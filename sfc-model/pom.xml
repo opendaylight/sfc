@@ -60,7 +60,9 @@
                         <Export-Package>
                             org.opendaylight.yang.gen.v1.urn.cisco.*;
                             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.*;
-                            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.*
+                            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.*;
+                            org.opendaylight.yang.gen.v1.http.www.intel.com.service.appliance.rev141201.*;
+                            org.opendaylight.yang.gen.v1.http.www.intel.com.service.appliance.rev141105.*
                         </Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>

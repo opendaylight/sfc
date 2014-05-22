@@ -1,5 +1,6 @@
 # UUID                                  	Group Name
 #
+ee61070ca5cbe15d8445415ff456875dbd974300	Non-Interactive sfc users
 global:Anonymous-Users                  	Anonymous Users
 global:Registered-Users                 	Registered Users
 ldap:cn=gerrit-sfc-committers,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-sfc-committers

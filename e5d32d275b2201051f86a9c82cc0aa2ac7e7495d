@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_16ec90c6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 37
+      },
+      "writtenOn": "2014-06-04T00:59:06Z",
+      "side": 1,
+      "message": "This is a bit light on details.  This is not just updating pom, it\u0027s acutal models, for example.  Also, not clear to me that org.opendaylight.controller.sfc _is_ actually proper naming (as opposed to org.opendaylight.sfc, for example)",
+      "revId": "e5d32d275b2201051f86a9c82cc0aa2ac7e7495d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f6e80cb6",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 37
+      },
+      "writtenOn": "2014-06-04T00:59:06Z",
+      "side": 1,
+      "message": "tab not spaces",
+      "revId": "e5d32d275b2201051f86a9c82cc0aa2ac7e7495d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_36df540f",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 37
+      },
+      "writtenOn": "2014-06-04T00:59:06Z",
+      "side": 1,
+      "message": "tab not spaces",
+      "revId": "e5d32d275b2201051f86a9c82cc0aa2ac7e7495d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_96c0a02b",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 37
+      },
+      "writtenOn": "2014-06-04T00:59:06Z",
+      "side": 1,
+      "message": "tab not spaces",
+      "revId": "e5d32d275b2201051f86a9c82cc0aa2ac7e7495d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_fcb78d84",
+        "filename": "model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 656
+      },
+      "writtenOn": "2014-06-05T07:11:57Z",
+      "side": 1,
+      "message": "we should probably add the opendaylight commons as out parent, and inherit these properties from it.",
+      "revId": "f1cdf7954156ab7856b50dc8b67b2d7ee790ff83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

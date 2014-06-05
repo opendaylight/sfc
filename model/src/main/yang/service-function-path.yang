@@ -43,7 +43,7 @@ module service-function-path {
   // Service Function Path
 
   container service-function-path {
-    description 
+    description
       "A Service Function Path is an instantiation of a Service Chain. It
        specifies the actual firewall (say, firewall-3) that will be traversed by
        the packets. The Service Path needs to be known before hand or stitched
@@ -79,14 +79,14 @@ module service-function-path {
     type bits {
       bit oam {
         position 0;
-        description 
+        description
           "Indicates that this packet is an operations and management
           (OAM) packet";
       }
       bit context-use {
         position 1;
-        description 
-          "If a context header is not in use, the value of that context 
+        description
+          "If a context header is not in use, the value of that context
           header MUST be zero";
       }
       bit r1 {

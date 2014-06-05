@@ -9,6 +9,7 @@
 
    <properties>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
+      <checkstyle.version>2.10</checkstyle.version>
    </properties>
     
     <distributionManagement>

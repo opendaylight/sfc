@@ -42,11 +42,11 @@ module service-function-forwarder {
   // Service Function Forwarding Map
 
   container service-forwarding-map {
-    description 
+    description
       "This dictionary holds the configuration for a service function forwarder.
       For each service function, it has the location information.
 
-      Example of a working Python Implementation of a SFF Map. A service function 
+      Example of a working Python Implementation of a SFF Map. A service function
       can be reached through IP:port or internal function call. ";
       //sfi_map = {"fw1": {"function": "fw1_process_packet", "ip_address":"", "port":""}, \
       //           "fw2": {"function": "", "ip_address": "192.168.0.2", "port":""}, \

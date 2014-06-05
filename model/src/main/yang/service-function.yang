@@ -16,7 +16,7 @@ module service-function {
     "This module contains a collection of YANG definitions for
      managing service function.
 
-     It follows closely the constructs of 
+     It follows closely the constructs of
      http://tools.ietf.org/html/draft-ietf-netmod-interfaces-cfg-12
 
      Copyright (c) 2013 IETF Trust and the persons identified as
@@ -72,7 +72,7 @@ module service-function {
   typedef service-function-type {
     type identityref {
       base "service-function-type-indentity";
-    } 
+    }
   }
 
   typedef service-function-ref {
@@ -85,7 +85,7 @@ module service-function {
   }
 
   container service-functions {
-    description 
+    description
       "A network or application based packet
       treatment, application, compute or storage resource, used
       singularly or in concert with other service functions within a
@@ -97,19 +97,19 @@ module service-function {
       injection, HTTP Header Enrichment functions, TCP optimizer, etc.";
 
       list service-function {
-	key "name";
-	leaf name {
-	  type string;
-	  description
+        key "name";
+        leaf name {
+          type string;
+          description
             "The name of the service function.";
-	  mandatory true;
-	}
-	leaf type {
-	  type service-function-type;
-	}
-	leaf ip-host-address {
-	  type inet:ip-address;
-	}
+          mandatory true;
+        }
+        leaf type {
+          type service-function-type;
+        }
+        leaf ip-host-address {
+          type inet:ip-address;
+        }
       }
     }
 }

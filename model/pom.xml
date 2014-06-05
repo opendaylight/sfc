@@ -13,6 +13,7 @@
        <ietf.model.version>2010.09.24.4-SNAPSHOT</ietf.model.version>
        <yang.ext.version>2013.09.07.4-SNAPSHOT</yang.ext.version>
        <compiler.version>2.3.2</compiler.version>
+       <checkstyle.version>2.10</checkstyle.version>
    </properties>
 
     <pluginRepositories>
@@ -75,6 +76,28 @@
 
    <build>
       <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${checkstyle.version}</version>
+            <executions>
+                <execution>
+                    <phase>process-sources</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                 <failsOnError>true</failsOnError>
+                 <configLocation>../checkstyle.xml</configLocation>
+                 <consoleOutput>true</consoleOutput>
+                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                 <sourceDirectory>${project.basedir}</sourceDirectory>
+                 <includes>**\/*.yang</includes>
+                 <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal</excludes>
+            </configuration>
+          </plugin>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>

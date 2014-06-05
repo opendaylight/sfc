@@ -43,7 +43,7 @@ module service-node {
   }
 
   // Transport type definitions
- 
+
   identity transport-type-identity {
     description
       "Base identity from which specific transport types are
@@ -58,7 +58,7 @@ module service-node {
   typedef transport-type {
     type identityref {
       base "transport-type-identity";
-    } 
+    }
   }
 
   // Failmode type definitions
@@ -121,7 +121,7 @@ module service-node {
   typedef service-node-type {
     type identityref {
       base "service-node-type-identity";
-    } 
+    }
   }
 
   typedef service-node-ref {
@@ -166,5 +166,5 @@ module service-node {
         "A list of service functions resident in this service node";
       }
     }
-  } 
+  }
 }

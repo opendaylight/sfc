@@ -1,6 +1,6 @@
 module service-node {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-sn";
+  namespace "urn:TBD:params:xml:ns:yang:sfc-sn";
 
   prefix sfc-sn;
 
@@ -37,7 +37,7 @@ module service-node {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-05-08 {
+  revision 2014-06-05 {
     description
       "Initial revision.";
   }
@@ -146,7 +146,6 @@ module service-node {
         type string;
         description
              "The name of the service node.";
-        mandatory true;
       }
       leaf type {
         type service-node-type;
@@ -154,7 +153,7 @@ module service-node {
       leaf transport {
         type transport-type;
       }
-      leaf ip-host-address {
+      leaf ip-mgmt-address {
         type inet:ip-address;
       }
       leaf failmode {
@@ -163,7 +162,7 @@ module service-node {
       leaf-list service-function {
         type sfc-sf:service-function-ref;
         description
-        "A list of service functions resident in this service node";
+          "A list of service functions resident in this service node";
       }
     }
   } 

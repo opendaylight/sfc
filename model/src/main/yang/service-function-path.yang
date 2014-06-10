@@ -1,6 +1,6 @@
 module service-function-path {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-path";
+  namespace "urn:TBD:params:xml:ns:yang:sfc-path";
 
   prefix sfc-path;
 
@@ -35,25 +35,33 @@ module service-function-path {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-29-04 {
+  revision 2014-06-05 {
     description
-    "Changes based on Opendaylight Testing";
+      "Changes based on Opendaylight Testing and IETF SFC ml.";
   }
 
   // Service Function Path
 
-  container service-function-path {
-    description 
-      "A Service Function Path is an instantiation of a Service Chain. It
-       specifies the actual firewall (say, firewall-3) that will be traversed by
-       the packets. The Service Path needs to be known before hand or stitched
-       run-time (given the dynamic LB decision) since a forwarding decision need
-       to be made regardless.";
-    leaf-list service-function-instance {
-      type sfc-sf:service-function-ref;
-      ordered-by user;
-      description
-        "A list of service function instances that compose the service chain";
+  container service-function-paths {
+    list service-function-path {
+      description 
+        "A Service Function Path is an instantiation of a Service Chain. It
+         specifies the actual firewall (say, firewall-3) that will be traversed by
+         the packets. The Service Path needs to be known before hand or stitched
+         run-time (given the dynamic LB decision) since a forwarding decision need
+         to be made regardless.";
+      key "name";
+      leaf name {
+        type string;
+        description 
+          "the name of this service function path";
+      }
+      leaf-list service-function-instance {
+        type sfc-sf:service-function-ref;
+        ordered-by user;
+        description
+          "A list of service function instances that compose the service chain";
+      }
     }
   }
 

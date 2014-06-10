@@ -1,11 +1,12 @@
 module service-function-forwarder {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-sff";
+  namespace "urn:TBD:params:xml:ns:yang:sfc-sff";
 
   prefix sfc-sff;
 
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
+  import service-function {prefix sfc-sf; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -34,14 +35,14 @@ module service-function-forwarder {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-05-08 {
+  revision 2014-06-05 {
     description
     "Initial revision.";
   }
 
   // Service Function Forwarding Map
 
-  container service-forwarding-map {
+  container service-forwarding-maps {
     description 
       "This dictionary holds the configuration for a service function forwarder.
       For each service function, it has the location information.
@@ -58,7 +59,7 @@ module service-function-forwarder {
         ordered-by user;
         key "service-function-name";
         leaf service-function-name {
-            type string;
+            type sfc-sf:service-function-ref;
         }
         container service-function-location {
             leaf ip {

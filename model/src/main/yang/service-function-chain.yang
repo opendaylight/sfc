@@ -36,26 +36,42 @@ module service-function-chain {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-05-05 {
+  revision 2014-06-05 {
     description
-    "Initial revision.";
+    "Revised based on IETF SFC ml comments";
   }
 
 
-  // Service Function Chain
+  // Service Function Chains
 
-  container service-function-chain {
-    description
-      "A service chain defines the required functions and
-      associated order (service-function1 --> service-function 2) that
-      must be applied to packets and/or frames.  A service chain does
-      not specify the network location or specific instance of service
-      functions (e.g. firewall1 vs. firewall2).";
-    leaf-list service-function {
-      type sfc-sf:service-function-type;
-      ordered-by user;
+  container service-function-chains {
+    list service-function-chain {
       description
-        "A list of service functions that compose the service chain";
+        "A service chain defines the required functions and
+        associated order (service-function1 --> service-function 2) that
+        must be applied to packets and/or frames.  A service chain does
+        not specify the network location or specific instance of service
+        functions (e.g. firewall1 vs. firewall2).";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "the name of the service function chain";
+      }
+      list service-function {
+        key "name";
+        leaf name {
+          type string;
+          description
+              "The type of the service function. This could be the
+              same as the service function type or in the case where
+              multiple service functions or the same type are used in
+              chain, something like ingress-firewall and egress-firewall";
+        }
+        ordered-by user;
+        description
+          "A list of service functions that compose the service chain";
+      }
     }
   }
 }

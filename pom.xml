@@ -1,36 +1,550 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <prerequisites>
+        <maven>3.0</maven><!-- TODO set 3.0.4 -->
+    </prerequisites>
     <groupId>org.opendaylight.sfc</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>sfc-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-   <properties>
-      <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-      <checkstyle.version>2.10</checkstyle.version>
-   </properties>
-    
-    <distributionManagement>
-        <!-- OpenDayLight Released artifact -->
-        <repository>
-            <id>opendaylight-release</id>
-            <url>${nexusproxy}/repositories/opendaylight.release/</url>
-        </repository>
-        <!-- OpenDayLight Snapshot artifact -->
-        <snapshotRepository>
-            <id>opendaylight-snapshot</id>
-            <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
-        </snapshotRepository>
-        <!-- Site deployment -->
-        <!-- site>
-            <id>website</id>
-            <url>${sitedeploy}</url>
-        </site -->
-    </distributionManagement>
-    
+	<!--
+    <scm>
+      <connection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</connection>
+      <developerConnection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</developerConnection>
+      <url>https://wiki.opendaylight.org/view/Service_Function_Chaining:Main</url>
+      <tag>HEAD</tag>
+    </scm>
+	-->
+	
     <modules>
-        <module>model</module>
+      <module>sfc-model</module>
+      <module>sfc-provider</module>
+      <module>sfc-distribution</module>
     </modules>
+
+    <distributionManagement>
+      <!-- OpenDayLight Released artifact -->
+      <repository>
+        <id>opendaylight-release</id>
+        <url>${nexusproxy}/repositories/opendaylight.release</url>
+      </repository>
+      <!-- OpenDayLight Snapshot artifact -->
+      <snapshotRepository>
+        <id>opendaylight-snapshot</id>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
+      </snapshotRepository>
+      <!-- Site deployment -->
+      <!-- site>
+           <id>website</id>
+           <url>${sitedeploy}</url>
+           </site -->
+    </distributionManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
+
+        <!-- Java Versions -->
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+
+        <!-- Build Plugin Versions -->
+        <maven.bundle.version>2.4.0</maven.bundle.version>
+        <maven.jar.version>2.3.2</maven.jar.version>
+        <maven.javadoc.version>2.9.1</maven.javadoc.version>
+        <maven.release.version>2.4.2</maven.release.version>
+        <maven.source.version>2.2.1</maven.source.version>
+        <maven.surefire.version>2.16</maven.surefire.version>
+        
+        <config.version>0.2.5-SNAPSHOT</config.version>
+        <mdsal.version>1.1-SNAPSHOT</mdsal.version>
+
+        <!-- Supporting Libraries -->
+        <commons.lang.version>3.1</commons.lang.version>
+        <junit.version>4.10</junit.version>
+        <slf4j.version>1.7.2</slf4j.version>
+        <guava.version>14.0.1</guava.version>
+        <xtend.version>2.4.3</xtend.version>
+        <groovy.version>2.1.6</groovy.version>
+        <mockito.version>1.9.5</mockito.version>
+        <javassist.version>3.17.1-GA</javassist.version>
+		
+		<!-- TODO check whether we need those -->
+		<logback.version>1.0.9</logback.version>
+		<openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
+		<controller.model.version>1.1-SNAPSHOT</controller.model.version>
+		<osgi.core.version>5.0.0</osgi.core.version>
+		<sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
+		<sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>		
+		<netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
+		<config.parent.version>0.2.5-SNAPSHOT</config.parent.version>
+		<build.helper.version>1.8</build.helper.version>
+		
+		<xtend.dstdir>src/main/xtend-gen</xtend.dstdir> <!-- TODO move closer to 'xtend.version' -->
+		<jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
+		<salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
+		<exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
+    </properties>
+
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.opendaylight.sfc</groupId>
+          <artifactId>sfc-model</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.opendaylight.sfc</groupId>
+          <artifactId>sfc-provider</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+          <version>3.17.1-GA</version>
+        </dependency>
+
+        <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>14.0.1</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.eclipse.osgi</artifactId>
+          <version>3.8.1.v20120830-144521</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.eclipse.equinox.console</artifactId>
+          <version>1.0.0.v20120522-1841</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.command</artifactId>
+          <version>0.8.0.v201108120515</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.runtime</artifactId>
+          <version>0.8.0.v201108120515</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.shell</artifactId>
+          <version>0.8.0.v201110170705</version>
+        </dependency>
+
+		<!--
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-impl</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-api</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-spi</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>simple-client</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+		-->
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-base</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-management</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-service</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-statistics</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-inventory</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>sal-binding-api</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal</artifactId>
+            <version>${sal.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal.connection</artifactId>
+            <version>${sal.connection.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-common-util</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
+
+        <!-- IT -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-netconf-connector</artifactId>
+            <version>${netconf.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-it</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-broker-impl</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-manager</artifactId>
+            <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+            <artifactId>antlr4-runtime-osgi-nohead</artifactId>
+            <version>4.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>logback-config</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-api</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-impl</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-file-xml-adapter</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-monitoring</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-client</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-impl</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+
+        <!-- thirdparty -->
+        <dependency>
+          <groupId>org.openexi</groupId>
+          <artifactId>nagasena</artifactId>
+          <version>${exi.nagasena.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openexi</groupId>
+          <artifactId>nagasena-rta</artifactId>
+          <version>${exi.nagasena.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>ganymed</artifactId>
+          <version>1.1-SNAPSHOT</version>
+        </dependency>
+        
+        
+
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+          <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+          <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+            <artifactId>xtend-lib-osgi</artifactId>
+            <version>2.4.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+          <version>${osgi.core.version}</version>
+          <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+          <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>build-helper-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                <source>1.7</source>
+                <target>1.7</target>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.ops4j.pax.exam</groupId>
+              <artifactId>maven-paxexam-plugin</artifactId>
+              <version>1.2.4</version>
+            </plugin>
+            <plugin>
+              <groupId>org.eclipse.xtend</groupId>
+              <artifactId>xtend-maven-plugin</artifactId>
+              <version>${xtend.version}</version>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>compile</goal>
+                      </goals>
+                      <configuration>
+                          <outputDirectory>${xtend.dstdir}</outputDirectory>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+          <plugin>
+              <artifactId>maven-clean-plugin</artifactId>
+              <configuration>
+                  <filesets>
+                      <fileset>
+                          <directory>${xtend.dstdir}</directory>
+                          <includes>
+                              <include>**</include>
+                          </includes>
+                      </fileset>
+                      <fileset>
+                          <directory>${jmxGeneratorPath}</directory>
+                          <includes>
+                              <include>**</include>
+                          </includes>
+                      </fileset>
+                      <fileset>
+                          <directory>${salGeneratorPath}</directory>
+                          <includes>
+                              <include>**</include>
+                          </includes>
+                      </fileset>
+                  </filesets>
+              </configuration>
+            </plugin>
+          <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>build-helper-maven-plugin</artifactId>
+             <version>${build.helper.version}</version>
+             <executions>
+                <execution>
+                   <id>add-source</id>
+                   <phase>generate-sources</phase>
+                   <goals>
+                      <goal>add-source</goal>
+                   </goals>
+                   <configuration>
+                      <sources>
+                         <source>${jmxGeneratorPath}</source>
+                         <source>${salGeneratorPath}</source>
+                         <source>${xtend.dstdir}</source>
+                      </sources>
+                   </configuration>
+                </execution>
+             </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.opendaylight.yangtools</groupId>
+              <artifactId>yang-maven-plugin</artifactId>
+              <version>0.6.2-SNAPSHOT</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <version>${maven.bundle.version}</version>
+              <extensions>true</extensions>
+              <configuration>
+                <instructions>
+                  <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                </instructions>
+                <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+      <profile>
+        <id>findbugsReport</id>
+        <reporting>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.7</version>
+              <configuration>
+                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+              </configuration>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>index</report>
+                    <report>project-team</report>
+                    <report>license</report>
+                    <report>mailing-list</report>
+                    <report>plugin-management</report>
+                    <report>cim</report>
+                    <report>issue-tracking</report>
+                    <report>scm</report>
+                    <report>summary</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>findbugs-maven-plugin</artifactId>
+              <version>2.5.2</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-pmd-plugin</artifactId>
+              <version>3.0.1</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jxr-plugin</artifactId>
+              <version>2.3</version>
+            </plugin>
+          </plugins>
+        </reporting>
+      </profile>
+    </profiles>
+
+    <repositories>
+      <repository>
+        <id>opendaylight-snapshot</id>
+        <name>opendaylight-snapshot</name>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+      </repository>
+      <repository>
+        <id>public</id>
+        <name>public</name>
+        <url>${nexusproxy}/groups/public</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+      </repository>
+
+    </repositories>
+
+    <pluginRepositories>
+      <pluginRepository>
+        <id>opendaylight-central</id>
+        <name>opendaylight-central</name>
+        <url>${nexusproxy}/repositories/public</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+      </pluginRepository>
+      <pluginRepository>
+        <id>opendaylight-snapshot</id>
+        <name>central2</name>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+      </pluginRepository>
+    </pluginRepositories>
+
 </project>

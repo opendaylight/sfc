@@ -14,6 +14,8 @@
        <yang.ext.version>2013.09.07.4-SNAPSHOT</yang.ext.version>
        <compiler.version>2.3.2</compiler.version>
        <checkstyle.version>2.10</checkstyle.version>
+       <osgi.core.version>5.0.0</osgi.core.version>
+       <bundle.plugin.version>2.4.0</bundle.plugin.version>
    </properties>
 
     <pluginRepositories>
@@ -112,11 +114,13 @@
              <groupId>org.apache.felix</groupId>
              <artifactId>maven-bundle-plugin</artifactId>
              <extensions>true</extensions>
-             <version>2.3.6</version>
+             <version>${bundle.plugin.version}</version>
              <configuration>
                  <instructions>
                      <Export-Package>org.opendaylight.controller.sfc.*;
+                      org.opendaylight.yang.gen.v1.urn.cisco.*
                      </Export-Package>
+                     <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                  </instructions>
              </configuration>
           </plugin>
@@ -191,6 +195,11 @@
            <groupId>org.opendaylight.yangtools</groupId>
            <artifactId>yang-common</artifactId>
            <version>${yangtools.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.osgi</groupId>
+           <artifactId>org.osgi.core</artifactId>
+           <version>${osgi.core.version}</version>
        </dependency>
    </dependencies>
 </project>

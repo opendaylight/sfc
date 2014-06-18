@@ -1,0 +1,75 @@
+module test-consumer-impl {
+
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:test-consumer:impl";
+    prefix "test-consumer-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+    description
+        "This module contains the base YANG definitions for
+        test-consumer impl implementation.";
+
+    revision "2014-06-12" {
+        description
+            "Initial revision.";
+    }
+
+    // This is the definition of test-consumer interface identity.
+    identity test-consumer {
+        base "config:service-type";
+        config:java-class "org.opendaylight.sfc.sf.consumer.api.ServiceFunctionsConsumer";
+    }
+
+    // This is the definition of test-consumer implementation module identity. 
+    identity test-consumer-impl {
+            base config:module-type;
+            config:provided-service test-consumer;
+            config:java-name-prefix ServiceFunctionsConsumer;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case test-consumer-impl {
+            when "/config:modules/config:module/config:type = 'test-consumer-impl'";
+
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+        }
+    }
+	augment "/config:modules/config:module/config:state" {
+        case test-consumer-impl {
+            when "/config:modules/config:module/config:type = 'test-consumer-impl'";
+
+            rpcx:rpc-context-instance "update-sf-wa20-rpc";
+        }
+    }
+
+    identity update-sf-wa20-rpc;
+
+    rpc update-sf-wa20  {
+        description
+          "Shortcut JMX call to for testing.";
+
+        input {
+            uses rpcx:rpc-context-ref {
+                refine context-instance {
+                    rpcx:rpc-context-instance update-sf-wa20-rpc;
+                }
+            }
+        }
+        output {
+            leaf result {
+                type boolean;
+            }
+        }
+    }
+}

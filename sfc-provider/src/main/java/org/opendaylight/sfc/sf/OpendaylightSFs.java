@@ -1,5 +1,6 @@
 package org.opendaylight.sfc.sf;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -9,9 +10,11 @@ import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.controller.sal.common.util.Rpcs;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.service.functions.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.*;
@@ -23,11 +26,11 @@ import com.google.common.util.concurrent.Futures;
 public class OpendaylightSFs 
 	implements ServiceFunctionService, AutoCloseable, DataChangeListener {
 
-	public static final InstanceIdentifier<ServiceFunctions> IID = InstanceIdentifier
-			.builder(ServiceFunctions.class).build();
+    public static final InstanceIdentifier<ServiceFunctions> IID = InstanceIdentifier
+            .builder(ServiceFunctions.class).build();
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(OpendaylightSFs.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(OpendaylightSFs.class);
 
 	private DataBrokerService dataProvider;
 	
@@ -43,13 +46,11 @@ public class OpendaylightSFs
 		return builder.build();
 	}
 
-	public void setDataProvider(DataBrokerService salDataProvider,
-			List<ServiceFunction> list) {
-		this.dataProvider = salDataProvider;
-		updateStatus(list);
-	}
+    public void setDataProvider(DataBrokerService salDataProvider) {
+        this.dataProvider = salDataProvider;
+    }
 
-	/**
+    /**
 	 * Implemented from the AutoCloseable interface.
 	 */
 	@Override
@@ -105,12 +106,17 @@ public class OpendaylightSFs
 		ServiceFunctionBuilder builder = new ServiceFunctionBuilder();
 		ServiceFunction sf = builder.setName(input.getName()).setType(input.getType())
 				.setIpHostAddress(input.getIpHostAddress()).build();
-		
-		if (dataProvider != null) {
+        List<ServiceFunction> list = new ArrayList<>();
+        list.add(sf);
+
+        ServiceFunctions sfs = buildServiceFunctions(list);
+
+
+        if (dataProvider != null) {
 			final DataModificationTransaction t = dataProvider
 					.beginTransaction();
 
-			t.putConfigurationData(IID, sf);
+			t.putConfigurationData(IID, sfs);
 			try {
 				t.commit().get();
 			} catch (ExecutionException | InterruptedException e) {
@@ -125,29 +131,32 @@ public class OpendaylightSFs
 	@Override
 	public Future<RpcResult<Void>> updateFunctionDpiWa20() {
 		LOG.info("updateFunctionDpiWa20: \n");
-		IpAddress ip = new IpAddress(new char[]{10,0,0,111});
+        IpAddress ip = new IpAddress(new Ipv4Address("10.0.0.111"));
 		ServiceFunctionBuilder builder = new ServiceFunctionBuilder();
 		ServiceFunction sf = builder.setName("dpi-wa20")
 				.setType(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.Firewall.class)
 				.setIpHostAddress(ip).build();
-		
-		LOG.info("updateFunctionDpiWa20: bbb\n");
-		if (dataProvider != null) {
-			LOG.info("updateFunctionDpiWa20: dataProvider not null\n");
+
+        List<ServiceFunction> list = new ArrayList<>();
+        list.add(sf);
+
+        ServiceFunctions sfs = buildServiceFunctions(list);
+
+        if (dataProvider != null) {
 			final DataModificationTransaction t = dataProvider
 					.beginTransaction();
 
-			t.putConfigurationData(IID, sf);
+			t.putConfigurationData(IID, sfs);
 			try {
 				t.commit().get();
+                LOG.info("updateFunctionDpiWa20: commited\n");
 			} catch (ExecutionException | InterruptedException e) {
 				LOG.warn("Failed to update-function, operational otherwise", e);
 			}
 		}
 		else{
-			LOG.info("updateFunctionDpiWa20: dataProvider not null\n");
+			LOG.warn("updateFunctionDpiWa20: dataProvider is null\n");
 		}
-		LOG.info("updateFunctionDpiWa20: eee\n");
 		return Futures.immediateFuture(Rpcs.<Void> getRpcResult(true,
 				Collections.<RpcError> emptySet()));
 	}

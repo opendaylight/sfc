@@ -6,11 +6,16 @@ import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.sfc.sf.OpendaylightSFs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140602.ServiceFunctionService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceFunctionsProviderModule
 		extends
 		org.opendaylight.controller.config.yang.config.service_function_provider.impl.AbstractServiceFunctionsProviderModule {
-	public ServiceFunctionsProviderModule(
+
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionsProviderModule.class);
+
+    public ServiceFunctionsProviderModule(
 			org.opendaylight.controller.config.api.ModuleIdentifier identifier,
 			org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
 		super(identifier, dependencyResolver);
@@ -34,8 +39,7 @@ public class ServiceFunctionsProviderModule
 		final OpendaylightSFs opendaylightSFs = new OpendaylightSFs();
 
 		DataProviderService dataBrokerService = getDataBrokerDependency();
-
-		opendaylightSFs.setDataProvider(dataBrokerService, null);
+		opendaylightSFs.setDataProvider(dataBrokerService);
 
 		// Register our OpendaylightToaster instance as the RPC implementation
 		// for the ToasterService.

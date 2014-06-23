@@ -1,0 +1,412 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_75e61217",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces\nProperly indent \nRemove unnecessary commented dependencies\n\nI wonder if we really need all these dependencies. Please check with: mvn dependency:analyze\n\nIt is not perfect but it will give you an idea of what is really needed. Remove dependencies reported as \"unused\" little by little.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_557e6e1a",
+        "filename": "sfc-distribution/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "I looked at https://git.opendaylight.org/gerrit/#/c/390/ and it made my head spin. Please explain why do we need all this.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f532225e",
+        "filename": "sfc-distribution/src/assemble/bin.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Please help me understand why we need this file and explain all these sections.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_15746634",
+        "filename": "sfc-distribution/src/main/resources/configuration/initial/sfc-initial.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert all tabs to spaces\n\nIndent file with 4 spaces\n\nIn the required capabilities don\u0027t we need SFC model module as well?\n\nI would also think we need some extra md-sal capabilities.\n\nit strikes me as odd that we need to have any test-consumer related config here. Does that mean if somebody else writes a consumer we need to come here and add to the list of capabilities?",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_751ff208",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "You can use the current POM in the repository.\n\nPlease convert tabs to spaces",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f53302a9",
+        "filename": "sfc-model/src/main/yang/service-function-chain.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "You modified Yang files and introduced RPCs. That is fine except these Yang files are older than the ones in the repository.  So, you need to pull the Yang files to get the newer versions and then modify then.\n\nThis same comment applies to the other Yang files, I\u0027m not going to repeat it.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d514bea1",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Properly indent the file\n\nConvert tabs to spaces\n\nWe do not need to return \"leaf ip-host-address\". If we return the service function name user can get other info if needed.\n\nRPCs and actual function in the files seems at odds",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_5522ee52",
+        "filename": "sfc-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces. Use 4 spaces for indentation.\n\nThis POM does not follow the current POM structure in the repository.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b5b7baf4",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/service_function_provider/impl/ServiceFunctionsProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces\n\nProperly indent file to 4 spaces\n\nPlease provide javadoc comments",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b20fd087",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert all tabs to spaces.\nProperly indent file to 4 spaces\nFix imports when using the new versions of the Yang files\n\nMethods need to have comments on their purpose. Please use javadoc style\n\nInserting debug LOGs is very good, but please be consistent and insert them at the beginning and end of each method. Instead of writing the function name by hand (which is error prone), you can use something like:\n\n    * LOG.info(\"\\n####### Start: {}\", Thread.currentThread().getStackTrace()[1]);",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_55d0ae1e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Change IID to ServiceFunctionsIID. We will use many Instance identifiers for the different models therefore we need more descriptive names.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_95a95692",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Are we using this function anywhere? If not, please comment it out or use it. You can exercise it locally through some test.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_35c3aa58",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Going back to my comment about proper naming. This is not \"deleteAll\". This function only deletes all ServiceFunctions.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d52efe42",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "I do not believe this function works as is much like updateFunctionDpiWa20() did not work. The issue is that ServiceFunction is an entry in a list and not a simple leaf.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_5228c4e1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "I\u0027m okay on committing experimental code, but please change the name to something more meaningful, insert comments and make function more general so we can use in unit tests. \n\nBTW, this function as originally written does not work for me. I\u0027ve modified it to work and add a service function as below:\n\n    public Future\u003cRpcResult\u003cVoid\u003e\u003e updateServiceFunction ()  {\n        LOG.info(\"\\n########## Start: {}\", Thread.currentThread().getStackTrace()[1]);\n        IpAddress ip \u003d new IpAddress(\"10.0.0.11\".toCharArray());\n        ServiceFunctionBuilder sfbuilder \u003d new ServiceFunctionBuilder();\n        ServiceFunctionKey sfkey \u003d new ServiceFunctionKey(\"fw-wa\");\n        sfbuilder.setKey(sfkey);\n        ServiceFunction sf \u003d sfbuilder.setName(\"fw-wa\")\n                .setType(Firewall.class)\n                .setIpMgmtAddress(ip).build();\n\n\n        LOG.info(\"updateFunctionDpiWa20: bbb\\n\");\n        if (dataProvider !\u003d null) {\n            LOG.info(\"updateFunctionDpiWa20: dataProvider not null\\n\");\n            final DataModificationTransaction t \u003d dataProvider\n                    .beginTransaction();\n\n            InstanceIdentifier\u003cServiceFunction\u003e  sfIID \u003d InstanceIdentifier.builder(ServiceFunctions.class).\n                    child(ServiceFunction.class, sf.getKey()).toInstance();\n\n            t.putConfigurationData(sfIID, sf);\n            try {\n                t.commit().get();\n            } catch (ExecutionException | InterruptedException e) {\n                LOG.warn(\"Failed to update-function, operational otherwise\", e);\n            }\n        }\n        else{\n            LOG.info(\"updateFunctionDpiWa20: dataProvider not null\\n\");\n        }\n        LOG.info(\"\\n########## Stop: {}\", Thread.currentThread().getStackTrace()[1]);\n        return Futures.immediateFuture(Rpcs.\u003cVoid\u003e getRpcResult(true,\n                Collections.\u003cRpcError\u003e emptySet()));\n    }",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f5a8e28e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/sf/OpendaylightSFs.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Logs are great but without a proper prefix they will be lost in the wood pile. Logs need to have a structured prefix like \u003cproject name:class name:method name\u003e.\n\nSame applies to all other logs, I\u0027m not going to repeat the comment",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d5bcbede",
+        "filename": "sfc-provider/src/main/yang/service-function-provider-impl@2014-06-03.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces\nProperly indent file",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_35a88a76",
+        "filename": "test-consumer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces\n\nIndent to 4 spaces\n\nThis directory should be called sfc-test-consumer for consistency\n\nNot clear we need all these dependencies. Please use mvn dependency:analyze here as well\n\nThere is no version information for this artifact\n\nNot sure why sfc-model is under dependency management, differently from all other dependencies.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_55cc2e6a",
+        "filename": "test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/test_consumer/impl/ServiceFunctionsConsumerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tab to spaces\n\nProperly indent to 4 spaces",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b5b33ae8",
+        "filename": "test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/test_consumer/impl/ServiceFunctionsConsumerModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "It says \"toasterService\"",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f5e462e2",
+        "filename": "test-consumer/src/main/java/org/opendaylight/sfc/sf/consumer/api/ServiceFunctionConsumerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "This function updates/creates a single service function, please correct naming.\n\nDid you test this code? Like the test code in the provide this does not seem to work.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_55faee75",
+        "filename": "test-consumer/src/main/java/org/opendaylight/sfc/sf/consumer/api/ServiceFunctionsConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Convert tabs to spaces\n\nPlease provide javadoc comments",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_75f7f28b",
+        "filename": "test-consumer/src/main/yang/test-consumer-impl@2014-06-12.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "Properly indent file",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_95fcf673",
+        "filename": "test-consumer/src/main/yang/test-consumer-impl@2014-06-12.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-06-23T17:18:34Z",
+      "side": 1,
+      "message": "I could not find where this RPC is located.\n\nThere is updateSfWa20 in test-consumer and similar in provide but not the one listed below.\n\nDescription mentions JMX testing but I do not believe we have such at this point.",
+      "revId": "5b28bd591949077c4a54b801154c762393d416ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

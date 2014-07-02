@@ -1,8 +1,8 @@
 module service-function-path {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-path";
+  namespace "urn:cisco:params:xml:ns:yang:sfc-sfp";
 
-  prefix sfc-path;
+  prefix sfc-sfp;
 
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
@@ -35,7 +35,7 @@ module service-function-path {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-05 {
+  revision 2014-06-26 {
     description
       "Changes based on Opendaylight Testing and IETF SFC ml.";
   }
@@ -60,7 +60,7 @@ module service-function-path {
         type sfc-sf:service-function-ref;
         ordered-by user;
         description
-          "A list of service function instances that compose the service chain";
+          "A list of service function instances that compose the service path";
       }
     }
   }

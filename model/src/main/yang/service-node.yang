@@ -37,108 +37,30 @@ module service-node {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-05 {
+  revision 2014-06-30 {
     description
-      "Initial revision.";
-  }
-
-  // Transport type definitions
-  identity transport-type-identity {
-    description
-      "Base identity from which specific transport types are
-      derived.";
-  }
-
-  identity vxlan-gpe {
-    base "transport-type-identity";
-    description "Programmable vxlan transport type";
-  }
-
-  typedef transport-type {
-    type identityref {
-      base "transport-type-identity";
-    }
-  }
-
-  // Failmode type definitions
-
-  identity failmode-type-identity {
-    description
-      "Base identity from which specific failmode
-       types are derived. Fail mode specifies the behavior
-       when the interface does not have connectivity to the
-       service node.";
-  }
-
-  typedef failmode-type {
-    type identityref {
-      base "failmode-type-identity";
-    }
-  }
-
-  identity close {
-    base "failmode-type-identity";
-    description "When service-node can not reach service function, packets will be dropped";
-  }
-
-  identity open {
-    base "failmode-type-identity";
-    description "When service-node can not reach service function, packets will be forwarded";
-  }
-
-  // Service Nodes
-
-  // Service Node Type definitions
-
-  identity service-node-type-identity {
-    description
-          "Base identity from which specific service function types are
-          derived.";
-  }
-
-  identity egress {
-    base "service-node-type-identity";
-    description "Last node in the chain";
-  }
-
-  identity ingress {
-    base "service-node-type-identity";
-    description "First node in the chain";
-  }
-
-  identity middle {
-    base "service-node-type-identity";
-    description "Service nodes in the middle of the chain";
-  }
-
-  identity legacy {
-    base "service-node-type-identity";
-    description "Service Nodes that need a proxy function";
+      "Revision based on Opendaylight project feedback";
   }
 
 
-  typedef service-node-type {
-    type identityref {
-      base "service-node-type-identity";
-    }
-  }
+
+    // Service Nodes
 
   typedef service-node-ref {
-    type leafref {
-      path "/sfc-sn:service-nodes/sfc-sn:service-node/sfc-sn:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       configured service functions.";
+      type leafref {
+          path "/sfc-sn:service-nodes/sfc-sn:service-node/sfc-sn:name";
+      }
+      description
+          "This type is used by data models that need to reference
+           configured service functions.";
   }
-
 
 
   container service-nodes {
     description
-      "Physical or virtual element that hosts one or
-      more service functions and has one or more network locators
-      associated with it for reachability and service delivery.";
+        "Physical or virtual element that hosts one or
+        more service functions and has one or more network locators
+        associated with it for reachability and service delivery.";
     list service-node {
       key "name";
       leaf name {
@@ -146,22 +68,14 @@ module service-node {
         description
              "The name of the service node.";
       }
-      leaf type {
-        type service-node-type;
-      }
-      leaf transport {
-        type transport-type;
-      }
+
       leaf ip-mgmt-address {
         type inet:ip-address;
-      }
-      leaf failmode {
-        type failmode-type;
       }
       leaf-list service-function {
         type sfc-sf:service-function-ref;
         description
-          "A list of service functions resident in this service node";
+            "A list of service functions resident in this service node";
       }
     }
   }

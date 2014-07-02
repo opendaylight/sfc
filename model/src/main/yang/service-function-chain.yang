@@ -36,15 +36,12 @@ module service-function-chain {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-05 {
+  revision 2014-06-30 {
     description
-    "Revised based on IETF SFC ml comments";
+    "Revised based on Opendaylight Project feedback";
   }
 
-
-  // Service Function Chains
-
-  container service-function-chains {
+  grouping service-function-chain-grouping {
     list service-function-chain {
       description
         "A service chain defines the required functions and
@@ -58,20 +55,37 @@ module service-function-chain {
         description
           "the name of the service function chain";
       }
-      list service-function {
+      list service-function-type {
         key "name";
         leaf name {
           type string;
           description
-              "The type of the service function. This could be the
-              same as the service function type or in the case where
-              multiple service functions or the same type are used in
-              chain, something like ingress-firewall and egress-firewall";
+              "The name of this service function type. This could be the
+              same as the registered type or in the case where
+              multiple service functions of the same type are used in
+              the chain, something like ingress-firewall and egress-firewall";
+        }
+        leaf type {
+          type string;
+          description
+              "The registered service function type.";
         }
         ordered-by user;
         description
           "A list of service functions that compose the service chain";
       }
+    }
+  }
+
+  // Service Function Chains
+
+  container service-function-chains {
+    uses service-function-chain-grouping;
+  }
+
+  rpc put-service-function-chains {
+    input {
+      uses service-function-chain-grouping;
     }
   }
 }

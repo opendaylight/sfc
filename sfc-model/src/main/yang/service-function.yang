@@ -38,7 +38,7 @@ module service-function {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-05 {
+  revision 2014-06-29 {
     description
     "Changes based on Opendaylight Testing.";
   }
@@ -75,6 +75,15 @@ module service-function {
     }
   }
 
+  typedef service-function-type-ref {
+    type leafref {
+      path "/sfc-sf:service-function-type";
+    }
+    description
+      "This type is used by data models that need to reference
+       registered service types.";
+  }
+
   typedef service-function-ref {
     type leafref {
       path "/sfc-sf:service-functions/sfc-sf:service-function/sfc-sf:name";
@@ -109,6 +118,57 @@ module service-function {
       }
       leaf ip-mgmt-address {
         type inet:ip-address;
+      }
+    }
+  }
+
+  rpc delete-all-service-function {
+  }
+
+  rpc put-service-function {
+    input {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function.";
+      }
+      leaf type {
+        type service-function-type;
+      }
+      leaf ip-mgmt-address {
+        type inet:ip-address;
+      }
+    }
+  }
+  rpc read-service-function {
+    input {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function.";
+      }
+    }
+    output {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function.";
+      }
+      leaf type {
+        type service-function-type;
+      }
+      leaf ip-mgmt-address {
+        type inet:ip-address;
+      }
+    }
+  }
+
+  rpc delete-service-function {
+    input {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function.";
       }
     }
   }

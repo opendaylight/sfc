@@ -32,5 +32,6 @@
     
     <modules>
         <module>model</module>
+        <module>sfc-model</module>
     </modules>
 </project>

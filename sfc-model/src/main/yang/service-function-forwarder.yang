@@ -1,135 +1,131 @@
 module service-function-forwarder {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-sff";
+    namespace "urn:cisco:params:xml:ns:yang:sfc-sff";
 
-  prefix sfc-sff;
+    prefix sfc-sff;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+    import service-function {prefix sfc-sf; }
 
-  organization "Cisco Systems, Inc.";
-  contact "Reinaldo Penno <repenno@cisco.com>";
+    organization "Cisco Systems, Inc.";
+    contact "Reinaldo Penno <repenno@cisco.com>";
 
 
-  description
-    "This module contains a collection of YANG definitions for
-     managing service function forwarders.
-
-     Copyright (c) 2013 IETF Trust and the persons identified as
-     authors of the code.  All rights reserved.
-
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject
-     to the license terms contained in, the Simplified BSD License
-     set forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents
-     (http://trustee.ietf.org/license-info).
-
-     This version of this YANG module is part of RFC XXXX; see
-     the RFC itself for full legal notices.";
-
-     // RFC Ed.: replace XXXX with actual RFC number and remove this
-     // note.
-
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
-
-  revision 2014-06-30 {
-      description
-      "Revision based on Opendaylight project feedback";
-  }
-
-  // Transport type definitions
-  identity transport-type-identity {
     description
-        "Base identity from which specific transport types are
-        derived.";
-  }
+        "This module contains a collection of YANG definitions for
+         managing service function forwarders.
 
-  identity vxlan-gpe {
-    base "transport-type-identity";
-    description "Programmable vxlan transport type";
-  }
+         Copyright (c) 2013 IETF Trust and the persons identified as
+         authors of the code.  All rights reserved.
 
-  typedef transport-type {
-    type identityref {
-        base "transport-type-identity";
-    }
-  }
+         Redistribution and use in source and binary forms, with or
+         without modification, is permitted pursuant to, and subject
+         to the license terms contained in, the Simplified BSD License
+         set forth in Section 4.c of the IETF Trust's Legal Provisions
+         Relating to IETF Documents
+         (http://trustee.ietf.org/license-info).
 
-  // Failmode type definitions
+         This version of this YANG module is part of RFC XXXX; see
+         the RFC itself for full legal notices.";
 
-  identity failmode-type-identity {
-    description
-      "Base identity from which specific failmode
-       types are derived. Fail mode specifies the behavior
-       when the interface does not have connectivity to the
-       service node.";
-  }
+         // RFC Ed.: replace XXXX with actual RFC number and remove this
+         // note.
 
-  typedef failmode-type {
-    type identityref {
-        base "failmode-type-identity";
-    }
-  }
+         // RFC Ed.: update the date below with the date of RFC publication
+         // and remove this note.
 
-  identity close {
-    base "failmode-type-identity";
-    description "When service-function can not reach service function, packets will be dropped";
-  }
-
-  identity open {
-    base "failmode-type-identity";
-    description "When service-function can not reach service function, packets will be forwarded";
-  }
-
-
-  // Service Function Forwarding Map
-
-  container service-function-forwarders {
-    description
-        "This dictionary holds the configuration for a service function forwarder.
-        For each service function, it has the location information.
-
-        Example of a working Python Implementation of a SFF Map. A service function
-        can be reached through IP:port or internal function call. ";
-        //sfi_map = {"fw1": {"function": "fw1_process_packet", "ip_address":"", "port":""}, \
-        //           "fw2": {"function": "", "ip_address": "192.168.0.2", "port":""}, \
-        //           "dpi1":{"function": "", "ip_address": "192.168.0.4", "port":10000}, \
-        //           "nat1":{"function": "nat1_process_packet", "ip_address": "", "port":""}}
-    list service-function-forwarder {
-      key "name";
-      leaf name {
-        type string;
+    revision 2014-06-30 {
         description
-          "The name of this service function forwarder";
-      }
-      leaf transport {
-        type transport-type;
-      }
-      list service-map {
-        ordered-by user;
-        key "service-function-name";
-        leaf service-function-name {
-          type sfc-sf:service-function-ref;
-        }
-        leaf failmode {
-            type failmode-type;
-        }
-        container service-function-location {
-          leaf ip {
-            type inet:ip-address;
-          }
-          leaf port {
-            type inet:port-number;
-          }
-        }
-      }
+            "Revision based on Opendaylight project feedback";
     }
-  }
+
+    // Transport type definitions
+    identity transport-type-identity {
+        description
+            "Base identity from which specific transport types are
+            derived.";
+    }
+
+    identity vxlan-gpe {
+        base "transport-type-identity";
+        description "Programmable vxlan transport type";
+    }
+
+    typedef transport-type {
+        type identityref {
+            base "transport-type-identity";
+        }
+    }
+
+    // Failmode type definitions
+
+    identity failmode-type-identity {
+        description
+            "Base identity from which specific failmode
+             types are derived. Fail mode specifies the behavior
+             when the interface does not have connectivity to the
+             service node.";
+    }
+
+    typedef failmode-type {
+        type identityref {
+            base "failmode-type-identity";
+        }
+    }
+
+    identity close {
+        base "failmode-type-identity";
+        description "When service-function can not reach service function, packets will be dropped";
+    }
+
+    identity open {
+        base "failmode-type-identity";
+        description "When service-function can not reach service function, packets will be forwarded";
+    }
+
+
+    // Service Function Forwarding Map
+
+    container service-function-forwarders {
+        description
+            "This dictionary holds the configuration for a service function forwarder.
+            For each service function, it has the location information.
+
+            Example of a working Python Implementation of a SFF Map. A service function
+            can be reached through IP:port or internal function call. ";
+            //sfi_map = {"fw1": {"function": "fw1_process_packet", "ip_address":"", "port":""}, \
+            //           "fw2": {"function": "", "ip_address": "192.168.0.2", "port":""}, \
+            //           "dpi1":{"function": "", "ip_address": "192.168.0.4", "port":10000}, \
+            //           "nat1":{"function": "nat1_process_packet", "ip_address": "", "port":""}}
+        list service-function-forwarder {
+            key "name";
+            leaf name {
+                type string;
+                description
+                    "The name of this service function forwarder";
+            }
+            leaf transport {
+                type transport-type;
+            }
+            list service-map {
+                ordered-by user;
+                key "service-function-name";
+                leaf service-function-name {
+                    type sfc-sf:service-function-ref;
+                }
+                leaf failmode {
+                        type failmode-type;
+                }
+                container service-function-location {
+                    leaf ip {
+                        type inet:ip-address;
+                    }
+                    leaf port {
+                        type inet:port-number;
+                    }
+                }
+            }
+        }
+    }
 }
-
-
-
-

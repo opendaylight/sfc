@@ -1,92 +1,111 @@
 module service-function-chain {
 
-  namespace "urn:cisco:params:xml:ns:yang:sfc-sfc";
+    namespace "urn:cisco:params:xml:ns:yang:sfc-sfc";
 
-  prefix sfc-sfc;
+    prefix sfc-sfc;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
-
-
-  organization "Cisco Systems, Inc.";
-  contact "Reinaldo Penno <repenno@cisco.com>";
+    import ietf-inet-types { prefix inet; }
+    import ietf-yang-types { prefix yang; }
+    import service-function {prefix sfc-sf; }
 
 
-  description
-    "This module contains a collection of YANG definitions for
-     managing service function chains.
+    organization "Cisco Systems, Inc.";
+    contact "Reinaldo Penno <repenno@cisco.com>";
 
-     Copyright (c) 2013 IETF Trust and the persons identified as
-     authors of the code.  All rights reserved.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject
-     to the license terms contained in, the Simplified BSD License
-     set forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents
-     (http://trustee.ietf.org/license-info).
-
-     This version of this YANG module is part of RFC XXXX; see
-     the RFC itself for full legal notices.";
-
-     // RFC Ed.: replace XXXX with actual RFC number and remove this
-     // note.
-
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
-
-  revision 2014-06-30 {
     description
-    "Revised based on Opendaylight Project feedback";
-  }
+        "This module contains a collection of YANG definitions for
+         managing service function chains.
 
-  grouping service-function-chain-grouping {
-    list service-function-chain {
-      description
-        "A service chain defines the required functions and
-        associated order (service-function1 --> service-function 2) that
-        must be applied to packets and/or frames.  A service chain does
-        not specify the network location or specific instance of service
-        functions (e.g. firewall1 vs. firewall2).";
-      key "name";
-      leaf name {
-        type string;
+         Copyright (c) 2013 IETF Trust and the persons identified as
+         authors of the code.  All rights reserved.
+
+         Redistribution and use in source and binary forms, with or
+         without modification, is permitted pursuant to, and subject
+         to the license terms contained in, the Simplified BSD License
+         set forth in Section 4.c of the IETF Trust's Legal Provisions
+         Relating to IETF Documents
+         (http://trustee.ietf.org/license-info).
+
+         This version of this YANG module is part of RFC XXXX; see
+         the RFC itself for full legal notices.";
+
+         // RFC Ed.: replace XXXX with actual RFC number and remove this
+         // note.
+
+         // RFC Ed.: update the date below with the date of RFC publication
+         // and remove this note.
+
+    revision 2014-07-07 {
         description
-          "the name of the service function chain";
-      }
-      list service-function-type {
-        key "name";
-        leaf name {
-          type string;
-          description
-              "The name of this service function type. This could be the
-              same as the registered type or in the case where
-              multiple service functions of the same type are used in
-              the chain, something like ingress-firewall and egress-firewall";
-        }
-        leaf type {
-          type string;
-          description
-              "The registered service function type.";
-        }
-        ordered-by user;
+            "Changes by Konstantin Blagov <kblagov@cisco.com> based on Opendaylight Testing and IETF SFC milestone";
+    }
+    revision 2014-06-30 {
         description
-          "A list of service functions that compose the service chain";
-      }
+            "Revised based on Opendaylight Project feedback";
     }
-  }
 
-  // Service Function Chains
-
-  container service-function-chains {
-    uses service-function-chain-grouping;
-  }
-
-  rpc put-service-function-chains {
-    input {
-      uses service-function-chain-grouping;
+    grouping service-function-chain-grouping {
+        list service-function-chain {
+            description
+                "A service chain defines the required functions and
+                associated order (service-function1 --> service-function 2) that
+                must be applied to packets and/or frames.  A service chain does
+                not specify the network location or specific instance of service
+                functions (e.g. firewall1 vs. firewall2).";
+            key "name";
+            leaf name {
+                type string;
+                description
+                    "the name of the service function chain";
+            }
+            list service-function-ref {
+                key "name";
+                leaf name {
+                    type sfc-sf:service-function-ref;
+                    description
+                        "A reference by the name to a registered service function.
+                        This should be the same as the service function name.";
+                }
+                ordered-by user;
+                description
+                    "A list of service functions that compose the service chain";
+            }
+        }
     }
-  }
+
+    // Service Function Chains
+
+    container service-function-chains {
+        uses service-function-chain-grouping;
+    }
+
+    // Remote procedure calls
+
+    // (main feature: instantiation of a SFC)
+
+    rpc instantiate-service-function-chain {
+        input {
+            leaf name {
+                type string;
+                mandatory true;
+                description "The name of the service function chain to be instantiated.";
+            }
+        }
+        output {
+            leaf name {
+                type string;
+                description "The name of the created service function path.";
+            }
+        }
+    }
+
+    // (RPC for testing)
+
+    rpc put-service-function-chains {
+        input {
+            uses service-function-chain-grouping;
+        }
+    }
+    
 }
-

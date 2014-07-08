@@ -72,7 +72,7 @@ module service-function-path {
             uses service-function-path-grouping;
         }
     }
-    
+
     rpc put-service-function-path {
         input {
             uses service-function-path-grouping;

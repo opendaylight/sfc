@@ -14,7 +14,7 @@ module sfc-provider-impl {
       "This module contains the base YANG definitions for
       sfc-provider impl implementation.";
 
-  revision "2014-05-13" {
+  revision "2014-06-30" {
       description
           "Initial revision.";
   }
@@ -30,7 +30,7 @@ module sfc-provider-impl {
 
   // Augments the 'configuration' choice node under modules/module.
   augment "/config:modules/config:module/config:configuration" {
-    case service-function-provider-impl {
+    case sfc-provider-impl {
       when "/config:modules/config:module/config:type = 'sfc-provider-impl'";
 
       //wires in the data-broker service

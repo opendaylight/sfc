@@ -8,12 +8,21 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140629.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140630.PutServiceFunctionChainsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140630.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140630.service.function.chain.grouping.ServiceFunctionChainBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.
+        service.function.chain.grouping.service.function.chain.*;
+/*
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.
+        data.plane.locator.DataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.
+        data.plane.locator.data.plane.locator.locator.type.IpBuilder;
+*/
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140630.service.function.chain.grouping.service.function.chain.*;
+
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,20 +44,56 @@ public class SfcProviderUnitTest {
     // Delete all Service Functions
     public static void sfcProviderUnitTest(SfcProviderRpc sfcRpcObj) {
         sfcRpcObj.deleteAllServiceFunction();
+
         // Put one Service Function
-        PutServiceFunctionInputBuilder psfibuilder = new PutServiceFunctionInputBuilder();
-        IpAddress ip = new IpAddress("10.0.0.1".toCharArray());
-        PutServiceFunctionInput psfi = psfibuilder.setName("test-fw-ca").setType(Firewall.class).setIpMgmtAddress(ip).build();
+/*
+        // Build Locator Type (ip and port)
+        IpAddress ipaddr = new IpAddress("10.0.0.1".toCharArray());
+        IpBuilder ipBuilder = new IpBuilder();
+        PortNumber portNumber = new PortNumber(5050);
+        ipBuilder = ipBuilder.setPort(portNumber).setIp(ipaddr);
+
+        // Build Data Plane Locator and populate with Locator Type
+        DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
+        dataPlaneLocatorBuilder = dataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
+
+        // Build ServiceFunctionBuilder and set all data constructed above
+        PutServiceFunctionInputBuilder putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
+        putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName("test-fw-ca").setType("Firewall.class").
+                setIpMgmtAddress(new IpAddress("192.168.0.1".toCharArray())).
+                setDataPlaneLocator(dataPlaneLocatorBuilder.build());
+
+        PutServiceFunctionInput psfi = putServiceFunctionInputBuilder.build();
         sfcRpcObj.putServiceFunction(psfi);
+
         // Put one Service Function
-        psfibuilder = new PutServiceFunctionInputBuilder();
-        ip = new IpAddress("10.0.0.2".toCharArray());
-        psfi = psfibuilder.setName("test-fw-ut").setType(Firewall.class).setIpMgmtAddress(ip).build();
+
+        // Build Locator Type (ip and port)
+        ipaddr = new IpAddress("10.0.0.2".toCharArray());
+        ipBuilder = new IpBuilder();
+        portNumber = new PortNumber(5050);
+        ipBuilder = ipBuilder.setPort(portNumber).setIp(ipaddr);
+
+        // Build Data Plane Locator and populate with Locator Type
+        dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
+        dataPlaneLocatorBuilder = dataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
+
+        // Build ServiceFunctionBuilder and set all data constructed above
+        putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
+        putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName("test-dpi-ut").setType("Dpi.class").
+                setIpMgmtAddress(new IpAddress("192.168.0.2".toCharArray())).
+                setDataPlaneLocator(dataPlaneLocatorBuilder.build());
+
+        // Put one Service Function
+        psfi = putServiceFunctionInputBuilder.build();
         sfcRpcObj.putServiceFunction(psfi);
+
+*/
         // Delete one Service Function
         DeleteServiceFunctionInputBuilder dsfibuilder = new DeleteServiceFunctionInputBuilder();
         DeleteServiceFunctionInput dsfi = dsfibuilder.setName("test-fw-ca").build();
         sfcRpcObj.deleteServiceFunction(dsfi);
+
         // Read One Service Function
         ReadServiceFunctionInputBuilder rsfibuilder = new ReadServiceFunctionInputBuilder();
         ReadServiceFunctionInput rsfi = rsfibuilder.setName("test-fw-ut").build();
@@ -63,20 +108,21 @@ public class SfcProviderUnitTest {
         } catch (Exception e) {
             LOG.warn("Error occurred during SF Read Test: " + e);
         }
+
         //Put a service chain. We need to build a list of lists.
         PutServiceFunctionChainsInputBuilder psfcibuilder = new PutServiceFunctionChainsInputBuilder();
         ServiceFunctionChainBuilder sfcbuilder = new ServiceFunctionChainBuilder();
 
         List<ServiceFunctionChain> sfclist = new ArrayList<>();
-        List<ServiceFunctionType> sftlist = new ArrayList<>();
+        List<SfcServiceFunction> sftlist = new ArrayList<>();
 
-        ServiceFunctionTypeBuilder sftBuilder = new ServiceFunctionTypeBuilder();
+        SfcServiceFunctionBuilder sftBuilder = new SfcServiceFunctionBuilder();
         sftlist.add(sftBuilder.setName("napt44-testB").setType("napt44").build());
         sftlist.add(sftBuilder.setName("firewall-testB").setType("firewall").build());
         sftlist.add(sftBuilder.setName("dpi-testB").setType("dpi").build());
 
         // Now we add list function type list to Service Chain list.
-        sfclist.add(sfcbuilder.setName("Chain-1").setServiceFunctionType(sftlist).build());
+        sfclist.add(sfcbuilder.setName("Chain-1").setSfcServiceFunction(sftlist).build());
 
         psfcibuilder = psfcibuilder.setServiceFunctionChain(sfclist);
         sfcRpcObj.putServiceFunctionChains(psfcibuilder.build());

@@ -13,22 +13,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <properties>
-        <bundle.plugin.version>2.4.0</bundle.plugin.version>
-        <checkstyle.version>2.10</checkstyle.version>
-        <compiler.version>2.3.2</compiler.version>
-        <config.version>0.2.5-SNAPSHOT</config.version>
-        <ietf.model.version>2010.09.24.4-SNAPSHOT</ietf.model.version>
-        <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
-        <mdsal.version>1.1-SNAPSHOT</mdsal.version>
-        <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-        <osgi.core.version>5.0.0</osgi.core.version>
-        <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-        <yang.ext.version>2013.09.07.4-SNAPSHOT</yang.ext.version>
-        <yangtools.generator.version>0.6.2-SNAPSHOT</yangtools.generator.version>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

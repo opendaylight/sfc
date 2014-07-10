@@ -6,7 +6,8 @@ module service-function {
 
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
-
+  import service-function-type {prefix sfc-sft;}
+  import service-locator {prefix sfc-sl;}
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -38,51 +39,11 @@ module service-function {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-29 {
+  revision 2014-07-01 {
     description
     "Changes based on Opendaylight Testing.";
   }
 
-
-  // Service Function
-
-  // Service Function Type definitions
-
-  identity service-function-type-indentity {
-    description
-      "Base identity from which specific service function types are
-      derived.";
-  }
-
-  identity firewall {
-    base "service-function-type-indentity";
-    description "Firewall";
-  }
-
-  identity dpi {
-    base "service-function-type-indentity";
-    description "Deep Packet Inspection";
-  }
-
-  identity napt44 {
-    base "service-function-type-indentity";
-    description "Network Address and Port Translation 44";
-  }
-
-  typedef service-function-type {
-    type identityref {
-      base "service-function-type-indentity";
-    }
-  }
-
-  typedef service-function-type-ref {
-    type leafref {
-      path "/sfc-sf:service-function-type";
-    }
-    description
-      "This type is used by data models that need to reference
-       registered service types.";
-  }
 
   typedef service-function-ref {
     type leafref {
@@ -91,6 +52,32 @@ module service-function {
     description
       "This type is used by data models that need to reference
        configured service functions.";
+  }
+
+  grouping service-function-entry {
+    leaf name {
+      type string;
+      description
+          "The name of the service function.";
+    }
+    leaf type {
+      type string;
+      mandatory true;
+      description
+        "Service Function Type from service-function-type.yang.";
+    }
+    leaf ip-mgmt-address {
+      type inet:ip-address;
+    }
+    container sf-data-plane-locator {
+      uses sfc-sl:data-plane-locator;
+    }
+
+    leaf-list service-function-forwarder {
+      type string;
+      description
+        "The service function forwarders associated with this Service Function";
+    }
   }
 
   container service-functions {
@@ -107,18 +94,7 @@ module service-function {
 
     list service-function {
       key "name";
-      leaf name {
-        type string;
-        description
-            "The name of the service function.";
-      }
-      leaf type {
-        type service-function-type;
-        mandatory true;
-      }
-      leaf ip-mgmt-address {
-        type inet:ip-address;
-      }
+      uses service-function-entry;
     }
   }
 
@@ -127,17 +103,7 @@ module service-function {
 
   rpc put-service-function {
     input {
-      leaf name {
-        type string;
-        mandatory true;
-        description "The name of the service function.";
-      }
-      leaf type {
-        type service-function-type;
-      }
-      leaf ip-mgmt-address {
-        type inet:ip-address;
-      }
+      uses service-function-entry;
     }
   }
   rpc read-service-function {
@@ -149,17 +115,7 @@ module service-function {
       }
     }
     output {
-      leaf name {
-        type string;
-        mandatory true;
-        description "The name of the service function.";
-      }
-      leaf type {
-        type service-function-type;
-      }
-      leaf ip-mgmt-address {
-        type inet:ip-address;
-      }
+      uses service-function-entry;
     }
   }
 

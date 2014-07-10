@@ -36,7 +36,7 @@ module service-function-chain {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-30 {
+  revision 2014-07-01 {
     description
     "Revised based on Opendaylight Project feedback";
   }
@@ -55,20 +55,18 @@ module service-function-chain {
         description
           "the name of the service function chain";
       }
-      list service-function-type {
+      list sfc-service-function {
         key "name";
         leaf name {
           type string;
           description
-              "The name of this service function type. This could be the
-              same as the registered type or in the case where
-              multiple service functions of the same type are used in
-              the chain, something like ingress-firewall and egress-firewall";
+            "The name of the service function.";
         }
         leaf type {
           type string;
+          mandatory true;
           description
-              "The registered service function type.";
+            "Service Function Type from service-function-type.yang.";
         }
         ordered-by user;
         description

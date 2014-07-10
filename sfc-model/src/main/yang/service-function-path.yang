@@ -8,6 +8,7 @@ module service-function-path {
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
 
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -35,9 +36,18 @@ module service-function-path {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2014-06-26 {
+  revision 2014-07-01 {
     description
       "Changes based on Opendaylight Testing and IETF SFC ml.";
+  }
+
+  typedef service-function-path-ref {
+    type leafref {
+      path "/sfc-sfp:service-function-paths/sfc-sfp:service-function-path/sfc-sfp:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       configured service functions.";
   }
 
   // Service Function Path
@@ -56,11 +66,23 @@ module service-function-path {
         description
           "the name of this service function path";
       }
-      leaf-list service-function-instance {
-        type sfc-sf:service-function-ref;
+      leaf-list sfp-service-function {
+        type string;
         ordered-by user;
+        min-elements 1;
         description
           "A list of service function instances that compose the service path";
+      }
+      leaf path-id-low {
+        type uint8;
+      }
+
+      leaf path-id-med {
+        type uint8;
+      }
+
+      leaf path-id-hi {
+        type uint8;
       }
     }
   }
@@ -73,7 +95,7 @@ module service-function-path {
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |O|C|R|R|R|R|R|R| Protocol Type                 |Service Index  |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                 Service path                  | Reserved      |
+     |                 Service path  ID              | Reserved      |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
    Flags: 8
@@ -83,80 +105,4 @@ module service-function-path {
    Reserved: 8
 */
 
-  typedef service-header-flag-type {
-    type bits {
-      bit oam {
-        position 0;
-        description
-          "Indicates that this packet is an operations and management
-          (OAM) packet";
-      }
-      bit context-use {
-        position 1;
-        description
-          "If a context header is not in use, the value of that context
-          header MUST be zero";
-      }
-      bit r1 {
-        position 2;
-        description "Some description";
-      }
-      bit r2 {
-        position 3;
-        description "Some description";
-      }
-      bit r3 {
-        position 4;
-        description "Some description";
-      }
-      bit r4 {
-        position 5;
-        description "Some description";
-      }
-      bit r5 {
-        position 6;
-        description "Some description";
-      }
-      bit r6 {
-        position 7;
-        description "Some description";
-      }
-    }
-    description "Service-Header Flags";
-    reference "http://tools.ietf.org/html/draft-quinn-nsh-00";
-  }
-
-  grouping network-service-base-header {
-    description "Network Service Base header";
-
-    leaf service-header-flag-value {
-        type service-header-flag-type;
-    }
-
-    leaf protocol-type {
-        type uint8;
-        // Reinaldo: Another option is to import Opendaylight L2 Types so have ethertype
-    }
-
-    leaf service-index {
-      type uint8 {
-        range "0 .. 255";
-      }
-      description "TTL functionality and location within the service
-            path";
-    }
-    leaf-list service-path {
-      type uint8;
-      min-elements 3;
-      max-elements 3;
-    }
-
-    leaf reserved {
-      default 0;
-      type uint8 {
-        range "0 .. 255";
-      }
-      description "Reserved field";
-    }
-  }
 }

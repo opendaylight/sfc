@@ -10,12 +10,17 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140629.ServiceFunctions;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140629.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -36,6 +41,63 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
             DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        LOG.info("\n########## getUpdatedConfigurationData");
+
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
+        {
+            if( entry.getValue() instanceof ServiceFunctionChains) {
+                ServiceFunctionChains updatedServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
+                List<ServiceFunctionChain>  serviceFunctionChainList = updatedServiceFunctionChains.getServiceFunctionChain();
+                for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
+                    LOG.info("\n########## Updated ServiceFunctionChain name: {}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+                        LOG.info("\n########## Updated ServiceFunction name: {}", sfcServiceFunction.getName());
+                    }
+                }
+            }
+            //System.out.println(entry.getKey() + "/" + entry.getValue());
+        }
+
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalConfigurationData();
+        LOG.info("\n########## getOriginalConfigurationData");
+
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet())
+        {
+            if( entry.getValue() instanceof ServiceFunctionChains) {
+                ServiceFunctionChains originalServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
+                List<ServiceFunctionChain>  serviceFunctionChainList = originalServiceFunctionChains.getServiceFunctionChain();
+                for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
+                    LOG.info("\n########## Original ServiceFunctionChain name: {}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+                        LOG.info("\n########## Original ServiceFunction name: {}", sfcServiceFunction.getName());
+                    }
+                }
+            }
+            //System.out.println(entry.getKey() + "/" + entry.getValue());
+        }
+
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedConfigurationData();
+        LOG.info("\n########## getCreatedConfigurationData");
+
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet())
+        {
+            if( entry.getValue() instanceof ServiceFunctionChains) {
+                ServiceFunctionChains createdServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
+                List<ServiceFunctionChain>  serviceFunctionChainList = createdServiceFunctionChains.getServiceFunctionChain();
+                for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
+                    LOG.info("\n########## Created ServiceFunctionChain name: {}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+                        LOG.info("\n########## Created ServiceFunction name: {}", sfcServiceFunction.getName());
+                    }
+                }
+            }
+            //System.out.println(entry.getKey() + "/" + entry.getValue());
+        }
 
 
 

@@ -1,178 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>sfc-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <groupId>org.opendaylight.sfc</groupId>
+
     <artifactId>sfc-provider</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sfc-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-api</artifactId>
-            <version>${config.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-       <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-config</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-broker-impl</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>yang-jmx-generator</artifactId>
-            <version>${config.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>yang-jmx-generator</artifactId>
-            <version>${config.version}</version>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>yang-jmx-generator-plugin</artifactId>
-            <version>${config.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${osgi.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-binding</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>binding-generator-impl</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>concepts</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>binding-generator-util</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>binding-type-provider</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-common</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>munge-maven-plugin</artifactId>
-            <version>1.0</version>
-        </dependency>
-    </dependencies>
+    <properties>
+        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler.version}</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${bundle.plugin.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>org.opendaylight.controller.sfc.*;</Export-Package>
-                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.version}</version>
-                <configuration>
-                    <failsOnError>true</failsOnError>
-                    <configLocation>../checkstyle.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <sourceDirectory>${project.basedir}</sourceDirectory>
-                    <includes>**\/*.yang</includes>
-                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal</excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
+                <!-- <configuration> <instructions> <Export-Package>org.opendaylight.controller.config.yang.toaster_provider,</Export-Package>
+                    <Import-Package>*</Import-Package> </instructions> </configuration> -->
             </plugin>
             <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
-                <version>${yangtools.version}</version>
                 <executions>
                     <execution>
                         <id>config</id>
@@ -182,15 +36,21 @@
                         <configuration>
                             <codeGenerators>
                                 <generator>
-                                    <codeGeneratorClass>org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator</codeGeneratorClass>
-                                    <outputBaseDir>${jmxGeneratorPath}</outputBaseDir>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
+                                    </codeGeneratorClass>
+                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
                                     <additionalConfiguration>
-                                        <namespaceToPackage1>urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang</namespaceToPackage1>
+                                        <namespaceToPackage1>
+                                            urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
+                                        </namespaceToPackage1>
                                     </additionalConfiguration>
                                 </generator>
                                 <generator>
-                                    <codeGeneratorClass>org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl</codeGeneratorClass>
-                                    <outputBaseDir>${salGeneratorPath}</outputBaseDir>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
+                                    </codeGeneratorClass>
+                                    <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
                                 </generator>
                             </codeGenerators>
                             <inspectDependencies>true</inspectDependencies>
@@ -202,95 +62,50 @@
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
                         <version>${config.version}</version>
-                        <scope>compile</scope>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>
                         <artifactId>maven-sal-api-gen-plugin</artifactId>
                         <version>${yangtools.version}</version>
-                        <scope>compile</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.osgi</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                        <version>${osgi.core.version}</version>
-                        <scope>compile</scope>
                     </dependency>
                 </dependencies>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.opendaylight.yangtools</groupId>
-                    <artifactId>yang-maven-plugin</artifactId>
-                    <version>${yangtools.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
-    <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
-    </scm>
 
-    <repositories>
-        <!-- Opendaylight public group -->
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>odlPublic</id>
-            <name>odlPublic</name>
-            <url>${nexusproxy}/groups/public/</url>
-        </repository>
-        <!-- OpenDayLight Snapshot artifact -->
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>opendaylight-snapshot</id>
-            <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
-        </repository>
-    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-broker-impl</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
 
-    <pluginRepositories>
-        <!-- Opendaylight public group -->
-        <pluginRepository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>odlPublic</id>
-            <name>odlPublic</name>
-            <url>${nexusproxy}/groups/public/</url>
-        </pluginRepository>
-        <!-- OpenDayLight Snapshot artifact -->
-        <pluginRepository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>opendaylight-snapshot</id>
-            <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
-    <distributionManagement>
-        <!-- OpenDayLight Released artifact -->
-        <repository>
-            <id>opendaylight-release</id>
-            <url>${nexusproxy}/repositories/opendaylight.release/</url>
-        </repository>
-        <!-- OpenDayLight Snapshot artifact -->
-        <snapshotRepository>
-            <id>opendaylight-snapshot</id>
-            <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
-        </snapshotRepository>
-        <!-- Site deployment -->
-        <!-- site>
-                <id>website</id>
-                <url>${sitedeploy}</url>
-            </site -->
-    </distributionManagement>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-binding</artifactId>
+            <version>${yangtools.binding.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
+            <version>${yangtools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-inet-types</artifactId>
+            <version>${ietf.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-yang-types</artifactId>
+            <version>2010.09.24.4-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
+

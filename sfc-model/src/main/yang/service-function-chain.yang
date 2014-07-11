@@ -81,6 +81,27 @@ module service-function-chain {
     uses service-function-chain-grouping;
   }
 
+    // Remote procedure calls
+
+    // (main feature: instantiation of a SFC)
+
+    rpc instantiate-service-function-chain {
+        input {
+            leaf name {
+                type string;
+                mandatory true;
+                description "The name of the service function chain to be instantiated.";
+            }
+        }
+        output {
+            leaf name {
+                type string;
+                description "The name of the created service function path.";
+            }
+        }
+    }
+
+    // (RPC for testing)
   rpc put-service-function-chains {
     input {
       uses service-function-chain-grouping;

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>sfc-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
@@ -13,6 +13,10 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <properties>
+        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
+    </properties>
+    
     <build>
         <plugins>
             <plugin>

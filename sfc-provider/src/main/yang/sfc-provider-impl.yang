@@ -1,56 +1,54 @@
 // vi: set smarttab et sw=4 tabstop=4:
 module sfc-provider-impl {
-
-  yang-version 1;
+    yang-version 1;
   namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl";
   prefix "sfc-provider-impl";
 
-  import config { prefix config; revision-date 2013-04-05; }
+    import config { prefix config; revision-date 2013-04-05; }
   import rpc-context { prefix rpcx; revision-date 2013-06-17; }
-  import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
 
-
-  description
+    description
       "This module contains the base YANG definitions for
       sfc-provider impl implementation.";
 
   revision "2014-06-30" {
-      description
-          "Initial revision.";
-  }
+        description
+            "Initial revision.";
+    }
 
-  // This is the definition of the service implementation as a module identity
+    // This is the definition of the service implementation as a module identity
   identity sfc-provider-impl {
-      base config:module-type;
+        base config:module-type;
 
-      // Specifies the prefix for generated java classes.
+        // Specifies the prefix for generated java classes.
       config:java-name-prefix SfcProvider;
-  }
+    }
 
-
-  // Augments the 'configuration' choice node under modules/module.
-  augment "/config:modules/config:module/config:configuration" {
+    // Augments the 'configuration' choice node under modules/module.  
+    augment "/config:modules/config:module/config:configuration" {
     case sfc-provider-impl {
       when "/config:modules/config:module/config:type = 'sfc-provider-impl'";
 
-      //wires in the data-broker service
-      container data-broker {
-        uses config:service-ref {
-          refine type {
-              mandatory false;
-              config:required-identity mdsal:binding-data-broker;
-          }
-        }
-      }
+            //wires in the data-broker service 
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory false;
+                        config:required-identity mdsal:binding-data-broker;
+                    }
+                }
+            }  
 
-      container rpc-registry {
-        uses config:service-ref {
-          refine type {
-             mandatory true;
-             config:required-identity mdsal:binding-rpc-registry;
-          }
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                       mandatory true;
+                       config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            } 
         }
-      }
     }
-  }
+
 }

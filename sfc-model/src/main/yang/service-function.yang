@@ -55,29 +55,30 @@ module service-function {
   }
 
   grouping service-function-entry {
-    leaf name {
-      type string;
-      description
-          "The name of the service function.";
-    }
-    leaf type {
-      type string;
-      mandatory true;
-      description
-        "Service Function Type from service-function-type.yang.";
-    }
-    leaf ip-mgmt-address {
-      type inet:ip-address;
-    }
-    container sf-data-plane-locator {
-      uses sfc-sl:data-plane-locator;
-    }
+        leaf name {
+          type string;
+          description
+              "The name of the service function.";
+        }
+        leaf type {
+          type string;
+          mandatory true;
+          description
+            "Service Function Type from service-function-type.yang.";
+        }
+        leaf ip-mgmt-address {
+          type inet:ip-address;
+        }
 
-    leaf-list service-function-forwarder {
-      type string;
-      description
-        "The service function forwarders associated with this Service Function";
-    }
+        container data-plane-locator {
+          uses sfc-sl:data-plane-locator;
+        }
+
+        leaf-list service-function-forwarder {
+          type string;
+          description
+            "The service function forwarders associated with this Service Function";
+        }
   }
 
   container service-functions {

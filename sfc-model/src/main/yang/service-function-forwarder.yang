@@ -119,10 +119,16 @@ module service-function-forwarder {
         //           "fw2": {"function": "", "ip_address": "192.168.0.2", "port":""}, \
         //           "dpi1":{"function": "", "ip_address": "192.168.0.4", "port":10000}, \
         //           "nat1":{"function": "nat1_process_packet", "ip_address": "", "port":""}}
-
-        uses sfc-sf:service-function-entry;
+        ordered-by user;
+        key "name";
+        leaf name {
+          type string;
+        }
         leaf failmode {
             type failmode-type;
+        }
+        container locator {
+          uses sfc-sl:data-plane-locator;
         }
       }
     }

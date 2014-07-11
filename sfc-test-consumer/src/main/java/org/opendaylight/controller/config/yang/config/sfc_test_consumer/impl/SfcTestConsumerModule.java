@@ -6,6 +6,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.
         rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 
 public class SfcTestConsumerModule extends org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.AbstractSfcTestConsumerModule {
     public SfcTestConsumerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
@@ -25,13 +26,14 @@ public class SfcTestConsumerModule extends org.opendaylight.controller.config.ya
     public java.lang.AutoCloseable createInstance() {
         ServiceFunctionService sfService = getRpcRegistryDependency().getRpcService(ServiceFunctionService.class);
         ServiceFunctionChainService sfcService = getRpcRegistryDependency().getRpcService(ServiceFunctionChainService.class);
+        ServiceNodeService snService = getRpcRegistryDependency().getRpcService(ServiceNodeService.class);
 
-        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService);
+        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService, snService);
 
         final SfcTestConsumerRuntimeRegistration runtimeReg =
                 getRootRuntimeBeanRegistratorWrapper().register(sfcTestConsumer);
 
-        final class AutoCloseableServiceFunctionsConsumer implements SfcTestConsumer, AutoCloseable {
+        final class AutoCloseableSfcTestConsumer implements SfcTestConsumer, AutoCloseable {
 
             @Override
             public void close() throws Exception {
@@ -40,7 +42,7 @@ public class SfcTestConsumerModule extends org.opendaylight.controller.config.ya
 
         }
 
-        AutoCloseable ret = new AutoCloseableServiceFunctionsConsumer();
+        AutoCloseable ret = new AutoCloseableSfcTestConsumer();
         return ret;
     }
 

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
@@ -10,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +45,7 @@ public class SfcProviderServiceTypeAPI implements Runnable {
 
     private ServiceFunction serviceFunction;
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     public enum OperationType {CREATE, DELETE}
 
     private OperationType operation = OperationType.CREATE;
@@ -155,5 +164,26 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("deleteServiceFunction failed", e);
         }
+    }
+
+    public static ServiceFunctionType readServiceFunctionType (String type) {
+        InstanceIdentifier<ServiceFunctionType> sftentryIID;
+        ServiceFunctionTypeKey serviceFunctionTypeKey;
+        serviceFunctionTypeKey = new ServiceFunctionTypeKey(type);
+
+            /*
+             * We iterate thorough the list of service function types and for each one we get a suitable
+             * Service Function
+             */
+        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
+        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sftentryIID);
+        if (dataObject instanceof ServiceFunctionType) {
+            ServiceFunctionType serviceFunctionType = (ServiceFunctionType) dataObject;
+            return serviceFunctionType;
+        } else {
+            return null;
+        }
+
     }
 }

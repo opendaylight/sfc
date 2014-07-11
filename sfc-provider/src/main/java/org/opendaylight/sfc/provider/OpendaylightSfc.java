@@ -48,7 +48,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
    private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
 
-    public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
+   public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
             InstanceIdentifier.builder(ServiceFunctionChains.class)
                     .child(ServiceFunctionChain.class).build();
    public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
@@ -79,7 +79,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
    public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(1);
+       executor = Executors.newFixedThreadPool(2);
        opendaylightSfcObj = this;
    }
 
@@ -111,6 +111,7 @@ public class OpendaylightSfc implements AutoCloseable {
         if (dataProvider != null) {
             final DataModificationTransaction t = dataProvider.beginTransaction();
             t.removeOperationalData(sfsIID);
+            t.removeOperationalData(sfEntryIID);
             t.removeOperationalData(sfcEntryIID);
             t.removeOperationalData(snIID);
             t.removeOperationalData(sffIID);

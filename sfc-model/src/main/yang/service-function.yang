@@ -73,8 +73,9 @@ module service-function {
       uses sfc-sl:data-plane-locator;
     }
 
-    leaf-list service-function-forwarder {
+    leaf service-function-forwarder {
       type string;
+      mandatory true;
       description
         "The service function forwarders associated with this Service Function";
     }

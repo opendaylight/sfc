@@ -35,6 +35,7 @@ import java.util.Map;
 public class SfcProviderSfcEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfcDataListener.class);
+    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
@@ -50,6 +51,8 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.info("\n########## Updated ServiceFunctionChain name: {}", updatedServiceFunctionChain.getName());
+                odlSfc.executor.execute(SfcProviderServicePathAPI.getSfcProviderCreateServicePathAPI(updatedServiceFunctionChain));
+                //odlSfc.executor.execute(SfcProviderExecutorDispatcher.getSfcProviderCreateProvisioningElement(updatedServiceFunctionChain));
                 List<SfcServiceFunction>  SfcServiceFunctionList = updatedServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
                     LOG.info("\n########## Updated ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -67,6 +70,8 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.info("\n########## Original ServiceFunctionChain name: {}", originalServiceFunctionChain.getName());
+                odlSfc.executor.execute(SfcProviderServicePathAPI.getSfcProviderDeleteServicePathAPI(originalServiceFunctionChain));
+                //odlSfc.executor.execute(SfcProviderExecutorDispatcher.getSfcProviderDeleteProvisioningElement(originalServiceFunctionChain));
                 List<SfcServiceFunction>  SfcServiceFunctionList = originalServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
                     LOG.info("\n########## Original ServiceFunction name: {}", sfcServiceFunction.getName());

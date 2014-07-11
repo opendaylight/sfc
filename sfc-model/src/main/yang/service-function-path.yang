@@ -66,12 +66,26 @@ module service-function-path {
         description
           "the name of this service function path";
       }
-      leaf-list sfp-service-function {
-        type string;
+      list sfp-service-function {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf service-function-forwarder {
+          type string;
+        }
         ordered-by user;
         min-elements 1;
         description
           "A list of service function instances that compose the service path";
+      }
+      leaf service_index {
+        type uint8;
+      }
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
       }
       leaf path-id-low {
         type uint8;

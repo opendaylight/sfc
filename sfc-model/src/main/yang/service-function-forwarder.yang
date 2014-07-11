@@ -6,9 +6,9 @@ module service-function-forwarder {
 
   import ietf-inet-types        { prefix inet; }
   import ietf-yang-types        { prefix yang; }
-  import service-function       {prefix sfc-sf; }
-  import service-function-path  {prefix sfc-sfp; }
-  import service-locator        {prefix sfc-sl;}
+  import service-function       { prefix sfc-sf; }
+  import service-function-path  { prefix sfc-sfp; }
+  import service-locator        { prefix sfc-sl; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -102,24 +102,21 @@ module service-function-forwarder {
       leaf transport {
         type transport-type;
       }
-      leaf path {
-        type sfc-sfp:service-function-path-ref;
-        mandatory true;
-        description
-          "Back pointer to the service path";
+
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
       }
 
       container sff-data-plane-locator {
         uses sfc-sl:data-plane-locator;
+        description
+          "The data plane network locator of this SFF, such as IP:port.";
       }
 
       list service-function-dictionary {
-
-        //sfi_map = {"fw1": {"function": "fw1_process_packet", "ip_address":"", "port":""}, \
-        //           "fw2": {"function": "", "ip_address": "192.168.0.2", "port":""}, \
-        //           "dpi1":{"function": "", "ip_address": "192.168.0.4", "port":10000}, \
-        //           "nat1":{"function": "nat1_process_packet", "ip_address": "", "port":""}}
-
+        key "name";
         uses sfc-sf:service-function-entry;
         leaf failmode {
             type failmode-type;

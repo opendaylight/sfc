@@ -58,20 +58,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        /* If any service function was deleted we need to remove it from the
-         * ServiceFunctionType list.
-         */
-        /*
-        DataObject dataOriginalObject = change.getOriginalConfigurationSubtree();
-        LOG.info("\n########## getOriginalConfigurationSubtree");
-        if (dataOriginalObject instanceof ServiceFunction) {
-            ServiceFunction origServiceFunction = (ServiceFunction)dataOriginalObject;
-            deleteServiceFunctionTypeEntry (origServiceFunction);
-            LOG.info("\n########## OriginalConfigurationSubstree {}  {}",
-                        origServiceFunction.getType(), origServiceFunction.getName());
-        }
-        */
-
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalConfigurationData();
         LOG.info("\n########## getOriginalConfigurationData");
 
@@ -79,26 +65,13 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
                 odlSfc.executor.execute(SfcProviderServiceTypeAPI.getSfcProviderDeleteServiceType(originalServiceFunction));
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI.getSfcProviderDeleteServiceForwarderAPI(originalServiceFunction));
                 //deleteServiceFunctionTypeEntry(originalServiceFunction);
                 LOG.info("\n########## getOriginalConfigurationData {}  {}",
                         originalServiceFunction.getType(), originalServiceFunction.getName());
             }
             //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
-        /*
-        Set<InstanceIdentifier<?>> removedConfig;
-        removedConfig = change.getRemovedConfigurationData();
-          for (InstanceIdentifier<?> instanceIdentifier : removedConfig) {
-            Class<? extends DataObject> datatestObject = instanceIdentifier.getTargetType();
-            String name = instanceIdentifier.getTargetType().getName();
-            if (name.equals(OpendaylightSfc.serviceFunctionIIDName)) {
-                KeyedInstanceIdentifier keyed = (KeyedInstanceIdentifier) instanceIdentifier;
-                ServiceFunctionKey serviceFunctionKey = (ServiceFunctionKey) keyed.getKey();
-                String sfName = serviceFunctionKey.getName();
-                LOG.info("\n########## Working {} ", sfName);
-            }
-        }
-        */
 
         DataObject dataUpdatedObject = change.getUpdatedConfigurationSubtree();
         LOG.info("\n########## getUpdatedConfigurationSubtree");
@@ -131,6 +104,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
                 //createServiceFunctionTypeEntry(updatedServiceFunction);
                 odlSfc.executor.execute(SfcProviderServiceTypeAPI.getSfcProvideCreateServiceType(updatedServiceFunction));
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI.getSfcProviderCreateServiceForwarderAPI(updatedServiceFunction));
                 LOG.info("\n########## getUpdatedConfigurationData {}  {}",
                         updatedServiceFunction.getType(), updatedServiceFunction.getName());
             }
@@ -144,91 +118,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         }
 
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-    }
-
-    private void createServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
-
-
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-
-        String sfkey = serviceFunction.getType();
-        ServiceFunctionTypeKey  serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
-
-        //Build the instance identifier all the way down to the bottom child
-
-        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
-/*
-        InstanceIdentifier<SftServiceFunctionName> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-               .child(ServiceFunctionType.class, serviceFunctionTypeKey)
-                .child(SftServiceFunctionName.class,sftServiceFunctionNameKey).build();
-
-
-        InstanceIdentifier<ServiceFunctionType> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
-
-*/
-
-
-        InstanceIdentifier<ServiceFunctionTypes> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-
-        // Create a item in the list keyed by service function name
-        SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-        sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName());
-        SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
-
-        ArrayList<SftServiceFunctionName> sftServiceFunctionNameArrayList = new ArrayList<>();
-        sftServiceFunctionNameArrayList.add(sftServiceFunctionName);
-
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        serviceFunctionTypeBuilder = serviceFunctionTypeBuilder.setType(serviceFunction.getType());
-        serviceFunctionTypeBuilder.setSftServiceFunctionName(sftServiceFunctionNameArrayList);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-
-        ArrayList<ServiceFunctionType> serviceFunctionTypeArrayList = new ArrayList<>();
-        serviceFunctionTypeArrayList.add(serviceFunctionTypeBuilder.build());
-
-
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeArrayList);
-        ServiceFunctionTypes serviceFunctionTypes = serviceFunctionTypesBuilder.build();
-
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-
-        t.putConfigurationData(sftentryIID, serviceFunctionTypes);
-        try {
-            t.commit().get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("Failed to update-function, operational otherwise", e);
-        }
-
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-
-    }
-
-    private void deleteServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
-
-        String sfkey = serviceFunction.getType();
-        ServiceFunctionTypeKey  serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
-
-        //Build the instance identifier all the way down to the bottom child
-        InstanceIdentifier<SftServiceFunctionName> sftentryIID;
-        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).
-                child(ServiceFunctionType.class, serviceFunctionTypeKey)
-                .child(SftServiceFunctionName.class,sftServiceFunctionNameKey).toInstance();
-
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-        t.removeConfigurationData(sftentryIID);
-        try {
-            t.commit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("deleteServiceFunction failed", e);
-        }
     }
 
 }

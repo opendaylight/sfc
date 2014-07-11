@@ -17,7 +17,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 
 import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -37,9 +40,9 @@ import java.util.concurrent.Future;
  * In order to to exercise these RPCs controller has to be started as: ./run –jmx
  *
  * Then start jconsole from /bin inside your $JAVA_HOME. It will show a list of
- * running JVM processes, select “org.eclipse.equinox.launcher.Main –console –consoleLog”
+ * running JVM processes, select "org.eclipse.equinox.launcher.Main –console –consoleLog"
  * (this is how it looks on Windows, maybe on Mac you will see some difference), or
- * type in “remote connections” localhost:1088
+ * type in "remote connections" localhost:1088
  *
  * Allow insecure connection if it asks. There will be the rightmost tab called
  * MBeans, with a folded tree of different components.
@@ -64,12 +67,15 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
     private final ServiceFunctionService sfService;
     private final ServiceFunctionChainService sfcService;
+    private final ServiceNodeService snService;
 
     public SfcTestConsumerImpl(
             ServiceFunctionService sfService,
-            ServiceFunctionChainService sfcService) {
+            ServiceFunctionChainService sfcService,
+            ServiceNodeService snService) {
         this.sfService = sfService;
         this.sfcService = sfcService;
+        this.snService = snService;
     }
 
     /**
@@ -124,6 +130,78 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         }
     }
 
+    private Boolean putNode(String name,
+                            String ip,
+                            List<String> sfList) {
+
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        PutServiceNodeInputBuilder input = new PutServiceNodeInputBuilder();
+
+        input.setName(name)
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ip)))
+                .setServiceFunction(sfList);
+        try {
+            Future<RpcResult<Void>> fr = snService.putServiceNode(input.build());
+            RpcResult<Void> result = fr.get();
+            if (result != null) {
+                LOG.info("\n####### {} result: {}", Thread.currentThread().getStackTrace()[1], result);
+                if (result.isSuccessful()) {
+                    LOG.info("\n####### {}: successfully finished", Thread.currentThread().getStackTrace()[1]);
+                } else {
+                    LOG.warn("\n####### {}: not successfully finished", Thread.currentThread().getStackTrace()[1]);
+                }
+                return result.isSuccessful();
+            } else {
+                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
+                return Boolean.FALSE;
+            }
+
+        } catch (Exception e) {
+            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
+            e.printStackTrace();
+            return Boolean.FALSE;
+        }
+    }
+
+    /**
+     * Puts an SFChain
+     * @param name Name for new service function chain
+     * @param sfList List of references to service functions (by names)
+     * @return Boolean
+     */
+    private Boolean putChain(String name, List<SfcServiceFunction> sfList) {
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        PutServiceFunctionChainsInputBuilder input = new PutServiceFunctionChainsInputBuilder();
+        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
+
+        sfcBuilder.setName(name).setSfcServiceFunction(sfList);
+        List<ServiceFunctionChain> list = new ArrayList<>();
+        list.add(sfcBuilder.build());
+
+        input.setServiceFunctionChain(list);
+
+        try {
+            Future<RpcResult<Void>> fr = sfcService.putServiceFunctionChains(input.build());
+            RpcResult<Void> result = fr.get();
+            if (result != null) {
+                LOG.info("\n####### {} result: {}", Thread.currentThread().getStackTrace()[1], result);
+                if (result.isSuccessful()) {
+                    LOG.info("\n####### {}: successfully finished", Thread.currentThread().getStackTrace()[1]);
+                } else {
+                    LOG.warn("\n####### {}: not successfully finished", Thread.currentThread().getStackTrace()[1]);
+                }
+                return result.isSuccessful();
+            } else {
+                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
+                return Boolean.FALSE;
+            }
+
+        } catch (Exception e) {
+            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
+            e.printStackTrace();
+            return Boolean.FALSE;
+        }
+    }
 
     /**
      * Function for JMX testing.
@@ -132,7 +210,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
-    public Boolean testPutSf() {
+    public Boolean testAPutSf() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         return putSf("firewall-test", "firewall", "10.0.0.2", "192.168.0.2", 5050);
     }
@@ -144,7 +222,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
-    public Boolean testReadSf() {
+    public Boolean testAReadSf() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ReadServiceFunctionInputBuilder input = new ReadServiceFunctionInputBuilder();
         input.setName("firewall-test");
@@ -170,7 +248,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
-    public Boolean testDeleteSf() {
+    public Boolean testADeleteSf() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         DeleteServiceFunctionInputBuilder input = new DeleteServiceFunctionInputBuilder();
         input.setName("firewall-test");
@@ -275,5 +353,50 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testBDeleteSfc() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         return null;
+    }
+
+    @Override
+    public Boolean testCPutData() {
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        Boolean res = putSf("firewall-101-testC", "firewall", "10.3.1.101", "10.3.1.101", 10000);
+        res = putSf("dpi-102-testC", "dpi", "10.3.1.102", "10.3.1.102", 10000) && res;
+        res = putSf("napt44-103-testC", "napt44", "10.3.1.103", "10.3.1.103", 10000) && res;
+        res = putSf("firewall-104-testC", "firewall", "10.3.1.104", "10.3.1.104", 10000) && res;
+
+        List<SfcServiceFunction> sfRefList = new ArrayList<>();
+        SfcServiceFunctionBuilder sfBuilder = new SfcServiceFunctionBuilder();
+        sfRefList.add(sfBuilder.setName("firewall-101-testC").build());
+        sfRefList.add(sfBuilder.setName("dpi-102-testC").build());
+        sfRefList.add(sfBuilder.setName("napt44-103-testC").build());
+
+        res = putChain("SFC1", sfRefList) && res;
+
+        List<String> iList = new ArrayList<>();
+        iList.add("firewall-101-1");
+        iList.add("firewall-101-2");
+
+        res = putNode("node-101", "10.3.1.101", iList) && res;
+
+        iList.clear();
+        iList.add("dpi-102-1");
+        iList.add("dpi-102-2");
+        iList.add("dpi-102-3");
+
+        res = putNode("node-102", "10.3.1.102", iList) && res;
+
+        iList.clear();
+        iList.add("napt44-103-1");
+        iList.add("napt44-103-2");
+
+        res = putNode("node-103", "10.3.1.103", iList) && res;
+
+        iList.clear();
+        iList.add("firewall-104");
+        iList.add("napt44-104");
+
+        res = putNode("node-104", "10.3.1.104", iList) && res;
+
+        return res;
     }
 }

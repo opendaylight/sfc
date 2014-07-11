@@ -56,13 +56,7 @@ module service-node {
   }
 
 
-  container service-nodes {
-    description
-        "Physical or virtual element that hosts one or
-        more service functions and has one or more network locators
-        associated with it for reachability and service delivery.";
-    list service-node {
-      key "name";
+  grouping service-node-grouping {
       leaf name {
         type string;
         description
@@ -77,6 +71,24 @@ module service-node {
         description
             "A list of service functions resident in this service node";
       }
+  }
+
+  container service-nodes {
+    description
+        "Physical or virtual element that hosts one or
+        more service functions and has one or more network locators
+        associated with it for reachability and service delivery.";
+    list service-node {
+      key "name";
+      uses service-node-grouping;
+    }
+  }
+
+    // Remote procedure calls (for testing)
+
+    rpc put-service-node {
+        input {
+            uses service-node-grouping;
     }
   }
 }

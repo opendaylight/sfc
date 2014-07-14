@@ -26,9 +26,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -36,7 +40,10 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -51,7 +58,8 @@ import java.util.concurrent.Future;
  * @since       2014-06-30
  */
 
-public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService {
+public class SfcProviderRpc implements ServiceFunctionService,
+        ServiceFunctionChainService, ServiceNodeService {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SfcProviderRpc.class);
@@ -80,7 +88,6 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     public Future<RpcResult<Void>> putServiceFunction(PutServiceFunctionInput input) {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         LOG.info("\n####### Input: " + input);
-
 
         if (odlSfc.dataProvider != null) {
 
@@ -155,7 +162,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         if (odlSfc.dataProvider != null) {
             final DataModificationTransaction t = odlSfc.dataProvider
                     .beginTransaction();
-            t.removeConfigurationData(odlSfc.sfsIID);
+            t.removeConfigurationData(OpendaylightSfc.sfsIID);
             try {
                 t.commit().get();
             } catch (InterruptedException | ExecutionException e) {
@@ -174,7 +181,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         LOG.info("Input: " + input);
         if (odlSfc.dataProvider != null) {
-            DataObject dataObject = odlSfc.dataProvider.readConfigurationData(odlSfc.sfsIID);
+            DataObject dataObject = odlSfc.dataProvider.readConfigurationData(OpendaylightSfc.sfsIID);
             if (dataObject instanceof ServiceFunctions) {
 
                 ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
@@ -209,7 +216,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
         if (odlSfc.dataProvider != null) {
             final DataModificationTransaction t = odlSfc.dataProvider.beginTransaction();
-            t.putConfigurationData(odlSfc.sfcIID, sfcs);
+            t.putConfigurationData(OpendaylightSfc.sfcIID, sfcs);
 
             try {
                 t.commit().get();
@@ -223,38 +230,36 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 Collections.<RpcError>emptySet()));
     }
 
-    public Future<RpcResult<Void>> updateFunctionDpiWa20()  {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-        IpAddress ip = new IpAddress("10.0.0.11".toCharArray());
-        ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
-        ServiceFunctionKey sfkey = new ServiceFunctionKey("fw-wa");
-        sfbuilder.setKey(sfkey);
-        ServiceFunction sf = sfbuilder.setName("fw-wa")
-                .setType("Firewall.class")
-                .setIpMgmtAddress(ip).build();
+    @Override
+    public Future<RpcResult<Void>> putServiceNode(PutServiceNodeInput input) {
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.info("\n####### Input: " + input);
 
-
-        LOG.info("updateFunctionDpiWa20: bbb\n");
         if (odlSfc.dataProvider != null) {
-            LOG.info("updateFunctionDpiWa20: dataProvider not null\n");
-            final DataModificationTransaction t = odlSfc.dataProvider
-                    .beginTransaction();
+        ServiceNodeKey snKey = new ServiceNodeKey(input.getName());
+        ServiceNodeBuilder builder = new ServiceNodeBuilder();
+        ServiceNode sn = builder.setKey(snKey)
+                .setName(input.getName())
+                .setIpMgmtAddress(input.getIpMgmtAddress())
+                .setServiceFunction(input.getServiceFunction())
+                .build();
 
-            InstanceIdentifier<ServiceFunction>  sfIID = InstanceIdentifier.builder(ServiceFunctions.class).
-                    child(ServiceFunction.class, sf.getKey()).toInstance();
+        InstanceIdentifier<ServiceNode> snEntryIID = InstanceIdentifier.builder(ServiceNodes.class).
+                child(ServiceNode.class, sn.getKey()).toInstance();
+        final DataModificationTransaction t = odlSfc.dataProvider
+                .beginTransaction();
 
-            t.putConfigurationData(sfIID, sf);
-            try {
-                t.commit().get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.warn("Failed to update-function, operational otherwise", e);
-            }
+        t.putConfigurationData(snEntryIID, sn);
+        try {
+            t.commit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.warn("\n########## {} failed, operational otherwise", Thread.currentThread().getStackTrace()[1], e);
         }
-        else{
-            LOG.info("updateFunctionDpiWa20: dataProvider not null\n");
+        } else {
+            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
         }
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-        return Futures.immediateFuture(Rpcs.<Void> getRpcResult(true,
+        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
 
@@ -271,14 +276,14 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                     ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
                     List<SfpServiceFunction> instances = new ArrayList<>();
 
+                    Random rand = new Random(); // temporarily
                     for (SfcServiceFunction ref : sfRefList) {
-                        ServiceFunction sf = findServiceFunction(ref.getName());
-                        List<SfpServiceFunction> instanceNames = findInstances(sf);
-                        if (instanceNames != null && instanceNames.size() > 0) {
+                        List<SfpServiceFunction> instanceList = findInstancesByType(ref.getType());
+                        LOG.info("\n********** instanceList ***********\n" + instanceList);
+                        if (instanceList != null && instanceList.size() > 0) {
                             // select instance
-                            // for now, takes first element
-                            LOG.info("\n********** instanceNames.get(0) ***********\n" + instanceNames.get(0));
-                            instances.add(instanceNames.get(0));
+                            // for now, takes an element randomly
+                            instances.add(instanceList.get(rand.nextInt(instanceList.size())));
                         } else {
                             throw new IllegalStateException("No instances found for Service Function \"" + ref.getName() + "\"");
                         }
@@ -332,6 +337,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         }
     }
 
+    // TODO this is duplicated in SFCSftMapper (and used only there, not here; better to DRY
     private ServiceFunction findServiceFunction(String name) {
         ServiceFunctionKey key = new ServiceFunctionKey(name);
         InstanceIdentifier<ServiceFunction> iid =
@@ -346,46 +352,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         }
     }
 
-    private List<SfpServiceFunction> findInstances(ServiceFunction sf) {
-        String name = sf.getName();
-//        Class<? extends ServiceFunctionTypeIdentity> type = sf.getType();
-        String type = sf.getType();
-        IpAddress ip = sf.getIpMgmtAddress();
+    private List<SfpServiceFunction> findInstancesByType(String sfType) {
+        List<SfpServiceFunction> ret = new ArrayList<>();
 
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(OpendaylightSfc.snIID);
-        if (dataObject instanceof ServiceNodes) {
-            ServiceNodes nodes = (ServiceNodes) dataObject;
-            List<ServiceNode> list = nodes.getServiceNode();
-            // lookup node by IP
-            Map<IpAddress, ServiceNode> nodesByIp = new HashMap<>();
-            for (ServiceNode e : list) {
-                nodesByIp.put(e.getIpMgmtAddress(), e);
-            }
-            ServiceNode node = nodesByIp.get(ip);
-            if (node != null) {
-                List<String> instances = node.getServiceFunction();
-                LOG.info("\n********** instances ***********\n" + instances);
-                if (instances.size() > 0) {
-                    // names of instances of given type
-                    List<SfpServiceFunction> names = new ArrayList<>();
-                    for (String inst : instances) {
-                        if (inst.equals(type)) {
-                            // FIXME type mismatch
-                            //names.add(inst);
-                        }
-                    }
-                    LOG.info("\n********** names ***********\n" + names);
-                    return names;
-                } else {
-                    throw new IllegalStateException("No Service Function instances at node \"" + node.getName() + "\".");
-                }
-            } else {
-                throw new IllegalStateException("No node with IP " + ip.toString() + " registered.");
-            }
-
-        } else {
-            throw new IllegalStateException("Wrong dataObject instance.");
+        SfcSftMapper mapper = new SfcSftMapper(odlSfc);
+        List<ServiceFunction> sfList = mapper.getSfList(sfType);
+        for(ServiceFunction sf : sfList){
+            SfpServiceFunctionBuilder builder = new SfpServiceFunctionBuilder();
+            ret.add(builder.setName(sf.getName())
+                    .setServiceFunctionForwarder(sf.getServiceFunctionForwarder())
+                    .build());
         }
+        return ret;
     }
 
     private ServiceFunctionPaths buildServiceFunctionPaths(List<ServiceFunctionPath> list) {

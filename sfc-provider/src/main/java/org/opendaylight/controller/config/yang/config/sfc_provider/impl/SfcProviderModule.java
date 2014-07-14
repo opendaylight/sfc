@@ -20,6 +20,7 @@ import org.opendaylight.sfc.provider.SfcProviderSnDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSffDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfcEntryDataListener;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
@@ -105,9 +106,15 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 getRpcRegistryDependency()
                         .addRpcImplementation(ServiceFunctionService.class,
                                 sfcProviderRpc);
+
         final BindingAwareBroker.RpcRegistration<ServiceFunctionChainService> sfcRpcRegistration =
                 getRpcRegistryDependency()
                         .addRpcImplementation(ServiceFunctionChainService.class,
+                                sfcProviderRpc);
+
+        final BindingAwareBroker.RpcRegistration<ServiceNodeService> snRpcRegistration =
+                getRpcRegistryDependency()
+                        .addRpcImplementation(ServiceNodeService.class,
                                 sfcProviderRpc);
 
         // close()
@@ -123,6 +130,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 sffDataChangeListenerRegistration.close();
                 sfRpcRegistration.close();
                 sfcRpcRegistration.close();
+                snRpcRegistration.close();
 
                 //runtimeReg.close();
                 opendaylightSfc.close();

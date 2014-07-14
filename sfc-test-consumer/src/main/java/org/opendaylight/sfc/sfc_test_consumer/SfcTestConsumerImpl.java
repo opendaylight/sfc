@@ -359,19 +359,35 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testCPutData() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        Boolean res = putSf("firewall-101-testC", "firewall", "10.3.1.101", "10.3.1.101", 10000);
-        res = putSf("dpi-102-testC", "dpi", "10.3.1.102", "10.3.1.102", 10000) && res;
-        res = putSf("napt44-103-testC", "napt44", "10.3.1.103", "10.3.1.103", 10000) && res;
-        res = putSf("firewall-104-testC", "firewall", "10.3.1.104", "10.3.1.104", 10000) && res;
+        // Service Functions (real, not abstract)
+        Boolean res = putSf("firewall-101-1", "firewall", "10.3.1.101", "10.3.1.101", 10001);
+        res = putSf("firewall-101-2", "firewall", "10.3.1.101", "10.3.1.101", 10002) && res;
+        res = putSf("dpi-102-1", "dpi", "10.3.1.102", "10.3.1.102", 10001) && res;
+        res = putSf("dpi-102-2", "dpi", "10.3.1.102", "10.3.1.102", 10002) && res;
+        res = putSf("dpi-102-3", "dpi", "10.3.1.102", "10.3.1.102", 10003) && res;
+        res = putSf("napt44-103-1", "napt44", "10.3.1.103", "10.3.1.103", 10001) && res;
+        res = putSf("napt44-103-2", "napt44", "10.3.1.103", "10.3.1.103", 10002) && res;
+        res = putSf("firewall-104", "firewall", "10.3.1.104", "10.3.1.104", 10001) && res;
+        res = putSf("napt44-104", "napt44", "10.3.1.104", "10.3.1.104", 10020) && res;
 
+        // SFC1
         List<SfcServiceFunction> sfRefList = new ArrayList<>();
         SfcServiceFunctionBuilder sfBuilder = new SfcServiceFunctionBuilder();
-        sfRefList.add(sfBuilder.setName("firewall-101-testC").build());
-        sfRefList.add(sfBuilder.setName("dpi-102-testC").build());
-        sfRefList.add(sfBuilder.setName("napt44-103-testC").build());
+        sfRefList.add(sfBuilder.setName("firewall-abstract1").setType("firewall").build());
+        sfRefList.add(sfBuilder.setName("dpi-abstract1").setType("dpi").build());
+        sfRefList.add(sfBuilder.setName("napt44-abstract1").setType("napt44").build());
 
         res = putChain("SFC1", sfRefList) && res;
 
+        // SFC2
+        sfRefList.clear();
+        sfBuilder = new SfcServiceFunctionBuilder();
+        sfRefList.add(sfBuilder.setName("firewall-abstract2").setType("firewall").build());
+        sfRefList.add(sfBuilder.setName("napt44-abstract2").setType("napt44").build());
+
+        res = putChain("SFC2", sfRefList) && res;
+
+        // Nodes
         List<String> iList = new ArrayList<>();
         iList.add("firewall-101-1");
         iList.add("firewall-101-2");

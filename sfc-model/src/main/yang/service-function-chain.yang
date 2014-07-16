@@ -73,6 +73,11 @@ module service-function-chain {
         description
           "A list of service functions that compose the service chain";
       }
+      leaf-list sfc-service-function-path {
+        type string;
+        description
+          "A list of all service function paths instantiated from this chain";
+      }
     }
   }
 

@@ -11,9 +11,7 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
@@ -23,7 +21,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -43,40 +43,70 @@ import java.util.concurrent.ExecutionException;
  */
 public class SfcProviderServiceTypeAPI implements Runnable {
 
-    private ServiceFunction serviceFunction;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceTypeAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    public enum OperationType {CREATE, DELETE}
+    private String methodName = null;
+    private Class[] parameterTypes;
+    Object[] parameters;
 
-    private OperationType operation = OperationType.CREATE;
+    SfcProviderServiceTypeAPI (Object[] params, String m) {
+        int i = 0;
+        this.methodName = m;
+        this.parameters = new Object[params.length];
+        this.parameterTypes = new Class[params.length];
+        this.parameters = Arrays.copyOf(params, params.length);
+        for (Object obj : parameters) {
+            this.parameterTypes[i] = obj.getClass();
+            i++;
+        }
 
-    SfcProviderServiceTypeAPI (ServiceFunction sf, OperationType type) {
-        this.serviceFunction = sf;
-        this.operation = type;
     }
 
-
-    public static  SfcProviderServiceTypeAPI getSfcProviderDeleteServiceType(ServiceFunction sf) {
-        return new SfcProviderServiceTypeAPI(sf, OperationType.DELETE);
+    SfcProviderServiceTypeAPI (Object[] params, Class[] paramsTypes, String m) {
+        this.methodName = m;
+        this.parameters = new Object[params.length];
+        this.parameterTypes = new Class[params.length];
+        this.parameters = Arrays.copyOf(params, params.length);
+        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
     }
 
-
-    public static  SfcProviderServiceTypeAPI getSfcProvideCreateServiceType(ServiceFunction sf) {
-        return new SfcProviderServiceTypeAPI(sf, OperationType.CREATE);
+/*
+    public static  SfcProviderServiceTypeAPI getSfcProviderDeleteServiceFunctionFromServiceType (Object[] params) {
+        return new SfcProviderServiceTypeAPI(params, "deleteServiceFunctionTypeEntry");
     }
+
+    public static  SfcProviderServiceTypeAPI getSfcProviderCreateServiceFunctionToServiceType(Object[] params) {
+        return new SfcProviderServiceTypeAPI(params, "createServiceFunctionTypeEntry");
+    }
+
+    */
+    public static  SfcProviderServiceTypeAPI getSfcProviderCreateServiceFunctionToServiceType(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceTypeAPI(params, paramsTypes, "createServiceFunctionTypeEntry");
+    }
+
+    public static  SfcProviderServiceTypeAPI getSfcProviderDeleteServiceFunctionFromServiceType (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionTypeEntry");
+    }
+
 
     @Override
     public void run() {
-        switch (operation) {
-            case CREATE:
-                createServiceFunctionTypeEntry(serviceFunction);
-                break;
-            case DELETE:
-                deleteServiceFunctionTypeEntry(serviceFunction);
-                break;
+        if (methodName != null) {
+            //Class[] parameterTypes = {ServiceFunctionChain.class};
+            Class c = this.getClass();
+            Method method = null;
+            try {
+                method = c.getDeclaredMethod(methodName, parameterTypes);
+                method.invoke (this, parameters);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 
 
     public void createServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
@@ -102,34 +132,6 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName());
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
-        /*
-        InstanceIdentifier<ServiceFunctionType> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
-
-
-        InstanceIdentifier<ServiceFunctionTypes> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-
-        ArrayList<SftServiceFunctionName> sftServiceFunctionNameArrayList = new ArrayList<>();
-        sftServiceFunctionNameArrayList.add(sftServiceFunctionName);
-
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        serviceFunctionTypeBuilder = serviceFunctionTypeBuilder.setType(serviceFunction.getType());
-        serviceFunctionTypeBuilder.setSftServiceFunctionName(sftServiceFunctionNameArrayList);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-
-        ArrayList<ServiceFunctionType> serviceFunctionTypeArrayList = new ArrayList<>();
-        serviceFunctionTypeArrayList.add(serviceFunctionTypeBuilder.build());
-
-
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeArrayList);
-        ServiceFunctionTypes serviceFunctionTypes = serviceFunctionTypesBuilder.build();
-
-        t.putConfigurationData(sftentryIID, serviceFunctionTypes);
-
-        */
         final DataModificationTransaction t = odlSfc.dataProvider
                 .beginTransaction();
         t.putConfigurationData(sftentryIID, sftServiceFunctionName);
@@ -137,7 +139,7 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         try {
             t.commit().get();
         } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("Failed to update-function, operational otherwise", e);
+            LOG.error("Failed to create Service Function entry in Service Type List", e);
         }
 
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
@@ -154,7 +156,7 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
         sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).
                 child(ServiceFunctionType.class, serviceFunctionTypeKey)
-                .child(SftServiceFunctionName.class,sftServiceFunctionNameKey).toInstance();
+                .child(SftServiceFunctionName.class,sftServiceFunctionNameKey).build();
 
         final DataModificationTransaction t = odlSfc.dataProvider
                 .beginTransaction();
@@ -162,12 +164,12 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         try {
             t.commit().get();
         } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("deleteServiceFunction failed", e);
+            LOG.warn("Failed to delete Service Function entry in Service Type List failed", e);
         }
     }
 
-    public static ServiceFunctionType readServiceFunctionType (String type) {
-        InstanceIdentifier<ServiceFunctionType> sftentryIID;
+    public static ServiceFunctionType getServiceFunctionTypeList (String type) {
+        InstanceIdentifier<ServiceFunctionType> sftListIID;
         ServiceFunctionTypeKey serviceFunctionTypeKey;
         serviceFunctionTypeKey = new ServiceFunctionTypeKey(type);
 
@@ -175,9 +177,9 @@ public class SfcProviderServiceTypeAPI implements Runnable {
              * We iterate thorough the list of service function types and for each one we get a suitable
              * Service Function
              */
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+        sftListIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sftentryIID);
+        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sftListIID);
         if (dataObject instanceof ServiceFunctionType) {
             ServiceFunctionType serviceFunctionType = (ServiceFunctionType) dataObject;
             return serviceFunctionType;

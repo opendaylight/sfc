@@ -82,6 +82,29 @@ module service-function-chain {
     uses service-function-chain-grouping;
   }
 
+  container service-function-chains-state {
+    config false;
+    list service-function-chain-state {
+      description
+        "A service chain defines the required functions and
+        associated order (service-function1 --> service-function 2) that
+        must be applied to packets and/or frames.  A service chain does
+        not specify the network location or specific instance of service
+        functions (e.g. firewall1 vs. firewall2).";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "the name of the service function chain";
+      }
+      leaf-list sfc-service-function-path {
+        type string;
+        description
+        "A list of all service function paths instantiated from this chain";
+      }
+    }
+  }
+
     // Remote procedure calls
 
     // (main feature: instantiation of a SFC)

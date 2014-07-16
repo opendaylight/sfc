@@ -1,12 +1,9 @@
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,8 +40,12 @@ public class SfcSftMapper {
                 for(ServiceNode sn : snList){
                     List<String> sfNameList = sn.getServiceFunction();
                     for(String sfName : sfNameList){
-                        ServiceFunction sf = findServiceFunction(sfName);
-                        this.add(sf.getType(), sn.getName(), sf);
+                        ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+                        if ( sf != null) {
+                            this.add(sf.getType(), sn.getName(), sf);
+                        } else {
+                            throw new IllegalStateException("Service Function not found in datastore");
+                        }
                     }
                 }
             } else {
@@ -87,20 +88,4 @@ public class SfcSftMapper {
         }
         return ret;
     }
-
-    private ServiceFunction findServiceFunction(String name) {
-        ServiceFunctionKey key = new ServiceFunctionKey(name);
-        InstanceIdentifier<ServiceFunction> iid =
-                InstanceIdentifier.builder(ServiceFunctions.class)
-                        .child(ServiceFunction.class, key)
-                        .toInstance();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(iid);
-        if (dataObject instanceof ServiceFunction) {
-            return (ServiceFunction) dataObject;
-        } else {
-            throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunction).");
-        }
-    }
-
-
 }

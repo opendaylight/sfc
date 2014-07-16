@@ -11,31 +11,16 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        ServiceFunctionTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        ServiceFunctionTypeKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        service.function.type.SftServiceFunctionName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        service.function.type.SftServiceFunctionNameBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.
-        service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Set;
 
 
 /**
@@ -58,21 +43,20 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
+
+
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalConfigurationData();
         LOG.info("\n########## getOriginalConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI.getSfcProviderDeleteServiceType(originalServiceFunction));
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI.getSfcProviderDeleteServiceForwarderAPI(originalServiceFunction));
-                //deleteServiceFunctionTypeEntry(originalServiceFunction);
                 LOG.info("\n########## getOriginalConfigurationData {}  {}",
                         originalServiceFunction.getType(), originalServiceFunction.getName());
             }
             //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
-
+        /*
         DataObject dataUpdatedObject = change.getUpdatedConfigurationSubtree();
         LOG.info("\n########## getUpdatedConfigurationSubtree");
         if( dataUpdatedObject instanceof  ServiceFunction) {
@@ -81,13 +65,26 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     updatedServiceFunction.getType(), updatedServiceFunction.getName());
 
         }
+        */
 
+        // Created ServiceFunctions trigger creation of SFFs and SFTs
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
         LOG.info("\n########## getCreatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
+
+                Object[] serviceTypeObj = {createdServiceFunction};
+                Class[] serviceTypeClass = {ServiceFunction.class};
+
+                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                        .getSfcProviderCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+
+                Object[] sfParams = {createdServiceFunction};
+                Class[] sfParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                        .getSfcProviderCreateServiceForwarderAPI(sfParams, sfParamsTypes));
                 LOG.info("\n########## getCreatedConfigurationData {}  {}",
                             createdServiceFunction.getType(), createdServiceFunction.getName());
             }
@@ -95,21 +92,82 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         }
 
 
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
-        LOG.info("\n########## getUpdatedConfigurationData");
+        // Build a list of all Service Functions that were explicitly removed.
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
+        LinkedHashMap<InstanceIdentifier<?>, ServiceFunction> removedServiceFunctionLinkedHashMap = new LinkedHashMap<>();
+        LinkedHashMap<InstanceIdentifier<?>, DataObject> removedSubElementsLinkedHashMap = new LinkedHashMap<>();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if( dataObject instanceof  ServiceFunction) {
+                removedServiceFunctionLinkedHashMap.put(instanceIdentifier, (ServiceFunction)dataObject);
+                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
+                Object[] serviceTypeObj = {originalServiceFunction};
+                Class[] serviceTypeClass = {ServiceFunction.class};
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
-        {
-            if( entry.getValue() instanceof  ServiceFunction) {
+                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                        .getSfcProviderDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
+
+
+                Object[] sfParams = {originalServiceFunction};
+                Class[] sfParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                        .getDeleteServiceFunctionFromForwarderAPI(sfParams, sfParamsTypes ));
+                // This deletion will trigger a callback to the SFC Entry listener
+                Object[] chainsParams = {originalServiceFunction};
+                Class[] chainsParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceChainAPI
+                        .getRemoveServiceFunctionFromChain(chainsParams, chainsParamsTypes));
+            } else {
+                removedSubElementsLinkedHashMap.put(instanceIdentifier, dataObject);
+            }
+        }
+
+
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
+            if ((entry.getValue() instanceof ServiceFunction) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
-                //createServiceFunctionTypeEntry(updatedServiceFunction);
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI.getSfcProvideCreateServiceType(updatedServiceFunction));
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI.getSfcProviderCreateServiceForwarderAPI(updatedServiceFunction));
+                Object[] serviceTypeObj = {updatedServiceFunction};
+                Class[] serviceTypeClass = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                        .getSfcProviderCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+
+                Object[] sfParams = {updatedServiceFunction};
+                Class[] sfParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
                 LOG.info("\n########## getUpdatedConfigurationData {}  {}",
                         updatedServiceFunction.getType(), updatedServiceFunction.getName());
             }
-            //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
+/*
+        LOG.info("\n########## getUpdatedConfigurationData");
+
+        // PUT on sub-container
+        // If this condition holds there was a 'replace' to an element of a ServiceFunction, i.e.,
+        // something under the ServiceFunction entry was updated with a PUT.
+        // It is very problematic to find out
+        // which element and the difference from before, therefore we just commit the
+        // entire affected elements  again and rely on datastore merge.
+        //
+        if ((dataRemovedConfigurationIID.isEmpty()) && (dataCreatedObject.isEmpty())) {
+
+            for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
+                if (entry.getValue() instanceof ServiceFunction) {
+                    ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
+                    Object[] serviceTypeObj = {updatedServiceFunction};
+                    Class[] serviceTypeClass = {ServiceFunction.class};
+                    //odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                    //        .getSfcProviderCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+                    odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                            .getSfcProviderCreateServiceForwarderAPI(updatedServiceFunction));
+                    LOG.info("\n########## getUpdatedConfigurationData {}  {}",
+                            updatedServiceFunction.getType(), updatedServiceFunction.getName());
+                }
+            }
+        }
+        */
+
 
         // Debug and Unit Test. We trigger the unit test code by adding a service function to the datastore.
         if (SfcProviderDebug.ON) {

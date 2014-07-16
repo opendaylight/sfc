@@ -35,6 +35,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <artifactId>sfc-test-consumer</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-southbound</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
 
         <!-- base distribution -->

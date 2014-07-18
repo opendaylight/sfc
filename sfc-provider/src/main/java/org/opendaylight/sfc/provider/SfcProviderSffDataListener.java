@@ -37,7 +37,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
     public void onDataChanged(
             DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
 
         /*
@@ -46,7 +46,6 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
          */
         boolean sffready = false;
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
-        LOG.info("\n########## getUpdatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {
@@ -67,7 +66,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
         }
 
 
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
 }

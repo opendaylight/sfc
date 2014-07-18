@@ -116,7 +116,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
     public void createServiceFunctionForwarder (ServiceFunction serviceFunction) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
@@ -136,7 +136,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
         serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionDictionaryList);
 
-        LOG.info("\n########## Creating Forwarder: {}  Service Function: {} "
+        LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
                 ,serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
 
 
@@ -149,12 +149,12 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to create Service Function Forwarder", e);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
     }
 
     public void deleteServiceFunctionForwarder (ServiceFunction serviceFunction) {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
@@ -170,12 +170,12 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to create Service Function Forwarder", e);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
     public void updateServiceFunctionForwarder (ServiceFunction serviceFunction) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         deleteServiceFunctionForwarder(serviceFunction);
         createServiceFunctionForwarder(serviceFunction);
 
@@ -184,7 +184,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
     public void createServiceFunctionForwarders (ServiceFunctionChains serviceFunctionchains) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionForwarders> sffIID;
 
         // Prepare top container and list
@@ -222,7 +222,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
                 serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
 
-                LOG.info("\n########## Creating Forwarder: {}  Service Function: {} "
+                LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
                         , serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
 
 
@@ -237,7 +237,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 }
             }
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
     }
 
@@ -251,7 +251,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
          */
 
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionDictionary> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
@@ -261,7 +261,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey )
                 .build();
-        LOG.info("\n########## Deleting Forwarder: {}  Service Function: {} "
+        LOG.debug("\n########## Deleting Forwarder: {}  Service Function: {} "
                 ,serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
         final DataModificationTransaction t = odlSfc.dataProvider
                 .beginTransaction();
@@ -272,11 +272,11 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to delete Service Function Forwarder", e);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
     public static ServiceFunctionForwarder readServiceFunctionForwarder(String name) {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(name);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
@@ -293,7 +293,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
     }
 
     public static void addPathIdtoServiceFunctionForwarder(ServiceFunctionPath serviceFunctionPath) {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID;
         sffsIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
@@ -330,7 +330,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to create Service Function Forwarder", e);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
 
     }

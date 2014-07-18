@@ -112,7 +112,7 @@ public class SfcProviderServiceTypeAPI implements Runnable {
     public void createServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
 
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         String sfkey = serviceFunction.getType();
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
@@ -142,12 +142,13 @@ public class SfcProviderServiceTypeAPI implements Runnable {
             LOG.error("Failed to create Service Function entry in Service Type List", e);
         }
 
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
     }
 
     public void deleteServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
 
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         String sfkey = serviceFunction.getType();
         ServiceFunctionTypeKey  serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
 
@@ -166,9 +167,12 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Failed to delete Service Function entry in Service Type List failed", e);
         }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
     public static ServiceFunctionType getServiceFunctionTypeList (String type) {
+
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionType> sftListIID;
         ServiceFunctionTypeKey serviceFunctionTypeKey;
         serviceFunctionTypeKey = new ServiceFunctionTypeKey(type);
@@ -182,10 +186,13 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sftListIID);
         if (dataObject instanceof ServiceFunctionType) {
             ServiceFunctionType serviceFunctionType = (ServiceFunctionType) dataObject;
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionType;
         } else {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
         }
+
 
     }
 }

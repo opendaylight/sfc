@@ -37,7 +37,7 @@ public class SfcProviderServiceFunctionAPI {
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     public static ServiceFunction readServiceFunction(String serviceFunctionName) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunction> sfIID;
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
         sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
@@ -45,10 +45,10 @@ public class SfcProviderServiceFunctionAPI {
 
         DataObject serviceFunctiondataObject = odlSfc.dataProvider.readConfigurationData(sfIID);
         if (serviceFunctiondataObject instanceof ServiceFunction) {
-            LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return (ServiceFunction) serviceFunctiondataObject;
         } else {
-            LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
         }
     }

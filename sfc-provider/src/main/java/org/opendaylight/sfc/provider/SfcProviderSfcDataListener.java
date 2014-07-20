@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
  * This class gets called whenever there is a change to
- * the Service Functions data store.
+ * the Service Functions data store. Today it does not
+ * do anything, it is just a big debug tool.
  *
  * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
@@ -58,7 +58,6 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
                     }
                 }
             }
-            //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalConfigurationData();
@@ -77,7 +76,6 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
                     }
                 }
             }
-            //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
 
         Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedConfigurationData();
@@ -96,12 +94,7 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
                     }
                 }
             }
-            //System.out.println(entry.getKey() + "/" + entry.getValue());
         }
-
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationInstance = change.getRemovedConfigurationData();
-
-
 
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }

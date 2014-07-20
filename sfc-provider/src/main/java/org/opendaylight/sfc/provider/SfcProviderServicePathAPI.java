@@ -9,12 +9,17 @@
 package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
@@ -43,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
- * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
+ * @see org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener
  *
  *
  * <p>
@@ -58,7 +63,6 @@ public class SfcProviderServicePathAPI implements Runnable {
     private String methodName = null;
     private Object[] parameters;
     private Class[] parameterTypes;
-    //private static int numCreatedServicePath = 0;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
 
 
@@ -83,57 +87,65 @@ public class SfcProviderServicePathAPI implements Runnable {
         this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
     }
 
-    public static  SfcProviderServicePathAPI getSfcProviderDeleteServicePathInstantiatedFromChain (Object[] params) {
-        return new SfcProviderServicePathAPI(params, "deleteServicePathInstantiatedFromChain");
+    public static  SfcProviderServicePathAPI getDeleteServicePathContainingFunction (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
     }
 
-    public static  SfcProviderServicePathAPI getSfcProviderDeleteServicePathInstantiatedFromChain (Object[] params, Class[] paramsTypes) {
+    public static  SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain (Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathInstantiatedFromChain");
     }
 
-    public static  SfcProviderServicePathAPI getSfcProviderCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
+    public static  SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
     }
 
-    public static  SfcProviderServicePathAPI getSfcProviderUpdateServicePathAPI(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
+    public static  SfcProviderServicePathAPI getUpdateServicePathAPI(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServicePathAPI(params, paramsTypes, "updateServiceFunctionPathEntry");
+    }
+
+    public static  SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathInstantiatedFromChain");
+    }
+
+    public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
     }
 
 
-    public int NumCreatedPathIncrementGet() {
+    public int numCreatedPathIncrementGet() {
         return numCreatedPath.incrementAndGet();
     }
 
-    public int NumCreatedPathDecrementGet() {
+    public int numCreatedPathDecrementGet() {
         return numCreatedPath.decrementAndGet();
     }
 
-    public int NumCreatedPathGetValue() {
+    public static int numCreatedPathGetValue() {
         return numCreatedPath.get();
     }
 
-    @Override
-    public void run() {
-        if (methodName != null) {
-            //Class[] parameterTypes = {ServiceFunctionChain.class};
-            Class c = this.getClass();
-            Method method = null;
-            try {
-                method = c.getDeclaredMethod(methodName, parameterTypes);
-                method.invoke (this, parameters);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
+   /* Today A Service Function Chain modification is catastrophic. We delete all Paths
+    * and recreate them. Maybe a real patch is possible but given the complexities of the possible
+    * modifications, this is the safest approach.
+    */
+    private void updateServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
+        deleteServicePathInstantiatedFromChain(serviceFunctionPath);
+        createServiceFunctionPathEntry(serviceFunctionPath);
     }
 
-    private void deleteServicePathInstantiatedFromChain (ServiceFunctionChain serviceFunctionChain) {
+    // TODO:Needs change
+    private void deleteServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        ServiceFunctionChain serviceFunctionChain;
+        String serviceChainName = serviceFunctionPath.getServiceChainName();
+        if ((serviceChainName == null) || ((serviceFunctionChain = SfcProviderServiceChainAPI
+                .readServiceFunctionChain(serviceChainName)) == null)) {
+            LOG.error("\n########## ServiceFunctionChain name for Path {} not provided",
+                    serviceFunctionPath.getName());
+            return;
+        }
+
 
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionChainState serviceFunctionChainState;
@@ -147,7 +159,9 @@ public class SfcProviderServicePathAPI implements Runnable {
         // TODO: Remove path name from Service Function path list
         if (dataSfcStateObject instanceof ServiceFunctionChainState) {
             serviceFunctionChainState = (ServiceFunctionChainState) dataSfcStateObject;
-            List<String> sfcServiceFunctionPathList = serviceFunctionChainState.getSfcServiceFunctionPath();
+            List<String> sfcServiceFunctionPathList =
+                    serviceFunctionChainState.getSfcServiceFunctionPath();
+            List<String> removedPaths = new ArrayList<>();
             for (String pathName : sfcServiceFunctionPathList) {
 
                 ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(pathName);
@@ -160,24 +174,57 @@ public class SfcProviderServicePathAPI implements Runnable {
                 t.removeConfigurationData(sfpIID);
                 try {
                     t.commit().get();
+                    // We update the list as we go
+                    removedPaths.add(pathName);
                 } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("deleteServicePathInstantiatedFromChain for path {} failed ", pathName);
+                    LOG.error("deleteServicePathInstantiatedFromChain for path {} failed ", pathName);
                 }
             }
+
+            sfcServiceFunctionPathList.removeAll(removedPaths);
+
+            /* After we are done removing all paths from the datastore we commit the updated the path list
+             * under the Service Chain operational tree
+             */
+            ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder  = new ServiceFunctionChainStateBuilder();
+            serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
+            serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathList);
+            final DataModificationTransaction t = odlSfc.dataProvider
+                    .beginTransaction();
+            t.putOperationalData(sfcStateIID, serviceFunctionChainStateBuilder.build());
+            try {
+                t.commit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Failed to update SfcServiceFunctionPath List State {} failed ");
+            }
+
         } else {
             LOG.error("Failed to get reference to Service Function Chain State {} ", serviceFunctionChain.getName());
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
-    public void createServiceFunctionPathEntry (ServiceFunctionChain serviceFunctionChain) {
+    private void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
+        this.createServiceFunctionPathEntry(serviceFunctionPath);
+    }
+
+    private void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        int pathId;
+        long pathId;
+        ServiceFunctionChain serviceFunctionChain;
+        String serviceFunctionChainName = serviceFunctionPath.getServiceChainName();
+        if ((serviceFunctionChainName == null) || ((serviceFunctionChain = SfcProviderServiceChainAPI
+                    .readServiceFunctionChain(serviceFunctionChainName)) == null)) {
+            LOG.error("\n########## ServiceFunctionChain name for Path {} not provided",
+                    serviceFunctionPath.getName());
+            return;
+        }
+
+
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         ArrayList<SfpServiceFunction> sfpServiceFunctionArrayList= new ArrayList<>();
-        String serviceFunctionChainName = serviceFunctionChain.getName();
         SfpServiceFunctionBuilder sfpServiceFunctionBuilder = new SfpServiceFunctionBuilder();
 
         /*
@@ -189,32 +236,39 @@ public class SfcProviderServicePathAPI implements Runnable {
             LOG.debug("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
 
             /*
-             * We iterate thorough the list of service function types and for each one we get a suitable
-             * Service Function
+             * We iterate thorough the list of service function types and for each one we try to get
+             * get a suitable Service Function. WE need to perform lost of checking to make sure
+             * we do not hit NULL Pointer exceptions
              */
 
             ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI.getServiceFunctionTypeList(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                for (SftServiceFunctionName sftServiceFunctionName : serviceFunctionType.getSftServiceFunctionName()) {
-                    String serviceFunctionName  = sftServiceFunctionName.getName();
-                    if (serviceFunctionName != null) {
-                        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
-                                .readServiceFunction(serviceFunctionName);
-                        if (serviceFunction != null) {
-                            sfpServiceFunctionBuilder.setName(serviceFunctionName)
-                                    .setServiceFunctionForwarder(serviceFunction.getServiceFunctionForwarder());
+                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                if (!sftServiceFunctionNameList.isEmpty()) {
+                    for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
+                        // TODO: API to select suitable Service Function
+                        String serviceFunctionName = sftServiceFunctionName.getName();
+                        ServiceFunction serviceFunction;
+                        if ((serviceFunctionName != null) && ((
+                             serviceFunction = SfcProviderServiceFunctionAPI
+                                    .readServiceFunction(serviceFunctionName)) != null)) {
 
+                            sfpServiceFunctionBuilder.setName(serviceFunctionName)
+                                        .setServiceFunctionForwarder(serviceFunction.getServiceFunctionForwarder());
+                            sfpServiceFunctionArrayList.add(sfpServiceFunctionBuilder.build());
+                            break;
+                        } else {
+                            LOG.error("\n####### Could not find suitable SF of type in data store: {}",
+                                    sfcServiceFunction.getType());
+                            return;
                         }
-                        sfpServiceFunctionArrayList.add(sfpServiceFunctionBuilder.build());
-                        break;
-                    } else {
-                        LOG.error("\n####### Could not find ServiceFunctionName in data store: {}",
-                                Thread.currentThread().getStackTrace()[1]);
-                        return;
                     }
+                } else {
+                    LOG.error("\n########## No configured SFs of type: {}", sfcServiceFunction.getType());
+                    return;
                 }
             } else {
-                LOG.error("\n########## Could not find SFs of type: {}", Thread.currentThread().getStackTrace()[1]);
+                LOG.error("\n########## No configured SFs of type: {}", sfcServiceFunction.getType());
                 return;
             }
 
@@ -222,32 +276,40 @@ public class SfcProviderServicePathAPI implements Runnable {
 
         //Build the service function path so it can be committed to datastore
 
-        pathId = NumCreatedPathIncrementGet();
-        serviceFunctionPathBuilder.setSfpServiceFunction(sfpServiceFunctionArrayList);
-        serviceFunctionPathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
-        // TODO: For now just monotonically incremented
 
-        serviceFunctionPathBuilder.setPathId((long) pathId);
+        pathId = (serviceFunctionPath.getPathId() != null)  ?  serviceFunctionPath.getPathId()
+                : numCreatedPathIncrementGet();
+        serviceFunctionPathBuilder.setSfpServiceFunction(sfpServiceFunctionArrayList);
+        if (serviceFunctionPath.getName().isEmpty())  {
+            serviceFunctionPathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
+        } else {
+            serviceFunctionPathBuilder.setName(serviceFunctionPath.getName());
+
+        }
+
+        serviceFunctionPathBuilder.setPathId(pathId);
         // TODO: Find out the exact rules for service index generation
         serviceFunctionPathBuilder.setServiceIndex((short) (sfpServiceFunctionArrayList.size() + 1));
 
         ServiceFunctionPathKey serviceFunctionPathKey = new
-                ServiceFunctionPathKey(serviceFunctionChainName + "-Path-" + pathId);
+                ServiceFunctionPathKey(serviceFunctionPathBuilder.getName());
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                 .build();
 
+        ServiceFunctionPath newServiceFunctionPath = serviceFunctionPathBuilder.build();
         final DataModificationTransaction t = odlSfc.dataProvider
                 .beginTransaction();
-        t.putConfigurationData(sfpIID, serviceFunctionPathBuilder.build());
+        t.putConfigurationData(sfpIID, newServiceFunctionPath);
 
         try {
             t.commit().get();
             // Add the created path to the list of paths instantiated from this Service Chain
-            SfcProviderServiceChainAPI
-                    .addPathToServiceFunctionChain(serviceFunctionChain, serviceFunctionPathBuilder.build());
-            SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(serviceFunctionPathBuilder.build());
+            //SfcProviderServiceChainAPI
+            //        .addPathToServiceFunctionChainState(serviceFunctionChain, serviceFunctionPath);
+            SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
+            SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Failed to create Service Path", e);
@@ -257,14 +319,14 @@ public class SfcProviderServicePathAPI implements Runnable {
 
     }
 
-    public void deleteServiceFunctionPathEntry (ServiceFunctionChain serviceFunctionChain) {
+    private void deleteServiceFunctionPathEntry (ServiceFunctionChain serviceFunctionChain) {
 
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         String serviceFunctionChainName = serviceFunctionChain.getName();
-        ServiceFunctionPathKey serviceFuntionPathKey = new ServiceFunctionPathKey(serviceFunctionChainName + "-Path");
+        ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionChainName + "-Path");
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                .child(ServiceFunctionPath.class, serviceFuntionPathKey)
+                .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                 .build();
 
         final DataModificationTransaction t = odlSfc.dataProvider
@@ -293,6 +355,81 @@ public class SfcProviderServicePathAPI implements Runnable {
             return serviceFunctionPath;
         } else {
             return null;
+        }
+    }
+
+    private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
+
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        InstanceIdentifier<ServiceFunctionPath> sfpIID;
+        ServiceFunctionState serviceFunctionState;
+        ServiceFunctionStateKey serviceFunctionStateKey =
+                new ServiceFunctionStateKey(serviceFunction.getName());
+        InstanceIdentifier<ServiceFunctionState> sfStateIID =
+                InstanceIdentifier.builder(ServiceFunctionsState.class)
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .build();
+        DataObject dataSfcStateObject = odlSfc.dataProvider.readOperationalData(sfStateIID);
+        if (dataSfcStateObject instanceof ServiceFunctionState) {
+            serviceFunctionState = (ServiceFunctionState) dataSfcStateObject;
+            List<String> sfServiceFunctionPathList =
+                    serviceFunctionState.getSfServiceFunctionPath();
+            List<String> removedPaths = new ArrayList<>();
+            for (String pathName : sfServiceFunctionPathList) {
+
+                ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(pathName);
+                sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                        .child(ServiceFunctionPath.class, serviceFunctionPathKey)
+                        .build();
+
+                final DataModificationTransaction t = odlSfc.dataProvider
+                        .beginTransaction();
+                t.removeConfigurationData(sfpIID);
+                try {
+                    t.commit().get();
+                    // We update the list as we go
+                    removedPaths.add(pathName);
+                } catch (InterruptedException | ExecutionException e) {
+                    LOG.error("deleteServicePathInstantiatedFromChain for path {} failed ", pathName);
+                }
+            }
+
+            sfServiceFunctionPathList.removeAll(removedPaths);
+
+            /* After we are done removing all paths from the datastore we commit the updated the path list
+             * under the Service Chain operational tree
+             */
+            ServiceFunctionStateBuilder serviceFunctionStateBuilder  = new ServiceFunctionStateBuilder();
+            serviceFunctionStateBuilder.setName(serviceFunction.getName());
+            serviceFunctionStateBuilder.setSfServiceFunctionPath(sfServiceFunctionPathList);
+            final DataModificationTransaction t = odlSfc.dataProvider
+                    .beginTransaction();
+            t.putOperationalData(sfStateIID, serviceFunctionStateBuilder.build());
+            try {
+                t.commit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Failed to update ServiceFunction {} State Path List failed ", serviceFunction.getName());
+            }
+
+        } else {
+            LOG.error("Failed to get reference to Service Function State {} ", serviceFunction.getName());
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+    }
+
+
+    @Override
+    public void run() {
+        if (methodName != null) {
+            Class c = this.getClass();
+            Method method;
+            try {
+                method = c.getDeclaredMethod(methodName, parameterTypes);
+                method.invoke (this, parameters);
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e ) {
+                e.printStackTrace();
+            }
         }
     }
 }

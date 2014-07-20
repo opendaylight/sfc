@@ -80,11 +80,11 @@ public class SfcProviderServiceTypeAPI implements Runnable {
     }
 
     */
-    public static  SfcProviderServiceTypeAPI getSfcProviderCreateServiceFunctionToServiceType(Object[] params, Class[] paramsTypes) {
+    public static  SfcProviderServiceTypeAPI getCreateServiceFunctionToServiceType(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "createServiceFunctionTypeEntry");
     }
 
-    public static  SfcProviderServiceTypeAPI getSfcProviderDeleteServiceFunctionFromServiceType (Object[] params, Class[] paramsTypes) {
+    public static  SfcProviderServiceTypeAPI getDeleteServiceFunctionFromServiceType (Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionTypeEntry");
     }
 

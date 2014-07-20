@@ -17,8 +17,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is the DataListener for SFF changes.
@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class SfcProviderSffDataListener implements DataChangeListener  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSnDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffDataListener.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
@@ -59,7 +59,9 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
 
                 }
                 if (sffready) {
-                    odlSfc.executor.execute(SfcProviderRestAPI.getSfcProviderRestAPIPut(updatedServiceFunctionForwarders));
+                    Object[] serviceForwarderObj = {updatedServiceFunctionForwarders};
+                    Class[] serviceForwarderClass = {ServiceFunctionForwarders.class};
+                    odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarders (serviceForwarderObj, serviceForwarderClass));
                     //send to REST
                 }
             }

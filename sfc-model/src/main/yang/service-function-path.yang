@@ -70,14 +70,24 @@ module service-function-path {
         key "name";
         leaf name {
           type string;
+          description
+            "Service Function name";
         }
         leaf service-function-forwarder {
           type string;
+          description
+            "Service Function Forwarder name";
         }
         ordered-by user;
         min-elements 1;
         description
           "A list of service function instances that compose the service path";
+      }
+      leaf service-chain-name {
+        mandatory true;
+        type string;
+        description
+          " The Service Function Chain used as blueprint for this path";
       }
       leaf service_index {
         type uint8;

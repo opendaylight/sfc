@@ -8,13 +8,24 @@
 
 package org.opendaylight.sfc.provider;
 
+import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class has the APIs to operate on the ServiceFunction
@@ -51,5 +62,37 @@ public class SfcProviderServiceFunctionAPI {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
         }
+    }
+
+    public static void addPathToServiceFunctionState (ServiceFunctionPath serviceFunctionPath) {
+
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
+        ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
+        sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
+
+        serviceFunctionStateBuilder.setSfServiceFunctionPath(sfcServiceFunctionPathArrayList);
+
+        List<SfpServiceFunction> sfpServiceFunctionList = serviceFunctionPath.getSfpServiceFunction();
+        for (SfpServiceFunction sfpServiceFunction : sfpServiceFunctionList) {
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfpServiceFunction.getName());
+            InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
+                    .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
+            serviceFunctionStateBuilder.setName(sfpServiceFunction.getName());
+            final DataModificationTransaction t = odlSfc.dataProvider
+                    .beginTransaction();
+            t.putOperationalData(sfStateIID, serviceFunctionStateBuilder.build());
+
+            try {
+                t.commit().get();
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.error("Failed to add Path to Service Function Chain", e);
+            }
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        }
+
+
+
     }
 }

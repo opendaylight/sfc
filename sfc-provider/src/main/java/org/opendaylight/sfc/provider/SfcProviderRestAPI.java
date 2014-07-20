@@ -13,8 +13,13 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 
 /**
@@ -27,33 +32,21 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcProviderRestAPI implements Runnable {
 
-    private ServiceFunctionForwarders serviceFunctionForwarders;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRestAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    public enum OperationType {CREATE, DELETE}
+    private String methodName = null;
+    private Object[] parameters;
+    private Class[] parameterTypes;
 
-    private OperationType operation = OperationType.CREATE;
-
-    SfcProviderRestAPI (ServiceFunctionForwarders sff, OperationType type) {
-        this.serviceFunctionForwarders = sff;
-        this.operation = type;
+    SfcProviderRestAPI (Object[] params, Class[] paramsTypes, String m) {
+        this.methodName = m;
+        this.parameters = new Object[params.length];
+        this.parameterTypes = new Class[params.length];
+        this.parameters = Arrays.copyOf(params, params.length);
+        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
     }
 
-    public void putServiceFunctionForwarder(ServiceFunctionForwarders serviceFunctionForwarders) {
-
-        /*
-        ObjectWriter ow = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true).writer().withDefaultPrettyPrinter();
-        String jsonsff = null;
-        try {
-            jsonsff  = ow.writeValueAsString(serviceFunctionForwarders);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ClientConfig clientConfig = new DefaultClientConfig();
-        //clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-        jsonsff = jsonsff.replaceAll("\\s*\"implementedInterface.*", "");
-        */
+    public void putServiceFunctionForwarders (ServiceFunctionForwarders serviceFunctionForwarders) {
 
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
@@ -75,18 +68,52 @@ public class SfcProviderRestAPI implements Runnable {
 
     }
 
-    public static  SfcProviderRestAPI getSfcProviderRestAPIPut(ServiceFunctionForwarders sff) {
-        return new SfcProviderRestAPI(sff, OperationType.CREATE);
+    public void putServiceFunctionPaths (ServiceFunctionPaths serviceFunctionPaths) {
+
+        ClientConfig clientConfig = new DefaultClientConfig();
+        Client client = Client.create(clientConfig);
+
+        ClientResponse getClientResponse = client
+                .resource("http://localhost:8080/restconf/config/service-function-path:service-function-paths/")
+                .accept("application/json")
+                .get(ClientResponse.class);
+
+
+        String jsonOutput = getClientResponse.getEntity(String.class);
+        getClientResponse.close();
+
+        ClientResponse putClientResponse= client
+                .resource("http://localhost:5000/paths").type("application/json")
+                .put(ClientResponse.class, jsonOutput);
+
+        putClientResponse.close();
+
+    }
+
+    public static  SfcProviderRestAPI getPutServiceFunctionForwarders (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionForwarders");
+    }
+
+    public static  SfcProviderRestAPI getPutServiceFunctionPaths (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPaths");
     }
 
     @Override
     public void run() {
-        switch (operation) {
-            case CREATE:
-                putServiceFunctionForwarder(serviceFunctionForwarders);
-                break;
-            case DELETE:
-                break;
+        if (methodName != null) {
+            //Class[] parameterTypes = {ServiceFunctionChain.class};
+            Class c = this.getClass();
+            Method method = null;
+            try {
+                method = c.getDeclaredMethod(methodName, parameterTypes);
+                method.invoke(this, parameters);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
 
     }

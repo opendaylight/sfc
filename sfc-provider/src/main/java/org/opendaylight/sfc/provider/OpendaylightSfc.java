@@ -11,14 +11,15 @@ import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.controller.sal.common.util.Rpcs;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -51,8 +52,13 @@ public class OpendaylightSfc implements AutoCloseable {
    public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
             InstanceIdentifier.builder(ServiceFunctionChains.class)
                     .child(ServiceFunctionChain.class).build();
+
    public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
+
+   public static final InstanceIdentifier<ServiceFunctionPath>  sfpEntryIID =
+            InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                    .child(ServiceFunctionPath.class).build();
 
    public static final InstanceIdentifier<ServiceFunctions>  sfsIID =
             InstanceIdentifier.builder(ServiceFunctions.class).build();
@@ -62,9 +68,6 @@ public class OpendaylightSfc implements AutoCloseable {
            InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
    public static final InstanceIdentifier<ServiceFunctionChains>  sfcIID =
            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-
-
 
    public static final InstanceIdentifier<ServiceFunctionForwarders>  sffIID =
            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
@@ -79,7 +82,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
    public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(2);
+       executor = Executors.newFixedThreadPool(1);
        opendaylightSfcObj = this;
    }
 

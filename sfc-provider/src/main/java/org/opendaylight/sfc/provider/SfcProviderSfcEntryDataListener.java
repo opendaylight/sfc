@@ -57,7 +57,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             }
         }
 
-        // Create Service Function Paths
+        // SFC CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
@@ -67,11 +67,8 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionChain.getName());
                 Object[] serviceChainObj = {createdServiceFunctionChain};
                 Class[] serviceChainClass = {ServiceFunctionChain.class};
-                //TODO: Race condition
                 odlSfc.executor.execute(SfcProviderServiceChainAPI
                         .getAddChainToChainState(serviceChainObj, serviceChainClass));
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getSfcProviderCreateServicePathAPI(serviceChainObj, serviceChainClass));
                 List<SfcServiceFunction>  SfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
                     LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -80,26 +77,32 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             }
         }
 
+        // SFC UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionChain) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
+                LOG.info("\n########## Modified Service Function Chain Name {}",
+                        updatedServiceFunctionChain.getName());
                 Object[] serviceChainObj = {updatedServiceFunctionChain};
                 Class[] serviceChainClass = {ServiceFunctionChain.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getSfcProviderUpdateServicePathAPI(serviceChainObj, serviceChainClass));
+                //odlSfc.executor.execute(SfcProviderServicePathAPI
+                //        .getUpdateServicePathInstantiatedFromChain(serviceChainObj, serviceChainClass));
             }
         }
 
+        // SFC DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) dataObject;
+                /* Could bring back
                 Object[] serviceChainParams = {originalServiceFunctionChain};
                 Class[] serviceChainTypes = {ServiceFunctionChain.class};
                 odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getSfcProviderDeleteServicePathInstantiatedFromChain(serviceChainParams, serviceChainTypes));
+                        .getDeleteServicePathInstantiatedFromChain(serviceChainParams, serviceChainTypes));
+                */
                 LOG.debug("\n########## getOriginalConfigurationData {}",
                         originalServiceFunctionChain.getName());
             }

@@ -85,7 +85,7 @@ public class SfcProviderServiceChainAPI implements Runnable {
         return new SfcProviderServiceChainAPI(params, paramsTypes, "addChainToChainState");
     }
 
-    public void addChainToChainState (ServiceFunctionChain serviceFunctionChain) {
+    private void addChainToChainState (ServiceFunctionChain serviceFunctionChain) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionChainStateKey serviceFunctionChainStateKey = new ServiceFunctionChainStateKey(serviceFunctionChain.getName());
@@ -107,7 +107,7 @@ public class SfcProviderServiceChainAPI implements Runnable {
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
-    public static void addPathToServiceFunctionChain(ServiceFunctionChain serviceFunctionChain,
+    public static void addPathToServiceFunctionChainState (ServiceFunctionChain serviceFunctionChain,
                                                      ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
@@ -135,6 +135,7 @@ public class SfcProviderServiceChainAPI implements Runnable {
 
     }
 
+
     public static ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
@@ -151,29 +152,41 @@ public class SfcProviderServiceChainAPI implements Runnable {
             return null;
         }
     }
+
+    private InstanceIdentifier<SfcServiceFunction> getServiceFunctionIIDFromChain (ServiceFunctionChain sfc, ServiceFunction sf) {
+        SfcServiceFunctionKey serviceFunctionKey = new SfcServiceFunctionKey(sf.getName());
+        InstanceIdentifier<SfcServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+                .child(ServiceFunctionChain.class, sfc.getKey())
+                .child(SfcServiceFunction.class, serviceFunctionKey).build();
+        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfIID);
+        if (dataObject instanceof SfcServiceFunction) {
+            return sfIID;
+        } else {
+            return null;
+        }
+    }
+
     /*
      * We will remove the ServiceFunction from all existing Chains
      */
-    public static void removeServiceFunctionFromChain (ServiceFunction serviceFunction) {
+    private void removeServiceFunctionFromChain (ServiceFunction serviceFunction) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionChains serviceFunctionChains = getServiceFunctionChainsRef();
         if (serviceFunctionChains != null) {
             List<ServiceFunctionChain> serviceFunctionChainList = serviceFunctionChains.getServiceFunctionChain();
-            InstanceIdentifier<SfcServiceFunction> sfIID;
-            SfcServiceFunctionKey serviceFunctionKey;
             for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
-                serviceFunctionKey = new SfcServiceFunctionKey(serviceFunction.getName());
-                sfIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-                        .child(ServiceFunctionChain.class, serviceFunctionChain.getKey())
-                        .child(SfcServiceFunction.class, serviceFunctionKey).build();
-                final DataModificationTransaction t = odlSfc.dataProvider
-                        .beginTransaction();
-                t.removeConfigurationData(sfIID);
-                try {
-                    t.commit().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("removeServiceFunctionFromChain failed", e);
+                InstanceIdentifier<SfcServiceFunction> sfIID =
+                        getServiceFunctionIIDFromChain(serviceFunctionChain, serviceFunction);
+                if (sfIID != null) {
+                    final DataModificationTransaction t = odlSfc.dataProvider
+                            .beginTransaction();
+                    t.removeConfigurationData(sfIID);
+                    try {
+                        t.commit().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        LOG.error("removeServiceFunctionFromChain failed", e);
+                    }
                 }
             }
         } else {
@@ -193,7 +206,25 @@ public class SfcProviderServiceChainAPI implements Runnable {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionChains;
         } else {
+            LOG.error("\n########## Failed to get Service Function Chains reference: {}",
+                    Thread.currentThread().getStackTrace()[1]);
+            return null;
+        }
+    }
+
+    public static ServiceFunctionChainsState getServiceFunctionChainsStateRef () {
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;
+        sfcsIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
+
+        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfcsIID);
+        if (dataObject instanceof ServiceFunctionChainsState) {
+            ServiceFunctionChainsState serviceFunctionChainsState = (ServiceFunctionChainsState) dataObject;
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            return serviceFunctionChainsState;
+        } else {
+            LOG.error("\n########## Failed to get Service Function Chains reference: {}",
+                    Thread.currentThread().getStackTrace()[1]);
             return null;
         }
     }

@@ -19,7 +19,7 @@ module service-function-acl {
   augment "/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:actions" {
     description "SFC simple filter actions";
     choice action {
-    case service-function-path {
+    case acl-service-function-path {
       description "Determine the Service Function Path the packet the packet will
       traverse";
       leaf path-id {

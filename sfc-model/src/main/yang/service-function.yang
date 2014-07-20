@@ -99,6 +99,29 @@ module service-function {
     }
   }
 
+  container service-functions-state {
+    config false;
+    list service-function-state {
+      description
+        "A service chain defines the required functions and
+        associated order (service-function1 --> service-function 2) that
+        must be applied to packets and/or frames.  A service chain does
+        not specify the network location or specific instance of service
+        functions (e.g. firewall1 vs. firewall2).";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "the name of the service function";
+      }
+      leaf-list sf-service-function-path {
+        type string;
+        description
+        "A list of all service function paths that contain this service function";
+      }
+    }
+  }
+
   rpc delete-all-service-function {
   }
 

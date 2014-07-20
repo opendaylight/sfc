@@ -11,20 +11,11 @@ package org.opendaylight.controller.config.yang.config.sfc_provider.impl;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.SfcProviderRpc;
-import org.opendaylight.sfc.provider.SfcProviderSfsDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSfcDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSfpDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSnDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSffDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSfcEntryDataListener;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-
+import org.opendaylight.sfc.provider.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +86,12 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
          final ListenerRegistration<DataChangeListener> sfcEntryDataChangeListenerRegistration =
                 dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfcEntryIID, sfcProviderSfcEntryDataListener  );
 
+
+        // ServiceFunctionPathEntry Entry
+        SfcProviderSfpEntryDataListener sfcProviderSfpEntryDataListener = new SfcProviderSfpEntryDataListener();
+        final ListenerRegistration<DataChangeListener> sfpEntryDataChangeListenerRegistration =
+                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfpEntryIID, sfcProviderSfpEntryDataListener  );
+
         // ServiceFunctions
         //SfcProviderSfsDataListener sfcProviderSfsDataListener = new SfcProviderSfsDataListener();
         //final ListenerRegistration<DataChangeListener> sfsDataChangeListenerRegistration =
@@ -129,6 +126,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 sfEntryDataChangeListenerRegistration.close();
                 //sfsDataChangeListenerRegistration.close();
                 //sfcEntryDataChangeListenerRegistration.close();
+                sfpEntryDataChangeListenerRegistration.close();
                 snDataChangeListenerRegistration.close();
                 sfpDataChangeListenerRegistration.close();
                 //sfcDataChangeListenerRegistration.close();

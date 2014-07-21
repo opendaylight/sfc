@@ -291,6 +291,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
                     String pathName = input.getName() + "-" + java.lang.System.currentTimeMillis();
                     ServiceFunctionPath path = pathBuilder.setName(pathName)
                             .setSfpServiceFunction(instances)
+                            .setServiceChainName(input.getName())
                             .build();
                     List<ServiceFunctionPath> list = new ArrayList<>();
                     list.add(path);

@@ -21,6 +21,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.PutServiceFunctionForwarderInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarderService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -59,7 +65,7 @@ import java.util.concurrent.Future;
  */
 
 public class SfcProviderRpc implements ServiceFunctionService,
-        ServiceFunctionChainService, ServiceNodeService {
+        ServiceFunctionChainService, ServiceNodeService, ServiceFunctionForwarderService {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SfcProviderRpc.class);
@@ -100,7 +106,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
             ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
             ServiceFunction sf = sfbuilder.setName(input.getName()).setType(input.getType())
                     .setKey(sfkey).setIpMgmtAddress(input.getIpMgmtAddress())
-                    .setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build()).build();
+                    .setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build())
+                    .setServiceFunctionForwarder(input.getServiceFunctionForwarder())
+                    .build();
 
             InstanceIdentifier<ServiceFunction>  sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
                     child(ServiceFunction.class, sf.getKey()).toInstance();
@@ -256,7 +264,42 @@ public class SfcProviderRpc implements ServiceFunctionService,
             LOG.warn("\n########## {} failed, operational otherwise", Thread.currentThread().getStackTrace()[1], e);
         }
         } else {
-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+            LOG.warn("\n####### Data Provider is null : {}", Thread.currentThread().getStackTrace()[1]);
+        }
+        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+                Collections.<RpcError>emptySet()));
+    }
+
+    @Override
+    public Future<RpcResult<Void>> putServiceFunctionForwarder(PutServiceFunctionForwarderInput input) {
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.info("\n####### Input: " + input);
+
+        if (odlSfc.dataProvider != null) {
+            ServiceFunctionForwarderKey sffKey = new ServiceFunctionForwarderKey(input.getName());
+            ServiceFunctionForwarderBuilder builder = new ServiceFunctionForwarderBuilder();
+            ServiceFunctionForwarder sff = builder.setKey(sffKey)
+                    .setName(input.getName())
+                    .setPathId(input.getPathId())
+                    .setServiceFunctionDictionary(input.getServiceFunctionDictionary())
+                    .setSffDataPlaneLocator(input.getSffDataPlaneLocator())
+                    .setTransport(input.getTransport())
+                    .build();
+
+            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
+                    child(ServiceFunctionForwarder.class, sff.getKey()).toInstance();
+            final DataModificationTransaction t = odlSfc.dataProvider
+                    .beginTransaction();
+
+            t.putConfigurationData(sffEntryIID, sff);
+            try {
+                t.commit().get();
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.warn("\n########## {} failed, operational otherwise", Thread.currentThread().getStackTrace()[1], e);
+            }
+        } else {
+            LOG.warn("\n####### Data Provider is null : {}", Thread.currentThread().getStackTrace()[1]);
         }
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
@@ -288,6 +331,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
                             throw new IllegalStateException("No instances found for Service Function \"" + ref.getName() + "\"");
                         }
                     }
+                    LOG.info("\n********** instances ***********\n" + instances);
                     String pathName = input.getName() + "-" + java.lang.System.currentTimeMillis();
                     ServiceFunctionPath path = pathBuilder.setName(pathName)
                             .setSfpServiceFunction(instances)

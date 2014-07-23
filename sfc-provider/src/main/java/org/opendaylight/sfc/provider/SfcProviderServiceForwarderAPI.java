@@ -19,9 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.entry.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.entry.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.entry.ServiceFunctionDictionaryKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -99,16 +99,12 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
     public void run() {
         if (methodName != null) {
             //Class[] parameterTypes = {ServiceFunctionChain.class};
-            Class c = this.getClass();
+            Class<?> c = this.getClass();
             Method method = null;
             try {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 method.invoke(this, parameters);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
@@ -314,7 +310,8 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 serviceFunctionForwarderBuilder.setKey(serviceFunctionForwarderKey);
 
             } else {
-                LOG.error("Failed to read Service Function Forwarder from data store");
+                LOG.error("Failed to read Service Function Forwarder \"{}\" from data store",
+                        sfpServiceFunction.getServiceFunctionForwarder());
                 continue;
             }
             serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
@@ -342,7 +339,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
     /*
      * This method checks if a SFF is complete and can be sent to southbound devices
      */
-    public static boolean checkServiceFunctionForwarder (ServiceFunctionForwarder serviceFunctionForwarder) {
+    public static boolean checkServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
         if ((serviceFunctionForwarder.getName() != null) && (serviceFunctionForwarder.getPathId() != null) &&
                 (serviceFunctionForwarder.getServiceFunctionDictionary() != null)) {
             return true;

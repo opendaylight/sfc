@@ -89,39 +89,51 @@ module service-function-forwarder {
 
   // Service Function Forwarding Map
 
+  grouping service-function-forwarder-entry {
+    leaf name {
+      type string;
+      description
+        "The name of this service function forwarder, such as ovs-switch-1";
+    }
+    leaf transport {
+      type transport-type;
+    }
+
+    leaf path-id {
+      type uint32 {
+        range "0..16777216";
+      }
+    }
+
+    container sff-data-plane-locator {
+      uses sfc-sl:data-plane-locator;
+      description
+        "The data plane network locator of this SFF, such as IP:port.";
+    }
+
+    list service-function-dictionary {
+      key "name";
+      uses sfc-sf:service-function-entry;
+      leaf failmode {
+          type failmode-type;
+      }
+    }
+  }
+
   container service-function-forwarders {
     description
         "This container holds the configuration for a service function forwarder. ";
     list service-function-forwarder {
       key "name";
-      leaf name {
-        type string;
-        description
-          "The name of this service function forwarder, such as ovs-switch-1";
-      }
-      leaf transport {
-        type transport-type;
-      }
+      uses service-function-forwarder-entry;
+    }
+  }
 
-      leaf path-id {
-        type uint32 {
-          range "0..16777216";
-        }
-      }
+    // Remote procedure calls (for testing)
 
-      container sff-data-plane-locator {
-        uses sfc-sl:data-plane-locator;
-        description
-          "The data plane network locator of this SFF, such as IP:port.";
-      }
-
-      list service-function-dictionary {
-        key "name";
-        uses sfc-sf:service-function-entry;
-        leaf failmode {
-            type failmode-type;
-        }
-      }
+    rpc put-service-function-forwarder {
+        input {
+            uses service-function-forwarder-entry;
     }
   }
 }

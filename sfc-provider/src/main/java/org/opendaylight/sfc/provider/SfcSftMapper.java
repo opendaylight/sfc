@@ -13,18 +13,17 @@ import java.util.Map;
 /**
  * This class maps service function types to service node mappers
  *
- * @see org.opendaylight.sfc.provider.SfcSnMapper
- * <p>
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
- * @since       2014-07-14
+ * @see org.opendaylight.sfc.provider.SfcSnMapper
+ * <p/>
+ * @since 2014-07-14
  */
 public class SfcSftMapper {
+    private final OpendaylightSfc odlSfc;
     private Map<String, SfcSnMapper> map;
 
-    private final OpendaylightSfc odlSfc;
-
-    public SfcSftMapper(OpendaylightSfc odlSfc){
+    public SfcSftMapper(OpendaylightSfc odlSfc) {
         this.map = new HashMap<>();
         this.odlSfc = odlSfc;
         this.update();
@@ -37,14 +36,14 @@ public class SfcSftMapper {
                 ServiceNodes nodes = (ServiceNodes) dataObject;
                 List<ServiceNode> snList = nodes.getServiceNode();
 
-                for(ServiceNode sn : snList){
+                for (ServiceNode sn : snList) {
                     List<String> sfNameList = sn.getServiceFunction();
-                    for(String sfName : sfNameList){
+                    for (String sfName : sfNameList) {
                         ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
-                        if ( sf != null) {
+                        if (sf != null) {
                             this.add(sf.getType(), sn.getName(), sf);
                         } else {
-                            throw new IllegalStateException("Service Function not found in datastore");
+                            throw new IllegalStateException("Service Function \"" + sfName + "\"not found in datastore");
                         }
                     }
                 }
@@ -56,20 +55,20 @@ public class SfcSftMapper {
         }
     }
 
-    public void add(String type, String snName, ServiceFunction sf){
-        if(this.map.containsKey(type)){
+    public void add(String type, String snName, ServiceFunction sf) {
+        if (this.map.containsKey(type)) {
             this.map.get(type).add(snName, sf);
-        }else{
+        } else {
             SfcSnMapper snMapper = new SfcSnMapper(type);
             snMapper.add(snName, sf);
             this.map.put(type, snMapper);
         }
     }
 
-    public void addAll(String type, String snName, List<ServiceFunction> sfList){
-        if(this.map.containsKey(type)){
+    public void addAll(String type, String snName, List<ServiceFunction> sfList) {
+        if (this.map.containsKey(type)) {
             this.map.get(type).addAll(snName, sfList);
-        }else{
+        } else {
             SfcSnMapper snMapper = new SfcSnMapper(type);
             snMapper.addAll(snName, sfList);
             this.map.put(type, snMapper);

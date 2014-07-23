@@ -42,9 +42,9 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
 
         /*
          * when a SFF is created we will process and send it to southbound devices. But first we need
-         * to mae sure all info is present or we will pass.
+         * to make sure all info is present or we will pass.
          */
-        boolean sffready = false;
+        boolean sffready = true;
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
@@ -54,9 +54,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
                 ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry.getValue();
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
                 for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
-                    sffready = SfcProviderServiceForwarderAPI.checkServiceFunctionForwarder(serviceFunctionForwarder);
-                    sffready &= sffready;
-
+                    sffready = sffready && SfcProviderServiceForwarderAPI.checkServiceFunctionForwarder(serviceFunctionForwarder);
                 }
                 if (sffready) {
                     Object[] serviceForwarderObj = {updatedServiceFunctionForwarders};

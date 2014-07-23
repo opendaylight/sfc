@@ -21,11 +21,12 @@ import java.util.Map;
 
 /**
  * This class is the DataListener for SFP Entry changes.
+ * <p/>
+ * <p/>
  *
- * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since 2014-06-30
  */
 
 public class SfcProviderSfpEntryDataListener implements DataChangeListener {
@@ -40,20 +41,21 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         /*
          * when a SFF is created we will process and send it to southbound devices. But first we need
-         * to mae sure all info is present or we will pass.
+         * to make sure all info is present or we will pass.
          */
-        // SFC CREATION
+        // SFP CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
-        {
-            if( entry.getValue() instanceof ServiceFunctionPath) {
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
+            if (entry.getValue() instanceof ServiceFunctionPath) {
                 ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-                LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionPath.getName());
+                LOG.debug("\n########## Created ServiceFunctionPath name: {}", createdServiceFunctionPath.getName());
                 Object[] servicePathObj = {createdServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getCreateServicePathAPI(servicePathObj, servicePathClass));
+
+                // commented out temporarily; causes extra SFs in a new SFP
+//                odlSfc.executor.execute(SfcProviderServicePathAPI
+//                        .getCreateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
 
@@ -63,7 +65,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionPath) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionPath updatedServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-                LOG.info("\n########## Modified Service Function Chain Name {}",
+                LOG.info("\n########## Modified Service Function Path Name {}",
                         updatedServiceFunctionPath.getName());
                 Object[] servicePathObj = {updatedServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};

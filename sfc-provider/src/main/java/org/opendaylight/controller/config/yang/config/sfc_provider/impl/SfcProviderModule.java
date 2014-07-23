@@ -14,6 +14,8 @@ import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.sfc.provider.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarderService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
@@ -118,6 +120,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                         .addRpcImplementation(ServiceNodeService.class,
                                 sfcProviderRpc);
 
+        final BindingAwareBroker.RpcRegistration<ServiceFunctionForwarderService> sffRpcRegistration =
+                getRpcRegistryDependency()
+                        .addRpcImplementation(ServiceFunctionForwarderService.class,
+                                sfcProviderRpc);
+
         // close()
         final class AutoCloseableSfc implements AutoCloseable {
 
@@ -134,6 +141,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 sfRpcRegistration.close();
                 sfcRpcRegistration.close();
                 snRpcRegistration.close();
+                sffRpcRegistration.close();
 
                 //runtimeReg.close();
                 opendaylightSfc.close();

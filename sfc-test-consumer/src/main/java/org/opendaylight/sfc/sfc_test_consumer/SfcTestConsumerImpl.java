@@ -16,12 +16,20 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 
 import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.PutServiceFunctionForwarderInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.PutServiceFunctionForwarderInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarderService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.entry.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.entry.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,14 +76,17 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     private final ServiceFunctionService sfService;
     private final ServiceFunctionChainService sfcService;
     private final ServiceNodeService snService;
+    private final ServiceFunctionForwarderService sffService;
 
     public SfcTestConsumerImpl(
             ServiceFunctionService sfService,
             ServiceFunctionChainService sfcService,
-            ServiceNodeService snService) {
+            ServiceNodeService snService,
+            ServiceFunctionForwarderService sffService) {
         this.sfService = sfService;
         this.sfcService = sfcService;
         this.snService = snService;
+        this.sffService = sffService;
     }
 
     /**
@@ -85,7 +96,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     private Boolean putSf(String name, String type,
-                          String ipMgmt, String ipLocator, int portLocator) {
+                          String ipMgmt, String ipLocator, int portLocator, String sffName) {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         // Build Locator Type (ip and port)
@@ -94,8 +105,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder = ipBuilder.setIp(ipAddress).setPort(portNumber);
 
-
-
         // Build Data Plane Locator and populate with Locator Type
 
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
@@ -103,9 +112,12 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         // Build ServiceFunctionBuilder and set all data constructed above
         PutServiceFunctionInputBuilder putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
-        putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName(name).setType(type).
-                setIpMgmtAddress(new IpAddress(ipMgmt.toCharArray())).
-                setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build());
+        putServiceFunctionInputBuilder
+                .setName(name)
+                .setType(type)
+                .setIpMgmtAddress(new IpAddress(ipMgmt.toCharArray()))
+                .setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build())
+                .setServiceFunctionForwarder(sffName);
 
         try {
             Future<RpcResult<Void>> fr = sfService.putServiceFunction(putServiceFunctionInputBuilder.build());
@@ -203,6 +215,44 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         }
     }
 
+    private Boolean putForwarder(String name,
+                            String ip,
+                            Integer port) {
+
+        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        PutServiceFunctionForwarderInputBuilder input = new PutServiceFunctionForwarderInputBuilder();
+
+        SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
+        IpBuilder ipBuilder = new IpBuilder();
+        locatorBuilder.setLocatorType(ipBuilder.setIp(new IpAddress(new Ipv4Address(ip)))
+                .setPort(new PortNumber(port)).build());
+        input.setName(name)
+                .setServiceFunctionDictionary(new ArrayList<ServiceFunctionDictionary>())
+                .setSffDataPlaneLocator(locatorBuilder.build())
+                .setTransport(VxlanGpe.class);
+        try {
+            Future<RpcResult<Void>> fr = sffService.putServiceFunctionForwarder(input.build());
+            RpcResult<Void> result = fr.get();
+            if (result != null) {
+                LOG.info("\n####### {} result: {}", Thread.currentThread().getStackTrace()[1], result);
+                if (result.isSuccessful()) {
+                    LOG.info("\n####### {}: successfully finished", Thread.currentThread().getStackTrace()[1]);
+                } else {
+                    LOG.warn("\n####### {}: not successfully finished", Thread.currentThread().getStackTrace()[1]);
+                }
+                return result.isSuccessful();
+            } else {
+                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
+                return Boolean.FALSE;
+            }
+
+        } catch (Exception e) {
+            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
+            e.printStackTrace();
+            return Boolean.FALSE;
+        }
+    }
+
     /**
      * Function for JMX testing.
      * Creates a new sfService function with fixed parameters.
@@ -212,7 +262,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     @Override
     public Boolean testAPutSf() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        return putSf("firewall-test", "firewall", "10.0.0.2", "192.168.0.2", 5050);
+        return putSf("firewall-test", "firewall", "10.0.0.2", "192.168.0.2", 5050, "SFF-testA");
     }
 
     /**
@@ -283,9 +333,9 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testBPutSfs() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        Boolean res = putSf("firewall-testB", "firewall", "10.0.0.101", "192.168.0.101", 5050);
-        res = putSf("dpi-testB", "dpi", "10.0.0.102", "192.168.0.102", 5050) && res;
-        res = putSf("napt44-testB", "napt44", "10.0.0.103", "192.168.0.102", 5050) && res;
+        Boolean res = putSf("firewall-testB", "firewall", "10.0.0.101", "192.168.0.101", 5050, "SFF-testB");
+        res = putSf("dpi-testB", "dpi", "10.0.0.102", "192.168.0.102", 5050, "SFF-testB") && res;
+        res = putSf("napt44-testB", "napt44", "10.0.0.103", "192.168.0.102", 5050, "SFF-testB") && res;
 
         return res;
     }
@@ -359,16 +409,18 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testCPutData() {
         LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
+        Boolean res = putForwarder("SFF-testC", "10.3.1.101", 33333);
+
         // Service Functions (real, not abstract)
-        Boolean res = putSf("firewall-101-1", "firewall", "10.3.1.101", "10.3.1.101", 10001);
-        res = putSf("firewall-101-2", "firewall", "10.3.1.101", "10.3.1.101", 10002) && res;
-        res = putSf("dpi-102-1", "dpi", "10.3.1.102", "10.3.1.102", 10001) && res;
-        res = putSf("dpi-102-2", "dpi", "10.3.1.102", "10.3.1.102", 10002) && res;
-        res = putSf("dpi-102-3", "dpi", "10.3.1.102", "10.3.1.102", 10003) && res;
-        res = putSf("napt44-103-1", "napt44", "10.3.1.103", "10.3.1.103", 10001) && res;
-        res = putSf("napt44-103-2", "napt44", "10.3.1.103", "10.3.1.103", 10002) && res;
-        res = putSf("firewall-104", "firewall", "10.3.1.104", "10.3.1.104", 10001) && res;
-        res = putSf("napt44-104", "napt44", "10.3.1.104", "10.3.1.104", 10020) && res;
+        res = putSf("firewall-101-1", "firewall", "10.3.1.101", "10.3.1.101", 10001, "SFF-testC") && res;
+        res = putSf("firewall-101-2", "firewall", "10.3.1.101", "10.3.1.101", 10002, "SFF-testC") && res;
+        res = putSf("dpi-102-1", "dpi", "10.3.1.102", "10.3.1.102", 10001, "SFF-testC") && res;
+        res = putSf("dpi-102-2", "dpi", "10.3.1.102", "10.3.1.102", 10002, "SFF-testC") && res;
+        res = putSf("dpi-102-3", "dpi", "10.3.1.102", "10.3.1.102", 10003, "SFF-testC") && res;
+        res = putSf("napt44-103-1", "napt44", "10.3.1.103", "10.3.1.103", 10001, "SFF-testC") && res;
+        res = putSf("napt44-103-2", "napt44", "10.3.1.103", "10.3.1.103", 10002, "SFF-testC") && res;
+        res = putSf("firewall-104", "firewall", "10.3.1.104", "10.3.1.104", 10001, "SFF-testC") && res;
+        res = putSf("napt44-104", "napt44", "10.3.1.104", "10.3.1.104", 10020, "SFF-testC") && res;
 
         // SFC1
         List<SfcServiceFunction> sfRefList = new ArrayList<>();

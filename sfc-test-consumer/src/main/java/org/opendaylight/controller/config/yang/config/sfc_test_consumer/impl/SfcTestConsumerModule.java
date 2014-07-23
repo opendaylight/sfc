@@ -6,6 +6,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.
         rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarderService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 
 public class SfcTestConsumerModule extends org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.AbstractSfcTestConsumerModule {
@@ -27,8 +29,9 @@ public class SfcTestConsumerModule extends org.opendaylight.controller.config.ya
         ServiceFunctionService sfService = getRpcRegistryDependency().getRpcService(ServiceFunctionService.class);
         ServiceFunctionChainService sfcService = getRpcRegistryDependency().getRpcService(ServiceFunctionChainService.class);
         ServiceNodeService snService = getRpcRegistryDependency().getRpcService(ServiceNodeService.class);
+        ServiceFunctionForwarderService sffService = getRpcRegistryDependency().getRpcService(ServiceFunctionForwarderService.class);
 
-        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService, snService);
+        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService, snService, sffService);
 
         final SfcTestConsumerRuntimeRegistration runtimeReg =
                 getRootRuntimeBeanRegistratorWrapper().register(sfcTestConsumer);

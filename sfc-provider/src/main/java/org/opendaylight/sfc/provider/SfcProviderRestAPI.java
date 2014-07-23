@@ -102,16 +102,12 @@ public class SfcProviderRestAPI implements Runnable {
     public void run() {
         if (methodName != null) {
             //Class[] parameterTypes = {ServiceFunctionChain.class};
-            Class c = this.getClass();
-            Method method = null;
+            Class<?> c = this.getClass();
+            Method method;
             try {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 method.invoke(this, parameters);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

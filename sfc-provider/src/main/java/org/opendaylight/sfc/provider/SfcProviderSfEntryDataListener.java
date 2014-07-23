@@ -51,6 +51,32 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
             }
         }
 
+        // SF DELETION
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if( dataObject instanceof  ServiceFunction) {
+                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
+                Object[] serviceTypeObj = {originalServiceFunction};
+                Class[] serviceTypeClass = {ServiceFunction.class};
+
+                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                        .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
+
+                Object[] sfParams = {originalServiceFunction};
+                Class[] sfParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
+
+                Object[] functionParams = {originalServiceFunction};
+                Class[] functionParamsTypes = {ServiceFunction.class};
+
+                odlSfc.executor.execute(SfcProviderServicePathAPI
+                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+            }
+        }
+
+
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
 
@@ -72,34 +98,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                             createdServiceFunction.getType(), createdServiceFunction.getName());
             }
 
-        }
-
-        // SF DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if( dataObject instanceof  ServiceFunction) {
-                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
-                Object[] serviceTypeObj = {originalServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
-
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI
-                        .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
-
-
-                Object[] sfParams = {originalServiceFunction};
-                Class[] sfParamsTypes = {ServiceFunction.class};
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
-                // This deletion will trigger a callback to the SFC Entry listener
-                Object[] functionParams = {originalServiceFunction};
-                Class[] functionParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceChainAPI
-                //        .getRemoveServiceFunctionFromChain(chainsParams, chainsParamsTypes));
-
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
-            }
         }
 
         // SF UPDATE

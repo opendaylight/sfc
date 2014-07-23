@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is the DataListener for SFP Entry changes.
@@ -38,10 +40,17 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
             DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-        /*
-         * when a SFF is created we will process and send it to southbound devices. But first we need
-         * to mae sure all info is present or we will pass.
-         */
+
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalConfigurationData();
+
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
+            if( entry.getValue() instanceof  ServiceFunction) {
+                ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
+                LOG.debug("\n########## getOriginalConfigurationData {}  {}",
+                        originalServiceFunction.getType(), originalServiceFunction.getName());
+            }
+        }
+
         // SFC CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
 
@@ -71,6 +80,21 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         .getUpdateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
+
+        // SFP DELETION
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if( dataObject instanceof ServiceFunctionPath) {
+                ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;
+                Object[] serviceTypeObj = {originalServiceFunctionPath};
+                Class[] serviceTypeClass = {ServiceFunctionPath.class};
+
+                odlSfc.executor.execute(SfcProviderServiceFunctionAPI
+                        .getDeleteServicePathFromServiceFunctionState(serviceTypeObj, serviceTypeClass));
+            }
+        }
+
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 }

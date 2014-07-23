@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class SfcProviderServiceForwarderAPI implements Runnable {
     private ServiceFunction serviceFunction;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceForwarderAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private String methodName = null;
     private Object[] parameters;
@@ -155,11 +155,14 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
     public void deleteServiceFunctionFromForwarder (ServiceFunction serviceFunction) {
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-        InstanceIdentifier<ServiceFunctionForwarder> sffIID;
+        InstanceIdentifier<ServiceFunctionDictionary> sffIID;
+        ServiceFunctionDictionaryKey serviceFunctionDictionaryKey =
+                new ServiceFunctionDictionaryKey(serviceFunction.getName());
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
         sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
                 .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
+                .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
                 .build();
         final DataModificationTransaction t = odlSfc.dataProvider
                 .beginTransaction();
@@ -176,11 +179,10 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
     public void updateServiceFunctionForwarder (ServiceFunction serviceFunction) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-        deleteServiceFunctionForwarder(serviceFunction);
+        deleteServiceFunctionFromForwarder(serviceFunction);
         createServiceFunctionForwarder(serviceFunction);
 
     }
-
 
     public void createServiceFunctionForwarders (ServiceFunctionChains serviceFunctionchains) {
 

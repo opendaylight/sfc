@@ -60,11 +60,17 @@ public class SfcProviderRestAPI implements Runnable {
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
 
-        ClientResponse putClientResponse= client
-                .resource("http://localhost:5000/paths").type("application/json")
+        ClientResponse putClientRemoteResponse= client
+                .resource("http://31.133.132.41:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
-        putClientResponse.close();
+        putClientRemoteResponse.close();
+
+        ClientResponse putClientLocalResponse= client
+                .resource("http://31.133.131.241:5000/paths").type("application/json")
+                .put(ClientResponse.class, jsonOutput);
+
+        putClientLocalResponse.close();
 
     }
 
@@ -82,11 +88,13 @@ public class SfcProviderRestAPI implements Runnable {
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
 
-        ClientResponse putClientResponse= client
-                .resource("http://localhost:5000/paths").type("application/json")
+        /*
+        ClientResponse putClientRemoteResponse= client
+                .resource("http://31.133.132.41:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
-        putClientResponse.close();
+        putClientRemoteResponse.close();
+        */
 
     }
 

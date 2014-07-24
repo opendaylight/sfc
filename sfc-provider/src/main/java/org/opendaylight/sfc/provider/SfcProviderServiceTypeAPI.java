@@ -70,16 +70,6 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
     }
 
-/*
-    public static  SfcProviderServiceTypeAPI getSfcProviderDeleteServiceFunctionFromServiceType (Object[] params) {
-        return new SfcProviderServiceTypeAPI(params, "deleteServiceFunctionTypeEntry");
-    }
-
-    public static  SfcProviderServiceTypeAPI getSfcProviderCreateServiceFunctionToServiceType(Object[] params) {
-        return new SfcProviderServiceTypeAPI(params, "createServiceFunctionTypeEntry");
-    }
-
-    */
     public static  SfcProviderServiceTypeAPI getCreateServiceFunctionToServiceType(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "createServiceFunctionTypeEntry");
     }

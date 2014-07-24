@@ -12,7 +12,6 @@ import org.opendaylight.controller.sal.binding.api.data.DataModificationTransact
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -108,7 +107,7 @@ public class SfcProviderServicePathAPI implements Runnable {
     }
 
     public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
+        return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathContainingFunction");
     }
 
 
@@ -237,7 +236,7 @@ public class SfcProviderServicePathAPI implements Runnable {
 
             /*
              * We iterate thorough the list of service function types and for each one we try to get
-             * get a suitable Service Function. WE need to perform lost of checking to make sure
+             * get a suitable Service Function. WE need to perform lots of checking to make sure
              * we do not hit NULL Pointer exceptions
              */
 
@@ -358,6 +357,10 @@ public class SfcProviderServicePathAPI implements Runnable {
         }
     }
 
+    /*
+     * We iterate through all service paths that use this service function and remove them.
+     * In the end since there is no more operational state, we remove the state tree.
+     */
     private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
@@ -391,33 +394,58 @@ public class SfcProviderServicePathAPI implements Runnable {
                     // We update the list as we go
                     removedPaths.add(pathName);
                 } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("deleteServicePathInstantiatedFromChain for path {} failed ", pathName);
+                    LOG.error("deleteServicePathContainingFunction for path {} failed ", pathName);
                 }
             }
 
-            sfServiceFunctionPathList.removeAll(removedPaths);
-
-            /* After we are done removing all paths from the datastore we commit the updated the path list
-             * under the Service Chain operational tree
-             */
-            ServiceFunctionStateBuilder serviceFunctionStateBuilder  = new ServiceFunctionStateBuilder();
-            serviceFunctionStateBuilder.setName(serviceFunction.getName());
-            serviceFunctionStateBuilder.setSfServiceFunctionPath(sfServiceFunctionPathList);
-            final DataModificationTransaction t = odlSfc.dataProvider
-                    .beginTransaction();
-            t.putOperationalData(sfStateIID, serviceFunctionStateBuilder.build());
-            try {
-                t.commit().get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Failed to update ServiceFunction {} State Path List failed ", serviceFunction.getName());
+            // If no more SFP associated with this SF, remove the state.
+            if (removedPaths.containsAll(sfServiceFunctionPathList)) {
+                SfcProviderServiceFunctionAPI.deleteServiceFunctionState(serviceFunction.getName());
+            } else {
+                LOG.error("Could not remove all paths containing function: {} ", serviceFunction.getName());
             }
+        } else {
+            LOG.warn("Failed to get reference to Service Function State {} ", serviceFunction.getName());
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+    }
 
+
+    /*
+     * When a SF is updated, meaning key remains the same, but other fields change we need to
+     * update all affected SFPs. We need to do that because admin can update critical fields
+     * as SFC type, rendering the path unfeasible. The update reads the current path from
+     * data store, keeps pathID intact and rebuild the SF list.
+     *
+     * The update can or not work.
+     */
+    private void updateServicePathContainingFunction (ServiceFunction serviceFunction) {
+
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        InstanceIdentifier<ServiceFunctionPath> sfpIID;
+
+        ServiceFunctionState serviceFunctionState = SfcProviderServiceFunctionAPI.readServiceFunctionState(serviceFunction.getName());
+        if (serviceFunctionState != null) {
+            List<String> sfServiceFunctionPathList =
+                    serviceFunctionState.getSfServiceFunctionPath();
+            for (String pathName : sfServiceFunctionPathList) {
+
+                ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(pathName);
+                sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                        .child(ServiceFunctionPath.class, serviceFunctionPathKey)
+                        .build();
+                DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfpIID);
+                if (dataObject instanceof  ServiceFunctionPath) {
+                    ServiceFunctionPath servicefunctionPath = (ServiceFunctionPath) dataObject;
+                    createServiceFunctionPathEntry(servicefunctionPath);
+                }
+            }
         } else {
             LOG.error("Failed to get reference to Service Function State {} ", serviceFunction.getName());
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
-
 
     @Override
     public void run() {

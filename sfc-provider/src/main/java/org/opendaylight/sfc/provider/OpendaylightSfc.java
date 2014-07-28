@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
  * SFCProviderModule class.
  *
  * <p>
- * @author Konstantin Blagov ()
+ * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since       2014-06-30

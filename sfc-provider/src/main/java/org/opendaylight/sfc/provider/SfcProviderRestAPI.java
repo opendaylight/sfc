@@ -30,20 +30,12 @@ import java.util.Arrays;
  * @version 0.1
  * @since       2014-06-30
  */
-public class SfcProviderRestAPI implements Runnable {
+public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRestAPI.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private String methodName = null;
-    private Object[] parameters;
-    private Class[] parameterTypes;
 
     SfcProviderRestAPI (Object[] params, Class[] paramsTypes, String m) {
-        this.methodName = m;
-        this.parameters = new Object[params.length];
-        this.parameterTypes = new Class[params.length];
-        this.parameters = Arrays.copyOf(params, params.length);
-        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
+        super(params, paramsTypes, m);
     }
 
     public void putServiceFunctionForwarders (ServiceFunctionForwarders serviceFunctionForwarders) {
@@ -106,23 +98,4 @@ public class SfcProviderRestAPI implements Runnable {
         return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPaths");
     }
 
-    @Override
-    public void run() {
-        if (methodName != null) {
-            //Class[] parameterTypes = {ServiceFunctionChain.class};
-            Class c = this.getClass();
-            Method method = null;
-            try {
-                method = c.getDeclaredMethod(methodName, parameterTypes);
-                method.invoke(this, parameters);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 }

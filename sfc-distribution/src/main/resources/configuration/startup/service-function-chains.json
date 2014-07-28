@@ -1,0 +1,36 @@
+{
+    "service-function-chains": {
+        "service-function-chain": [
+            {
+                "sfc-service-function": [
+                    {
+                        "name": "firewall-abstract1",
+                        "type": "firewall"
+                    },
+                    {
+                        "name": "dpi-abstract1",
+                        "type": "dpi"
+                    },
+                    {
+                        "name": "napt44-abstract1",
+                        "type": "napt44"
+                    }
+                ],
+                "name": "SFC1"
+            },
+            {
+                "sfc-service-function": [
+                    {
+                        "name": "firewall-abstract2",
+                        "type": "firewall"
+                    },
+                    {
+                        "name": "napt44-abstract2",
+                        "type": "napt44"
+                    }
+                ],
+                "name": "SFC2"
+            }
+        ]
+    }
+}

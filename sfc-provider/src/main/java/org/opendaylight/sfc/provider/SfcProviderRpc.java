@@ -53,7 +53,7 @@ import java.util.concurrent.Future;
  *
  * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
- * @author Konstantin Blagov ()
+ * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
  * @since       2014-06-30
  */

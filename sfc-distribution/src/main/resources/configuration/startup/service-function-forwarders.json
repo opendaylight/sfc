@@ -1,0 +1,97 @@
+{
+    "service-function-forwarders": {
+        "service-function-forwarder": [
+            {
+                "name": "SFF-bootstrap",
+                "sff-data-plane-locator": {
+                    "port": 33333,
+                    "ip": "10.3.1.101"
+                },
+                "transport": "service-function-forwarder:vxlan-gpe",
+                "service-function-dictionary": [
+                    {
+                        "name": "dpi-102-3",
+                        "type": "dpi",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10003,
+                            "ip": "10.3.1.102"
+                        }
+                    },
+                    {
+                        "name": "napt44-104",
+                        "type": "napt44",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10020,
+                            "ip": "10.3.1.104"
+                        }
+                    },
+                    {
+                        "name": "firewall-101-1",
+                        "type": "firewall",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10001,
+                            "ip": "10.3.1.101"
+                        }
+                    },
+                    {
+                        "name": "napt44-103-2",
+                        "type": "napt44",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10002,
+                            "ip": "10.3.1.103"
+                        }
+                    },
+                    {
+                        "name": "napt44-103-1",
+                        "type": "napt44",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10001,
+                            "ip": "10.3.1.103"
+                        }
+                    },
+                    {
+                        "name": "firewall-101-2",
+                        "type": "firewall",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10002,
+                            "ip": "10.3.1.101"
+                        }
+                    },
+                    {
+                        "name": "firewall-104",
+                        "type": "firewall",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10001,
+                            "ip": "10.3.1.104"
+                        }
+                    },
+                    {
+                        "name": "dpi-102-1",
+                        "type": "dpi",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10001,
+                            "ip": "10.3.1.102"
+                        }
+                    },
+                    {
+                        "name": "dpi-102-2",
+                        "type": "dpi",
+                        "service-function-forwarder": "SFF-bootstrap",
+                        "sf-data-plane-locator": {
+                            "port": 10002,
+                            "ip": "10.3.1.102"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

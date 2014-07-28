@@ -53,7 +53,7 @@ import java.util.concurrent.Future;
  * select one, on the right panel there is a button to invoke that function.
  *
  * <p>
- * @author Konstantin Blagov ()
+ * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since       2014-07-01

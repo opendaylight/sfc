@@ -12,12 +12,17 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.sfc.provider.*;
+import org.opendaylight.sfc.provider.bootstrap.SfcProviderBootstrapRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class is called from the MD-SAL infra in order to bootstrap
@@ -25,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
- * @author Konstantin Blagov ()
+ * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
  * @since       2014-06-30
  * @see org.opendaylight.controller.config.yang.config.sfc_provider.impl.SfcProviderModule
@@ -142,6 +147,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         }
 
         AutoCloseable ret = new AutoCloseableSfc();
+        Object[] serviceForwarderObj = new Object[1];
+        Class[] serviceForwarderClass = {ServiceFunctions.class};
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(SfcProviderBootstrapRestAPI.getBootstrapTest(serviceForwarderObj, serviceForwarderClass));
+        executor.shutdown();
         LOG.info("SFC provider (instance {}) initialized.", ret);
         return ret;
     }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_52b2c706",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "This method name is misleading. it is not used for testing, it is the actual method that will read the files and commit them through RESTconf, so please change to some other name,",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

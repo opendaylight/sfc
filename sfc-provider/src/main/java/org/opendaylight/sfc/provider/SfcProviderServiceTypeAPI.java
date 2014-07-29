@@ -8,7 +8,10 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -16,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,26 +81,6 @@ public class SfcProviderServiceTypeAPI implements Runnable {
     }
 
 
-    @Override
-    public void run() {
-        if (methodName != null) {
-            //Class[] parameterTypes = {ServiceFunctionChain.class};
-            Class c = this.getClass();
-            Method method = null;
-            try {
-                method = c.getDeclaredMethod(methodName, parameterTypes);
-                method.invoke (this, parameters);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
     public void createServiceFunctionTypeEntry (ServiceFunction serviceFunction) {
 
 
@@ -122,15 +104,10 @@ public class SfcProviderServiceTypeAPI implements Runnable {
         sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName());
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-        t.putConfigurationData(sftentryIID, sftServiceFunctionName);
-
-        try {
-            t.commit().get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Failed to create Service Function entry in Service Type List", e);
-        }
+        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                sftentryIID, sftServiceFunctionName, true);
+        writeTx.commit();
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
@@ -149,14 +126,11 @@ public class SfcProviderServiceTypeAPI implements Runnable {
                 child(ServiceFunctionType.class, serviceFunctionTypeKey)
                 .child(SftServiceFunctionName.class,sftServiceFunctionNameKey).build();
 
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-        t.removeConfigurationData(sftentryIID);
-        try {
-            t.commit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("Failed to delete Service Function entry in Service Type List failed", e);
-        }
+        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                sftentryIID);
+        writeTx.commit();
+
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
@@ -173,16 +147,37 @@ public class SfcProviderServiceTypeAPI implements Runnable {
              */
         sftListIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sftListIID);
-        if (dataObject instanceof ServiceFunctionType) {
-            ServiceFunctionType serviceFunctionType = (ServiceFunctionType) dataObject;
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunctionType> serviceFunctionTypeObject = null;
+        try {
+            serviceFunctionTypeObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sftListIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (serviceFunctionTypeObject instanceof ServiceFunctionType) {
+            ServiceFunctionType serviceFunctionType = (ServiceFunctionType) serviceFunctionTypeObject;
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionType;
         } else {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
         }
+    }
 
+    @Override
+    public void run() {
+        if (methodName != null) {
+            Class<?> c = this.getClass();
+            Method method;
+            try {
+                method = c.getDeclaredMethod(methodName, parameterTypes);
+                method.invoke(this, parameters);
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 }

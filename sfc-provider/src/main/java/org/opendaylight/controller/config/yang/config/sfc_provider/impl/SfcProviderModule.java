@@ -8,9 +8,10 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_provider.impl;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.sfc.provider.*;
 import org.opendaylight.sfc.provider.bootstrap.SfcProviderBootstrapRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
@@ -62,40 +63,48 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
 
-        DataProviderService dataBrokerService = getDataBrokerDependency();
+        DataBroker dataBrokerService = getDataBrokerDependency();
         opendaylightSfc.setDataProvider(dataBrokerService);
 
         final SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
 
         SfcProviderSfpDataListener sfcProviderSfpDataListener = new SfcProviderSfpDataListener();
         SfcProviderSnDataListener sfcProviderSnDataListener = new SfcProviderSnDataListener();
+
         final ListenerRegistration<DataChangeListener> snDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.snIID, sfcProviderSnDataListener );
+                dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.snIID, sfcProviderSnDataListener, DataBroker.DataChangeScope.SUBTREE );
+
         final ListenerRegistration<DataChangeListener> sfpDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfpIID, sfcProviderSfpDataListener );
+                dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.sfpIID, sfcProviderSfpDataListener, DataBroker.DataChangeScope.SUBTREE );
 
 
         //ServiceFunctionForwarder
         SfcProviderSffDataListener sfcProviderSffDataListener = new SfcProviderSffDataListener();
         final ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sffIID, sfcProviderSffDataListener );
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                       OpendaylightSfc.sffIID, sfcProviderSffDataListener,  DataBroker.DataChangeScope.SUBTREE );
 
 
         // ServiceFunction Entry
         SfcProviderSfEntryDataListener sfcProviderSfEntryDataListener = new SfcProviderSfEntryDataListener();
         final ListenerRegistration<DataChangeListener> sfEntryDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfEntryIID, sfcProviderSfEntryDataListener);
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.sfEntryIID, sfcProviderSfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
 
-        // ServiceFunctionChainEntry Entry
+        // ServiceFunctionChainEntry
         SfcProviderSfcEntryDataListener sfcProviderSfcEntryDataListener = new SfcProviderSfcEntryDataListener();
          final ListenerRegistration<DataChangeListener> sfcEntryDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfcEntryIID, sfcProviderSfcEntryDataListener  );
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.sfcEntryIID, sfcProviderSfcEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
 
 
         // ServiceFunctionPathEntry Entry
         SfcProviderSfpEntryDataListener sfcProviderSfpEntryDataListener = new SfcProviderSfpEntryDataListener();
         final ListenerRegistration<DataChangeListener> sfpEntryDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfpEntryIID, sfcProviderSfpEntryDataListener  );
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.sfpEntryIID, sfcProviderSfpEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
 
         // ServiceFunctions
         //SfcProviderSfsDataListener sfcProviderSfsDataListener = new SfcProviderSfsDataListener();
@@ -130,7 +139,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
             public void close() throws Exception {
                 sfEntryDataChangeListenerRegistration.close();
                 //sfsDataChangeListenerRegistration.close();
-                //sfcEntryDataChangeListenerRegistration.close();
+                sfcEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();
                 snDataChangeListenerRegistration.close();
                 sfpDataChangeListenerRegistration.close();

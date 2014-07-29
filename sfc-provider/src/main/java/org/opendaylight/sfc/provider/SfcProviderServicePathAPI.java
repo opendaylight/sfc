@@ -8,7 +8,10 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
@@ -27,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +129,7 @@ public class SfcProviderServicePathAPI implements Runnable {
     * and recreate them. Maybe a real patch is possible but given the complexities of the possible
     * modifications, this is the safest approach.
     */
+   @SuppressWarnings("unused")
     private void updateServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
         deleteServicePathInstantiatedFromChain(serviceFunctionPath);
         createServiceFunctionPathEntry(serviceFunctionPath);
@@ -154,10 +157,17 @@ public class SfcProviderServicePathAPI implements Runnable {
                 InstanceIdentifier.builder(ServiceFunctionChainsState.class)
                         .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
                         .build();
-        DataObject dataSfcStateObject = odlSfc.dataProvider.readOperationalData(sfcStateIID);
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunctionChainState> serviceFunctionChainStateObject = null;
+        try {
+            serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcStateIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
         // TODO: Remove path name from Service Function path list
-        if (dataSfcStateObject instanceof ServiceFunctionChainState) {
-            serviceFunctionChainState = (ServiceFunctionChainState) dataSfcStateObject;
+        if (serviceFunctionChainStateObject instanceof ServiceFunctionChainState) {
+            serviceFunctionChainState = (ServiceFunctionChainState) serviceFunctionChainStateObject;
             List<String> sfcServiceFunctionPathList =
                     serviceFunctionChainState.getSfcServiceFunctionPath();
             List<String> removedPaths = new ArrayList<>();
@@ -168,16 +178,11 @@ public class SfcProviderServicePathAPI implements Runnable {
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
 
-                final DataModificationTransaction t = odlSfc.dataProvider
-                        .beginTransaction();
-                t.removeConfigurationData(sfpIID);
-                try {
-                    t.commit().get();
-                    // We update the list as we go
-                    removedPaths.add(pathName);
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("deleteServicePathInstantiatedFromChain for path {} failed ", pathName);
-                }
+                WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                        sfpIID);
+                writeTx.commit();
+
             }
 
             sfcServiceFunctionPathList.removeAll(removedPaths);
@@ -188,14 +193,10 @@ public class SfcProviderServicePathAPI implements Runnable {
             ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder  = new ServiceFunctionChainStateBuilder();
             serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
             serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathList);
-            final DataModificationTransaction t = odlSfc.dataProvider
-                    .beginTransaction();
-            t.putOperationalData(sfcStateIID, serviceFunctionChainStateBuilder.build());
-            try {
-                t.commit().get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Failed to update SfcServiceFunctionPath List State {} failed ");
-            }
+            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.OPERATIONAL,
+                    sfcStateIID, serviceFunctionChainStateBuilder.build(), true);
+            writeTx.commit();
 
         } else {
             LOG.error("Failed to get reference to Service Function Chain State {} ", serviceFunctionChain.getName());
@@ -203,6 +204,7 @@ public class SfcProviderServicePathAPI implements Runnable {
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
+    @SuppressWarnings("unused")
     private void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
         this.createServiceFunctionPathEntry(serviceFunctionPath);
     }
@@ -298,21 +300,12 @@ public class SfcProviderServicePathAPI implements Runnable {
                 .build();
 
         ServiceFunctionPath newServiceFunctionPath = serviceFunctionPathBuilder.build();
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-        t.putConfigurationData(sfpIID, newServiceFunctionPath);
-
-        try {
-            t.commit().get();
-            // Add the created path to the list of paths instantiated from this Service Chain
-            //SfcProviderServiceChainAPI
-            //        .addPathToServiceFunctionChainState(serviceFunctionChain, serviceFunctionPath);
-            SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
-            SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
-
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Failed to create Service Path", e);
-        }
+        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        writeTx.put(LogicalDatastoreType.CONFIGURATION,
+                sfpIID, newServiceFunctionPath, true);
+        writeTx.commit();
+        SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
+        SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
@@ -328,14 +321,10 @@ public class SfcProviderServicePathAPI implements Runnable {
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                 .build();
 
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
-        t.removeConfigurationData(sfpIID);
-        try {
-            t.commit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("deleteServiceFunctionPathEntry failed", e);
-        }
+        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                sfpIID);
+        writeTx.commit();
         LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
     }
@@ -347,12 +336,20 @@ public class SfcProviderServicePathAPI implements Runnable {
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFuntionPathKey)
                 .build();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfpIID);
-        if (dataObject instanceof ServiceFunctionPath) {
-            ServiceFunctionPath serviceFunctionPath = (ServiceFunctionPath) dataObject;
-            LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return serviceFunctionPath;
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunctionPath> serviceFunctionPathObject = null;
+        try {
+            serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (serviceFunctionPathObject instanceof ServiceFunctionPath) {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            return (ServiceFunctionPath) serviceFunctionPathObject;
         } else {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
         }
     }
@@ -361,6 +358,8 @@ public class SfcProviderServicePathAPI implements Runnable {
      * We iterate through all service paths that use this service function and remove them.
      * In the end since there is no more operational state, we remove the state tree.
      */
+
+    @SuppressWarnings("unused")
     private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
@@ -373,9 +372,17 @@ public class SfcProviderServicePathAPI implements Runnable {
                 InstanceIdentifier.builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
                         .build();
-        DataObject dataSfcStateObject = odlSfc.dataProvider.readOperationalData(sfStateIID);
-        if (dataSfcStateObject instanceof ServiceFunctionState) {
-            serviceFunctionState = (ServiceFunctionState) dataSfcStateObject;
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunctionState> serviceFunctionStateObject = null;
+        try {
+            serviceFunctionStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (serviceFunctionStateObject instanceof ServiceFunctionState) {
+            serviceFunctionState = (ServiceFunctionState) serviceFunctionStateObject;
             List<String> sfServiceFunctionPathList =
                     serviceFunctionState.getSfServiceFunctionPath();
             List<String> removedPaths = new ArrayList<>();
@@ -386,16 +393,12 @@ public class SfcProviderServicePathAPI implements Runnable {
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
 
-                final DataModificationTransaction t = odlSfc.dataProvider
-                        .beginTransaction();
-                t.removeConfigurationData(sfpIID);
-                try {
-                    t.commit().get();
-                    // We update the list as we go
-                    removedPaths.add(pathName);
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("deleteServicePathContainingFunction for path {} failed ", pathName);
-                }
+                WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                        sfpIID);
+                writeTx.commit();
+                // TODO: Need to consider failure of transaction
+                removedPaths.add(pathName);
             }
 
             // If no more SFP associated with this SF, remove the state.
@@ -435,9 +438,17 @@ public class SfcProviderServicePathAPI implements Runnable {
                 sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
-                DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfpIID);
-                if (dataObject instanceof  ServiceFunctionPath) {
-                    ServiceFunctionPath servicefunctionPath = (ServiceFunctionPath) dataObject;
+
+                ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+                Optional<ServiceFunctionPath> serviceFunctionPathObject = null;
+                try {
+                    serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                if (serviceFunctionPathObject instanceof  ServiceFunctionPath) {
+                    ServiceFunctionPath servicefunctionPath = (ServiceFunctionPath) serviceFunctionPathObject;
                     createServiceFunctionPathEntry(servicefunctionPath);
                 }
             }
@@ -450,14 +461,15 @@ public class SfcProviderServicePathAPI implements Runnable {
     @Override
     public void run() {
         if (methodName != null) {
-            Class c = this.getClass();
+            Class<?> c = this.getClass();
             Method method;
             try {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
-                method.invoke (this, parameters);
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e ) {
+                method.invoke(this, parameters);
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
+
     }
 }

@@ -91,7 +91,7 @@ module service-function-forwarder {
 
   container service-function-forwarders {
     description
-        "This container holds the configuration for a service function forwarder. ";
+        "This container holds the configuration for all service function forwarders. ";
     list service-function-forwarder {
       key "name";
       leaf name {
@@ -99,23 +99,27 @@ module service-function-forwarder {
         description
           "The name of this service function forwarder, such as ovs-switch-1";
       }
-      leaf transport {
-        type transport-type;
-      }
 
-      leaf path-id {
-        type uint32 {
-          range "0..16777216";
+      list sff-data-plane-locator {
+        description
+          "A list of all data-plane-locators of this SFF.";
+        key "name";
+        leaf name {
+          type string;
+          description
+            "A unique string that represents this data-plane-locator";
+        }
+        leaf transport {
+          type transport-type;
+        }
+        container data-plane-locator {
+          uses sfc-sl:data-plane-locator;
         }
       }
 
-      container sff-data-plane-locator {
-        uses sfc-sl:data-plane-locator;
-        description
-          "The data plane network locator of this SFF, such as IP:port.";
-      }
-
       list service-function-dictionary {
+        description
+          "A list of all Service Functions attached to this SFF.";
         key "name";
         uses sfc-sf:service-function-entry;
         leaf failmode {

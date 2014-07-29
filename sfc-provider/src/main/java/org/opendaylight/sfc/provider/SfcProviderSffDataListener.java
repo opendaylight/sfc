@@ -8,8 +8,8 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -35,7 +35,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
 
     @Override
     public void onDataChanged(
-            DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
@@ -45,7 +45,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
          * to mae sure all info is present or we will pass.
          */
         boolean sffready = false;
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {

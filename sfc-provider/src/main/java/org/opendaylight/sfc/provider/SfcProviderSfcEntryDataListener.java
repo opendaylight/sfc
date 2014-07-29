@@ -8,8 +8,8 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -38,11 +38,11 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
 
     @Override
     public void onDataChanged(
-            DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet())
         {
@@ -58,7 +58,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
         }
 
         // SFC CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
         {
@@ -78,7 +78,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
         }
 
         // SFC UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionChain) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
@@ -92,7 +92,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
         }
 
         // SFC DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionChain) {

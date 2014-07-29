@@ -17,10 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 
 /**
  * This class is the DataListener for SFF changes.
@@ -53,13 +49,13 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         getClientResponse.close();
 
         ClientResponse putClientRemoteResponse= client
-                .resource("http://31.133.132.41:5000/paths").type("application/json")
+                .resource("http://localhost:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
         putClientRemoteResponse.close();
 
         ClientResponse putClientLocalResponse= client
-                .resource("http://31.133.131.241:5000/paths").type("application/json")
+                .resource("http://localhost:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
         putClientLocalResponse.close();

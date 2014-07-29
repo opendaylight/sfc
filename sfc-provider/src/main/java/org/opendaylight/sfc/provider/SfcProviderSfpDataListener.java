@@ -9,8 +9,8 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -35,14 +35,14 @@ public class SfcProviderSfpDataListener implements DataChangeListener {
 
     @Override
     public void onDataChanged(
-            DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         /*
          * when a SFF is created we will process and send it to southbound devices. But first we need
          * to mae sure all info is present or we will pass.
          */
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {

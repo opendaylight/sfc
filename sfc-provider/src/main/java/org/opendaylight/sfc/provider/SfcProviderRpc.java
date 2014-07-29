@@ -8,8 +8,11 @@
 
 package org.opendaylight.sfc.provider;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -33,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -104,15 +106,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
             InstanceIdentifier<ServiceFunction>  sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
                     child(ServiceFunction.class, sf.getKey()).toInstance();
-            final DataModificationTransaction t = odlSfc.dataProvider
-                    .beginTransaction();
 
-            t.putConfigurationData(sfEntryIID, sf);
-            try {
-                t.commit().get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.warn("Failed to update-function, operational otherwise", e);
-            }
+            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    sfEntryIID, sf);
+            writeTx.commit();
 
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
@@ -133,7 +131,14 @@ public class SfcProviderRpc implements ServiceFunctionService,
             InstanceIdentifier<ServiceFunction> sfIID;
             sfIID = InstanceIdentifier.builder(ServiceFunctions.class).
                     child(ServiceFunction.class, sfkey).toInstance();
-            DataObject dataObject = odlSfc.dataProvider.readConfigurationData(sfIID);
+
+            ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+            Optional<ServiceFunction> dataObject = null;
+            try {
+                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
             if (dataObject instanceof ServiceFunction) {
                 LOG.info("readServiceFunction Success: {}", ((ServiceFunction) dataObject).getName());
                 ServiceFunction serviceFunction = (ServiceFunction) dataObject;
@@ -160,14 +165,12 @@ public class SfcProviderRpc implements ServiceFunctionService,
     public Future<RpcResult<Void>> deleteAllServiceFunction() {
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         if (odlSfc.dataProvider != null) {
-            final DataModificationTransaction t = odlSfc.dataProvider
-                    .beginTransaction();
-            t.removeConfigurationData(OpendaylightSfc.sfsIID);
-            try {
-                t.commit().get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("deleteServiceFunction failed", e);
-            }
+
+            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                    OpendaylightSfc.sfsIID);
+            writeTx.commit();
+
         } else {
             LOG.warn("dataProvider is null");
         }
@@ -181,7 +184,14 @@ public class SfcProviderRpc implements ServiceFunctionService,
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         LOG.info("Input: " + input);
         if (odlSfc.dataProvider != null) {
-            DataObject dataObject = odlSfc.dataProvider.readConfigurationData(OpendaylightSfc.sfsIID);
+
+            ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+            Optional<ServiceFunctions> dataObject = null;
+            try {
+                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sfsIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
             if (dataObject instanceof ServiceFunctions) {
 
                 ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
@@ -189,15 +199,14 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 sfIID = InstanceIdentifier.builder(ServiceFunctions.class).
                         child(ServiceFunction.class, sfkey).toInstance();
 
-                final DataModificationTransaction t = odlSfc.dataProvider
-                        .beginTransaction();
-                t.removeConfigurationData(sfIID);
-                try {
-                    t.commit().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("deleteServiceFunction failed", e);
-                }
+                WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                        sfIID);
+                writeTx.commit();
             }
+
+
+
         } else {
             LOG.warn("dataProvider is null");
         }
@@ -215,14 +224,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
         ServiceFunctionChains sfcs = builder.build();
 
         if (odlSfc.dataProvider != null) {
-            final DataModificationTransaction t = odlSfc.dataProvider.beginTransaction();
-            t.putConfigurationData(OpendaylightSfc.sfcIID, sfcs);
+            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    OpendaylightSfc.sfcIID, sfcs, true);
+            writeTx.commit();
 
-            try {
-                t.commit().get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.warn("putServiceFunctionChain failed, operational otherwise", e);
-            }
         } else {
             LOG.warn("dataProvider is null");
         }
@@ -236,25 +242,21 @@ public class SfcProviderRpc implements ServiceFunctionService,
         LOG.info("\n####### Input: " + input);
 
         if (odlSfc.dataProvider != null) {
-        ServiceNodeKey snKey = new ServiceNodeKey(input.getName());
-        ServiceNodeBuilder builder = new ServiceNodeBuilder();
-        ServiceNode sn = builder.setKey(snKey)
-                .setName(input.getName())
-                .setIpMgmtAddress(input.getIpMgmtAddress())
-                .setServiceFunction(input.getServiceFunction())
-                .build();
+            ServiceNodeKey snKey = new ServiceNodeKey(input.getName());
+            ServiceNodeBuilder builder = new ServiceNodeBuilder();
+            ServiceNode sn = builder.setKey(snKey)
+                    .setName(input.getName())
+                    .setIpMgmtAddress(input.getIpMgmtAddress())
+                    .setServiceFunction(input.getServiceFunction())
+                    .build();
 
-        InstanceIdentifier<ServiceNode> snEntryIID = InstanceIdentifier.builder(ServiceNodes.class).
-                child(ServiceNode.class, sn.getKey()).toInstance();
-        final DataModificationTransaction t = odlSfc.dataProvider
-                .beginTransaction();
+            InstanceIdentifier<ServiceNode> snEntryIID = InstanceIdentifier.builder(ServiceNodes.class).
+                    child(ServiceNode.class, sn.getKey()).toInstance();
 
-        t.putConfigurationData(snEntryIID, sn);
-        try {
-            t.commit().get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("\n########## {} failed, operational otherwise", Thread.currentThread().getStackTrace()[1], e);
-        }
+            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    snEntryIID, sn, true);
+            writeTx.commit();
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
         }
@@ -297,19 +299,17 @@ public class SfcProviderRpc implements ServiceFunctionService,
                     list.add(path);
 
                     ServiceFunctionPaths paths = buildServiceFunctionPaths(list);
-                    final DataModificationTransaction t = odlSfc.dataProvider.beginTransaction();
-                    t.putConfigurationData(OpendaylightSfc.sfpIID, paths);
 
-                    try {
-                        t.commit().get();
-                        InstantiateServiceFunctionChainOutputBuilder outputBuilder = new InstantiateServiceFunctionChainOutputBuilder();
-                        outputBuilder.setName(pathName);
-                        return Futures.immediateFuture(Rpcs.getRpcResult(true,
-                                outputBuilder.build(),
-                                Collections.<RpcError>emptySet()));
-                    } catch (ExecutionException | InterruptedException e) {
-                        LOG.warn("\n####### instantiateServiceFunctionChain failed, operational otherwise", e);
-                    }
+                    WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                    writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                            OpendaylightSfc.sfpIID, paths, true);
+                    writeTx.commit();
+                    InstantiateServiceFunctionChainOutputBuilder outputBuilder = new InstantiateServiceFunctionChainOutputBuilder();
+                    outputBuilder.setName(pathName);
+                    return Futures.immediateFuture(Rpcs.getRpcResult(true,
+                            outputBuilder.build(),
+                            Collections.<RpcError>emptySet()));
+
                 } else {
                     throw new IllegalStateException("Service function chain's SF list is null or empty.");
                 }
@@ -330,12 +330,21 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 InstanceIdentifier.builder(ServiceFunctionChains.class)
                         .child(ServiceFunctionChain.class, key)
                         .toInstance();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(iid);
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunctionChain> dataObject = null;
+        try {
+            dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, iid).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         if (dataObject instanceof ServiceFunctionChain) {
             return (ServiceFunctionChain) dataObject;
         } else {
             throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunctionChain).");
         }
+
     }
 
     // TODO this is duplicated in SFCSftMapper (and used only there, not here; better to DRY
@@ -345,7 +354,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 InstanceIdentifier.builder(ServiceFunctions.class)
                         .child(ServiceFunction.class, key)
                         .toInstance();
-        DataObject dataObject = odlSfc.dataProvider.readConfigurationData(iid);
+
+        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        Optional<ServiceFunction> dataObject = null;
+        try {
+            dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, iid).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         if (dataObject instanceof ServiceFunction) {
             return (ServiceFunction) dataObject;
         } else {

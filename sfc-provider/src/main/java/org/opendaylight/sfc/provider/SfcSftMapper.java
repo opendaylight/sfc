@@ -1,14 +1,17 @@
 package org.opendaylight.sfc.provider;
 
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class maps service function types to service node mappers
@@ -32,7 +35,13 @@ public class SfcSftMapper {
 
     public void update() {
         if (odlSfc != null) {
-            DataObject dataObject = odlSfc.dataProvider.readConfigurationData(OpendaylightSfc.snIID);
+            ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+            Optional<ServiceNodes> dataObject = null;
+            try {
+                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.snIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
             if (dataObject instanceof ServiceNodes) {
                 ServiceNodes nodes = (ServiceNodes) dataObject;
                 List<ServiceNode> snList = nodes.getServiceNode();

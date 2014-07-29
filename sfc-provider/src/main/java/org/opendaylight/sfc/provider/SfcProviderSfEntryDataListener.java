@@ -9,8 +9,8 @@
 package org.opendaylight.sfc.provider;
 
 
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -37,11 +37,11 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
     @Override
     public void onDataChanged(
-            DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
@@ -52,7 +52,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         }
 
         // SF DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedConfigurationData();
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
             if( dataObject instanceof  ServiceFunction) {
@@ -78,7 +78,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
 
         // SF CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
@@ -102,7 +102,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
         // SF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
-                = change.getUpdatedConfigurationData();
+                = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunction) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();

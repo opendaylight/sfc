@@ -8,8 +8,10 @@
 package org.opendaylight.sfc.provider;
 
 import com.google.common.util.concurrent.Futures;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -31,6 +33,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+//import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 
 /**
  * This the main SFC Provider class. It is instantiated from the
@@ -75,7 +79,7 @@ public class OpendaylightSfc implements AutoCloseable {
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
    protected ExecutorService executor;
-   protected DataBrokerService dataProvider;
+   protected DataBroker dataProvider;
    private static OpendaylightSfc opendaylightSfcObj;
 
    private Future<RpcResult<Void>> currentTask;
@@ -91,11 +95,11 @@ public class OpendaylightSfc implements AutoCloseable {
        return Futures.immediateFuture(result);
    }
 
-   public void setDataProvider(DataBrokerService salDataProvider) {
+   public void setDataProvider(DataBroker salDataProvider) {
        this.dataProvider = salDataProvider;
    }
 
-    public DataBrokerService getDataProvider(DataBrokerService salDataProvider) {
+    public AsyncDataBroker getDataProvider(AsyncDataBroker salDataProvider) {
         return this.dataProvider;
     }
 
@@ -112,14 +116,16 @@ public class OpendaylightSfc implements AutoCloseable {
         executor.shutdown();
 
         if (dataProvider != null) {
-            final DataModificationTransaction t = dataProvider.beginTransaction();
-            t.removeOperationalData(sfsIID);
-            t.removeOperationalData(sfEntryIID);
-            t.removeOperationalData(sfcEntryIID);
-            t.removeOperationalData(snIID);
-            t.removeOperationalData(sffIID);
-            t.removeOperationalData(sfpIID);
-            t.removeOperationalData(sftIID);
+            final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfcEntryIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfsIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, snIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sffIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sfpIID);
+            t.delete(LogicalDatastoreType.OPERATIONAL, sftIID);
             t.commit().get();
         }
     }

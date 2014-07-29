@@ -8,8 +8,8 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
@@ -38,11 +38,11 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
 
     @Override
     public void onDataChanged(
-            DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         LOG.info("\n########## getUpdatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
@@ -60,7 +60,7 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
             }
         }
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
         LOG.info("\n########## getOriginalConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet())
@@ -78,7 +78,7 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
             }
         }
 
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedConfigurationData();
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
         LOG.info("\n########## getCreatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet())

@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "fa82b9bf_52a9678e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderAbstractRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "You can remove the comment",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_32cdc385",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "CONFIG_DATA_URL and CONFIG_DATA_MIME_TYPE should be part of a config file itself. I would suggest to have a configuration file, say, sfc_provider_config.json, that has everything you need so that things are not hard-coded. \n\nLater we can use the same file for many other things we do not want to hard-code. This would allow us great flexibility",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_52b2c706",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
         "patchSetId": 1
@@ -13,6 +47,57 @@
       "writtenOn": "2014-07-29T00:16:16Z",
       "side": 1,
       "message": "This method name is misleading. it is not used for testing, it is the actual method that will read the files and commit them through RESTconf, so please change to some other name,",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d2c5775c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "Move all this to sfc_provider_config.json. If this belongs to a configuration file, user is free to extend, provide different file names, etc. It would be a good feature.",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_72b7cbf5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "Please change to LOG.error",
+      "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_12d0bf1d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/bootstrap/SfcProviderBootstrapRestAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-07-29T00:16:16Z",
+      "side": 1,
+      "message": "I do not understand what you are trying to test here. If you want to make sure the file carries valid JSON I would recommend the following:\n\nhttp://stackoverflow.com/questions/10174898/how-to-check-whether-a-given-string-is-valid-json-in-java",
       "revId": "04a5a93e8b0139519ffa8002c9bf47ec1ae02639",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -12,7 +12,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opendaylight.sfc.provider.SfcProviderAbstractRestAPI;
+import org.opendaylight.sfc.provider.config.SfcProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,64 +44,61 @@ import java.util.List;
 public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderBootstrapRestAPI.class);
 
-    private static final String CONFIG_FILES_DIR = "configuration/startup/";
-    private static final String CONFIG_DATA_URL = "http://localhost:8080/restconf/config/";
-    private static final String CONFIG_DATA_MIME_TYPE = "application/json";
-
     SfcProviderBootstrapRestAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
     }
 
-    public static SfcProviderBootstrapRestAPI getBootstrapTest(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderBootstrapRestAPI(params, paramsTypes, "bootstrapTest");
+    public static SfcProviderBootstrapRestAPI getPutBootstrapData(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderBootstrapRestAPI(params, paramsTypes, "putBootstrapData");
     }
 
-    public void bootstrapTest(ServiceFunctions sfs) {
+    public void putBootstrapData() {
 
-        // RESTconf URL and corresponding JSON file
-        final class ConfigFileData {
-            public String urlpath;
-            public String filename;
+        SfcProviderConfig providerConfig = SfcProviderConfig.getInstance();
+        JSONObject jo = providerConfig.getBootstrap();
 
-            public ConfigFileData(String urlpath, String filename) {
-                this.urlpath = urlpath;
-                this.filename = filename;
+        JSONArray files = new JSONArray();
+
+        try {
+            final String CONFIG_FILES_DIR = jo.getString("bootstrapDataDir");
+            final String CONFIG_DATA_URL = jo.getString("configDataUrl");
+            final String CONFIG_DATA_MIME_TYPE = jo.getString("configDataMimeType");
+            files = jo.getJSONArray("files");
+
+            ClientConfig clientConfig = new DefaultClientConfig();
+            Client client = Client.create(clientConfig);
+
+            if (files.length() > 0) {
+                for (int i = 0; i < files.length(); i++) {
+                    JSONObject o = files.getJSONObject(i);
+                    String json;
+                    String filename = o.getString("name");
+                    String urlpath = o.getString("urlpath");
+                    try {
+                        byte[] encoded = Files.readAllBytes(Paths.get(CONFIG_FILES_DIR + filename));
+                        json = new String(encoded, StandardCharsets.UTF_8);
+                    } catch (FileNotFoundException e) {
+                        LOG.error("\n***** Configuration file {} not found, passing *****\n", filename);
+                        continue;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                    try {
+                        new JSONObject(json);
+                        ClientResponse putClientResponse = client
+                                .resource(CONFIG_DATA_URL + urlpath)
+                                .type(CONFIG_DATA_MIME_TYPE)
+                                .put(ClientResponse.class, json);
+                        putClientResponse.close();
+                    } catch (JSONException e) {
+                        LOG.error("\n***** Invalid JSON in file {}, passing *****\n", filename);
+                    }
+
+                }
             }
-        }
-
-        // the order of the files will be important when ODL consistency control is implemented
-        List<ConfigFileData> configList = new ArrayList<>();
-        configList.add(new ConfigFileData(
-                "service-function-forwarder:service-function-forwarders", "service-function-forwarders.json"));
-        configList.add(new ConfigFileData(
-                "service-function:service-functions", "service-functions.json"));
-        configList.add(new ConfigFileData(
-                "service-function-chain:service-function-chains", "service-function-chains.json"));
-        configList.add(new ConfigFileData(
-                "service-node:service-nodes", "service-nodes.json"));
-
-        ClientConfig clientConfig = new DefaultClientConfig();
-        Client client = Client.create(clientConfig);
-
-        for (ConfigFileData config : configList) {
-            String json = "";
-            try {
-                byte[] encoded = Files.readAllBytes(Paths.get(CONFIG_FILES_DIR + config.filename));
-                json = new String(encoded, StandardCharsets.UTF_8);
-            } catch (FileNotFoundException e) {
-                LOG.info("\n***** Configuration file {} not found, passing *****\n", config.filename);
-                continue;
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
-            }
-            if (!"".equals(json)) {
-                ClientResponse putClientResponse = client
-                        .resource(CONFIG_DATA_URL + config.urlpath)
-                        .type(CONFIG_DATA_MIME_TYPE)
-                        .put(ClientResponse.class, json);
-                putClientResponse.close();
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

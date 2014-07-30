@@ -38,7 +38,6 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
     @Override
     public void run() {
         if (methodName != null) {
-            //Class[] parameterTypes = {ServiceFunctionChain.class};
             Class<?> c = this.getClass();
             Method method = null;
             try {

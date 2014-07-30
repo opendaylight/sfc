@@ -156,10 +156,10 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         }
 
         AutoCloseable ret = new AutoCloseableSfc();
-        Object[] serviceForwarderObj = new Object[1];
-        Class[] serviceForwarderClass = {ServiceFunctions.class};
+        Object[] emptyObjArray = {}; // method putBootstrapData() has no argument
+        Class[] emptyClassArray = {};
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(SfcProviderBootstrapRestAPI.getBootstrapTest(serviceForwarderObj, serviceForwarderClass));
+        executor.execute(SfcProviderBootstrapRestAPI.getPutBootstrapData(emptyObjArray, emptyClassArray));
         executor.shutdown();
         LOG.info("SFC provider (instance {}) initialized.", ret);
         return ret;

@@ -31,7 +31,6 @@ import java.util.Map;
 public class SfcProviderSffDataListener implements DataChangeListener  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffDataListener.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
@@ -54,15 +53,7 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
                 ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry.getValue();
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
                 for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
-                    sffready = SfcProviderServiceForwarderAPI.checkServiceFunctionForwarder(serviceFunctionForwarder);
-                    sffready &= sffready;
-
-                }
-                if (sffready) {
-                    Object[] serviceForwarderObj = {updatedServiceFunctionForwarders};
-                    Class[] serviceForwarderClass = {ServiceFunctionForwarders.class};
-                    odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarders (serviceForwarderObj, serviceForwarderClass));
-                    //send to REST
+                    LOG.trace("\n########## Updated Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }
         }

@@ -33,7 +33,6 @@ import java.util.Set;
 public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfpEntryDataListener.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
@@ -46,7 +45,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
-                LOG.debug("\n########## getOriginalConfigurationData {}  {}",
+                LOG.debug("\n########## Service Function Path Entry Original {}  {}",
                         originalServiceFunction.getType(), originalServiceFunction.getName());
             }
         }
@@ -58,11 +57,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         {
             if( entry.getValue() instanceof ServiceFunctionPath) {
                 ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-                LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionPath.getName());
-                Object[] servicePathObj = {createdServiceFunctionPath};
-                Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getCreateServicePathAPI(servicePathObj, servicePathClass));
+                LOG.debug("\n########## Created Service Function Path: {}", createdServiceFunctionPath.getName());
             }
         }
 
@@ -72,12 +67,8 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionPath) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionPath updatedServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-                LOG.info("\n########## Modified Service Function Chain Name {}",
+                LOG.info("\n########## Modified Service Function Path: {}",
                         updatedServiceFunctionPath.getName());
-                Object[] servicePathObj = {updatedServiceFunctionPath};
-                Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getUpdateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
 
@@ -87,11 +78,8 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionPath) {
                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;
-                Object[] serviceTypeObj = {originalServiceFunctionPath};
-                Class[] serviceTypeClass = {ServiceFunctionPath.class};
-
-                odlSfc.executor.execute(SfcProviderServiceFunctionAPI
-                        .getDeleteServicePathFromServiceFunctionState(serviceTypeObj, serviceTypeClass));
+                LOG.info("\n########## Deleted Service Function Path: {}",
+                		originalServiceFunctionPath.getName());
             }
         }
 

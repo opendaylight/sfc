@@ -12,11 +12,14 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +34,6 @@ import java.util.Map;
 public class SfcProviderSfpDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfpDataListener.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
@@ -47,12 +49,11 @@ public class SfcProviderSfpDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionPaths) {
-
-                ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-                Object[] serviceForwarderObj = {updatedServiceFunctionPaths};
-                Class[] serviceForwarderClass = {ServiceFunctionPaths.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPaths (serviceForwarderObj, serviceForwarderClass));
-
+            	ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
+                List<ServiceFunctionPath> serviceFunctionPathList = updatedServiceFunctionPaths.getServiceFunctionPath();
+                for (ServiceFunctionPath serviceFunctionPath : serviceFunctionPathList) {
+                    LOG.trace("\n########## Updated Service Function Path: {}", serviceFunctionPath.getName());
+                }
             }
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);

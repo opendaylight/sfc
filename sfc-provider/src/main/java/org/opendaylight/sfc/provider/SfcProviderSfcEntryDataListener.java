@@ -34,7 +34,6 @@ import java.util.Set;
 public class SfcProviderSfcEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfcDataListener.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
@@ -48,10 +47,10 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
         {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
-                LOG.debug("\n########## Original ServiceFunctionChain name: {}", originalServiceFunctionChain.getName());
+                LOG.debug("\n########## Original ServiceFunctionChainEntry name: {}", originalServiceFunctionChain.getName());
                 List<SfcServiceFunction>  SfcServiceFunctionList = originalServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
-                    LOG.debug("\n########## Original ServiceFunction name: {}", sfcServiceFunction.getName());
+                    LOG.debug("\n########## Original ServiceFunctionEntry name: {}", sfcServiceFunction.getName());
 
                 }
             }
@@ -65,10 +64,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain createdServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionChain.getName());
-                Object[] serviceChainObj = {createdServiceFunctionChain};
-                Class[] serviceChainClass = {ServiceFunctionChain.class};
-                odlSfc.executor.execute(SfcProviderServiceChainAPI
-                        .getAddChainToChainState(serviceChainObj, serviceChainClass));
                 List<SfcServiceFunction>  SfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
                     LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -84,10 +79,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.info("\n########## Modified Service Function Chain Name {}",
                         updatedServiceFunctionChain.getName());
-                Object[] serviceChainObj = {updatedServiceFunctionChain};
-                Class[] serviceChainClass = {ServiceFunctionChain.class};
-                //odlSfc.executor.execute(SfcProviderServicePathAPI
-                //        .getUpdateServicePathInstantiatedFromChain(serviceChainObj, serviceChainClass));
             }
         }
 
@@ -97,12 +88,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) dataObject;
-                /* Could bring back
-                Object[] serviceChainParams = {originalServiceFunctionChain};
-                Class[] serviceChainTypes = {ServiceFunctionChain.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getDeleteServicePathInstantiatedFromChain(serviceChainParams, serviceChainTypes));
-                */
                 LOG.debug("\n########## getOriginalConfigurationData {}",
                         originalServiceFunctionChain.getName());
             }

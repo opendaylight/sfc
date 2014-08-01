@@ -78,6 +78,12 @@ module service-function-path {
           description
             "Service Function Forwarder name";
         }
+        leaf sff-egress-interface {
+          mandatory false;
+          type string;
+          description
+            "The interface on which packet should exit the SFF to reach the SF";
+        }
         ordered-by user;
         min-elements 1;
         description

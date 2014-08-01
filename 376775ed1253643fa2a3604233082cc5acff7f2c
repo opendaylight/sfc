@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_91f6035c",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-01T17:12:07Z",
+      "side": 0,
+      "message": "sff-egress-interface is a data plane locator and therefore needs to be put in the service-locator.yang file.  Then it will configured as part of SF and reference in SFF model automatically.",
+      "revId": "376775ed1253643fa2a3604233082cc5acff7f2c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_31993720",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-01T17:12:07Z",
+      "side": 0,
+      "message": "There is no need to say \"mandatory false\". Just remove mandatory.",
+      "revId": "376775ed1253643fa2a3604233082cc5acff7f2c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

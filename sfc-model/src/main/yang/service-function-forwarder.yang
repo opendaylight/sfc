@@ -122,6 +122,16 @@ module service-function-forwarder {
           "A list of all Service Functions attached to this SFF.";
         key "name";
         uses sfc-sf:service-function-entry;
+        list sff-interfaces {
+          description
+            "A list of interfaces on the SFF which are connected to this SF, will usually be 1 or 2 elements";
+          key "sff-interface";
+          leaf sff-interface {
+            type string;
+            description
+              "An individual interface on the SFF connected to the SF";
+          }
+        }
         leaf failmode {
             type failmode-type;
         }

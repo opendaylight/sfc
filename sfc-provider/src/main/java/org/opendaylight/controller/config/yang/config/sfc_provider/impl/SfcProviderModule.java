@@ -15,15 +15,15 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.*;
 import org.opendaylight.sfc.provider.bootstrap.SfcProviderBootstrapRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is called from the MD-SAL infra in order to bootstrap
@@ -158,9 +158,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         AutoCloseable ret = new AutoCloseableSfc();
         Object[] emptyObjArray = {}; // method putBootstrapData() has no argument
         Class[] emptyClassArray = {};
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(SfcProviderBootstrapRestAPI.getPutBootstrapData(emptyObjArray, emptyClassArray));
-        executor.shutdown();
+        ScheduledExecutorService scheduledExecutorService =
+                Executors.newScheduledThreadPool(1);
+        scheduledExecutorService.schedule
+                (SfcProviderBootstrapRestAPI.getPutBootstrapData(emptyObjArray, emptyClassArray), 15,
+                        TimeUnit.SECONDS);
         LOG.info("SFC provider (instance {}) initialized.", ret);
         return ret;
     }

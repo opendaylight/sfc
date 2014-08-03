@@ -73,6 +73,11 @@ module service-function {
       uses sfc-sl:data-plane-locator;
     }
 
+    leaf test {
+      config false;
+      type string;
+    }
+
     leaf service-function-forwarder {
       type string;
       mandatory true;

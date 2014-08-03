@@ -57,27 +57,29 @@ module service-node {
 
 
   grouping service-node-grouping {
-      leaf name {
-        type string;
-        description
-             "The name of the service node.";
-      }
-
-      leaf ip-mgmt-address {
+    leaf name {
+      type string;
+      description
+        "The name of the service node.";
+    }
+    leaf ip-mgmt-address {
         type inet:ip-address;
-      }
-      leaf-list service-function {
-        type sfc-sf:service-function-ref;
-        description
-            "A list of service functions resident in this service node";
-      }
+    }
+    leaf-list service-function-forwarder {
+      type string;
+      description
+        "A list of service function forwarders resident in this service node";
+    }
+    leaf-list service-function {
+      type sfc-sf:service-function-ref;
+      description
+          "A list of service functions resident in this service node";
+    }
   }
 
   container service-nodes {
     description
-        "Physical or virtual element that hosts one or
-        more service functions and has one or more network locators
-        associated with it for reachability and service delivery.";
+        "Physical or virtual element that hosts one or more service function forwarders";
     list service-node {
       key "name";
       uses service-node-grouping;

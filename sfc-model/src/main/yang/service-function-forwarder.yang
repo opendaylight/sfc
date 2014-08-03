@@ -43,21 +43,26 @@ module service-function-forwarder {
   }
 
   // Transport type definitions
-  identity transport-type-identity {
+  identity transport-type {
     description
         "Base identity from which specific transport types are
         derived.";
   }
 
   identity vxlan-gpe {
-    base "transport-type-identity";
+    base "sff-transport-type";
     description "Programmable vxlan transport type";
   }
 
-  typedef transport-type {
-    type identityref {
-        base "transport-type-identity";
-    }
+  identity other {
+    base "sff-transport-type";
+    description "unspecified transport type";
+  }
+
+  identity sff-transport-type {
+    description "This identity is used as a base for all transport
+      types";
+      base "transport-type";
   }
 
   // Failmode type definitions
@@ -78,26 +83,33 @@ module service-function-forwarder {
 
   identity close {
     base "failmode-type-identity";
-    description "When service-function can not reach service function, packets will be dropped";
+    description "When service-function can not reach service
+       function, packets will be dropped";
   }
 
   identity open {
     base "failmode-type-identity";
-    description "When service-function can not reach service function, packets will be forwarded";
+    description "When service-function can not reach service
+       function, packets will be forwarded";
   }
 
 
-  // Service Function Forwarding Map
-
   container service-function-forwarders {
     description
-        "This container holds the configuration for all service function forwarders. ";
+        "This container holds the configuration for all service
+         function forwarders";
     list service-function-forwarder {
       key "name";
       leaf name {
         type string;
         description
-          "The name of this service function forwarder, such as ovs-switch-1";
+          "The unique name of this service function forwarder, such
+           as ovs-1-bridge-2.";
+      }
+
+      leaf service-node {
+        type string;
+        description "The service node that hosts this SFF";
       }
 
       list sff-data-plane-locator {
@@ -110,7 +122,9 @@ module service-function-forwarder {
             "A unique string that represents this data-plane-locator";
         }
         leaf transport {
-          type transport-type;
+          type identityref {
+             base sff-transport-type;
+          }
         }
         container data-plane-locator {
           uses sfc-sl:data-plane-locator;
@@ -124,7 +138,8 @@ module service-function-forwarder {
         uses sfc-sf:service-function-entry;
         list sff-interfaces {
           description
-            "A list of interfaces on the SFF which are connected to this SF, will usually be 1 or 2 elements";
+            "A list of interfaces on the SFF which are connected to this SF,
+             will usually be 1 or 2 elements";
           key "sff-interface";
           leaf sff-interface {
             type string;

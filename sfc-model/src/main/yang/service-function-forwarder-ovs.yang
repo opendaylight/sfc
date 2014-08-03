@@ -1,0 +1,25 @@
+module service-function-forwarder-ovs {
+  yang-version 1;
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-acl";
+
+  prefix sfc-sff-ovs;
+
+  import service-function-forwarder {
+    prefix "sfc-sff";
+  }
+
+  organization "Cisco Systems, Inc.";
+  contact "Reinaldo Penno <repenno@cisco.com>";
+
+  revision 2014-07-01 {
+    description "Augmentation of SFF for OVS";
+  }
+
+  augment "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/" {
+    description "OVSDB bridge UUID";
+    leaf uuid {
+      type string;
+    }
+  }
+}

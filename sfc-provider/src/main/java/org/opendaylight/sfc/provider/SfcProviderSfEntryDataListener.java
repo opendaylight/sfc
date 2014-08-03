@@ -92,8 +92,8 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] sfParams = {createdServiceFunction};
                 Class[] sfParamsTypes = {ServiceFunction.class};
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                        .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
+                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                //        .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
                             createdServiceFunction.getType(), createdServiceFunction.getName());
             }

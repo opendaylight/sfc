@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opendaylight.sfc.provider.SfcProviderAbstractRestAPI;
 import org.opendaylight.sfc.provider.config.SfcProviderConfig;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +25,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Filling the data store with prepared data through the RESTconf API.
@@ -55,7 +52,11 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
     public void putBootstrapData() {
 
         SfcProviderConfig providerConfig = SfcProviderConfig.getInstance();
-        JSONObject jo = providerConfig.getBootstrap();
+        if (!providerConfig.readConfigFile()) {
+            return;
+        }
+
+        JSONObject jo = providerConfig.getJsonBootstrapObject();
 
         JSONArray files = new JSONArray();
 

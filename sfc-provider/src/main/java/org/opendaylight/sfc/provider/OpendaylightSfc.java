@@ -51,53 +51,53 @@ import java.util.concurrent.Future;
 public class OpendaylightSfc implements AutoCloseable {
 
 
-   private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
 
-   public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
+    public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
             InstanceIdentifier.builder(ServiceFunctionChains.class)
                     .child(ServiceFunctionChain.class).build();
 
-   public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
+    public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
 
-   public static final InstanceIdentifier<ServiceFunctionPath>  sfpEntryIID =
+    public static final InstanceIdentifier<ServiceFunctionPath>  sfpEntryIID =
             InstanceIdentifier.builder(ServiceFunctionPaths.class)
                     .child(ServiceFunctionPath.class).build();
 
-   public static final InstanceIdentifier<ServiceFunctions>  sfsIID =
+    public static final InstanceIdentifier<ServiceFunctions>  sfsIID =
             InstanceIdentifier.builder(ServiceFunctions.class).build();
-   public static final InstanceIdentifier<ServiceNodes>  snIID =
+    public static final InstanceIdentifier<ServiceNodes>  snIID =
            InstanceIdentifier.builder(ServiceNodes.class).build();
-   public static final InstanceIdentifier<ServiceFunctionPaths>  sfpIID =
+    public static final InstanceIdentifier<ServiceFunctionPaths>  sfpIID =
            InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
-   public static final InstanceIdentifier<ServiceFunctionChains>  sfcIID =
+    public static final InstanceIdentifier<ServiceFunctionChains>  sfcIID =
            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-   public static final InstanceIdentifier<ServiceFunctionForwarders>  sffIID =
+    public static final InstanceIdentifier<ServiceFunctionForwarders>  sffIID =
            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
-   public static final InstanceIdentifier<ServiceFunctionTypes>  sftIID =
+    public static final InstanceIdentifier<ServiceFunctionTypes>  sftIID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-   protected ExecutorService executor;
-   protected DataBroker dataProvider;
-   private static OpendaylightSfc opendaylightSfcObj;
+    protected ExecutorService executor;
+    protected DataBroker dataProvider;
+    private static OpendaylightSfc opendaylightSfcObj;
 
-   private Future<RpcResult<Void>> currentTask;
+    private Future<RpcResult<Void>> currentTask;
 
-   public OpendaylightSfc() {
+    public OpendaylightSfc() {
 
        executor = Executors.newFixedThreadPool(1);
        opendaylightSfcObj = this;
-   }
+    }
 
-   private Future<RpcResult<Void>> inProgressError() {
+    private Future<RpcResult<Void>> inProgressError() {
        RpcResult<Void> result = Rpcs.<Void> getRpcResult(false, null, Collections.<RpcError> emptySet());
        return Futures.immediateFuture(result);
-   }
+    }
 
-   public void setDataProvider(DataBroker salDataProvider) {
+    public void setDataProvider(DataBroker salDataProvider) {
        this.dataProvider = salDataProvider;
-   }
+    }
 
     public AsyncDataBroker getDataProvider(AsyncDataBroker salDataProvider) {
         return this.dataProvider;
@@ -107,7 +107,7 @@ public class OpendaylightSfc implements AutoCloseable {
         return OpendaylightSfc.opendaylightSfcObj;
     }
 
-   /**
+    /**
     * Implemented from the AutoCloseable interface.
     */
     @Override

@@ -39,7 +39,8 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
-
+        // SF CREATION
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
         /*
          * when a SFF is created we will process and send it to southbound devices. But first we need
          * to mae sure all info is present or we will pass.

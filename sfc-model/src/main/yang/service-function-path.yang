@@ -53,7 +53,20 @@ module service-function-path {
   // Service Function Path
 
   container service-function-paths {
+    description
+      "The SFP provides a level of indirection
+       between the fully abstract notion of service chain as an
+       abstract sequence of functions to be delivered, and the
+       fully specified notion of exactly what SFF/SFs the packet
+       will visit when it actually traverses the network.  By
+       allowing the control components to specify the use of this
+       level of indirection, the deployment may choose the degree
+       of SFF/SF selection authority that is delegated to the
+       network";
     list service-function-path {
+      description
+        "A list that holds configuration data for all SFPs in the
+         domain";
       key "name";
       leaf name {
         type string;
@@ -74,7 +87,7 @@ module service-function-path {
         }
         ordered-by user;
         description
-          "A list of service function instances that compose the
+          "A list of service functions that compose the
            service path";
       }
       leaf service-chain-name {
@@ -107,18 +120,6 @@ module service-function-path {
            value for reporting and troubleshooting packets along
            a specific path.";
       }
-      description
-        "The SFP provides a level of indirection
-         between the fully abstract notion of service chain as an
-         abstract sequence of functions to be delivered, and the
-         fully specified notion of exactly what SFF/SFs the packet
-         will visit when it actually traverses the network.  By
-         allowing the control components to specify the use of this
-         level of indirection, the deployment may choose the degree
-         of SFF/SF selection authority that is delegated to the
-         network";
     }
-    description
-      "This container holds all service-paths in the domain";
   }
 }

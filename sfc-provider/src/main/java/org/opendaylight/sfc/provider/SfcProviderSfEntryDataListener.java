@@ -63,10 +63,10 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 odlSfc.executor.execute(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
 
-                Object[] sfParams = {originalServiceFunction};
-                Class[] sfParamsTypes = {ServiceFunction.class};
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
+                //Object[] sfParams = {originalServiceFunction};
+                //Class[] sfParamsTypes = {ServiceFunction.class};
+                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                //        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
 
                 Object[] functionParams = {originalServiceFunction};
                 Class[] functionParamsTypes = {ServiceFunction.class};
@@ -90,8 +90,8 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 odlSfc.executor.execute(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
 
-                Object[] sfParams = {createdServiceFunction};
-                Class[] sfParamsTypes = {ServiceFunction.class};
+                //Object[] sfParams = {createdServiceFunction};
+                //Class[] sfParamsTypes = {ServiceFunction.class};
                 //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
                 //        .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
@@ -113,8 +113,8 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] sfParams = {updatedServiceFunction};
                 Class[] sfParamsTypes = {ServiceFunction.class};
-                odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
+                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                //        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
 
                 odlSfc.executor.execute(SfcProviderServicePathAPI
                         .getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));

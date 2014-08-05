@@ -100,8 +100,8 @@ module service-function-type {
           "The list of all service functions of a specific type";
       }
       description
-        "A list of all service types. Each service-type entry holds a
-         list of all service functions of the type";
+        "A list of all service types. Each service-type entry holds
+         a list of all service functions of the type";
     }
   }
 }

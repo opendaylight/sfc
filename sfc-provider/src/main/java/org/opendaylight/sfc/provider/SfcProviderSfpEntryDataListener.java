@@ -51,7 +51,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
             }
         }
 
-        // SFC CREATION
+        // SFP CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())

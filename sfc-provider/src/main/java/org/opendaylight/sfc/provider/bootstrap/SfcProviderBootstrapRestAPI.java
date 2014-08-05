@@ -58,13 +58,14 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
 
         JSONObject jo = providerConfig.getJsonBootstrapObject();
 
-        JSONArray files = new JSONArray();
+        JSONArray files;
 
         try {
             final String CONFIG_FILES_DIR = jo.getString("bootstrapDataDir");
             final String CONFIG_DATA_URL = jo.getString("configDataUrl");
             final String CONFIG_DATA_MIME_TYPE = jo.getString("configDataMimeType");
             files = jo.getJSONArray("files");
+
 
             ClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create(clientConfig);

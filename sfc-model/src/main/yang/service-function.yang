@@ -47,7 +47,8 @@ module service-function {
 
   typedef service-function-ref {
     type leafref {
-      path "/sfc-sf:service-functions/sfc-sf:service-function/sfc-sf:name";
+      path "/sfc-sf:service-functions/sfc-sf:service-function/"
+          + "sfc-sf:name";
     }
     description
       "This type is used by data models that need to reference

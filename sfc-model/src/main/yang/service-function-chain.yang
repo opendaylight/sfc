@@ -44,34 +44,36 @@ module service-function-chain {
   grouping service-function-chain-grouping {
     list service-function-chain {
       description
-        "A service Function chain defines an
-         abstract set of service functions and their ordering
-         constraints that must be applied to packets and/or frames
-         selected as a result of classification.  The implied order
-         may not be a linear progression as the architecture allows
-         for nodes that copy to more than one branch, and also allows
-         for cases where there is flexibility in the order in which
-         services need to be applied. The term service chain is often
-         used as shorthand for service function chain.";
+        "A list that holds all service function chains in the
+         domain";
       key "name";
       leaf name {
         type string;
         description
           "the name of the service function chain";
       }
+      leaf symmetric {
+        type boolean;
+        description
+          "If the chain is symmetric we will create two service
+           paths, one ingress and another egress. Packets traverse
+           the egress service path in the reverse order of the
+           ingress path";
+      }
       list sfc-service-function {
         key "name";
         leaf name {
           type string;
           description
-            "The name of the service function if known,
-            otherwise a generic unique string";
+            "A unique handle that describes the service function
+             that will be chosen for this type, such as
+             ingress-dpi. This is not the service function name";
         }
         leaf type {
           type string;
           mandatory true;
           description
-            "Service Function Type from service-function-type.yang.";
+            "Service Function Type from service-function-type.yang";
         }
         ordered-by user;
         description
@@ -89,8 +91,15 @@ module service-function-chain {
   container service-function-chains {
     uses service-function-chain-grouping;
     description
-      "This containers holds service function chains configuration
-       data";
+      "A service Function chain defines an
+       abstract set of service functions and their ordering
+       constraints that must be applied to packets and/or frames
+       selected as a result of classification.  The implied order
+       may not be a linear progression as the architecture allows
+       for nodes that copy to more than one branch, and also allows
+       for cases where there is flexibility in the order in which
+       services need to be applied. The term service chain is often
+       used as shorthand for service function chain.";
   }
 
   container service-function-chains-state {

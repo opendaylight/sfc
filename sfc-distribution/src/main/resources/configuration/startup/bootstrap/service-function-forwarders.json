@@ -1,97 +1,75 @@
 {
-    "service-function-forwarders": {
-        "service-function-forwarder": [
-            {
-                "name": "SFF-bootstrap",
-                "sff-data-plane-locator": {
-                    "port": 33333,
-                    "ip": "10.3.1.101"
-                },
-                "transport": "service-function-forwarder:vxlan-gpe",
-                "service-function-dictionary": [
-                    {
-                        "name": "dpi-102-3",
-                        "type": "dpi",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10003,
-                            "ip": "10.3.1.102"
-                        }
-                    },
-                    {
-                        "name": "napt44-104",
-                        "type": "napt44",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10020,
-                            "ip": "10.3.1.104"
-                        }
-                    },
-                    {
-                        "name": "firewall-101-1",
-                        "type": "firewall",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10001,
-                            "ip": "10.3.1.101"
-                        }
-                    },
-                    {
-                        "name": "napt44-103-2",
-                        "type": "napt44",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10002,
-                            "ip": "10.3.1.103"
-                        }
-                    },
-                    {
-                        "name": "napt44-103-1",
-                        "type": "napt44",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10001,
-                            "ip": "10.3.1.103"
-                        }
-                    },
-                    {
-                        "name": "firewall-101-2",
-                        "type": "firewall",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10002,
-                            "ip": "10.3.1.101"
-                        }
-                    },
-                    {
-                        "name": "firewall-104",
-                        "type": "firewall",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10001,
-                            "ip": "10.3.1.104"
-                        }
-                    },
-                    {
-                        "name": "dpi-102-1",
-                        "type": "dpi",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10001,
-                            "ip": "10.3.1.102"
-                        }
-                    },
-                    {
-                        "name": "dpi-102-2",
-                        "type": "dpi",
-                        "service-function-forwarder": "SFF-bootstrap",
-                        "sf-data-plane-locator": {
-                            "port": 10002,
-                            "ip": "10.3.1.102"
-                        }
-                    }
-                ]
-            }
+  "service-function-forwarders": {
+    "service-function-forwarder": [
+      {
+        "name": "br-int-ovs-1",
+        "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c",
+        "service-node": "OVSDB1",
+        "sff-data-plane-locator": [
+          {  
+            "name": "eth0",
+            "data-plane-locator": {
+              "port": 5000,
+              "ip": "192.168.1.1"
+            },
+            "transport": "vxlan-gpe"
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "sf-data-plane-locator": {
+              "port": 5000,
+              "ip": "10.1.1.1"
+            },
+            "name": "SF1",
+            "service-function-forwarder": "br-int-ovs-1",
+            "type": "dp1"
+          },
+          {
+            "sf-data-plane-locator": {
+              "port": 5000,
+              "ip": "10.1.1.2"
+            },
+            "name": "SF2",
+            "service-function-forwarder": "br-int-ovs-1",
+            "type": "firewall"
+          }
         ]
-    }
+      },
+      {
+        "name": "br-int-ovs-2",
+        "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a02",
+        "service-node": "OVSDB2",
+        "sff-data-plane-locator": [
+          {
+            "name": "eth0",
+            "data-plane-locator": {
+              "port": 5000,
+              "ip": "192.168.1.2"
+            }
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "sf-data-plane-locator": {
+              "port": 5000,
+              "ip": "10.1.1.5"
+            },
+            "name": "SF5",
+            "service-function-forwarder": "br-int-ovs-2",
+            "type": "qos"
+          },
+          {
+            "sf-data-plane-locator": {
+              "port": 5000,
+              "ip": "10.1.1.6"
+            },
+            "name": "SF6",
+            "service-function-forwarder": "br-int-ovs-2",
+            "type": "napt44"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -32,9 +32,9 @@ public class SfcProviderSnDataListener implements DataChangeListener {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
 
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 }

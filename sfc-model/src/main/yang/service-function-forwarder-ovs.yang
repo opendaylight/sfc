@@ -16,7 +16,8 @@ module service-function-forwarder-ovs {
     description "Augmentation of SFF for OVS";
   }
 
-  augment "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/" {
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/" {
     description "OVSDB bridge UUID";
     leaf uuid {
       type string;

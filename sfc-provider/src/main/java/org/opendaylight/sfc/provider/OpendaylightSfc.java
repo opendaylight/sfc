@@ -117,15 +117,15 @@ public class OpendaylightSfc implements AutoCloseable {
 
         if (dataProvider != null) {
             final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfEntryIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfcEntryIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfsIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, snIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sffIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sfpIID);
-            t.delete(LogicalDatastoreType.OPERATIONAL, sftIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfcEntryIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfsIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, snIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sffIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sfpIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, sftIID);
             t.commit().get();
         }
     }

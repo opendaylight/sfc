@@ -99,7 +99,15 @@ module service-function-forwarder {
 
 
   container service-function-forwarders {
+    description
+      "A service function forwarder is
+       responsible for delivering traffic received from the SFC
+       network forwarder to one or more connected service
+       functions via information carried in the SFC encapsulation.
+      ";
     list service-function-forwarder {
+      description
+        "A list that holds configuration of all SFFs in the domain";
       key "name";
       leaf name {
         type string;
@@ -163,16 +171,7 @@ module service-function-forwarder {
         description
           "A list of all Service Functions attached to this SFF.";
       }
-      description
-        "A service function forwarder is
-         responsible for delivering traffic received from the SFC
-         network forwarder to one or more connected service
-         functions via information carried in the SFC encapsulation.
-        ";
     }
-    description
-      "This container holds the configuration for all service
-       function forwarders";
   }
 }
 

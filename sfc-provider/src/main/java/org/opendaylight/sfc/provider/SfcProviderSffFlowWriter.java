@@ -58,9 +58,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
 
 //
 //From maven repo:
@@ -86,6 +97,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -108,7 +121,8 @@ public class SfcProviderSffFlowWriter {
     private static final Integer METADATA_BITS = new Integer(0x0fff);
     private static final short TABLE_INDEX_SFF_ACL = 0;
     private static final short TABLE_INDEX_SFF_NEXT_HOP = 1;
-    private static final int ACL_FLOW_PRIORITY = 256;
+    private static final int FLOW_PRIORITY_ACL = 256;
+    private static final int FLOW_PRIORITY_NEXT_HOP = 256;
 
     private AtomicLong flowIdInc = new AtomicLong();
     private short tableBase = (short) 0;
@@ -179,12 +193,9 @@ public class SfcProviderSffFlowWriter {
     		   .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey()).toInstance();
 
-       //logger.trace("+++++++++++++++++  writeFlowToConfig: Node path {}", nodePath);
-       //logger.trace("+++++++++++++++++  writeFlowToConfig: Flow path {}", flowPath);
-
        WriteTransaction addFlowTransaction = dataBroker.newWriteOnlyTransaction();
-       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build());
-       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build());
+       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build(), true /* create Missing parents if needed */);
+       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build(), true);
 
        return addFlowTransaction.commit();
    }
@@ -201,6 +212,7 @@ public class SfcProviderSffFlowWriter {
         return (short) (this.tableBase + tableIndex);
     }
 
+    // TODO some of the 5tuple entries may be optional, need to add logic to writeSffAcl() to not write them if not specified
     public void writeSffAcl(String srcIp, String dstIp, short srcPort, short dstPort, byte protocol, int sfpId, short nextTable) {
         try {
         	if(!isReady) {
@@ -292,7 +304,7 @@ public class SfcProviderSffFlowWriter {
             aclFlow.setStrict(false);
             aclFlow.setMatch(match.build());
             aclFlow.setInstructions(isb.build());
-            aclFlow.setPriority(ACL_FLOW_PRIORITY);
+            aclFlow.setPriority(FLOW_PRIORITY_ACL);
             aclFlow.setHardTimeout(0);
             aclFlow.setIdleTimeout(0);
             aclFlow.setFlags(new FlowModFlags(false, false, false, false, false));
@@ -310,6 +322,110 @@ public class SfcProviderSffFlowWriter {
         }
     }
 
+    // TODO need to check if these types are correct: sfpId, src/dstMac, etc
     public void writeSffNextHop(int inPort, int sfpId, String srcMac, String dstMac, int outPort) {
+    	try {
+            LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
+            		inPort, sfpId, srcMac, dstMac, outPort);
+
+            //
+            // Create the matching criteria
+            MatchBuilder match = new MatchBuilder();
+
+            // Match on the metadata sfpId
+            MetadataBuilder metadata = new MetadataBuilder();
+            metadata.setMetadata(BigInteger.valueOf(sfpId));
+            metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
+            match.setMetadata(metadata.build());
+
+            // Match on the inPort
+            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+            ethTypeBuilder.setType(new EtherType(0x0800L));
+            EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
+            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
+            match.setEthernetMatch(ethMatchBuilder.build());
+            match.setInPort(new NodeConnectorId(Integer.toString(inPort)));
+
+            //
+            // Create the Actions
+
+            // Set the DL (Data Link) Dest Mac Address
+            SetDlDstActionBuilder setdl = new SetDlDstActionBuilder();
+            setdl.setAddress(new MacAddress(dstMac));
+
+            ActionBuilder abDst = new ActionBuilder();
+            abDst.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(setdl.build()).build());
+            abDst.setOrder(0);
+            abDst.setKey(new ActionKey(0));
+
+            // Set the DL (Data Link) Source Mac Address
+            SetDlSrcActionBuilder setdlSrc = new SetDlSrcActionBuilder();
+            setdlSrc.setAddress(new MacAddress(srcMac));
+
+            ActionBuilder abSrc = new ActionBuilder();
+            abSrc.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(setdlSrc.build()).build());
+            abSrc.setOrder(1);
+            abSrc.setKey(new ActionKey(1));
+
+            // Set the output port
+            OutputActionBuilder output = new OutputActionBuilder();
+            output.setOutputNodeConnector(new Uri(Integer.toString(outPort)));
+
+            ActionBuilder abPort = new ActionBuilder();
+            abPort.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+            abPort.setOrder(2);
+            abPort.setKey(new ActionKey(2));
+
+            List<Action> actionList = new ArrayList<Action>();
+            actionList.add(abDst.build());
+            actionList.add(abSrc.build());
+            actionList.add(abPort.build());
+
+            // Create an Apply Action
+            ApplyActionsBuilder aab = new ApplyActionsBuilder();
+            aab.setAction(actionList);
+
+            // Wrap our Apply Action in an Instruction
+            InstructionBuilder ib = new InstructionBuilder();
+            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+            ib.setKey(new InstructionKey(0));
+            ib.setOrder(0);
+
+            // Put our Instruction in a list of Instructions
+            InstructionsBuilder isb = new InstructionsBuilder();
+            List<Instruction> instructions = new ArrayList<Instruction>();
+            instructions.add(ib.build());
+            isb.setInstruction(instructions);
+
+            //
+            // Create and configure the FlowBuilder
+            FlowBuilder nextHopFlow = new FlowBuilder();
+            nextHopFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
+            nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
+            nextHopFlow.setTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP));
+            nextHopFlow.setFlowName("nextHop"); // should this name be unique??
+            BigInteger cookieValue = new BigInteger("20", 10);
+            nextHopFlow.setCookie(new FlowCookie(cookieValue));
+            nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
+            nextHopFlow.setContainerName(null);
+            nextHopFlow.setStrict(false);
+            nextHopFlow.setMatch(match.build());
+            nextHopFlow.setInstructions(isb.build());
+            nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+            nextHopFlow.setHardTimeout(0);
+            nextHopFlow.setIdleTimeout(0);
+            nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
+            if (null == nextHopFlow.isBarrier()) {
+            	nextHopFlow.setBarrier(Boolean.FALSE);
+            }
+
+            //
+            // Now write the Flow Entry
+            getResult(writeFlowToConfig(nextHopFlow));
+
+    	} catch (Exception e) {
+        	LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+        	LOG.error(e.getMessage(), e);
+        }
     }
 }

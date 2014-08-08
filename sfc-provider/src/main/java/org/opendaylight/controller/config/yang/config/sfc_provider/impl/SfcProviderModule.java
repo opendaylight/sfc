@@ -68,6 +68,8 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
 
         final SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
 
+        SfcProviderSffFlowWriter.createInstance(dataBrokerService);
+
         SfcProviderSfpDataListener sfcProviderSfpDataListener = new SfcProviderSfpDataListener();
         SfcProviderSnDataListener sfcProviderSnDataListener = new SfcProviderSnDataListener();
 

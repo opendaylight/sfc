@@ -1,0 +1,7 @@
+Code-Review+2: Christopher Price <christopher.price@ericsson.com>
+Verified+1: jenkins-sfc <jenkins-sfc@opendaylight.org>
+Submitted-by: Christopher Price <christopher.price@ericsson.com>
+Submitted-at: Sat, 09 Aug 2014 14:11:59 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/9816
+Project: sfc
+Branch: refs/heads/sfcofbasic

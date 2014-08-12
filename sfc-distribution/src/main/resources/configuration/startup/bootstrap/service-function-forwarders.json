@@ -2,7 +2,7 @@
   "service-function-forwarders": {
     "service-function-forwarder": [
       {
-        "name": "br-int-ovs-1",
+        "name": "SFF-bootstrap",
         "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c",
         "service-node": "OVSDB1",
         "sff-data-plane-locator": [
@@ -17,21 +17,20 @@
         ],
         "service-function-dictionary": [
           {
-            "sf-data-plane-locator": {
+            "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.1"
             },
             "name": "SF1",
-            "service-function-forwarder": "br-int-ovs-1",
             "type": "dp1"
           },
           {
-            "sf-data-plane-locator": {
+            "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.2"
             },
             "name": "SF2",
-            "service-function-forwarder": "br-int-ovs-1",
+
             "type": "firewall"
           }
         ]
@@ -51,21 +50,19 @@
         ],
         "service-function-dictionary": [
           {
-            "sf-data-plane-locator": {
+            "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.5"
             },
             "name": "SF5",
-            "service-function-forwarder": "br-int-ovs-2",
             "type": "qos"
           },
           {
-            "sf-data-plane-locator": {
+            "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.6"
             },
             "name": "SF6",
-            "service-function-forwarder": "br-int-ovs-2",
             "type": "napt44"
           }
         ]

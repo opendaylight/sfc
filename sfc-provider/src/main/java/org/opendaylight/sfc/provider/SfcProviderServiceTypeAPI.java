@@ -156,8 +156,9 @@ public class SfcProviderServiceTypeAPI implements Runnable {
             e.printStackTrace();
         }
 
-        if (serviceFunctionTypeObject instanceof ServiceFunctionType) {
-            ServiceFunctionType serviceFunctionType = (ServiceFunctionType) serviceFunctionTypeObject;
+        if (serviceFunctionTypeObject != null &&
+                (serviceFunctionTypeObject.get() instanceof ServiceFunctionType)) {
+            ServiceFunctionType serviceFunctionType = serviceFunctionTypeObject.get();
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionType;
         } else {

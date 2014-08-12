@@ -339,8 +339,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
             e.printStackTrace();
         }
 
-        if (dataObject instanceof ServiceFunctionChain) {
-            return (ServiceFunctionChain) dataObject;
+        if (dataObject.get() instanceof ServiceFunctionChain) {
+            return dataObject.get();
         } else {
             throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunctionChain).");
         }
@@ -363,8 +363,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
             e.printStackTrace();
         }
 
-        if (dataObject instanceof ServiceFunction) {
-            return (ServiceFunction) dataObject;
+        if (dataObject.get() instanceof ServiceFunction) {
+            return dataObject.get();
         } else {
             throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunction).");
         }
@@ -378,7 +378,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
         for(ServiceFunction sf : sfList){
             SfpServiceFunctionBuilder builder = new SfpServiceFunctionBuilder();
             ret.add(builder.setName(sf.getName())
-                    .setServiceFunctionForwarder(sf.getServiceFunctionForwarder())
+                    .setServiceFunctionForwarder(sf.getSfDataPlaneLocator()
+                            .getServiceFunctionForwarder())
                     .build());
         }
         return ret;

@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -96,32 +97,34 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
     }
 
 
-
-
     public void createServiceFunctionForwarder (ServiceFunction serviceFunction) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
+        String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator().
+                getServiceFunctionForwarder();
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
+                new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
         sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
                 .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
                 .build();
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(serviceFunction.getServiceFunctionForwarder());
 
         ArrayList<ServiceFunctionDictionary> serviceFunctionDictionaryList = new ArrayList<>();
         ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
+
+        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+        sffSfDataPlaneLocatorBuilder.setLocatorType(serviceFunction.getSfDataPlaneLocator().getLocatorType());
+
         serviceFunctionDictionaryBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
-                .setServiceFunctionForwarder(serviceFunction.getServiceFunctionForwarder())
-                .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
+                .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build());
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
 
         serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionDictionaryList);
 
         LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
-                ,serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
+                ,serviceFunctionForwarderName, serviceFunction.getName());
 
         WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION,
@@ -132,11 +135,13 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
     public void deleteServiceFunctionFromForwarder (ServiceFunction serviceFunction) {
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator().
+                getServiceFunctionForwarder();
         InstanceIdentifier<ServiceFunctionDictionary> sffIID;
         ServiceFunctionDictionaryKey serviceFunctionDictionaryKey =
                 new ServiceFunctionDictionaryKey(serviceFunction.getName());
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
+                new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
         sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
                 .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
@@ -180,17 +185,21 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfcServiceFunction.getName());
 
                 // Build a single service function forwarder
+                String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator().
+                        getServiceFunctionForwarder();
                 ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                        new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
+                        new ServiceFunctionForwarderKey(serviceFunction.getSfDataPlaneLocator().getServiceFunctionForwarder());
                 ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-                serviceFunctionForwarderBuilder.setName(serviceFunction.getServiceFunctionForwarder());
+                serviceFunctionForwarderBuilder.setName(serviceFunctionForwarderName);
                 serviceFunctionForwarderBuilder.setKey(serviceFunctionForwarderKey);
 
                 ArrayList<ServiceFunctionDictionary> serviceFunctionDictionaryList = new ArrayList<>();
                 ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
+                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+                sffSfDataPlaneLocatorBuilder.setLocatorType(serviceFunction.getSfDataPlaneLocator().getLocatorType());
+
                 serviceFunctionDictionaryBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
-                        .setServiceFunctionForwarder(serviceFunction.getServiceFunctionForwarder())
-                        .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
+                        .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build());
                 serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
 
                 serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionDictionaryList);
@@ -198,7 +207,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
 
                 LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
-                        , serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
+                        , serviceFunctionForwarderName, serviceFunction.getName());
 
 
             }
@@ -212,7 +221,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
     }
     @SuppressWarnings("unused")
-    public void deleteServiceFunctionForwarder (ServiceFunction serviceFunction) {
+    public void deleteServiceFunctionForwarderfromSF (ServiceFunction serviceFunction) {
 
         /*
          * TODO: We assume that if a ServiceFunction exists it belongs to a ServiceFunctionForwarder
@@ -223,9 +232,12 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
 
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator().
+                getServiceFunctionForwarder();
         InstanceIdentifier<ServiceFunctionDictionary> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(serviceFunction.getServiceFunctionForwarder());
+                new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
         ServiceFunctionDictionaryKey serviceFunctionDictionaryKey =
                 new ServiceFunctionDictionaryKey(serviceFunction.getName());
         sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
@@ -233,7 +245,7 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey )
                 .build();
         LOG.debug("\n########## Deleting Forwarder: {}  Service Function: {} "
-                ,serviceFunction.getServiceFunctionForwarder(), serviceFunction.getName());
+                ,serviceFunctionForwarderName, serviceFunction.getName());
 
         WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
@@ -260,7 +272,8 @@ public class SfcProviderServiceForwarderAPI implements Runnable {
             e.printStackTrace();
         }
 
-        if (serviceFunctionForwarderObject.get() instanceof ServiceFunctionForwarder) {
+        if (serviceFunctionForwarderObject != null &&
+                (serviceFunctionForwarderObject.get() instanceof ServiceFunctionForwarder)) {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionForwarderObject.get();
         } else {

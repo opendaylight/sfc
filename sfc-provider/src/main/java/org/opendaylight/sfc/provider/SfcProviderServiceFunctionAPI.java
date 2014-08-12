@@ -82,9 +82,10 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        if (serviceFunctiondataObject instanceof ServiceFunction) {
+        if (serviceFunctiondataObject != null &&
+                (serviceFunctiondataObject.get() instanceof ServiceFunction)) {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return (ServiceFunction) serviceFunctiondataObject;
+            return serviceFunctiondataObject.get();
         } else {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
@@ -118,7 +119,7 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
 
 
             ReadWriteTransaction writeTx = odlSfc.dataProvider.newReadWriteTransaction();
-            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfStateIID, serviceFunctionStateBuilder.build());
+            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfStateIID, serviceFunctionStateBuilder.build(), true);
             writeTx.commit();
         }
     }
@@ -142,8 +143,9 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        if (dataSfcStateObject instanceof ServiceFunctionState) {
-            serviceFunctionState = (ServiceFunctionState) dataSfcStateObject;
+        if (dataSfcStateObject != null &&
+                (dataSfcStateObject.get() instanceof ServiceFunctionState)) {
+            serviceFunctionState = dataSfcStateObject.get();
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return serviceFunctionState;
         } else {

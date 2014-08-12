@@ -148,7 +148,23 @@ module service-function-forwarder {
 
       list service-function-dictionary {
         key "name";
-        uses sfc-sf:service-function-entry;
+        leaf name {
+          type string;
+          description
+              "The name of the service function.";
+        }
+        leaf type {
+          type string;
+          mandatory true;
+          description
+            "Service Function Type from service-function-type yang
+             model";
+        }
+        container sff-sf-data-plane-locator {
+          description
+            "A network data-plane locator";
+          uses sfc-sl:data-plane-locator;
+        }
         list sff-interfaces {
           key "sff-interface";
           leaf sff-interface {

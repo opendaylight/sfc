@@ -209,6 +209,11 @@ public class SfcProviderServicePathAPI implements Runnable {
         this.createServiceFunctionPathEntry(serviceFunctionPath);
     }
 
+    /*
+     * This function is actually an updated to a previously created SFP where only
+     * the service chain name was given. In this function we patch the SFP with the
+     * names of the chosen SFs
+     */
     private void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
@@ -255,7 +260,8 @@ public class SfcProviderServicePathAPI implements Runnable {
                                     .readServiceFunction(serviceFunctionName)) != null)) {
 
                             sfpServiceFunctionBuilder.setName(serviceFunctionName)
-                                        .setServiceFunctionForwarder(serviceFunction.getServiceFunctionForwarder());
+                                        .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
+                                                .getServiceFunctionForwarder());
                             sfpServiceFunctionArrayList.add(sfpServiceFunctionBuilder.build());
                             break;
                         } else {
@@ -291,6 +297,7 @@ public class SfcProviderServicePathAPI implements Runnable {
         serviceFunctionPathBuilder.setPathId(pathId);
         // TODO: Find out the exact rules for service index generation
         serviceFunctionPathBuilder.setServiceIndex((short) (sfpServiceFunctionArrayList.size() + 1));
+        serviceFunctionPathBuilder.setServiceChainName(serviceFunctionChainName);
 
         ServiceFunctionPathKey serviceFunctionPathKey = new
                 ServiceFunctionPathKey(serviceFunctionPathBuilder.getName());
@@ -304,7 +311,7 @@ public class SfcProviderServicePathAPI implements Runnable {
         writeTx.put(LogicalDatastoreType.CONFIGURATION,
                 sfpIID, newServiceFunctionPath, true);
         writeTx.commit();
-        SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
+        //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
         SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
@@ -345,9 +352,10 @@ public class SfcProviderServicePathAPI implements Runnable {
             e.printStackTrace();
         }
 
-        if (serviceFunctionPathObject instanceof ServiceFunctionPath) {
+        if (serviceFunctionPathObject != null  &&
+                (serviceFunctionPathObject.get() instanceof ServiceFunctionPath)) {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return (ServiceFunctionPath) serviceFunctionPathObject;
+            return serviceFunctionPathObject.get();
         } else {
             LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
             return null;
@@ -381,8 +389,9 @@ public class SfcProviderServicePathAPI implements Runnable {
             e.printStackTrace();
         }
 
-        if (serviceFunctionStateObject instanceof ServiceFunctionState) {
-            serviceFunctionState = (ServiceFunctionState) serviceFunctionStateObject;
+        if (serviceFunctionStateObject != null &&
+                (serviceFunctionStateObject.get() instanceof ServiceFunctionState)) {
+            serviceFunctionState = serviceFunctionStateObject.get();
             List<String> sfServiceFunctionPathList =
                     serviceFunctionState.getSfServiceFunctionPath();
             List<String> removedPaths = new ArrayList<>();
@@ -447,8 +456,9 @@ public class SfcProviderServicePathAPI implements Runnable {
                     e.printStackTrace();
                 }
 
-                if (serviceFunctionPathObject instanceof  ServiceFunctionPath) {
-                    ServiceFunctionPath servicefunctionPath = (ServiceFunctionPath) serviceFunctionPathObject;
+                if (serviceFunctionPathObject != null &&
+                        (serviceFunctionPathObject.get() instanceof  ServiceFunctionPath)) {
+                    ServiceFunctionPath servicefunctionPath = serviceFunctionPathObject.get();
                     createServiceFunctionPathEntry(servicefunctionPath);
                 }
             }

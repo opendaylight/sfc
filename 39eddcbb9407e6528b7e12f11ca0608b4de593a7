@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_4f0af926",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-08-16T19:09:08Z",
+      "side": 1,
+      "message": "Let me ask another question... is grouping sfc-sf:service-function-entry used anywhere else other than here?",
+      "parentUuid": "fa82b9bf_4f00b933",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_ac34f3fb",
         "filename": "sfc-model/src/main/yang/service-locator.yang",
         "patchSetId": 1
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "The opendaylight definition is the same as in the IETF interfaces module (which we used here)\n\n\ntypedef vlan-id {\ntype uint16 {\nrange \"0..4095\";\n}\n}",
       "parentUuid": "fa82b9bf_ac34f3fb",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_2f0f7538",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-08-16T19:09:08Z",
+      "side": 1,
+      "message": "Even more reason to reuse it the one from ODL... every new typedef means a duplicate class... which means things are harder and harder for folks to use.\n\nAt this point this would be the *third* (one from the standard ODL one, one from the ietf interface model, and now this one)... stop the insanity... use the stock one :)",
+      "parentUuid": "fa82b9bf_2f053545",
       "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

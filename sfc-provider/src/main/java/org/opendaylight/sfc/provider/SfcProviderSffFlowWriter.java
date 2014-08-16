@@ -19,7 +19,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import org.opendaylight.sfc.provider.utils.MdSalUtils;
 //
 //From maven repo:
 //   <groupId>org.opendaylight.controller.model</groupId>
@@ -34,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-
 
 //
 //From maven repo:
@@ -103,21 +102,22 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
- *
+ * 
  * <p>
+ * 
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
- * @since       2014-08-07
+ * @since 2014-08-07
  */
 public class SfcProviderSffFlowWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffFlowWriter.class);
     private static SfcProviderSffFlowWriter instance = null;
 
-    // Which bits in the metadata field to set, used for the Bucket and allows 4095 sfpid's 
+    // Which bits in the metadata field to set, used for the Bucket and allows
+    // 4095 sfpid's
     // TODO check how many sfpid's there can be
     private static final Integer METADATA_BITS = new Integer(0x0fff);
     private static final short TABLE_INDEX_SFF_ACL = 0;
@@ -132,13 +132,13 @@ public class SfcProviderSffFlowWriter {
     private String sffNodeName;
 
     public static void createInstance(DataBroker dataBroker) {
-    	if(instance == null) {
-    		instance = new SfcProviderSffFlowWriter(dataBroker);
-    	}
+        if (instance == null) {
+            instance = new SfcProviderSffFlowWriter(dataBroker);
+        }
     }
-    
+
     public static SfcProviderSffFlowWriter getInstance() {
-    	return instance;
+        return instance;
     }
 
     public SfcProviderSffFlowWriter(DataBroker dataBroker) {
@@ -158,132 +158,139 @@ public class SfcProviderSffFlowWriter {
     public short getTableBase() {
         return this.tableBase;
     }
+
     public void setTableBase(short tableBase) {
         this.tableBase = tableBase;
     }
 
-
     /**
      * getTableId
      * 
-     * Having a TableBase allows us to "offset" the SFF tables by this.tableBase tables
-     * Doing so allows for OFS tables previous to the SFF tables.
-     * tableIndex should be one of: TABLE_INDEX_SFF_ACL or TABLE_INDEX_SFF_OUTPUT
+     * Having a TableBase allows us to "offset" the SFF tables by this.tableBase
+     * tables Doing so allows for OFS tables previous to the SFF tables.
+     * tableIndex should be one of: TABLE_INDEX_SFF_ACL or
+     * TABLE_INDEX_SFF_OUTPUT
      */
     private short getTableId(short tableIndex) {
         return (short) (this.tableBase + tableIndex);
     }
 
-    // TODO some of the 5tuple entries may be optional, need to add logic to writeSffAcl() to not write them if not specified
+    // TODO some of the 5tuple entries may be optional, need to add logic to
+    // writeSffAcl() to not write them if not specified
     public void writeSffAcl(final String srcIp, final String dstIp, final short srcPort, final short dstPort, final byte protocol, final int sfpId) {
         Thread t = new Thread() {
             public void run() {
-		        try {
-		        	if(!isReady) {
-		        		LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() NOT ready to write yet");
-		        		return;
-		        	}
-		
-		        	LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
-		
-		            //
-		            // Create the 5-tuple matching criteria
-		
-		            // To do an IP match, the EtherType needs to be set to 0x0800 which indicates IP
-		            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-		            ethTypeBuilder.setType(new EtherType(0x0800L));
-		            EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
-		            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-		
-		            Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-		            ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(srcIp));
-		            ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(dstIp));
-		
-		            IpMatchBuilder ipmatch = new IpMatchBuilder();
-		            ipmatch.setIpProtocol((short) protocol);
-		
-		            MatchBuilder match = new MatchBuilder();
-		            match.setEthernetMatch(ethMatchBuilder.build());
-		            match.setLayer3Match(ipv4MatchBuilder.build());
-		            match.setIpMatch(ipmatch.build());
-		
-		            if(protocol == 6) {
-		                TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
-		                // There must be a bug in setTcpSource/DestinationPort(), because its 
-		                // looking at the upper 2 bytes of the port and thinks its out of range
-		                tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
-		                tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
-		                match.setLayer4Match(tcpMatch.build());
-		            } else {
-		                UdpMatchBuilder udpMatch = new UdpMatchBuilder();
-		                udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
-		                udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
-		                match.setLayer4Match(udpMatch.build());
-		            }
-		
-		            //
-		            // Create the Actions
-		
-		            // Create the Metadata action and wrap it in an InstructionBuilder
-		            // Set the bits specified by METADATA_BITS with the bucket value
-		            WriteMetadataBuilder wmb = new WriteMetadataBuilder();
-		            wmb.setMetadata(new BigInteger(Integer.toString(sfpId), 10));
-		            wmb.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
-		
-		            InstructionBuilder wmbIb = new InstructionBuilder();
-		            wmbIb.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(wmb.build()).build());
-		            wmbIb.setKey(new InstructionKey(0));
-		            wmbIb.setOrder(0);
-		
-		            // Create the Goto Table (Twcl) Action and wrap it in an InstructionBuilder
-		            GoToTableBuilder gotoTb = new GoToTableBuilder();
-		            gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP)));
-		
-		            InstructionBuilder gotoTbIb = new InstructionBuilder();
-		            gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-		            gotoTbIb.setKey(new InstructionKey(1));
-		            gotoTbIb.setOrder(1);
-		
-		            //
-		            // Put the Instructions in a list of Instructions
-		            List<Instruction> instructions = new ArrayList<Instruction>();
-		            instructions.add(gotoTbIb.build());
-		            instructions.add(wmbIb.build());
-		
-		            InstructionsBuilder isb = new InstructionsBuilder();
-		            isb.setInstruction(instructions);
-		
-		
-		            //
-		            // Create and configure the FlowBuilder
-		            FlowBuilder aclFlow = new FlowBuilder();
-		            aclFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
-		            aclFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
-		            aclFlow.setTableId(getTableId(TABLE_INDEX_SFF_ACL));
-		            aclFlow.setFlowName("acl"); // should this name be unique??
-		            BigInteger cookieValue = new BigInteger("10", 10);
-		            aclFlow.setCookie(new FlowCookie(cookieValue));
-		            aclFlow.setCookieMask(new FlowCookie(cookieValue));
-		            aclFlow.setContainerName(null);
-		            aclFlow.setStrict(false);
-		            aclFlow.setMatch(match.build());
-		            aclFlow.setInstructions(isb.build());
-		            aclFlow.setPriority(FLOW_PRIORITY_ACL);
-		            aclFlow.setHardTimeout(0);
-		            aclFlow.setIdleTimeout(0);
-		            aclFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-		            if (null == aclFlow.isBarrier()) {
-		            	aclFlow.setBarrier(Boolean.FALSE);
-		            }
-		
-		            //
-		            // Now write the Flow Entry
-		            getResult(writeFlowToConfig(aclFlow));
-		
-		        } catch (Exception e) {
-		        	LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
-		        	LOG.error(e.getMessage(), e);
-		        }
+                try {
+                    if (!isReady) {
+                        LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() NOT ready to write yet");
+                        return;
+                    }
+
+                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
+
+                    //
+                    // Create the 5-tuple matching criteria
+
+                    // To do an IP match, the EtherType needs to be set to
+                    // 0x0800 which indicates IP
+                    EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+                    ethTypeBuilder.setType(new EtherType(0x0800L));
+                    EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
+                    ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
+
+                    Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(srcIp));
+                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(dstIp));
+
+                    IpMatchBuilder ipmatch = new IpMatchBuilder();
+                    ipmatch.setIpProtocol((short) protocol);
+
+                    MatchBuilder match = new MatchBuilder();
+                    match.setEthernetMatch(ethMatchBuilder.build());
+                    match.setLayer3Match(ipv4MatchBuilder.build());
+                    match.setIpMatch(ipmatch.build());
+
+                    if (protocol == 6) {
+                        TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
+                        // There must be a bug in
+                        // setTcpSource/DestinationPort(), because its
+                        // looking at the upper 2 bytes of the port and thinks
+                        // its out of range
+                        tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
+                        tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
+                        match.setLayer4Match(tcpMatch.build());
+                    } else {
+                        UdpMatchBuilder udpMatch = new UdpMatchBuilder();
+                        udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
+                        udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
+                        match.setLayer4Match(udpMatch.build());
+                    }
+
+                    //
+                    // Create the Actions
+
+                    // Create the Metadata action and wrap it in an
+                    // InstructionBuilder
+                    // Set the bits specified by METADATA_BITS with the bucket
+                    // value
+                    WriteMetadataBuilder wmb = new WriteMetadataBuilder();
+                    wmb.setMetadata(new BigInteger(Integer.toString(sfpId), 10));
+                    wmb.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
+
+                    InstructionBuilder wmbIb = new InstructionBuilder();
+                    wmbIb.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(wmb.build()).build());
+                    wmbIb.setKey(new InstructionKey(0));
+                    wmbIb.setOrder(0);
+
+                    // Create the Goto Table (Twcl) Action and wrap it in an
+                    // InstructionBuilder
+                    GoToTableBuilder gotoTb = new GoToTableBuilder();
+                    gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP)));
+
+                    InstructionBuilder gotoTbIb = new InstructionBuilder();
+                    gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
+                    gotoTbIb.setKey(new InstructionKey(1));
+                    gotoTbIb.setOrder(1);
+
+                    //
+                    // Put the Instructions in a list of Instructions
+                    List<Instruction> instructions = new ArrayList<Instruction>();
+                    instructions.add(gotoTbIb.build());
+                    instructions.add(wmbIb.build());
+
+                    InstructionsBuilder isb = new InstructionsBuilder();
+                    isb.setInstruction(instructions);
+
+                    //
+                    // Create and configure the FlowBuilder
+                    FlowBuilder aclFlow = new FlowBuilder();
+                    aclFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
+                    aclFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
+                    aclFlow.setTableId(getTableId(TABLE_INDEX_SFF_ACL));
+                    aclFlow.setFlowName("acl"); // should this name be unique??
+                    BigInteger cookieValue = new BigInteger("10", 10);
+                    aclFlow.setCookie(new FlowCookie(cookieValue));
+                    aclFlow.setCookieMask(new FlowCookie(cookieValue));
+                    aclFlow.setContainerName(null);
+                    aclFlow.setStrict(false);
+                    aclFlow.setMatch(match.build());
+                    aclFlow.setInstructions(isb.build());
+                    aclFlow.setPriority(FLOW_PRIORITY_ACL);
+                    aclFlow.setHardTimeout(0);
+                    aclFlow.setIdleTimeout(0);
+                    aclFlow.setFlags(new FlowModFlags(false, false, false, false, false));
+                    if (null == aclFlow.isBarrier()) {
+                        aclFlow.setBarrier(Boolean.FALSE);
+                    }
+
+                    //
+                    // Now write the Flow Entry
+                    getResult(writeFlowToConfig(aclFlow));
+
+                } catch (Exception e) {
+                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
+                    LOG.error(e.getMessage(), e);
+                }
             }
         };
         t.start();
@@ -293,109 +300,93 @@ public class SfcProviderSffFlowWriter {
     public void writeSffNextHop(final int inPort, final int sfpId, final String srcMac, final String dstMac, final int outPort) {
         Thread t = new Thread() {
             public void run() {
-		    	try {
-		            LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
-		            		inPort, sfpId, srcMac, dstMac, outPort);
-		
-		            //
-		            // Create the matching criteria
-		            MatchBuilder match = new MatchBuilder();
-		
-		            // Match on the metadata sfpId
-		            MetadataBuilder metadata = new MetadataBuilder();
-		            metadata.setMetadata(BigInteger.valueOf(sfpId));
-		            metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
-		            match.setMetadata(metadata.build());
-		
-		            // Match on the inPort
-		            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-		            ethTypeBuilder.setType(new EtherType(0x0800L));
-		            EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
-		            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-		            match.setEthernetMatch(ethMatchBuilder.build());
-		            match.setInPort(new NodeConnectorId(Integer.toString(inPort)));
-		
-		            //
-		            // Create the Actions
-		
-		            // Set the DL (Data Link) Dest Mac Address
-		            SetDlDstActionBuilder setdl = new SetDlDstActionBuilder();
-		            setdl.setAddress(new MacAddress(dstMac));
-		
-		            ActionBuilder abDst = new ActionBuilder();
-		            abDst.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(setdl.build()).build());
-		            abDst.setOrder(0);
-		            abDst.setKey(new ActionKey(0));
-		
-		            // Set the DL (Data Link) Source Mac Address
-		            SetDlSrcActionBuilder setdlSrc = new SetDlSrcActionBuilder();
-		            setdlSrc.setAddress(new MacAddress(srcMac));
-		
-		            ActionBuilder abSrc = new ActionBuilder();
-		            abSrc.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(setdlSrc.build()).build());
-		            abSrc.setOrder(1);
-		            abSrc.setKey(new ActionKey(1));
-		
-		            // Set the output port
-		            OutputActionBuilder output = new OutputActionBuilder();
-		            output.setOutputNodeConnector(new Uri(Integer.toString(outPort)));
-		
-		            ActionBuilder abPort = new ActionBuilder();
-		            abPort.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-		            abPort.setOrder(2);
-		            abPort.setKey(new ActionKey(2));
-		
-		            List<Action> actionList = new ArrayList<Action>();
-		            actionList.add(abDst.build());
-		            actionList.add(abSrc.build());
-		            actionList.add(abPort.build());
-		
-		            // Create an Apply Action
-		            ApplyActionsBuilder aab = new ApplyActionsBuilder();
-		            aab.setAction(actionList);
-		
-		            // Wrap our Apply Action in an Instruction
-		            InstructionBuilder ib = new InstructionBuilder();
-		            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-		            ib.setKey(new InstructionKey(0));
-		            ib.setOrder(0);
-		
-		            // Put our Instruction in a list of Instructions
-		            InstructionsBuilder isb = new InstructionsBuilder();
-		            List<Instruction> instructions = new ArrayList<Instruction>();
-		            instructions.add(ib.build());
-		            isb.setInstruction(instructions);
-		
-		            //
-		            // Create and configure the FlowBuilder
-		            FlowBuilder nextHopFlow = new FlowBuilder();
-		            nextHopFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
-		            nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
-		            nextHopFlow.setTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP));
-		            nextHopFlow.setFlowName("nextHop"); // should this name be unique??
-		            BigInteger cookieValue = new BigInteger("20", 10);
-		            nextHopFlow.setCookie(new FlowCookie(cookieValue));
-		            nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-		            nextHopFlow.setContainerName(null);
-		            nextHopFlow.setStrict(false);
-		            nextHopFlow.setMatch(match.build());
-		            nextHopFlow.setInstructions(isb.build());
-		            nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
-		            nextHopFlow.setHardTimeout(0);
-		            nextHopFlow.setIdleTimeout(0);
-		            nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-		            if (null == nextHopFlow.isBarrier()) {
-		            	nextHopFlow.setBarrier(Boolean.FALSE);
-		            }
-		
-		            //
-		            // Now write the Flow Entry
-		            getResult(writeFlowToConfig(nextHopFlow));
-		
-		    	} catch (Exception e) {
-		        	LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
-		        	LOG.error(e.getMessage(), e);
-		        }
+                try {
+                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
+                            inPort, sfpId, srcMac, dstMac, outPort);
+
+                    //
+                    // Create the matching criteria
+                    MatchBuilder match = new MatchBuilder();
+
+                    // Match on the metadata sfpId
+                    MetadataBuilder metadata = new MetadataBuilder();
+                    metadata.setMetadata(BigInteger.valueOf(sfpId));
+                    metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
+                    match.setMetadata(metadata.build());
+
+                    // Match on the inPort
+                    EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+                    ethTypeBuilder.setType(new EtherType(0x0800L));
+                    EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
+                    ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
+                    match.setEthernetMatch(ethMatchBuilder.build());
+                    match.setInPort(new NodeConnectorId(Integer.toString(inPort)));
+
+                    //
+                    // Create the Actions
+
+                    // Set the DL (Data Link) Dest Mac Address
+                    Action abDst = MdSalUtils.createSetDlDstAction(dstMac, 0);
+
+                    // Set the DL (Data Link) Source Mac Address
+                    Action abSrc = MdSalUtils.createSetDlSrcAction(srcMac, 1);
+
+                    // Set the output port
+                    Action abPort = MdSalUtils.createOutputAction(new Uri(Integer.toString(outPort)), 2);
+
+                    List<Action> actionList = new ArrayList<Action>();
+
+                    actionList.add(abDst);
+                    actionList.add(abSrc);
+                    actionList.add(abPort);
+
+                    // Create an Apply Action
+                    ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                    aab.setAction(actionList);
+
+                    // Wrap our Apply Action in an Instruction
+                    InstructionBuilder ib = new InstructionBuilder();
+                    ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                    ib.setKey(new InstructionKey(0));
+                    ib.setOrder(0);
+
+                    // Put our Instruction in a list of Instructions
+                    InstructionsBuilder isb = new InstructionsBuilder();
+                    List<Instruction> instructions = new ArrayList<Instruction>();
+                    instructions.add(ib.build());
+                    isb.setInstruction(instructions);
+
+                    //
+                    // Create and configure the FlowBuilder
+                    FlowBuilder nextHopFlow = new FlowBuilder();
+                    nextHopFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
+                    nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
+                    nextHopFlow.setTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP));
+                    nextHopFlow.setFlowName("nextHop"); // should this name be
+                                                        // unique??
+                    BigInteger cookieValue = new BigInteger("20", 10);
+                    nextHopFlow.setCookie(new FlowCookie(cookieValue));
+                    nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
+                    nextHopFlow.setContainerName(null);
+                    nextHopFlow.setStrict(false);
+                    nextHopFlow.setMatch(match.build());
+                    nextHopFlow.setInstructions(isb.build());
+                    nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+                    nextHopFlow.setHardTimeout(0);
+                    nextHopFlow.setIdleTimeout(0);
+                    nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
+                    if (null == nextHopFlow.isBarrier()) {
+                        nextHopFlow.setBarrier(Boolean.FALSE);
+                    }
+
+                    //
+                    // Now write the Flow Entry
+                    getResult(writeFlowToConfig(nextHopFlow));
+
+                } catch (Exception e) {
+                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                    LOG.error(e.getMessage(), e);
+                }
             }
         };
         t.start();
@@ -412,9 +403,9 @@ public class SfcProviderSffFlowWriter {
     // Should only set wait to true for debugging
     private boolean getResult(ListenableFuture<RpcResult<TransactionStatus>> result, boolean wait) {
         try {
-            if(wait) {
-                while(!result.isDone()) {
-                    //LOG.trace("writeFlowToConfig status is not done yet");
+            if (wait) {
+                while (!result.isDone()) {
+                    // LOG.trace("writeFlowToConfig status is not done yet");
                 }
             }
 
@@ -428,31 +419,35 @@ public class SfcProviderSffFlowWriter {
             LOG.trace("TransactionStatus result {}, result SUCCESSFUL", ts.toString());
             return true;
 
-        } catch(Exception e) {
-        	LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter waitForResult() caught an Exception: ");
-        	LOG.error(e.getMessage(), e);
+        } catch (Exception e) {
+            LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter waitForResult() caught an Exception: ");
+            LOG.error(e.getMessage(), e);
             return false;
         }
-   }
+    }
 
-   private ListenableFuture<RpcResult<TransactionStatus>> writeFlowToConfig(FlowBuilder flow) {
-	   // Create the NodeBuilder
-       NodeBuilder nodeBuilder = new NodeBuilder();
-       nodeBuilder.setId(new NodeId(this.sffNodeName));
-       nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+    private ListenableFuture<RpcResult<TransactionStatus>> writeFlowToConfig(FlowBuilder flow) {
+        // Create the NodeBuilder
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setId(new NodeId(this.sffNodeName));
+        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
-       // Create the flow path
-       InstanceIdentifier<Flow> flowPath = 
-    		   InstanceIdentifier.builder(Nodes.class)
-    		   .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-    		   .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-       InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey()).toInstance();
+        // Create the flow path
+        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey())
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
+        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey()).toInstance();
 
-       WriteTransaction addFlowTransaction = dataBroker.newWriteOnlyTransaction();
-       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build(), true /* create Missing parents if needed */);
-       addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build(), true);
+        WriteTransaction addFlowTransaction = dataBroker.newWriteOnlyTransaction();
+        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build(), true /*
+                                                                                                        * create
+                                                                                                        * Missing
+                                                                                                        * parents
+                                                                                                        * if
+                                                                                                        * needed
+                                                                                                        */);
+        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build(), true);
 
-       return addFlowTransaction.commit();
-   }
+        return addFlowTransaction.commit();
+    }
 
 }

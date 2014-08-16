@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_4f00b933",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-16T08:15:42Z",
+      "side": 1,
+      "message": "It depends how you look at it. If a SFF can not reach a SF for whatever reason, the possible set of actions it can take depends on local SFF specific configuration/policy and SF config.",
+      "parentUuid": "fa82b9bf_2c61c304",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_ac34f3fb",
         "filename": "sfc-model/src/main/yang/service-locator.yang",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2014-08-15T20:47:58Z",
       "side": 1,
       "message": "Is there a reason you are not using the vlan-id types from opendaylight-l2-types ?",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_2f053545",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-16T08:15:42Z",
+      "side": 1,
+      "message": "The opendaylight definition is the same as in the IETF interfaces module (which we used here)\n\n\ntypedef vlan-id {\ntype uint16 {\nrange \"0..4095\";\n}\n}",
+      "parentUuid": "fa82b9bf_ac34f3fb",
       "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_1ab3d14d",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-17T16:06:30Z",
+      "side": 1,
+      "message": "This is a slightly  old version. In the new version it will be here anymore.",
+      "parentUuid": "fa82b9bf_4f0af926",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_ac34f3fb",
         "filename": "sfc-model/src/main/yang/service-locator.yang",
         "patchSetId": 1
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "Even more reason to reuse it the one from ODL... every new typedef means a duplicate class... which means things are harder and harder for folks to use.\n\nAt this point this would be the *third* (one from the standard ODL one, one from the ietf interface model, and now this one)... stop the insanity... use the stock one :)",
       "parentUuid": "fa82b9bf_2f053545",
+      "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_fab70d38",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-08-17T16:06:30Z",
+      "side": 1,
+      "message": "opendaylight-l2-types has overlapping definitions with IETF interface models, so we can not use that. Importing such model would not be good.\n\nAnd the IETF definition is not a typedef, just a leaf example much like here. I suggest leaving the way it is.",
+      "parentUuid": "fa82b9bf_2f0f7538",
       "revId": "39eddcbb9407e6528b7e12f11ca0608b4de593a7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

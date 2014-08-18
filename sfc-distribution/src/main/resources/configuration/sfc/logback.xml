@@ -1,0 +1,16 @@
+<configuration scan="true" debug="true">
+    
+  <appender name="sfc.log" class="ch.qos.logback.core.FileAppender">
+    <file>logs/sfc.log</file>
+
+    <encoder>
+      <pattern>%date{"yyyy-MM-dd HH:mm:ss.SSS z"} [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+
+  </appender>    
+
+  <logger name="org.opendaylight.sfc.provider" level="DEBUG">
+          <appender-ref ref="sfc.log" />
+  </logger>
+  
+</configuration>

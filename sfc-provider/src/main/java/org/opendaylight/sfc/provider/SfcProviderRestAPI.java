@@ -76,13 +76,11 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
 
-        /*
         ClientResponse putClientRemoteResponse= client
                 .resource("http://31.133.132.41:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
         putClientRemoteResponse.close();
-        */
 
     }
 

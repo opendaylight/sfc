@@ -58,11 +58,28 @@ module service-locator {
     }
   }
 
+  grouping mac-address-locator {
+    description
+      "Data plane-locator: mac address and optional vlan-id";
+    leaf mac {
+      type yang:mac-address;
+    }
+    leaf vlan-id {
+      type uint16 {
+        range "1..4094";
+      }
+    }
+  }
+
   grouping data-plane-locator {
     choice locator-type {
-      mandatory true;
+      // Commenting out mandatory in lieu of a solution for Yangtools  bug:1467
+      // mandatory true;
       case ip {
         uses ip-port-locator;
+      }
+      case mac {
+        uses mac-address-locator;
       }
     }
   }

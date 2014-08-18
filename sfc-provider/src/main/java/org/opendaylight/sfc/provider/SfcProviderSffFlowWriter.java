@@ -14,19 +14,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.math.BigInteger;
 
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opendaylight.sfc.provider.utils.MdSalUtils;
-//
-//From maven repo:
-//   <groupId>org.opendaylight.controller.model</groupId>
-//   <artifactId>model-flow-service</artifactId>
-//   <version>1.1-SNAPSHOT</version>
-//Yang version: rev130819
-//
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -34,20 +29,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-
-//
-//From maven repo:
-//   <groupId>org.opendaylight.controller.model</groupId>
-//   <artifactId>model-flow-base</artifactId>
-//   <version>1.1-SNAPSHOT</version>
-//Yang version: rev131026
-//
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -71,22 +61,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
-
-//
-//From maven repo:
-//    <groupId>org.opendaylight.controller.model</groupId>
-//    <artifactId>model-inventory</artifactId>
-//    <version>1.1-SNAPSHOT</version>
-//Yang version: rev130819
-//
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-
-// 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -101,6 +81,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
@@ -143,7 +124,7 @@ public class SfcProviderSffFlowWriter {
 
     public SfcProviderSffFlowWriter(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-        this.isReady = false;
+        isReady = false;
     }
 
     public boolean isReady() {
@@ -156,7 +137,7 @@ public class SfcProviderSffFlowWriter {
     }
 
     public short getTableBase() {
-        return this.tableBase;
+        return tableBase;
     }
 
     public void setTableBase(short tableBase) {
@@ -172,13 +153,15 @@ public class SfcProviderSffFlowWriter {
      * TABLE_INDEX_SFF_OUTPUT
      */
     private short getTableId(short tableIndex) {
-        return (short) (this.tableBase + tableIndex);
+        return (short) (tableBase + tableIndex);
     }
 
     // TODO some of the 5tuple entries may be optional, need to add logic to
     // writeSffAcl() to not write them if not specified
-    public void writeSffAcl(final String srcIp, final String dstIp, final short srcPort, final short dstPort, final byte protocol, final int sfpId) {
+    public void writeSffAcl(final String srcIp, final short srcMask, final String dstIp, final short dstMask,
+            final short srcPort, final short dstPort, final byte protocol, final int sfpId) {
         Thread t = new Thread() {
+            @Override
             public void run() {
                 try {
                     if (!isReady) {
@@ -199,8 +182,8 @@ public class SfcProviderSffFlowWriter {
                     ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
 
                     Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(srcIp));
-                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(dstIp));
+                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(longToIp(srcIp, srcMask)));
+                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(longToIp(dstIp, dstMask)));
 
                     IpMatchBuilder ipmatch = new IpMatchBuilder();
                     ipmatch.setIpProtocol((short) protocol);
@@ -216,13 +199,13 @@ public class SfcProviderSffFlowWriter {
                         // setTcpSource/DestinationPort(), because its
                         // looking at the upper 2 bytes of the port and thinks
                         // its out of range
-                        tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
-                        tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
+                        tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                        tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
                         match.setLayer4Match(tcpMatch.build());
                     } else {
                         UdpMatchBuilder udpMatch = new UdpMatchBuilder();
-                        udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & (int) srcPort)));
-                        udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & (int) dstPort)));
+                        udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                        udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
                         match.setLayer4Match(udpMatch.build());
                     }
 
@@ -296,12 +279,121 @@ public class SfcProviderSffFlowWriter {
         t.start();
     }
 
-    // TODO need to check if these types are correct: sfpId, src/dstMac, etc
-    public void writeSffNextHop(final int inPort, final int sfpId, final String srcMac, final String dstMac, final int outPort) {
+    // Overriden it for our specific L2 case
+    public void writeSffNextHop(final String srcMac, final int srcVlan, final String dstMac, final int dstVlan,
+            final int sfpId) {
+
         Thread t = new Thread() {
+            @Override
             public void run() {
                 try {
-                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
+                    LOG.trace(
+                            "+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
+                            srcVlan, sfpId, srcMac, dstMac, dstVlan);
+
+                    //
+                    // Create the matching criteria
+                    MatchBuilder match = new MatchBuilder();
+
+                    // Match on the metadata sfpId
+                    MetadataBuilder metadata = new MetadataBuilder();
+                    metadata.setMetadata(BigInteger.valueOf(sfpId));
+                    metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 10));
+                    match.setMetadata(metadata.build());
+
+                    // match the src mac
+                    EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+                    EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
+                    ethSourceBuilder.setAddress(new MacAddress(srcMac));
+                    ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+                    match.setEthernetMatch(ethernetMatch.build());
+
+                    // match the src vlan
+                    VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
+                    VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+                    VlanId vlanId = new VlanId(srcVlan);
+                    vlanIdBuilder.setVlanId(vlanId);
+                    vlanIdBuilder.setVlanIdPresent(true);
+                    vlanBuilder.setVlanId(vlanIdBuilder.build());
+                    ;
+                    match.setVlanMatch(vlanBuilder.build());
+
+                    // Create the Actions
+
+                    // Set the DL (Data Link) Dest Mac Address
+                    Action abDst = MdSalUtils.createSetDlDstAction(dstMac, 0);
+
+                    // Set the DL (Data Link) Source Mac Address
+                    Action abSrc = MdSalUtils.createSetDlSrcAction(srcMac, 1);
+
+                    Action dstMac = MdSalUtils.createSetDstVlanAction(dstVlan, 2);
+
+                    List<Action> actionList = new ArrayList<Action>();
+
+                    actionList.add(abDst);
+                    actionList.add(abSrc);
+                    actionList.add(dstMac);
+                    // Create an Apply Action
+                    ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                    aab.setAction(actionList);
+
+                    // Wrap our Apply Action in an Instruction
+                    InstructionBuilder ib = new InstructionBuilder();
+                    ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                    ib.setKey(new InstructionKey(0));
+                    ib.setOrder(0);
+
+                    // Put our Instruction in a list of Instructions
+                    InstructionsBuilder isb = new InstructionsBuilder();
+                    List<Instruction> instructions = new ArrayList<Instruction>();
+                    instructions.add(ib.build());
+                    isb.setInstruction(instructions);
+
+                    //
+                    // Create and configure the FlowBuilder
+                    FlowBuilder nextHopFlow = new FlowBuilder();
+                    nextHopFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
+                    nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
+                    nextHopFlow.setTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP));
+                    nextHopFlow.setFlowName("nextHop");
+                    BigInteger cookieValue = new BigInteger("20", 10);
+                    nextHopFlow.setCookie(new FlowCookie(cookieValue));
+                    nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
+                    nextHopFlow.setContainerName(null);
+                    nextHopFlow.setStrict(false);
+                    nextHopFlow.setMatch(match.build());
+                    nextHopFlow.setInstructions(isb.build());
+                    nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+                    nextHopFlow.setHardTimeout(0);
+                    nextHopFlow.setIdleTimeout(0);
+                    nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
+                    if (null == nextHopFlow.isBarrier()) {
+                        nextHopFlow.setBarrier(Boolean.FALSE);
+                    }
+
+                    //
+                    // Now write the Flow Entry
+                    getResult(writeFlowToConfig(nextHopFlow));
+
+                } catch (Exception e) {
+                    LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                    LOG.error(e.getMessage(), e);
+                }
+
+            }
+        };
+        t.start();
+    }
+
+    // TODO need to check if these types are correct: sfpId, src/dstMac, etc
+    public void writeSffNextHop(final int inPort, final int sfpId, final String srcMac, final String dstMac,
+            final int outPort) {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    LOG.trace(
+                            "+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop inPort {} sfpId {}, MAC src/dest {}/{} outPort {}",
                             inPort, sfpId, srcMac, dstMac, outPort);
 
                     //
@@ -363,7 +455,7 @@ public class SfcProviderSffFlowWriter {
                     nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
                     nextHopFlow.setTableId(getTableId(TABLE_INDEX_SFF_NEXT_HOP));
                     nextHopFlow.setFlowName("nextHop"); // should this name be
-                                                        // unique??
+                    // unique??
                     BigInteger cookieValue = new BigInteger("20", 10);
                     nextHopFlow.setCookie(new FlowCookie(cookieValue));
                     nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
@@ -429,13 +521,15 @@ public class SfcProviderSffFlowWriter {
     private ListenableFuture<RpcResult<TransactionStatus>> writeFlowToConfig(FlowBuilder flow) {
         // Create the NodeBuilder
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(this.sffNodeName));
+        nodeBuilder.setId(new NodeId(sffNodeName));
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path
-        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey())
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey()).toInstance();
+        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
+        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).toInstance();
 
         WriteTransaction addFlowTransaction = dataBroker.newWriteOnlyTransaction();
         addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build(), true /*
@@ -448,6 +542,12 @@ public class SfcProviderSffFlowWriter {
         addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build(), true);
 
         return addFlowTransaction.commit();
+    }
+
+    public static String longToIp(String ip, short mask) {
+        StringBuilder sb = new StringBuilder(15);
+        sb.append("/" + mask);
+        return sb.toString();
     }
 
 }

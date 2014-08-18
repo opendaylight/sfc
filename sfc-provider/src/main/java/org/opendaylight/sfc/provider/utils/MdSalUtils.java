@@ -12,15 +12,18 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 public class MdSalUtils {
 
@@ -52,6 +55,17 @@ public class MdSalUtils {
                 .build();
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(action).build());
         return ab.build();
+    }
+
+    public static Action createSetDstVlanAction(int vlan, int order) {
+        ActionBuilder ab = createActionBuilder(order);
+
+        SetVlanIdActionBuilder vlanIdActionBuilder = new SetVlanIdActionBuilder();
+        VlanId vlanId = new VlanId(vlan);
+        vlanIdActionBuilder.setVlanId(vlanId);
+        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vlanIdActionBuilder.build()).build());
+        return ab.build();
+
     }
 
     private static ActionBuilder createActionBuilder(int order) {

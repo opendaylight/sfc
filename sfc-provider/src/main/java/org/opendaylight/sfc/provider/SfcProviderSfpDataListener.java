@@ -6,7 +6,6 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-
 package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
@@ -32,11 +31,12 @@ import java.util.Map;
 
 /**
  * This class is the DataListener for SFP changes.
- *
+ * 
  * <p>
+ * 
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since 2014-06-30
  */
 
 public class SfcProviderSfpDataListener implements DataChangeListener {
@@ -45,30 +45,31 @@ public class SfcProviderSfpDataListener implements DataChangeListener {
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
         /*
-         * when a SFP is created we will process and send it to southbound devices. But first we need
-         * to make sure all info is present or we will pass.
+         * when a SFP is created we will process and send it to southbound
+         * devices. But first we need to make sure all info is present or we
+         * will pass.
          */
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
-        {
-            if( entry.getValue() instanceof ServiceFunctionPaths) {
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
+            if (entry.getValue() instanceof ServiceFunctionPaths) {
 
                 ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-                Object[] serviceForwarderObj = {updatedServiceFunctionPaths};
-                Class[] serviceForwarderClass = {ServiceFunctionPaths.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPaths (serviceForwarderObj, serviceForwarderClass));
+                Object[] serviceForwarderObj = { updatedServiceFunctionPaths };
+                Class[] serviceForwarderClass = { ServiceFunctionPaths.class };
+                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPaths(serviceForwarderObj,
+                        serviceForwarderClass));
 
                 //
                 // Write the flows to the SFF
                 // For now these will be both ACL and NextHop flow tables,
                 // later on logic needs to be added here to write different flow
-                // entry types depending on the individual switch encapsulation, etc
+                // entry types depending on the individual switch encapsulation,
+                // etc
                 //
                 writeSffFlows(updatedServiceFunctionPaths);
             }
@@ -77,45 +78,53 @@ public class SfcProviderSfpDataListener implements DataChangeListener {
     }
 
     private void writeSffFlows(ServiceFunctionPaths updatedServiceFunctionPaths) {
-    	Iterator<ServiceFunctionPath> sfpIter = updatedServiceFunctionPaths.getServiceFunctionPath().iterator();
+        Iterator<ServiceFunctionPath> sfpIter = updatedServiceFunctionPaths.getServiceFunctionPath().iterator();
 
-    	// Each Service Function Path configured
-    	while(sfpIter.hasNext()) {
-    		ServiceFunctionPath sfp = sfpIter.next();
-    		Iterator<SfpServiceFunction> sfpSfIter = sfp.getSfpServiceFunction().iterator();
+        // Each Service Function Path configured
+        while (sfpIter.hasNext()) {
+            ServiceFunctionPath sfp = sfpIter.next();
+            Iterator<SfpServiceFunction> sfpSfIter = sfp.getSfpServiceFunction().iterator();
 
-    		// Each Service Function in the Service Function Path
-    		while(sfpSfIter.hasNext()) {
-    			SfpServiceFunction sfpSf = sfpSfIter.next();
+            // Each Service Function in the Service Function Path
+            while (sfpSfIter.hasNext()) {
+                SfpServiceFunction sfpSf = sfpSfIter.next();
 
-    			// The SFF name should be the name of the actual switch
-    			SfcProviderSffFlowWriter.getInstance().setNodeInfo(sfpSf.getServiceFunctionForwarder());
+                // The SFF name should be the name of the actual switch
+                SfcProviderSffFlowWriter.getInstance().setNodeInfo(sfpSf.getServiceFunctionForwarder());
 
-    			ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sfpSf.getServiceFunctionForwarder());
-    			//Iterator<SffDataPlaneLocator> sffDplIter = sff.getSffDataPlaneLocator().iterator();
-    			//Iterator<ServiceFunctionDictionary> sffSfDictIter = sff.getServiceFunctionDictionary().iterator();
-    			// TODO need to get the inPort and srcMac
+                ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sfpSf
+                        .getServiceFunctionForwarder());
+                Iterator<SffDataPlaneLocator> sffDplIter = sff.getSffDataPlaneLocator().iterator();
+                Iterator<ServiceFunctionDictionary> sffSfDictIter = sff.getServiceFunctionDictionary().iterator();
+                // TODO need to get the inPort and srcMac
 
+                // Get everything needed to write to the Next Hop table
+                ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfpSf.getName());
+                LocatorType sfLt = sf.getSfDataPlaneLocator().getLocatorType();
 
-    			// Get everything needed to write to the Next Hop table
-    			ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfpSf.getName());
-    			LocatorType sfLt = sf.getSfDataPlaneLocator().getLocatorType();
-    				
-    			// TODO the Mac DataPlanLocator choice was temporarily removed due to yangtools bug: https://bugs.opendaylight.org/show_bug.cgi?id=1467
-    			// TODO get the dst MACs and the outPort from the LocatorType
-    			//if(!sfLt.getImplementedInterface().equals(Mac.class)) {
-    			//    What to do if its not a MAC locator??
-    			//}
-    			// This is the other choice, but I dont think we'll be using it
-    			//else if(sfLt.getImplementedInterface().equals(Ip.class))
+                // TODO<Brady/ the Mac DataPlanLocator choice was temporarily
+                // removed
+                // due to yangtools bug:
+                // https://bugs.opendaylight.org/show_bug.cgi?id=1467
+                // TODO<Brady/ get the dst MACs and the outPort from the
+                // LocatorType
+                // if(!sfLt.getImplementedInterface().equals(Mac.class)) {
+                // What to do if its not a MAC locator??
+                // }
+                // This is the other choice, but I dont think we'll be using it
+                // else if(sfLt.getImplementedInterface().equals(Ip.class))
 
+                // TODO<Brady/>SfcProviderSffFlowWriter.getInstance().writeSffNextHop(inPort,
+                // sfp.getPathId(), srcMac, dstMac, outPort);
 
-    			//SfcProviderSffFlowWriter.getInstance().writeSffNextHop(inPort, sfp.getPathId(), srcMac, dstMac, outPort);
+                // TODO<shuva/>since the implementation is now only for L2
+                // domain we get the mac/vlan for each of the SFs from the list
+                // of SFs that belong to a SFP.hence we will provision flows for
+                // all of them eg src is from SF1, dest will be SF2 and so on
+                // the deault is assumed to go to SF1
 
-    			// TODO need to get the ACL and fill in the following fields
-    			//SfcProviderSffFlowWriter.getInstance().writeSffAcl(srcIp, dstIp, srcPort, dstPort, protocol, sfp.getPathId());
-    		}
-    	}
-	}
+            }
+        }
+    }
 
 }

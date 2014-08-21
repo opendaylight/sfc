@@ -85,6 +85,18 @@ module service-function-path {
           description
             "Service Function Forwarder name";
         }
+        leaf service_index {
+          type uint8;
+          description
+            "Provides location within the service path.
+             Service index MUST be decremented by service functions
+             or proxy nodes after performing required services.  MAY
+             be used in conjunction with service path for path
+             selection.  Service Index is also valuable when
+             troubleshooting/reporting service paths.  In addition to
+             location within a path, SI can be used for loop
+             detection.";
+        }
         ordered-by user;
         description
           "A list of service functions that compose the
@@ -97,17 +109,10 @@ module service-function-path {
           "The Service Function Chain used as blueprint for this
            path";
       }
-      leaf service_index {
+      leaf starting-index {
         type uint8;
         description
-          "Provides location within the service path.
-           Service index MUST be decremented by service functions
-           or proxy nodes after performing required services.  MAY
-           be used in conjunction with service path for path
-           selection.  Service Index is also valuable when
-           troubleshooting/reporting service paths.  In addition to
-           location within a path, SI can be used for loop
-           detection.";
+          "Starting service index";
       }
       leaf path-id {
         type uint32 {

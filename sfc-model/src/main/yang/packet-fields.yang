@@ -11,6 +11,7 @@ module packet-fields {
 
     import ietf-yang-types {
         prefix "yang";
+        revision-date 2013-07-15;
     }
 
     revision 2014-06-25 {

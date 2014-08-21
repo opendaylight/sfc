@@ -19,7 +19,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This class is the DataListener for SFF changes.
+ * This class provides a REST client implementation to
+ * manage SB devices that provide a REST server interface.
  *
  * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)

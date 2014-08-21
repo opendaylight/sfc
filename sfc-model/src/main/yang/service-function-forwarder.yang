@@ -4,10 +4,11 @@ module service-function-forwarder {
 
   prefix sfc-sff;
 
-  import ietf-inet-types        { prefix inet; }
-  import ietf-yang-types        { prefix yang; }
-  import service-function       { prefix sfc-sf; }
-  import service-function-path  { prefix sfc-sfp; }
+  import ietf-inet-types        { prefix inet;}
+  import ietf-yang-types {
+    prefix "yang";
+    revision-date 2013-07-15;
+  }
   import service-locator        { prefix sfc-sl; }
 
   organization "Cisco Systems, Inc.";
@@ -40,31 +41,6 @@ module service-function-forwarder {
   revision 2014-07-01 {
       description
       "Revision based on Opendaylight project feedback";
-  }
-
-  // Transport type definitions
-  identity transport-type {
-    description
-      "Base identity from which specific transport types are
-       derived.";
-  }
-
-  identity vxlan-gpe {
-    base "sff-transport-type";
-    description "Programmable vxlan transport type";
-  }
-
-  identity other {
-    base "sff-transport-type";
-    description "unspecified transport type";
-  }
-
-  identity sff-transport-type {
-    base "transport-type";
-    description
-      "This identity is used as a base for all transport
-       types";
-
   }
 
   // Failmode type definitions
@@ -121,7 +97,15 @@ module service-function-forwarder {
         description "The service node that hosts this SFF";
       }
 
+      leaf classifier {
+        type string;
+        description "the access-list responsible for directing
+          packets to a specific service path";
+      }
+
       list sff-data-plane-locator {
+        description
+          "A list of all data-plane-locators of this SFF.";
         key "name";
         leaf name {
           type string;
@@ -129,21 +113,12 @@ module service-function-forwarder {
             "A unique string that represents this
              data-plane-locator";
         }
-        leaf transport {
-          type identityref {
-             base sff-transport-type;
-          }
-          description
-            "The overlay transport protocol used to sends packets
-             between SFFs such as VXLAN or GRE";
-        }
+
         container data-plane-locator {
-          uses sfc-sl:data-plane-locator;
           description
             "A network data-plane locator";
+          uses sfc-sl:data-plane-locator;
         }
-        description
-          "A list of all data-plane-locators of this SFF.";
       }
 
       list service-function-dictionary {
@@ -155,7 +130,6 @@ module service-function-forwarder {
         }
         leaf type {
           type string;
-          mandatory true;
           description
             "Service Function Type from service-function-type yang
              model";

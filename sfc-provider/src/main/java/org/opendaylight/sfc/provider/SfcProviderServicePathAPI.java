@@ -219,6 +219,8 @@ public class SfcProviderServicePathAPI implements Runnable {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         long pathId;
+        int pos_index = 0;
+        int service_index;
         ServiceFunctionChain serviceFunctionChain;
         String serviceFunctionChainName = serviceFunctionPath.getServiceChainName();
         if ((serviceFunctionChainName == null) || ((serviceFunctionChain = SfcProviderServiceChainAPI
@@ -238,6 +240,7 @@ public class SfcProviderServicePathAPI implements Runnable {
          * service function from the list of service functions by type.
          */
         List<SfcServiceFunction> SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
+        service_index = SfcServiceFunctionList.size();
         for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
             LOG.debug("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
 
@@ -260,9 +263,12 @@ public class SfcProviderServicePathAPI implements Runnable {
                                     .readServiceFunction(serviceFunctionName)) != null)) {
 
                             sfpServiceFunctionBuilder.setName(serviceFunctionName)
+                                    .setServiceIndex((short)service_index)
                                         .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
                                                 .getServiceFunctionForwarder());
-                            sfpServiceFunctionArrayList.add(sfpServiceFunctionBuilder.build());
+                            sfpServiceFunctionArrayList.add(pos_index,sfpServiceFunctionBuilder.build());
+                            service_index--;
+                            pos_index++;
                             break;
                         } else {
                             LOG.error("\n####### Could not find suitable SF of type in data store: {}",
@@ -296,7 +302,7 @@ public class SfcProviderServicePathAPI implements Runnable {
 
         serviceFunctionPathBuilder.setPathId(pathId);
         // TODO: Find out the exact rules for service index generation
-        serviceFunctionPathBuilder.setServiceIndex((short) (sfpServiceFunctionArrayList.size() + 1));
+        serviceFunctionPathBuilder.setStartingIndex((short) (sfpServiceFunctionArrayList.size() + 1));
         serviceFunctionPathBuilder.setServiceChainName(serviceFunctionChainName);
 
         ServiceFunctionPathKey serviceFunctionPathKey = new

@@ -9,6 +9,15 @@ module service-function-forwarder-ovs {
     prefix "sfc-sff";
   }
 
+  import ietf-inet-types {
+    prefix "inet";
+  }
+
+  import ietf-yang-types {
+    prefix "yang";
+    revision-date 2013-07-15;
+  }
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -18,9 +27,24 @@ module service-function-forwarder-ovs {
 
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/" {
-    description "OVSDB bridge UUID";
-    leaf uuid {
-      type string;
+
+    container ovs {
+      leaf uuid {
+        description "OVSDB bridge UUID";
+        type yang:uuid;
+      }
+      leaf external-ids {
+        description "OVSDB external bridge id";
+        type string;
+      }
+      leaf bridge-name {
+        description "OVSDB bridge name";
+        type string;
+      }
+      leaf rest-uri {
+        description "URI of REST based management";
+        type inet:uri;
+      }
     }
   }
 }

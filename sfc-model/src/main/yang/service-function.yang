@@ -76,11 +76,22 @@ module service-function {
       description
         "The IP and port used to configure this service-node";
     }
+    leaf nsh-aware {
+      type boolean;
+      description "Whether this SF can process NSH headers";
+    }
+
 
     //TODO: move to list
     container sf-data-plane-locator {
       description
         "A network data-plane locator";
+      leaf name {
+        type string;
+        description
+          "A unique string that represents this
+           data-plane-locator";
+      }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
         type string;

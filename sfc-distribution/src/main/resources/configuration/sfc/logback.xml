@@ -13,7 +13,7 @@
         <suffixPattern>[%thread] %logger %msg</suffixPattern>
     </appender>
 
-    <logger name="org.opendaylight.sfc.provider" level="DEBUG">
+    <logger name="org.opendaylight.sfc.provider" level="ERROR">
         <appender-ref ref="sfc.log" />
         <appender-ref ref="sfc.syslog" />
     </logger>

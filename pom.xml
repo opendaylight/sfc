@@ -38,6 +38,7 @@
         <maven.surefire.version>2.16</maven.surefire.version>
 
         <ietf.model.version>2010.09.24.4-SNAPSHOT</ietf.model.version>
+        <ietf.yang.types.version>2013.07.15.1-SNAPSHOT</ietf.yang.types.version>
         <yang.ext.version>2013.09.07.4-SNAPSHOT</yang.ext.version>
         <compiler.version>2.3.2</compiler.version>
         <checkstyle.version>2.10</checkstyle.version>

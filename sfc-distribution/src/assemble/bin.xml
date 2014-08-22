@@ -13,18 +13,13 @@
       <directory>${project.build.directory}/generated-resources</directory>
       <outputDirectory>/</outputDirectory>
       <excludes>
-        <exclude>opendaylight/plugins/org.opendaylight.controller.thirdparty.org.openflow.openflowj-*.jar</exclude>
-        <exclude>opendaylight/plugins/org.opendaylight.controller.protocol_plugins.openflow-*.jar</exclude>
+        <exclude>opendaylight/plugins/*sfc*</exclude>
       </excludes>
     </fileSet>
     <fileSet>
       <directory>
         src/main/resources/
       </directory>
-      <excludes>
-        <exclude>version.properties</exclude>
-        <exclude>configuration/config.ini</exclude>
-      </excludes>
       <outputDirectory>
         opendaylight/
       </outputDirectory>
@@ -33,26 +28,6 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>opendaylight/plugins</outputDirectory>
-      <excludes>
-        <exclude>equinoxSDK381:org.eclipse.osgi</exclude>
-        <exclude>equinoxSDK381:org.eclipse.equinox.console</exclude>
-        <exclude>equinoxSDK381:org.eclipse.equinox.launcher</exclude>
-        <exclude>equinoxSDK381:org.eclipse.equinox.ds</exclude>
-        <exclude>equinoxSDK381:org.eclipse.equinox.util</exclude>
-        <exclude>equinoxSDK381:org.eclipse.osgi.services</exclude>
-        <exclude>virgomirror:org.eclipse.jdt.core.compiler.batch</exclude>
-        <exclude>org.apache.felix:org.apache.felix.fileinstall</exclude>
-        <exclude>geminiweb:org.eclipse.virgo.kernel.equinox.extensions</exclude>
-        <exclude>org.slf4j:slf4j-api</exclude>
-        <exclude>ch.qos.logback:logback-core</exclude>
-        <exclude>ch.qos.logback:logback-classic</exclude>
-        <exclude>com.sun.jersey:jersey-core</exclude>
-        <exclude>com.sun.jersey:jersey-json</exclude>
-        <exclude>com.sun.jersey:jersey-server</exclude>
-        <exclude>org.opendaylight.defense4all:defense4all.core.impl</exclude>
-        <exclude>org.opendaylight.defense4all:framework.core.impl</exclude>
-        <exclude>org.opendaylight.defense4all:defense4all.restservice</exclude>
-      </excludes>
       <outputFileNameMapping>
         ${artifact.groupId}.${artifact.artifactId}-${artifact.version}${dashClassifier?}.${artifact.extension}
       </outputFileNameMapping>

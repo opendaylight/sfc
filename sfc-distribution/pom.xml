@@ -16,6 +16,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <packaging>pom</packaging>
     <!-- name>Opendaylight SFC</name -->
 
+    <properties>
+        <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
+        <openflowplugin.version>0.0.3-SNAPSHOT</openflowplugin.version>
+        <openflowj.version>1.0.2</openflowj.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -36,9 +42,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <version>${project.parent.version}</version>
         </dependency>
 
-
-        <!-- base distribution -->
-
+        <!-- controller base distribution -->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>distribution.opendaylight</artifactId>
@@ -49,6 +53,68 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <scope>provided</scope>
         </dependency>
 
+        <!-- openflowjava -->
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>util</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-spi</artifactId>
+            <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.thirdparty</groupId>
+            <artifactId>org.openflow.openflowj</artifactId>
+            <version>${openflowj.version}</version>
+        </dependency>
+        <!-- openflowplugin -->
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-api</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-nicira</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowjava-extension-nicira-api</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowjava-extension-nicira</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-controller-config</artifactId>
+            <version>${openflowplugin.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -77,6 +143,26 @@ see https://git.opendaylight.org/gerrit/#/c/390/
                             <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
                             <includeArtifactIds>distribution.opendaylight</includeArtifactIds>
                             <includeGroupIds>org.opendaylight.controller</includeGroupIds>
+                            <excludeTransitive>true</excludeTransitive>
+                            <ignorePermissions>false</ignorePermissions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-provided-configs</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
+                            <includeArtifactIds>
+                                openflowplugin-controller-config,
+                                openflowjava-extension-nicira,
+                                openflowjava-extension-nicira-api,
+                                openflowplugin-extension-nicira,
+                                test-extension
+                            </includeArtifactIds>
+                            <includes>**\/*.xml</includes>
                             <excludeTransitive>true</excludeTransitive>
                             <ignorePermissions>false</ignorePermissions>
                         </configuration>

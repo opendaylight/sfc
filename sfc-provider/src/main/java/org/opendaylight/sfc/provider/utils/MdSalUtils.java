@@ -9,10 +9,12 @@ package org.opendaylight.sfc.provider.utils;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstAction;
@@ -33,7 +35,8 @@ public class MdSalUtils {
         MacAddress addr = new MacAddress(mac);
         SetDlSrcActionBuilder actionBuilder = new SetDlSrcActionBuilder();
         SetDlSrcAction action = actionBuilder.setAddress(addr).build();
-        ab.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(action).build());
+        ab.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(action)
+                .build());
         return ab.build();
     }
 
@@ -43,7 +46,8 @@ public class MdSalUtils {
         MacAddress addr = new MacAddress(mac);
         SetDlDstActionBuilder actionBuilder = new SetDlDstActionBuilder();
         SetDlDstAction action = actionBuilder.setAddress(addr).build();
-        ab.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(action).build());
+        ab.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(action)
+                .build());
         return ab.build();
     }
 
@@ -53,7 +57,8 @@ public class MdSalUtils {
         OutputAction action = oab //
                 .setOutputNodeConnector(uri) //
                 .build();
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(action).build());
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(action)
+                .build());
         return ab.build();
     }
 
@@ -63,9 +68,21 @@ public class MdSalUtils {
         SetVlanIdActionBuilder vlanIdActionBuilder = new SetVlanIdActionBuilder();
         VlanId vlanId = new VlanId(vlan);
         vlanIdActionBuilder.setVlanId(vlanId);
-        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vlanIdActionBuilder.build()).build());
+        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(
+                vlanIdActionBuilder.build()).build());
         return ab.build();
 
+    }
+
+    public static Action createSetGroupAction(long nextHopGroupId, int order) {
+        ActionBuilder ab = createActionBuilder(order);
+
+        GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+        groupActionBuilder.setGroupId(nextHopGroupId);
+
+        ab.setAction(new GroupActionCaseBuilder().setGroupAction(
+                groupActionBuilder.build()).build());
+        return ab.build();
     }
 
     private static ActionBuilder createActionBuilder(int order) {

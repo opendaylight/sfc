@@ -67,7 +67,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionChain.getName());
                 Object[] serviceChainObj = {createdServiceFunctionChain};
                 Class[] serviceChainClass = {ServiceFunctionChain.class};
-                odlSfc.executor.execute(SfcProviderServiceChainAPI
+                odlSfc.executor.submit(SfcProviderServiceChainAPI
                         .getAddChainToChainState(serviceChainObj, serviceChainClass));
                 List<SfcServiceFunction>  SfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
                 for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {

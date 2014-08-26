@@ -60,7 +60,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Object[] serviceTypeObj = {originalServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
 
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
 
                 //Object[] sfParams = {originalServiceFunction};
@@ -71,7 +71,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Object[] functionParams = {originalServiceFunction};
                 Class[] functionParamsTypes = {ServiceFunction.class};
 
-                odlSfc.executor.execute(SfcProviderServicePathAPI
+                odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
             }
         }
@@ -87,7 +87,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Object[] serviceTypeObj = {createdServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
 
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
 
                 //Object[] sfParams = {createdServiceFunction};
@@ -108,7 +108,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
                 Object[] serviceTypeObj = {updatedServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
-                odlSfc.executor.execute(SfcProviderServiceTypeAPI
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
 
                 Object[] sfParams = {updatedServiceFunction};
@@ -116,7 +116,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
                 //        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
 
-                odlSfc.executor.execute(SfcProviderServicePathAPI
+                odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));
             }
         }

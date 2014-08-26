@@ -61,7 +61,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionPath.getName());
                 Object[] servicePathObj = {createdServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
+                odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getCreateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
@@ -76,7 +76,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         updatedServiceFunctionPath.getName());
                 Object[] servicePathObj = {updatedServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
+                odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getUpdateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
@@ -90,7 +90,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 Object[] serviceTypeObj = {originalServiceFunctionPath};
                 Class[] serviceTypeClass = {ServiceFunctionPath.class};
 
-                odlSfc.executor.execute(SfcProviderServiceFunctionAPI
+                odlSfc.executor.submit(SfcProviderServiceFunctionAPI
                         .getDeleteServicePathFromServiceFunctionState(serviceTypeObj, serviceTypeClass));
             }
         }

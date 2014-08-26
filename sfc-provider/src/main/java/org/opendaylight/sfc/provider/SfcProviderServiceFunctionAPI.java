@@ -26,106 +26,65 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
  * This class has the APIs to operate on the ServiceFunction
  * datastore.
- *
+ * <p/>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
- * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
  *
- *
- * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
+ * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
- * @since       2014-06-30
+ * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
+ * @since 2014-06-30
  */
-public class SfcProviderServiceFunctionAPI implements Runnable {
+public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private String methodName = null;
-    private Object[] parameters;
-    private Class[] parameterTypes;
 
-    SfcProviderServiceFunctionAPI (Object[] params, Class[] paramsTypes, String m) {
-        this.methodName = m;
-        this.parameters = new Object[params.length];
-        this.parameterTypes = new Class[params.length];
-        this.parameters = Arrays.copyOf(params, params.length);
-        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
+    SfcProviderServiceFunctionAPI(Object[] params, String m) {
+        super(params, m);
     }
 
-    public static  SfcProviderServiceFunctionAPI getDeleteServicePathFromServiceFunctionState (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionAPI (params, paramsTypes, "deleteServicePathFromServiceFunctionState");
+    SfcProviderServiceFunctionAPI(Object[] params, Class[] paramsTypes, String m) {
+        super(params, paramsTypes, m);
     }
 
-    public static ServiceFunction readServiceFunction(String serviceFunctionName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        InstanceIdentifier<ServiceFunction> sfIID;
-        ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
-        sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, serviceFunctionKey).build();
-
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
-        Optional<ServiceFunction> serviceFunctiondataObject = null;
-        try {
-            serviceFunctiondataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (serviceFunctiondataObject != null &&
-                (serviceFunctiondataObject.get() instanceof ServiceFunction)) {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return serviceFunctiondataObject.get();
-        } else {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return null;
-        }
+    public static SfcProviderServiceFunctionAPI getDeleteServicePathFromServiceFunctionState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "deleteServicePathFromServiceFunctionState");
     }
 
-    /*
-     * When a Service Path is deleted directly (not as a consequence of deleting a SF), we need
-     * to remove its reference from all the ServiceFunction states.
-     */
-    @SuppressWarnings("unused")
-    public void deleteServicePathFromServiceFunctionState (ServiceFunctionPath serviceFunctionPath) {
-
-        List<SfpServiceFunction>  sfpServiceFunctionList = serviceFunctionPath.getSfpServiceFunction();
-        for (SfpServiceFunction sfpServiceFunction : sfpServiceFunctionList) {
-            String serviceFunctionName = sfpServiceFunction.getName();
-            ServiceFunctionState serviceFunctionState = readServiceFunctionState(serviceFunctionName);
-            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
-            InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                    InstanceIdentifier.builder(ServiceFunctionsState.class)
-                            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                            .build();
-
-            List<String> sfServiceFunctionPathList = serviceFunctionState.getSfServiceFunctionPath();
-            List<String> newPathList = new ArrayList<>();
-            newPathList.addAll(sfServiceFunctionPathList);
-            newPathList.remove(serviceFunctionPath.getName());
-            ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
-            serviceFunctionStateBuilder.setName(serviceFunctionName);
-            serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
-
-
-            ReadWriteTransaction writeTx = odlSfc.dataProvider.newReadWriteTransaction();
-            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfStateIID, serviceFunctionStateBuilder.build(), true);
-            writeTx.commit();
-        }
+    public static SfcProviderServiceFunctionAPI getPut(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putServiceFunction");
     }
 
+    public static SfcProviderServiceFunctionAPI getRead(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "readServiceFunction");
+    }
 
-    public static ServiceFunctionState readServiceFunctionState (String serviceFunctionName) {
+    public static SfcProviderServiceFunctionAPI getDelete(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "deleteServiceFunction");
+    }
+
+    public static SfcProviderServiceFunctionAPI getPutAll(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putAllServiceFunctions");
+    }
+
+    public static SfcProviderServiceFunctionAPI getReadAll(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "readAllServiceFunctions");
+    }
+
+    public static SfcProviderServiceFunctionAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "deleteAllServiceFunctions");
+    }
+
+    public static ServiceFunctionState readServiceFunctionState(String serviceFunctionName) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         ServiceFunctionState serviceFunctionState;
@@ -155,7 +114,7 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
         }
     }
 
-    public static void deleteServiceFunctionState (String serviceFunctionName) {
+    public static void deleteServiceFunctionState(String serviceFunctionName) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
 
@@ -174,7 +133,7 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
     /*
      * We add the path name to the operational store of each SF in the path.
      */
-    public static void addPathToServiceFunctionState (ServiceFunctionPath serviceFunctionPath) {
+    public static void addPathToServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
@@ -200,18 +159,173 @@ public class SfcProviderServiceFunctionAPI implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        if (methodName != null) {
-            Class<?> c = this.getClass();
-            Method method;
+    protected static boolean putServiceFunction(ServiceFunction sf) {
+        boolean ret = false;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        if (odlSfc.getDataProvider() != null) {
+
+            InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
+                    child(ServiceFunction.class, sf.getKey()).toInstance();
+
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            writeTx.put(LogicalDatastoreType.CONFIGURATION,
+                    sfEntryIID, sf, true);
+            writeTx.commit();
+
+            ret = true;
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return ret;
+    }
+
+    protected static boolean mergeServiceFunction(ServiceFunction sf) {
+        boolean ret = false;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        if (odlSfc.getDataProvider() != null) {
+
+            InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
+                    child(ServiceFunction.class, sf.getKey()).toInstance();
+
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    sfEntryIID, sf, true);
+            writeTx.commit();
+
+            ret = true;
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return ret;
+    }
+
+    protected ServiceFunction readServiceFunction(String serviceFunctionName) {
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        ServiceFunction sf = null;
+        InstanceIdentifier<ServiceFunction> sfIID;
+        ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
+        sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
+                .child(ServiceFunction.class, serviceFunctionKey).build();
+
+        if (odlSfc.getDataProvider() != null) {
+            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+            Optional<ServiceFunction> serviceFunctionDataObject = null;
             try {
-                method = c.getDeclaredMethod(methodName, parameterTypes);
-                method.invoke(this, parameters);
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+            if (serviceFunctionDataObject != null
+                    && serviceFunctionDataObject.isPresent()) {
+                sf = serviceFunctionDataObject.get();
+            }
         }
-
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return sf;
     }
+
+    protected boolean deleteServiceFunction(String serviceFunctionName) {
+        boolean ret = false;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
+        InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
+                .child(ServiceFunction.class, serviceFunctionKey).toInstance();
+
+        if (odlSfc.getDataProvider() != null) {
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
+            writeTx.commit();
+
+            ret = true;
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return ret;
+    }
+
+    protected boolean putAllServiceFunctions(ServiceFunctions sfs) {
+        boolean ret = false;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        if (odlSfc.getDataProvider() != null) {
+
+            InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfsIID, sfs);
+            writeTx.commit();
+
+            ret = true;
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return ret;
+    }
+
+    protected ServiceFunctions readAllServiceFunctions() {
+        ServiceFunctions sfs = null;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+
+        if (odlSfc.getDataProvider() != null) {
+            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+            Optional<ServiceFunctions> serviceFunctionsDataObject = null;
+            try {
+                serviceFunctionsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfsIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (serviceFunctionsDataObject != null
+                    && serviceFunctionsDataObject.isPresent()) {
+                sfs = serviceFunctionsDataObject.get();
+            }
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return sfs;
+    }
+
+    protected boolean deleteAllServiceFunctions() {
+        boolean ret = false;
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        if (odlSfc.getDataProvider() != null) {
+
+            InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfsIID);
+            writeTx.commit();
+
+            ret = true;
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return ret;
+    }
+
+    /*
+     * When a Service Path is deleted directly (not as a consequence of deleting a SF), we need
+     * to remove its reference from all the ServiceFunction states.
+     */
+    @SuppressWarnings("unused")
+    public void deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
+
+        List<SfpServiceFunction> sfpServiceFunctionList = serviceFunctionPath.getSfpServiceFunction();
+        for (SfpServiceFunction sfpServiceFunction : sfpServiceFunctionList) {
+            String serviceFunctionName = sfpServiceFunction.getName();
+            ServiceFunctionState serviceFunctionState = readServiceFunctionState(serviceFunctionName);
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
+            InstanceIdentifier<ServiceFunctionState> sfStateIID =
+                    InstanceIdentifier.builder(ServiceFunctionsState.class)
+                            .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                            .build();
+
+            List<String> sfServiceFunctionPathList = serviceFunctionState.getSfServiceFunctionPath();
+            List<String> newPathList = new ArrayList<>();
+            newPathList.addAll(sfServiceFunctionPathList);
+            newPathList.remove(serviceFunctionPath.getName());
+            ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
+            serviceFunctionStateBuilder.setName(serviceFunctionName);
+            serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
+
+
+            ReadWriteTransaction writeTx = odlSfc.dataProvider.newReadWriteTransaction();
+            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfStateIID, serviceFunctionStateBuilder.build(), true);
+            writeTx.commit();
+        }
+    }
+
 }

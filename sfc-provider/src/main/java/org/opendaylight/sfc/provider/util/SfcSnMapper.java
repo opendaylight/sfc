@@ -1,4 +1,4 @@
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.util;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 

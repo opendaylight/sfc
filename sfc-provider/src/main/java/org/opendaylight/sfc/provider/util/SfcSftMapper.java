@@ -1,8 +1,10 @@
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.util;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
@@ -16,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * This class maps service function types to service node mappers
  *
- * @see org.opendaylight.sfc.provider.SfcSnMapper
+ * @see SfcSnMapper
  * <p>
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
@@ -35,7 +37,7 @@ public class SfcSftMapper {
 
     public void update() {
         if (odlSfc != null) {
-            ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceNodes> dataObject = null;
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.snIID).get();
@@ -49,7 +51,13 @@ public class SfcSftMapper {
                 for(ServiceNode sn : snList){
                     List<String> sfNameList = sn.getServiceFunction();
                     for(String sfName : sfNameList){
-                        ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+                        ServiceFunction sf = null;
+                        try {
+                            sf = (ServiceFunction) odlSfc.executor.submit(SfcProviderServiceFunctionAPI.getRead(
+                                    new Object[]{sfName}, new Class[]{String.class})).get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        }
                         if ( sf != null) {
                             this.add(sf.getType(), sn.getName(), sf);
                         } else {

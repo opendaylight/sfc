@@ -78,7 +78,7 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionTypes>  sftIID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-    protected ExecutorService executor;
+    public ExecutorService executor;
     protected DataBroker dataProvider;
     private static OpendaylightSfc opendaylightSfcObj;
 
@@ -99,7 +99,7 @@ public class OpendaylightSfc implements AutoCloseable {
        this.dataProvider = salDataProvider;
     }
 
-    public AsyncDataBroker getDataProvider(AsyncDataBroker salDataProvider) {
+    public DataBroker getDataProvider() {
         return this.dataProvider;
     }
 

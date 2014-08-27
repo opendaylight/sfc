@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -257,7 +257,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName());
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                 sftentryIID, sftServiceFunctionName, true);
         writeTx.commit();
@@ -279,7 +279,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey)
                 .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                 sftentryIID);
         writeTx.commit();

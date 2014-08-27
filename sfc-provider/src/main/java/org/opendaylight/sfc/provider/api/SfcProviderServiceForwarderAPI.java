@@ -7,7 +7,7 @@
  */
 
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -164,7 +164,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
         sffsIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                 sffsIID, serviceFunctionForwardersBuilder.build(), true);
         writeTx.commit();
@@ -339,7 +339,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
                 , serviceFunctionForwarderName, serviceFunction.getName());
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                 sffIID, serviceFunctionForwarderBuilder.build(), true);
         writeTx.commit();
@@ -360,7 +360,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
                 .build();
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                 sffIID);
         writeTx.commit();
@@ -429,7 +429,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
             }
             serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                     sffIID, serviceFunctionForwardersBuilder.build(), true);
             writeTx.commit();
@@ -465,7 +465,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         LOG.debug("\n########## Deleting Forwarder: {}  Service Function: {} "
                 , serviceFunctionForwarderName, serviceFunction.getName());
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                 sffIID);
         writeTx.commit();

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -95,7 +95,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
                         .build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionState> dataSfcStateObject = null;
         try {
             dataSfcStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
@@ -125,7 +125,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
                         .build();
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.OPERATIONAL, sfStateIID);
         writeTx.commit();
     }
@@ -150,7 +150,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                     .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
             serviceFunctionStateBuilder.setName(sfpServiceFunction.getName());
 
-            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                     sfStateIID, serviceFunctionStateBuilder.build(), true);
             writeTx.commit();
@@ -322,7 +322,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
 
 
-            ReadWriteTransaction writeTx = odlSfc.dataProvider.newReadWriteTransaction();
+            ReadWriteTransaction writeTx = odlSfc.getDataProvider().newReadWriteTransaction();
             writeTx.put(LogicalDatastoreType.CONFIGURATION, sfStateIID, serviceFunctionStateBuilder.build(), true);
             writeTx.commit();
         }

@@ -6,9 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

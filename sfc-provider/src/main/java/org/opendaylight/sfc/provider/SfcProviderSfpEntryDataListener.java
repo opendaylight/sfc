@@ -11,6 +11,8 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.DataObject;

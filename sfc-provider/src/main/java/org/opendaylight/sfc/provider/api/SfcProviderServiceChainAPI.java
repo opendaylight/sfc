@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -214,7 +214,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
         serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                 sfcoIID, serviceFunctionChainStateBuilder.build(), true);
         writeTx.commit();
@@ -235,7 +235,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathArrayList);
         serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
 
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                 sfcoIID, serviceFunctionChainStateBuilder.build(), true);
         writeTx.commit();
@@ -250,7 +250,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionChain.class, sfc.getKey())
                 .child(SfcServiceFunction.class, serviceFunctionKey).build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<SfcServiceFunction> serviceFunctionObject = null;
         try {
             serviceFunctionObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
@@ -272,7 +272,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChains> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionChains> serviceFunctionChainsObject = null;
         try {
             serviceFunctionChainsObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
@@ -294,7 +294,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionChainsState> serviceFunctionChainStateObject = null;
         try {
             serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcsIID).get();

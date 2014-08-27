@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -290,7 +290,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
                         .build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionChainState> serviceFunctionChainStateObject = null;
         try {
             serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcStateIID).get();
@@ -310,7 +310,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
 
-                WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
                 writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                         sfpIID);
                 writeTx.commit();
@@ -325,7 +325,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder  = new ServiceFunctionChainStateBuilder();
             serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
             serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathList);
-            WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                     sfcStateIID, serviceFunctionChainStateBuilder.build(), true);
             writeTx.commit();
@@ -465,7 +465,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 .build();
 
         ServiceFunctionPath newServiceFunctionPath = serviceFunctionPathBuilder.build();
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION,
                 sfpIID, newServiceFunctionPath, true);
         writeTx.commit();
@@ -516,7 +516,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
                         .build();
 
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionState> serviceFunctionStateObject = null;
         try {
             serviceFunctionStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
@@ -537,7 +537,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
 
-                WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
+                WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
                 writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                         sfpIID);
                 writeTx.commit();
@@ -583,7 +583,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                         .build();
 
-                ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
+                ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
                 Optional<ServiceFunctionPath> serviceFunctionPathObject = null;
                 try {
                     serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();

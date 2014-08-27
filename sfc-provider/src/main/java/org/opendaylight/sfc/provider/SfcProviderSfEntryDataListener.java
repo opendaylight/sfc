@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider;
 
-
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
@@ -22,34 +21,32 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
 
-
 /**
- * This class gets called whenever there is a change to
- * a Service Function list entry, i.e.,
- * added/deleted/modified.
- *
+ * This class gets called whenever there is a change to a Service Function list
+ * entry, i.e., added/deleted/modified.
+ * 
  * <p
+ * 
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since 2014-06-30
  */
-public class SfcProviderSfEntryDataListener implements DataChangeListener  {
+public class SfcProviderSfEntryDataListener implements DataChangeListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final LispUpdater lispUpdater = new LispUpdater();
 
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if( entry.getValue() instanceof  ServiceFunction) {
+            if (entry.getValue() instanceof ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
-                LOG.debug("\n########## getOriginalConfigurationData {}  {}",
-                        originalServiceFunction.getType(), originalServiceFunction.getName());
+                LOG.debug("\n########## getOriginalConfigurationData {}  {}", originalServiceFunction.getType(), originalServiceFunction.getName());
             }
         }
 
@@ -57,72 +54,70 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if( dataObject instanceof  ServiceFunction) {
+            if (dataObject instanceof ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
-                Object[] serviceTypeObj = {originalServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
+                Object[] serviceTypeObj = { originalServiceFunction };
+                Class[] serviceTypeClass = { ServiceFunction.class };
 
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI.getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
 
-                //Object[] sfParams = {originalServiceFunction};
-                //Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
+                // Object[] sfParams = {originalServiceFunction};
+                // Class[] sfParamsTypes = {ServiceFunction.class};
+                // odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                // .getDeleteServiceFunctionFromForwarder(sfParams,
+                // sfParamsTypes ));
 
-                Object[] functionParams = {originalServiceFunction};
-                Class[] functionParamsTypes = {ServiceFunction.class};
+                Object[] functionParams = { originalServiceFunction };
+                Class[] functionParamsTypes = { ServiceFunction.class };
 
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+                odlSfc.executor.submit(SfcProviderServicePathAPI.getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
             }
         }
-
 
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if( entry.getValue() instanceof  ServiceFunction) {
+            if (entry.getValue() instanceof ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
 
-                Object[] serviceTypeObj = {createdServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
+                ServiceFunction createdServiceFunctionWithLisp = lispUpdater.updateLispData(createdServiceFunction);
 
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+                Object[] serviceTypeObj = { createdServiceFunctionWithLisp };
+                Class[] serviceTypeClass = { ServiceFunction.class };
 
-                //Object[] sfParams = {createdServiceFunction};
-                //Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
-                LOG.debug("\n########## getCreatedConfigurationData {}  {}",
-                            createdServiceFunction.getType(), createdServiceFunction.getName());
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI.getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+
+                // Object[] sfParams = {createdServiceFunction};
+                // Class[] sfParamsTypes = {ServiceFunction.class};
+                // odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                // .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
+                LOG.debug("\n########## getCreatedConfigurationData {}  {}", createdServiceFunctionWithLisp.getType(),
+                        createdServiceFunctionWithLisp.getName());
             }
 
         }
 
         // SF UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
-                = change.getUpdatedData();
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunction) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
-                Object[] serviceTypeObj = {updatedServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+                ServiceFunction updatedServiceFunctionWithLisp = lispUpdater.updateLispData(updatedServiceFunction);
+                Object[] serviceTypeObj = { updatedServiceFunctionWithLisp };
+                Class[] serviceTypeClass = { ServiceFunction.class };
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI.getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
 
-                Object[] sfParams = {updatedServiceFunction};
-                Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
+                Object[] sfParams = { updatedServiceFunctionWithLisp };
+                Class[] sfParamsTypes = { ServiceFunction.class };
+                // odlSfc.executor.execute(SfcProviderServiceForwarderAPI
+                // .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
 
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));
+                odlSfc.executor.submit(SfcProviderServicePathAPI.getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));
             }
         }
-        // Debug and Unit Test. We trigger the unit test code by adding a service function to the datastore.
+        // Debug and Unit Test. We trigger the unit test code by adding a
+        // service function to the datastore.
         if (SfcProviderDebug.ON) {
             SfcProviderDebug.ON = false;
             SfcProviderUnitTest.sfcProviderUnitTest(SfcProviderRpc.getSfcProviderRpc());

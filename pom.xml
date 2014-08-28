@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <prerequisites>
@@ -62,7 +61,7 @@
         <!-- Supporting Libraries -->
         <commons.lang.version>3.1</commons.lang.version>
         <junit.version>4.10</junit.version>
-        <slf4j.version>1.7.2</slf4j.version>
+        <slf4j.version>1.7.5</slf4j.version>
         <guava.version>14.0.1</guava.version>
         <groovy.version>2.1.6</groovy.version>
         <mockito.version>1.9.5</mockito.version>
@@ -94,7 +93,11 @@
         <module>sfclisp</module>
         <module>sfc-distribution</module>
         <module>sfcofl2</module>
-    </modules>
+        <module>features</module>
+        <module>sfc-karaf</module>
+        <module>sfc-config</module>
+        <module>sfc-jsonconfig</module>
+  </modules>
 
     <build>
         <plugins>

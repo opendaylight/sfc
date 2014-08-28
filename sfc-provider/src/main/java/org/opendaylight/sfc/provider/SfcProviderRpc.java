@@ -17,7 +17,6 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.sfc.provider.util.SfcSftMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
@@ -29,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
@@ -95,15 +94,13 @@ public class SfcProviderRpc implements ServiceFunctionService,
         if (odlSfc.dataProvider != null) {
 
             // Data PLane Locator
-            SfDataPlaneLocator sfDataPlaneLocator = input.getSfDataPlaneLocator();
-            SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
-            sfDataPlaneLocatorBuilder = sfDataPlaneLocatorBuilder.setLocatorType(sfDataPlaneLocator.getLocatorType());
+            List<SfDataPlaneLocator> sfDataPlaneLocatorList = input.getSfDataPlaneLocator();
 
             ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
             ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
             ServiceFunction sf = sfbuilder.setName(input.getName()).setType(input.getType())
                     .setKey(sfkey).setIpMgmtAddress(input.getIpMgmtAddress())
-                    .setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build()).build();
+                    .setSfDataPlaneLocator(sfDataPlaneLocatorList).build();
 
             InstanceIdentifier<ServiceFunction>  sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
                     child(ServiceFunction.class, sf.getKey()).toInstance();
@@ -277,11 +274,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 if (sfRefList != null && sfRefList.size() > 0) {
 
                     ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
-                    List<SfpServiceFunction> instances = new ArrayList<>();
+                    List<ServicePathHop> instances = new ArrayList<>();
 
                     Random rand = new Random(); // temporarily
                     for (SfcServiceFunction ref : sfRefList) {
-                        List<SfpServiceFunction> instanceList = findInstancesByType(ref.getType());
+                        List<ServicePathHop> instanceList = findInstancesByType(ref.getType());
                         LOG.info("\n********** instanceList ***********\n" + instanceList);
                         if (instanceList != null && instanceList.size() > 0) {
                             // select instance
@@ -293,7 +290,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
                     }
                     String pathName = input.getName() + "-" + java.lang.System.currentTimeMillis();
                     ServiceFunctionPath path = pathBuilder.setName(pathName)
-                            .setSfpServiceFunction(instances)
+                            .setServicePathHop(instances)
                             .setServiceChainName(input.getName())
                             .build();
                     List<ServiceFunctionPath> list = new ArrayList<>();
@@ -371,17 +368,20 @@ public class SfcProviderRpc implements ServiceFunctionService,
         }
     }
 
-    private List<SfpServiceFunction> findInstancesByType(String sfType) {
-        List<SfpServiceFunction> ret = new ArrayList<>();
+    private List<ServicePathHop> findInstancesByType(String sfType) {
+        List<ServicePathHop> ret = new ArrayList<>();
 
         SfcSftMapper mapper = new SfcSftMapper(odlSfc);
         List<ServiceFunction> sfList = mapper.getSfList(sfType);
+        short hop_count = 0;
         for(ServiceFunction sf : sfList){
-            SfpServiceFunctionBuilder builder = new SfpServiceFunctionBuilder();
-            ret.add(builder.setName(sf.getName())
+            ServicePathHopBuilder builder = new ServicePathHopBuilder();
+            ret.add(builder.setHopNumber(hop_count)
+                    .setServiceFunctionName(sf.getName())
                     .setServiceFunctionForwarder(sf.getSfDataPlaneLocator()
-                            .getServiceFunctionForwarder())
+                            .get(0).getServiceFunctionForwarder())
                     .build());
+            hop_count++;
         }
         return ret;
     }

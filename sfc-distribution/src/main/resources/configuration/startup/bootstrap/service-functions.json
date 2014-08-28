@@ -1,106 +1,132 @@
 {
-    "service-functions": {
-        "service-function": [
-            {
-                "ip-mgmt-address": "10.3.1.103",
-                "sf-data-plane-locator": {
-                    "port": 10002,
-                    "ip": "10.3.1.103",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "napt44-103-2",
-                "type": "napt44",
-                "nsh-aware" : true
-
-            },
-            {
-                "ip-mgmt-address": "10.3.1.103",
-                "sf-data-plane-locator": {
-                    "port": 10001,
-                    "ip": "10.3.1.103",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "napt44-103-1",
-                "type": "napt44",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.102",
-                "sf-data-plane-locator": {
-                    "port": 10002,
-                    "ip": "10.3.1.102",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "dpi-102-2",
-                "type": "dpi",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.101",
-                "sf-data-plane-locator": {
-                    "port": 10002,
-                    "ip": "10.3.1.101",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "firewall-101-2",
-                "type": "firewall",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.104",
-                "sf-data-plane-locator": {
-                    "port": 10020,
-                    "ip": "10.3.1.104",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "napt44-104",
-                "type": "napt44",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.102",
-                "sf-data-plane-locator": {
-                    "port": 10001,
-                    "ip": "10.3.1.102",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "dpi-102-1",
-                "type": "dpi",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.104",
-                "sf-data-plane-locator": {
-                    "port": 10001,
-                    "ip": "10.3.1.104",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "firewall-104",
-                "type": "firewall",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.102",
-                "sf-data-plane-locator": {
-                    "port": 10003,
-                    "ip": "10.3.1.102",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "dpi-102-3",
-                "type": "dpi",
-                "nsh-aware" : true
-            },
-            {
-                "ip-mgmt-address": "10.3.1.101",
-                "sf-data-plane-locator": {
-                    "port": 10001,
-                    "ip": "10.3.1.101",
-                    "service-function-forwarder": "SFF-bootstrap"
-                },
-                "name": "firewall-101-1",
-                "type": "firewall",
-                "nsh-aware" : true
-            }
-        ]
-    }
+  "service-functions": {
+    "service-function": [
+      {
+        "ip-mgmt-address": "10.3.1.103",
+        "sf-data-plane-locator": [
+          {
+            "name": "preferred",
+            "port": 10002,
+            "ip": "10.3.1.103",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "napt44-103-2",
+        "type": "napt44",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.103",
+        "sf-data-plane-locator": [
+          {
+            "name": "master",
+            "port": 10001,
+            "ip": "10.3.1.103",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "napt44-103-1",
+        "type": "napt44",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.102",
+        "sf-data-plane-locator": [
+          {
+            "name": "1",
+            "port": 10002,
+            "ip": "10.3.1.102",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "dpi-102-2",
+        "type": "dpi",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.101",
+        "sf-data-plane-locator": [
+          {
+            "name": "2",
+            "port": 10002,
+            "ip": "10.3.1.101",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "firewall-101-2",
+        "type": "firewall",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.104",
+        "sf-data-plane-locator": [
+          {
+            "name": "3",
+            "port": 10020,
+            "ip": "10.3.1.104",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "napt44-104",
+        "type": "napt44",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.102",
+        "sf-data-plane-locator": [
+          {
+            "name": "4",
+            "port": 10001,
+            "ip": "10.3.1.102",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "dpi-102-1",
+        "type": "dpi",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.104",
+        "sf-data-plane-locator": [
+          {
+            "name": "my-locator",
+            "port": 10001,
+            "ip": "10.3.1.104",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "firewall-104",
+        "type": "firewall",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.102",
+        "sf-data-plane-locator": [
+          {
+            "name": "101",
+            "port": 10003,
+            "ip": "10.3.1.102",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "dpi-102-3",
+        "type": "dpi",
+        "nsh-aware": true
+      },
+      {
+        "ip-mgmt-address": "10.3.1.101",
+        "sf-data-plane-locator": [
+          {
+            "name": "007",
+            "port": 10001,
+            "ip": "10.3.1.101",
+            "service-function-forwarder": "SFF-bootstrap"
+          }
+        ],
+        "name": "firewall-101-1",
+        "type": "firewall",
+        "nsh-aware": true
+      }
+    ]
+  }
 }

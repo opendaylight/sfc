@@ -33,9 +33,19 @@ module service-function-forwarder-ovs {
         description "OVSDB bridge UUID";
         type yang:uuid;
       }
-      leaf external-ids {
-        description "OVSDB external bridge id";
-        type string;
+      list external-ids {
+        description "The list of external ids associated with this bridge";
+        key "name";
+        leaf name {
+          type string;
+          description
+            "A unique string that represents this external-id such as attached-mac";
+        }
+        leaf value {
+          type string;
+          description
+            "A unique string that represents the value of the external-id such as fa:16:3e:56:47:10";
+        }
       }
       leaf bridge-name {
         description "OVSDB bridge name";

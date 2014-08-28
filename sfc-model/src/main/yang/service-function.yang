@@ -81,11 +81,10 @@ module service-function {
       description "Whether this SF can process NSH headers";
     }
 
-
-    //TODO: move to list
-    container sf-data-plane-locator {
+    list sf-data-plane-locator {
       description
         "A network data-plane locator";
+      key "name";
       leaf name {
         type string;
         description

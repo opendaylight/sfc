@@ -286,5 +286,4 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
-
 }

@@ -26,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -61,35 +61,31 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
 
-
-    SfcProviderServicePathAPI (Object[] params, String m) {
-        super(params, m);
-        }
-
     SfcProviderServicePathAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
     }
 
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getPut(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putServiceFunctionPath");
     }
-
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readServiceFunctionPath");
     }
-
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServiceFunctionPath");
     }
-
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getPutAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putAllServiceFunctionPaths");
     }
-
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getReadAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readAllServiceFunctionPaths");
     }
-
+    @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteAllServiceFunctionPaths");
     }
@@ -97,7 +93,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static  SfcProviderServicePathAPI getDeleteServicePathContainingFunction (Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
     }
-
+    @SuppressWarnings("unused")
     public static  SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain (Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathInstantiatedFromChain");
     }
@@ -105,11 +101,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static  SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
     }
-
+    @SuppressWarnings("unused")
     public static  SfcProviderServicePathAPI getUpdateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServiceFunctionPathEntry");
     }
-
+    @SuppressWarnings("unused")
     public static  SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathInstantiatedFromChain");
     }
@@ -117,7 +113,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathContainingFunction");
     }
-
+    @SuppressWarnings("unused")
     public static int numCreatedPathGetValue() {
         return numCreatedPath.get();
     }
@@ -125,11 +121,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public int numCreatedPathIncrementGet() {
         return numCreatedPath.incrementAndGet();
     }
-
+    @SuppressWarnings("unused")
     public int numCreatedPathDecrementGet() {
         return numCreatedPath.decrementAndGet();
     }
 
+    @SuppressWarnings("unused")
     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
         boolean ret = false;
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
@@ -144,7 +141,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             writeTx.commit();
 
             ret = true;
-    }
+        }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return ret;
     }
@@ -248,11 +245,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-   /* Today A Service Function Chain modification is catastrophic. We delete all Paths
-    * and recreate them. Maybe a real patch is possible but given the complexities of the possible
-    * modifications, this is the safest approach.
-    */
-   @SuppressWarnings("unused")
+    /* Today A Service Function Chain modification is catastrophic. We delete all Paths
+     * and recreate them. Maybe a real patch is possible but given the complexities of the possible
+     * modifications, this is the safest approach.
+     */
+    @SuppressWarnings("unused")
     private void updateServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
         deleteServicePathInstantiatedFromChain(serviceFunctionPath);
         createServiceFunctionPathEntry(serviceFunctionPath);
@@ -346,14 +343,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * the service chain name was given. In this function we patch the SFP with the
      * names of the chosen SFs
      */
-    private void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
+    protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         long pathId;
-        int pos_index = 0;
+        short pos_index = 0;
         int service_index;
-        ServiceFunctionChain serviceFunctionChain = null;
+        ServiceFunctionChain serviceFunctionChain;
         serviceFunctionChain = null;
         String serviceFunctionChainName = serviceFunctionPath.getServiceChainName();
         try {
@@ -374,8 +371,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        ArrayList<SfpServiceFunction> sfpServiceFunctionArrayList= new ArrayList<>();
-        SfpServiceFunctionBuilder sfpServiceFunctionBuilder = new SfpServiceFunctionBuilder();
+        ArrayList<ServicePathHop> servicePathHopArrayList = new ArrayList<>();
+        ServicePathHopBuilder servicePathHopBuilder = new ServicePathHopBuilder();
 
         /*
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific
@@ -414,11 +411,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                             e.printStackTrace();
                         }
                         if (serviceFunction != null) {
-                            sfpServiceFunctionBuilder.setName(serviceFunctionName)
-                                    .setServiceIndex((short)service_index)
-                                        .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
-                                                .getServiceFunctionForwarder());
-                            sfpServiceFunctionArrayList.add(pos_index,sfpServiceFunctionBuilder.build());
+                            servicePathHopBuilder.setHopNumber(pos_index)
+                                    .setServiceFunctionName(serviceFunctionName)
+                                    .setServiceIndex((short) service_index)
+                                    .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
+                                            .get(0).getServiceFunctionForwarder());
+                            servicePathHopArrayList.add(pos_index, servicePathHopBuilder.build());
                             service_index--;
                             pos_index++;
                             break;
@@ -444,7 +442,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         pathId = (serviceFunctionPath.getPathId() != null)  ?  serviceFunctionPath.getPathId()
                 : numCreatedPathIncrementGet();
-        serviceFunctionPathBuilder.setSfpServiceFunction(sfpServiceFunctionArrayList);
+        serviceFunctionPathBuilder.setServicePathHop(servicePathHopArrayList);
         if (serviceFunctionPath.getName().isEmpty())  {
             serviceFunctionPathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
         } else {
@@ -454,7 +452,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         serviceFunctionPathBuilder.setPathId(pathId);
         // TODO: Find out the exact rules for service index generation
-        serviceFunctionPathBuilder.setStartingIndex((short) (sfpServiceFunctionArrayList.size() + 1));
+        serviceFunctionPathBuilder.setStartingIndex((short) servicePathHopArrayList.size());
         serviceFunctionPathBuilder.setServiceChainName(serviceFunctionChainName);
 
         ServiceFunctionPathKey serviceFunctionPathKey = new
@@ -524,7 +522,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             e.printStackTrace();
         }
 
-        if (serviceFunctionStateObject != null &&
+        if ((serviceFunctionStateObject != null) &&
                 (serviceFunctionStateObject.get() instanceof ServiceFunctionState)) {
             serviceFunctionState = serviceFunctionStateObject.get();
             List<String> sfServiceFunctionPathList =
@@ -602,5 +600,4 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
-
-            }
+}

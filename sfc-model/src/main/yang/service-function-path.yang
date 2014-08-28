@@ -71,11 +71,16 @@ module service-function-path {
       leaf name {
         type string;
         description
-          "the name of this service function path";
+          "The name of this service function path";
       }
-      list sfp-service-function {
-        key "name";
-        leaf name {
+      list service-path-hop {
+        key "hop-number";
+        leaf hop-number {
+          type uint8;
+          description
+            "A Monotonically increasing number";
+        }
+        leaf service-function-name {
           type string;
           description
             "Service Function name";

@@ -9,7 +9,6 @@ package org.opendaylight.sfc.provider;
 
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
@@ -78,7 +77,7 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionTypes>  sftIID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-    public ExecutorService executor;
+    public final ExecutorService executor;
     protected DataBroker dataProvider;
     private static OpendaylightSfc opendaylightSfcObj;
 
@@ -86,7 +85,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(1);
+       executor = Executors.newFixedThreadPool(4);
        opendaylightSfcObj = this;
     }
 

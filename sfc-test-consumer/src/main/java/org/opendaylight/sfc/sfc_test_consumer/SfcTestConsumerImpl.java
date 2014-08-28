@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.sfc_test_consumer;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.*;
@@ -100,12 +101,14 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
         sfDataPlaneLocatorBuilder = sfDataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
+        List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<SfDataPlaneLocator>();
+        sfDataPlaneLocatorList.add(sfDataPlaneLocatorBuilder.build());
 
         // Build ServiceFunctionBuilder and set all data constructed above
         PutServiceFunctionInputBuilder putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
         putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName(name).setType(type).
                 setIpMgmtAddress(new IpAddress(ipMgmt.toCharArray())).
-                setSfDataPlaneLocator(sfDataPlaneLocatorBuilder.build());
+                setSfDataPlaneLocator(sfDataPlaneLocatorList);
 
         try {
             Future<RpcResult<Void>> fr = sfService.putServiceFunction(putServiceFunctionInputBuilder.build());

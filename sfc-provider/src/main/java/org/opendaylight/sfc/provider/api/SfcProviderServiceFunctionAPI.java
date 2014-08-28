@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.SfpServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,12 +143,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         serviceFunctionStateBuilder.setSfServiceFunctionPath(sfcServiceFunctionPathArrayList);
 
-        List<SfpServiceFunction> sfpServiceFunctionList = serviceFunctionPath.getSfpServiceFunction();
-        for (SfpServiceFunction sfpServiceFunction : sfpServiceFunctionList) {
-            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfpServiceFunction.getName());
+        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(servicePathHop.getServiceFunctionName());
             InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
                     .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
-            serviceFunctionStateBuilder.setName(sfpServiceFunction.getName());
+            serviceFunctionStateBuilder.setName(servicePathHop.getServiceFunctionName());
 
             WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.OPERATIONAL,
@@ -303,9 +303,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     public void deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
-        List<SfpServiceFunction> sfpServiceFunctionList = serviceFunctionPath.getSfpServiceFunction();
-        for (SfpServiceFunction sfpServiceFunction : sfpServiceFunctionList) {
-            String serviceFunctionName = sfpServiceFunction.getName();
+        List<ServicePathHop> sfpServiceFunctionList = serviceFunctionPath.getServicePathHop();
+        for (ServicePathHop sfpServiceFunction : sfpServiceFunctionList) {
+            String serviceFunctionName = sfpServiceFunction.getServiceFunctionName();
             ServiceFunctionState serviceFunctionState = readServiceFunctionState(serviceFunctionName);
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
             InstanceIdentifier<ServiceFunctionState> sfStateIID =
@@ -327,5 +327,4 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             writeTx.commit();
         }
     }
-
 }

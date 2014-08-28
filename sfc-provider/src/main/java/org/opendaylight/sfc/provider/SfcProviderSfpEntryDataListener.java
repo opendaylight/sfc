@@ -63,18 +63,19 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionPath.getName());
                 Object[] servicePathObj = {createdServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getCreateServicePathAPI(servicePathObj, servicePathClass));
+                SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
+                        .getCreateServicePathAPI(servicePathObj, servicePathClass);
+                odlSfc.executor.submit(sfcProviderServicePathAPI);
             }
         }
-
+/*
         // SFP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =
                 change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionPath) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionPath updatedServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-                LOG.info("\n########## Modified Service Function Chain Name {}",
+                LOG.info("\n########## Modified Service Function Path Name {}",
                         updatedServiceFunctionPath.getName());
                 Object[] servicePathObj = {updatedServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
@@ -82,6 +83,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         .getUpdateServicePathAPI(servicePathObj, servicePathClass));
             }
         }
+        */
 
         // SFP DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();

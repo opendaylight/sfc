@@ -1,0 +1,26 @@
+<div class="modal-header btn-danger">
+    <h4 class="modal-title">{{'SFC_MODAL_ERROR_HEAD' | translate}}: {{error.head}}</h4>
+</div>
+
+<div class="modal-body" ng-hide="isRpcError()">
+    <p>{{error.body}}</p>
+</div>
+
+<div class="modal-body" ng-show="isRpcError()">
+    <p>
+        <i>Server responded with status: {{error.rpcError.status}} ({{error.rpcError.statusText}})</i><br>
+        <section data-ng-repeat="rpcError in error.rpcError.data.errors.error track by $index">
+            <b>RPC Error #{{$index}}</b><br>
+            <pre>error-type: {{rpcError['error-type']}}</pre>
+            <pre>error-tag: {{rpcError['error-tag']}}</pre>
+            <pre>error-message: {{rpcError['error-message']}}</pre>
+            <pre style="white-space: pre; word-break: break-all; word-wrap: break-word;">error-info: {{rpcError['error-info']}}</pre>
+        </section>
+    </p>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_MODAL_ERROR_CLOSE' |
+        translate}}
+    </button>
+</div>

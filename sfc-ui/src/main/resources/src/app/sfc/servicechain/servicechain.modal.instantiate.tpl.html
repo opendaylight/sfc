@@ -1,0 +1,14 @@
+<div class="modal-header btn-info">
+    <h4 class="modal-title">{{'SFC_CHAIN_MODAL_INSTANTIATE' | translate}} '{{sfc.name}}'</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="name" style="color:black !important;">{{'SFC_CHAIN_MODAL_PATH_NAME' | translate}}</label>
+        <input type="text" class="form-control input-sm" ng-model="data.name" id="name"
+               placeholder="{{'SFC_CHAIN_MODAL_PATH_NAME_HINT' | translate}}" required focus-me="{{true}}">
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-orange" ng-disabled="!(!!data.name)"  ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL' | translate}}</button>
+</div>

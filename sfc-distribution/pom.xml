@@ -42,6 +42,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-ui</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
         <!-- controller base distribution -->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>

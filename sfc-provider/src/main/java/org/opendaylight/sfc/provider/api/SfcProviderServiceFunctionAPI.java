@@ -197,7 +197,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected ServiceFunction readServiceFunction(String serviceFunctionName) {
+    public static ServiceFunction readServiceFunction(String serviceFunctionName) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunction sf = null;
         InstanceIdentifier<ServiceFunction> sfIID;

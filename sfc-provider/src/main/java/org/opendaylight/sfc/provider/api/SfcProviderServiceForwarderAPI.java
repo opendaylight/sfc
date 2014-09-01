@@ -10,6 +10,9 @@
 package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
+
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -233,6 +236,31 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return sff;
     }
 
+    
+    public static ServiceFunctionForwarder readServiceFunctionForwarder(DataBroker dataBroker,String serviceFunctionForwarderName) {
+        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        ServiceFunctionForwarder sff = null;
+        InstanceIdentifier<ServiceFunctionForwarder> sffIID;
+        ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
+        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
+                .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).build();
+
+        if (dataBroker != null) {
+            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+            Optional<ServiceFunctionForwarder> serviceFunctionForwarderDataObject = null;
+            try {
+                serviceFunctionForwarderDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (serviceFunctionForwarderDataObject != null
+                    && serviceFunctionForwarderDataObject.isPresent()) {
+                sff = serviceFunctionForwarderDataObject.get();
+            }
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return sff;
+    }
     protected boolean deleteServiceFunctionForwarder(String serviceFunctionForwarderName) {
         boolean ret = false;
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);

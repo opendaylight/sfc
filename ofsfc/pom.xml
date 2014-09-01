@@ -8,13 +8,14 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>sfc-provider</artifactId>
+    <artifactId>ofsfc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
 
 
     <dependencies>
+       
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-model</artifactId>
@@ -65,6 +66,27 @@
             <artifactId>sal-common-util</artifactId>
             <version>${mdsal.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.opendaylight.sfc</groupId>
+          <artifactId>sfc-provider</artifactId>
+           <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+			<groupId>org.opendaylight.controller.model</groupId>
+			<artifactId>model-flow-base</artifactId>
+			<version>${mdsal.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.controller.model</groupId>
+			<artifactId>model-flow-service</artifactId>
+			<version>${mdsal.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.controller.model</groupId>
+			<artifactId>model-inventory</artifactId>
+			<version>${mdsal.version}</version>
+		</dependency>
+		
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>yang-jmx-generator</artifactId>
@@ -117,19 +139,24 @@
             <artifactId>yang-common</artifactId>
             <version>${yangtools.version}</version>
         </dependency>
+        
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <version>1.1-SNAPSHOT</version>
-            <scope>test</scope>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-inet-types</artifactId>
+            <version>${ietf.model.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <version>1.1-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-yang-types-20130715</artifactId>
+            <version>${ietf.yang.types.version}</version>
         </dependency>
+        <dependency>
+           <groupId>org.opendaylight.yangtools.model</groupId>
+           <artifactId>ietf-yang-types</artifactId>
+           <version>${ietf.model.version}</version>
+       </dependency>
+        
+        
         <dependency>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>munge-maven-plugin</artifactId>
@@ -198,14 +225,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <!-- version>4.8.1</version -->
-            <version>[4.8.1, 4.11]</version>
-            <!-- version>4.11</version -->
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -228,22 +247,10 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>jersey</Embed-Dependency>
-                        <Export-Package>org.opendaylight.sfc.*;</Export-Package>
+                        <Export-Package>org.opendaylight.controller.ofsfc.*;</Export-Package> 
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

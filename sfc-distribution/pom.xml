@@ -44,6 +44,13 @@ see https://git.opendaylight.org/gerrit/#/c/390/
 
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>ofsfc</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-ui</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -121,7 +128,26 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <artifactId>openflowplugin-controller-config</artifactId>
             <version>${openflowplugin.version}</version>
         </dependency>
-    </dependencies>
+        
+        <!-- Yang -->
+        <dependency>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-inet-types</artifactId>
+            <version>${ietf.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.model</groupId>
+            <artifactId>ietf-yang-types-20130715</artifactId>
+            <version>${ietf.yang.types.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.opendaylight.yangtools.model</groupId>
+           <artifactId>ietf-yang-types</artifactId>
+           <version>${ietf.model.version}</version>
+       </dependency>
+     </dependencies>
+        
+
 
     <build>
         <resources>

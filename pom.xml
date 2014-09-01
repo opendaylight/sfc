@@ -92,6 +92,7 @@
         <module>sfc-test-consumer</module>
         <module>sfc-ui</module>
         <module>sfc-distribution</module>
+        <module>ofsfc</module>
     </modules>
 
     <build>

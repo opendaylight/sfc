@@ -6,9 +6,9 @@
         "sf-data-plane-locator": [
           {
             "name": "preferred",
-            "port": 10002,
-            "ip": "10.3.1.103",
-            "service-function-forwarder": "SFF-bootstrap"
+            "mac": "00:21:22:23:24:25",
+            "vlan-id": 103,
+            "service-function-forwarder": "openflow:1"
           }
         ],
         "name": "napt44-103-2",
@@ -48,9 +48,9 @@
         "sf-data-plane-locator": [
           {
             "name": "2",
-            "port": 10002,
-            "ip": "10.3.1.101",
-            "service-function-forwarder": "SFF-bootstrap"
+            "mac": "00:01:02:03:04:05",
+            "vlan-id": 101,
+            "service-function-forwarder": "openflow:1"
           }
         ],
         "name": "firewall-101-2",
@@ -104,9 +104,9 @@
         "sf-data-plane-locator": [
           {
             "name": "101",
-            "port": 10003,
-            "ip": "10.3.1.102",
-            "service-function-forwarder": "SFF-bootstrap"
+            "mac": "00:11:12:13:14:15",
+            "vlan-id": 102,
+            "service-function-forwarder": "openflow:1"
           }
         ],
         "name": "dpi-102-3",

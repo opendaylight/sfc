@@ -129,7 +129,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         if (dataBroker != null) {
 
             InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).
@@ -142,12 +142,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return ret;
     }
 
     protected ServiceFunctionPath readServiceFunctionPath(String serviceFunctionPathName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionPath sfp = null;
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
@@ -167,13 +167,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 sfp = serviceFunctionPathDataObject.get();
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return sfp;
     }
 
     protected boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey).toInstance();
@@ -185,13 +185,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return ret;
     }
 
     protected boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         if (dataBroker != null) {
 
             InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
@@ -202,13 +202,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return ret;
     }
 
     protected ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps = null;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
 
         if (odlSfc.getDataProvider() != null) {
@@ -224,13 +224,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 sfps = serviceFunctionPathsDataObject.get();
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return sfps;
     }
 
     protected boolean deleteAllServiceFunctionPaths() {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
@@ -241,7 +241,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return ret;
     }
 
@@ -258,7 +258,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     // TODO:Needs change
     private void deleteServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionChain serviceFunctionChain = null;
         String serviceChainName = serviceFunctionPath.getServiceChainName();
         try {
@@ -330,7 +330,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.error("Failed to get reference to Service Function Chain State {} ", serviceFunctionChain.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
     @SuppressWarnings("unused")
@@ -345,7 +345,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
     protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         long pathId;
         short pos_index = 0;
@@ -381,7 +381,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         List<SfcServiceFunction> SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
         service_index = SfcServiceFunctionList.size();
         for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
-            LOG.debug("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
+            LOG.error("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
 
             /*
              * We iterate thorough the list of service function types and for each one we try to get
@@ -470,7 +470,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
         SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
 
     }
 
@@ -503,7 +503,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionState serviceFunctionState;
@@ -552,7 +552,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.warn("Failed to get reference to Service Function State {} ", serviceFunction.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 
 
@@ -566,7 +566,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
     private void updateServicePathContainingFunction (ServiceFunction serviceFunction) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
 
@@ -598,6 +598,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.error("Failed to get reference to Service Function State {} ", serviceFunction.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 }

@@ -43,7 +43,7 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
         }
     }
 
-    SfcProviderAbstractAPI(Object[] params, Class[] paramsTypes, String m) {
+    protected SfcProviderAbstractAPI(Object[] params, Class[] paramsTypes, String m) {
         this.methodName = m;
         this.parameters = new Object[params.length];
         this.parameterTypes = new Class[params.length];

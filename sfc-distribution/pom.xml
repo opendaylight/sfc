@@ -20,6 +20,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
         <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
         <openflowplugin.version>0.0.3-SNAPSHOT</openflowplugin.version>
         <openflowj.version>1.0.2</openflowj.version>
+        <lisp.version>1.1.11-SNAPSHOT</lisp.version>
     </properties>
 
     <dependencies>
@@ -39,6 +40,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-test-consumer</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfclisp</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
@@ -121,6 +128,48 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <artifactId>openflowplugin-controller-config</artifactId>
             <version>${openflowplugin.version}</version>
         </dependency>
+        <!-- lispFlowMapping -->
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.yangmodel</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.api</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.config</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.implementation</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.clusterdao</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.southbound</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opendaylight.lispflowmapping</groupId>
+			<artifactId>mappingservice.northbound</artifactId>
+			<version>${lisp.version}</version>
+		</dependency>
     </dependencies>
 
     <build>

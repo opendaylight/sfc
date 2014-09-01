@@ -6,13 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.lisp;
+
+import java.util.List;
+import java.util.Map;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceLispAPI;
-import org.opendaylight.sfc.provider.lisp.LispUpdater;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -20,20 +21,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * This class is the DataListener for SFF changes.
  *
  * <p>
- * @author Reinaldo Penno (rapenno@gmail.com)
+ * @author David Goldberg (david.goldberg@contextream.com)
  * @version 0.1
  * @since       2014-06-30
  */
-public class SfcProviderSffDataListener implements DataChangeListener  {
+public class SfcLispProviderSffEntryDataListener implements DataChangeListener  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcLispProviderSffEntryDataListener.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static LispUpdater lispUpdater = LispUpdater.getLispUpdaterObj();
 
@@ -45,23 +43,14 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
 
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-        /*
-         * when a SFF is created we will process and send it to southbound devices. But first we need
-         * to mae sure all info is present or we will pass.
-         */
-        boolean sffready = false;
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionForwarders) {
 
                 ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry.getValue();
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
                 for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
-                    sffready = SfcProviderServiceForwarderAPI.checkServiceFunctionForwarder(serviceFunctionForwarder);
-                    sffready &= sffready;
-
                     if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
                         Object[] serviceFunctionForwarderObj = { serviceFunctionForwarder };
                         Class[] serviceFunctionForwarderClass = { ServiceFunctionForwarder.class };
@@ -69,12 +58,6 @@ public class SfcProviderSffDataListener implements DataChangeListener  {
                                 serviceFunctionForwarderClass));
                     }
 
-                }
-                if (sffready) {
-                    Object[] serviceForwarderObj = {updatedServiceFunctionForwarders};
-                    Class[] serviceForwarderClass = {ServiceFunctionForwarders.class};
-                    odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarders (serviceForwarderObj, serviceForwarderClass));
-                    //send to REST
                 }
             }
         }

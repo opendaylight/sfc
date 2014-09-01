@@ -76,6 +76,15 @@ module service-locator {
 
   }
 
+  grouping lisp-locator {
+    description
+      "Data plane-locator: Lisp Eid(IP)";
+    leaf eid {
+      type inet:ip-address;
+      description "Data-plane IP address";
+    }
+  }
+
   grouping ip-port-locator {
     description
       "Data plane-locator: IP address and L4 port";
@@ -112,6 +121,9 @@ module service-locator {
       mandatory true;
       case ip {
         uses ip-port-locator;
+      }
+      case lisp {
+        uses lisp-locator;
       }
 //      case mac {
 //        uses mac-address-locator;

@@ -2,15 +2,15 @@
   "service-function-forwarders": {
     "service-function-forwarder": [
       {
-        "name": "openflow:1",
+        "name": "SFF-bootstrap",
         "service-node": "OVSDB1",
         "classifier": "acl-sfp-1",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
             "data-plane-locator": {
-                 "mac": "00:0a:0b:0c:0d:0e",
-               "vlan-id": 500,
+              "port": 5000,
+              "ip": "192.168.1.1",
               "transport": "service-locator:vxlan-gpe"
             }
           }

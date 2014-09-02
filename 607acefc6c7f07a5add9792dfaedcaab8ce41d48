@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_b14c2aca",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/Activator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "I\u0027m not sure I followed this implementation. There is no start function, there is just the registration of a OSGi dependency.\n\nAm I missing something?",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d149aeb8",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/lisp/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "There is not a single line of comment in this file.",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b1918af3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/lisp/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this get a reference to LispMappingService?",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f18712b5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/lisp/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "Why do you need empty constructor?",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_71c6a218",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/lisp/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "You should break here",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f1d952f5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/lisp/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T22:28:46Z",
+      "side": 1,
+      "message": "break here",
+      "revId": "607acefc6c7f07a5add9792dfaedcaab8ce41d48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

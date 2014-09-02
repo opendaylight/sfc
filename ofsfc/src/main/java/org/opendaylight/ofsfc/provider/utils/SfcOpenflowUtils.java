@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
-public class MdSalUtils {
+public class SfcOpenflowUtils {
 
     public static Action createSetDlSrcAction(String mac, int order) {
         ActionBuilder ab = createActionBuilder(order);

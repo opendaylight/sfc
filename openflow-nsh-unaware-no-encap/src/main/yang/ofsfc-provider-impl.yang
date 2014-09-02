@@ -14,7 +14,7 @@ module ofsfc-provider-impl {
       "This module contains the base YANG definitions for
       ofsfc-provider impl implementation.";
 
-  revision "2014-06-30" {
+  revision "2014-09-01" {
       description
           "Initial revision.";
   }

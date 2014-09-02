@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.ofsfc.provider.utils.MdSalUtils;
+import org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -353,9 +353,9 @@ public class OfSfcProviderSffFlowWriter {
                     // Create the Actions
 
                     // Set the DL (Data Link) Dest Mac Address
-                    Action actionDstMac = MdSalUtils.createSetDlDstAction(dstMac, 0);
-                    Action actionPushVlan = MdSalUtils.createPushVlanAction(1);
-                    Action actionDstVlan = MdSalUtils.createSetDstVlanAction(dstVlan,
+                    Action actionDstMac = SfcOpenflowUtils.createSetDlDstAction(dstMac, 0);
+                    Action actionPushVlan = SfcOpenflowUtils.createPushVlanAction(1);
+                    Action actionDstVlan = SfcOpenflowUtils.createSetDstVlanAction(dstVlan,
                             2);
 
                     List<Action> actionList = new ArrayList<Action>();
@@ -460,7 +460,7 @@ public class OfSfcProviderSffFlowWriter {
                     match.setVlanMatch(vlanBuilder.build());
 
 
-                    Action actionPopVlan = MdSalUtils.createPopVlanAction(0);
+                    Action actionPopVlan = SfcOpenflowUtils.createPopVlanAction(0);
                     List<Action> actionList = new ArrayList<Action>();
 
                     actionList.add(actionPopVlan);
@@ -561,9 +561,9 @@ public class OfSfcProviderSffFlowWriter {
                     // Create the Actions
 
                     // Set the DL (Data Link) Dest Mac Address
-                    Action actionDstMac = MdSalUtils.createSetDlDstAction(dstMac, 0);
-                    Action actionPushVlan = MdSalUtils.createPushVlanAction(1);
-                    Action actionDstVlan = MdSalUtils.createSetDstVlanAction(dstVlan,
+                    Action actionDstMac = SfcOpenflowUtils.createSetDlDstAction(dstMac, 0);
+                    Action actionPushVlan = SfcOpenflowUtils.createPushVlanAction(1);
+                    Action actionDstVlan = SfcOpenflowUtils.createSetDstVlanAction(dstVlan,
                             2);
 
                     List<Action> actionList = new ArrayList<Action>();

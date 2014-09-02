@@ -65,10 +65,6 @@ public class OfSfcProviderAclDataListener implements DataChangeListener {
 
                 byte protocol = aceIp.getIpProtocol().byteValue();
 
-                // aceIp.getDestinationPortRange().getLowerPort()
-
-                // aceIpv4.getDestinationIpv4Address();
-
                 // TODO open item how to retieve SFP details using SFPname, then
                 // for each of the SF from the list of SFs, take the sff and
                 // provision
@@ -77,8 +73,6 @@ public class OfSfcProviderAclDataListener implements DataChangeListener {
                 // SfcProviderSffFlowWriter.getInstance().setNodeInfo(TODO
                 // sffname);
 
-                // TODO need to get the ip src/dst, srcport/dstport and protocol
-                // and call it
                 OfSfcProviderSffFlowWriter.getInstance().writeClassificationFlow(
                         srcIpAddress, (short) 32, dstIpAddress, (short) 32,
                         srcPort, dstPort, protocol, pathId);

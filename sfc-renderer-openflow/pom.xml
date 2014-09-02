@@ -8,7 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>ofsfc</artifactId>
+    <artifactId>sfc-renderer-openflow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
@@ -86,7 +86,6 @@
 			<artifactId>model-inventory</artifactId>
 			<version>${mdsal.version}</version>
 		</dependency>
-		
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>yang-jmx-generator</artifactId>
@@ -138,8 +137,7 @@
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-common</artifactId>
             <version>${yangtools.version}</version>
-        </dependency>
-        
+        </dependency>        
         <dependency>
             <groupId>org.opendaylight.yangtools.model</groupId>
             <artifactId>ietf-inet-types</artifactId>
@@ -154,9 +152,7 @@
            <groupId>org.opendaylight.yangtools.model</groupId>
            <artifactId>ietf-yang-types</artifactId>
            <version>${ietf.model.version}</version>
-       </dependency>
-        
-        
+       </dependency>        
         <dependency>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>munge-maven-plugin</artifactId>
@@ -197,7 +193,6 @@
             <artifactId>jackson-datatype-json-org</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-base</artifactId>

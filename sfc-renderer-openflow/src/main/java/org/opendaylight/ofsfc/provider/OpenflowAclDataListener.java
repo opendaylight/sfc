@@ -16,21 +16,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OfSfcProviderAclDataListener implements DataChangeListener {
+public class OpenflowAclDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory
-            .getLogger(OfSfcProviderSfpDataListener.class);
-    private static final OfSfcProvider odlSfc = OfSfcProvider
+            .getLogger(OpenflowSfpDataListener.class);
+    private static final OpenFlowSfcRenderer odlSfc = OpenFlowSfcRenderer
             .getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
             AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        // TODO Auto-generated method stub
-
-        LOG.debug("\n########## Start: {}", Thread.currentThread()
-                .getStackTrace()[1]);
-
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change
                 .getOriginalData();
 
@@ -42,43 +37,32 @@ public class OfSfcProviderAclDataListener implements DataChangeListener {
                 AclServiceFunctionPath action = (AclServiceFunctionPath) ((SfcAction) originalAccessListEntries
                         .getActions());
 
-                // will now get the sfp name and fetch the sfp id from it
-                //need to fetch the sfpid from the sfp name
-                //String sPath= action.getServiceFunctionPath();
+                // TODO: retrieve sfpid from sfpname
                 Long pathId = 1L;
 
                 Matches matches;
                 AceIp aceIp;
                 AceIpv4 aceIpv4;
+
                 matches = originalAccessListEntries.getMatches();
                 aceIp = (AceIp) matches.getAceType();
                 aceIpv4 = (AceIpv4) aceIp.getAceIpVersion();
 
                 String srcIpAddress = aceIpv4.getSourceIpv4Address().getValue();
-                String dstIpAddress = aceIpv4.getDestinationIpv4Address()
-                        .getValue();
+                String dstIpAddress = aceIpv4.getDestinationIpv4Address().getValue();
 
-                Short srcPort = aceIp.getSourcePortRange().getLowerPort()
-                        .getValue().shortValue();
-                Short dstPort = aceIp.getDestinationPortRange().getLowerPort()
-                        .getValue().shortValue();
+                Short srcPort = aceIp.getSourcePortRange().getLowerPort().getValue().shortValue();
+                Short dstPort = aceIp.getDestinationPortRange().getLowerPort().getValue().shortValue();
 
                 byte protocol = aceIp.getIpProtocol().byteValue();
 
-                // TODO open item how to retieve SFP details using SFPname, then
-                // for each of the SF from the list of SFs, take the sff and
-                // provision
-                // table 0 entry
+                // TODO program classification table on each sff of sfp
+                // SfcProviderSffFlowWriter.getInstance().setNodeInfo(sffname);
 
-                // SfcProviderSffFlowWriter.getInstance().setNodeInfo(TODO
-                // sffname);
-
-                OfSfcProviderSffFlowWriter.getInstance().writeClassificationFlow(
+                OpenflowSfcFlowProgrammer.getInstance().writeClassificationFlow(
                         srcIpAddress, (short) 32, dstIpAddress, (short) 32,
                         srcPort, dstPort, protocol, pathId);
-
             }
         }
-
     }
 }

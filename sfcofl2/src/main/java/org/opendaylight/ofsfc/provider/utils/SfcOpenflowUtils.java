@@ -34,8 +34,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 
-public class MdSalUtils {
+public class SfcOpenflowUtils {
 
     public static Action createSetDlSrcAction(String mac, int order) {
         ActionBuilder ab = createActionBuilder(order);
@@ -116,4 +119,15 @@ public class MdSalUtils {
         return ab;
     }
 
+    public static VlanMatch createVlanMatch(int vlan)
+    {
+        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
+        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+        VlanId vlanId = new VlanId(vlan);
+        vlanIdBuilder.setVlanId(vlanId);
+        vlanIdBuilder.setVlanIdPresent(true);
+        vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
+
+        return vlanMatchBuilder.build();
+    }
 }

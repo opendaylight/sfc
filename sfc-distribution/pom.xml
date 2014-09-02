@@ -44,13 +44,6 @@ see https://git.opendaylight.org/gerrit/#/c/390/
 
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>ofsfc</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-ui</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

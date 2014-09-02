@@ -41,13 +41,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <artifactId>sfc-test-consumer</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
+         
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>ofsfc</artifactId>
+            <artifactId>sfc-openflow-renderer-no-encap</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>

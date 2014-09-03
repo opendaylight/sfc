@@ -47,11 +47,22 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 
 import com.google.common.net.InetAddresses;
 
-public class LispUpdater {
+public class LispUpdater implements ILispUpdater {
 
-    private IFlowMapping flowMapping;
+    private static LispUpdater lispUpdaterObj;
+
+    private static IFlowMapping flowMapping;
 
     public LispUpdater() {
+        lispUpdaterObj = this;
+    }
+
+    public static LispUpdater getLispUpdaterObj() {
+        return LispUpdater.lispUpdaterObj;
+    }
+
+    public static void setFlowMapping(IFlowMapping fm) {
+        flowMapping = fm;
     }
 
     public LispAddressContainer asLispContainer(String rloc) {
@@ -66,14 +77,7 @@ public class LispUpdater {
 
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
-        Lisp lispLocation = null;
-        for (SffDataPlaneLocator location : locations) {
-            DataPlaneLocator dpl = location.getDataPlaneLocator();
-            LocatorType lt = dpl.getLocatorType();
-            if (lt instanceof Lisp) {
-                lispLocation = (Lisp) lt;
-            }
-        }
+        Lisp lispLocation = getLispLocationFromSff(locations);
         if (lispLocation != null) {
             return updateLispData(lispLocation, serviceFunctionForwarder);
         } else {
@@ -81,15 +85,40 @@ public class LispUpdater {
         }
     }
 
-    public ServiceFunction updateLispData(ServiceFunction serviceFunction) {
-        List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
-        Lisp lispLocation = null;
-        for (SfDataPlaneLocator location : locations) {
-            LocatorType lt = location.getLocatorType();
+    private Lisp getLispLocationFromSff(List<SffDataPlaneLocator> locations) {
+        for (SffDataPlaneLocator location : locations) {
+            DataPlaneLocator dpl = location.getDataPlaneLocator();
+            LocatorType lt = dpl.getLocatorType();
             if (lt instanceof Lisp) {
-                lispLocation = (Lisp) lt;
+                return (Lisp) lt;
             }
         }
+        return null;
+    }
+
+    public boolean containsLispAddress(ServiceFunction serviceFunction) {
+        List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
+        for (SfDataPlaneLocator location : locations) {
+            if (location.getLocatorType() instanceof Lisp) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsLispAddress(ServiceFunctionForwarder serviceFunctionForwarder) {
+        List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
+        for (SffDataPlaneLocator location : locations) {
+            if (location.getDataPlaneLocator().getLocatorType() instanceof Lisp) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ServiceFunction updateLispData(ServiceFunction serviceFunction) {
+        List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
+        Lisp lispLocation = getLispLocationFromSf(locations);
         if (lispLocation != null) {
             return updateLispData(lispLocation, serviceFunction);
         } else {
@@ -97,8 +126,18 @@ public class LispUpdater {
         }
     }
 
+    private Lisp getLispLocationFromSf(List<SfDataPlaneLocator> locations) {
+        for (SfDataPlaneLocator location : locations) {
+            LocatorType lt = location.getLocatorType();
+            if (lt instanceof Lisp) {
+                return (Lisp) lt;
+            }
+        }
+        return null;
+    }
+
     private ServiceFunction updateLispData(Lisp lispLocation, ServiceFunction serviceFunction) {
-        MapRequest mr = createMapRequest(lispLocation.getIp());
+        MapRequest mr = createMapRequest(lispLocation.getEid());
         MapReply reply = flowMapping.handleMapRequest(mr);
         if (reply.getEidToLocatorRecord() == null || reply.getEidToLocatorRecord().isEmpty()) {
             return serviceFunction;
@@ -109,7 +148,7 @@ public class LispUpdater {
             if (address instanceof LcafApplicationData) {
                 LcafApplicationData applicationData = (LcafApplicationData) address;
                 Ip locatorType = createLocator(applicationData);
-                String name = lispLocation.getIp().toString();
+                String name = lispLocation.getEid().toString();
                 SfDataPlaneLocatorKey key = new SfDataPlaneLocatorKey(name);
                 SfDataPlaneLocator loc = new SfDataPlaneLocatorBuilder().setLocatorType(locatorType).setKey(key).setName(name).build();
                 ServiceFunctionBuilder fb = new ServiceFunctionBuilder(serviceFunction);
@@ -123,7 +162,7 @@ public class LispUpdater {
     }
 
     private ServiceFunctionForwarder updateLispData(Lisp lispLocation, ServiceFunctionForwarder serviceFunctionForwarder) {
-        MapRequest mr = createMapRequest(lispLocation.getIp());
+        MapRequest mr = createMapRequest(lispLocation.getEid());
         MapReply reply = flowMapping.handleMapRequest(mr);
         if (reply.getEidToLocatorRecord() == null || reply.getEidToLocatorRecord().isEmpty()) {
             return serviceFunctionForwarder;
@@ -135,7 +174,7 @@ public class LispUpdater {
                 LcafApplicationData applicationData = (LcafApplicationData) address;
                 Ip locatorType = createLocator(applicationData);
                 DataPlaneLocator dpl = new DataPlaneLocatorBuilder().setLocatorType(locatorType).build();
-                String name = lispLocation.getIp().toString();
+                String name = lispLocation.getEid().toString();
                 SffDataPlaneLocatorKey key = new SffDataPlaneLocatorKey(name);
                 SffDataPlaneLocator loc = new SffDataPlaneLocatorBuilder().setDataPlaneLocator(dpl).setKey(key).setName(name).build();
                 ServiceFunctionForwarderBuilder fb = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);

@@ -235,6 +235,7 @@
                         <Embed-Dependency>jersey</Embed-Dependency>
                         <Export-Package>org.opendaylight.controller.sfc.*;</Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                        <Bundle-Activator>org.opendaylight.sfc.provider.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import org.apache.felix.dm.Component;
 import org.opendaylight.controller.sal.core.ComponentActivatorAbstractBase;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
+import org.opendaylight.sfc.provider.lisp.ILispUpdater;
 import org.opendaylight.sfc.provider.lisp.LispUpdater;
 
 /**
@@ -77,7 +78,7 @@ public class Activator extends ComponentActivatorAbstractBase {
             // export the service
             Dictionary<String, String> props = new Hashtable<String, String>();
             props.put("name", LispUpdater.class.getSimpleName());
-            c.setInterface(new String[] { IFlowMapping.class.getName() }, props);
+            c.setInterface(new String[] { ILispUpdater.class.getName() }, props);
             c.add(createContainerServiceDependency(containerName).setService(IFlowMapping.class).setCallbacks("setFlowMapping", "unsetFlowMapping")
                     .setRequired(true));
         }

@@ -95,6 +95,7 @@
         <module>sfcofl2</module>
         <module>features</module>
     <module>sfc-karaf</module>
+    <module>sfc-config</module>
   </modules>
 
     <build>

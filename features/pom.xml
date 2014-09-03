@@ -116,6 +116,13 @@
       </dependency>
     -->
     <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>sfc-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
+    <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${logback.version}</version>

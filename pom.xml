@@ -93,6 +93,7 @@
         <module>sfc-distribution</module>
         <module>features</module>
     <module>sfc-karaf</module>
+    <module>sfc-config</module>
   </modules>
 
     <build>

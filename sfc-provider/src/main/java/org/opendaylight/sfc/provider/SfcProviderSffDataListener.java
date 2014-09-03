@@ -11,8 +11,6 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceLispAPI;
-import org.opendaylight.sfc.provider.lisp.LispUpdater;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -25,36 +23,35 @@ import java.util.Map;
 
 /**
  * This class is the DataListener for SFF changes.
- * 
+ *
  * <p>
- * 
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * @since 2014-06-30
+ * @since       2014-06-30
  */
-public class SfcProviderSffDataListener implements DataChangeListener {
+public class SfcProviderSffDataListener implements DataChangeListener  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffDataListener.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private static LispUpdater lispUpdater = LispUpdater.getLispUpdaterObj();
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
         /*
-         * when a SFF is created we will process and send it to southbound
-         * devices. But first we need to mae sure all info is present or we will
-         * pass.
+         * when a SFF is created we will process and send it to southbound devices. But first we need
+         * to mae sure all info is present or we will pass.
          */
         boolean sffready = false;
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionForwarders) {
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
+        {
+            if( entry.getValue() instanceof ServiceFunctionForwarders) {
 
                 ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry.getValue();
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
@@ -62,22 +59,16 @@ public class SfcProviderSffDataListener implements DataChangeListener {
                     sffready = SfcProviderServiceForwarderAPI.checkServiceFunctionForwarder(serviceFunctionForwarder);
                     sffready &= sffready;
 
-                    if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
-                        Object[] serviceFunctionForwarderObj = { serviceFunctionForwarder };
-                        Class[] serviceFunctionForwarderClass = { ServiceFunctionForwarder.class };
-                        odlSfc.executor.submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceFunctionForwarderObj,
-                                serviceFunctionForwarderClass));
-                    }
-
                 }
                 if (sffready) {
-                    Object[] serviceForwardersObj = { updatedServiceFunctionForwarders };
-                    Class[] serviceForwardersClass = { ServiceFunctionForwarders.class };
-                    odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarders(serviceForwardersObj, serviceForwardersClass));
-                    // send to REST
+                    Object[] serviceForwarderObj = {updatedServiceFunctionForwarders};
+                    Class[] serviceForwarderClass = {ServiceFunctionForwarders.class};
+                    odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarders (serviceForwarderObj, serviceForwarderClass));
+                    //send to REST
                 }
             }
         }
+
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }

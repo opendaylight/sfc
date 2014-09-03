@@ -118,11 +118,6 @@
             <version>${yangtools.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.lispflowmapping</groupId>
-            <artifactId>mappingservice.api</artifactId>
-            <version>1.1.11-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-broker-impl</artifactId>
             <version>1.1-SNAPSHOT</version>
@@ -235,7 +230,6 @@
                         <Embed-Dependency>jersey</Embed-Dependency>
                         <Export-Package>org.opendaylight.controller.sfc.*;</Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                        <Bundle-Activator>org.opendaylight.sfc.provider.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

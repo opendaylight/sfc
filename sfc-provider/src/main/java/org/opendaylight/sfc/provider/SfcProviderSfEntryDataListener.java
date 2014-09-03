@@ -11,10 +11,8 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceLispAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
-import org.opendaylight.sfc.provider.lisp.LispUpdater;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,7 +36,6 @@ import java.util.Set;
 public class SfcProviderSfEntryDataListener implements DataChangeListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private static LispUpdater lispUpdater = LispUpdater.getLispUpdaterObj();
 
     @Override
     public void onDataChanged(
@@ -89,12 +86,8 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
 
-                Object[] serviceTypeObj = { createdServiceFunction };
-                Class[] serviceTypeClass = { ServiceFunction.class };
-
-                if (lispUpdater.containsLispAddress(createdServiceFunction)) {
-                    odlSfc.executor.submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceTypeObj, serviceTypeClass));
-                }
+                Object[] serviceTypeObj = {createdServiceFunction};
+                Class[] serviceTypeClass = {ServiceFunction.class};
 
                 odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));

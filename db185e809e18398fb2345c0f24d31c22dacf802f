@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_57458e15",
+        "filename": "sfc-provider/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-03T09:13:03Z",
+      "side": 1,
+      "message": "As I mentioned, SFCProvider is a full MD_SAL based provider, it does not use Activators.",
+      "revId": "db185e809e18398fb2345c0f24d31c22dacf802f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_773692b6",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/Activator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-03T09:13:03Z",
+      "side": 1,
+      "message": "SFC Provider does not use an Activator. It is started by infrastructure based on sfc-provider-impl.yang\n\nIf you need an Activator, you need to create a LISP Provider.",
+      "revId": "db185e809e18398fb2345c0f24d31c22dacf802f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_f7494233",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-03T09:13:03Z",
+      "side": 1,
+      "message": "There are a lot of whitespace changes in this file that are not necessary. We try to keep lines at most 80 chars.",
+      "revId": "db185e809e18398fb2345c0f24d31c22dacf802f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

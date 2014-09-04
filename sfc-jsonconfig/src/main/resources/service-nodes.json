@@ -1,0 +1,39 @@
+{
+    "service-nodes": {
+        "service-node": [
+            {
+                "name": "node-101",
+                "service-function": [
+                    "firewall-101-2",
+                    "firewall-101-1"
+                ],
+                "ip-mgmt-address": "10.3.1.101"
+            },
+            {
+                "name": "node-102",
+                "service-function": [
+                    "dpi-102-1",
+                    "dpi-102-2",
+                    "dpi-102-3"
+                ],
+                "ip-mgmt-address": "10.3.1.102"
+            },
+            {
+                "name": "node-103",
+                "service-function": [
+                    "napt44-103-1",
+                    "napt44-103-2"
+                ],
+                "ip-mgmt-address": "10.3.1.103"
+            },
+            {
+                "name": "node-104",
+                "service-function": [
+                    "firewall-104",
+                    "napt44-104"
+                ],
+                "ip-mgmt-address": "10.3.1.104"
+            }
+        ]
+    }
+}

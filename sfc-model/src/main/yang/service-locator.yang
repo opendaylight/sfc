@@ -113,9 +113,9 @@ module service-locator {
       case ip {
         uses ip-port-locator;
       }
-//      case mac {
-//        uses mac-address-locator;
-//      }
+      case mac {
+        uses mac-address-locator;
+      }
       description "The collection of all possible data-plane
         locators. Only one can be chosen";
     }

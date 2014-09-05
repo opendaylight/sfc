@@ -97,7 +97,9 @@
         <module>sfc-karaf</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
-  </modules>
+        <module>features-sfcofl2</module>
+        <module>features-sfclisp</module>
+    </modules>
 
     <build>
         <plugins>

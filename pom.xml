@@ -58,6 +58,8 @@
         <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
         <yangtools.binding.version>0.6.2-SNAPSHOT</yangtools.binding.version>
 
+        <lispflowmapping.version>1.1.11-SNAPSHOT</lispflowmapping.version>
+
         <!-- Supporting Libraries -->
         <commons.lang.version>3.1</commons.lang.version>
         <junit.version>4.10</junit.version>
@@ -94,10 +96,11 @@
         <module>sfc-distribution</module>
         <module>sfcofl2</module>
         <module>features</module>
-        <module>sfc-karaf</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
-  </modules>
+        <module>features-sfclisp</module>
+        <module>sfc-karaf</module>
+    </modules>
 
     <build>
         <plugins>

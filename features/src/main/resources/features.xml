@@ -84,11 +84,11 @@
         <feature version='1.1-SNAPSHOT'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>    
-        <configfile finalname="bin/configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="bin/configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="bin/configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="bin/configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="bin/configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
+        <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-core/${logback.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-classic/${logback.version}</bundle>
@@ -116,10 +116,10 @@
         <feature version='${project.version}'>odl-sfc-model</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>    
         <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
-        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>  
+        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}</bundle>
       
     </feature>

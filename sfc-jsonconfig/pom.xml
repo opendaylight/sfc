@@ -34,6 +34,7 @@
   <properties>
       <!-- Optional TODO: Rename your configfile to taste -->
       <configfile>sfc_provider_config.json</configfile>
+      <bootstrapdir>bootstrap</bootstrapdir>
   </properties>
   <build>
     <plugins>
@@ -53,6 +54,26 @@
                   <file>${project.build.directory}/classes/${configfile}</file>
                   <type>xml</type>
                   <classifier>config</classifier>
+                </artifact>
+                <artifact>
+                    <file>${project.build.directory}/classes/${bootstrapdir}/service-function-chains.json</file>
+                    <type>xml</type>
+                    <classifier>config-sfc</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/${bootstrapdir}/service-function-forwarders.json</file>
+                  <type>xml</type>
+                  <classifier>config-sff</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/${bootstrapdir}/service-functions.json</file>
+                  <type>xml</type>
+                  <classifier>config-sf</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/${bootstrapdir}/service-nodes.json</file>
+                  <type>xml</type>
+                  <classifier>config-sn</classifier>
                 </artifact>
                 <!--
                   Optional TODO: Add additional config files

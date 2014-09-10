@@ -272,9 +272,9 @@
         <configuration>
           <bootFeatures>
             <feature>standard</feature>
- <!--           <feature>odl-sfc-all</feature>
             <feature>odl-restconf</feature> 
-            <feature>odl-mdsal-apidocs</feature> -->
+            <feature>odl-sfc-all</feature>
+            <feature>odl-mdsal-apidocs</feature>
             <!-- 
               Optional TODO: Add entries here for the features you want in your local distro
               Note: odl-restconf is a separate feature from odl-mdsal-broker.  If you want

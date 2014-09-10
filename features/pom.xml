@@ -136,7 +136,56 @@
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config</classifier>
-      </dependency>    
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sff</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sfc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sn</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sf</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sff</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sfc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sn</classifier>
+      </dependency>
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
       <artifactId>sfc-config</artifactId>

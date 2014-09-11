@@ -34,6 +34,7 @@
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${project.version}'>odl-sfc-test-consumer</feature>
+        <feature version='${project.version}'>odl-sfc-ui</feature>
     </feature>
     <!--
         Necessary TODO: Define your features.  It is useful to list then in order of dependency.  So if A depends on B, list A first.
@@ -121,8 +122,14 @@
         <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}</bundle>
-      
     </feature>
+    <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>
+        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature>odl-restconf</feature>
+        <feature>http</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ui/${project.version}</bundle>
+    </feature>
+
     <!-- Optional TODO: Remove TODO Comments -->
 
 </features>

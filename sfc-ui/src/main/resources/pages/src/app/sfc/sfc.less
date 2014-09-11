@@ -1,0 +1,237 @@
+.formElement {
+  border-radius: 5px;
+  background-color: #5f5f5f;
+  padding: 10px 10px 5px 10px;
+  margin-bottom: 15px;
+}
+
+div.tooltip {
+  a{
+    color: #428bca !important;
+  }
+  position: absolute;
+  text-align: left;
+  //width: 180px;
+  //height: 80px;
+  padding: 10px;
+  font: 12px sans-serif;
+  color: white;
+  background: black;
+  border: 0px;
+  border-radius: 4px;
+}
+
+.small-label {
+  font-size: 12px;
+}
+
+.spanText {
+  color: #444;
+}
+
+.spanTip {
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.overlay{
+  //background-color:#EEE;
+  background-image: none;
+  border: none;
+}
+
+.node text {
+  font-size:12px;
+  font-family:sans-serif;
+  fill: #ffffff;
+  text-shadow: 2px 2px black;
+}
+
+.nodeLabelOutContainer{
+  width: 50%;
+  height: 100%;
+  margin:auto;
+  display: table;
+  table-layout: fixed;
+}
+
+.nodeLabelInContainer{
+  display: table-cell;
+  line-height: 1;
+}
+
+.nodeLabel{
+  font-size:12px;
+  font-family:sans-serif;
+  color: white;
+  background: #414042;
+//  -ms-word-break: break-all;
+//  -webkit-hyphens: auto;
+//  -moz-hyphens: auto;
+//  -ms-hyphens: auto;
+//  hyphens: auto;
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+/* saf3+, chrome1+ */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .nodeLabel  { word-wrap: inherit  }
+}
+
+.link {
+  fill: none;
+  stroke: #fafafa;
+  stroke-width: 2.5px;
+}
+
+.sfc-node-main{
+  margin-top: 30px;
+  text-align: center;
+}
+
+.dropcontainer{
+  display: table-cell;
+  float:left;
+}
+
+.editable-input{
+  color: #1C94C4 !important;
+  background-color: white !important;
+  font-size:12px;
+  width: 80px;
+  text-align: center;
+  cursor: text;
+}
+
+.editable-click, a.editable-click{
+  text-decoration: none;
+  color: #428bca;
+  border-bottom: none;
+  cursor: text;
+}
+
+.place{
+  width: 104px;
+  height: 100px;
+  background-image: url(images/arrow-right-part-small.png), url(images/arrow-left-part-small.png);
+  background-position: top left, top right;
+  background-repeat: no-repeat, no-repeat;
+  float: left;
+}
+
+.new {
+  background: rgba(106, 147, 255, 0.32);
+}
+
+.edited {
+  background: rgba(250, 182, 0, 0.49);
+}
+
+.persisted {
+  background: inherit;
+}
+
+.error {
+  background: rgba(255,0,0,0.53);
+  border-radius: 0px;
+  float:right;
+}
+
+.warning {
+  background-color: orange;
+  color: #444444;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.sfc-sf-component {
+  height: 100px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+
+.arrow-left-part {
+  width: 18px;
+  height: 64px;
+  background: url(images/arrow-left-part-small.png) 0 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+
+.arrow-right-part {
+  width: 22px;
+  height: 64px;
+  background: url(images/arrow-right-part-small.png) 0 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+
+.obr-box {
+  width: 64px;
+  height: 64px;
+  background: url(images/Device_switch_3062_unknown_64.png) 0 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+
+.displayNone {
+  display: none;
+}
+
+.arrow-empty {
+  visibility: hidden !important;
+}
+
+.ng-table th.sortable.sort-desc, .ng-table th.sortable.sort-asc {
+  background-color: rgba(255, 255, 0, 0.25);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
+.ng-table th.filter {
+  background-color: white;
+  border-left: 1px solid #ccc;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
+.ng-table input[type="text"] {
+  background-color: white;
+  color: #858585;
+}
+
+.btn-default span {
+  color: #444;
+}
+
+.pagination span {
+  color: #444;
+}

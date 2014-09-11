@@ -1,0 +1,50 @@
+<a class="btn btn-info add-row" href="index.html#/sfc/servicefunction-create">
+    {{'SFC_FUNCTION_ADD' | translate}}
+</a>
+
+<button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+</button>
+
+<table ng-table="tableParams" show-filter="true" class="footable table">
+    <!--<tr ng-hide="sfs.length">-->
+    <!--<td colspan="6" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
+    <!--</tr>-->
+    <tr ng-repeat="sf in $data track by $index" ng-model="sfs">
+        <td data-title="'SFC_FUNCTION_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
+            {{sf.name}}
+        </td>
+        <td data-title="'SFC_FUNCTION_TYPE' | translate" sortable="'type'" filter="{ 'type': 'select' }" filter-data="sfTypes()">
+            {{sf.type}}
+        </td>
+        <td data-title="'SFC_FUNCTION_IP' | translate" sortable="'valueOf()[\'ip-mgmt-address\']'" filter="{ 'ip-mgmt-address': 'text' }">
+            {{sf['ip-mgmt-address']}}
+        </td>
+        <td data-title="'SFC_FUNCTION_NSH_AWARE' | translate" sortable="'valueOf()[\'nsh-aware\']'" filter="{ 'nsh-aware': 'select' }" filter-data="sfNshAware()">
+            {{sf['nsh-aware']}}
+        </td>
+        <td data-title="'SFC_FUNCTION_DATA_PLANE_LOCATOR' | translate" sortable="'valueOf()[\'sf-data-plane-locator-string\']'" filter="{ 'sf-data-plane-locator-string' : 'text'}">
+            <span style="color: #1C94C4; cursor: pointer;" ng-repeat="loc in sf['sf-data-plane-locator']"
+                  tooltip-placement="bottom"
+                  tooltip-html-unsafe="
+                      <div style='text-align: left'>
+                      {{'SFC_TOOLTIP_IP' | translate}}: {{loc['ip']}} <br/>
+                      {{'SFC_TOOLTIP_PORT' | translate}}: {{loc['port']}} <br/>
+                      {{'SFC_TOOLTIP_FORWARDER' | translate}}: {{loc['service-function-forwarder']}}
+                      </div>">
+                    {{loc['name']}}{{$last ? '' : ', '}}
+                </span></td>
+        <td data-title="'SFC_FUNCTION_ACTIONS' | translate">
+            <!--<a class="row-delete-sf" href="#">-->
+            <!--<i class="icon-edit"></i>-->
+            <!--</a>-->
+            <a ng-click="deleteSF(sf)">
+                <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                   popover="{{ 'SFC_FUNCTION_DELETE' | translate }}"></i>
+            </a>
+            <a ng-click="editSF(sf.name)">
+                <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                   popover="{{ 'SFC_FUNCTION_EDIT' | translate }}"></i>
+            </a>
+        </td>
+    </tr>
+</table>

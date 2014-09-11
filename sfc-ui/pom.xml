@@ -12,7 +12,29 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.dlux</groupId>
+            <artifactId>dlux-web</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
+        <resources>
+            <resource>
+                <directory>target/generated-resources</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33,19 +55,35 @@
                     <instructions>
                         <Export-Package>org.opendaylight.sfc.*;</Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                        <Bundle-Activator>org.opendaylight.sfc.ui.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <!--dlux Resources-->
+                    <execution>
+                        <id>unpack-dlux-resources</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+                            <groupId>org.opendaylight.dlux</groupId>
+                            <includeArtifactIds>dlux-web</includeArtifactIds>
+                            <excludes>META-INF\/**, org\/**</excludes>
+                            <excludeTransitive>true</excludeTransitive>
+                            <ignorePermissions>false</ignorePermissions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.opendaylight.dlux</groupId>
-            <artifactId>dlux-web</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>

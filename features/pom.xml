@@ -132,6 +132,11 @@
       </dependency>
       <dependency>
         <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-ui</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>

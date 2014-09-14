@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_a1d7dcbe",
+        "filename": "features-sfclisp/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-09-14T11:24:53Z",
+      "side": 1,
+      "message": "First comment: You don\u0027t need direct dependencies on these things, your feature only has:\n\n\u003cfeature version\u003d\u0027${project.version}\u0027\u003eodl-sfc-provider\u003c/feature\u003e\n\u003cfeature version\u003d\u0027${project.version}\u0027\u003eodl-sfc-model\u003c/feature\u003e\n\u003cfeature version\u003d\u0027${lisp.version}\u0027\u003eodl-lispflowmapping-all\u003c/feature\u003e\n\u003cbundle\u003emvn:org.opendaylight.sfc/sfclisp/${project.version}\u003c/bundle\u003e\n\nso you should only need dependencies on those (presuming the other features are done correctly... which I think they are)",
+      "revId": "88ffeddac54faa36dbb1dc548e4da4a259e51e8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_61e1d499",
+        "filename": "features-sfclisp/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-09-14T11:24:53Z",
+      "side": 1,
+      "message": "Second comment:\n\nYou are missing:\n\n\u003c!-- test to validate features.xml --\u003e\n    \u003cdependency\u003e\n      \u003cgroupId\u003eorg.opendaylight.yangtools\u003c/groupId\u003e\n      \u003cartifactId\u003efeatures-test\u003c/artifactId\u003e\n      \u003cversion\u003e${feature.test.version}\u003c/version\u003e\n      \u003cscope\u003etest\u003c/scope\u003e\n    \u003c/dependency\u003e\n    \u003c!-- dependency for opendaylight-karaf-empty for use by testing --\u003e\n    \u003cdependency\u003e\n      \u003cgroupId\u003eorg.opendaylight.controller\u003c/groupId\u003e\n      \u003cartifactId\u003eopendaylight-karaf-empty\u003c/artifactId\u003e\n      \u003cversion\u003e${karaf.empty.version}\u003c/version\u003e\n      \u003ctype\u003ezip\u003c/type\u003e\n    \u003c/dependency\u003e\n\nwithout which the wiring tests won\u0027t run.\n\n(Note: you may also need:\n\n    \u003c!-- Optional TODO: Uncomment this if you get an error : java.lang.NoSuchMethodError: org.slf4j.helpers.MessageFormatter.format(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Lorg/slf4j/helpers/FormattingTuple; --\u003e\n    \u003cdependency\u003e\n      \u003cgroupId\u003eorg.slf4j\u003c/groupId\u003e\n      \u003cartifactId\u003eslf4j-simple\u003c/artifactId\u003e\n      \u003cversion\u003e1.7.2\u003c/version\u003e\n    \u003c/dependency\u003e\n\n)",
+      "revId": "88ffeddac54faa36dbb1dc548e4da4a259e51e8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_c1d0e0cb",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-09-14T11:24:53Z",
+      "side": 1,
+      "message": "This shouldn\u0027t be necessary as features-lispflowmapping should be pulled through dependency wise by features-sfclisp.",
+      "revId": "88ffeddac54faa36dbb1dc548e4da4a259e51e8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

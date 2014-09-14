@@ -41,6 +41,11 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>sfclisp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
      <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>features-test</artifactId>

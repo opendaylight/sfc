@@ -9,10 +9,7 @@
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfclisp</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-
-
 
     <dependencies>
        
@@ -46,6 +43,11 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-api</artifactId>
             <version>${mdsal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guava</artifactId>
+            <version>0.9.9</version>
         </dependency>
        <dependency>
             <groupId>org.opendaylight.controller</groupId>
@@ -81,31 +83,6 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>munge-maven-plugin</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.17</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.18.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

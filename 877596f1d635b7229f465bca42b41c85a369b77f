@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_41a93023",
+        "filename": "features-sfclisp/src/main/resources/features.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-09-14T12:22:28Z",
+      "side": 1,
+      "message": "You need a \u003crepo\u003e for features-sfc (and a dependency for it in your pom.xml)",
+      "revId": "877596f1d635b7229f465bca42b41c85a369b77f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -12,6 +12,9 @@
     <artifactId>sfcofl2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
+    <properties>
+        <openflowplugin.version>0.0.3-SNAPSHOT</openflowplugin.version>
+    </properties>
 
     <dependencies>
 

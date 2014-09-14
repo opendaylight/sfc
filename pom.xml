@@ -99,6 +99,7 @@
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
         <module>features-sfclisp</module>
+        <module>features-sfcofl2</module>
         <module>sfc-karaf</module>
     </modules>
 

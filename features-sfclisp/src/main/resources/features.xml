@@ -12,8 +12,8 @@
 		<feature version='${project.version}'>odl-sfc-provider</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${lisp.version}'>odl-lispflowmapping-all</feature>
+        <bundle>mvn:org.sonatype.sisu/sisu-guava/0.9.9</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfclisp/${project.version}</bundle>
-        
 	</feature>
 </features>
 

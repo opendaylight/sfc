@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_818898c7",
+        "filename": "features-sfclisp/src/main/resources/features.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-09-14T12:03:23Z",
+      "side": 1,
+      "message": "You need a \u003crepo\u003e here for your features-lispflowmapping",
+      "revId": "88ffeddac54faa36dbb1dc548e4da4a259e51e8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_c1d0e0cb",
         "filename": "sfc-karaf/pom.xml",
         "patchSetId": 4

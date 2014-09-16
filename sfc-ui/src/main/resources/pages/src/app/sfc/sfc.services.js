@@ -205,10 +205,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
-    SfcRestBaseSvc.prototype.wrapOneInObject = function (item) {
-      return {
-        "Object": item
-      };
+    SfcRestBaseSvc.prototype.wrapInListname = function (item) {
+      var result = {};
+      result[this.listName] = item;
+      return result;
     };
 
     SfcRestBaseSvc.prototype.checkRequired = function (item) {
@@ -221,7 +221,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       this.checkRequired(item);
 
-      var wrappedElem = this.wrapOneInObject(item);
+      var wrappedElem = this.wrapInListname(item);
 
       this.put(wrappedElem, item.name).then(function () {
         if (callback) {

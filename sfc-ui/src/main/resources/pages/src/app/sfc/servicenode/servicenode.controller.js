@@ -10,17 +10,25 @@ define(['app/sfc/sfc.module'], function (sfc) {
   }
 
   function addNecessarySff(sn, sfs) {
+    var sffNames = sn['service-function-forwarder'];  // before
+
+    if (angular.isUndefined(sffNames)) {
+      sffNames = [];
+    }
+
     _.each(sn['service-function'], function (sf) {
-      var sff = getSFfromSFS(sf, sfs)['sf-data-plane-locator']['service-function-forwarder'];
+      var dplArray = getSFfromSFS(sf, sfs)['sf-data-plane-locator'];
 
-      if (angular.isUndefined(sn['service-function-forwarder'])) {
-        sn['service-function-forwarder'] = [];
-      }
-
-      if (!_.contains(sn['service-function-forwarder'], sff)) {
-        sn['service-function-forwarder'].push(sff);
-      }
+      _.each(dplArray, function (dpl) {
+        if (dpl['service-function-forwarder'] && !_.contains(sffNames, dpl['service-function-forwarder'])) {
+          sffNames.push(dpl['service-function-forwarder']);
+        }
+      });
     });
+
+    if (!_.isEmpty(sffNames)) {
+      sn['service-function-forwarder'] = sffNames;  // after
+    }
   }
 
   function getSFfromSFS(sfName, sfs) {
@@ -96,7 +104,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
 
     $scope.submit = function () {
-      //addNecessarySff($scope.data, $scope.sfs);
+      addNecessarySff($scope.data, $scope.sfs);
       ServiceNodeSvc.putItem($scope.data, function () {
         $state.transitionTo('main.sfc.servicenode', null, { location: true, inherit: true, relative: $state.$current, notify: true });
       });

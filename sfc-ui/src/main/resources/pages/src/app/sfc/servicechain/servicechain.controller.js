@@ -3,7 +3,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter, $timeout) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
-    var sfcsGetDataWait = true;  // wait for combining unpersisted with persisted in getArray callback
 
     $scope.tableParams = new NgTableParams(
       {
@@ -13,7 +12,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: 0, // wait for 'sfcs'
         getData: function ($defer, params) {
-          if (!sfcsGetDataWait && params.total() > 0) {
+          if (params.total() > 0) {
             // use build-in angular filter
             var orderedData = params.sorting() ?
               $filter('orderBy')($scope.sfcs, params.orderBy()) :
@@ -27,15 +26,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     );
 
-    $timeout(function () {
-      $scope.$watchCollection('sfcs', function (newVal) {
-        if (angular.isUndefined(newVal)) {
-          return;
-        }
-        $scope.tableParams.total($scope.sfcs.length);
-        $scope.tableParams.reload();
-      });
-    });
+    var sfcsWatcherRegistered = false;
+
+    var registerSfcsWatcher = function () { // wait for combining unpersisted with persisted in getArray callback
+
+      if (!sfcsWatcherRegistered) {
+        $scope.$watchCollection('sfcs', function (newVal) {
+          if (angular.isUndefined(newVal)) {
+            return;
+          }
+          $scope.tableParams.total($scope.sfcs.length);
+          $scope.tableParams.reload();
+        });
+
+        sfcsWatcherRegistered = true;
+      }
+    };
 
     $scope.sfcEffectMe = {};
 
@@ -100,8 +106,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
           }
         });
       }
-      $rootScope.sfcs = tempSfcs; // this will launch watcher
-      sfcsGetDataWait = false;
+      $rootScope.sfcs = tempSfcs;
+
+      registerSfcsWatcher(); // this will launch watcher
     });
 
     $scope.undoSFCnew = function undoSFCnew(sfc) {
@@ -219,9 +226,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.controller('serviceChainCreateCtrl', function ($scope, $rootScope, $state) {
     $scope.data = {};
 
+    function symmetricToBoolean(sfc){
+      if(angular.isDefined(sfc.symmetric)){
+        sfc.symmetric = sfc.symmetric == "true" ? true : false;
+      }
+    }
+
     $scope.submit = function () {
       $scope.data['sfc-service-function'] = [];
       $scope.data['state'] = $rootScope.sfcState.NEW;
+      symmetricToBoolean($scope.data);
       $rootScope.sfcs.push($scope.data);
 
       $state.transitionTo('main.sfc.servicechain', null, { location: true, inherit: true, relative: $state.$current, notify: true });

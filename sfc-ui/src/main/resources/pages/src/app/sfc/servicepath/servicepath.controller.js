@@ -2,7 +2,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServicePathSvc, ServicePathHelper, ModalDeleteSvc, ngTableParams, $filter, $timeout) {
     var NgTableParams = ngTableParams; // checkstyle 'hack'
-    var sfpsGetDataWait = true;  // wait for combining unpersisted with persisted in getArray callback
 
     $scope.tableParams = new NgTableParams(
       {
@@ -10,9 +9,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
         count: 10           // count per page
       },
       {
-        total: 0, // wait for 'sfcs'
+        total: 0, // wait for 'sfps'
         getData: function ($defer, params) {
-          if (!sfpsGetDataWait && params.total() > 0) {
+          if (params.total() > 0) {
             // use build-in angular filter
             var orderedData = params.sorting() ?
               $filter('orderBy')($scope.sfps, params.orderBy()) :
@@ -26,15 +25,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     );
 
-    $timeout(function () {
-      $scope.$watchCollection('sfps', function (newVal) {
-        if (angular.isUndefined(newVal)) {
-          return;
-        }
-        $scope.tableParams.total($scope.sfps.length);
-        $scope.tableParams.reload();
-      });
-    });
+    var sfpsWatcherRegistered = false;
+
+    var registerSfpsWatcher = function () { // wait for combining unpersisted with persisted in getArray callback
+
+      if (!sfpsWatcherRegistered) {
+        $scope.$watchCollection('sfps', function (newVal) {
+          if (angular.isUndefined(newVal)) {
+            return;
+          }
+          $scope.tableParams.total($scope.sfps.length);
+          $scope.tableParams.reload();
+        });
+
+        sfpsWatcherRegistered = true;
+      }
+    };
 
     $scope.getSFPstate = function getSFPstate(sfp) {
       return sfp.state || $rootScope.sfpState.PERSISTED;
@@ -101,7 +107,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
 
       $rootScope.sfps = tempSfps;
-      sfpsGetDataWait = false;
+
+      registerSfpsWatcher();
     });
 
     $scope.undoSFPchanges = function undoSFPchanges(sfp) {

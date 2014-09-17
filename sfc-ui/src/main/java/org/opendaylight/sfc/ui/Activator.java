@@ -3,30 +3,42 @@ package org.opendaylight.sfc.ui;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
+
     private ServiceTracker httpTracker;
 
+    @Override
     public void start(BundleContext context) throws Exception {
         httpTracker = new ServiceTracker(context, HttpService.class.getName(), null) {
+
+            @Override
             public void removedService(ServiceReference reference, Object service) {
 
                 try {
                     ((HttpService) service).unregister("/sfc");
-                } catch (IllegalArgumentException exception) {
-                    // Ignore; servlet registration probably failed earlier on...
+                } catch (Exception exception) {
+                    LOG.error("removedService", exception);
                 }
             }
 
+            @Override
             public Object addingService(ServiceReference reference) {
                 // HTTP service is available, register our servlet...
                 HttpService httpService = (HttpService) this.context.getService(reference);
                 try {
-                    httpService.registerResources("/sfc", "/pages",  null);
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                    HttpContext defaultHttpContext = httpService.createDefaultHttpContext();
+                    httpService.registerResources("/sfc", "/pages", new SfcUiHttpContext(defaultHttpContext, "/pages/"));
+                } catch (NamespaceException exception) {
+                    LOG.error("addingService", exception);
                 }
                 return httpService;
             }
@@ -34,7 +46,9 @@ public class Activator implements BundleActivator {
         httpTracker.open();
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         httpTracker.close();
     }
+
 }

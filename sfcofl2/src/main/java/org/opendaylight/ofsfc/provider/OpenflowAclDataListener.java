@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfpDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowAclDataListener.class);
     private static final OpenflowSfcRenderer odlSfc = OpenflowSfcRenderer.getOpendaylightSfcObj();
 
     public OpenflowAclDataListener(DataBroker dataBroker) {
@@ -33,6 +33,9 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
 
+        
+        
+        
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof AccessListEntries) {
                 AccessListEntries originalAccessListEntries = (AccessListEntries) entry.getValue();

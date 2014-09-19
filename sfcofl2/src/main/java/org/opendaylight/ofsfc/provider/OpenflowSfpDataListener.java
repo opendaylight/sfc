@@ -98,7 +98,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 curSFFName = servicePathHopCur.getServiceFunctionForwarder();
                 flowProgrammer.setNodeInfo(curSFFName);
                 flowProgrammer.writeSffNextHopDefaultFlow();
-
+                
                 ServiceFunctionForwarder curSff = SfcOfL2APIUtil.readServiceFunctionForwarder(odlSfc.getDataProvider(),
                         curSFFName);
 

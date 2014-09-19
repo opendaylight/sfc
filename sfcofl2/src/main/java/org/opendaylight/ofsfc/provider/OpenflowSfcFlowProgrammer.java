@@ -3,6 +3,7 @@ package org.opendaylight.ofsfc.provider;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.math.BigInteger;
 
@@ -32,8 +33,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -64,6 +69,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -99,6 +105,7 @@ public class OpenflowSfcFlowProgrammer {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfcFlowProgrammer.class);
     private static OpenflowSfcFlowProgrammer instance = null;
+    private final AtomicInteger m_atomicInteger = new AtomicInteger();
 
     // Which bits in the metadata field to set, used for the Bucket and allows
     // 4095 sfpid's
@@ -278,8 +285,8 @@ public class OpenflowSfcFlowProgrammer {
 
                     //
                     // Now write the Flow Entry
-                    getResult(writeFlowToConfig(aclFlow));
-
+                    // getResult(writeFlowToConfig(aclFlow));
+                    writeFlowToConfig(aclFlow);
                 } catch (Exception e) {
                     LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
                     LOG.error(e.getMessage(), e);
@@ -311,10 +318,15 @@ public class OpenflowSfcFlowProgrammer {
                     metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 16));
                     match.setMetadata(metadata.build());
 
+                    EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
+                    EtherType type = new EtherType(0x0800L);
+
                     // match the src mac
                     EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                     EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                     ethSourceBuilder.setAddress(new MacAddress(srcMac));
+                    ethSourceBuilder.setMask(new MacAddress("ff:ff:ff:ff:ff:ff"));
+                    ethernetMatch.setEthernetType(ethtype.setType(type).build());
                     ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                     match.setEthernetMatch(ethernetMatch.build());
 
@@ -379,8 +391,8 @@ public class OpenflowSfcFlowProgrammer {
 
                     //
                     // Now write the Flow Entry
-                    getResult(writeFlowToConfig(nextHopFlow));
-
+                    // getResult(writeFlowToConfig(nextHopFlow));
+                    writeFlowToConfig(nextHopFlow);
                 } catch (Exception e) {
                     LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
                     LOG.error(e.getMessage(), e);
@@ -438,7 +450,7 @@ public class OpenflowSfcFlowProgrammer {
                     nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
                     nextHopFlow.setTableId(getTableId(TABLE_INDEX_INGRESS));
                     nextHopFlow.setFlowName("ingress flow"); // should this name
-                                                             // be
+                    // be
                     // unique??
                     BigInteger cookieValue = new BigInteger("20", 10);
                     nextHopFlow.setCookie(new FlowCookie(cookieValue));
@@ -457,8 +469,8 @@ public class OpenflowSfcFlowProgrammer {
 
                     //
                     // Now write the Flow Entry
-                    getResult(writeFlowToConfig(nextHopFlow));
-
+                    // getResult(writeFlowToConfig(nextHopFlow));
+                    writeFlowToConfig(nextHopFlow);
                 } catch (Exception e) {
                     LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
                     LOG.error(e.getMessage(), e);
@@ -492,6 +504,12 @@ public class OpenflowSfcFlowProgrammer {
                     metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 16));
                     match.setMetadata(metadata.build());
 
+                    EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
+                    EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
+                    EtherType type = new EtherType(0x0800L);
+                    ethmatch.setEthernetType(ethtype.setType(type).build());
+
+                    match.setEthernetMatch(ethmatch.build());
                     // Create the Actions
 
                     // Set the DL (Data Link) Dest Mac Address
@@ -533,11 +551,15 @@ public class OpenflowSfcFlowProgrammer {
                     //
                     // Create and configure the FlowBuilder
                     FlowBuilder nextHopFlow = new FlowBuilder();
-                    nextHopFlow.setId(new FlowId(String.valueOf(flowIdInc.getAndIncrement())));
-                    nextHopFlow.setKey(new FlowKey(new FlowId(Long.toString(flowIdInc.getAndIncrement()))));
+
+                    long flowId = flowIdInc.getAndIncrement();
+                    nextHopFlow.setId(new FlowId(String.valueOf(flowId)));
+                    nextHopFlow.setKey(new FlowKey(new FlowId(String.valueOf(flowId))));
                     nextHopFlow.setTableId(getTableId(TABLE_INDEX_DEFAULT));
-                    nextHopFlow.setFlowName("default flow"); // should this name
-                                                             // be
+                    nextHopFlow.setFlowName("default flow : " + flowId); // should
+                                                                         // this
+                                                                         // name
+                    // be
                     // unique??
                     BigInteger cookieValue = new BigInteger("20", 10);
                     nextHopFlow.setCookie(new FlowCookie(cookieValue));
@@ -556,8 +578,8 @@ public class OpenflowSfcFlowProgrammer {
 
                     //
                     // Now write the Flow Entry
-                    getResult(writeFlowToConfig(nextHopFlow));
-
+                    // getResult(writeFlowToConfig(nextHopFlow));
+                    writeFlowToConfig(nextHopFlow);
                 } catch (Exception e) {
                     LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
                     LOG.error(e.getMessage(), e);
@@ -629,7 +651,7 @@ public class OpenflowSfcFlowProgrammer {
         return addGroupTransaction.commit();
     }
 
-    private ListenableFuture<RpcResult<TransactionStatus>> writeFlowToConfig(FlowBuilder flow) {
+    private void writeFlowToConfig(FlowBuilder flow) {
         // Create the NodeBuilder
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(sffNodeName));
@@ -642,22 +664,30 @@ public class OpenflowSfcFlowProgrammer {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).toInstance();
 
-        WriteTransaction addFlowTransaction = dataBroker.newWriteOnlyTransaction();
-        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, nodePath, nodeBuilder.build(), true /*
-                                                                                                        * create
-                                                                                                        * Missing
-                                                                                                        * parents
-                                                                                                        * if
-                                                                                                        * needed
-                                                                                                        */);
-        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flow.build(), true);
+        InstanceIdentifier<Table> tableInstanceId = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).build();
 
-        return addFlowTransaction.commit();
+        String sTransactionUri = generateTransactionUri();
+        AddFlowInputBuilder builder = new AddFlowInputBuilder(flow.build());
+
+        builder.setTransactionUri(new Uri(sTransactionUri));
+        builder.setNode(new NodeRef(nodePath));
+        builder.setFlowTable(new FlowTableRef(tableInstanceId));
+        builder.setFlowRef(new FlowRef(flowPath));
+
+        OpenflowSfcRenderer.getOpendaylightSfcObj().getRpcProvider().getRpcService(SalFlowService.class)
+                .addFlow(builder.build());
+    }
+
+    private String generateTransactionUri() {
+        long lTransactionIdOut = m_atomicInteger.incrementAndGet();
+        return "" + (lTransactionIdOut);
     }
 
     public static String longToIp(String ip, short mask) {
-        StringBuilder sb = new StringBuilder(15);
-        sb.append("/").append(mask);
+        StringBuilder sb = new StringBuilder(16);
+        sb.append(ip).append("/").append(mask);
         return sb.toString();
     }
 
@@ -716,8 +746,9 @@ public class OpenflowSfcFlowProgrammer {
 
                     //
                     // Now write the Flow Entry
-                    getResult(writeFlowToConfig(nextHopFlow));
+                    // getResult(writeFlowToConfig(nextHopFlow));
 
+                    writeFlowToConfig(nextHopFlow);
                 } catch (Exception e) {
                     LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
                     LOG.error(e.getMessage(), e);

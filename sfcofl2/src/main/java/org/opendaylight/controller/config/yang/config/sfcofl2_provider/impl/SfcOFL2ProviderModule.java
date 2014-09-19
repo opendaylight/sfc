@@ -1,6 +1,7 @@
 package org.opendaylight.controller.config.yang.config.sfcofl2_provider.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.ofsfc.provider.OpenflowSfcRenderer;
 import org.opendaylight.ofsfc.provider.OpenflowSfcFlowProgrammer;
 
@@ -26,7 +27,8 @@ public class SfcOFL2ProviderModule extends
     @Override
     public java.lang.AutoCloseable createInstance() {
         DataBroker dataBroker = getDataBrokerDependency();
-        final OpenflowSfcRenderer openflowSfcRenderer = new OpenflowSfcRenderer(dataBroker);
+        RpcProviderRegistry rpcProvider = getRpcRegistryDependency();
+        final OpenflowSfcRenderer openflowSfcRenderer = new OpenflowSfcRenderer(dataBroker, rpcProvider);
         OpenflowSfcFlowProgrammer.createFlowProgrammer(dataBroker);
 
         return new AutoCloseable() {

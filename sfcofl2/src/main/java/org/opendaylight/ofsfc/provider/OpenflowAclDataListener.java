@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfpDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowAclDataListener.class);
     private static final OpenflowSfcRenderer odlSfc = OpenflowSfcRenderer.getOpendaylightSfcObj();
 
     public OpenflowAclDataListener(DataBroker dataBroker) {

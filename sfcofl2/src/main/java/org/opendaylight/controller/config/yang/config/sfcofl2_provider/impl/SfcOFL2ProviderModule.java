@@ -1,6 +1,15 @@
+/**
+ * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ */
 package org.opendaylight.controller.config.yang.config.sfcofl2_provider.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.ofsfc.provider.OpenflowSfcRenderer;
 import org.opendaylight.ofsfc.provider.OpenflowSfcFlowProgrammer;
 
@@ -26,7 +35,8 @@ public class SfcOFL2ProviderModule extends
     @Override
     public java.lang.AutoCloseable createInstance() {
         DataBroker dataBroker = getDataBrokerDependency();
-        final OpenflowSfcRenderer openflowSfcRenderer = new OpenflowSfcRenderer(dataBroker);
+        RpcProviderRegistry rpcProvider = getRpcRegistryDependency();
+        final OpenflowSfcRenderer openflowSfcRenderer = new OpenflowSfcRenderer(dataBroker, rpcProvider);
         OpenflowSfcFlowProgrammer.createFlowProgrammer(dataBroker);
 
         return new AutoCloseable() {

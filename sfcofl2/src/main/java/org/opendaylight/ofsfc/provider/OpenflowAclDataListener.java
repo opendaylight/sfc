@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ */
 package org.opendaylight.ofsfc.provider;
 
 import java.util.Map;
@@ -20,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfpDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowAclDataListener.class);
     private static final OpenflowSfcRenderer odlSfc = OpenflowSfcRenderer.getOpendaylightSfcObj();
 
     public OpenflowAclDataListener(DataBroker dataBroker) {
@@ -61,8 +69,8 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
                 // TODO program classification table on each sff of sfp
                 // SfcProviderSffFlowWriter.getInstance().setNodeInfo(sffname);
 
-                OpenflowSfcFlowProgrammer.getInstance().writeClassificationFlow(srcIpAddress, (short) 32, dstIpAddress,
-                        (short) 32, srcPort, dstPort, protocol, pathId);
+                OpenflowSfcFlowProgrammer.getInstance().configureClassificationFlow(srcIpAddress, (short) 32,
+                        dstIpAddress, (short) 32, srcPort, dstPort, protocol, pathId, true);
             }
         }
     }

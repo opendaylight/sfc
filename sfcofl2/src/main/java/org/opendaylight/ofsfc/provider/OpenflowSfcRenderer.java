@@ -1,10 +1,21 @@
+/**
+ * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ */
+
 package org.opendaylight.ofsfc.provider;
 
 import com.google.common.util.concurrent.Futures;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -33,16 +44,18 @@ public class OpenflowSfcRenderer implements AutoCloseable {
 
     protected ExecutorService executor;
     protected DataBroker dataBroker;
+    protected RpcProviderRegistry rpcProvider;
     private static OpenflowSfcRenderer openflowSfcRendererObj;
     private OpenflowSfpDataListener openflowSfpDataListener;
     private OpenflowAclDataListener openflowAclDataListener;
 
     private Future<RpcResult<Void>> currentTask;
 
-    public OpenflowSfcRenderer(DataBroker dataBroker) {
+    public OpenflowSfcRenderer(DataBroker dataBroker, RpcProviderRegistry rpcProvider) {
         executor = Executors.newFixedThreadPool(1);
         openflowSfcRendererObj = this;
         setDataBroker(dataBroker);
+        setRpcProvider(rpcProvider);
         openflowSfpDataListener = new OpenflowSfpDataListener(dataBroker);
         openflowAclDataListener = new OpenflowAclDataListener(dataBroker);
     }
@@ -53,6 +66,14 @@ public class OpenflowSfcRenderer implements AutoCloseable {
 
     public DataBroker getDataProvider() {
         return dataBroker;
+    }
+
+    public void setRpcProvider(RpcProviderRegistry rpcProvider) {
+        this.rpcProvider = rpcProvider;
+    }
+
+    public RpcProviderRegistry getRpcProvider() {
+        return rpcProvider;
     }
 
     public static OpenflowSfcRenderer getOpendaylightSfcObj() {

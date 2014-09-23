@@ -20,6 +20,7 @@
     -->
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/0.6.2-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/1.1-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-restconf/1.1-SNAPSHOT/xml/features</repository>
     <feature name='odl-sfc-all' version='${project.version}' description='OpenDaylight :: sfc :: All'>
           <!--
             Necessary TODO:

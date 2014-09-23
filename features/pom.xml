@@ -83,6 +83,13 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>features-restconf</artifactId>
+      <version>1.1-SNAPSHOT</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
     <!--
       Necessary TODO: Put dependencies for bundles directly referenced
       in your features.xml file.  For every <bundle> reference in your

@@ -26,7 +26,7 @@ var directives = [
 
 define(['app/sfc/sfc.module'].concat(services).concat(directives).concat(controllers), function (sfc) {
 
-  sfc.isKarmaTest = true;  // used in 'config/schema.services.js' because of different folder structure in karma
+  sfc.isKarmaTest = true;  // not used
 
   // all scripts loaded before bootstrap
 

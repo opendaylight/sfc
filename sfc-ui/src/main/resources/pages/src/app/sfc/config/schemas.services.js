@@ -481,7 +481,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       if (!validator) { // load only once
 
-        var basePath = sfc.isKarmaTest ? "./assets/js/jsv/" : "../assets/js/jsv/";   // !!!  . vs ..
+        var basePath = window.isAssetsDirInSrc ? "./assets/js/jsv/" : "../assets/js/jsv/";   // !!!  '.' vs '..'
 
         // JSV must be loaded in following sequence
         require([basePath + 'uri'], function () {

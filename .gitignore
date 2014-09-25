@@ -29,3 +29,5 @@ maven-eclipse.xml
 .metadata
 .hg
 /target
+node_modules/
+coverage/

@@ -502,7 +502,6 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(srcMac));
-                ethSourceBuilder.setMask(new MacAddress("ff:ff:ff:ff:ff:ff"));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 match.setEthernetMatch(ethernetMatch.build());
@@ -852,7 +851,6 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(dstMac));
-                ethSourceBuilder.setMask(new MacAddress("ff:ff:ff:ff:ff:ff"));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());

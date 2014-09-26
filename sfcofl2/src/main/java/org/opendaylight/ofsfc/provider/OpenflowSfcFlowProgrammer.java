@@ -110,9 +110,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
- * 
  * <p>
- * 
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
  * @since 2014-08-07
@@ -502,7 +500,6 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(srcMac));
-                ethSourceBuilder.setMask(new MacAddress("ff:ff:ff:ff:ff:ff"));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 match.setEthernetMatch(ethernetMatch.build());
@@ -852,7 +849,6 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(dstMac));
-                ethSourceBuilder.setMask(new MacAddress("ff:ff:ff:ff:ff:ff"));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());

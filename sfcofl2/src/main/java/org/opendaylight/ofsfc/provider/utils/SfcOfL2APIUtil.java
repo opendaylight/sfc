@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.*;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,5 +89,30 @@ public class SfcOfL2APIUtil {
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
         return sf;
+    }
+
+    public static ServiceFunctionPath readServiceFunctionPath(DataBroker databroker, String serviceFunctionPathName) {
+        ServiceFunctionPath sff = null;
+        InstanceIdentifier<ServiceFunctionPath> sfpIID;
+        ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
+        sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                .child(ServiceFunctionPath.class, serviceFunctionPathKey).build();
+
+        if (databroker != null) {
+            ReadOnlyTransaction readTx = databroker.newReadOnlyTransaction();
+            Optional<ServiceFunctionPath> serviceFunctionPathDataObject = null;
+            try {
+                serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (serviceFunctionPathDataObject != null && serviceFunctionPathDataObject.isPresent()) {
+                sff = serviceFunctionPathDataObject.get();
+            }
+        } else {
+            LOG.debug("Databroker is null", Thread.currentThread().getStackTrace()[1]);
+        }
+        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        return sff;
     }
 }

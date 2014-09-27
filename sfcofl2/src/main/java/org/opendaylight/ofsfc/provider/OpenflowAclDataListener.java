@@ -8,6 +8,7 @@
  */
 package org.opendaylight.ofsfc.provider;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.ofsfc.provider.utils.SfcInstanceIdentifierUtils;
+import org.opendaylight.ofsfc.provider.utils.SfcOfL2APIUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclServiceFunctionPath;
@@ -22,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev1405
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Matches;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -86,9 +90,10 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
         AclServiceFunctionPath sfcAction = (AclServiceFunctionPath) (SfcAction) createdAccessListEntries.getActions();
 
-        // TODO: retrieve sfpid from sfpname that you will get by querying
-        // String sfpName= sfcAction.getServiceFunctionPath();
-        Long pathId = 1L;
+        String sfpName = sfcAction.getServiceFunctionPath();
+        ServiceFunctionPath servicefunctionPath = SfcOfL2APIUtil.readServiceFunctionPath(getDataBroker(), sfpName);
+
+        Long pathId = servicefunctionPath.getPathId();
 
         Matches matches;
         AceIp aceIp;
@@ -106,11 +111,13 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
         byte protocol = aceIp.getIpProtocol().byteValue();
 
-        // TODO program classification table on each sff of sfp
-        // SfcProviderSffFlowWriter.getInstance().setNodeInfo(sffname);
+        List<ServicePathHop> servicePathHopList = servicefunctionPath.getServicePathHop();
 
-        OpenflowSfcFlowProgrammer.getInstance().configureClassificationFlow(srcIpAddress, (short) 32, dstIpAddress,
-                (short) 32, srcPort, dstPort, protocol, pathId, isAddFlow);
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+            OpenflowSfcFlowProgrammer.getInstance().setNodeInfo(servicePathHop.getServiceFunctionForwarder());
+            OpenflowSfcFlowProgrammer.getInstance().configureClassificationFlow(srcIpAddress, (short) 32, dstIpAddress,
+                    (short) 32, srcPort, dstPort, protocol, pathId, isAddFlow);
+        }
     }
 
 }

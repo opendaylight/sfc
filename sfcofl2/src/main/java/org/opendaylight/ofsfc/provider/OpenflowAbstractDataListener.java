@@ -29,6 +29,10 @@ public abstract class OpenflowAbstractDataListener implements DataChangeListener
         iID = IID;
     }
 
+    public DataBroker getDataBroker() {
+        return dataBroker;
+    }
+
     public void registerAsDataChangeListener() {
         dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, iID,
                 this, DataBroker.DataChangeScope.SUBTREE);

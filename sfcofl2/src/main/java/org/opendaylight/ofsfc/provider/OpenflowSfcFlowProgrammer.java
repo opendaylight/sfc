@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -110,7 +111,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
- * 
  * <p>
  * 
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
@@ -137,6 +137,7 @@ public class OpenflowSfcFlowProgrammer {
 
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
+    private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
 
     private final AtomicLong flowIdInc = new AtomicLong();
     private short tableBase = (short) 0;
@@ -424,7 +425,7 @@ public class OpenflowSfcFlowProgrammer {
                 defNextHopFlow.setStrict(false);
                 defNextHopFlow.setMatch(match.build());
                 defNextHopFlow.setInstructions(isb.build());
-                defNextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+                defNextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
                 defNextHopFlow.setHardTimeout(0);
                 defNextHopFlow.setIdleTimeout(0);
                 defNextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
@@ -847,12 +848,12 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
                 EtherType type = new EtherType(0x8100L);
 
-                // match the src mac
+                // match the dst mac
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-                EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-                ethSourceBuilder.setAddress(new MacAddress(dstMac));
+                EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+                ethDestinationBuilder.setAddress(new MacAddress(dstMac));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
-                ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+                ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());
 
                 List<Action> actionList = new ArrayList<Action>();

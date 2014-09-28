@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -110,7 +111,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
- * 
  * <p>
  * 
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
@@ -126,7 +126,8 @@ public class OpenflowSfcFlowProgrammer {
     // Which bits in the metadata field to set, used for the Bucket and allows
     // 4095 sfpid's
     // TODO check how many sfpid's there can be
-    private static final Integer METADATA_BITS = new Integer(0x0ffff);
+
+    public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", 16);
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
     private static final short TABLE_INDEX_INGRESS = 1;
@@ -137,6 +138,7 @@ public class OpenflowSfcFlowProgrammer {
 
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
+    private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
 
     private final AtomicLong flowIdInc = new AtomicLong();
     private short tableBase = (short) 0;
@@ -188,6 +190,10 @@ public class OpenflowSfcFlowProgrammer {
 
     public void setTableBase(short tableBase) {
         this.tableBase = tableBase;
+    }
+
+    public static BigInteger getMetadataSFP(long sfpid) {
+        return (new BigInteger("FFFF", 16).and(BigInteger.valueOf(sfpid)));
     }
 
     /**
@@ -299,8 +305,8 @@ public class OpenflowSfcFlowProgrammer {
                 // Set the bits specified by METADATA_BITS with the bucket
                 // value
                 WriteMetadataBuilder wmb = new WriteMetadataBuilder();
-                wmb.setMetadata(new BigInteger(Long.toString(sfpId), 10));
-                wmb.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 16));
+                wmb.setMetadata(getMetadataSFP(sfpId));
+                wmb.setMetadataMask(METADATA_MASK_SFP_MATCH);
 
                 InstructionBuilder wmbIb = new InstructionBuilder();
                 wmbIb.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(wmb.build()).build());
@@ -424,7 +430,7 @@ public class OpenflowSfcFlowProgrammer {
                 defNextHopFlow.setStrict(false);
                 defNextHopFlow.setMatch(match.build());
                 defNextHopFlow.setInstructions(isb.build());
-                defNextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+                defNextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
                 defNextHopFlow.setHardTimeout(0);
                 defNextHopFlow.setIdleTimeout(0);
                 defNextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
@@ -491,8 +497,8 @@ public class OpenflowSfcFlowProgrammer {
 
                 // Match on the metadata sfpId
                 MetadataBuilder metadata = new MetadataBuilder();
-                metadata.setMetadata(BigInteger.valueOf(sfpId));
-                metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 16));
+                metadata.setMetadata(getMetadataSFP(sfpId));
+                metadata.setMetadataMask(METADATA_MASK_SFP_MATCH);
                 match.setMetadata(metadata.build());
 
                 EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
@@ -718,8 +724,8 @@ public class OpenflowSfcFlowProgrammer {
 
                 // Match on the metadata sfpId
                 MetadataBuilder metadata = new MetadataBuilder();
-                metadata.setMetadata(BigInteger.valueOf(sfpId));
-                metadata.setMetadataMask(new BigInteger(METADATA_BITS.toString(), 16));
+                metadata.setMetadata(getMetadataSFP(sfpId));
+                metadata.setMetadataMask(METADATA_MASK_SFP_MATCH);
                 match.setMetadata(metadata.build());
 
                 EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
@@ -847,12 +853,12 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
                 EtherType type = new EtherType(0x8100L);
 
-                // match the src mac
+                // match the dst mac
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-                EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-                ethSourceBuilder.setAddress(new MacAddress(dstMac));
+                EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+                ethDestinationBuilder.setAddress(new MacAddress(dstMac));
                 ethernetMatch.setEthernetType(ethtype.setType(type).build());
-                ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+                ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());
 
                 List<Action> actionList = new ArrayList<Action>();

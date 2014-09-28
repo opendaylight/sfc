@@ -110,16 +110,15 @@ public class SfcOpenflowUtils {
     }
 
     public static Action createSetDlDstAction(String mac, int order) {
-        ActionBuilder ab = createActionBuilder(order);
-
-        MacAddress addr = new MacAddress(mac);
+        MacAddress macAddr = new MacAddress(mac);
         return new ActionBuilder()
                 .setAction(
                         new SetFieldCaseBuilder().setSetField(
                                 new SetFieldBuilder().setEthernetMatch(
                                         new EthernetMatchBuilder().setEthernetDestination(
-                                                new EthernetDestinationBuilder().setAddress(addr).build()).build())
-                                        .build()).build()).setKey(new ActionKey(0)).build();
+                                                new EthernetDestinationBuilder().setAddress(macAddr).build()).build())
+                                        .build()).build()).setOrder(order).setKey(new ActionKey(order)).build();
+
     }
 
     public static Action createOutputAction(Uri uri, int order) {
@@ -129,34 +128,33 @@ public class SfcOpenflowUtils {
                 .setOutputNodeConnector(uri) //
                 .build();
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(action).build());
-        return ab.setKey(new ActionKey(0)).build();
+        return ab.build();
     }
 
     public static Action createPushVlanAction(int order) {
-        ActionBuilder ab = createActionBuilder(order);
         return new ActionBuilder()
                 .setAction(
                         new PushVlanActionCaseBuilder().setPushVlanAction(
                                 new PushVlanActionBuilder().setEthernetType(Integer.valueOf(0x8100)).build()).build())
-                .setKey(new ActionKey(0)).build();
+                .setOrder(order).setKey(new ActionKey(order)).build();
     }
 
     public static Action createSetDstVlanAction(int vlan, int order) {
-        ActionBuilder ab = createActionBuilder(order);
-
-        SetVlanIdActionBuilder vlanIdActionBuilder = new SetVlanIdActionBuilder();
-        VlanId vlanId = new VlanId(vlan);
-        vlanIdActionBuilder.setVlanId(vlanId);
-        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vlanIdActionBuilder.build()).build());
-        return ab.setKey(new ActionKey(0)).build();
+        return new ActionBuilder()
+                .setAction(
+                        new SetFieldCaseBuilder().setSetField(
+                                new SetFieldBuilder().setVlanMatch(
+                                        new VlanMatchBuilder().setVlanId(
+                                                new VlanIdBuilder().setVlanId(new VlanId(vlan)).setVlanIdPresent(true)
+                                                        .build()).build()).build()).build()).setOrder(order)
+                .setKey(new ActionKey(order)).build();
 
     }
 
     public static Action createPopVlanAction(int order) {
-        ActionBuilder ab = createActionBuilder(order);
-        PopVlanActionBuilder popVlanActionBuilder = new PopVlanActionBuilder();
-        ab.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVlanActionBuilder.build()).build());
-        return ab.setKey(new ActionKey(0)).build();
+        return new ActionBuilder()
+                .setAction(new PopVlanActionCaseBuilder().setPopVlanAction(new PopVlanActionBuilder().build()).build())
+                .setOrder(order).setKey(new ActionKey(order)).build();
     }
 
     public static Action createSetGroupAction(long nextHopGroupId, int order) {

@@ -110,7 +110,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
- * 
  * <p>
  * 
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
@@ -137,6 +136,7 @@ public class OpenflowSfcFlowProgrammer {
 
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
+    private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
 
     private final AtomicLong flowIdInc = new AtomicLong();
     private short tableBase = (short) 0;
@@ -783,7 +783,7 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setStrict(false);
                 nextHopFlow.setMatch(match.build());
                 nextHopFlow.setInstructions(isb.build());
-                nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
+                nextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
                 nextHopFlow.setHardTimeout(0);
                 nextHopFlow.setIdleTimeout(0);
                 nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));

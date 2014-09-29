@@ -265,7 +265,7 @@ public class OpenflowSfcFlowProgrammer {
                 // To do an IP match, the EtherType needs to be set to
                 // 0x0800 which indicates IP
                 EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-                ethTypeBuilder.setType(new EtherType(0x8100L));
+                ethTypeBuilder.setType(new EtherType(0x0800L));
                 EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
                 ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
 
@@ -857,7 +857,8 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
                 ethDestinationBuilder.setAddress(new MacAddress(dstMac));
-                ethernetMatch.setEthernetType(ethtype.setType(type).build());
+
+                //ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());
 

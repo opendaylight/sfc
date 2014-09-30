@@ -77,8 +77,8 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 // install ingress flow for each of the dataplane locator
                 OpenflowSfcFlowProgrammer.getInstance().configureDefaultNextHopFlow(sfpId, curSFSrcMac, curSFSrcVlan,
                         isAddFlow);
-                OpenflowSfcFlowProgrammer.getInstance().configureEgressTransportFlow(curSFSrcMac, curSFSrcVlan,
-                        isAddFlow);
+               // OpenflowSfcFlowProgrammer.getInstance().configureEgressTransportFlow(curSFSrcMac, curSFSrcVlan,
+              //       isAddFlow);
             }
         }
     }
@@ -229,7 +229,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
 
                                 flowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMac, dstVlan,
                                         isAddFlow);
-                                flowProgrammer.configureEgressTransportFlow(dstMac, dstVlan, isAddFlow);
+                               //  flowProgrammer.configureEgressTransportFlow(dstMac, dstVlan, isAddFlow);
                                 // TODO add support for multiple data plane
                                 // locators
                                 break;
@@ -250,7 +250,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                     // Install one flow in the current Sff
                                     flowProgrammer.configureNextHopFlow(sfp.getPathId(), srcMacSff, dstMac, dstVlan,
                                             isAddFlow);
-                                    flowProgrammer.configureEgressTransportFlow(dstMac, dstVlan, isAddFlow);
+                                    //flowProgrammer.configureEgressTransportFlow(dstMac, dstVlan, isAddFlow);
                                     // TODO add support for multiple data plane
                                     // locators
                                     break;
@@ -271,7 +271,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                 flowProgrammer.setNodeInfo(servicePathHopPrev.getServiceFunctionForwarder());
                                 flowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMacSff,
                                         dstVlanSff, isAddFlow);
-                                flowProgrammer.configureEgressTransportFlow(dstMacSff, dstVlanSff, isAddFlow);
+                                //flowProgrammer.configureEgressTransportFlow(dstMacSff, dstVlanSff, isAddFlow);
                                 // TODO add support for multiple data plane
                                 // locators
                                 break;
@@ -286,7 +286,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
             }
         }
         // TODO escape route
-        ServiceFunction prevSF = SfcOfL2APIUtil.readServiceFunction(servicePathHopPrev.getServiceFunctionName());
+      /*  ServiceFunction prevSF = SfcOfL2APIUtil.readServiceFunction(servicePathHopPrev.getServiceFunctionName());
         String prevSFSrcMac = null;
         List<SfDataPlaneLocator> prevSFDataPlaneLocatorList = prevSF.getSfDataPlaneLocator();
         for (SfDataPlaneLocator prevSFDataPlanelocator : prevSFDataPlaneLocatorList) {
@@ -318,7 +318,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 // TODO add support for multiple data plane locators
 
                 break;
-            }
+            }*/
         }
     }
 }

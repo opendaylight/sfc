@@ -1,5 +1,5 @@
 <div class="col-md-12" style="padding-right: 0px">
-    <button type="button" ng-click="tableParams.sorting({}); tableParamsSfName.sorting({});" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}</button>
+    <button type="button" ng-click="tableParams.sorting({}); tableParamsSfName.sorting({}); tableParamsSffName.sorting({});" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}</button>
 </div>
 
 <div class="col-md-2" style="padding-left: 0px">
@@ -7,12 +7,23 @@
         <!--<tr ng-hide="sfs.length">-->
         <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
         <!--</tr>-->
-        <tr ng-repeat="item in $data track by $index | filter:search" ng-model="items"
-            ui-draggable="true" drag="item.name" class="draggable">
+        <tr ng-repeat="item in $data track by $index"
+            ui-draggable="true" drag="'sf_' + item.name" class="draggable">
             <td data-title="'SFC_FUNCTION_NAME' | translate" sortable="'name'">
                 <span style="color:black;"
                       tooltip-html-unsafe="{{'SFC_TOOLTIP_TYPE' | translate}} {{item.type}} <br/> {{'SFC_TOOLTIP_IP' | translate}} {{item['ip-mgmt-address']}}"
                       tooltip-placement="right">{{item.name}}</span>
+            </td>
+        </tr>
+    </table>
+    <table ng-table="tableParamsSffName" class="footable table">
+        <!--<tr ng-hide="sfs.length">-->
+        <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
+        <!--</tr>-->
+        <tr ng-repeat="item in $data track by $index"
+            ui-draggable="true" drag="'sff_' + item.name" class="draggable">
+            <td data-title="'SFC_FUNCTION_SFF' | translate" sortable="'name'">
+                {{item.name}}
             </td>
         </tr>
     </table>
@@ -70,7 +81,7 @@
 
                         <div style="width: 100%; height: 64px;">
                             <div class="arrow-right-part"></div>
-                            <div class="obr-box">
+                            <div class="obr-box" ng-class="getHopClass(s)">
                                 <i class="icon-remove"
                                    style="cursor: pointer; position: relative; top: 0px; left: 60px;"
                                    ng-click="removeSFfromSFP(sfp, $index)"
@@ -83,17 +94,28 @@
 
                         <div style="width: 100%; height: 36px; text-align: center;">
                             <div style="display: inline-block;">
-                                <span style="color: #1C94C4; cursor: pointer;" tooltip-placement="bottom"
+                                <span ng-if="getHopClass(s) == 'sf'" style="color: #1C94C4; cursor: pointer;" tooltip-placement="bottom"
                                       tooltip-html-unsafe="
+                                  {{'SFC_FUNCTION' | translate}} <br/> <br/>
                                   <div style='text-align: left'>
                                   {{'SFC_TOOLTIP_HOP_NUMBER' | translate}}: {{s['hop-number']}} <br/>
-                                  {{'SFC_TOOLTIP_FORWARDER' | translate}}: {{s['service-function-forwarder']}} <br/>
                                   {{'SFC_TOOLTIP_SERVICE_INDEX' | translate}}: {{s['service_index']}} <br/>
+                                  {{'SFC_TOOLTIP_FORWARDER' | translate}}: {{s['service-function-forwarder']}} <br/>
                                   {{'SFC_TOOLTIP_TYPE' | translate}}: {{sfs[getSFindexInSFS(s['service-function-name'])].type}} <br/>
                                   {{'SFC_TOOLTIP_IP' | translate}}: {{sfs[getSFindexInSFS(s['service-function-name'])]['ip-mgmt-address']}}
                                   </div>
                                   ">
-                                {{s['service-function-name']}}
+                                    {{s['service-function-name']}}
+                                </span>
+                                <span ng-if="getHopClass(s) == 'sff'" style="color: orange; cursor: pointer;" tooltip-placement="bottom"
+                                      tooltip-html-unsafe="
+                                  {{'SFC_FUNCTION_SFF' | translate}} <br/> <br/>
+                                  <div style='text-align: left'>
+                                  {{'SFC_TOOLTIP_HOP_NUMBER' | translate}}: {{s['hop-number']}} <br/>
+                                  {{'SFC_TOOLTIP_SERVICE_INDEX' | translate}}: {{s['service_index']}} <br/>
+                                  </div>
+                                  ">
+                                    {{s['service-function-forwarder']}}
                                 </span>
                             </div>
                         </div>

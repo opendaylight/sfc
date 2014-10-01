@@ -1,11 +1,235 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
+  sfc.register.directive('uiSelect2Label', function ($timeout) {
+    return {
+      restrict: 'A',
+      link: function (scope, iElement, iAttrs) {
+        // fix for focus on label click
+        $timeout(function () {
+            if (iAttrs && iAttrs['uiSelect2Label']) {
+              iElement.bind("click", function () {
+                $('#s2id_' + iAttrs['uiSelect2Label'] + " > input").focus();
+              });
+            }
+          }
+        );
+      }
+    };
+  });
+
+  sfc.register.directive('sfcForwarderSelect2', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        'inputId': '@inputId',
+        'sffs': '=sffs',
+        'sffProp': '=sffProp'
+      },
+      template: '<input type="hidden" id="{{inputId}}" class="form-control input-sm" ui-select2="select2Options" ng-model="tmpSffForSelect2" ng-required="false" data-placeholder="{{\'SFC_FUNCTION_SFF_CREATE_NAME\' | translate}}">',
+      controller: ['$scope', function ($scope) {
+
+        // initial
+        if ($scope.sffProp) {
+          $scope.tmpSffForSelect2 = {
+            id: $scope.sffProp,
+            text: $scope.sffProp
+          };
+        }
+
+        // sync/copy 'id' to model
+        $scope.$watch(function () {
+          if ($scope.tmpSffForSelect2) {
+            $scope.sffProp = $scope.tmpSffForSelect2.id;
+          }
+        });
+
+        $scope.select2Options = {
+          query: function (query) {
+            var data = {results: []};
+            var exact = false;
+            var blank = _.str.isBlank(query.term);
+
+            _.each($scope.sffs, function (sff) {
+              var name = sff.name;
+              var addThis = false;
+
+              if (!blank) {
+                if (query.term == name) {
+                  exact = true;
+                  addThis = true;
+                } else if (name.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                  addThis = true;
+                }
+              } else {
+                addThis = true;
+              }
+
+              if (addThis === true) {
+                data.results.push({id: name, text: name});
+              }
+            });
+
+            if (!exact && !blank) {
+              data.results.unshift({id: query.term, text: query.term, ne: true});
+            }
+
+            query.callback(data);
+          },
+          formatSelection: function (object) {
+            if (object.ne) {
+              return object.text + " <span><i style=\"color: greenyellow;\">(to be created)</i></span>";
+            } else {
+              return object.text;
+            }
+          }
+        };
+      }]
+    };
+  });
+
+  sfc.register.directive('dateAndTime', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('dateAndTime', true);
+            return null;
+          }
+          else if (viewValue.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-]\d{2}:\d{2})/)) {
+            ctrl.$setValidity('dateAndTime', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('dateAndTime', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('vlanId', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('vlanId', true);
+            return null;
+          }
+          else if (viewValue >= 1 && viewValue <= 4094) {
+            ctrl.$setValidity('vlanId', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('vlanId', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('macAddress', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('macAddress', true);
+            return null;
+          }
+          else if (viewValue.match(/^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/)) {
+            ctrl.$setValidity('macAddress', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('macAddress', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('uint8', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('uint8', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 63) {
+            ctrl.$setValidity('uint8', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint8', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('uint32', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('uint32', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 1048575) {
+            ctrl.$setValidity('uint32', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint32', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('port', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('port', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 65535) {
+            ctrl.$setValidity('port', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('port', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
   sfc.register.directive('ipAddress', function () {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
         ctrl.$parsers.unshift(function (viewValue) {
-          if (inet_pton(viewValue)) {
+          if(viewValue === null || viewValue === "") {
+            ctrl.$setValidity('ipAddress', true);
+            return null;
+          }
+          else if (inet_pton(viewValue)) {
             ctrl.$setValidity('ipAddress', true);
             return viewValue;
           }
@@ -38,7 +262,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       // Return if 4 bytes, otherwise false.
       return m.length === 4 ? m : false;
     }
-    r = /^((?:[\da-f]{1,4}(?::|)){0,8})(::)?((?:[\da-f]{1,4}(?::|)){0,8})$/;
+    r = /^((?:[\da-fA-F]{1,4}(?::|)){0,8})(::)?((?:[\da-fA-F]{1,4}(?::|)){0,8})$/;
     // IPv6
     m = a.match(r);
     if (m) {

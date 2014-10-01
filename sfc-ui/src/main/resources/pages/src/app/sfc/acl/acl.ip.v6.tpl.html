@@ -1,0 +1,40 @@
+<div class="form-horizontal" ng-form="f_ipv6">
+    <div class="form-group" show-validation-error>
+        <label for="acl_source_ipv6_add{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_SOURCE_IPV6_ADDRESS' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="matches['source-ipv6-address']"
+                   id="acl_source_ipv6_add{{idSuffix}}" name="source-ipv6-address"
+                   placeholder="{{'SFC_ACL_CREATE_SOURCE_IPV6_ADDRESS' | translate}}"
+                   ip-address="{version:6, prefix:false}">
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_dest_ipv6_add{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_DESTINATION_IPV6_ADDRESS' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="matches['destination-ipv6-address']"
+                   id="acl_dest_ipv6_add{{idSuffix}}" name="destination-ipv6-address"
+                   placeholder="{{'SFC_ACL_CREATE_DESTINATION_IPV6_ADDRESS' | translate}}"
+                   ip-address="{version:6, prefix:true}">
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_flow_label{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_FLOW_LABEL' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="matches['flow-label']"
+                   id="acl_flow_label{{idSuffix}}" name="flow-label"
+                   placeholder="{{'SFC_ACL_CREATE_FLOW_LABEL' | translate}}"
+                   number-range="{from:0, to:1048575}">
+        </div>
+    </div>
+</div>

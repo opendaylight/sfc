@@ -35,18 +35,78 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $rootScope.sfcs = [];
     $rootScope.sfps = [];
     $rootScope.sfpEffectMe = {};
-    $rootScope.servicefunction =
+    $rootScope.serviceFunctionConstants =
     {
       type: ["napt44", "dpi", "firewall"],
       failmode: ["open", "close"]
     };
-    $rootScope.sff_dataplane_locator =
+    $rootScope.serviceLocatorConstants =
     {
-      transport: ["vxlan-gpe", "other"]
+      transport: ["vxlan-gpe", "gre", "other"],
+      type: ["ip", "mac", "lisp"]
     };
-    $rootScope.dataplane_locator =
+    $rootScope.aclConstants =
     {
-      type: ["ip:port"]
+      "ace-type": ["ip", "eth"],
+      "ace-ip": ["IPv4", "IPv6"]
+    };
+  });
+
+  sfc.register.controller('sfcForwarderSelect2Ctrl', function ($scope) {
+    // initial
+    if ($scope.sffProp) {
+      $scope.tmpSffForSelect2 = {
+        id: $scope.sffProp,
+        text: $scope.sffProp
+      };
+    }
+
+    // sync/copy 'id' to model
+    $scope.$watch(function () {
+      if ($scope.tmpSffForSelect2) {
+        $scope.sffProp = $scope.tmpSffForSelect2.id;
+      }
+    });
+
+    $scope.select2Options = {
+      query: function (query) {
+        var data = {results: []};
+        var exact = false;
+        var blank = _.str.isBlank(query.term);
+
+        _.each($scope.sffs, function (sff) {
+          var name = sff.name;
+          var addThis = false;
+
+          if (!blank) {
+            if (query.term == name) {
+              exact = true;
+              addThis = true;
+            } else if (name.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+              addThis = true;
+            }
+          } else {
+            addThis = true;
+          }
+
+          if (addThis === true) {
+            data.results.push({id: name, text: name});
+          }
+        });
+
+        if (!exact && !blank) {
+          data.results.unshift({id: query.term, text: query.term, ne: true});
+        }
+
+        query.callback(data);
+      },
+      formatSelection: function (object) {
+        if (object.ne) {
+          return object.text + " <span><i style=\"color: greenyellow;\">(to be created)</i></span>";
+        } else {
+          return object.text;
+        }
+      }
     };
   });
 });

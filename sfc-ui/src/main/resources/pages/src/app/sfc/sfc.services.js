@@ -132,6 +132,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
 
+    SfcRestBaseSvc.prototype.getListKeyFromItem = function (itemData) {
+      return itemData['name']; // default
+    };
+
     SfcRestBaseSvc.prototype.put = function (elem, key) {
       return this.baseRest().customPUT(elem, this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key);
     };
@@ -175,13 +179,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       this.getAll().then(
         // success
-        function(restangularObject){
+        function (restangularObject) {
           var extracted = {};
           extracted[instance.containerName] = restangularObject[instance.containerName];
           receiveCallback(extracted);
         },
         // error
-        function(errorResponse){
+        function (errorResponse) {
           receiveCallback(new SfcRestconfError(errorResponse, instance.modelUrl));
         }
       );
@@ -212,8 +216,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     SfcRestBaseSvc.prototype.checkRequired = function (item) {
-      if (!item.name || _.isEmpty(item.name)) {
-        throw new Error('name is undefined or empty');
+      var key = this.getListKeyFromItem(item);
+
+      if (!key || _.isEmpty(key)) {
+        throw new Error('list key is undefined or empty');
       }
     };
 
@@ -223,7 +229,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       var wrappedElem = this.wrapInListname(item);
 
-      this.put(wrappedElem, item.name).then(function () {
+      this.put(wrappedElem, this.getListKeyFromItem(item)).then(function () {
         if (callback) {
           callback();
         }
@@ -253,7 +259,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       this.checkRequired(item);
 
-      this._delete(item.name).then(function () {
+      this._delete(this.getListKeyFromItem(item)).then(function () {
         if (callback) {
           callback();
         }
@@ -297,6 +303,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (!_.isEmpty(sf.type)) {
           sf.type = sf.type.replace(matcher, "");
         }
+
+        _.each(sf['sf-data-plane-locator'], function (locator) {
+          if (!_.isEmpty(locator.transport)) {
+            locator.transport = locator.transport.replace(matcher, "");
+          }
+        });
       });
 
       return sfsArray;
@@ -455,27 +467,33 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceForwarderSvc.prototype.stripNamespacePrefixes = function (sffArray) {
 
       var matcher = new RegExp("^service-function-forwarder:");
+      var serviceLocatorMatcher = new RegExp("^service-locator:");
 
       _.each(sffArray, function (sff) {
-          if (!_.isEmpty(sff['sff-data-plane-locator'])) {
+        if (!_.isEmpty(sff['sff-data-plane-locator'])) {
 
-            _.each(sff['sff-data-plane-locator'], function (locator) {
-              if (angular.isDefined(locator['transport'])) {
-                locator['transport'] = locator['transport'].replace(matcher, "");
-              }
-            });
-          }
+          _.each(sff['sff-data-plane-locator'], function (locator) {
+            if (angular.isDefined(locator['data-plane-locator']['transport'])) {
+//                locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(matcher, "");
+              locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
+            }
+          });
+        }
 
-          if (!_.isEmpty(sff['service-function-dictionary'])) {
+        if (!_.isEmpty(sff['service-function-dictionary'])) {
 
-            _.each(sff['service-function-dictionary'], function (dictionary) {
-              if (angular.isDefined(dictionary['failmode'])) {
-                dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
-              }
-            });
-          }
+          _.each(sff['service-function-dictionary'], function (dictionary) {
+            if (angular.isDefined(dictionary['failmode'])) {
+              dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
+            }
 
-        });
+            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'])) {
+              dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(matcher, "");
+            }
+          });
+        }
+
+      });
       return sffArray;
     };
 
@@ -483,5 +501,78 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-})
-;
+  // *** SfcAclSvc **********************
+  sfc.register.factory('SfcAclSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'ietf-acl';
+    var containerName = 'access-lists';
+    var listName = 'access-list';
+
+    // constructor
+    function SfcAclSvc() {
+      this['subListName'] = "access-list-entry";
+      this['subListKeyName'] = "rule-name";
+    }
+
+    SfcAclSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    // @override
+    SfcAclSvc.prototype.stripNamespacePrefixes = function (aclArray) {
+
+      _.each(aclArray, function (acl) {
+        if (!_.isEmpty(acl['access-list-entries'])) {
+
+          _.each(acl['access-list-entries'], function (ace) {
+            var actions = ace['actions'];
+            if (angular.isDefined(actions)) {
+              if (angular.isDefined(actions["service-function-acl:service-function-path"])) {
+                actions["service-function-path"] = actions["service-function-acl:service-function-path"];
+                delete actions["service-function-acl:service-function-path"];
+              }
+            }
+          });
+        }
+      });
+
+      return aclArray;
+    };
+
+    // @override
+    SfcAclSvc.prototype.getListKeyFromItem = function (itemData) {
+      return itemData['acl-name'];
+    };
+
+
+    SfcAclSvc.prototype.deleteItemByKey = function (itemKey, callback) {
+      var item ={};
+      item['acl-name'] = itemKey;
+      this.deleteItem(item, callback);
+    };
+
+
+    // sub item functions
+
+    SfcAclSvc.prototype._deleteSub = function (key, subKey) {
+      return this.baseRest().customDELETE(this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key + '/' + this.subListName + '/' + subKey);
+    };
+
+
+    SfcAclSvc.prototype.deleteSubItemByKey = function (itemKey, subItemKey, callback) {
+      this._deleteSub(itemKey, subItemKey).then(function () {
+        if (callback) {
+          callback();
+        }
+      }, /* on error*/ function (response) {
+        console.log("Error with status code", response.status, " while DELETE");
+        if (callback) {
+          callback(response); // on REST error pass response
+        }
+      });
+    };
+
+    return new SfcAclSvc();
+  });
+
+
+
+}); // end define

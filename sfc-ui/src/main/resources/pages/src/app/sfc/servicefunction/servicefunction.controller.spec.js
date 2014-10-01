@@ -1,15 +1,19 @@
 define(['app/sfc/sfc.test.module.loader'], function (sfc) {
 
   ddescribe('SFC app', function () {
-    var rootScope, scope, state, stateParams;
+    var rootScope, scope, state, stateParams, ngTableParams, filter, q;
     var serviceFunctionSvcMock, serviceForwarderSvcMock, serviceFunctionHelperMock;
-    var modalDeleteSvcMock;
+    var modalDeleteSvcMock, serviceLocatorHelperMock;
     var exampleData = {};
+
+    var serviceFunctionConstants = {type: ["firewall"]};
 
     serviceFunctionHelperMock = {
       addLocator: function (scope) {},
       removeLocator: function (index, scope) {},
-      select2Options: function (scope) {}
+      removeTemporaryPropertiesFromSf: function (sf) {},
+      sfDpLocatorToString: function (sfDpLocators) {},
+      nshAwareToString: function (sf) {}
     };
     serviceFunctionSvcMock = {
       getArray: function (callback) {
@@ -36,6 +40,9 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         return callback('delete');
       }
     };
+    serviceLocatorHelperMock = {
+      getSfLocatorTooltipText: function (locator, $scope) {}
+    };
 
     beforeEach(function () {
       exampleData.sfs = [
@@ -53,11 +60,14 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
     beforeEach(angular.mock.module('app.common.layout'));
     beforeEach(angular.mock.module('app.sfc'));
 
-    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope) {
+    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope, $filter, _ngTableParams_) {
       rootScope = $rootScope;
       scope = $rootScope.$new();
       state = $state;
       stateParams = $stateParams;
+      ngTableParams = _ngTableParams_;
+      filter = $filter;
+      q = $q;
     }));
 
     beforeEach(angular.mock.inject(function ($controller) {
@@ -71,15 +81,57 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
 
         beforeEach(angular.mock.inject(function ($controller) {
           createServiceFunctionCtrl = function () {
-            return $controller('serviceFunctionCtrl', {$scope: scope, ServiceFunctionSvc: serviceFunctionSvcMock, ModalDeleteSvc: modalDeleteSvcMock});
+            return $controller('serviceFunctionCtrl', {$scope: scope, ServiceFunctionSvc: serviceFunctionSvcMock, ServiceFunctionHelper: serviceFunctionHelperMock,
+              ServiceLocatorHelper: serviceLocatorHelperMock, ModalDeleteSvc: modalDeleteSvcMock, ngTableParams: ngTableParams, $filter: filter, $q: q});
           };
         }));
 
-        it("should call get Service Functions", function () {
+        it("should call get Service Functions and ensures that tableParams are defined", function () {
           spyOn(serviceFunctionSvcMock, 'getArray').andCallThrough();
           createServiceFunctionCtrl();
           expect(serviceFunctionSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
           expect(scope.sfs).toEqual(exampleData.sfs);
+          expect(scope.tableParams).toBeDefined();
+        });
+
+        it("scope.getSfLocatorTooltipText function should be defined and call Service Locator Helper function", function () {
+          spyOn(serviceLocatorHelperMock, 'getSfLocatorTooltipText').andCallThrough();
+          createServiceFunctionCtrl();
+          expect(scope.getSfLocatorTooltipText).toBeDefined();
+          expect(scope.getSfLocatorTooltipText).toEqual(jasmine.any(Function));
+          scope.getSfLocatorTooltipText({name: 'dummylocatorObject'});
+          expect(serviceLocatorHelperMock.getSfLocatorTooltipText).toHaveBeenCalledWith({name: 'dummylocatorObject'}, scope);
+        });
+
+        it("scope.sfTypes() should return promise with SF types data", function () {
+          spyOn(q, 'defer').andCallThrough();
+          createServiceFunctionCtrl();
+          scope.serviceFunctionConstants = serviceFunctionConstants;
+
+          var def = scope.sfTypes();
+          expect(q.defer).toHaveBeenCalled();
+          expect(def.promise).toBeDefined();
+
+          var promise = def.promise;
+          promise.then(function(data){
+            expect(data).toEqual([{id: "firewall", title: "firewall"}]);
+          });
+          scope.$digest();
+        });
+
+        it("scope.sfNshAware() should return promise with true/false values", function () {
+          spyOn(q, 'defer').andCallThrough();
+          createServiceFunctionCtrl();
+
+          var def = scope.sfNshAware();
+          expect(q.defer).toHaveBeenCalled();
+          expect(def.promise).toBeDefined();
+
+          var promise = def.promise;
+          promise.then(function(data){
+            expect(data).toEqual([{id: "true", title: "true"}, {id: "false", title: "false"}]);
+          });
+          scope.$digest();
         });
 
         it("should open modal dialog and delete service function", function () {
@@ -118,11 +170,15 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
       });
 
       describe("serviceFunctionCreateCtrl", function () {
-        var createServiceFunctionCreateCtrl;
+        var createServiceFunctionCreateCtrl, createServiceFunctionEditCtrl;
 
         beforeEach(angular.mock.inject(function ($controller) {
           createServiceFunctionCreateCtrl = function () {
-            return $controller('serviceFunctionCreateCtrl', {$scope: scope, $state: state, ServiceFunctionSvc: serviceFunctionSvcMock,
+            return $controller('serviceFunctionCreateCtrl', {$scope: scope, $state: state, $stateParams: stateParams, ServiceFunctionSvc: serviceFunctionSvcMock,
+              ServiceFunctionHelper: serviceFunctionHelperMock, ServiceForwarderSvc: serviceForwarderSvcMock});
+          };
+          createServiceFunctionEditCtrl = function () {
+            return $controller('serviceFunctionCreateCtrl', {$scope: scope, $state: state, $stateParams: {sfName: exampleData.sfs[0].name}, ServiceFunctionSvc: serviceFunctionSvcMock,
               ServiceFunctionHelper: serviceFunctionHelperMock, ServiceForwarderSvc: serviceForwarderSvcMock});
           };
         }));
@@ -130,6 +186,24 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         it("ensure that scope.data variable is properly initialized", function () {
           createServiceFunctionCreateCtrl();
           expect(scope.data).toEqual({"sf-data-plane-locator": [{}]});
+        });
+
+        it("should call get Service Function Forwarders", function () {
+          spyOn(serviceForwarderSvcMock, 'getArray').andCallThrough();
+          createServiceFunctionCreateCtrl();
+          expect(serviceForwarderSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
+          expect(scope.sffs).toEqual(exampleData.sffs);
+        });
+
+        it("should get Service Function with specified name and convert nshAware to String", function () {
+          spyOn(serviceFunctionSvcMock, 'getItem').andCallThrough();
+          spyOn(serviceFunctionHelperMock, 'nshAwareToString').andCallThrough();
+          createServiceFunctionEditCtrl();
+//        expect(stateParams.sfName).toBe(exampleData.sfs[0].name);
+          stateParams.sfName = exampleData.sfs[0].name;
+          expect(serviceFunctionSvcMock.getItem).toHaveBeenCalledWith(stateParams.sfName, jasmine.any(Function));
+          expect(serviceFunctionHelperMock.nshAwareToString).toHaveBeenCalledWith(exampleData.sfs[0]);
+          expect(scope.data).toEqual(exampleData.sfs[0]);
         });
 
         it("scope.addLocator function should be defined and call SF Helper function", function () {
@@ -148,18 +222,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.removeLocator).toEqual(jasmine.any(Function));
           scope.removeLocator(1);
           expect(serviceFunctionHelperMock.removeLocator).toHaveBeenCalledWith(1, scope);
-        });
-
-        it("scope.select2ModelSff should be initialized as array", function (){
-          createServiceFunctionCreateCtrl();
-          expect(scope.select2ModelSff).toBeDefined();
-          expect(scope.select2ModelSff).toEqual([]);
-        });
-
-        it("scope.select2Options should be defined and call SF Helper function", function () {
-          spyOn(serviceFunctionHelperMock, 'select2Options').andCallThrough();
-          createServiceFunctionCreateCtrl();
-          expect(serviceFunctionHelperMock.select2Options).toHaveBeenCalledWith(scope);
         });
 
         it("should PUT Service function data to controller and transition to sfc.servicefunction", function () {
@@ -173,81 +235,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         });
       });
 
-      describe("serviceFunctionEditCtrl", function () {
-        var createServiceFunctionEditCtrl;
-
-        beforeEach(angular.mock.inject(function ($controller) {
-          createServiceFunctionEditCtrl = function () {
-            return $controller('serviceFunctionEditCtrl', {$scope: scope, $state: state, $stateParams: {sfName: exampleData.sfs[0].name},
-              ServiceFunctionSvc: serviceFunctionSvcMock, ServiceFunctionHelper: serviceFunctionHelperMock, ServiceForwarderSvc: serviceForwarderSvcMock});
-          };
-        }));
-
-        it("should call get Service Function Forwarders", function () {
-          spyOn(serviceForwarderSvcMock, 'getArray').andCallThrough();
-          createServiceFunctionEditCtrl();
-          expect(serviceForwarderSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
-          expect(scope.sffs).toEqual(exampleData.sffs);
-        });
-
-        it("should get Service Function with specified name and fill select2ModelSff", function () {
-          spyOn(serviceFunctionSvcMock, 'getItem').andCallThrough();
-          createServiceFunctionEditCtrl();
-//        expect(stateParams.sfName).toBe(exampleData.sfs[0].name);
-          stateParams.sfName = exampleData.sfs[0].name;
-          expect(serviceFunctionSvcMock.getItem).toHaveBeenCalledWith(stateParams.sfName, jasmine.any(Function));
-          expect(scope.data).toEqual(exampleData.sfs[0]);
-          expect(scope.select2ModelSff).toEqual([{"id": exampleData.sfs[0]['sf-data-plane-locator'][0]['service-function-forwarder'],
-            "text": exampleData.sfs[0]['sf-data-plane-locator'][0]['service-function-forwarder']}]);
-        });
-
-        it("ensure that scope.data variable is initialized", function () {
-          createServiceFunctionEditCtrl();
-          expect(scope.data).toBeDefined();
-        });
-
-        it("scope.addLocator function should be defined and call SF Helper function", function () {
-          spyOn(serviceFunctionHelperMock, 'addLocator').andCallThrough();
-          createServiceFunctionEditCtrl();
-          expect(scope.addLocator).toBeDefined();
-          expect(scope.addLocator).toEqual(jasmine.any(Function));
-          scope.addLocator();
-          expect(serviceFunctionHelperMock.addLocator).toHaveBeenCalledWith(scope);
-        });
-
-        it("scope.removeLocator function should be defined and call SF Helper function", function () {
-          spyOn(serviceFunctionHelperMock, 'removeLocator').andCallThrough();
-          createServiceFunctionEditCtrl();
-          expect(scope.removeLocator).toBeDefined();
-          expect(scope.removeLocator).toEqual(jasmine.any(Function));
-          scope.removeLocator(1);
-          expect(serviceFunctionHelperMock.removeLocator).toHaveBeenCalledWith(1, scope);
-        });
-
-//        it("scope.select2ModelSff should be initialized as array", function () {
-//          createServiceFunctionEditCtrl();
-//          expect(scope.select2ModelSff).toBeDefined();
-//          expect(scope.select2ModelSff).toEqual([]);
-//        });
-
-        it("scope.select2Options should be defined and call SF Helper function", function () {
-          spyOn(serviceFunctionHelperMock, 'select2Options').andCallThrough();
-          createServiceFunctionEditCtrl();
-          expect(serviceFunctionHelperMock.select2Options).toHaveBeenCalledWith(scope);
-        });
-
-        it("should PUT Service Function data to controller and transition to sfc.servicefunction", function () {
-          spyOn(serviceFunctionSvcMock, 'putItem').andCallThrough();
-          createServiceFunctionEditCtrl();
-          scope.data = exampleData.sfs[0];
-          scope.sffs = exampleData.sffs;
-          scope.submit();
-          expect(serviceFunctionSvcMock.putItem).toHaveBeenCalledWith(scope.data, jasmine.any(Function));
-//        rootScope.$digest();
-//        expect(state.current.name).toBe('sfc.servicenode');
-        });
-
-      });
     });
   });
 });

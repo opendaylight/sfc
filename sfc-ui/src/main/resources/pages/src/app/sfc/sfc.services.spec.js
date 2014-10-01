@@ -235,13 +235,13 @@ define(['angularAMD', 'app/sfc/sfc.test.module.loader'], function () {
       // **************
       it("putItem - should call put() with proper key", angular.mock.inject(function () {
         var itemMock = {
-          "name": "testname"
+          "name": "testname"  // "name" is the key in yang model list
         };
 
-        var wrappedInObject = testRestBaseSvc.wrapOneInObject(itemMock);
+        var expectedWrappedInListname = testRestBaseSvc.wrapInListname(itemMock);
 
         spyOn(testRestBaseSvc, 'put').andCallThrough();
-        httpBackend.expectPUT('http://localhost:8080/restconf/config/url:container/listname/testname', wrappedInObject).respond({});
+        httpBackend.expectPUT('http://localhost:8080/restconf/config/url:container/listname/testname', expectedWrappedInListname).respond({});
 
         testRestBaseSvc.putItem(itemMock, function () {
           // noop
@@ -249,7 +249,7 @@ define(['angularAMD', 'app/sfc/sfc.test.module.loader'], function () {
 
         httpBackend.flush();
 
-        expect(testRestBaseSvc.put).toHaveBeenCalledWith(wrappedInObject, 'testname');
+        expect(testRestBaseSvc.put).toHaveBeenCalledWith(expectedWrappedInListname, 'testname');
       }));
 
 

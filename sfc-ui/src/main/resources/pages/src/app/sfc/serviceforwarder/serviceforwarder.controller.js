@@ -1,9 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter) {
     var NgTableParams = ngTableParams;
 
     $scope.sffInterfaceToString = ServiceForwarderHelper.sffInterfaceToString;
+
+    $scope.getLocatorTooltipText = function (locator) {
+      return ServiceLocatorHelper.getLocatorTooltipText(locator, $scope);
+    };
 
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
@@ -73,9 +77,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ]
     };
 
-    $scope.DpLocators = {};
-    $scope.selectedDpLocator = {};
-
     ServiceNodeSvc.getArray(function (data) {
       $scope.sns = data;
     });
@@ -102,10 +103,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.sfChangeListener = function(choosenSf) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
-    };
-
-    $scope.dpChangeListener = function(sf) {
-      ServiceForwarderHelper.dpChangeListener(sf, $scope);
     };
 
     $scope.submit = function () {
@@ -139,9 +136,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       ]
     };
-
-    $scope.DpLocators = {};
-    $scope.selectedDpLocator = {};
 
     ServiceNodeSvc.getArray(function (data) {
       $scope.sns = data;
@@ -177,10 +171,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.sfChangeListener = function(choosenSf) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
-    };
-
-    $scope.dpChangeListener = function(sf) {
-      ServiceForwarderHelper.dpChangeListener(sf, $scope);
     };
 
     $scope.submit = function () {

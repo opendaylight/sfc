@@ -1,0 +1,25 @@
+<ng-form name="f_locator_ip">
+    <div class="form-group" show-validation-error>
+        <label for="data_plane_ip{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_DATA_PLANE_LOCATOR_IP' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator['ip']" name="data_plane_ip"
+                   id="data_plane_ip{{idSuffix}}" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_IP' | translate}}"
+                   ip-address>
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="data_plane_port{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_DATA_PLANE_LOCATOR_PORT' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator['port']" name="data_plane_port"
+                   id="data_plane_port{{idSuffix}}" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_PORT' | translate}}"
+                   port>
+        </div>
+    </div>
+</ng-form>

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServicePathSvc, ServicePathHelper, ModalDeleteSvc, ngTableParams, $filter, $timeout) {
+  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, ServicePathHelper, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
     var NgTableParams = ngTableParams; // checkstyle 'hack'
 
     $scope.tableParams = new NgTableParams(
@@ -68,16 +68,37 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       $scope.tableParamsSfName = new NgTableParams({
           page: 1,            // show first page
-          count: 10           // count per page
+          count: 5           // count per page
         },
         {
-          counts: [10, 25], // hide page counts control
+          counts: [5, 10, 15], // hide page counts control
           total: $scope.sfs.length,  // value less than count hide pagination
           getData: function ($defer, params) {
             // use build-in angular filter
             var orderedData = params.sorting() ?
               $filter('orderBy')($scope.sfs, params.orderBy()) :
               $scope.sfs;
+
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+          }
+        });
+    });
+
+    ServiceForwarderSvc.getArray(function (data) {
+      $scope.sffs = data;
+
+      $scope.tableParamsSffName = new NgTableParams({
+          page: 1,            // show first page
+          count: 5           // count per page
+        },
+        {
+          counts: [5, 10, 15], // hide page counts control
+          total: $scope.sffs.length,  // value less than count hide pagination
+          getData: function ($defer, params) {
+            // use build-in angular filter
+            var orderedData = params.sorting() ?
+              $filter('orderBy')($scope.sffs, params.orderBy()) :
+              $scope.sffs;
 
             $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
           }
@@ -115,6 +136,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServicePathSvc.getItem(sfp.name, function (oldSfp) {
         var index = _.indexOf($rootScope.sfps, sfp);
         $rootScope.sfps.splice(index, 1);
+        ServicePathHelper.orderHopsInSFP(oldSfp);
         $rootScope.sfps.splice(index, 0, oldSfp);
       });
     };
@@ -140,13 +162,71 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     };
 
-    $scope.onSFPdrop = function ($sf, sfp) {
-      if (sfp['service-path-hop'] === undefined) {
-        sfp['service-path-hop'] = [];
+    var collectDistinctSffsNamesFromSf = function (sf) {
+      if (!sf) {
+        return [];
       }
-      sfp['service-path-hop'].push({"service-function-name": $sf});
 
-      $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);
+      var tmp = {};
+      _.each(sf['sf-data-plane-locator'], function (dpl) {
+        var sffName;
+        if (dpl && (sffName = dpl['service-function-forwarder'])) {
+          tmp[sffName] = true; // dummy value
+        }
+      });
+
+      return _.keys(tmp);
+    };
+
+    $scope.onSFPdrop = function (hop, sfp) {
+      var hopType, hopName;
+
+      if(angular.isDefined(hop)){
+        var str = hop.split('_');
+        hopType = str[0];
+        hopName = str[1];
+      }
+
+      if (hopType == 'sf') {
+        var addSfHopToSfp = function (sffName) {
+          if (sfp['service-path-hop'] === undefined) {
+            sfp['service-path-hop'] = [];
+          }
+
+          var hopItem = {"service-function-name": hopName};
+
+          if (sffName) {
+            hopItem["service-function-forwarder"] = sffName;
+          }
+
+          sfp['service-path-hop'].push(hopItem);
+          $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);
+        };
+
+        // retrieve SFF
+        var droppedSf = _.findWhere($scope.sfs, {name: hopName});
+        var sffNames = collectDistinctSffsNamesFromSf(droppedSf);
+
+        if (sffNames.length > 1) {
+          ServicePathModalSffSelect.open(hopName, sffNames, function (sff) {
+            if (angular.isDefined(sff.name)) {
+              addSfHopToSfp(sff.name);
+            }
+          });
+        } else {
+          addSfHopToSfp(sffNames[0]);
+        }
+      }
+      else if (hopType == 'sff') {
+        if (sfp['service-path-hop'] === undefined) {
+          sfp['service-path-hop'] = [];
+        }
+
+        var hopItem = {"service-function-forwarder": hopName};
+        sfp['service-path-hop'].push(hopItem);
+        $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);
+      }
+
     };
 
     $scope.deleteSFP = function deleteSFP(sfp) {
@@ -168,7 +248,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.persistSFP = function persistSFP(sfp) {
       $scope.unsetSFPstate(sfp);
       ServicePathHelper.updateHopsOrderInSFP(sfp);
-      ServicePathHelper.updateStartingIndexOfSFP(sfp);
       ServicePathSvc.putItem(sfp, function () {
       });
     };
@@ -177,6 +256,32 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var sfObject = _.findWhere($scope.sfs, {name: sfName});
       return _.indexOf($scope.sfs, sfObject);
     };
+
+    $scope.getHopClass = function getHopClass(hop) {
+      if(angular.isDefined(hop)){
+        if(angular.isDefined(hop['service-function-name'])){
+          return "sf";
+        }
+        else{
+          return "sff";
+        }
+      }
+    };
   });
 
-});
+  sfc.register.controller('servicePathModalSffSelectCtrl', function ($scope, $modalInstance, sfName, sffNameList) {
+
+    $scope.sfName = sfName;
+    $scope.sffNameList = sffNameList;
+
+    $scope.save = function () {
+      $modalInstance.close({name: this.sffName});
+    };
+
+    $scope.dismiss = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  });
+
+})
+;

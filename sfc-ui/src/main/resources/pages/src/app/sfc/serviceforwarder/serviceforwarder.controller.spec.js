@@ -3,7 +3,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
   ddescribe('SFC app', function () {
     var rootScope, scope, state, stateParams, ngTableParams, filter;
     var serviceFunctionSvcMock, serviceForwarderSvcMock, serviceNodeSvcMock;
-    var modalDeleteSvcMock, serviceForwarderHelperMock;
+    var modalDeleteSvcMock, serviceForwarderHelperMock, serviceLocatorHelperMock;
     var exampleData = {};
 
     serviceForwarderHelperMock = {
@@ -139,7 +139,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         beforeEach(angular.mock.inject(function ($controller) {
           createServiceForwarderCtrl = function () {
             return $controller('serviceForwarderCtrl', {$scope: scope, $state: state, ServiceForwarderSvc: serviceForwarderSvcMock, ServiceForwarderHelper: serviceForwarderHelperMock,
-              ModalDeleteSvc: modalDeleteSvcMock, ngTableParams: ngTableParams, $filter: filter});
+              ServiceLocatorHelper: serviceLocatorHelperMock, ModalDeleteSvc: modalDeleteSvcMock, ngTableParams: ngTableParams, $filter: filter});
           };
         }));
 
@@ -220,14 +220,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.data).toEqual(exampleData.data);
         });
 
-        it("scope.DpLocators and scope.selectedDpLocator objects should be intialized", function () {
-          createServiceForwarderCreateCtrl();
-          expect(scope.DpLocators).toBeDefined();
-          expect(scope.DpLocators).toEqual({});
-          expect(scope.selectedDpLocator).toBeDefined();
-          expect(scope.selectedDpLocator).toEqual({});
-        });
-
         it("scope.addLocator function should be defined and call SFF Helper function", function () {
           spyOn(serviceForwarderHelperMock, 'addLocator').andCallThrough();
           createServiceForwarderCreateCtrl();
@@ -271,15 +263,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.sfChangeListener).toEqual(jasmine.any(Function));
           scope.sfChangeListener(exampleData.sfs[0]);
           expect(serviceForwarderHelperMock.sfChangeListener).toHaveBeenCalledWith(exampleData.sfs[0], scope);
-        });
-
-        it("scope.dpChangeListener function should be defined and call SFF Helper function", function () {
-          spyOn(serviceForwarderHelperMock, 'dpChangeListener').andCallThrough();
-          createServiceForwarderCreateCtrl();
-          expect(scope.dpChangeListener).toBeDefined();
-          expect(scope.dpChangeListener).toEqual(jasmine.any(Function));
-          scope.dpChangeListener(exampleData.sfs[0]);
-          expect(serviceForwarderHelperMock.dpChangeListener).toHaveBeenCalledWith(exampleData.sfs[0], scope);
         });
 
         it("should call get Service Nodes", function () {
@@ -335,14 +318,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.data).toEqual(exampleData.sffs[0]);
         });
 
-        it("scope.DpLocators and scope.selectedDpLocator objects should be intialized", function () {
-          createServiceForwarderEditCtrl();
-          expect(scope.DpLocators).toBeDefined();
-          expect(scope.DpLocators).toEqual({});
-          expect(scope.selectedDpLocator).toBeDefined();
-          expect(scope.selectedDpLocator).toEqual({});
-        });
-
         it("scope.addLocator function should be defined and call SFF Helper function", function () {
           spyOn(serviceForwarderHelperMock, 'addLocator').andCallThrough();
           createServiceForwarderEditCtrl();
@@ -386,15 +361,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.sfChangeListener).toEqual(jasmine.any(Function));
           scope.sfChangeListener(exampleData.sfs[0]);
           expect(serviceForwarderHelperMock.sfChangeListener).toHaveBeenCalledWith(exampleData.sfs[0], scope);
-        });
-
-        it("scope.dpChangeListener function should be defined and call SFF Helper function", function () {
-          spyOn(serviceForwarderHelperMock, 'dpChangeListener').andCallThrough();
-          createServiceForwarderEditCtrl();
-          expect(scope.dpChangeListener).toBeDefined();
-          expect(scope.dpChangeListener).toEqual(jasmine.any(Function));
-          scope.dpChangeListener(exampleData.sfs[0]);
-          expect(serviceForwarderHelperMock.dpChangeListener).toHaveBeenCalledWith(exampleData.sfs[0], scope);
         });
 
         it("should call get Service Nodes", function () {

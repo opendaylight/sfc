@@ -175,7 +175,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         it("should add SF into SFP['service-path-hop']", function () {
           createServicePathCtrl();
           var emptySfp = {"name": "test SFP"};
-          scope.onSFPdrop(exampleData.sfs[0].name, emptySfp);
+          scope.onSFPdrop("sf_" + exampleData.sfs[0].name, emptySfp);
           expect(emptySfp['service-path-hop']).toBeDefined();
           expect(emptySfp['service-path-hop'][0]).toEqual({"service-function-name": exampleData.sfs[0].name});
           expect(emptySfp.state).toBe(sfpState.EDITED);

@@ -70,14 +70,8 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(exampleData.unOrderedSfp).toEqual(exampleData.updatedSfp);
         });
 
-        it("should update starting index of SFP according to count of resident SFs", function () {
-          ServicePathHelper.updateStartingIndexOfSFP(exampleData.badStartingIndexSfp);
-          expect(exampleData.badStartingIndexSfp).toEqual(exampleData.orderedSfp);
-        });
-
         it("should update starting index and hops order in SFP with added SF", function () {
           ServicePathHelper.updateHopsOrderInSFP(exampleData.augmentedSfp);
-          ServicePathHelper.updateStartingIndexOfSFP(exampleData.augmentedSfp);
           expect(exampleData.augmentedSfp).toEqual(exampleData.correctedSfp);
         });
 

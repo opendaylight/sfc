@@ -13,13 +13,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
       Object.freeze(sfpState);
     }
 
-    var servicefunction =
+    var serviceFunctionConstants =
     {
       type: ["napt44", "dpi", "firewall"],
       failmode : [ 'open', 'close' ]
     };
 
-    var dataplane_locator =
+    var serviceLocatorConstants =
     {
       type: ["ip:port"]
     };
@@ -69,14 +69,14 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(rootScope.sfpEffectMe).toEqual({});
         });
 
-        it("$rootScope.servicefunction should be properly initialized", function () {
+        it("$rootScope.serviceFunctionConstants should be properly initialized", function () {
           createRootSfcCtrl();
-          expect(rootScope.servicefunction).toEqual(servicefunction);
+          expect(rootScope.serviceFunctionConstants).toEqual(serviceFunctionConstants);
         });
 
-        it("$rootScope.dataplane_locator should be properly initialized", function () {
+        it("$rootScope.serviceLocatorConstants should be properly initialized", function () {
           createRootSfcCtrl();
-          expect(rootScope.dataplane_locator).toEqual(dataplane_locator);
+          expect(rootScope.serviceLocatorConstants).toEqual(serviceLocatorConstants);
         });
       });
     });

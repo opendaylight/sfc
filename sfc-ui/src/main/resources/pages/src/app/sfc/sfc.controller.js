@@ -35,18 +35,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $rootScope.sfcs = [];
     $rootScope.sfps = [];
     $rootScope.sfpEffectMe = {};
-    $rootScope.servicefunction =
+    $rootScope.serviceFunctionConstants =
     {
       type: ["napt44", "dpi", "firewall"],
       failmode: ["open", "close"]
     };
-    $rootScope.sff_dataplane_locator =
+    $rootScope.serviceLocatorConstants =
     {
-      transport: ["vxlan-gpe", "other"]
+      transport: ["vxlan-gpe", "gre", "other"],
+      type: ["ip", "mac", "lisp"]
     };
-    $rootScope.dataplane_locator =
+    $rootScope.aclConstants =
     {
-      type: ["ip:port"]
+      "ace-type": ["ip", "eth"],
+      "ace-ip": ["IPv4", "IPv6"]
     };
   });
 });

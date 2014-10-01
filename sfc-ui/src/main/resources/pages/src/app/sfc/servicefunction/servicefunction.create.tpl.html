@@ -35,10 +35,12 @@
             </div>
 
             <div class="form-group">
-                <label for="nshaware" class="col-lg-6 control-label small-label">{{'SFC_FUNCTION_NSH_AWARE' | translate}}</label>
+                <label for="nshaware" class="col-lg-6 control-label small-label">{{'SFC_FUNCTION_NSH_AWARE' |
+                    translate}}</label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="nshaware" ui-select2 ng-model="data['nsh-aware']" ng-required="false"
+                    <select class="form-control input-sm" id="nshaware" ui-select2 ng-model="data['nsh-aware']"
+                            ng-required="false"
                             data-placeholder="{{'SFC_FUNCTION_CREATE_NSH_AWARE' | translate}}">
                         <option value=""></option>
                         <option value="true">{{'SFC_TRUE' | translate}}</option>
@@ -54,13 +56,16 @@
     <div class="col-md-5 form-horizontal">
         <h3>{{'SFC_FUNCTION_DATA_PLANE_LOCATOR' | translate}}</h3>
 
-        <div class="formElement" ng-form="data_plane_form"
+        <div class="formElement" ng-form="f_data_plane"
              ng-repeat="locator in data['sf-data-plane-locator'] track by $index">
+
             <div style="text-align: right; margin-bottom: 10px">
                 <span class="spanTip">{{ 'SFC_DATA_PLANE_LOCATOR_REMOVE' | translate }}</span>
-                <button type="button" class="btn btn-xs btn-danger" ng-click="removeLocator($index)"><i class="icon-minus"></i>
+                <button type="button" class="btn btn-xs btn-danger" ng-click="removeLocator($index)"><i
+                        class="icon-minus"></i>
                 </button>
             </div>
+
             <div class="form-group">
                 <label for="data_plane_name" class="col-lg-6 control-label small-label">
                     {{'SFC_FORWARDER_DATA_PLANE_LOCATOR_NAME' | translate}}
@@ -72,62 +77,25 @@
                 </div>
             </div>
 
-            <!--<div class="form-group">-->
-            <!--<label for="transport" class="col-lg-6 control-label small-label">-->
-            <!--{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_TRANSPORT_TYPE' | translate}}-->
-            <!--</label>-->
-
-            <!--<div class="col-lg-6">-->
-            <!--<select class="form-control input-sm" id="transport" ui-select2 ng-model="locator['transport']"-->
-            <!--ng-required="false"-->
-            <!--data-placeholder="{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_CREATE_TRANSPORT_TYPE' | translate}}">-->
-
-            <!--<option value=""></option>-->
-            <!--<option ng-repeat="t in sff_dataplane_locator.transport" value="{{t}}">{{t}}</option>-->
-            <!--</select>-->
-            <!--</div>-->
-            <!--</div>-->
+            <service-locator locator="locator" constants="servicelocator"></service-locator>
 
             <div class="form-group">
-                <label for="data_plane_ip" class="col-lg-6 control-label small-label">
-                    {{'SFC_DATA_PLANE_LOCATOR_IP' | translate}}
-                </label>
-
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm" ng-model="locator['ip']"
-                           id="data_plane_ip" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_IP' | translate}}"
-                           ip-address>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="data_plane_port" class="col-lg-6 control-label small-label">
-                    {{'SFC_DATA_PLANE_LOCATOR_PORT' | translate}}
-                </label>
-
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm"
-                           ng-model="locator['port']"
-                           id="data_plane_port" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_PORT' | translate}}">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="data_plane_sff" class="col-lg-6 control-label small-label">
+                <label class="col-lg-6 control-label small-label" ui-select2-label="data_plane_sff">
                     {{'SFC_FUNCTION_SFF_NAME' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <input type="hidden" id="data_plane_sff" class="form-control input-sm" ui-select2="select2Options" ng-model="select2ModelSff[$index]" ng-required="false" data-placeholder="{{'SFC_FUNCTION_SFF_CREATE_NAME' | translate}}">
-                    <!--<input type="text" class="form-control input-sm"-->
-                           <!--ng-model="locator['service-function-forwarder']"-->
-                           <!--id="data_plane_sff" placeholder="{{'SFC_FUNCTION_SFF_CREATE_NAME' | translate}}">-->
+                    <sfc-forwarder-select2 input-id="data_plane_sff" sff-prop="locator['service-function-forwarder']"
+                                           sffs="sffs">
+                    </sfc-forwarder-select2>
                 </div>
             </div>
         </div>
+
         <div style="text-align: right;">
             <span class="spanTip">{{ 'SFC_DATA_PLANE_LOCATOR_ADD' | translate }}</span>
-            <button type="button" class="btn btn-xs btn-primary" ng-click="addLocator()"><i class="icon-plus"></i></button>
+            <button type="button" class="btn btn-xs btn-primary" ng-click="addLocator()"><i class="icon-plus"></i>
+            </button>
         </div>
     </div>
 

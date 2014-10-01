@@ -1,0 +1,24 @@
+<div class="modal-header btn-info">
+    <h4 class="modal-title">Select SFF for '{{sfName}}'</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label style="color:#444 !important;" class="col-lg-6 control-label small-label" ui-select2-label="sff_name">
+            {{'SFC_FUNCTION_SFF_NAME' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="sff_name" ui-select2
+                    ng-model="sffName" ng-required="true"
+                    data-placeholder="{{'SFC_FUNCTION_SFF_CREATE_NAME' | translate}}">
+
+                <option value=""></option>
+                <option ng-repeat="sff in sffNameList" value="{{sff}}">{{sff}}</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-orange" ng-disabled="!(!!sffName)" ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL' | translate}}</button>
+</div>

@@ -1,0 +1,20 @@
+<ng-form name="f_sf_locator">
+    <div class="form-group">
+        <label class="col-lg-6 control-label small-label" ui-select2-label="function_data_plane_name">
+            {{'SFC_DATA_PLANE_LOCATOR'| translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="function_data_plane_name" ui-select2
+                    ng-model="selected_locator" ng-required="false"
+                    data-placeholder="{{'SFC_DATA_PLANE_SELECT_LOCATOR' | translate}}"
+                    ng-change="setSffSfLocator(service_function, selected_locator)">
+
+                <option value=""></option>
+                <option ng-repeat="locator in sfLocators" value="{{locator.name}}">
+                    {{locatorToString(locator)}}
+                </option>
+            </select>
+        </div>
+    </div>
+</ng-form>

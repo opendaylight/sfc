@@ -1,11 +1,301 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.directive('ipAddress', function () {
+  sfc.register.directive('showValidationError', function ($timeout) {
+    return {
+      restrict: 'A',
+      require: '^form',
+      scope: {},  // for watch need isolated scope - specialy for destroying the watch
+      link: function (scope, el, attrs, formCtrl) {
+        // find the text box element, which has the 'name' attribute
+        var inputEl = el[0].querySelector("[name]");
+        // convert the native text box element to an angular element
+        var inputNgEl = angular.element(inputEl);
+        // get the name on the text box so we know the property to check
+        // on the form controller
+        var inputName = inputNgEl.attr('name');
+
+        // wait for initial model update
+        $timeout(function () {
+          // el.toggleClass('has-error', formCtrl[inputName].$invalid);
+
+          scope.$watch(function () {
+            return formCtrl[inputName].$invalid;
+          }, function (newVal) {
+            el.toggleClass('has-error', newVal);
+          });
+
+        }, 500);
+
+        // only apply the has-error class after the user leaves the text box
+//        inputNgEl.bind('change', function () {
+//          el.toggleClass('has-error', formCtrl[inputName].$invalid);
+//        });
+
+      }
+    };
+  });
+
+  sfc.register.directive('sfcWatchForReinit', function ($log) {
+    // adds wotch in scope for 're'-ngInit
+    return {
+      restrict: 'A',
+      link: function (scope, iElement, iAttrs) {
+        var count = 1;
+
+        if (iAttrs && iAttrs['sfcWatchForReinit'] && iAttrs['ngInit']) {
+
+          scope.$watch(iAttrs['sfcWatchForReinit'], function (newVal) {
+            if (count === 1) {
+              count--;
+              return; // skip first time - ngInit will do the work
+            }
+
+            if (angular.isUndefined(newVal)) {
+              return;
+            }
+
+            scope.$eval(iAttrs['ngInit']);
+          });
+        } else {
+          $log.warn('sfcWatchForReinit - illegal arguments');
+        }
+      }
+    };
+  });
+
+  sfc.register.directive('uiSelect2Label', function ($timeout) {
+    return {
+      restrict: 'A',
+      link: function (scope, iElement, iAttrs) {
+        // fix for focus on label click
+        $timeout(function () {
+            if (iAttrs && iAttrs['uiSelect2Label']) {
+              iElement.bind("click", function () {
+                $('#s2id_' + iAttrs['uiSelect2Label'] + " > input").focus();
+              });
+            }
+          }
+        );
+      }
+    };
+  });
+
+  sfc.register.directive('sfcForwarderSelect2', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        'inputId': '@inputId',
+        'sffs': '=sffs',
+        'sffProp': '=sffProp'
+      },
+      template: '<input type="hidden" id="{{inputId}}" class="form-control input-sm" ui-select2="select2Options" ng-model="tmpSffForSelect2" ng-required="false" data-placeholder="{{\'SFC_FUNCTION_SFF_CREATE_NAME\' | translate}}">',
+      controller: ['$scope', function ($scope) {
+
+        // initial
+        if ($scope.sffProp) {
+          $scope.tmpSffForSelect2 = {
+            id: $scope.sffProp,
+            text: $scope.sffProp
+          };
+        }
+
+        // sync/copy 'id' to model
+        $scope.$watch(function () {
+          if ($scope.tmpSffForSelect2) {
+            $scope.sffProp = $scope.tmpSffForSelect2.id;
+          }
+        });
+
+        $scope.select2Options = {
+          query: function (query) {
+            var data = {results: []};
+            var exact = false;
+            var blank = _.str.isBlank(query.term);
+
+            _.each($scope.sffs, function (sff) {
+              var name = sff.name;
+              var addThis = false;
+
+              if (!blank) {
+                if (query.term == name) {
+                  exact = true;
+                  addThis = true;
+                } else if (name.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                  addThis = true;
+                }
+              } else {
+                addThis = true;
+              }
+
+              if (addThis === true) {
+                data.results.push({id: name, text: name});
+              }
+            });
+
+            if (!exact && !blank) {
+              data.results.unshift({id: query.term, text: query.term, ne: true});
+            }
+
+            query.callback(data);
+          },
+          formatSelection: function (object) {
+            if (object.ne) {
+              return object.text + " <span><i style=\"color: greenyellow;\">(to be created)</i></span>";
+            } else {
+              return object.text;
+            }
+          }
+        };
+      }]
+    };
+  });
+
+  sfc.register.directive('dateAndTime', function () {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
         ctrl.$parsers.unshift(function (viewValue) {
-          if (inet_pton(viewValue)) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('dateAndTime', true);
+            return null;
+          }
+          else if (viewValue.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-]\d{2}:\d{2})/)) {
+            ctrl.$setValidity('dateAndTime', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('dateAndTime', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('vlanId', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('vlanId', true);
+            return null;
+          }
+          else if (viewValue >= 1 && viewValue <= 4094) {
+            ctrl.$setValidity('vlanId', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('vlanId', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('macAddress', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('macAddress', true);
+            return null;
+          }
+          else if (viewValue.match(/^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/)) {
+            ctrl.$setValidity('macAddress', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('macAddress', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('uint8', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('uint8', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 63) {
+            ctrl.$setValidity('uint8', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint8', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('uint32', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('uint32', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 1048575) {
+            ctrl.$setValidity('uint32', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint32', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('port', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('port', true);
+            return null;
+          }
+          else if (viewValue >= 0 && viewValue <= 65535) {
+            ctrl.$setValidity('port', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('port', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  sfc.register.directive('ipAddress', function ($parse) {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+
+        var params = $parse(attrs['ipAddress'])();
+
+        ctrl.$parsers.unshift(function (viewValue) {
+          if (viewValue === null || viewValue === "") {
+            ctrl.$setValidity('ipAddress', true);
+            return null;
+          }
+          else if (inet_pton(viewValue, params)) {
             ctrl.$setValidity('ipAddress', true);
             return viewValue;
           }
@@ -18,7 +308,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  function inet_pton(a) {
+  function inet_pton(a, params) {
     //  discuss at: http://phpjs.org/functions/inet_pton/
     // original by: Theriault
     //   example 1: inet_pton('::');
@@ -29,45 +319,69 @@ define(['app/sfc/sfc.module'], function (sfc) {
     // enhanced by: Andrej Kincel (akincel@cisco.com)
     //    features: IPv4 regex checks for valid range
 
-    var r, m, x, i, j, f = String.fromCharCode;
-    // IPv4
-    m = a.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
-    if (m) {
-      m = m[0].split('.');
-      m = f(m[0]) + f(m[1]) + f(m[2]) + f(m[3]);
-      // Return if 4 bytes, otherwise false.
-      return m.length === 4 ? m : false;
+    var r, m, x, i, j, f = String.fromCharCode, prefix;
+
+    if (params && params.prefix === true) {
+      m = a.match(/(\/)([0-9]+)$/);
+      if (m) {
+        prefix = parseInt(m[2]);
+        a = a.replace(/\/[0-9]+$/, ""); // trim prefix
+      }
     }
-    r = /^((?:[\da-f]{1,4}(?::|)){0,8})(::)?((?:[\da-f]{1,4}(?::|)){0,8})$/;
-    // IPv6
-    m = a.match(r);
-    if (m) {
-      // Translate each hexadecimal value.
-      for (j = 1; j < 4; j++) {
-        // Indice 2 is :: and if no length, continue.
-        if (j === 2 || m[j].length === 0) {
-          continue;
+
+    // IPv4
+    if (!params || params.version != 6) {
+      m = a.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+      if (m) {
+
+        if (prefix && prefix > 32) {
+          return false;
         }
-        m[j] = m[j].split(':');
-        for (i = 0; i < m[j].length; i++) {
-          m[j][i] = parseInt(m[j][i], 16);
-          // Would be NaN if it was blank, return false.
-          if (isNaN(m[j][i])) {
-            // Invalid IP.
-            return false;
+
+        m = m[0].split('.');
+        m = f(m[0]) + f(m[1]) + f(m[2]) + f(m[3]);
+        // Return if 4 bytes, otherwise false.
+        return m.length === 4 ? m : false;
+      }
+    }
+
+    if (!params || params.version != 4) {
+      // IPv6
+      r = /^((?:[\da-fA-F]{1,4}(?::|)){0,8})(::)?((?:[\da-fA-F]{1,4}(?::|)){0,8})$/;
+      m = a.match(r);
+      if (m) {
+
+        if (prefix && prefix > 128) {
+          return false;
+        }
+
+        // Translate each hexadecimal value.
+        for (j = 1; j < 4; j++) {
+          // Indice 2 is :: and if no length, continue.
+          if (j === 2 || m[j].length === 0) {
+            continue;
           }
-          m[j][i] = f(m[j][i] >> 8) + f(m[j][i] & 0xFF);
+          m[j] = m[j].split(':');
+          for (i = 0; i < m[j].length; i++) {
+            m[j][i] = parseInt(m[j][i], 16);
+            // Would be NaN if it was blank, return false.
+            if (isNaN(m[j][i])) {
+              // Invalid IP.
+              return false;
+            }
+            m[j][i] = f(m[j][i] >> 8) + f(m[j][i] & 0xFF);
+          }
+          m[j] = m[j].join('');
         }
-        m[j] = m[j].join('');
-      }
-      x = m[1].length + m[3].length;
-      if (x === 16) {
-        return m[1] + m[3];
-      }
-      else if (m[2] !== undefined) {
-        if (x < 16 && m[2].length > 0) {
-          return m[1] + (new Array(16 - x + 1))
-            .join('\x00') + m[3];
+        x = m[1].length + m[3].length;
+        if (x === 16) {
+          return m[1] + m[3];
+        }
+        else if (m[2] !== undefined) {
+          if (x < 16 && m[2].length > 0) {
+            return m[1] + (new Array(16 - x + 1))
+              .join('\x00') + m[3];
+          }
         }
       }
     }

@@ -1,8 +1,8 @@
 define(['app/sfc/sfc.test.module.loader'], function (sfc) {
 
   ddescribe('SFC app', function () {
-    var rootScope, scope, state, stateParams;
-    var serviceFunctionSvcMock, servicePathSvcMock, servicePathHelperMock, modalDeleteSvcMock;
+    var rootScope, scope, state, stateParams, modalInstance;
+    var serviceFunctionSvcMock, servicePathSvcMock, servicePathHelperMock, modalDeleteSvcMock, serviceForwarderSvcMock, servicePathModalSffSelectMock;
     var exampleData = {};
     var sfpState = {PERSISTED: "persisted", NEW: "new", EDITED: "edited"};
 
@@ -43,11 +43,26 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         return callback('delete');
       }
     };
+    serviceForwarderSvcMock = {
+      getArray: function (callback) {
+        callback(exampleData.sffs);
+      }
+    };
+    servicePathModalSffSelectMock = {
+      open: function (sfName, sffNameList, callback) {
+        return callback({name :sffNameList[0]});
+      }
+    };
 
 
     beforeEach(function () {
       exampleData.sfs = [
         {"name": "sf1", "type": "firewall", "ip": "10.0.0.1"}
+      ];
+      exampleData.sfsWithNumberOfSffs = [
+        {"name": "sf1", "type": "firewall", "ip": "10.0.0.1", 'sf-data-plane-locator': [
+          {'service-function-forwarder': 'sff1'}, {'service-function-forwarder': 'sff2'}
+        ]}
       ];
       exampleData.sfps = [
         {"name": "sfp1", "service-path-hop": [
@@ -70,6 +85,10 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           {"hop-number": 1, "service-function-name": "sf1"}
         ]}
       ];
+      exampleData.sffs = [
+        {name: "sff1"},
+        {name: "sff2"}
+      ];
     });
 
     beforeEach(angular.mock.module('ui.router'));
@@ -77,11 +96,18 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
     beforeEach(angular.mock.module('app.common.layout'));
     beforeEach(angular.mock.module('app.sfc'));
 
-    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope, $templateCache) {
+    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope) {
       rootScope = $rootScope;
       scope = $rootScope.$new();
       state = $state;
       stateParams = $stateParams;
+      modalInstance = {
+        close: jasmine.createSpy('modalInstance.close'),
+        dismiss: jasmine.createSpy('modalInstance.dismiss'),
+        result: {
+          then: jasmine.createSpy('modalInstance.result.then')
+        }
+      };
     }));
 
     beforeEach(angular.mock.inject(function ($controller) {
@@ -95,10 +121,56 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
 
         beforeEach(angular.mock.inject(function ($controller) {
           createServicePathCtrl = function () {
-            return $controller('servicePathCtrl', {$scope: scope, $rootScope: rootScope, ServiceFunctionSvc: serviceFunctionSvcMock,
-              ServicePathSvc: servicePathSvcMock, ServicePathHelper: servicePathHelperMock, ModalDeleteSvc: modalDeleteSvcMock});
+            return $controller('servicePathCtrl', {$scope: scope, $rootScope: rootScope, ServiceFunctionSvc: serviceFunctionSvcMock, ServiceForwarderSvc: serviceForwarderSvcMock,
+              ServicePathSvc: servicePathSvcMock, ServicePathHelper: servicePathHelperMock, ServicePathModalSffSelect: servicePathModalSffSelectMock, ModalDeleteSvc: modalDeleteSvcMock});
           };
         }));
+
+        it("ensure that scope.tableParamsSfName are set", function () {
+          createServicePathCtrl();
+          expect(scope.tableParamsSfName).toBeDefined();
+          expect(scope.tableParamsSfName.getData).toBeDefined();
+          expect(scope.tableParamsSfName.$params).toBeDefined();
+        });
+
+        it("ensure that scope.tableParamsSffName are set", function () {
+          createServicePathCtrl();
+          expect(scope.tableParamsSffName).toBeDefined();
+          expect(scope.tableParamsSffName.getData).toBeDefined();
+          expect(scope.tableParamsSffName.$params).toBeDefined();
+        });
+
+        it("ensure that scope.tableParams are set", function () {
+          createServicePathCtrl();
+          expect(scope.tableParams).toBeDefined();
+          expect(scope.tableParams.getData).toBeDefined();
+          expect(scope.tableParams.$params).toBeDefined();
+        });
+
+        it("ensure that this.sfpsWatcherRegistered variable is defined", function () {
+          var thisCtrl = createServicePathCtrl();
+          expect(thisCtrl.sfpsWatcherRegistered).toBeDefined();
+        });
+
+        it("ensure that this.registerSfpsWatcher function is defined and registers watchCollection on sfps", function () {
+          spyOn(scope, '$watchCollection').andCallThrough();
+          var thisCtrl = createServicePathCtrl();
+          scope.tableParams.settings().$scope = scope;
+          expect(thisCtrl.registerSfpsWatcher).toEqual(jasmine.any(Function));
+          expect(scope.$watchCollection).toHaveBeenCalledWith('sfps', jasmine.any(Function));
+
+          //test watchCollection with valid data
+          spyOn(scope.tableParams, 'total').andCallThrough();
+          spyOn(scope.tableParams, 'reload').andCallThrough();
+          scope.sfps = exampleData.sfps;
+          scope.$digest();
+          expect(scope.tableParams.total).toHaveBeenCalledWith(1);
+          expect(scope.tableParams.reload).toHaveBeenCalled();
+
+          //test watchCollection with undefined
+          scope.sfps = undefined;
+          scope.$digest();
+        });
 
         it("ensure that (root)scope.sfpEffectMe object is initialized", function () {
           createServicePathCtrl();
@@ -122,6 +194,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           createServicePathCtrl();
           expect(serviceFunctionSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
           expect(scope.sfs).toEqual(exampleData.sfs);
+        });
+
+        it("should call get Service Forwarders", function () {
+          spyOn(serviceForwarderSvcMock, 'getArray').andCallThrough();
+          createServicePathCtrl();
+          expect(serviceForwarderSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
+          expect(scope.sffs).toEqual(exampleData.sffs);
         });
 
         it("should call get Service Paths, keep temporary and remove persisted data", function () {
@@ -172,12 +251,34 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(exampleData.sfps[0].state).toBeUndefined();
         });
 
-        it("should add SF into SFP['service-path-hop']", function () {
+        it("should add SF with SFF into SFP['service-path-hop']", function () {
           createServicePathCtrl();
           var emptySfp = {"name": "test SFP"};
-          scope.onSFPdrop(exampleData.sfs[0].name, emptySfp);
+          scope.onSFPdrop("sf_" + exampleData.sfs[0].name, emptySfp);
           expect(emptySfp['service-path-hop']).toBeDefined();
           expect(emptySfp['service-path-hop'][0]).toEqual({"service-function-name": exampleData.sfs[0].name});
+          expect(emptySfp.state).toBe(sfpState.EDITED);
+        });
+
+        it("should open modal dialog allowing to choose SFF name during addition of SF into SFP['service-path-hop']", function (){
+          spyOn(servicePathModalSffSelectMock, 'open').andCallThrough();
+          createServicePathCtrl();
+          var emptySfp = {"name": "test SFP"};
+          scope.sfs = exampleData.sfsWithNumberOfSffs;
+          scope.onSFPdrop("sf_" + scope.sfs[0].name, emptySfp);
+          expect(servicePathModalSffSelectMock.open).toHaveBeenCalledWith(scope.sfs[0].name, ['sff1', 'sff2'], jasmine.any(Function));
+          expect(emptySfp['service-path-hop']).toBeDefined();
+          expect(emptySfp['service-path-hop'][0]).toEqual({"service-function-name": scope.sfs[0].name,
+            'service-function-forwarder': scope.sfs[0]['sf-data-plane-locator'][0]['service-function-forwarder']});
+          expect(emptySfp.state).toBe(sfpState.EDITED);
+        });
+
+        it("should add SFF into SFP['service-path-hop']", function () {
+          createServicePathCtrl();
+          var emptySfp = {"name": "test SFP"};
+          scope.onSFPdrop("sff_" + exampleData.sffs[0].name, emptySfp);
+          expect(emptySfp['service-path-hop']).toBeDefined();
+          expect(emptySfp['service-path-hop'][0]).toEqual({"service-function-forwarder": exampleData.sffs[0].name});
           expect(emptySfp.state).toBe(sfpState.EDITED);
         });
 
@@ -227,6 +328,66 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(servicePathSvcMock.getItem).toHaveBeenCalledWith(exampleData.sfps[0].name, jasmine.any(Function));
           expect(rootScope.sfps[0]).toEqual(exampleData.sfps[0]);
           expect(scope.sfps[0]).toEqual(exampleData.sfps[0]);
+        });
+
+        it("this.collectDistinctSffsNamesFromSf should return array of Sff names", function () {
+          var thisCtrl = createServicePathCtrl();
+          //should not pass through precondition
+          var result = thisCtrl.collectDistinctSffsNamesFromSf(undefined);
+          expect(result).toEqual([]);
+
+          //should return empty array
+          result = thisCtrl.collectDistinctSffsNamesFromSf({name: "sf1"});
+          expect(result).toEqual([]);
+
+          //should return array with sffNames
+          result = thisCtrl.collectDistinctSffsNamesFromSf({name: "sf1", 'sf-data-plane-locator':[
+            {'service-function-forwarder': 'sff1'},
+            {'service-function-forwarder': 'sff2'}
+          ]});
+          expect(result).toEqual(['sff1', 'sff2']);
+
+        });
+
+        it("scope.getHopClass should return string containing CSS class of Hop", function (){
+          createServicePathCtrl();
+          var returnedClass = scope.getHopClass({'service-function-name': 'sf1'});
+          expect(returnedClass).toEqual('sf');
+          returnedClass = scope.getHopClass({'service-function-forwarder': 'sff1'});
+          expect(returnedClass).toEqual('sff');
+          var emptyClass = scope.getHopClass({name: 'hopWihthoutSforSff'});
+          expect(emptyClass).toBeUndefined();
+        });
+
+      });
+
+      describe('servicePathModalSffSelectCtrl', function () {
+
+        var createServicePathModalSffSelectCtrl;
+
+        beforeEach(angular.mock.inject(function ($controller) {
+          createServicePathModalSffSelectCtrl = function () {
+            return $controller('servicePathModalSffSelectCtrl', {$scope: scope, $modalInstance: modalInstance, sfName: 'sf1', sffNameList: ['sff1', 'sff2']});
+          };
+        }));
+
+        it("scope.sfName and scope.sffNameList should equal passed parameters", function () {
+          createServicePathModalSffSelectCtrl();
+          expect(scope.sfName).toEqual('sf1');
+          expect(scope.sffNameList).toEqual(['sff1', 'sff2']);
+        });
+
+        it("modalInstance close should be caled with object {name: this.sffName}", function () {
+          createServicePathModalSffSelectCtrl();
+          scope.sffName = 'sff1';
+          scope.save();
+          expect(modalInstance.close).toHaveBeenCalledWith({name: 'sff1'});
+        });
+
+        it("modalInstance dismiss should be caled with mesage 'cancel'", function () {
+          createServicePathModalSffSelectCtrl();
+          scope.dismiss();
+          expect(modalInstance.dismiss).toHaveBeenCalledWith('cancel');
         });
       });
     });

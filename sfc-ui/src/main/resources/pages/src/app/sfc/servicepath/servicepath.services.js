@@ -22,4 +22,34 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     return svc;
   });
+
+  sfc.register.factory('ServicePathModalSffSelect', function ($modal) {
+    var svc = {};
+    var modalInstance;
+
+    svc.open = function (sfName, sffNameList, callback) {
+      modalInstance = $modal.open({
+        templateUrl: 'src/app/sfc/servicepath/servicepath.modal.sff.select.tpl.html',
+        controller: 'servicePathModalSffSelectCtrl',
+        resolve: {
+          sfName: function () {
+            return sfName;
+          },
+          sffNameList: function () {
+            return sffNameList;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (result) {
+        callback(result);
+      }, function (reason) {
+        callback(reason);
+      });
+
+      return modalInstance;
+    };
+    return svc;
+  });
+
 });

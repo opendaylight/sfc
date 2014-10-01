@@ -20,9 +20,9 @@
 
     <form role="form" name="jsonBaseUrlForm">
         <div class="form-group">
-            <label for="select_file">{{'SFC_RESTCONF_URL' | translate}}</label>
-            <input type="text" class="form-control input-sm" ng-model="restangularBaseUrl" />
-            <button type="button" class="btn btn-primary" ng-click="applyBaseUrl()">{{'SFC_CONFIG_APPLY' | translate}}</button>
+            <label for="rest_url">{{'SFC_RESTCONF_URL' | translate}}</label>
+            <input id="rest_url" type="text" class="form-control input-sm" ng-model="restangularBaseUrl" ng-required="true"/>
+            <button type="submit" class="btn btn-primary" ng-click="applyBaseUrl()">{{'SFC_CONFIG_APPLY' | translate}}</button>
         </div>
     </form>
 </div>

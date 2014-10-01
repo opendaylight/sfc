@@ -67,44 +67,8 @@
             </div>
         </div>
 
-        <!--<div class="form-group">-->
-            <!--<label for="transport" class="col-lg-6 control-label small-label">-->
-                <!--{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_TRANSPORT_TYPE' | translate}}-->
-            <!--</label>-->
+        <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants"></service-locator>
 
-            <!--<div class="col-lg-6">-->
-                <!--<select class="form-control input-sm" id="transport" ui-select2 ng-model="locator['transport']"-->
-                        <!--ng-required="false"-->
-                        <!--data-placeholder="{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_CREATE_TRANSPORT_TYPE' | translate}}">-->
-
-                    <!--<option value=""></option>-->
-                    <!--<option ng-repeat="t in sff_dataplane_locator.transport" value="{{t}}">{{t}}</option>-->
-                <!--</select>-->
-            <!--</div>-->
-        <!--</div>-->
-
-        <div class="form-group">
-            <label for="data_plane_ip" class="col-lg-6 control-label small-label">
-                {{'SFC_DATA_PLANE_LOCATOR_IP' | translate}}
-            </label>
-
-            <div class="col-lg-6">
-                <input type="text" class="form-control input-sm" ng-model="locator['data-plane-locator']['ip']"
-                       id="data_plane_ip" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_IP' | translate}}"
-                       ip-address>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="data_plane_port" class="col-lg-6 control-label small-label">
-                {{'SFC_DATA_PLANE_LOCATOR_PORT' | translate}}
-            </label>
-
-            <div class="col-lg-6">
-                <input type="text" class="form-control input-sm" ng-model="locator['data-plane-locator']['port']"
-                       id="data_plane_port" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_PORT' | translate}}">
-            </div>
-        </div>
     </div>
     <div style="text-align: right;">
         <span class="spanTip">{{ 'SFC_DATA_PLANE_LOCATOR_ADD' | translate }}</span>
@@ -157,28 +121,12 @@
                             ng-required="false" data-placeholder="{{'SFC_FUNCTION_CREATE_FAILMODE' | translate}}">
 
                         <option value=""></option>
-                        <option ng-repeat="t in servicefunction.failmode" value="{{t}}">{{t}}</option>
+                        <option ng-repeat="t in serviceFunctionConstants.failmode" value="{{t}}">{{t}}</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-group" ng-show="function['name']">
-                <label for="function_data_plane_name" class="col-lg-6 control-label small-label">
-                    {{'SFC_DATA_PLANE_LOCATOR_NAME_IP_PORT'| translate}}
-                </label>
-
-                <div class="col-lg-6">
-                    <select class="form-control input-sm" id="function_data_plane_name" ui-select2
-                            ng-model="selectedDpLocator[function.name]" ng-required="false"
-                            data-placeholder="{{'SFC_DATA_PLANE_SELECT_LOCATOR' | translate}}"
-                            ng-change="dpChangeListener(function)">
-                        <option value=""></option>
-                        <option ng-repeat="loc in DpLocators[function.name]" value="{{loc.name}}">
-                            {{loc.name}} / {{loc['ip']}}:{{loc['port']}}
-                        </option>
-                    </select>
-                </div>
-            </div>
+            <service-locator-selector function="function" ng-show="function['name']"></service-locator-selector>
 
             <div class="form-group" ng-show="function['name']">
                 <label for="function_interfaces" class="col-lg-6 control-label small-label">
@@ -217,7 +165,7 @@
                             data-placeholder="{{'SFC_FUNCTION_CREATE_TYPE' | translate}}">
 
                         <option value=""></option>
-                        <option ng-repeat="t in servicefunction.type" value="{{t}}">{{t}}</option>
+                        <option ng-repeat="t in serviceFunctionConstants.type" value="{{t}}">{{t}}</option>
                     </select>
                 </div>
             </div>
@@ -234,36 +182,12 @@
                             data-placeholder="{{'SFC_FUNCTION_CREATE_FAILMODE' | translate}}">
 
                         <option value=""></option>
-                        <option ng-repeat="t in servicefunction.failmode" value="{{t}}">{{t}}</option>
+                        <option ng-repeat="t in serviceFunctionConstants.failmode" value="{{t}}">{{t}}</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="function_data_plane_ip" class="col-lg-6 control-label small-label">
-                    {{'SFC_DATA_PLANE_LOCATOR_IP' | translate}}
-                </label>
-
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm"
-                           ng-model="function['sff-sf-data-plane-locator']['ip']"
-                           id="function_data_plane_ip" placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_IP' | translate}}"
-                           ip-address>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="function_data_plane_port" class="col-lg-6 control-label small-label">
-                    {{'SFC_DATA_PLANE_LOCATOR_PORT'| translate}}
-                </label>
-
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm"
-                           ng-model="function['sff-sf-data-plane-locator']['port']"
-                           id="function_data_plane_port"
-                           placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_PORT' | translate}}">
-                </div>
-            </div>
+            <service-locator constants="serviceLocatorConstants" locator="function['sff-sf-data-plane-locator']"></service-locator>
 
             <div class="form-group">
                 <label for="function_interfaces2" class="col-lg-6 control-label small-label">

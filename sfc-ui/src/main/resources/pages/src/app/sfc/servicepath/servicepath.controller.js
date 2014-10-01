@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServicePathSvc, ServicePathHelper, ModalDeleteSvc, ngTableParams, $filter, $timeout) {
+  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServicePathSvc, ServicePathHelper, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
     var NgTableParams = ngTableParams; // checkstyle 'hack'
 
     $scope.tableParams = new NgTableParams(
@@ -140,13 +140,52 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     };
 
-    $scope.onSFPdrop = function ($sf, sfp) {
-      if (sfp['service-path-hop'] === undefined) {
-        sfp['service-path-hop'] = [];
+    var collectDistinctSffsNamesFromSf = function (sf) {
+      if (!sf) {
+        return [];
       }
-      sfp['service-path-hop'].push({"service-function-name": $sf});
 
-      $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);
+      var tmp = {};
+      _.each(sf['sf-data-plane-locator'], function (dpl) {
+        var sffName;
+        if (dpl && (sffName = dpl['service-function-forwarder'])) {
+          tmp[sffName] = true; // dummy value
+        }
+      });
+
+      return _.keys(tmp);
+    };
+
+    $scope.onSFPdrop = function ($sf, sfp) {
+
+      var addHopToSfp = function (sffName) {
+        if (sfp['service-path-hop'] === undefined) {
+          sfp['service-path-hop'] = [];
+        }
+
+        var hopItem = {"service-function-name": $sf};
+
+        if (sffName) {
+          hopItem["service-function-forwarder"] = sffName;
+        }
+
+        sfp['service-path-hop'].push(hopItem);
+        $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);
+      };
+
+      // retrieve SFF
+      var droppedSf = _.findWhere($scope.sfs, {name: $sf});
+      var sffNames = collectDistinctSffsNamesFromSf(droppedSf);
+
+      if (sffNames.length > 1) {
+        ServicePathModalSffSelect.open($sf, sffNames, function (sff) {
+          if(angular.isDefined(sff.name)) {
+            addHopToSfp(sff.name);
+          }
+        });
+      } else {
+        addHopToSfp(sffNames[0]);
+      }
     };
 
     $scope.deleteSFP = function deleteSFP(sfp) {
@@ -176,6 +215,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.getSFindexInSFS = function getSFindexInSFS(sfName) {
       var sfObject = _.findWhere($scope.sfs, {name: sfName});
       return _.indexOf($scope.sfs, sfObject);
+    };
+  });
+
+  sfc.register.controller('servicePathModalSffSelectCtrl', function ($scope, $modalInstance, sfName, sffNameList) {
+
+    $scope.sfName = sfName;
+    $scope.sffNameList = sffNameList;
+
+    $scope.save = function () {
+      $modalInstance.close({name: this.sffName});
+    };
+
+    $scope.dismiss = function () {
+      $modalInstance.dismiss('cancel');
     };
   });
 

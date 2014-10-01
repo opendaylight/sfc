@@ -1,0 +1,13 @@
+<ng-form name="f_locator_lisp">
+    <div class="form-group" show-validation-error>
+        <label for="data_plane_eid{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_DATA_PLANE_LOCATOR_EID' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator['eid']" name="data_plane_eid"
+                   id="data_plane_eid{{idSuffix}}" placeholder="{{'SFC_DATA_PLANE_LOCATOR_CREATE_EID' | translate}}"
+                   ip-address>
+        </div>
+    </div>
+</ng-form>

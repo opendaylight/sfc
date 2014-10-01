@@ -20,9 +20,7 @@
                       tooltip-placement="bottom"
                       tooltip-html-unsafe="
                           <div style='text-align: left'>
-                          <!--{{'SFC_TOOLTIP_TRANSPORT' | translate}}: {{loc['transport']}} <br/>-->
-                          {{'SFC_TOOLTIP_IP' | translate}}: {{loc['data-plane-locator']['ip']}} <br/>
-                          {{'SFC_TOOLTIP_PORT' | translate}}: {{loc['data-plane-locator']['port']}}
+                          {{getLocatorTooltipText(loc['data-plane-locator'])}}
                           </div>">
 
                     {{loc['name']}}{{$last ? '' : ', '}}
@@ -36,7 +34,9 @@
                           {{'SFC_TOOLTIP_NAME' | translate}}: {{sf['name']}} <br/>
                           {{'SFC_TOOLTIP_TYPE' | translate}}: {{sf['type']}} <br/>
                           {{'SFC_TOOLTIP_FAILMODE' | translate}}: {{sf['failmode']}} <br/>
-                          {{'SFC_TOOLTIP_DATA_PLANE_LOCATOR' | translate}}: {{sf['sff-sf-data-plane-locator']['ip']}}:{{sf['sff-sf-data-plane-locator']['port']}} <br/>
+                          <br/>
+                          {{getLocatorTooltipText(sf['sff-sf-data-plane-locator'])}} <br/>
+                          <br/>
                           {{'SFC_TOOLTIP_INTERFACES' | translate}}: {{sffInterfaceToString(sf['sff-interfaces'])}}
                           </div>">
 

@@ -76,6 +76,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     };
 
+    svc.removeTemporaryPropertiesFromLocator = function (locator) {
+      if (angular.isDefined(locator['data-plane-locator'])){
+        if (angular.isDefined(locator['data-plane-locator']['locator-type'])){
+          delete locator['data-plane-locator']['locator-type'];
+        }
+      }
+    };
+
     svc.removeNonExistentSn = function (sff, sns) {
       if (angular.isDefined(sff['service-node'])) {
         var snExists = _.findWhere(sns, {'name': sff['service-node']});
@@ -90,29 +98,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
       choosenSf.type = sfModelData.type;
     };
 
-    svc.getSfDpLocators = function (choosenSf, sfModelData, $scope) {
-      if (angular.isDefined(sfModelData['sf-data-plane-locator'])) {
-        $scope.DpLocators[choosenSf.name] = sfModelData['sf-data-plane-locator'];
-      }
-      else {
-        $scope.DpLocators[choosenSf.name] = [];
-      }
-    };
-
-    svc.dpChangeListener = function (sf, $scope) {
-      var dpLocator = _.findWhere($scope.DpLocators[sf.name], {name: $scope.selectedDpLocator[sf.name]});
-      delete dpLocator.name;
-      delete dpLocator['service-function-forwarder'];
-      sf['sff-sf-data-plane-locator'] = dpLocator;
-    };
-
     svc.sfChangeListener = function (choosenSf, $scope) {
       if (angular.isDefined(choosenSf)) {
         var sfModelData = _.findWhere($scope.sfs, {name: choosenSf.name});
 
         if (angular.isDefined(sfModelData)) {
           svc.addSfTypeToChoosenSf(choosenSf, sfModelData);
-          svc.getSfDpLocators(choosenSf, sfModelData, $scope);
         }
       }
     };
@@ -122,15 +113,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         sf['sff-interfaces'] = svc.sffInterfaceToStringArray(sf['sff-interfaces']);
         var sfModelData = _.findWhere($scope.sfs, {name: sf.name});
 
-        if (angular.isDefined(sfModelData)) {
-          svc.getSfDpLocators(sf, sfModelData, $scope);
-          $scope.selectedDpLocator[sf.name] = _.findWhere(sfModelData['sf-data-plane-locator'], {
-            "ip": sf['sff-sf-data-plane-locator']['ip'], "port": sf['sff-sf-data-plane-locator']['port']})['name'];
-          sf.nonExistent = false;
-        }
-        else{
-          sf.nonExistent = true;
-        }
+        sf.nonExistent = angular.isDefined(sfModelData) ? false : true;
       }
     };
 

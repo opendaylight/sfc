@@ -1,8 +1,8 @@
 <div class="col-md-4">
     <form role="form" id="createForm" name="createForm">
-        <div class="form-group">
+        <div class="form-group" show-validation-error>
             <label for="name">{{'SFC_CHAIN_NAME' | translate}}</label>
-            <input type="text" class="form-control input-sm" ng-model="data.name" id="name"
+            <input type="text" class="form-control input-sm" ng-model="data.name" id="name" name="name"
                    placeholder="{{'SFC_CHAIN_CREATE_NAME' | translate}}" required focus-me="{{true}}">
         </div>
 

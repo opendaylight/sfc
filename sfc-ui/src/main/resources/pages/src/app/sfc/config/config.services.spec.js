@@ -112,16 +112,62 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         }
       };
 
+      var sffDataTest = {
+        "service-function-forwarders": {
+          "service-function-forwarder": [
+            {
+              "name": "SFF-bootstrap",
+              "service-function-forwarder-ovs:ovs": {
+                "bridge-name": "br-int",
+                "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+                "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
+              },
+              "service-function-dictionary": [
+                {
+                  "name": "SF1",
+                  "sff-sf-data-plane-locator": {
+                    "port": 5000,
+                    "ip": "10.1.1.1"
+                  },
+                  "type": "dp1"
+                },
+                {
+                  "name": "SF2",
+                  "sff-sf-data-plane-locator": {
+                    "port": 5000,
+                    "ip": "10.1.1.2"
+                  },
+                  "type": "firewall"
+                }
+              ],
+              "classifier": "acl-sfp-1",
+              "service-node": "OVSDB1",
+              "sff-data-plane-locator": [
+                {
+                  "name": "eth0",
+                  "data-plane-locator": {
+                    "transport": "service-locator:vxlan-gpe",
+                    "port": 5000,
+                    "ip": "192.168.1.1"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      };
 
-      it('Should send REST-PUTs to SF, SN and SFC urls', function () {
+
+      it('Should send REST-PUTs to SF, SN, SFF and SFC urls', function () {
         // compose input string - 'file content'
-        var sfContentTest = angular.toJson(sfDataTest, true) + ";\r\n" + angular.toJson(snDataTest, true) + ";\r\n" + angular.toJson(sfcDataTest, true) + ";";
+        var sfContentTest = angular.toJson(sfDataTest, true) + ";\r\n" + angular.toJson(snDataTest, true) + ";\r\n" + angular.toJson(sfcDataTest, true) + ";\r\n" + angular.toJson(sffDataTest, true) + ";";
 
         var validateBefore = false;
 
         $httpBackend.expectPUT("http://localhost:8080/restconf/config/service-function:service-functions", sfDataTest).respond(200, {});
         $httpBackend.expectPUT("http://localhost:8080/restconf/config/service-node:service-nodes", snDataTest).respond(200, {});
         $httpBackend.expectPUT("http://localhost:8080/restconf/config/service-function-chain:service-function-chains", sfcDataTest).respond(200, {});
+        $httpBackend.expectPUT("http://localhost:8080/restconf/config/service-function-forwarder:service-function-forwarders", sffDataTest).respond(200, {});
 
         SfcConfigSvc.runConfig(sfContentTest, validateBefore);
 
@@ -205,6 +251,30 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(ServiceChainSvc.exportContainer).toHaveBeenCalled();
 
           expect(count).toEqual(4);
+        }));
+
+
+    });
+
+    describe("SFC Config SfcFileReaderSvc service", function () {
+
+      var SfcFileReaderSvc;
+
+      // tested service
+      beforeEach(angular.mock.inject(function (_SfcFileReaderSvc_) {
+        SfcFileReaderSvc = _SfcFileReaderSvc_;
+      }));
+
+      it("shoul receive filecontent in callback",
+        angular.mock.inject(function ($rootScope) {
+
+          var blob = new Blob(["test content"], {type: "text/plain;charset=UTF-8"});
+
+          SfcFileReaderSvc.readAsText(blob ,$rootScope).then(function(content){
+            expect(content).toEqual("test content");
+          });
+
+          $rootScope.$digest();
         }));
 
 

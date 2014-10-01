@@ -1,0 +1,25 @@
+<ng-form name="f_locator_mac">
+    <div class="form-group" show-validation-error>
+        <label for="data_plane_mac{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_DATA_PLANE_LOCATOR_MAC' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator['mac']" name="data_plane_mac"
+                   id="data_plane_mac{{idSuffix}}" placeholder="{{'SFC_DATA_PLANE_LOCATOR_CREATE_MAC' | translate}}"
+                   mac-address>
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="data_plane_vlan_id{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_DATA_PLANE_LOCATOR_VLAN' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator['vlan-id']" name="data_plane_vlan_id"
+                   id="data_plane_vlan_id{{idSuffix}}" placeholder="{{'SFC_DATA_PLANE_LOCATOR_CREATE_VLAN' | translate}}"
+                   vlan-id>
+        </div>
+    </div>
+</ng-form>

@@ -1,7 +1,7 @@
 .formElement {
   border-radius: 5px;
   background-color: #5f5f5f;
-  padding: 10px 10px 5px 10px;
+  padding: 15px 10px 5px 10px;
   margin-bottom: 15px;
 }
 
@@ -156,6 +156,7 @@ div.tooltip {
 
 .sfc-sf-component {
   height: 100px;
+  width: 104px;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -191,10 +192,9 @@ div.tooltip {
   float: left;
 }
 
-.obr-box {
+.obr-box{
   width: 64px;
   height: 64px;
-  background: url(images/Device_switch_3062_unknown_64.png) 0 0;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -202,6 +202,14 @@ div.tooltip {
   -ms-user-select: none;
   user-select: none;
   float: left;
+}
+
+.obr-box.sf{
+  background: url(images/Device_switch_3062_unknown_64.png) 0 0;
+}
+
+.obr-box.sff{
+  background: url(images/Device_switch_3062_unknown_64_orange.png) 0 0;
 }
 
 .displayNone {
@@ -234,4 +242,16 @@ div.tooltip {
 
 .pagination span {
   color: #444;
+}
+
+//---UI BOOTSTRAP MODAL OVERRIDE---
+// .modal-open      - body class for killing the scroll
+// .modal           - container to scroll within
+
+.modal-open {
+  overflow: auto;
+}
+
+.modal {
+  overflow: hidden;
 }

@@ -1,9 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter) {
     var NgTableParams = ngTableParams;
 
     $scope.sffInterfaceToString = ServiceForwarderHelper.sffInterfaceToString;
+
+    $scope.getLocatorTooltipText = function (locator) {
+      return ServiceLocatorHelper.getLocatorTooltipText(locator, $scope);
+    };
 
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
@@ -54,7 +58,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceForwarderCreateCtrl', function ($scope, $state, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc) {
+  sfc.register.controller('serviceForwarderCreateCtrl', function ($scope, $state, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc, ServiceLocatorHelper) {
 
     $scope.selectOptions = ServiceForwarderHelper.selectOptions($scope);
 
@@ -72,9 +76,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       ]
     };
-
-    $scope.DpLocators = {};
-    $scope.selectedDpLocator = {};
 
     ServiceNodeSvc.getArray(function (data) {
       $scope.sns = data;
@@ -104,11 +105,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
     };
 
-    $scope.dpChangeListener = function(sf) {
-      ServiceForwarderHelper.dpChangeListener(sf, $scope);
-    };
-
     $scope.submit = function () {
+      _.each($scope.data['sff-data-plane-locator'], function (locator) {
+        ServiceForwarderHelper.removeTemporaryPropertiesFromLocator(locator);
+      });
       //reformat sff-interfaces string array to object array
       _.each($scope.data['service-function-dictionary'], function(sf){
         sf['sff-interfaces'] = ServiceForwarderHelper.sffInterfaceToObjectArray(sf['sff-interfaces']);
@@ -121,7 +121,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceForwarderEditCtrl', function ($scope, $state, $stateParams, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc) {
+  sfc.register.controller('serviceForwarderEditCtrl', function ($scope, $state, $stateParams, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc, ServiceLocatorHelper) {
 
     $scope.selectOptions = ServiceForwarderHelper.selectOptions($scope);
 
@@ -139,9 +139,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       ]
     };
-
-    $scope.DpLocators = {};
-    $scope.selectedDpLocator = {};
 
     ServiceNodeSvc.getArray(function (data) {
       $scope.sns = data;
@@ -179,11 +176,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
     };
 
-    $scope.dpChangeListener = function(sf) {
-      ServiceForwarderHelper.dpChangeListener(sf, $scope);
-    };
-
     $scope.submit = function () {
+      _.each($scope.data['sff-data-plane-locator'], function (locator) {
+        ServiceForwarderHelper.removeTemporaryPropertiesFromLocator(locator);
+      });
       //reformat sff-interfaces string array to object array
       _.each($scope.data['service-function-dictionary'], function(sf){
         sf['sff-interfaces'] = ServiceForwarderHelper.sffInterfaceToObjectArray(sf['sff-interfaces']);

@@ -4,7 +4,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
 
     $scope.validationRevision = SfcConfigSvc.getValidationRevision();
-    $scope.validateBefore = true;
+    $scope.validateBefore = false;
     $scope.fileContent = "";
     $scope.restangularBaseUrl = SfcRestangularSvc.getCurrentBaseUrl();
 

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ModalDeleteSvc, ngTableParams, $filter, $q) {
+  sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter, $q) {
     var NgTableParams = ngTableParams;
 
     ServiceFunctionSvc.getArray(function (data) {
@@ -34,10 +34,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
         });
     });
 
+    $scope.getSfLocatorTooltipText = function(locator) {
+      return ServiceLocatorHelper.getSfLocatorTooltipText(locator, $scope);
+    };
+
     $scope.sfTypes = function () {
       var def = $q.defer();
       var data = [];
-      _.each($scope.servicefunction.type, function (type) {
+      _.each($scope.serviceFunctionConstants.type, function (type) {
         data.push({id: type, title: type});
       });
       def.resolve(data);
@@ -70,7 +74,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
+  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc, ServiceLocatorHelper) {
 
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
@@ -88,83 +92,34 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServiceFunctionHelper.removeLocator(index, $scope);
     };
 
-    $scope.select2Options = ServiceFunctionHelper.select2Options($scope);
-
-    $scope.select2ModelSff = [];
-
-    $scope.$watchCollection(
-      function () {
-        if ($scope.select2ModelSff) {
-          var idArray = [];
-          _.each($scope.select2ModelSff, function (sff) {
-            if (angular.isDefined(sff) && !_.isNull(sff) && angular.isDefined(sff.id)) {
-              idArray.push(sff.id); // watch id in select2 view model
-            }
-          });
-          return idArray;
-        } else {
-          return undefined;
-        }
-      },
-      function (newVal) {
-        if (angular.isDefined(newVal) && !_.isEmpty(newVal)) {
-          _.each($scope.data['sf-data-plane-locator'], function (locator, index) {
-            // copy id to YANG model
-            locator['service-function-forwarder'] = $scope.select2ModelSff[index].id;
-          });
-        }
-      }
-    );
-
-
     $scope.submit = function () {
+      ServiceFunctionHelper.removeTemporaryPropertiesFromSf($scope.data);
       ServiceFunctionSvc.putItem($scope.data, function () {
         $state.transitionTo('main.sfc.servicefunction', null, { location: true, inherit: true, relative: $state.$current, notify: true });
       });
     };
   });
 
-  sfc.register.controller('serviceFunctionEditCtrl', function ($scope, $state, $stateParams, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
-    $scope.data = {"sf-data-plane-locator": [{}]};
+  sfc.register.controller('serviceFunctionEditCtrl', function ($scope, $state, $stateParams, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc, ServiceLocatorHelper) {
 
-    $scope.select2Options = ServiceFunctionHelper.select2Options($scope);
+    function nshAwareToString(sf) {
+      if (angular.isDefined(sf['nsh-aware'])) {
+        sf['nsh-aware'] = sf['nsh-aware'] === true ? "true" : "false";
+      }
+    }
 
-    $scope.select2ModelSff = [];
+    $scope.data = {"sf-data-plane-locator": []}; // empty array on init of edit
 
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
 
       ServiceFunctionSvc.getItem($stateParams.sfName, function (item) {
         $scope.data = item;
+        nshAwareToString($scope.data);
 
-        $scope.select2ModelSff = [];
         _.each($scope.data['sf-data-plane-locator'], function (locator) {
-          $scope.select2ModelSff.push({"id": locator['service-function-forwarder'], "text": locator['service-function-forwarder']});
         });
 
-        $scope.$watchCollection(
-          function () {
-            if ($scope.select2ModelSff) {
-              var idArray = [];
-              _.each($scope.select2ModelSff, function (sff) {
-                if (angular.isDefined(sff) && !_.isNull(sff) && angular.isDefined(sff.id)) {
-                  idArray.push(sff.id); // watch id in select2 view model
-                }
-              });
-              return idArray;
-            } else {
-              return undefined;
-            }
-          },
-          function (newVal) {
-            if (angular.isDefined(newVal) && !_.isEmpty(newVal)) {
-              _.each($scope.data['sf-data-plane-locator'], function (locator, index) {
-                // copy id to YANG model
-                locator['service-function-forwarder'] = $scope.select2ModelSff[index].id;
-              });
-            }
-          }
-        );
       });
     });
 
@@ -177,6 +132,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.submit = function () {
+      ServiceFunctionHelper.removeTemporaryPropertiesFromSf($scope.data);
       ServiceFunctionSvc.putItem($scope.data, function () {
         $state.transitionTo('main.sfc.servicefunction', null, { location: true, inherit: true, relative: $state.$current, notify: true });
       });

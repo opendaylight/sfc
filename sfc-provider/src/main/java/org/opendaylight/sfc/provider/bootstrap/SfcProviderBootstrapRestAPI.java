@@ -12,6 +12,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,11 +65,13 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
             final String CONFIG_FILES_DIR = jo.getString("bootstrapDataDir");
             final String CONFIG_DATA_URL = jo.getString("configDataUrl");
             final String CONFIG_DATA_MIME_TYPE = jo.getString("configDataMimeType");
+            final HTTPBasicAuthFilter basicAuthFilter = new HTTPBasicAuthFilter("admin", "admin");
             files = jo.getJSONArray("files");
 
 
             ClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create(clientConfig);
+            client.addFilter(basicAuthFilter);
 
             if (files.length() > 0) {
                 for (int i = 0; i < files.length(); i++) {
@@ -93,6 +96,10 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                                 .type(CONFIG_DATA_MIME_TYPE)
                                 .put(ClientResponse.class, json);
                         putClientResponse.close();
+                        if (putClientResponse.getStatus() != 200){
+                            LOG.error("\n***** Unsuccessful PUT for file {}, HTTP response code {} *****\n", filename,
+                                    putClientResponse.getStatus());
+                        }
                     } catch (JSONException e) {
                         LOG.error("\n***** Invalid JSON in file {}, passing *****\n", filename);
                     }

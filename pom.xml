@@ -36,6 +36,7 @@
         <maven.source.version>2.2.1</maven.source.version>
         <maven.surefire.version>2.16</maven.surefire.version>
 
+        <!-- Build Plugin Versions -->
         <ietf.model.version>2010.09.24.4-SNAPSHOT</ietf.model.version>
         <ietf.yang.types.version>2013.07.15.1-SNAPSHOT</ietf.yang.types.version>
         <yang.ext.version>2013.09.07.4-SNAPSHOT</yang.ext.version>

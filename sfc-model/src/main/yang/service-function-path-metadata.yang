@@ -22,6 +22,33 @@ module service-function-metadata {
 
   // Service Function Path Metadata
 
+  typedef context-metadata-ref {
+    type leafref {
+      path "/sfc-md:service-function-metadata/" +
+        "sfc-md:context-metadata/sfc-md:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       configured context metadata headers.";
+  }
+
+  typedef variable-metadata-ref {
+    type leafref {
+      path "/sfc-md:service-function-metadata/" +
+        "sfc-md:variable-metadata/sfc-md:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       configured variable metadata headers.";
+  }
+
+  //Another module would reference these headers like
+  //leaf name {
+  //  type sfc-md:context-metadata-ref;
+  //  description
+  //   "A reference to the name of a configured context header";
+  //}
+
   container service-function-metadata {
 
     description

@@ -8,8 +8,10 @@
 
 package org.opendaylight.sfc.provider;
 
+import org.slf4j.Logger;
+
 /**
- * This class is used to control unit test coding and debugging
+ * This class is used to for debugging
  *
  * Example:
  *
@@ -24,5 +26,47 @@ package org.opendaylight.sfc.provider;
  */
 public final class SfcProviderDebug {
 
+ /*
+    private SfcProviderDebug()
+    {
+    }
+    */
     public static boolean ON = false;
+    public static String traceStart = "####### Start: {}";
+    public static String traceStop  = "####### Stop: {}";
+
+    public static boolean isOn()
+    {
+        return ON;
+    }
+
+    public static String getTraceStart()
+    {
+        return traceStart;
+    }
+
+    public static void setTraceStart(String traceStart)
+    {
+        SfcProviderDebug.traceStart = traceStart;
+    }
+
+    public static String getTraceStop()
+    {
+        return traceStop;
+    }
+
+    public static void setTraceStop(String traceStop)
+    {
+        SfcProviderDebug.traceStop = traceStop;
+    }
+
+    public static void printTraceStart(Logger log)
+    {
+        log.debug(traceStart, Thread.currentThread().getStackTrace()[1]);
+    }
+    public static void printTraceStop(Logger log)
+    {
+        log.debug(traceStop, Thread.currentThread().getStackTrace()[1]);
+    }
+
 }

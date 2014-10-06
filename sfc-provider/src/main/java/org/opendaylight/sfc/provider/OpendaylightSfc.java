@@ -7,11 +7,9 @@
  */
 package org.opendaylight.sfc.provider;
 
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
@@ -22,18 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-//import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 
 /**
  * This the main SFC Provider class. It is instantiated from the
@@ -81,17 +73,10 @@ public class OpendaylightSfc implements AutoCloseable {
     protected DataBroker dataProvider;
     private static OpendaylightSfc opendaylightSfcObj;
 
-    private Future<RpcResult<Void>> currentTask;
-
     public OpendaylightSfc() {
 
        executor = Executors.newFixedThreadPool(4);
        opendaylightSfcObj = this;
-    }
-
-    private Future<RpcResult<Void>> inProgressError() {
-       RpcResult<Void> result = Rpcs.<Void> getRpcResult(false, null, Collections.<RpcError> emptySet());
-       return Futures.immediateFuture(result);
     }
 
     public void setDataProvider(DataBroker salDataProvider) {

@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 /**
  * This class gets called whenever there is a change to
  * a Service Function Chain list entry, i.e.,
@@ -41,7 +44,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
 
@@ -50,8 +53,9 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.debug("\n########## Original ServiceFunctionChain name: {}", originalServiceFunctionChain.getName());
-                List<SfcServiceFunction>  SfcServiceFunctionList = originalServiceFunctionChain.getSfcServiceFunction();
-                for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+                List<SfcServiceFunction>  sfcServiceFunctionList =
+                        originalServiceFunctionChain.getSfcServiceFunction();
+                for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
                     LOG.debug("\n########## Original ServiceFunction name: {}", sfcServiceFunction.getName());
 
                 }
@@ -70,8 +74,8 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                 Class[] serviceChainClass = {ServiceFunctionChain.class};
                 odlSfc.executor.submit(SfcProviderServiceChainAPI
                         .getAddChainToChainState(serviceChainObj, serviceChainClass));
-                List<SfcServiceFunction>  SfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
-                for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+                List<SfcServiceFunction>  sfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
+                for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
                     LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
 
                 }
@@ -109,8 +113,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             }
         }
 
-
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
 

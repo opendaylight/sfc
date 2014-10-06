@@ -10,6 +10,8 @@ package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,17 +28,59 @@ import java.util.concurrent.Callable;
 public abstract class SfcProviderAbstractAPI implements Callable<Object> {
 
     protected static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    protected String methodName = null;
-    protected Object[] parameters;
-    protected Class[] parameterTypes;
+    private static final Logger LOG = LoggerFactory.getLogger
+            (SfcProviderAbstractAPI.class);
+    private String methodName = null;
+    private Object[] parameters;
+    private Class[] parameterTypes;
     protected DataBroker dataBroker;
 
+    public String getMethodName()
+    {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName)
+    {
+        this.methodName = methodName;
+    }
+
+    public Object[] getParameters()
+    {
+        return parameters;
+    }
+
+    public void setParameters(Object[] newParameters)
+    {
+        this.parameters = newParameters;
+    }
+
+    public Class[] getParameterTypes()
+    {
+        return parameterTypes;
+    }
+
+    public void setParameterTypes(Class[] newParameterTypes)
+    {
+        this.parameterTypes = newParameterTypes;
+    }
+
+    public DataBroker getDataBroker()
+    {
+        return dataBroker;
+    }
+
+    public void setDataBroker(DataBroker dataBroker)
+    {
+        this.dataBroker = dataBroker;
+    }
+
     SfcProviderAbstractAPI(Object[] params, String m) {
-        this.methodName = m;
-        this.parameters = new Object[params.length];
-        this.parameterTypes = new Class[params.length];
-        this.parameters = Arrays.copyOf(params, params.length);
-        this.dataBroker = odlSfc.getDataProvider();
+        setMethodName(m);
+        setParameters(new Object[params.length]);
+        setParameterTypes(new Class[params.length]);
+        setParameters(Arrays.copyOf(params, params.length));
+        setDataBroker(odlSfc.getDataProvider());
 
         for (int i = 0; i < params.length; i++) {
             this.parameterTypes[i] = params[i].getClass();
@@ -44,12 +88,12 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
     }
 
     protected SfcProviderAbstractAPI(Object[] params, Class[] paramsTypes, String m) {
-        this.methodName = m;
-        this.parameters = new Object[params.length];
-        this.parameterTypes = new Class[params.length];
-        this.parameters = Arrays.copyOf(params, params.length);
-        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
-        this.dataBroker = odlSfc.getDataProvider();
+        setMethodName(m);
+        setParameters(new Object[params.length]);
+        setParameterTypes(new Class[params.length]);
+        setParameters(Arrays.copyOf(params, params.length));
+        setParameterTypes(Arrays.copyOf(paramsTypes, paramsTypes.length));
+        setDataBroker(odlSfc.getDataProvider());
     }
 
     @Override
@@ -62,7 +106,7 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 result = method.invoke(this, parameters);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
+                LOG.error("Could not find method in class");
             }
         }
         return result;

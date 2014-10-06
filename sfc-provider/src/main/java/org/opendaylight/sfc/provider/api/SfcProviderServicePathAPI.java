@@ -39,6 +39,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 /**
  * This class has the APIs to operate on the ServiceFunctionPath
  * datastore.
@@ -129,7 +132,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
             InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).
@@ -142,12 +145,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionPath readServiceFunctionPath(String serviceFunctionPathName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionPath sfp = null;
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
@@ -158,22 +161,23 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunctionPath> serviceFunctionPathDataObject = null;
             try {
-                serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
+                serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType
+                        .CONFIGURATION, sfpIID).get();
+                if (serviceFunctionPathDataObject != null
+                        && serviceFunctionPathDataObject.isPresent()) {
+                    sfp = serviceFunctionPathDataObject.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            if (serviceFunctionPathDataObject != null
-                    && serviceFunctionPathDataObject.isPresent()) {
-                sfp = serviceFunctionPathDataObject.get();
+                LOG.error("Could not read Service Function Path configuration data \n");
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sfp;
     }
 
     protected boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey).toInstance();
@@ -185,16 +189,17 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
+            InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
+                    builder(ServiceFunctionPaths.class).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfpsIID, sfps);
@@ -202,46 +207,47 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps = null;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
 
-        if (odlSfc.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        if (dataBroker != null) {
+            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunctionPaths> serviceFunctionPathsDataObject = null;
             try {
                 serviceFunctionPathsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpsIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("Could not read top-level Service Function Path " +
+                        "container \n");
             }
             if (serviceFunctionPathsDataObject != null
                     && serviceFunctionPathsDataObject.isPresent()) {
                 sfps = serviceFunctionPathsDataObject.get();
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sfps;
     }
 
     protected boolean deleteAllServiceFunctionPaths() {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
-            InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
+            InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
+                    InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
 
             WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
             writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfpsIID);
             writeTx.commit();
-
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
@@ -258,7 +264,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     // TODO:Needs change
     private void deleteServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionChain serviceFunctionChain = null;
         String serviceChainName = serviceFunctionPath.getServiceChainName();
         try {
@@ -269,7 +275,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                                     new Class[]{String.class})).get()
                     : null;
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOG.error("\n Could not read Service Function Chain configuration");
         }
         if (serviceFunctionChain == null) {
             LOG.error("\n########## ServiceFunctionChain name for Path {} not provided",
@@ -292,7 +298,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcStateIID).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOG.error("\n Could not read Service Function Chain operational data \n");
         }
         // TODO: Remove path name from Service Function path list
         if (serviceFunctionChainStateObject instanceof ServiceFunctionChainState) {
@@ -330,7 +336,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.error("Failed to get reference to Service Function Chain State {} ", serviceFunctionChain.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
     @SuppressWarnings("unused")
@@ -345,13 +351,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
     protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         long pathId;
-        short pos_index = 0;
-        int service_index;
-        ServiceFunctionChain serviceFunctionChain;
-        serviceFunctionChain = null;
+        short posIndex = 0;
+        int serviceIndex;
+        ServiceFunctionChain serviceFunctionChain = null;
         String serviceFunctionChainName = serviceFunctionPath.getServiceChainName();
         try {
             serviceFunctionChain = serviceFunctionChainName != null ?
@@ -361,10 +366,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                                     new Class[]{String.class})).get()
                     : null;
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOG.error(" \n Could not read Service Function Chain configuration for Service Path {}",
+                    serviceFunctionPath.getName());
         }
         if (serviceFunctionChain == null) {
-            LOG.error("\n########## ServiceFunctionChain name for Path {} not provided",
+            LOG.error("\n ServiceFunctionChain name for Path {} not provided",
                     serviceFunctionPath.getName());
             return;
         }
@@ -378,9 +384,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific
          * service function from the list of service functions by type.
          */
-        List<SfcServiceFunction> SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
-        service_index = SfcServiceFunctionList.size();
-        for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
+        List<SfcServiceFunction> sfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
+        serviceIndex = sfcServiceFunctionList.size();
+        for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
 
             /*
@@ -389,12 +395,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
              * we do not hit NULL Pointer exceptions
              */
 
-            ServiceFunctionType serviceFunctionType = null;
+            ServiceFunctionType serviceFunctionType;
             try {
                 serviceFunctionType = (ServiceFunctionType) odlSfc.executor.submit(SfcProviderServiceTypeAPI.getRead(
                         new Object[]{sfcServiceFunction.getType()}, new Class[]{String.class})).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error(" Could not get list of Service Functions of type {} \n", sfcServiceFunction.getType());
+                return;
             }
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
@@ -408,17 +415,19 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                                     (ServiceFunction) odlSfc.executor.submit(SfcProviderServiceFunctionAPI
                                             .getRead(new Object[]{serviceFunctionName}, new Class[]{String.class})).get();
                         } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
+                            LOG.error(" Could not read Service Function {} " +
+                                    "\n", serviceFunctionName);
                         }
                         if (serviceFunction != null) {
-                            servicePathHopBuilder.setHopNumber(pos_index)
+                            servicePathHopBuilder.setHopNumber(posIndex)
                                     .setServiceFunctionName(serviceFunctionName)
-                                    .setServiceIndex((short) service_index)
+                                    .setServiceIndex((short) serviceIndex)
                                     .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
-                                            .get(0).getServiceFunctionForwarder());
-                            servicePathHopArrayList.add(pos_index, servicePathHopBuilder.build());
-                            service_index--;
-                            pos_index++;
+                                            .get(0)
+                                            .getServiceFunctionForwarder());
+                            servicePathHopArrayList.add(posIndex, servicePathHopBuilder.build());
+                            serviceIndex--;
+                            posIndex++;
                             break;
                         } else {
                             LOG.error("\n####### Could not find suitable SF of type in data store: {}",
@@ -470,7 +479,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
         SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
 
     }
 
@@ -503,7 +512,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionState serviceFunctionState;
@@ -519,7 +528,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             serviceFunctionStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOG.error("Could not read Service Function State operational data \n");
+            return;
         }
 
         if ((serviceFunctionStateObject != null) &&
@@ -552,7 +562,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.warn("Failed to get reference to Service Function State {} ", serviceFunction.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
 
@@ -566,7 +576,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
     private void updateServicePathContainingFunction (ServiceFunction serviceFunction) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
 
@@ -585,19 +595,19 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 Optional<ServiceFunctionPath> serviceFunctionPathObject = null;
                 try {
                     serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
+                    if (serviceFunctionPathObject != null &&
+                            (serviceFunctionPathObject.get() instanceof  ServiceFunctionPath)) {
+                        ServiceFunctionPath servicefunctionPath = serviceFunctionPathObject.get();
+                        createServiceFunctionPathEntry(servicefunctionPath);
+                    }
                 } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                if (serviceFunctionPathObject != null &&
-                        (serviceFunctionPathObject.get() instanceof  ServiceFunctionPath)) {
-                    ServiceFunctionPath servicefunctionPath = serviceFunctionPathObject.get();
-                    createServiceFunctionPathEntry(servicefunctionPath);
+                    LOG.error("Could not read Service Function Path configuration data \n");
                 }
             }
         } else {
             LOG.error("Failed to get reference to Service Function State {} ", serviceFunction.getName());
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
+        return;
     }
 }

@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 /**
  * This class has the APIs to operate on the ServiceFunction
  * datastore.
@@ -103,7 +106,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     /*
     public static ServiceFunctionForwarder readServiceFunctionForwarder(String name) {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG)
         ServiceFunctionForwarderKey serviceFunctionForwarderKey =
                 new ServiceFunctionForwarderKey(name);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
@@ -121,17 +124,17 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
         if (serviceFunctionForwarderObject != null &&
                 (serviceFunctionForwarderObject.get() instanceof ServiceFunctionForwarder)) {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            printTraceStop(LOG);
             return serviceFunctionForwarderObject.get();
         } else {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            printTraceStop(LOG);
             return null;
         }
     }
     */
 
     public static void addPathIdtoServiceFunctionForwarder(ServiceFunctionPath serviceFunctionPath) throws ExecutionException, InterruptedException {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID;
         ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
@@ -169,7 +172,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 sffsIID, serviceFunctionForwardersBuilder.build(), true);
         writeTx.commit();
 
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
 
         //serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
 
@@ -180,18 +183,14 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * This method checks if a SFF is complete and can be sent to southbound devices
      */
     public static boolean checkServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
-        if ((serviceFunctionForwarder.getName() != null) &&
-                (serviceFunctionForwarder.getServiceFunctionDictionary() != null)) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return ((serviceFunctionForwarder.getName() != null) &&
+                (serviceFunctionForwarder.getServiceFunctionDictionary() !=
+                        null));
     }
 
     protected boolean putServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
@@ -204,12 +203,12 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionForwarder readServiceFunctionForwarder(String serviceFunctionForwarderName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionForwarder sff = null;
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
@@ -220,22 +219,25 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunctionForwarder> serviceFunctionForwarderDataObject = null;
             try {
-                serviceFunctionForwarderDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
+                serviceFunctionForwarderDataObject = readTx.
+                        read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("Could not read Service Function Forwarder {} " +
+                        "configuration", serviceFunctionForwarderName);
+                return null;
             }
             if (serviceFunctionForwarderDataObject != null
                     && serviceFunctionForwarderDataObject.isPresent()) {
                 sff = serviceFunctionForwarderDataObject.get();
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sff;
     }
 
     protected boolean deleteServiceFunctionForwarder(String serviceFunctionForwarderName) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
                 child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).toInstance();
@@ -247,13 +249,13 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected boolean putAllServiceFunctionForwarders(ServiceFunctionForwarders sffs) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
             InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
@@ -265,13 +267,13 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionForwarders readAllServiceFunctionForwarders() {
         ServiceFunctionForwarders sffs = null;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
                 InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
 
@@ -279,34 +281,37 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunctionForwarders> serviceFunctionForwardersDataObject = null;
             try {
-                serviceFunctionForwardersDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffsIID).get();
+                serviceFunctionForwardersDataObject = readTx.
+                        read(LogicalDatastoreType.CONFIGURATION, sffsIID).get();
+                if (serviceFunctionForwardersDataObject != null
+                        && serviceFunctionForwardersDataObject.isPresent()) {
+                    sffs = serviceFunctionForwardersDataObject.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("Could not read Service Function Forwarder " +
+                        "configuration data");
             }
-            if (serviceFunctionForwardersDataObject != null
-                    && serviceFunctionForwardersDataObject.isPresent()) {
-                sffs = serviceFunctionForwardersDataObject.get();
-            }
+
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sffs;
     }
 
     protected boolean deleteAllServiceFunctionForwarders() {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
                     InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
 
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.delete(LogicalDatastoreType.CONFIGURATION, sffsIID);
             writeTx.commit();
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
@@ -315,7 +320,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      */
     public void createServiceFunctionForwarder(ServiceFunction serviceFunction) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
         String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
                 .get(0).getServiceFunctionForwarder();
@@ -342,15 +347,15 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
                 , serviceFunctionForwarderName, serviceFunction.getName());
 
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                 sffIID, serviceFunctionForwarderBuilder.build(), true);
         writeTx.commit();
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
     public void deleteServiceFunctionFromForwarder(ServiceFunction serviceFunction) {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
                 .get(0).getServiceFunctionForwarder();
         InstanceIdentifier<ServiceFunctionDictionary> sffIID;
@@ -363,17 +368,17 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
                 .build();
 
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                 sffIID);
         writeTx.commit();
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
     @SuppressWarnings("unused")
     public void updateServiceFunctionForwarder(ServiceFunction serviceFunction) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         deleteServiceFunctionFromForwarder(serviceFunction);
         createServiceFunctionForwarder(serviceFunction);
 
@@ -382,7 +387,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     public void createServiceFunctionForwarders(ServiceFunctionChains serviceFunctionchains) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffIID;
 
         // Prepare top container and list
@@ -427,18 +432,19 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
                 serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
 
-                LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
+                LOG.debug("\n########## Creating Forwarder: {}  Service " +
+                        "Function: {} "
                         , serviceFunctionForwarderName, serviceFunction.getName());
 
 
             }
             serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                     sffIID, serviceFunctionForwardersBuilder.build(), true);
             writeTx.commit();
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
 
     }
 
@@ -453,7 +459,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
          */
 
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
                 .get(0).getServiceFunctionForwarder();
@@ -469,10 +475,10 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         LOG.debug("\n########## Deleting Forwarder: {}  Service Function: {} "
                 , serviceFunctionForwarderName, serviceFunction.getName());
 
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION,
                 sffIID);
         writeTx.commit();
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 }

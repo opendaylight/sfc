@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 /**
  * This class has the APIs to operate on the ServiceFunction
  * datastore.
@@ -85,7 +88,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     }
 
     public static ServiceFunctionState readServiceFunctionState(String serviceFunctionName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         ServiceFunctionState serviceFunctionState;
         ServiceFunctionStateKey serviceFunctionStateKey =
@@ -99,23 +102,26 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Optional<ServiceFunctionState> dataSfcStateObject = null;
         try {
             dataSfcStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
+            if (dataSfcStateObject != null) {
+                serviceFunctionState = dataSfcStateObject.get();
+                printTraceStop(LOG);
+                return serviceFunctionState;
+            } else {
+                LOG.error("\n########## Could not find Service Function State for service function {}",
+                        serviceFunctionName);
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (dataSfcStateObject != null &&
-                (dataSfcStateObject.get() instanceof ServiceFunctionState)) {
-            serviceFunctionState = dataSfcStateObject.get();
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return serviceFunctionState;
-        } else {
-            LOG.error("\n########## Could not find Service Function State for service function {}",
+            LOG.error("\n########## Could not read Service Function State for" +
+                            " service function {} from DataStore",
                     serviceFunctionName);
             return null;
         }
+
     }
 
     public static void deleteServiceFunctionState(String serviceFunctionName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
 
         ServiceFunctionStateKey serviceFunctionStateKey =
@@ -135,7 +141,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      */
     public static void addPathToServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
@@ -155,13 +161,13 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                     sfStateIID, serviceFunctionStateBuilder.build(), true);
             writeTx.commit();
 
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            printTraceStop(LOG);
         }
     }
 
     protected static boolean putServiceFunction(ServiceFunction sf) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
@@ -174,13 +180,13 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected static boolean mergeServiceFunction(ServiceFunction sf) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
@@ -193,12 +199,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunction readServiceFunction(String serviceFunctionName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunction sf = null;
         InstanceIdentifier<ServiceFunction> sfIID;
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
@@ -210,21 +216,31 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             Optional<ServiceFunction> serviceFunctionDataObject = null;
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
+                if (serviceFunctionDataObject != null
+                        && serviceFunctionDataObject.isPresent()) {
+                    sf = serviceFunctionDataObject.get();
+                    printTraceStop(LOG);
+                    return sf;
+                } else {
+                    LOG.error("\n########## Could not find Service Function " +
+                                    "{}", serviceFunctionName);
+                    return null;
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("\n########## Could not read Service Function {} " +
+                                "from DataStore",
+                        serviceFunctionName);
+                return null;
             }
-            if (serviceFunctionDataObject != null
-                    && serviceFunctionDataObject.isPresent()) {
-                sf = serviceFunctionDataObject.get();
-            }
+
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sf;
     }
 
     protected boolean deleteServiceFunction(String serviceFunctionName) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, serviceFunctionKey).toInstance();
@@ -236,13 +252,13 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected boolean putAllServiceFunctions(ServiceFunctions sfs) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
@@ -253,35 +269,44 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctions readAllServiceFunctions() {
         ServiceFunctions sfs = null;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+        printTraceStart(LOG);
+        InstanceIdentifier<ServiceFunctions> sfsIID =
+                InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
 
         if (odlSfc.getDataProvider() != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunctions> serviceFunctionsDataObject = null;
             try {
                 serviceFunctionsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfsIID).get();
+                if (serviceFunctionsDataObject != null
+                        && serviceFunctionsDataObject.isPresent()) {
+                    sfs = serviceFunctionsDataObject.get();
+                    printTraceStop(LOG);
+                    return sfs;
+                } else {
+                    LOG.error("\n########## Could not find Service Functions");
+                    return null;
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            if (serviceFunctionsDataObject != null
-                    && serviceFunctionsDataObject.isPresent()) {
-                sfs = serviceFunctionsDataObject.get();
+                LOG.error("\n########## Could not read Service Functions from" +
+                        " DataStore");
+                printTraceStop(LOG);
+                return null;
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sfs;
     }
 
     protected boolean deleteAllServiceFunctions() {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
@@ -292,7 +317,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 

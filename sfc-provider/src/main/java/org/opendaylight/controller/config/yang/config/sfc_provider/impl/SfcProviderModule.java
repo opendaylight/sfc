@@ -22,6 +22,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -72,18 +73,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
 
         final SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
 
-        SfcProviderSfpDataListener sfcProviderSfpDataListener = new SfcProviderSfpDataListener();
         SfcProviderSnDataListener sfcProviderSnDataListener = new SfcProviderSnDataListener();
 
         final ListenerRegistration<DataChangeListener> snDataChangeListenerRegistration =
                 dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.snIID, sfcProviderSnDataListener, DataBroker.DataChangeScope.SUBTREE );
-
-        // ServiceFunctionPath
-        //final ListenerRegistration<DataChangeListener> sfpDataChangeListenerRegistration =
-        //        dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-        //                OpendaylightSfc.sfpIID, sfcProviderSfpDataListener, DataBroker.DataChangeScope.SUBTREE );
-
 
         //ServiceFunctionForwarder
         SfcProviderSffDataListener sfcProviderSffDataListener = new SfcProviderSffDataListener();
@@ -114,16 +108,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.sfpEntryIID, sfcProviderSfpEntryDataListener, DataBroker.DataChangeScope.BASE  );
 
-        // ServiceFunctions
-        //SfcProviderSfsDataListener sfcProviderSfsDataListener = new SfcProviderSfsDataListener();
-        //final ListenerRegistration<DataChangeListener> sfsDataChangeListenerRegistration =
-        //        dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfsIID, sfcProviderSfsDataListener);
-
-        // ServiceFunctionChains
-        //SfcProviderSfcDataListener sfcProviderSfcDataListener = new SfcProviderSfcDataListener();
-        //final ListenerRegistration<DataChangeListener> sfcDataChangeListenerRegistration =
-        //        dataBrokerService.registerDataChangeListener( OpendaylightSfc.sfcIID, sfcProviderSfcDataListener  );
-
 
         final BindingAwareBroker.RpcRegistration<ServiceFunctionService> sfRpcRegistration =
                 getRpcRegistryDependency()
@@ -144,22 +128,27 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         final class AutoCloseableSfc implements AutoCloseable {
 
             @Override
-            public void close() throws Exception {
+            public void close() {
                 sfEntryDataChangeListenerRegistration.close();
-                //sfsDataChangeListenerRegistration.close();
                 sfcEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();
                 snDataChangeListenerRegistration.close();
-                //sfpDataChangeListenerRegistration.close();
-                //sfcDataChangeListenerRegistration.close();
                 sffDataChangeListenerRegistration.close();
                 sfRpcRegistration.close();
                 sfcRpcRegistration.close();
                 snRpcRegistration.close();
 
-                //runtimeReg.close();
-                opendaylightSfc.close();
-                LOG.info("SFC provider (instance {}) torn down.", this);
+                try
+                {
+                    opendaylightSfc.close();
+                } catch (ExecutionException | InterruptedException e)
+                {
+                    LOG.error("\nFailed to close SFC Provider (instance {}) " +
+                            "cleanly", this);
+                }
+
+
+                LOG.info("SFC provider (instance {}) torn down", this);
             }
         }
 

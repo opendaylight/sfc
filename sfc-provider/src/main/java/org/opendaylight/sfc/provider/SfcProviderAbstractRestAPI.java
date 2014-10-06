@@ -8,6 +8,9 @@
 
 package org.opendaylight.sfc.provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,28 +26,62 @@ import java.util.Arrays;
  */
 abstract public class SfcProviderAbstractRestAPI implements Runnable {
     protected static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    protected String methodName = null;
-    protected Object[] parameters;
-    protected Class[] parameterTypes;
+    private static final Logger LOG = LoggerFactory.getLogger
+            (SfcProviderAbstractRestAPI.class);
+    private String methodName = null;
+    private Object[] parameters;
+
+    public String getMethodName()
+    {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName)
+    {
+        this.methodName = methodName;
+    }
+
+    public Object[] getParameters()
+    {
+        return parameters;
+    }
+
+    public void setParameters(Object[] parameters)
+    {
+        this.parameters = Arrays.copyOf(parameters, parameters.length);
+    }
+
+    public Class[] getParameterTypes()
+    {
+        return parameterTypes;
+    }
+
+    public void setParameterTypes(Class[] parameterTypes)
+    {
+        this.parameterTypes = Arrays.copyOf(parameterTypes, parameterTypes.length);
+    }
+
+    private Class[] parameterTypes;
 
     protected SfcProviderAbstractRestAPI(Object[] params, Class[] paramsTypes, String m) {
-        this.methodName = m;
+        setMethodName(m);
         this.parameters = new Object[params.length];
         this.parameterTypes = new Class[params.length];
-        this.parameters = Arrays.copyOf(params, params.length);
-        this.parameterTypes = Arrays.copyOf(paramsTypes, paramsTypes.length);
+        setParameters(params);
+        setParameterTypes(paramsTypes);
     }
 
     @Override
     public void run() {
         if (methodName != null) {
             Class<?> c = this.getClass();
-            Method method = null;
+            Method method;
             try {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 method.invoke(this, parameters);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
+                LOG.error("\nFailed to find proper REST method: {}",
+                        e.getMessage());
             }
         }
     }

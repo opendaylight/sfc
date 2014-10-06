@@ -86,7 +86,8 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                         LOG.error("\n***** Configuration file {} not found, passing *****\n", filename);
                         continue;
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOG.error("\n***** Configuration file {} could not be" +
+                                " read: {}", filename, e.getMessage());
                         break;
                     }
                     try {

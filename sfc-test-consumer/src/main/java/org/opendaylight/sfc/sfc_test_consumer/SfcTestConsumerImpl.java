@@ -8,15 +8,16 @@
 
 package org.opendaylight.sfc.sfc_test_consumer;
 
+import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
-
-import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
@@ -87,7 +88,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     private Boolean putSf(String name, String type,
                           String ipMgmt, String ipLocator, int portLocator) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
 
         // Build Locator Type (ip and port)
         IpAddress ipAddress = new IpAddress(ipLocator.toCharArray());
@@ -128,7 +129,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         } catch (Exception e) {
             LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
-            e.printStackTrace();
             return Boolean.FALSE;
         }
     }
@@ -137,7 +137,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
                             String ip,
                             List<String> sfList) {
 
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         PutServiceNodeInputBuilder input = new PutServiceNodeInputBuilder();
 
         input.setName(name)
@@ -161,7 +161,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         } catch (Exception e) {
             LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
-            e.printStackTrace();
             return Boolean.FALSE;
         }
     }
@@ -173,7 +172,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     private Boolean putChain(String name, List<SfcServiceFunction> sfList) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         PutServiceFunctionChainsInputBuilder input = new PutServiceFunctionChainsInputBuilder();
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
 
@@ -195,13 +194,13 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
                 }
                 return result.isSuccessful();
             } else {
-                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
+                LOG.error("\n####### {} result is NULL", Thread.currentThread()
+                        .getStackTrace()[1]);
                 return Boolean.FALSE;
             }
 
         } catch (Exception e) {
             LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
-            e.printStackTrace();
             return Boolean.FALSE;
         }
     }
@@ -214,7 +213,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     @Override
     public Boolean testAPutSf() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         return putSf("firewall-test", "firewall", "10.0.0.2", "192.168.0.2", 5050);
     }
 
@@ -226,7 +225,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     @Override
     public Boolean testAReadSf() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         ReadServiceFunctionInputBuilder input = new ReadServiceFunctionInputBuilder();
         input.setName("firewall-test");
 
@@ -252,7 +251,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     @Override
     public Boolean testADeleteSf() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         DeleteServiceFunctionInputBuilder input = new DeleteServiceFunctionInputBuilder();
         input.setName("firewall-test");
 
@@ -270,8 +269,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
                 LOG.warn("*****\ntestDeleteSf result is NULL");
             }
         } catch (Exception e) {
-            LOG.warn("Error occurred during testDeleteSf: " + e);
-            e.printStackTrace();
+            LOG.warn("Error occurred during testDeleteSf: " + e.getMessage());
         }
         return Boolean.FALSE;
     }
@@ -284,7 +282,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     @Override
     public Boolean testBPutSfs() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
 
         Boolean res = putSf("firewall-testB", "firewall", "10.0.0.101", "192.168.0.101", 5050);
         res = putSf("dpi-testB", "dpi", "10.0.0.102", "192.168.0.102", 5050) && res;
@@ -302,7 +300,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      */
     @Override
     public Boolean testBPutSfc() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
 
         //Put a service chain. We need to build a list of lists.
         PutServiceFunctionChainsInputBuilder putServiceFunctionChainsInputBuilder = new PutServiceFunctionChainsInputBuilder();
@@ -339,8 +337,8 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
             }
 
         } catch (Exception e) {
-            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
-            e.printStackTrace();
+            LOG.warn("\n####### {} Error occurred: {}",
+                    Thread.currentThread().getStackTrace()[1], e.getMessage());
             return Boolean.FALSE;
         }
 
@@ -348,19 +346,19 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
     @Override
     public Boolean testBReadSfc() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         return null;
     }
 
     @Override
     public Boolean testBDeleteSfc() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
         return null;
     }
 
     @Override
     public Boolean testCPutData() {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        //printTraceStart(LOG);
 
         // Service Functions (real, not abstract)
         Boolean res = putSf("firewall-101-1", "firewall", "10.3.1.101", "10.3.1.101", 10001);

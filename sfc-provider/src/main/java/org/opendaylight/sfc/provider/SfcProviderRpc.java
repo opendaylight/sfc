@@ -49,6 +49,9 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 
 /**
  * This class holds all RPCs methods for SFC Provider.
@@ -66,29 +69,16 @@ public class SfcProviderRpc implements ServiceFunctionService,
     private static final Logger LOG = LoggerFactory
             .getLogger(SfcProviderRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private SfcProviderRpc sfcRpcObj;
 
-    /*
-    public SfcProviderRpc () {
-        this.sfcRpcObj = this;
-    }
-    */
 
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();
     }
 
 
-    private ServiceFunctions buildServiceFunctions(List<ServiceFunction> list) {
-
-        ServiceFunctionsBuilder builder = new ServiceFunctionsBuilder();
-        builder.setServiceFunction(list);
-        return builder.build();
-    }
-
     @Override
     public Future<RpcResult<Void>> putServiceFunction(PutServiceFunctionInput input) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         LOG.info("\n####### Input: " + input);
 
         if (odlSfc.dataProvider != null) {
@@ -113,18 +103,17 @@ public class SfcProviderRpc implements ServiceFunctionService,
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
 
     @Override
     public Future<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         LOG.info("Input: " + input);
 
         if (odlSfc.dataProvider != null) {
-            String name = input.getName();
             ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
             InstanceIdentifier<ServiceFunction> sfIID;
             sfIID = InstanceIdentifier.builder(ServiceFunctions.class).
@@ -135,10 +124,12 @@ public class SfcProviderRpc implements ServiceFunctionService,
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.debug("Failed to readServiceFunction : {}",
+                        e.getMessage());
             }
             if (dataObject instanceof ServiceFunction) {
-                LOG.info("readServiceFunction Success: {}", ((ServiceFunction) dataObject).getName());
+                LOG.debug("readServiceFunction Success: {}",
+                        ((ServiceFunction) dataObject).getName());
                 ServiceFunction serviceFunction = (ServiceFunction) dataObject;
                 ReadServiceFunctionOutput readServiceFunctionOutput = null;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
@@ -146,22 +137,22 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
                         .setType(serviceFunction.getType());
                 readServiceFunctionOutput = outputBuilder.build();
-                LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+                printTraceStop(LOG);
                 return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>
                         getRpcResult(true, readServiceFunctionOutput, Collections.<RpcError>emptySet()));
             }
-            LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            printTraceStop(LOG);
             return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>getRpcResult(true, null, Collections.<RpcError>emptySet()));
         } else {
             LOG.warn("dataProvider is null");
-            LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            printTraceStop(LOG);
             return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>getRpcResult(true, null, Collections.<RpcError>emptySet()));
         }
     }
 
     @Override
     public Future<RpcResult<Void>> deleteAllServiceFunction() {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (odlSfc.dataProvider != null) {
 
             WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
@@ -172,14 +163,14 @@ public class SfcProviderRpc implements ServiceFunctionService,
         } else {
             LOG.warn("dataProvider is null");
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
 
     @Override
     public Future<RpcResult<Void>> deleteServiceFunction(DeleteServiceFunctionInput input) {
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         LOG.info("Input: " + input);
         if (odlSfc.dataProvider != null) {
 
@@ -188,7 +179,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sfsIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("Failed to deleteServiceFunction");
+                return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+                        Collections.<RpcError>emptySet()));
             }
             if (dataObject instanceof ServiceFunctions) {
 
@@ -202,20 +195,17 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         sfIID);
                 writeTx.commit();
             }
-
-
-
         } else {
             LOG.warn("dataProvider is null");
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
 
     @Override
     public Future<RpcResult<Void>> putServiceFunctionChains(PutServiceFunctionChainsInput input) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionChainsBuilder builder = new ServiceFunctionChainsBuilder();
         builder = builder.setServiceFunctionChain(input.getServiceFunctionChain());
 
@@ -236,7 +226,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
     @Override
     public Future<RpcResult<Void>> putServiceNode(PutServiceNodeInput input) {
-        LOG.info("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         LOG.info("\n####### Input: " + input);
 
         if (odlSfc.dataProvider != null) {
@@ -258,7 +248,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
@@ -270,7 +260,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
             if (chain != null) {
                 List<SfcServiceFunction> sfRefList = chain.getSfcServiceFunction();
-                LOG.info("\n********** sfRefList ***********\n" + sfRefList);
+                LOG.debug("\n********** sfRefList ***********\n" + sfRefList);
                 if (sfRefList != null && sfRefList.size() > 0) {
 
                     ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
@@ -279,7 +269,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
                     Random rand = new Random(); // temporarily
                     for (SfcServiceFunction ref : sfRefList) {
                         List<ServicePathHop> instanceList = findInstancesByType(ref.getType());
-                        LOG.info("\n********** instanceList ***********\n" + instanceList);
+                        LOG.debug("\n********** instanceList ***********\n" +
+                                instanceList);
                         if (instanceList != null && instanceList.size() > 0) {
                             // select instance
                             // for now, takes an element randomly
@@ -333,16 +324,16 @@ public class SfcProviderRpc implements ServiceFunctionService,
         Optional<ServiceFunctionChain> dataObject = null;
         try {
             dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, iid).get();
+            if (dataObject != null) {
+                return dataObject.get();
+            } else {
+                LOG.error("\nFailed to findServiceFunctionChain");
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOG.error("\nFailed to findServiceFunctionChain: {}", e.getMessage());
+            return null;
         }
-
-        if (dataObject.get() instanceof ServiceFunctionChain) {
-            return dataObject.get();
-        } else {
-            throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunctionChain).");
-        }
-
     }
 
     // TODO this is duplicated in SFCSftMapper (and used only there, not here; better to DRY
@@ -357,14 +348,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
         Optional<ServiceFunction> dataObject = null;
         try {
             dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, iid).get();
+            if (dataObject != null) {
+                return dataObject.get();
+            } else {
+                LOG.error("\nFailed to findServiceFunction");
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        if (dataObject.get() instanceof ServiceFunction) {
-            return dataObject.get();
-        } else {
-            throw new IllegalStateException("Wrong dataObject instance (expected ServiceFunction).");
+            LOG.error("\nFailed to findServiceFunction: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -373,15 +365,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
         SfcSftMapper mapper = new SfcSftMapper(odlSfc);
         List<ServiceFunction> sfList = mapper.getSfList(sfType);
-        short hop_count = 0;
+        short hopCount = 0;
         for(ServiceFunction sf : sfList){
             ServicePathHopBuilder builder = new ServicePathHopBuilder();
-            ret.add(builder.setHopNumber(hop_count)
+            ret.add(builder.setHopNumber(hopCount)
                     .setServiceFunctionName(sf.getName())
                     .setServiceFunctionForwarder(sf.getSfDataPlaneLocator()
                             .get(0).getServiceFunctionForwarder())
                     .build());
-            hop_count++;
+            hopCount++;
         }
         return ret;
     }

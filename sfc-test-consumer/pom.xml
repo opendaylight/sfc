@@ -93,6 +93,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-provider</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.yangtools.model</groupId>
             <artifactId>ietf-inet-types</artifactId>
             <version>${ietf.model.version}</version>

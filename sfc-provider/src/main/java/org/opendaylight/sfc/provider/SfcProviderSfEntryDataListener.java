@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 
 /**
  * This class gets called whenever there is a change to
@@ -41,8 +44,10 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
+        printTraceStart(LOG);
+
+        // SF ORIGINAL
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
@@ -64,11 +69,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
-
-                //Object[] sfParams = {originalServiceFunction};
-                //Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getDeleteServiceFunctionFromForwarder(sfParams, sfParamsTypes ));
 
                 Object[] functionParams = {originalServiceFunction};
                 Class[] functionParamsTypes = {ServiceFunction.class};
@@ -92,10 +92,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
 
-                //Object[] sfParams = {createdServiceFunction};
-                //Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getCreateServiceForwarderAPI(sfParams, sfParamsTypes));
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
                             createdServiceFunction.getType(), createdServiceFunction.getName());
             }
@@ -115,20 +111,12 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] sfParams = {updatedServiceFunction};
                 Class[] sfParamsTypes = {ServiceFunction.class};
-                //odlSfc.executor.execute(SfcProviderServiceForwarderAPI
-                //        .getUpdateServiceForwarderAPI(sfParams, sfParamsTypes ));
 
                 odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));
             }
         }
-        // Debug and Unit Test. We trigger the unit test code by adding a service function to the datastore.
-        if (SfcProviderDebug.ON) {
-            SfcProviderDebug.ON = false;
-            SfcProviderUnitTest.sfcProviderUnitTest(SfcProviderRpc.getSfcProviderRpc());
-        }
-
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
 }

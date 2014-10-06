@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 
 /**
  * This class gets called whenever there is a change to
@@ -40,62 +43,70 @@ public class SfcProviderSfcDataListener implements DataChangeListener {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
 
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
-        LOG.info("\n########## getUpdatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionChains) {
                 ServiceFunctionChains updatedServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
-                List<ServiceFunctionChain>  serviceFunctionChainList = updatedServiceFunctionChains.getServiceFunctionChain();
+                List<ServiceFunctionChain>  serviceFunctionChainList =
+                        updatedServiceFunctionChains.getServiceFunctionChain();
                 for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
-                    LOG.info("\n########## Updated ServiceFunctionChain name: {}", serviceFunctionChain.getName());
-                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
-                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
-                        LOG.info("\n########## Updated ServiceFunction name: {}", sfcServiceFunction.getName());
+                    LOG.debug("\n########## Updated ServiceFunctionChain: " +
+                            "{}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  sfcServiceFunctionList =
+                            serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+                        LOG.debug("\n########## Updated ServiceFunction::" +
+                                " {}", sfcServiceFunction.getName());
                     }
                 }
             }
         }
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
-        LOG.info("\n########## getOriginalConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionChains) {
                 ServiceFunctionChains originalServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
-                List<ServiceFunctionChain>  serviceFunctionChainList = originalServiceFunctionChains.getServiceFunctionChain();
+                List<ServiceFunctionChain>  serviceFunctionChainList =
+                        originalServiceFunctionChains.getServiceFunctionChain();
                 for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
-                    LOG.info("\n########## Original ServiceFunctionChain name: {}", serviceFunctionChain.getName());
-                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
-                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
-                        LOG.info("\n########## Original ServiceFunction name: {}", sfcServiceFunction.getName());
+                    LOG.debug("\n########## Original ServiceFunctionChain: " +
+                            "{}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  sfcServiceFunctionList =
+                            serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+                        LOG.debug("\n########## Original ServiceFunction: " +
+                                "{}", sfcServiceFunction.getName());
                     }
                 }
             }
         }
 
         Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
-        LOG.info("\n########## getCreatedConfigurationData");
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionChains) {
                 ServiceFunctionChains createdServiceFunctionChains = (ServiceFunctionChains) entry.getValue();
-                List<ServiceFunctionChain>  serviceFunctionChainList = createdServiceFunctionChains.getServiceFunctionChain();
+                List<ServiceFunctionChain>  serviceFunctionChainList =
+                        createdServiceFunctionChains.getServiceFunctionChain();
                 for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
-                    LOG.info("\n########## Created ServiceFunctionChain name: {}", serviceFunctionChain.getName());
-                    List<SfcServiceFunction>  SfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
-                    for (SfcServiceFunction sfcServiceFunction : SfcServiceFunctionList) {
-                        LOG.info("\n########## Created ServiceFunction name: {}", sfcServiceFunction.getName());
+                    LOG.debug("\n########## Created ServiceFunctionChain: " +
+                            "{}", serviceFunctionChain.getName());
+                    List<SfcServiceFunction>  sfcServiceFunctionList =
+                            serviceFunctionChain.getSfcServiceFunction();
+                    for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+                        LOG.debug("\n########## Created ServiceFunction: " +
+                                " {}", sfcServiceFunction.getName());
                     }
                 }
             }
         }
-
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 }

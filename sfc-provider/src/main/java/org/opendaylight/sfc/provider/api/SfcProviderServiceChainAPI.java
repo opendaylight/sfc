@@ -12,13 +12,10 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
@@ -29,6 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 
 /**
  * This class has the APIs to operate on the ServiceFunctionChain
@@ -86,55 +87,61 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceChainAPI(params, paramsTypes, "addChainToChainState");
     }
 
-    protected boolean putServiceFunctionChain(ServiceFunctionChain sfc) {
+    protected boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class).
-                    child(ServiceFunctionChain.class, sfc.getKey()).toInstance();
+            InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
+                    InstanceIdentifier.builder(ServiceFunctionChains.class)
+                            .child(ServiceFunctionChain.class,
+                                    serviceFunctionChain.getKey())
+                            .toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    sfcEntryIID, sfc, true);
+                    sfcEntryIID, serviceFunctionChain, true);
             writeTx.commit();
-
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         ServiceFunctionChain sfc = null;
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
-        ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
+        ServiceFunctionChainKey serviceFunctionChainKey =
+                new ServiceFunctionChainKey(serviceFunctionChainName);
         sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
 
         if (dataBroker != null) {
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<ServiceFunctionChain> serviceFunctionChainDataObject = null;
+            Optional<ServiceFunctionChain> serviceFunctionChainDataObject;
             try {
                 serviceFunctionChainDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcIID).get();
+                if (serviceFunctionChainDataObject != null
+                        && serviceFunctionChainDataObject.isPresent()) {
+                    sfc = serviceFunctionChainDataObject.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            if (serviceFunctionChainDataObject != null
-                    && serviceFunctionChainDataObject.isPresent()) {
-                sfc = serviceFunctionChainDataObject.get();
+                LOG.error("Could not read Service Function Chain " +
+                        "configuration {}", serviceFunctionChainName);
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sfc;
     }
 
     protected boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
-        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+        printTraceStart(LOG);
+        ServiceFunctionChainKey serviceFunctionChainKey =
+                new ServiceFunctionChainKey(serviceFunctionChainName);
+        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, serviceFunctionChainKey).toInstance();
 
         if (dataBroker != null) {
@@ -144,16 +151,17 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
+            InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                    InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfcsIID, sfcs);
@@ -161,75 +169,85 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected ServiceFunctionChains readAllServiceFunctionChains() {
         ServiceFunctionChains sfcs = null;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
+        printTraceStart(LOG);
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
+                .builder(ServiceFunctionChains.class).toInstance();
 
-        if (odlSfc.getDataProvider() != null) {
+        if (dataBroker != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunctionChains> serviceFunctionChainsDataObject = null;
             try {
-                serviceFunctionChainsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
+                serviceFunctionChainsDataObject = readTx
+                        .read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
+                if (serviceFunctionChainsDataObject != null
+                        && serviceFunctionChainsDataObject.isPresent()) {
+                    sfcs = serviceFunctionChainsDataObject.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.error("Could not read Service Function Chains " +
+                        "configuration");
             }
-            if (serviceFunctionChainsDataObject != null
-                    && serviceFunctionChainsDataObject.isPresent()) {
-                sfcs = serviceFunctionChainsDataObject.get();
-            }
+
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return sfcs;
     }
 
     protected boolean deleteAllServiceFunctionChains() {
         boolean ret = false;
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (odlSfc.getDataProvider() != null) {
+        printTraceStart(LOG);
+        if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
+            InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                    InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
 
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfcsIID);
             writeTx.commit();
 
             ret = true;
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
         return ret;
     }
 
     protected void addChainToChainState (ServiceFunctionChain serviceFunctionChain) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new ServiceFunctionChainStateKey(serviceFunctionChain.getName());
-        InstanceIdentifier<ServiceFunctionChainState> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
+        printTraceStart(LOG);
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
+                ServiceFunctionChainStateKey(serviceFunctionChain.getName());
+        InstanceIdentifier<ServiceFunctionChainState> sfcoIID =
+                InstanceIdentifier.builder(ServiceFunctionChainsState.class)
                 .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey).build();
 
         ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
         serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
 
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                 sfcoIID, serviceFunctionChainStateBuilder.build(), true);
         writeTx.commit();
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
     }
 
     public static void addPathToServiceFunctionChainState (ServiceFunctionChain serviceFunctionChain,
                                                      ServiceFunctionPath serviceFunctionPath) {
 
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new ServiceFunctionChainStateKey(serviceFunctionChain.getName());
-        InstanceIdentifier<ServiceFunctionChainState> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
+        printTraceStart(LOG);
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
+                ServiceFunctionChainStateKey(serviceFunctionChain.getName());
+        InstanceIdentifier<ServiceFunctionChainState> sfcoIID = InstanceIdentifier
+                .builder(ServiceFunctionChainsState.class)
                 .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey).build();
 
-        ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
+        ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new
+                ServiceFunctionChainStateBuilder();
         ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
         sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
         serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathArrayList);
@@ -239,36 +257,43 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                 sfcoIID, serviceFunctionChainStateBuilder.build(), true);
         writeTx.commit();
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStop(LOG);
 
 
     }
-
+/*
     private InstanceIdentifier<SfcServiceFunction> getServiceFunctionIIDFromChain (ServiceFunctionChain sfc, ServiceFunction sf) {
         SfcServiceFunctionKey serviceFunctionKey = new SfcServiceFunctionKey(sf.getName());
-        InstanceIdentifier<SfcServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+        InstanceIdentifier<SfcServiceFunction> sfIID = InstanceIdentifier
+                .builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, sfc.getKey())
                 .child(SfcServiceFunction.class, serviceFunctionKey).build();
 
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
         Optional<SfcServiceFunction> serviceFunctionObject = null;
         try {
             serviceFunctionObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
+            if (serviceFunctionObject != null) {
+                serviceFunctionObject.get();
+                printTraceStop(LOG);
+                return sfIID;
+
+            } else {
+                printTraceStop(LOG);
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (serviceFunctionObject.get() instanceof SfcServiceFunction) {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return sfIID;
-        } else {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+            LOG.error("\n########## Failed to get Service Function IID " +
+                            "from Chain: {}",
+                    e.getMessage());
+            printTraceStop(LOG);
             return null;
         }
     }
 
-
+*/
     public static ServiceFunctionChains getServiceFunctionChainsRef () {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionChains> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
@@ -276,21 +301,23 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         Optional<ServiceFunctionChains> serviceFunctionChainsObject = null;
         try {
             serviceFunctionChainsObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
+            if (serviceFunctionChainsObject != null) {
+                printTraceStop(LOG);
+                return serviceFunctionChainsObject.get();
+            } else {
+                LOG.error("\n########## Failed to get Service Function Chains reference: {}",
+                        Thread.currentThread().getStackTrace()[1]);
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (serviceFunctionChainsObject.get() instanceof ServiceFunctionChains) {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return serviceFunctionChainsObject.get();
-        } else {
             LOG.error("\n########## Failed to get Service Function Chains reference: {}",
-                    Thread.currentThread().getStackTrace()[1]);
+                    e.getMessage());
             return null;
         }
     }
 
     public static ServiceFunctionChainsState getServiceFunctionChainsStateRef () {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
 
@@ -298,15 +325,17 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         Optional<ServiceFunctionChainsState> serviceFunctionChainStateObject = null;
         try {
             serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcsIID).get();
+            if (serviceFunctionChainStateObject != null) {
+                printTraceStop(LOG);
+                return serviceFunctionChainStateObject.get();
+            } else {
+                LOG.error("\n########## Failed to get Service Function Chains reference: {}",
+                        Thread.currentThread().getStackTrace()[1]);
+                return null;
+            }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (serviceFunctionChainStateObject.get() instanceof ServiceFunctionChainsState) {
-            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-            return serviceFunctionChainStateObject.get();
-        } else {
             LOG.error("\n########## Failed to get Service Function Chains reference: {}",
-                    Thread.currentThread().getStackTrace()[1]);
+                    e.getMessage());
             return null;
         }
     }

@@ -45,6 +45,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 .accept("application/json")
                 .get(ClientResponse.class);
 
+        if (getClientResponse.getStatus() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + getClientResponse.getStatus());
+        }
 
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
@@ -53,12 +57,21 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 .resource("http://localhost:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
+        if (putClientRemoteResponse.getStatus() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + putClientRemoteResponse.getStatus());
+        }
+
         putClientRemoteResponse.close();
 
         ClientResponse putClientLocalResponse= client
                 .resource("http://localhost:5000/paths").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
+        if (putClientLocalResponse.getStatus() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + putClientLocalResponse.getStatus());
+        }
         putClientLocalResponse.close();
 
     }

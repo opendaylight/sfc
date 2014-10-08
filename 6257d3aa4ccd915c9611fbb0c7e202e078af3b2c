@@ -1,0 +1,7 @@
+Code-Review+2: Konstantin Blagov <kblagov@cisco.com>
+Verified+1: jenkins-sfc <jenkins-sfc@opendaylight.org>
+Submitted-by: Konstantin Blagov <kblagov@cisco.com>
+Submitted-at: Wed, 08 Oct 2014 12:58:34 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/11803
+Project: sfc
+Branch: refs/heads/stable/helium

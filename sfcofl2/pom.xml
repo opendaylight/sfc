@@ -6,14 +6,14 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-Helium</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfcofl2</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-Helium</version>
     <packaging>bundle</packaging>
     <properties>
-        <openflowplugin.version>0.0.3-SNAPSHOT</openflowplugin.version>
+        <openflowplugin.version>0.0.3-Helium</openflowplugin.version>
     </properties>
 
     <dependencies>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-provider</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1-Helium</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>

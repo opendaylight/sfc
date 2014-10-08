@@ -10,7 +10,7 @@
    <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-Helium</version>
   </parent>
    <!--
     Necessary TODO: Hookup your parent pom here, else you will not get necessary versions,
@@ -21,18 +21,18 @@
    <artifactId>features-sfc</artifactId>
    <groupId>org.opendaylight.sfc</groupId>
    <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
-   <version>1.0-SNAPSHOT</version>
+   <version>1.0-Helium</version>
    -->
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
       <!-- Optional TODO: Move these properties to your parent pom and possibly 
             DependencyManagement section of your parent pom -->
-      <branding.version>1.0.0-SNAPSHOT</branding.version>
-      <karaf.resources.version>1.4.2-SNAPSHOT</karaf.resources.version>
+      <branding.version>1.0.0-Helium</branding.version>
+      <karaf.resources.version>1.4.2-Helium</karaf.resources.version>
       <karaf.version>3.0.1</karaf.version>
-      <feature.test.version>0.6.2-SNAPSHOT</feature.test.version>
-      <karaf.empty.version>1.4.2-SNAPSHOT</karaf.empty.version>
+      <feature.test.version>0.6.2-Helium</feature.test.version>
+      <karaf.empty.version>1.4.2-Helium</karaf.empty.version>
       <surefire.version>2.16</surefire.version>
    </properties>
    <dependencies>
@@ -50,21 +50,21 @@
         <dependency>
           <groupId>org.opendaylight.yangtools</groupId>
           <artifactId>features-yangtools</artifactId>
-          <version>0.6.2-SNAPSHOT</version>
+          <version>0.6.2-Helium</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>features-mdsal</artifactId>
-          <version>1.1-SNAPSHOT</version>
+          <version>1.1-Helium</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.openflowplugin</groupId>
           <artifactId>features-openflowplugin</artifactId>
-          <version>0.0.3-SNAPSHOT</version>
+          <version>0.0.3-Helium</version>
           <classifier>features</classifier>
           <type>xml</type>
         </dependency>
@@ -72,21 +72,21 @@
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>features-yangtools</artifactId>
-      <version>0.6.2-SNAPSHOT</version>
+      <version>0.6.2-Helium</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>features-mdsal</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.1-Helium</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>features-restconf</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.1-Helium</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>

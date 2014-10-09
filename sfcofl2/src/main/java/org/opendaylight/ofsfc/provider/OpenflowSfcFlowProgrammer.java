@@ -147,7 +147,7 @@ public class OpenflowSfcFlowProgrammer {
     private String sffNodeName;
 
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
-    private static final int QUEUE_SIZE = 16;
+    private static final int QUEUE_SIZE = 50;
     private static final int ASYNC_THREAD_POOL_CORE_SIZE = 1;
     private static final int ASYNC_THREAD_POOL_MAX_SIZE = 1;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
@@ -259,6 +259,8 @@ public class OpenflowSfcFlowProgrammer {
 
                 LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
 
+                boolean isIpMatch = false;
+                boolean isPortMatch = false;
                 //
                 // Create the 5-tuple matching criteria
 
@@ -268,33 +270,58 @@ public class OpenflowSfcFlowProgrammer {
                 ethTypeBuilder.setType(new EtherType(0x0800L));
                 EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
                 ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-
-                Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(longToIp(srcIp, srcMask)));
-                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(longToIp(dstIp, dstMask)));
-
-                IpMatchBuilder ipmatch = new IpMatchBuilder();
-                ipmatch.setIpProtocol((short) protocol);
-
                 MatchBuilder match = new MatchBuilder();
                 match.setEthernetMatch(ethMatchBuilder.build());
-                match.setLayer3Match(ipv4MatchBuilder.build());
-                match.setIpMatch(ipmatch.build());
 
-                if (protocol == 6) {
-                    TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
-                    // There must be a bug in
-                    // setTcpSource/DestinationPort(), because its
-                    // looking at the upper 2 bytes of the port and thinks
-                    // its out of range
-                    tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
-                    tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
-                    match.setLayer4Match(tcpMatch.build());
-                } else {
-                    UdpMatchBuilder udpMatch = new UdpMatchBuilder();
-                    udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
-                    udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
-                    match.setLayer4Match(udpMatch.build());
+                Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+                if (srcIp != null) {
+                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(longToIp(srcIp, srcMask)));
+                    isIpMatch = true;
+                }
+                if (dstIp != null) {
+                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(longToIp(dstIp, dstMask)));
+                    isIpMatch = true;
+                }
+                if (isIpMatch == true) {
+                    match.setLayer3Match(ipv4MatchBuilder.build());
+                }
+
+                IpMatchBuilder ipmatch = new IpMatchBuilder();
+                if (protocol != 0) {
+                    ipmatch.setIpProtocol((short) protocol);
+                    match.setIpMatch(ipmatch.build());
+
+                    if (protocol == 6) {
+                        TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
+                        // There must be a bug in
+                        // setTcpSource/DestinationPort(), because its
+                        // looking at the upper 2 bytes of the port and thinks
+                        // its out of range
+                        if (srcPort != 0) {
+                            tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                            isPortMatch = true;
+                        }
+                        if (dstPort != 0) {
+                            tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
+                            isPortMatch = true;
+                        }
+                        if (isPortMatch == true) {
+                            match.setLayer4Match(tcpMatch.build());
+                        }
+                    } else {
+                        UdpMatchBuilder udpMatch = new UdpMatchBuilder();
+                        if (srcPort != 0) {
+                            udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                            isPortMatch = true;
+                        }
+                        if (dstPort != 0) {
+                            udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
+                            isPortMatch = true;
+                        }
+                        if (isPortMatch == true) {
+                            match.setLayer4Match(udpMatch.build());
+                        }
+                    }
                 }
 
                 //
@@ -508,7 +535,7 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(srcMac));
-                ethernetMatch.setEthernetType(ethtype.setType(type).build());
+                // ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 match.setEthernetMatch(ethernetMatch.build());
 
@@ -731,7 +758,7 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
                 EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
                 EtherType type = new EtherType(0x0800L);
-                ethmatch.setEthernetType(ethtype.setType(type).build());
+                // ethmatch.setEthernetType(ethtype.setType(type).build());
 
                 match.setEthernetMatch(ethmatch.build());
                 // Create the Actions
@@ -857,8 +884,7 @@ public class OpenflowSfcFlowProgrammer {
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
                 ethDestinationBuilder.setAddress(new MacAddress(dstMac));
-
-                //ethernetMatch.setEthernetType(ethtype.setType(type).build());
+                // ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());
 

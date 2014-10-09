@@ -38,6 +38,9 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowAclDataListener.class);
     private static final OpenflowSfcRenderer odlSfc = OpenflowSfcRenderer.getOpendaylightSfcObj();
 
+    private static final short DEFAULT_MASK = 32;
+    public static final String SUBNET_MASK = "/";
+
     public OpenflowAclDataListener(DataBroker dataBroker) {
         setDataBroker(dataBroker);
         setIID(SfcInstanceIdentifierUtils.createServiceFunctionAclsPath());
@@ -94,6 +97,8 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
         AceIpv4 aceIpv4;
         Short srcPort = 0;
         Short dstPort = 0;
+        Short srcMask = 0;
+        Short dstMask = 0;
         String srcIpAddress = null;
         String dstIpAddress = null;
         byte protocol = (byte) 0;
@@ -113,9 +118,23 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
         if (aceIpv4.getSourceIpv4Address() != null) {
             srcIpAddress = aceIpv4.getSourceIpv4Address().getValue();
+            if (srcIpAddress.contains(SUBNET_MASK)) {
+                String[] parts = srcIpAddress.split(SUBNET_MASK);
+                srcIpAddress = parts[0];
+                srcMask = Short.parseShort(parts[1]);
+            } else {
+                srcMask = DEFAULT_MASK;
+            }
         }
         if (aceIpv4.getDestinationIpv4Address() != null) {
             dstIpAddress = aceIpv4.getDestinationIpv4Address().getValue();
+            if (dstIpAddress.contains(SUBNET_MASK)) {
+                String[] parts = dstIpAddress.split(SUBNET_MASK);
+                dstIpAddress = parts[0];
+                dstMask = Short.parseShort(parts[1]);
+            } else {
+                dstMask = DEFAULT_MASK;
+            }
         }
 
         if (aceIp != null) {
@@ -134,8 +153,8 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
         for (ServicePathHop servicePathHop : servicePathHopList) {
 
             flowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
-            flowProgrammer.configureClassificationFlow(srcIpAddress, (short) 32, dstIpAddress, (short) 32, srcPort,
-                    dstPort, protocol, pathId, isAddFlow);
+            flowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort, dstPort,
+                    protocol, pathId, isAddFlow);
         }
     }
 

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.0.1-Helium</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfclisp</artifactId>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>mappingservice.api</artifactId>
-            <version>1.1.11-Helium</version>
+            <version>1.1.12-SNAPSHOT</version>
         </dependency>
         
         <dependency>

@@ -128,6 +128,8 @@ public class OpenflowSfcFlowProgrammer {
     // TODO check how many sfpid's there can be
 
     public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", 16);
+    public static final BigInteger METADATA_BASE_MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+    public static final BigInteger COOKIE_SCF_BASE = new BigInteger("1000000", 16);
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
     private static final short TABLE_INDEX_INGRESS = 1;
@@ -192,8 +194,20 @@ public class OpenflowSfcFlowProgrammer {
         this.tableBase = tableBase;
     }
 
-    public static BigInteger getMetadataSFP(long sfpid) {
-        return (new BigInteger("FFFF", 16).and(BigInteger.valueOf(sfpid)));
+    public static BigInteger getMetadataSFP(long sfpId) {
+        return (BigInteger.valueOf(sfpId).and(new BigInteger("FFFF", 16)));
+    }
+
+    public static BigInteger getCookieSFP(long sfpId) {
+        return COOKIE_SCF_BASE.add(new BigInteger("0120000", 16)).add(BigInteger.valueOf(sfpId));
+    }
+
+    public static BigInteger getCookieIngress(long vlanId) {
+        return COOKIE_SCF_BASE.add(new BigInteger("0130000", 16)).add(BigInteger.valueOf(vlanId));
+    }
+
+    public static BigInteger getCookieDefault(int tableId) {
+        return COOKIE_SCF_BASE.add(new BigInteger("0100000", 16)).add(BigInteger.valueOf(tableId));
     }
 
     /**
@@ -333,7 +347,7 @@ public class OpenflowSfcFlowProgrammer {
                 // value
                 WriteMetadataBuilder wmb = new WriteMetadataBuilder();
                 wmb.setMetadata(getMetadataSFP(sfpId));
-                wmb.setMetadataMask(METADATA_MASK_SFP_MATCH);
+                wmb.setMetadataMask(METADATA_BASE_MASK);
 
                 InstructionBuilder wmbIb = new InstructionBuilder();
                 wmbIb.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(wmb.build()).build());
@@ -367,7 +381,7 @@ public class OpenflowSfcFlowProgrammer {
                         protocol, sfpId))));
                 aclFlow.setTableId(getTableId(TABLE_INDEX_CLASSIFICATION));
                 aclFlow.setFlowName("acl");
-                BigInteger cookieValue = new BigInteger("10", 10);
+                BigInteger cookieValue = getCookieSFP(sfpId);
                 aclFlow.setCookie(new FlowCookie(cookieValue));
                 aclFlow.setCookieMask(new FlowCookie(cookieValue));
                 aclFlow.setContainerName(null);
@@ -450,7 +464,7 @@ public class OpenflowSfcFlowProgrammer {
                 defNextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(TABLE_INDEX_NEXT_HOP))));
                 defNextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
                 defNextHopFlow.setFlowName("next_Hop_Default_Flow");
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = getCookieDefault(TABLE_INDEX_NEXT_HOP);
                 defNextHopFlow.setCookie(new FlowCookie(cookieValue));
                 defNextHopFlow.setCookieMask(new FlowCookie(cookieValue));
                 defNextHopFlow.setContainerName(null);
@@ -583,7 +597,7 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(sfpId, srcMac, dstMac, dstVlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
                 nextHopFlow.setFlowName("nextHop");
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = getCookieSFP(sfpId);
                 nextHopFlow.setCookie(new FlowCookie(cookieValue));
                 nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
                 nextHopFlow.setContainerName(null);
@@ -679,7 +693,7 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setFlowName("ingress_flow"); // should this name
                 // be
                 // unique??
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = getCookieIngress(vlan);
                 nextHopFlow.setCookie(new FlowCookie(cookieValue));
                 nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
                 nextHopFlow.setContainerName(null);
@@ -809,7 +823,7 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setFlowName("default_flow ");
                 // be
                 // unique??
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = getCookieSFP(sfpId);
                 nextHopFlow.setCookie(new FlowCookie(cookieValue));
                 nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
                 nextHopFlow.setContainerName(null);

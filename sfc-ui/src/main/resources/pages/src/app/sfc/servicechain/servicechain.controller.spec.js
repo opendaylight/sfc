@@ -1,7 +1,7 @@
 define(['app/sfc/sfc.test.module.loader'], function (sfc) {
 
   ddescribe('SFC app', function () {
-    var rootScope, scope, state, stateParams, modalInstance;
+    var rootScope, scope, state, stateParams, modalInstance, compile;
     var serviceFunctionSvcMock, serviceChainSvcMock, servicePathSvcMock;
     var modalDeleteSvcMock, modalSfNameSvcMock, modalSfpInstantiateSvc, modalInfoSvcMock, modalErrorSvcMock;
     var exampleData = {};
@@ -90,7 +90,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
     beforeEach(angular.mock.module('app.common.layout'));
     beforeEach(angular.mock.module('app.sfc'));
 
-    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope, $templateCache) {
+    beforeEach(angular.mock.inject(function ($controller, $q, $state, $stateParams, $rootScope, $compile) {
       rootScope = $rootScope;
       scope = $rootScope.$new();
       state = $state;
@@ -102,6 +102,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           then: jasmine.createSpy('modalInstance.result.then')
         }
       };
+      compile = $compile;
     }));
 
     beforeEach(angular.mock.inject(function ($controller) {
@@ -111,7 +112,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
     describe('servicechain.controller', function () {
 
       describe("serviceChainCtrl", function () {
-        var createServiceChainCtrl;
+        var createServiceChainCtrl /*,compileNgTable*/;
 
         beforeEach(angular.mock.inject(function ($controller) {
           createServiceChainCtrl = function () {
@@ -120,7 +121,52 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
               ModalDeleteSvc: modalDeleteSvcMock, ModalInfoSvc: modalInfoSvcMock, ModalErrorSvc: modalErrorSvcMock,
               ModalSfNameSvc: modalSfNameSvcMock, ModalSfpInstantiateSvc: modalSfpInstantiateSvc});
           };
+
+//          compileNgTable = function () {
+//            var element = compile('<table ng-table="tableParams"></table>')(scope);
+//            scope.$digest();
+//            console.log(element);
+//          };
         }));
+
+        it("ensure that scope.tableParamsSfType are set", function () {
+          createServiceChainCtrl();
+          expect(scope.tableParamsSfType).toBeDefined();
+          expect(scope.tableParamsSfType.getData).toBeDefined();
+          expect(scope.tableParamsSfType.$params).toBeDefined();
+        });
+
+        it("ensure that scope.tableParams are set", function () {
+          createServiceChainCtrl();
+          expect(scope.tableParams).toBeDefined();
+          expect(scope.tableParams.getData).toBeDefined();
+          expect(scope.tableParams.$params).toBeDefined();
+        });
+
+        it("ensure that this.sfcsWatcherRegistered variable is defined", function () {
+          var thisCtrl = createServiceChainCtrl();
+          expect(thisCtrl.sfcsWatcherRegistered).toBeDefined();
+        });
+
+        it("ensure that this.registerSfcsWatcher function is defined and registers watchCollection on sfcs", function () {
+          spyOn(scope, '$watchCollection').andCallThrough();
+          var thisCtrl = createServiceChainCtrl();
+          scope.tableParams.settings().$scope = scope;
+          expect(thisCtrl.registerSfcsWatcher).toEqual(jasmine.any(Function));
+          expect(scope.$watchCollection).toHaveBeenCalledWith('sfcs', jasmine.any(Function));
+
+          //test watchCollection with valid data
+          spyOn(scope.tableParams, 'total').andCallThrough();
+          spyOn(scope.tableParams, 'reload').andCallThrough();
+          scope.sfcs = exampleData.sfcs;
+          scope.$digest();
+          expect(scope.tableParams.total).toHaveBeenCalledWith(1);
+          expect(scope.tableParams.reload).toHaveBeenCalled();
+
+          //test watchCollection with undefined
+          scope.sfcs = undefined;
+          scope.$digest();
+        });
 
         it("ensure that scope.effectMe object is initialized", function () {
           createServiceChainCtrl();
@@ -133,11 +179,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.sfcs).toBeDefined();
         });
 
-        it("ensure that scope.sortableOptions variable is initialized", function () {
+        it("ensure that scope.sortableOptions object is properly initialized", function () {
           createServiceChainCtrl();
           expect(scope.sortableOptions).toBeDefined();
+          expect(scope.sortableOptions.start).toEqual(jasmine.any(Function));
+          expect(scope.sortableOptions.helper).toEqual(jasmine.any(Function));
+          expect(scope.sortableOptions.update).toEqual(jasmine.any(Function));
         });
-
 
         it("should call get Service Functions", function () {
           spyOn(serviceFunctionSvcMock, 'getArray').andCallThrough();
@@ -309,6 +357,17 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         it("ensure that scope.data is initialized", function () {
           createServiceChainCreateCtrl();
           expect(scope.data).toBeDefined();
+        });
+
+        it("this.symmetricToBoolean should convert symmetric string to bool", function () {
+          var thisCtrl = createServiceChainCreateCtrl();
+          exampleData.sfcs[0].symmetric = 'true';
+          thisCtrl.symmetricToBoolean(exampleData.sfcs[0]);
+          expect(exampleData.sfcs[0].symmetric === true).toBeTruthy();
+          exampleData.sfcs[0].symmetric = 'false';
+          thisCtrl.symmetricToBoolean(exampleData.sfcs[0]);
+          expect(exampleData.sfcs[0].symmetric === true).toBeFalsy();
+          expect(exampleData.sfcs[0].symmetric === false).toBeTruthy();
         });
 
         it("should create SFC, set is as new and transition to sfc.servicechain", function () {

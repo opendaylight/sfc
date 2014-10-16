@@ -1,10 +1,10 @@
 <div class="modal-header btn-info">
     <h4 class="modal-title">{{'SFC_CHAIN_MODAL_INSTANTIATE' | translate}} '{{sfc.name}}'</h4>
 </div>
-<div class="modal-body">
-    <div class="form-group">
+<div class="modal-body" ng-form="f_path_name">
+    <div class="form-group" show-validation-error>
         <label for="name" style="color:black !important;">{{'SFC_CHAIN_MODAL_PATH_NAME' | translate}}</label>
-        <input type="text" class="form-control input-sm" ng-model="data.name" id="name"
+        <input type="text" class="form-control input-sm" ng-model="data.name" id="name" name="name"
                placeholder="{{'SFC_CHAIN_MODAL_PATH_NAME_HINT' | translate}}" required focus-me="{{true}}">
     </div>
 </div>

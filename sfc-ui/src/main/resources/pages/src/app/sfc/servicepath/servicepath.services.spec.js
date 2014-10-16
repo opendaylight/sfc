@@ -70,15 +70,52 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(exampleData.unOrderedSfp).toEqual(exampleData.updatedSfp);
         });
 
-        it("should update starting index of SFP according to count of resident SFs", function () {
-          ServicePathHelper.updateStartingIndexOfSFP(exampleData.badStartingIndexSfp);
-          expect(exampleData.badStartingIndexSfp).toEqual(exampleData.orderedSfp);
-        });
-
         it("should update starting index and hops order in SFP with added SF", function () {
           ServicePathHelper.updateHopsOrderInSFP(exampleData.augmentedSfp);
-          ServicePathHelper.updateStartingIndexOfSFP(exampleData.augmentedSfp);
           expect(exampleData.augmentedSfp).toEqual(exampleData.correctedSfp);
+        });
+      });
+
+      describe('ServicePathModalSffSelect', function () {
+
+        var ServicePathModalSffSelect, callbackResult;
+
+        beforeEach(angular.mock.inject(function (_ServicePathModalSffSelect_) {
+          ServicePathModalSffSelect = _ServicePathModalSffSelect_;
+        }));
+
+        it("should open modal dialog and GET its template", function () {
+          httpBackend.expectGET('src/app/sfc/servicepath/servicepath.modal.sff.select.tpl.html').respond('');
+          spyOn(ServicePathModalSffSelect, 'open').andCallThrough();
+          ServicePathModalSffSelect.open("sfName", ["sff1", "sff2"], function(){});
+          rootScope.$digest();
+          expect(ServicePathModalSffSelect.open).toHaveBeenCalledWith("sfName", ["sff1", "sff2"], jasmine.any(Function));
+        });
+
+        it("should open modal dialog, GET its template and pass 'cancel' to callback function", function () {
+          httpBackend.expectGET('src/app/sfc/servicepath/servicepath.modal.sff.select.tpl.html').respond('<div>modal test</div>');
+          spyOn(ServicePathModalSffSelect, 'open').andCallThrough();
+          var modalIns = ServicePathModalSffSelect.open("sfName", ["sff1", "sff2"], function(result){callbackResult = result;});
+          rootScope.$digest();
+          httpBackend.flush();
+          modalIns.dismiss('cancel');
+          //digest to resolve promise
+          rootScope.$digest();
+          expect(ServicePathModalSffSelect.open).toHaveBeenCalledWith("sfName", ["sff1", "sff2"], jasmine.any(Function));
+          expect(callbackResult).toBe('cancel');
+        });
+
+        it("should open modal dialog, GET its template and pass {sffName: 'sff1'} to callback function", function () {
+          httpBackend.expectGET('src/app/sfc/servicepath/servicepath.modal.sff.select.tpl.html').respond('<div>modal test</div>');
+          spyOn(ServicePathModalSffSelect, 'open').andCallThrough();
+          var modalIns = ServicePathModalSffSelect.open("sfName", ["sff1", "sff2"], function(result){callbackResult = result;});
+          rootScope.$digest();
+          httpBackend.flush();
+          modalIns.close({sffName: "sff1"});
+          //digest to resolve promise
+          rootScope.$digest();
+          expect(ServicePathModalSffSelect.open).toHaveBeenCalledWith("sfName", ["sff1", "sff2"], jasmine.any(Function));
+          expect(callbackResult).toEqual({sffName: "sff1"});
         });
 
       });

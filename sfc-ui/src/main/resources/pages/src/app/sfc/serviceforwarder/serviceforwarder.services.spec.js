@@ -202,60 +202,32 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(choosenSf).toEqual({"name": "sf1", "type": "dpi"});
         });
 
-        it("should fill scope.DpLocators[choosenSF.name] property with array of SF locators", function () {
-          var choosenSf = {"name": "sf1"};
-          scope.DpLocators = {};
-          ServiceForwarderHelper.getSfDpLocators(choosenSf, exampleData.sfModelData, scope);
-          expect(scope.DpLocators[choosenSf.name]).toEqual(exampleData.sfModelData['sf-data-plane-locator']);
-          delete exampleData.sfModelData['sf-data-plane-locator'];
-          ServiceForwarderHelper.getSfDpLocators(choosenSf, exampleData.sfModelData, scope);
-          expect(scope.DpLocators[choosenSf.name]).toEqual([]);
-        });
-
-        it("should listen to change of SF Dp locator and keep this entry updated", function () {
-          var sf = {"name": "sf1"};
-          scope.DpLocators = {};
-          scope.DpLocators[sf.name] = exampleData.sfModelData['sf-data-plane-locator'];
-          scope.selectedDpLocator = {};
-          scope.selectedDpLocator[sf.name] = "sfdp1";
-          ServiceForwarderHelper.dpChangeListener(sf, scope);
-          expect(sf['sff-sf-data-plane-locator']).toEqual({"ip": "10.0.0.1", "port": "8000"});
-        });
-
         it("should listen to change of choosenSf and keep this entry updated", function () {
           spyOn(ServiceForwarderHelper, 'addSfTypeToChoosenSf').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var choosenSf = {"name": "sf1"};
           scope.sfs = exampleData.sfs;
           scope.DpLocators = {};
           ServiceForwarderHelper.sfChangeListener(choosenSf, scope);
           expect(ServiceForwarderHelper.addSfTypeToChoosenSf).toHaveBeenCalledWith(choosenSf, scope.sfs[0]);
-          expect(ServiceForwarderHelper.getSfDpLocators).toHaveBeenCalledWith(choosenSf, scope.sfs[0], scope);
           expect(choosenSf).toEqual({"name": "sf1", "type": "dpi"});
-          expect(scope.DpLocators[choosenSf.name]).toEqual(scope.sfs[0]['sf-data-plane-locator']);
         });
 
         it("should listen to change of choosenSf - testing inner else branch - should do nothing", function () {
           spyOn(ServiceForwarderHelper, 'addSfTypeToChoosenSf').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var choosenSf = {"name": "sf1"};
           ServiceForwarderHelper.sfChangeListener(choosenSf, scope);
           expect(ServiceForwarderHelper.addSfTypeToChoosenSf).not.toHaveBeenCalled();
-          expect(ServiceForwarderHelper.getSfDpLocators).not.toHaveBeenCalled();
         });
 
         it("should listen to change of choosenSf - testing outter else branch - should do nothing", function () {
           spyOn(ServiceForwarderHelper, 'addSfTypeToChoosenSf').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var choosenSf;
           ServiceForwarderHelper.sfChangeListener(choosenSf, scope);
           expect(ServiceForwarderHelper.addSfTypeToChoosenSf).not.toHaveBeenCalled();
-          expect(ServiceForwarderHelper.getSfDpLocators).not.toHaveBeenCalled();
         });
 
         it("should supplement SF model data with data required for Edit dialog", function () {
           spyOn(ServiceForwarderHelper, 'sffInterfaceToStringArray').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var sf = {"name": "sf1", "sff-interfaces": [
             {"sff-interface": "sfi1"},
             {"sff-interface": "sfi2"}
@@ -267,15 +239,11 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           ServiceForwarderHelper.sfUpdate(sf, scope);
           expect(ServiceForwarderHelper.sffInterfaceToStringArray).toHaveBeenCalledWith(sffInterfaces);
           expect(sf['sff-interfaces']).toEqual(["sfi1", "sfi2"]);
-          expect(ServiceForwarderHelper.getSfDpLocators).toHaveBeenCalledWith(sf, scope.sfs[0], scope);
-          expect(scope.DpLocators[sf.name]).toEqual(scope.sfs[0]['sf-data-plane-locator']);
-          expect(scope.selectedDpLocator[sf.name]).toEqual(scope.sfs[0]['sf-data-plane-locator'][0].name);
           expect(sf.nonExistent).toBeFalsy();
         });
 
         it("should supplement SF model data with data required for Edit dialog - testing inner else branch", function () {
           spyOn(ServiceForwarderHelper, 'sffInterfaceToStringArray').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var sf = {"name": "sf1", "sff-interfaces": [
             {"sff-interface": "sfi1"},
             {"sff-interface": "sfi2"}
@@ -283,17 +251,14 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           var sffInterfaces = sf['sff-interfaces'];
           ServiceForwarderHelper.sfUpdate(sf, scope);
           expect(ServiceForwarderHelper.sffInterfaceToStringArray).toHaveBeenCalledWith(sffInterfaces);
-          expect(ServiceForwarderHelper.getSfDpLocators).not.toHaveBeenCalled();
           expect(sf.nonExistent).toBeTruthy();
         });
 
         it("should supplement SF model data with data required for Edit dialog - testing outter else branch", function () {
           spyOn(ServiceForwarderHelper, 'sffInterfaceToStringArray').andCallThrough();
-          spyOn(ServiceForwarderHelper, 'getSfDpLocators').andCallThrough();
           var sf;
           ServiceForwarderHelper.sfUpdate(sf, scope);
           expect(ServiceForwarderHelper.sffInterfaceToStringArray).not.toHaveBeenCalled();
-          expect(ServiceForwarderHelper.getSfDpLocators).not.toHaveBeenCalled();
           expect(sf).toBeUndefined();
         });
 

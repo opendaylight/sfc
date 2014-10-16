@@ -7,7 +7,7 @@ module.exports = function(config) {
     // base path, that will be used to resolve files and exclude
     basePath: '../target/generated-resources/pages/',
 
-    plugins: [ 'karma-jasmine', 'karma-coverage', 'karma-requirejs', 'karma-firefox-launcher', 'karma-chrome-launcher', 'karma-phantomjs-launcher'],
+    plugins: [ 'karma-jasmine', 'karma-coverage', 'karma-requirejs', 'karma-ng-html2js-preprocessor', 'karma-firefox-launcher', 'karma-chrome-launcher', 'karma-phantomjs-launcher'],
 
     // frameworks to use
     frameworks: ['jasmine', 'requirejs'],
@@ -29,7 +29,8 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
-      'src/app/sfc/**/*.js': 'coverage'
+      'src/app/sfc/**/*.js': ['coverage'],
+      'src/app/sfc/**/*.tpl.html': ['ng-html2js']
     },
 
     // test results reporter to use

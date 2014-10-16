@@ -22,47 +22,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return string;
     };
 
-    svc.select2Options = function ($scope) {
-      return {
-        query: function (query) {
-          var data = {results: []};
-          var exact = false;
-          var blank = _.str.isBlank(query.term);
-
-          _.each($scope.sffs, function (sff) {
-            var name = sff.name;
-            var addThis = false;
-
-            if (!blank) {
-              if (query.term == name) {
-                exact = true;
-                addThis = true;
-              } else if (name.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
-                addThis = true;
-              }
-            } else {
-              addThis = true;
-            }
-
-            if (addThis === true) {
-              data.results.push({id: name, text: name});
-            }
-          });
-
-          if (!exact && !blank) {
-            data.results.unshift({id: query.term, text: query.term, ne: true});
-          }
-
-          query.callback(data);
-        },
-        formatSelection: function (object) {
-          if (object.ne) {
-            return object.text + " <span><i style=\"color: greenyellow;\">(to be created)</i></span>";
-          } else {
-            return object.text;
-          }
-        }
-      };
+    svc.nshAwareToString = function (sf) {
+      if (angular.isDefined(sf['nsh-aware'])) {
+        sf['nsh-aware'] = sf['nsh-aware'] === true ? "true" : "false";
+      }
     };
 
     return svc;

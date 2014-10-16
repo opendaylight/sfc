@@ -3,6 +3,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter, $timeout) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
+    var thisCtrl = this;
 
     $scope.tableParams = new NgTableParams(
       {
@@ -26,11 +27,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     );
 
-    var sfcsWatcherRegistered = false;
+    this.sfcsWatcherRegistered = false;
 
-    var registerSfcsWatcher = function () { // wait for combining unpersisted with persisted in getArray callback
+    this.registerSfcsWatcher = function () { // wait for combining unpersisted with persisted in getArray callback
 
-      if (!sfcsWatcherRegistered) {
+      if (!this.sfcsWatcherRegistered) {
         $scope.$watchCollection('sfcs', function (newVal) {
           if (angular.isUndefined(newVal)) {
             return;
@@ -39,7 +40,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           $scope.tableParams.reload();
         });
 
-        sfcsWatcherRegistered = true;
+        this.sfcsWatcherRegistered = true;
       }
     };
 
@@ -108,7 +109,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
       $rootScope.sfcs = tempSfcs;
 
-      registerSfcsWatcher(); // this will launch watcher
+      thisCtrl.registerSfcsWatcher(); // this will launch watcher
     });
 
     $scope.undoSFCnew = function undoSFCnew(sfc) {
@@ -225,17 +226,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('serviceChainCreateCtrl', function ($scope, $rootScope, $state) {
     $scope.data = {};
+    var thisCtrl = this;
 
-    function symmetricToBoolean(sfc){
+    this.symmetricToBoolean = function (sfc){
       if(angular.isDefined(sfc.symmetric)){
         sfc.symmetric = sfc.symmetric == "true" ? true : false;
       }
-    }
+    };
 
     $scope.submit = function () {
       $scope.data['sfc-service-function'] = [];
       $scope.data['state'] = $rootScope.sfcState.NEW;
-      symmetricToBoolean($scope.data);
+      thisCtrl.symmetricToBoolean($scope.data);
       $rootScope.sfcs.push($scope.data);
 
       $state.transitionTo('main.sfc.servicechain', null, { location: true, inherit: true, relative: $state.$current, notify: true });

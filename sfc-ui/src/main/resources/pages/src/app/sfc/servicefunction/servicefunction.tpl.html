@@ -27,9 +27,7 @@
                   tooltip-placement="bottom"
                   tooltip-html-unsafe="
                       <div style='text-align: left'>
-                      {{'SFC_TOOLTIP_IP' | translate}}: {{loc['ip']}} <br/>
-                      {{'SFC_TOOLTIP_PORT' | translate}}: {{loc['port']}} <br/>
-                      {{'SFC_TOOLTIP_FORWARDER' | translate}}: {{loc['service-function-forwarder']}}
+                      {{getSfLocatorTooltipText(loc)}}
                       </div>">
                     {{loc['name']}}{{$last ? '' : ', '}}
                 </span></td>

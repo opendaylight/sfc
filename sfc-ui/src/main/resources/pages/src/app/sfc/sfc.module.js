@@ -32,7 +32,9 @@ define([
       'app/sfc/servicechain/servicechain.controller',
       'app/sfc/servicepath/servicepath.controller',
       'app/sfc/config/config.controller',
-      'app/sfc/utils/modal.controller'];
+      'app/sfc/utils/modal.controller',
+      'app/sfc/acl/acl.controller',
+      'app/sfc/servicelocator/servicelocator.controller'];
     var services = [
       'app/core/core.services',
       'app/sfc/sfc.services',
@@ -43,11 +45,15 @@ define([
       'app/sfc/config/schemas.services',
       'app/sfc/serviceforwarder/serviceforwarder.services',
       'app/sfc/servicefunction/servicefunction.services',
-      'app/sfc/servicepath/servicepath.services'];
+      'app/sfc/servicepath/servicepath.services',
+      'app/sfc/servicelocator/servicelocator.services',
+      'app/sfc/acl/acl.services'];
     var directives = [
       'app/sfc/sfc.directives',
       'app/sfc/servicenode/servicenode.directives',
-      'app/sfc/config/config.directives'
+      'app/sfc/config/config.directives',
+      'app/sfc/servicelocator/servicelocator.directives',
+      'app/sfc/acl/acl.directives'
     ];
 
     var loaded = $q.defer();
@@ -130,7 +136,7 @@ define([
       access: access.public,
       views: {
         'sfc': {
-          templateUrl: 'src/app/sfc/servicenode/servicenode.edit.tpl.html',
+          templateUrl: 'src/app/sfc/servicenode/servicenode.create.tpl.html',
           controller: 'serviceNodeEditCtrl'
         }
       }
@@ -163,8 +169,8 @@ define([
       access: access.public,
       views: {
         'sfc': {
-          templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.edit.tpl.html',
-          controller: 'serviceForwarderEditCtrl'
+          templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.create.tpl.html',
+          controller: 'serviceForwarderCreateCtrl'
         }
       }
     });
@@ -196,8 +202,8 @@ define([
       access: access.public,
       views: {
         'sfc': {
-          templateUrl: 'src/app/sfc/servicefunction/servicefunction.edit.tpl.html',
-          controller: 'serviceFunctionEditCtrl'
+          templateUrl: 'src/app/sfc/servicefunction/servicefunction.create.tpl.html',
+          controller: 'serviceFunctionCreateCtrl'
         }
       }
     });
@@ -245,8 +251,29 @@ define([
         }
       }
     });
-  });
 
+    $stateProvider.state('main.sfc.acl', {
+      url: '/acl',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/acl/acl.tpl.html',
+          controller: 'sfcAclCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.acl-create', {
+      url: '/acl-create:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/acl/acl.create.tpl.html',
+          controller: 'sfcAclCreateCtrl'
+        }
+      }
+    });
+  });
 
   return sfc;
 });

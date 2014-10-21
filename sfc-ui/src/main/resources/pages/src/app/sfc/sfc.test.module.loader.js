@@ -8,6 +8,7 @@ var controllers = [
   'app/sfc/config/config.controller',
   'app/sfc/utils/modal.controller',
   'app/sfc/acl/acl.controller',
+  'app/sfc/metadata/metadata.controller',
   'app/sfc/servicelocator/servicelocator.controller'];
 var services = [
   'app/core/core.services',
@@ -27,7 +28,8 @@ var directives = [
   'app/sfc/servicenode/servicenode.directives',
   'app/sfc/config/config.directives',
   'app/sfc/servicelocator/servicelocator.directives',
-  'app/sfc/acl/acl.directives'
+  'app/sfc/acl/acl.directives',
+  'app/sfc/metadata/metadata.directives'
 ];
 
 define(['app/sfc/sfc.module'].concat(services).concat(directives).concat(controllers), function (sfc) {

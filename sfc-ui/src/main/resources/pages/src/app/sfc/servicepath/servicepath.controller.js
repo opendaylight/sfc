@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, ServicePathHelper, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ServicePathHelper, ServicePathModalSffSelect, ServicePathModalAttachMetadata, ModalDeleteSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle 'hack'
 
@@ -63,6 +63,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.isSFPstate = function isSFPstate(sfp, state) {
       return $scope.getSFPstate(sfp) === state ? true : false;
     };
+
+    SfcContextMetadataSvc.getArray(function (data) {
+      $scope.contextMetadata = data;
+    });
+
+    SfcVariableMetadataSvc.getArray(function (data) {
+      $scope.variableMetadata = data;
+    });
 
     ServiceFunctionSvc.getArray(function (data) {
       $scope.sfs = data;
@@ -182,7 +190,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.onSFPdrop = function (hop, sfp) {
       var hopType, hopName;
 
-      if(angular.isDefined(hop)){
+      if (angular.isDefined(hop)) {
         var str = hop.split('_');
         hopType = str[0];
         hopName = str[1];
@@ -259,14 +267,26 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.getHopClass = function getHopClass(hop) {
-      if(angular.isDefined(hop) && (angular.isDefined(hop['service-function-name']) || angular.isDefined(hop['service-function-forwarder']))){
-        if(angular.isDefined(hop['service-function-name'])){
+      if (angular.isDefined(hop) && (angular.isDefined(hop['service-function-name']) || angular.isDefined(hop['service-function-forwarder']))) {
+        if (angular.isDefined(hop['service-function-name'])) {
           return "sf";
         }
-        else{
+        else {
           return "sff";
         }
       }
+    };
+
+    $scope.showModalAttachMetadata = function showModalAttachMetadata(sfp) {
+      ServicePathModalAttachMetadata.open(sfp, $scope.contextMetadata, $scope.variableMetadata, function (selectedMetadata) {
+        if (angular.isDefined(selectedMetadata['contextMetadata'])) {
+
+        }
+
+        if (angular.isDefined(selectedMetadata['variableMetadata'])) {
+
+        }
+      });
     };
   });
 
@@ -277,6 +297,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.save = function () {
       $modalInstance.close({name: this.sffName});
+    };
+
+    $scope.dismiss = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  });
+
+  sfc.register.controller('servicePathModalAttachMetadataCtrl', function ($scope, $modalInstance, sfp, contextMetadata, variableMetadata) {
+
+    $scope.sfp = sfp;
+    $scope.contextMetadata = contextMetadata;
+    $scope.variableMetadata = variableMetadata;
+
+    $scope.save = function () {
+      $modalInstance.close({contextMetadata: this.selectedContextMetadata, variableMetadata: this.selectedVariableMetadata});
     };
 
     $scope.dismiss = function () {

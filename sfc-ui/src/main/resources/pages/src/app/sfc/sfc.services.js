@@ -573,6 +573,37 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcAclSvc();
   });
 
+// ******* SfcContextMetadataSvc *********
+  sfc.register.factory('SfcContextMetadataSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-metadata';
+    var containerName = 'service-function-metadata';
+    var listName = 'context-metadata';
+
+    // constructor
+    function SfcContextMetadataSvc() {
+    }
+
+    SfcContextMetadataSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcContextMetadataSvc();
+  });
+
+  // ******* SfcVariableMetadataSvc *********
+  sfc.register.factory('SfcVariableMetadataSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-metadata';
+    var containerName = 'service-function-metadata';
+    var listName = 'variable-metadata';
+
+    // constructor
+    function SfcVariableMetadataSvc() {
+    }
+
+    SfcVariableMetadataSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcVariableMetadataSvc();
+  });
 
 
 }); // end define

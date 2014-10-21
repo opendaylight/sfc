@@ -63,6 +63,12 @@
                     </span>
                     <span class="spanText" ng-show="isSFPstate(sfp, sfpState.EDITED)">({{'SFC_PATH_TEMPORARY' | translate}})</span>
 
+                    <a ng-hide="sfp.metadata" ng-click="showModalAttachMetadata(sfp)" class="pull-right" style="cursor: pointer">
+                        {{'SFC_PATH_METADATA_ATTACH' | translate}}
+                    </a>
+                    <span ng-show="sfp.metadata" class="spanText pull-right">
+                        {{sfp.metadata}}
+                    </span>
                 </p>
 
                 <div class="sfc-sf-component"

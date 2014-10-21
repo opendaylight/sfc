@@ -194,6 +194,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
             ctrl.$setValidity('uint8', true);
             return null;
           }
+          else if (isHexadecimal(viewValue)){
+            var decimal = parseInt(viewValue, 16);
+            if(decimal >= 0 && decimal <= 255){
+              ctrl.$setValidity('uint8', true);
+              return viewValue;
+            }
+            else {
+              ctrl.$setValidity('uint8', false);
+              return undefined;
+            }
+          }
           else if (viewValue >= 0 && viewValue <= 255) {
             ctrl.$setValidity('uint8', true);
             return viewValue;
@@ -216,6 +227,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
             ctrl.$setValidity('uint16', true);
             return null;
           }
+          else if (isHexadecimal(viewValue)){
+            var decimal = parseInt(viewValue, 16);
+            if(decimal >= 0 && decimal <= 65535){
+              ctrl.$setValidity('uint16', true);
+              return viewValue;
+            }
+            else {
+              ctrl.$setValidity('uint16', false);
+              return undefined;
+            }
+          }
           else if (viewValue >= 0 && viewValue <= 65535) {
             ctrl.$setValidity('uint16', true);
             return viewValue;
@@ -237,6 +259,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (viewValue === null || viewValue === "") {
             ctrl.$setValidity('uint32', true);
             return null;
+          }
+          else if (isHexadecimal(viewValue)){
+            var decimal = parseInt(viewValue, 16);
+            if(decimal >= 0 && decimal <= 4294967295){
+              ctrl.$setValidity('uint32', true);
+              return viewValue;
+            }
+            else {
+              ctrl.$setValidity('uint32', false);
+              return undefined;
+            }
           }
           else if (viewValue >= 0 && viewValue <= 4294967295) {
             ctrl.$setValidity('uint32', true);
@@ -297,6 +330,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     };
   });
+
+  function isHexadecimal(string) {
+    return string.match(/^0x[0-9A-Fa-f]+$/) ? true : false;
+  }
 
   function inet_pton(a, params) {
     //  discuss at: http://phpjs.org/functions/inet_pton/

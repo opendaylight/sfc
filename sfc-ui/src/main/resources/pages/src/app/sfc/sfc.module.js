@@ -34,6 +34,7 @@ define([
       'app/sfc/config/config.controller',
       'app/sfc/utils/modal.controller',
       'app/sfc/acl/acl.controller',
+      'app/sfc/metadata/metadata.controller',
       'app/sfc/servicelocator/servicelocator.controller'];
     var services = [
       'app/core/core.services',
@@ -53,7 +54,8 @@ define([
       'app/sfc/servicenode/servicenode.directives',
       'app/sfc/config/config.directives',
       'app/sfc/servicelocator/servicelocator.directives',
-      'app/sfc/acl/acl.directives'
+      'app/sfc/acl/acl.directives',
+      'app/sfc/metadata/metadata.directives'
     ];
 
     var loaded = $q.defer();
@@ -270,6 +272,39 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/acl/acl.create.tpl.html',
           controller: 'sfcAclCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.metadata', {
+      url: '/metadata',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/metadata/metadata.tpl.html',
+          controller: 'sfcMetadataCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.metadata-context-create', {
+      url: '/metadata-context-create:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/metadata/metadata.context.create.tpl.html',
+          controller: 'sfcMetadataContextCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.metadata-variable-create', {
+      url: '/metadata-variable-create:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/metadata/metadata.variable.create.tpl.html',
+          controller: 'sfcMetadataVariableCreateCtrl'
         }
       }
     });

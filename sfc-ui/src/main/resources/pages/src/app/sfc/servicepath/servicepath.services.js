@@ -69,4 +69,36 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return svc;
   });
 
+  sfc.register.factory('ServicePathModalAttachMetadata', function ($modal) {
+    var svc = {};
+    var modalInstance;
+
+    svc.open = function (sfp, contextMetadata, variableMetadata, callback) {
+      modalInstance = $modal.open({
+        templateUrl: 'src/app/sfc/servicepath/servicepath.modal.attach.metadata.tpl.html',
+        controller: 'servicePathModalAttachMetadataCtrl',
+        resolve: {
+          sfp: function () {
+            return sfp;
+          },
+          contextMetadata: function () {
+            return contextMetadata;
+          },
+          variableMetadata: function () {
+            return variableMetadata;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (result) {
+        callback(result);
+      }, function (reason) {
+        callback(reason);
+      });
+
+      return modalInstance;
+    };
+    return svc;
+  });
+
 });

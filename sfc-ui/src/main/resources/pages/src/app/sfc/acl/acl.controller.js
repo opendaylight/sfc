@@ -95,9 +95,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc) {
+  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc) {
 
     $scope.data = {'access-list-entries': []}; // initial data
+
+    SfcContextMetadataSvc.getArray(function (data) {
+      $scope.contextMetadata = data;
+    });
+
+    SfcVariableMetadataSvc.getArray(function (data) {
+      $scope.variableMetadata = data;
+    });
 
     if ($stateParams.itemKey) {
       SfcAclSvc.getItem($stateParams.itemKey, function (item) {

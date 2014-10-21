@@ -1,0 +1,40 @@
+<div class="modal-header btn-info">
+<h4 class="modal-title">{{'SFC_PATH_MODAL_SELECT_METADATA' | translate}} '{{sfp.name}}'</h4>
+</div>
+<div class="modal-body form-horizontal" ng-form="f_select_metadata">
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="context_metadata" class="col-lg-6 control-label small-label" ui-select2-label="context_metadata">
+            {{'SFC_PATH_MODAL_SELECT_CONTEXT_METADATA' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="context_metadata" name="context_metadata" ui-select2
+                    ng-model="selectedContextMetadata" ng-required="false"
+                    data-placeholder="{{'SFC_PATH_MODAL_CREATE_SELECT_CONTEXT_METADATA' | translate}}">
+
+                <option value=""></option>
+                <option ng-repeat="item in contextMetadata" value="{{item.name}}">{{item.name}}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="variable_metadata" class="col-lg-6 control-label small-label" ui-select2-label="variable_metadata">
+            {{'SFC_PATH_MODAL_SELECT_VARIABLE_METADATA' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="variable_metadata" name="variable_metadata" ui-select2
+                    ng-model="selectedVariableMetadata" ng-required="false"
+                    data-placeholder="{{'SFC_PATH_MODAL_CREATE_SELECT_VARIABLE_METADATA' | translate}}">
+
+                <option value=""></option>
+                <option ng-repeat="item in variableMetadata" value="{{item.name}}">{{item.name}}</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-orange" ng-disabled="!(!!selectedContextMetadata || !!selectedVariableMetadata)" ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL' | translate}}</button>
+</div>

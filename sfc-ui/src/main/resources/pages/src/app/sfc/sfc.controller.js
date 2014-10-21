@@ -53,13 +53,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
   sfc.register.controller('sfcForwarderSelect2Ctrl', function ($scope) {
-    // initial
-    if ($scope.sffProp) {
+    var thisCtrl = this;
+
+    //wait for data load, then prefill select2Model
+    this.unregisterSffPropWatch = $scope.$watch('sffProp', function (newVal){
+      if(angular.isUndefined(newVal) || newVal === null){
+        return;
+      }
+
       $scope.tmpSffForSelect2 = {
-        id: $scope.sffProp,
-        text: $scope.sffProp
+        id: newVal,
+        text: newVal
       };
-    }
+
+      thisCtrl.unregisterSffPropWatch();
+    });
 
     // sync/copy 'id' to model
     $scope.$watch(function () {

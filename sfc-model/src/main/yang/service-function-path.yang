@@ -7,6 +7,7 @@ module service-function-path {
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
+  import service-function-metadata {prefix sfc-md; }
 
 
   organization "Cisco Systems, Inc.";
@@ -43,7 +44,8 @@ module service-function-path {
 
   typedef service-function-path-ref {
     type leafref {
-      path "/sfc-sfp:service-function-paths/sfc-sfp:service-function-path/sfc-sfp:name";
+      path "/sfc-sfp:service-function-paths/" +
+        "sfc-sfp:service-function-path/sfc-sfp:name";
     }
     description
       "This type is used by data models that need to reference
@@ -72,6 +74,16 @@ module service-function-path {
         type string;
         description
           "The name of this service function path";
+      }
+      leaf context-metadata {
+        type sfc-md:context-metadata-ref;
+        description
+          "The name of the associated context metadata";
+      }
+      leaf variable-metadata {
+        type sfc-md:variable-metadata-ref;
+        description
+          "The name of the associated variable metadata";
       }
       list service-path-hop {
         key "hop-number";

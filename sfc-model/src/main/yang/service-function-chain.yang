@@ -75,6 +75,9 @@ module service-function-chain {
           description
             "Service Function Type from service-function-type.yang";
         }
+        leaf order {
+          type uint8;
+        }
         ordered-by user;
         description
           "A list of service functions that compose the service

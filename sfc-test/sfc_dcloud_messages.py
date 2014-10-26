@@ -70,9 +70,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           {
             "name": "eth0",
             "service-function-forwarder-ovs:ovs-bridge": {
-              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
-              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c",
-              "bridge-name": "br-tun"
+              "bridge-name": "br-tun",
+              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
             },
             "data-plane-locator": {
               "port": 4789,
@@ -81,33 +80,35 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
+        "rest-uri": "http://198.18.134.23",
         "service-function-dictionary": [
           {
             "name": "SF1",
             "type": "dp1",
             "sff-sf-data-plane-locator": {
-              "service-function-forwarder-ovs:ovs-bridge": {
-                "bridge-name": "br-int"
-              },
               "port": 4789,
               "ip": "10.1.1.4",
-              "transport": "service-locator:vxlan-gpe"
+              "transport": "service-locator:vxlan-gpe",
+              "service-function-forwarder-ovs:ovs-bridge": {
+                "bridge-name": "br-int"
+              }
             }
           },
           {
             "name": "SF2",
             "type": "napt44",
             "sff-sf-data-plane-locator": {
-              "service-function-forwarder-ovs:ovs-bridge": {
-                "bridge-name": "br-int"
-              },
               "port": 4789,
               "ip": "10.1.1.5",
-              "transport": "service-locator:vxlan-gpe"
+              "transport": "service-locator:vxlan-gpe",
+              "service-function-forwarder-ovs:ovs-bridge": {
+                "bridge-name": "br-int"
+              }
             }
           }
         ],
-        "classifier": "acl-sfp-1"
+        "classifier": "acl-sfp-1",
+        "ip-mgmt-address": "198.18.134.23"
       },
       {
         "name": "SFF2",
@@ -116,9 +117,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           {
             "name": "eth0",
             "service-function-forwarder-ovs:ovs-bridge": {
-              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0",
-              "bridge-name": "br-tun"
+              "bridge-name": "br-tun",
+              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
             },
             "data-plane-locator": {
               "port": 4789,
@@ -127,20 +127,22 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
+        "rest-uri": "http://198.18.134.23",
         "service-function-dictionary": [
           {
             "name": "SF3",
             "type": "firewall",
             "sff-sf-data-plane-locator": {
-              "service-function-forwarder-ovs:ovs-bridge": {
-                "bridge-name": "br-int"
-              },
               "port": 4789,
               "ip": "10.1.2.6",
-              "transport": "service-locator:vxlan-gpe"
+              "transport": "service-locator:vxlan-gpe",
+              "service-function-forwarder-ovs:ovs-bridge": {
+                "bridge-name": "br-int"
+              }
             }
           }
-        ]
+        ],
+        "ip-mgmt-address": "198.18.134.24"
       }
     ]
   }
@@ -155,15 +157,18 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi"
+            "type": "dpi",
+            "order" : 0
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44"
+            "type": "napt44",
+            "order" : 1
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall"
+            "type": "firewall",
+            "order" : 2
           }
         ]
       },
@@ -172,11 +177,13 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall"
+            "type": "firewall",
+            "order" : 0
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44"
+            "type": "napt44",
+            "order" : 1
           }
         ]
       }
@@ -202,7 +209,7 @@ SERVICE_PATH_RESP_JSON = """
     "service-function-path": [
       {
         "name": "Path-1-SFC1",
-        "path-id": 3,
+        "path-id": 1,
         "starting-index": 3,
         "service-chain-name": "SFC1",
         "service-path-hop": [
@@ -214,15 +221,15 @@ SERVICE_PATH_RESP_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF3",
+            "service-function-name": "SF2",
             "service_index": 2,
-            "service-function-forwarder": "SFF2"
+            "service-function-forwarder": "SFF1"
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF2",
+            "service-function-name": "SF3",
             "service_index": 1,
-            "service-function-forwarder": "SFF1"
+            "service-function-forwarder": "SFF2"
           }
         ]
       }

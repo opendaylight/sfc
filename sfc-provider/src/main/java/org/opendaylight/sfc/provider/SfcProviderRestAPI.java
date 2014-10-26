@@ -44,11 +44,13 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         Client client = Client.create(clientConfig);
 
         ClientResponse getClientResponse = client
-                .resource("http://localhost:8080/restconf/config/service-function-forwarder:service-function-forwarders/")
+                .resource("http://localhost:8080/restconf/config/service" +
+                        "-function-forwarder:service-function-forwarders/")
                 .accept(ACCEPT)
                 .get(ClientResponse.class);
 
-        if (getClientResponse.getStatus() != 200) {
+        if (getClientResponse.getStatus() != 200)
+        {
             throw new UniformInterfaceException(HTTP_ERROR_MSG
                     + getClientResponse.getStatus(),
                     getClientResponse);
@@ -57,31 +59,21 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
 
-        ClientResponse putClientRemoteResponse;
-
-        putClientRemoteResponse = client
-                .resource("http://localhost:5000/paths").type(ACCEPT)
+        ClientResponse putClientRemoteResponse = client
+                .resource("http://localhost:5000/" +
+                        "/config/service-function-forwarder:service-function" +
+                        "-forwarders/").type(ACCEPT)
                 .put(ClientResponse.class, jsonOutput);
 
 
-        if (putClientRemoteResponse.getStatus() != 200) {
+        if (putClientRemoteResponse.getStatus() != 200)
+        {
             throw new UniformInterfaceException(HTTP_ERROR_MSG
                     + putClientRemoteResponse.getStatus(),
                     putClientRemoteResponse);
         }
 
         putClientRemoteResponse.close();
-
-        ClientResponse putClientLocalResponse= client
-                .resource("http://localhost:5000/paths").type(ACCEPT)
-                .put(ClientResponse.class, jsonOutput);
-
-        if (putClientLocalResponse.getStatus() != 200) {
-            throw new UniformInterfaceException(HTTP_ERROR_MSG
-                    + putClientLocalResponse.getStatus(),
-                    putClientLocalResponse);
-        }
-        putClientLocalResponse.close();
 
     }
 
@@ -91,25 +83,29 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         Client client = Client.create(clientConfig);
 
         ClientResponse getClientResponse = client
-                .resource("http://localhost:8080/restconf/config/service-function-path:service-function-paths/")
+                .resource("http://localhost:8080/restconf/config/service" +
+                        "-function-path:service-function-paths/")
                 .accept(ACCEPT)
                 .get(ClientResponse.class);
 
-        if (getClientResponse.getStatus() != 200) {
+        if (getClientResponse.getStatus() != 200)
+        {
             throw new UniformInterfaceException(HTTP_ERROR_MSG
                     + getClientResponse.getStatus(),
                     getClientResponse);
         }
 
-        /*
+
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
-        ClientResponse putClientRemoteResponse= client
-                .resource("http://31.133.132.41:5000/paths").type("application/json")
+        ClientResponse putClientRemoteResponse = client
+                .resource("http://localhost:5000" +
+                        "/config/service-function-path:service-function-paths" +
+                        "/").type("application/json")
                 .put(ClientResponse.class, jsonOutput);
 
         putClientRemoteResponse.close();
-        */
+
 
     }
 

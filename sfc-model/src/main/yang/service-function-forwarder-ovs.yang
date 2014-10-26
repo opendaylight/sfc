@@ -55,10 +55,6 @@ module service-function-forwarder-ovs {
              external-id such as fa:16:3e:56:47:10";
         }
       }
-      leaf rest-uri {
-        description "URI of REST based management";
-        type inet:uri;
-      }
     }
   }
 

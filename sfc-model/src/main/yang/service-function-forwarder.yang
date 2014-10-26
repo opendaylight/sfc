@@ -103,6 +103,11 @@ module service-function-forwarder {
           "The IP and port used to configure this service-node";
       }
 
+      leaf rest-uri {
+        description "URI of REST based management";
+        type inet:uri;
+      }
+
       leaf classifier {
         type string;
         description "the access-list responsible for directing"

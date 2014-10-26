@@ -89,7 +89,7 @@ module service-function-forwarder {
         type string;
         description
           "The unique name of this service function forwarder, such
-           as ovs-1-bridge-2.";
+           as SFF1";
       }
 
       leaf service-node {
@@ -97,10 +97,16 @@ module service-function-forwarder {
         description "The service node that hosts this SFF";
       }
 
+      leaf ip-mgmt-address {
+        type inet:ip-address;
+        description
+          "The IP and port used to configure this service-node";
+      }
+
       leaf classifier {
         type string;
-        description "the access-list responsible for directing
-          packets to a specific service path";
+        description "the access-list responsible for directing"
+          + "packets to a specific service path";
       }
 
       list sff-data-plane-locator {
@@ -110,13 +116,13 @@ module service-function-forwarder {
         leaf name {
           type string;
           description
-            "A unique string that represents this
-             data-plane-locator";
+            "A unique string that represents this data-plane-locator";
         }
 
         container data-plane-locator {
           description
-            "A network data-plane locator";
+            "This container holds configuration for the overlay data plane"
+          + "locator used by this SFF. This could be VXLAN, GRE, etc";
           uses sfc-sl:data-plane-locator;
         }
       }
@@ -136,7 +142,8 @@ module service-function-forwarder {
         }
         container sff-sf-data-plane-locator {
           description
-            "A network data-plane locator";
+            "The SFF uses this data plane locator when sending packets to the"
+          + "associated service function";
           uses sfc-sl:data-plane-locator;
         }
         list sff-interfaces {
@@ -148,8 +155,8 @@ module service-function-forwarder {
                SF";
           }
           description
-            "A list of interfaces on the SFF which are connected
-             to this SF, will usually be 1 or 2 elements";
+            "A list of interfaces on the SFF which are connected to this SF,"
+          + "usually one 1 or 2 elements";
         }
         leaf failmode {
           type failmode-type;

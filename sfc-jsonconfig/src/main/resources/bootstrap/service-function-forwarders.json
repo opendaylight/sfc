@@ -8,6 +8,11 @@
         "sff-data-plane-locator": [
           {
             "name": "eth0",
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c",
+              "bridge-name": "br-tun"
+            },
             "data-plane-locator": {
               "port": 5000,
               "ip": "192.168.1.1",
@@ -32,12 +37,7 @@
             "name": "SF2",
             "type": "firewall"
           }
-        ],
-        "ovs": {
-          "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c",
-          "bridge-name": "br-int",
-          "rest-uri": "http://www.example.com/sffs/sff-bootstrap"
-        }
+        ]
       },
       {
         "name": "br-int-ovs-2",
@@ -45,6 +45,11 @@
         "sff-data-plane-locator": [
           {
             "name": "eth0",
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0",
+              "bridge-name": "br-tun"
+            },
             "data-plane-locator": {
               "port": 5000,
               "ip": "192.168.1.2",
@@ -69,12 +74,7 @@
             "name": "SF6",
             "type": "napt44"
           }
-        ],
-        "ovs": {
-          "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0",
-          "bridge-name": "br-int",
-          "rest-uri": "http://www.example.com/sffs/br-int-ovs-2"
-        }
+        ]
       }
     ]
   }

@@ -230,15 +230,15 @@ GET_ALL_SFF_RESP_JSON = """
     "service-function-forwarder": [
       {
         "name": "SFF-bootstrap",
-        "service-function-forwarder-ovs:ovs": {
-          "bridge-name": "br-int",
-          "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
-          "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
-        },
         "service-node": "OVSDB1",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "bridge-name": "br-tun",
+              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
+            },
             "data-plane-locator": {
               "port": 5000,
               "ip": "192.168.1.1",
@@ -268,15 +268,15 @@ GET_ALL_SFF_RESP_JSON = """
       },
       {
         "name": "br-int-ovs-2",
-        "service-function-forwarder-ovs:ovs": {
-          "bridge-name": "br-int",
-          "rest-uri": "http://www.example.com/sffs/br-int-ovs-2",
-          "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
-        },
         "service-node": "OVSDB2",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "bridge-name": "br-tun",
+              "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
+            },
             "data-plane-locator": {
               "port": 5000,
               "ip": "192.168.1.2",

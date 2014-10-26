@@ -25,12 +25,16 @@ module service-function-forwarder-ovs {
     description "Augmentation of SFF for OVS";
   }
 
-  augment "/sfc-sff:service-function-forwarders/"
-        + "sfc-sff:service-function-forwarder" {
-
-    container ovs {
+  grouping bridge {
+    container ovs-bridge {
+      leaf bridge-name {
+        description "Open vSwitch bridge name. In Openstack it is usually"
+          + "br-tun or br-int depending if it is used in the overlay or"
+          + "facing virtual machines respectively";
+        type string;
+      }
       leaf uuid {
-        description "OVSDB bridge UUID";
+        description "Open vSwitch bridge UUID";
         type yang:uuid;
       }
       list external-ids {
@@ -51,14 +55,25 @@ module service-function-forwarder-ovs {
              external-id such as fa:16:3e:56:47:10";
         }
       }
-      leaf bridge-name {
-        description "OVSDB bridge name";
-        type string;
-      }
       leaf rest-uri {
         description "URI of REST based management";
         type inet:uri;
       }
     }
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:sff-data-plane-locator" {
+
+    uses bridge;
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:service-function-dictionary/"
+        + "sfc-sff:sff-sf-data-plane-locator" {
+
+    uses bridge;
   }
 }

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ServicePathHelper, ServicePathModalSffSelect, ServicePathModalAttachMetadata, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ServicePathHelper, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle 'hack'
 
@@ -276,18 +276,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       }
     };
-
-    $scope.showModalAttachMetadata = function showModalAttachMetadata(sfp) {
-      ServicePathModalAttachMetadata.open(sfp, $scope.contextMetadata, $scope.variableMetadata, function (selectedMetadata) {
-        if (angular.isDefined(selectedMetadata['contextMetadata'])) {
-
-        }
-
-        if (angular.isDefined(selectedMetadata['variableMetadata'])) {
-
-        }
-      });
-    };
   });
 
   sfc.register.controller('servicePathModalSffSelectCtrl', function ($scope, $modalInstance, sfName, sffNameList) {
@@ -304,20 +292,4 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('servicePathModalAttachMetadataCtrl', function ($scope, $modalInstance, sfp, contextMetadata, variableMetadata) {
-
-    $scope.sfp = sfp;
-    $scope.contextMetadata = contextMetadata;
-    $scope.variableMetadata = variableMetadata;
-
-    $scope.save = function () {
-      $modalInstance.close({contextMetadata: this.selectedContextMetadata, variableMetadata: this.selectedVariableMetadata});
-    };
-
-    $scope.dismiss = function () {
-      $modalInstance.dismiss('cancel');
-    };
-  });
-
-})
-;
+});

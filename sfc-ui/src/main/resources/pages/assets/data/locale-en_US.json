@@ -521,7 +521,7 @@
   "SFC_METADATA_ACTIONS": "Actions",
   "SFC_METADATA_EDIT": "Edit this metadata",
   "SFC_METADATA_DELETE": "Delete this metadata",
-  "SFC_METADATA_VARIABLE_CREATE": "Variable metadata",
+  "SFC_METADATA_VARIABLE_NAME": "Variable metadata name",
   "SFC_METADATA_CREATE_VARIABLE_NAME": "Type in a name",
   "SFC_METADATA_VARIABLE_TLV_CREATE": "A set of variable length metadata",
   "SFC_METADATA_VARIABLE_TLV_ADD": "Add new item",

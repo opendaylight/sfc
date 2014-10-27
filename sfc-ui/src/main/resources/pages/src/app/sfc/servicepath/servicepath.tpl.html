@@ -37,7 +37,7 @@
         <!--</tr>-->
         <tr ng-repeat="sfp in $data track by $index" id="{{sfp.name}}~!~{{$index}}">
             <td data-title="'SFC_PATH' | translate" sortable="'name'" ui-on-Drop="onSFPdrop($data, sfp)"
-                ng-class="getSFPstate(sfp)" effect-me="sfpEffectMe[sfp.name]">
+                ng-class="getSFPstate(sfp)" effect-me="sfpEffectMe[sfp.name]" style="position: relative">
                 <p>
                     <span class="spanText"><b>{{sfp.name}}</b></span>
                     <span class="spanText" ng-show="sfp['path-id'] && sfp['starting-index']">
@@ -63,11 +63,8 @@
                     </span>
                     <span class="spanText" ng-show="isSFPstate(sfp, sfpState.EDITED)">({{'SFC_PATH_TEMPORARY' | translate}})</span>
 
-                    <a ng-hide="sfp.metadata" ng-click="showModalAttachMetadata(sfp)" class="pull-right" style="cursor: pointer">
-                        {{'SFC_PATH_METADATA_ATTACH' | translate}}
-                    </a>
-                    <span ng-show="sfp.metadata" class="spanText pull-right">
-                        {{sfp.metadata}}
+                    <span class="pull-right">
+                        <service-path-context-metadata-pop-up sfp-state="sfpState" sfp="sfp" context-metadata="contextMetadata" id-suffix="{{$index}}"></service-path-context-metadata-pop-up>
                     </span>
                 </p>
 

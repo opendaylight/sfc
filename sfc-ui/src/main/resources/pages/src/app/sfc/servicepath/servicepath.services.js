@@ -37,6 +37,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    var sfpState = {PERSISTED: "persisted", NEW: "new", EDITED: "edited"};
+    if (angular.isDefined(Object.freeze)) {
+      Object.freeze(sfpState);
+    }
+
+    svc.setSFPstate = function (sfp, newState) {
+      if (angular.isDefined(sfp.state) && sfp.state === sfpState.NEW) {
+        sfp.state = sfpState.NEW;
+      }
+      else {
+        sfp.state = newState;
+      }
+    };
+
     return svc;
   });
 
@@ -54,38 +68,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
           },
           sffNameList: function () {
             return sffNameList;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (result) {
-        callback(result);
-      }, function (reason) {
-        callback(reason);
-      });
-
-      return modalInstance;
-    };
-    return svc;
-  });
-
-  sfc.register.factory('ServicePathModalAttachMetadata', function ($modal) {
-    var svc = {};
-    var modalInstance;
-
-    svc.open = function (sfp, contextMetadata, variableMetadata, callback) {
-      modalInstance = $modal.open({
-        templateUrl: 'src/app/sfc/servicepath/servicepath.modal.attach.metadata.tpl.html',
-        controller: 'servicePathModalAttachMetadataCtrl',
-        resolve: {
-          sfp: function () {
-            return sfp;
-          },
-          contextMetadata: function () {
-            return contextMetadata;
-          },
-          variableMetadata: function () {
-            return variableMetadata;
           }
         }
       });

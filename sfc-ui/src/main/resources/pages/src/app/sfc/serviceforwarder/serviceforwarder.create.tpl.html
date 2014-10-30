@@ -33,6 +33,17 @@
             </div>
 
             <div class="form-group">
+                <label for="ip-mgmt-address" class="col-lg-6 control-label small-label">
+                    {{'SFC_FORWARDER_IP_MGMT_ADDRESS' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" ng-model="data['ip-mgmt-address']" id="ip-mgmt-address" name="ip-mgmt-address"
+                           placeholder="{{'SFC_FORWARDER_CREATE_IP_MGMT_ADDRESS' | translate}}">
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="classifier" class="col-lg-6 control-label small-label">
                     {{'SFC_FORWARDER_CLASSIFIER' | translate}}
                 </label>
@@ -42,6 +53,18 @@
                            placeholder="{{'SFC_FORWARDER_CREATE_CLASSIFIER' | translate}}">
                 </div>
             </div>
+
+            <div class="form-group">
+                <label for="rest-uri" class="col-lg-6 control-label small-label">
+                    {{'SFC_FORWARDER_REST_URI' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" ng-model="data['rest-uri']" id="rest-uri" name="rest-uri"
+                           placeholder="{{'SFC_FORWARDER_CREATE_REST_URI' | translate}}">
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -49,8 +72,7 @@
 <div class="col-md-5 form-horizontal">
     <h3>{{'SFC_FORWARDER_DATA_PLANE_LOCATOR' | translate}}</h3>
 
-    <div class="formElement" ng-form="data_plane_form_{{$index}}"
-         ng-repeat="locator in data['sff-data-plane-locator'] track by $index">
+    <div class="formElement" ng-form="data_plane_form_{{$index}}" ng-repeat="locator in data['sff-data-plane-locator'] track by $index">
         <div style="text-align: right; margin-bottom: 10px">
             <span class="spanTip">{{ 'SFC_DATA_PLANE_LOCATOR_REMOVE' | translate }}</span>
             <button type="button" class="btn btn-xs btn-danger" ng-click="removeLocator($index)"><i class="icon-minus"></i>
@@ -70,6 +92,13 @@
 
         <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants"></service-locator>
 
+        <h4>{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+
+        <div class="formElement" sfc-watch-for-reinit="locator"
+             ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};">
+            <sff-bridge bridge="locator['ovs-bridge']"></sff-bridge>
+        </div>
+
     </div>
     <div style="text-align: right;">
         <span class="spanTip">{{ 'SFC_DATA_PLANE_LOCATOR_ADD' | translate }}</span>
@@ -77,7 +106,7 @@
     </div>
 </div>
 
-<div class="col-md-1"></div>
+<!--<div class="col-md-1"></div>-->
 
 <div class="col-md-6 form-horizontal">
     <h3>{{'SFC_FORWARDER_SF_DICTIONARY' | translate}}</h3>
@@ -203,6 +232,16 @@
                 </div>
             </div>
         </div>
+
+        <any ng-if="function['sff-sf-data-plane-locator']">
+            <h4>{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+
+            <div class="formElement" sfc-watch-for-reinit="function['sff-sf-data-plane-locator']"
+                 ng-init="function['sff-sf-data-plane-locator']['ovs-bridge'] = function['sff-sf-data-plane-locator']['ovs-bridge'] || {};">
+                <sff-bridge bridge="function['sff-sf-data-plane-locator']['ovs-bridge']"></sff-bridge>
+            </div>
+        </any>
+
     </div>
 
     <div style="text-align: right;">

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.factory('ServicePathHelper', function ($filter) {
+  sfc.register.factory('ServicePathHelper', function ($filter, $rootScope) {
     var svc = {};
 
     svc.orderHopsInSFP = function (sfp) {
@@ -37,14 +37,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
-    var sfpState = {PERSISTED: "persisted", NEW: "new", EDITED: "edited"};
-    if (angular.isDefined(Object.freeze)) {
-      Object.freeze(sfpState);
-    }
-
     svc.setSFPstate = function (sfp, newState) {
-      if (angular.isDefined(sfp.state) && sfp.state === sfpState.NEW) {
-        sfp.state = sfpState.NEW;
+      if (angular.isDefined(sfp.state) && sfp.state === $rootScope.sfpState.NEW) {
+        sfp.state = $rootScope.sfpState.NEW;
       }
       else {
         sfp.state = newState;

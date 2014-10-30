@@ -123,5 +123,43 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('classifierSff', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'src/app/sfc/acl/acl.classifier.create.sff.tpl.html',
+      scope: {
+        idSuffix: '@idSuffix',
+        sffs: '=',
+        sff: '=',
+        classifierConstants: '='
+      },
+      controller: function ($scope) {
+        $scope.attachmentPointType = {};
+
+          $scope.$watch('sff', function(newVal){
+          if(angular.isUndefined(newVal)){
+            return;
+          }
+
+          if(angular.isDefined(newVal['bridge'])){
+            $scope.attachmentPointType = $scope.classifierConstants['attachment-point-type'][0];
+          }
+          else if (angular.isDefined(newVal['interface'])){
+            $scope.attachmentPointType = $scope.classifierConstants['attachment-point-type'][1];
+          }
+        });
+
+        $scope.resetAttachmentPoints = function(sff){
+          if(angular.isDefined(sff['bridge'])){
+            delete sff['bridge'];
+          }
+          if(angular.isDefined(sff['interface'])){
+            delete sff['interface'];
+          }
+        };
+      }
+    };
+  });
 
 });

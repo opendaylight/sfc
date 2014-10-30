@@ -1,9 +1,11 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter, $timeout) {
+  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, SfcToClassifierMappingSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     var thisCtrl = this;
+
+    SfcToClassifierMappingSvc.init();
 
     $scope.tableParams = new NgTableParams(
       {
@@ -42,6 +44,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         this.sfcsWatcherRegistered = true;
       }
+    };
+
+    this.sortSfItemsByOrder = function sortSfItemsByOrder(sfc) {
+      // fix data if 'order' property is undefined - set order index as served by restconf
+      var idx = 0;
+      _.each(sfc['sfc-service-function'], function (sfOfSfc) {
+        if (angular.isUndefined(sfOfSfc.order)) {
+          sfOfSfc.order = idx;
+        }
+        idx++;
+      });
+
+      sfc['sfc-service-function'] = $filter('orderBy')(
+        sfc['sfc-service-function'],
+        function getOrder(arg1) {
+          return arg1.order;
+        },
+        false);
     };
 
     $scope.sfcEffectMe = {};
@@ -102,6 +122,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         _.each(data, function (sfc) {
           //if it is not in tempSfcs add it
           if (angular.isUndefined(_.findWhere(tempSfcs, {name: sfc.name}))) {
+            thisCtrl.sortSfItemsByOrder(sfc);
             $scope.setSFCstate(sfc, $rootScope.sfcState.PERSISTED);
             tempSfcs.push(sfc);
           }
@@ -113,11 +134,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
 
     $scope.undoSFCnew = function undoSFCnew(sfc) {
+      SfcToClassifierMappingSvc.undoClassifierChange(sfc['name']);
       $rootScope.sfcs.splice(_.indexOf($rootScope.sfcs, sfc), 1);
     };
 
     $scope.undoSFCchanges = function undoSFCchanges(sfc) {
       ServiceChainSvc.getItem(sfc.name, function (oldSfc) {
+        SfcToClassifierMappingSvc.undoClassifierChange(sfc['name']);
         var index = _.indexOf($rootScope.sfcs, sfc);
         $rootScope.sfcs.splice(index, 1);
         $rootScope.sfcs.splice(index, 0, oldSfc);
@@ -180,6 +203,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
           //delete the row
           ServiceChainSvc.deleteItem(sfc, function () {
             $rootScope.sfcs.splice(_.indexOf($rootScope.sfcs, sfc), 1);
+            SfcToClassifierMappingSvc.setClassifier(sfc['name'], undefined);
+            SfcToClassifierMappingSvc.persistClassifier(sfc['name']);
           });
         }
       });
@@ -193,9 +218,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.persistSFC = function persistSFC(sfc) {
       $scope.unsetSFCstate(sfc);
 
+      // set order index
+      var idx = 0;
+      _.each(sfc['sfc-service-function'], function(sfOfSfc) {
+        sfOfSfc.order = idx;
+        idx++;
+      });
+
       ServiceChainSvc.putItem(sfc, function () {
         $scope.sfcEffectMe[sfc.name] = 1;
+        SfcToClassifierMappingSvc.persistClassifier(sfc.name);
       });
+
     };
 
     $scope.deploySFC = function deploySFC(sfc) {
@@ -226,6 +260,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('serviceChainCreateCtrl', function ($scope, $rootScope, $state) {
     $scope.data = {};
+
     var thisCtrl = this;
 
     this.symmetricToBoolean = function (sfc){
@@ -238,8 +273,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.data['sfc-service-function'] = [];
       $scope.data['state'] = $rootScope.sfcState.NEW;
       thisCtrl.symmetricToBoolean($scope.data);
-      $rootScope.sfcs.push($scope.data);
 
+      $rootScope.sfcs.push($scope.data);
       $state.transitionTo('main.sfc.servicechain', null, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
   });

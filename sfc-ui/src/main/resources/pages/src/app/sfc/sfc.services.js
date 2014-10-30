@@ -473,9 +473,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (!_.isEmpty(sff['sff-data-plane-locator'])) {
 
           _.each(sff['sff-data-plane-locator'], function (locator) {
+
             if (angular.isDefined(locator['data-plane-locator']['transport'])) {
 //                locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(matcher, "");
               locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
+            }
+
+            // strip namespace in 'ovs-bridge' property name
+            if (locator['service-function-forwarder-ovs:ovs-bridge']) {
+              locator['ovs-bridge'] = locator['service-function-forwarder-ovs:ovs-bridge'];
+              delete(locator['service-function-forwarder-ovs:ovs-bridge']);
             }
           });
         }
@@ -483,12 +490,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (!_.isEmpty(sff['service-function-dictionary'])) {
 
           _.each(sff['service-function-dictionary'], function (dictionary) {
+
             if (angular.isDefined(dictionary['failmode'])) {
               dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
             }
 
+            // strip namespace in 'transport' property value
             if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'])) {
               dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(matcher, "");
+            }
+
+            // strip namespace in 'ovs-bridge' property name
+            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge'])) {
+              dictionary['sff-sf-data-plane-locator']['ovs-bridge'] = dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge'];
+              delete(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge']);
             }
           });
         }
@@ -603,6 +618,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
     SfcVariableMetadataSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
 
     return new SfcVariableMetadataSvc();
+  });
+
+  // ******* SfcClassifierSvc *********
+  sfc.register.factory('SfcClassifierSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-classifier';
+    var containerName = 'service-function-classifiers';
+    var listName = 'service-function-classifier';
+
+    // constructor
+    function SfcClassifierSvc() {
+    }
+
+    SfcClassifierSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcClassifierSvc();
   });
 
 

@@ -29,14 +29,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
           $scope.popUpVisible = false;
         };
 
-        $scope.$watch('selectedMetadata', function () {
-          $scope.data = _.findWhere($scope.contextMetadata, {name: $scope.selectedMetadata});
+        $scope.$watch('selectedMetadata', function (newValue) {
+          if (angular.isUndefined(newValue)){
+            return;
+          }
+          $scope.data = _.findWhere($scope.contextMetadata, {name: newValue});
           $scope.data = thisCtrl.contextMetadataToHex($scope.data);
         });
 
         this.contextMetadataToHex = function contextMetadataToHex(data) {
-          var contextMetadata = {};
+          if(angular.isUndefined(data)){
+            return;
+          }
 
+          var contextMetadata = {};
           var decimalToHex = function (decimal) {
             return "0x" + decimal.toString(16);
           };

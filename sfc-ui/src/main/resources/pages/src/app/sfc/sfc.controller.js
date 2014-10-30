@@ -50,6 +50,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       "ace-type": ["ip", "eth"],
       "ace-ip": ["IPv4", "IPv6"]
     };
+    $rootScope.classifierConstants =
+    {
+      "attachment-point-type": ["bridge", "interface"]
+    };
   });
 
   sfc.register.controller('sfcForwarderSelect2Ctrl', function ($scope) {

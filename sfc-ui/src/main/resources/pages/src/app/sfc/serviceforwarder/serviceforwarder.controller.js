@@ -62,20 +62,26 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.selectOptions = ServiceForwarderHelper.selectOptions($scope);
 
-    $scope.data = {
-      "sff-data-plane-locator": [
-        {
-          "data-plane-locator": {}
-        }
-      ],
-      "service-function-dictionary": [
-        {
-          "nonExistent": false,
-          "sff-sf-data-plane-locator": {},
-          "sff-interfaces": []
-        }
-      ]
-    };
+    if (angular.isDefined($stateParams.sffName)) {
+      // we'll wait for data to edit
+      $scope.data = {};
+    } else {
+      // create initial data
+      $scope.data = {
+        "sff-data-plane-locator": [
+          {
+            "data-plane-locator": {}
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "nonExistent": false,
+            "sff-sf-data-plane-locator": {},
+            "sff-interfaces": []
+          }
+        ]
+      };
+    }
 
     ServiceNodeSvc.getArray(function (data) {
       $scope.sns = data;

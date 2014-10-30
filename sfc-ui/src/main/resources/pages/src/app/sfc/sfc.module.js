@@ -54,9 +54,11 @@ define([
       'app/sfc/servicenode/servicenode.directives',
       'app/sfc/config/config.directives',
       'app/sfc/servicelocator/servicelocator.directives',
+      'app/sfc/serviceforwarder/serviceforwarder.directives',
       'app/sfc/acl/acl.directives',
       'app/sfc/metadata/metadata.directives',
-      'app/sfc/servicepath/servicepath.directives'
+      'app/sfc/servicepath/servicepath.directives',
+      'app/sfc/servicechain/servicechain.directives'
     ];
 
     var loaded = $q.defer();
@@ -273,6 +275,17 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/acl/acl.create.tpl.html',
           controller: 'sfcAclCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.classifier-create', {
+      url: '/classifier-create:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/acl/acl.classifier.create.tpl.html',
+          controller: 'sfcClassifierCreateCtrl'
         }
       }
     });

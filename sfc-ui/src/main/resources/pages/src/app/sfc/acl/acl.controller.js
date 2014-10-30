@@ -41,7 +41,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             _.each(acl['access-list-entries'], function (entry) {
               entry['acl-name'] = acl['acl-name'];
               $scope.acls.push(entry);
-              stringifyComposedProperties(entry);
+              thisCtrl.stringifyComposedProperties(entry);
             });
           } else {
             var entry = {}; // dummy entry
@@ -56,7 +56,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     this.fetchData();
 
-    function stringifyComposedProperties(entry){
+    this.stringifyComposedProperties = function (entry){
       entry['source-ip-mac-mask-string'] = SfcAclHelper.sourceIpMacMaskToString(entry['matches']);
       entry['destination-ip-mac-mask-string'] = SfcAclHelper.destinationIpMacMaskToString(entry['matches']);
       entry['flow-label-string'] = SfcAclHelper.flowLabelToString(entry['matches']);
@@ -64,15 +64,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       entry['destination-port-range-string'] = SfcAclHelper.destinationPortRangeToString(entry['matches']['destination-port-range']);
       entry['dscp-string'] = SfcAclHelper.dscpToString(entry['matches']);
       entry['ip-protocol-string'] = SfcAclHelper.ipProtocolToString(entry['matches']);
-    }
-
-//    $scope.matchesToString = function (matches){
-//      return SfcAclHelper.matchesToString(matches, $scope);
-//    };
-//
-//    $scope.metadataToString = function (matches){
-//      return SfcAclHelper.metadataToString(matches, $scope);
-//    };
+    };
 
     //table actions
     $scope.showMetadata = function (ace) {
@@ -134,6 +126,115 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+  });
+
+  sfc.register.controller('sfcClassifierCtrl', function ($scope, $state, SfcClassifierSvc, ModalDeleteSvc, ngTableParams, $filter) {
+    var thisCtrl = this;
+    var NgTableParams = ngTableParams; // checkstyle
+
+    $scope.classifiers = [];
+
+    $scope.tableParams = new NgTableParams({
+        page: 1,          // show first page
+        count: 10,        // count per page
+        sorting: {
+          name: 'asc'     // initial sorting
+        }
+      },
+      {
+        total: 0,
+        getData: function ($defer, params) {
+          // use build-in angular filter
+          var filteredData = params.filter() ?
+            $filter('filter')($scope.classifiers, params.filter()) :
+            $scope.classifiers;
+
+          var orderedData = params.sorting() ?
+            $filter('orderBy')(filteredData, params.orderBy()) :
+            filteredData;
+
+          params.total(orderedData.length);
+          $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+      });
+
+    this.fetchData = function (){
+      SfcClassifierSvc.getArray(function(data){
+        $scope.classifiers = data;
+        $scope.tableParams.reload();
+      });
+    };
+
+    this.fetchData();
+
+    $scope.getSffAttachmentPointTooltip = function(sff){
+      var tooltip;
+
+      if(angular.isDefined(sff['bridge'])){
+        tooltip = $scope.$eval('"SFC_CLASSIFIER_ATTACHMENT_POINT_BRIDGE" | translate') + ": " + sff['bridge'];
+      }
+      else if(angular.isDefined(sff['interface'])){
+        tooltip = $scope.$eval('"SFC_CLASSIFIER_ATTACHMENT_POINT_INTERFACE" | translate') + ": " + sff['interface'];
+      }
+
+      return tooltip;
+    };
+
+    $scope.deleteItem = function deleteItem(classifier) {
+      ModalDeleteSvc.open(classifier['name'], function (result) {
+        if (result == 'delete') {
+          //delete the row
+          SfcClassifierSvc.deleteItem(classifier, function () {
+            thisCtrl.fetchData();
+          });
+        }
+      });
+    };
+
+    $scope.editItem = function editItem(classifier) {
+      $state.transitionTo('main.sfc.classifier-create', {itemKey: classifier['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+    };
+
+  });
+
+  sfc.register.controller('sfcClassifierCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcClassifierSvc, SfcClassifierHelper, SfcAclSvc, ServiceChainSvc, ServiceForwarderSvc){
+
+    $scope.data = {'service-function-forwarder': []};
+
+    if ($stateParams.itemKey) {
+      SfcClassifierSvc.getItem($stateParams.itemKey, function (item) {
+        $scope.data = item;
+      });
+    } else {
+      $scope.data['service-function-forwarder'].push({});
+    }
+
+    ServiceChainSvc.getArray(function (data){
+      $scope.sfcs = data;
+    });
+
+    SfcAclSvc.getArray(function (data){
+      $scope.acls = data;
+    });
+
+    ServiceForwarderSvc.getArray(function (data){
+      $scope.sffs = data;
+    });
+
+    // form actions
+    $scope.addSff = function (){
+      SfcClassifierHelper.addSff($scope);
+    };
+
+    $scope.removeSff = function (index){
+      SfcClassifierHelper.removeSff(index, $scope);
+    };
+
+    $scope.submit = function (){
+      SfcClassifierSvc.putItem($scope.data, function (){
+        $state.transitionTo('main.sfc.acl', null, { location: true, inherit: true, relative: $state.$current, notify: true });
+      });
+    };
   });
 
   sfc.register.controller('sfcAclModalMetadataCtrl', function ($modalInstance, $scope, ace) {

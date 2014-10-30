@@ -244,4 +244,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return svc;
   });
 
+  sfc.register.factory("SfcClassifierHelper", function () {
+    var svc = {};
+
+    svc.addSff = function ($scope) {
+      if (angular.isUndefined($scope.data['service-function-forwarder'])) {
+        $scope.data['service-function-forwarder'] = [];
+      }
+      $scope.data['service-function-forwarder'].push({});
+    };
+
+    svc.removeSff = function (index, $scope) {
+      $scope.data['service-function-forwarder'].splice(index, 1);
+    };
+
+    return svc;
+  });
+
 });

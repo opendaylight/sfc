@@ -243,7 +243,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (result == 'delete') {
           //delete the row
           ServicePathSvc.deleteItem(sfp, function () {
-            $rootScope.sfps.splice(_.indexOf($rootScope, sfp), 1);
+            $rootScope.sfps.splice(_.indexOf($rootScope.sfps, sfp), 1);
           });
         }
       });

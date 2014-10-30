@@ -55,6 +55,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.setSffSfLocator = function (sf, locatorName) {
       var locator = _.clone(_.findWhere($scope.sfLocators, {name: locatorName}));
+
+      var saved_other_properties = {}; // because we create new object on selector change, we must save other properties
+
+      if (angular.isDefined(sf['sff-sf-data-plane-locator']['ovs-bridge'])) {
+         saved_other_properties['ovs-bridge'] = sf['sff-sf-data-plane-locator']['ovs-bridge'];
+      }
+
       if (locator) {
         delete locator['name'];
         delete locator['service-function-forwarder'];
@@ -62,6 +69,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       } else {
         sf['sff-sf-data-plane-locator'] = {};
       }
+
+      angular.extend(sf['sff-sf-data-plane-locator'], saved_other_properties);
     };
 
     $scope.$watch('service_function', function (newVal, oldVal) {

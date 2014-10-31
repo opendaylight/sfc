@@ -68,7 +68,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 odlSfc.executor.submit(sfcProviderServicePathAPI);
             }
         }
-/*
+
         // SFP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =
                 change.getUpdatedData();
@@ -79,11 +79,12 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         updatedServiceFunctionPath.getName());
                 Object[] servicePathObj = {updatedServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getUpdateServicePathAPI(servicePathObj, servicePathClass));
+                SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
+                        .getUpdateServicePathAPI(servicePathObj, servicePathClass);
+                odlSfc.executor.submit(sfcProviderServicePathAPI);
             }
         }
-        */
+
 
         // SFP DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();

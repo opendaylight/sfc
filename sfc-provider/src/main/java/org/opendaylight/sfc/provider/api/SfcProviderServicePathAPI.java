@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf
         .rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf
@@ -56,6 +57,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -165,7 +167,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).
+            InstanceIdentifier<ServiceFunctionPath> sfpEntryIID =
+                    InstanceIdentifier.builder(ServiceFunctionPaths.class).
                     child(ServiceFunctionPath.class, sfp.getKey()).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
@@ -370,7 +373,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     }
 
     @SuppressWarnings("unused")
-    private void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
+    protected void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
         this.createServiceFunctionPathEntry(serviceFunctionPath);
     }
 
@@ -378,6 +381,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * This function is actually an updated to a previously created SFP where only
      * the service chain name was given. In this function we patch the SFP with the
      * names of the chosen SFs
+     */
+    /**
+     * This function is called whenever a SFP is created or updated. It recomputes
+     * the SFP information and merges any missing data
+     * <p>
+     * @param serviceFunctionPath Service Function Path Object
+     * @return Nothing.
      */
     protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
@@ -505,17 +515,54 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey)
                 .build();
 
-        ServiceFunctionPath newServiceFunctionPath = serviceFunctionPathBuilder.build();
+        ServiceFunctionPath newServiceFunctionPath =
+                serviceFunctionPathBuilder.build();
         WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-        writeTx.put(LogicalDatastoreType.CONFIGURATION,
+        writeTx.merge(LogicalDatastoreType.CONFIGURATION,
                 sfpIID, newServiceFunctionPath, true);
         writeTx.commit();
         //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
         SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
+        /* Prepare REST invocation */
+
+        invokeServicePathRest(serviceFunctionPath.getName(), HttpMethod.PUT);
+
         printTraceStop(LOG);
 
     }
+    /**
+     * This method decouples the SFP API from the SouthBound REST client.
+     * SFP APIs call this method to convey SFP information to REST southbound
+     * devices
+     * <p>
+     * @param sfpName Service Function Path Name
+     * @param httpMethod  HTTP method such as GET, PUT, POST..
+     * @return Nothing.
+     */
+    private void invokeServicePathRest(String sfpName, String httpMethod) {
+
+     /* Invoke SB REST API */
+
+        ServiceFunctionPath serviceFunctionPath =  readServiceFunctionPath(sfpName);
+
+        if (serviceFunctionPath != null)
+        {
+            if (httpMethod.equals(HttpMethod.PUT))
+            {
+                Object[] servicePathObj = {serviceFunctionPath};
+                String className = serviceFunctionPath.getClass().getName();
+                Class[] servicePathClass = {ServiceFunctionPath.class};
+                odlSfc.executor.execute(SfcProviderRestAPI.
+                        getPutServiceFunctionPath(servicePathObj,
+                                servicePathClass));
+            }
+        } else {
+            LOG.error("Could not find Service Function path: {}", sfpName);
+        }
+
+    }
+
 
     /*
     private void deleteServiceFunctionPathEntry (ServiceFunctionChain serviceFunctionChain) {

@@ -107,7 +107,7 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 result = method.invoke(this, parameters);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                LOG.error("Could not find method in class");
+                LOG.error("Could not find method {} in class", methodName);
             }
         }
         return result;

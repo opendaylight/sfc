@@ -30,6 +30,7 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
             (SfcProviderAbstractRestAPI.class);
     private String methodName = null;
     private Object[] parameters;
+    private Class[] parameterTypes;
 
     public String getMethodName()
     {
@@ -58,10 +59,10 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
 
     public void setParameterTypes(Class[] parameterTypes)
     {
-        this.parameterTypes = Arrays.copyOf(parameterTypes, parameterTypes.length);
+        this.parameterTypes = Arrays.copyOf(parameterTypes,
+                parameterTypes.length);
     }
 
-    private Class[] parameterTypes;
 
     protected SfcProviderAbstractRestAPI(Object[] params, Class[] paramsTypes, String m) {
         setMethodName(m);
@@ -80,8 +81,7 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 method.invoke(this, parameters);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                LOG.error("\nFailed to find proper REST method: {}",
-                        e.getMessage());
+                LOG.error("Could not find method {} in class", methodName);
             }
         }
     }

@@ -9,14 +9,20 @@
 package org.opendaylight.sfc.provider;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff
+        .rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
+        .rev140701.service.function.paths.ServiceFunctionPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.MediaType;
 
 
 /**
@@ -31,7 +37,6 @@ import org.slf4j.LoggerFactory;
 public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRestAPI.class);
-    private static final String ACCEPT = "application/json";
     private static final String HTTP_ERROR_MSG = "Failed : HTTP error code : ";
 
     SfcProviderRestAPI (Object[] params, Class[] paramsTypes, String m) {
@@ -40,14 +45,28 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     public void putServiceFunctionForwarders (ServiceFunctionForwarders serviceFunctionForwarders) {
 
+        final HTTPBasicAuthFilter basicAuthFilter = new HTTPBasicAuthFilter("admin", "admin");
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
+        client.addFilter(basicAuthFilter);
 
-        ClientResponse getClientResponse = client
-                .resource("http://localhost:8080/restconf/config/service" +
-                        "-function-forwarder:service-function-forwarders/")
-                .accept(ACCEPT)
-                .get(ClientResponse.class);
+        ClientResponse getClientResponse = null;
+        try
+        {
+            getClientResponse = client
+                    .resource("http://localhost:8181/restconf/config/service" +
+                            "-function-forwarder:service-function-forwarders/")
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .get(ClientResponse.class);
+        } catch (UniformInterfaceException e)
+        {
+            LOG.error("REST Server error. Status: {} Message: {}",
+                    getClientResponse.getClientResponseStatus(),
+                    e.getMessage());
+        } catch (ClientHandlerException e)
+        {
+            LOG.error("{} : Could not communicate with REST Server ", e.getMessage());
+        }
 
         if (getClientResponse.getStatus() != 200)
         {
@@ -60,9 +79,9 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         getClientResponse.close();
 
         ClientResponse putClientRemoteResponse = client
-                .resource("http://localhost:5000/" +
+                .resource("http://127.0.0.1:5000/" +
                         "/config/service-function-forwarder:service-function" +
-                        "-forwarders/").type(ACCEPT)
+                        "-forwarders/").type(MediaType.APPLICATION_JSON_TYPE)
                 .put(ClientResponse.class, jsonOutput);
 
 
@@ -77,16 +96,39 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     }
 
-    public void putServiceFunctionPaths (ServiceFunctionPaths serviceFunctionPaths) {
-
+    /**
+     * GETs a Service Function Path from REST Server and returns its
+     * data in JSON format
+     * <p>
+     * @param serviceFunctionPath Service Function Path Name
+     * @return The SFP in JSON format
+     */
+    private String getRESTServiceFunctionPath(ServiceFunctionPath serviceFunctionPath) {
+        final HTTPBasicAuthFilter basicAuthFilter = new HTTPBasicAuthFilter("admin", "admin");
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
 
-        ClientResponse getClientResponse = client
-                .resource("http://localhost:8080/restconf/config/service" +
-                        "-function-path:service-function-paths/")
-                .accept(ACCEPT)
-                .get(ClientResponse.class);
+        ClientResponse getClientResponse;
+        try
+        {
+            client.addFilter(basicAuthFilter);
+            String sfpURI  = "http://localhost:8181/restconf/config/service" +
+                    "-function-path:service-function-paths/" +
+                    "service-function-path/" + serviceFunctionPath.getName();
+            getClientResponse = client
+                    .resource(sfpURI)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .get(ClientResponse.class);
+        } catch (UniformInterfaceException e)
+        {
+            LOG.error("REST Server error. Message: {}",
+                    e.getMessage());
+            return null;
+        } catch (ClientHandlerException e)
+        {
+            LOG.error("Could not communicate with REST Server: {} ", e.getMessage());
+            return null;
+        }
 
         if (getClientResponse.getStatus() != 200)
         {
@@ -94,18 +136,44 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     + getClientResponse.getStatus(),
                     getClientResponse);
         }
-
-
         String jsonOutput = getClientResponse.getEntity(String.class);
         getClientResponse.close();
-        ClientResponse putClientRemoteResponse = client
-                .resource("http://localhost:5000" +
-                        "/config/service-function-path:service-function-paths" +
-                        "/").type("application/json")
-                .put(ClientResponse.class, jsonOutput);
+        return jsonOutput;
+    }
 
+    /**
+     * Communicates SFP to SouthBound REST Server
+     * <p>
+     * @param serviceFunctionPath Service Function Path Name
+     * @return The SFP in JSON format
+     */
+    public void putServiceFunctionPath (ServiceFunctionPath serviceFunctionPath) {
+
+        ClientConfig clientConfig = new DefaultClientConfig();
+        Client client = Client.create(clientConfig);
+
+        String sfpJSON = getRESTServiceFunctionPath(serviceFunctionPath);
+
+        ClientResponse putClientRemoteResponse;
+        try
+        {
+            String sfpURI  = "http://127.0.0.1:5000/config/service" +
+                    "-function-path:service-function-paths/" +
+                    "service-function-path/" + serviceFunctionPath.getName();
+            putClientRemoteResponse = client
+                    .resource(sfpURI).type(MediaType.APPLICATION_JSON_TYPE)
+                    .put(ClientResponse.class, sfpJSON);
+        } catch (UniformInterfaceException e)
+        {
+            LOG.error("REST Server error. Message: {}",
+                    e.getMessage());
+            return;
+        } catch (ClientHandlerException e)
+        {
+            LOG.error("Could not communicate with REST Server: {} ", e.getMessage());
+            return;
+        }
         putClientRemoteResponse.close();
-
 
     }
 
@@ -113,8 +181,8 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionForwarders");
     }
 
-    public static  SfcProviderRestAPI getPutServiceFunctionPaths (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPaths");
+    public static  SfcProviderRestAPI getPutServiceFunctionPath (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPath");
     }
 
 }

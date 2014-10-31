@@ -11,7 +11,8 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
+        .rev140701.ServiceFunctionPaths;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -47,12 +48,10 @@ public class SfcProviderSfpDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
         {
             if( entry.getValue() instanceof ServiceFunctionPaths) {
-
                 ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-                Object[] serviceForwarderObj = {updatedServiceFunctionPaths};
-                Class[] serviceForwarderClass = {ServiceFunctionPaths.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPaths (serviceForwarderObj, serviceForwarderClass));
-
+                Object[] servicePathObj = {updatedServiceFunctionPaths};
+                Class[] servicePathClass = {ServiceFunctionPaths.class};
+  //              odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPath (servicePathObj, servicePathClass));
             }
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);

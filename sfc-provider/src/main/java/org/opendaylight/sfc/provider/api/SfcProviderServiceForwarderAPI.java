@@ -13,6 +13,7 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -32,6 +33,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -96,8 +98,8 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteServiceFunctionFromForwarder");
     }
 
-    public static SfcProviderServiceForwarderAPI getCreateServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceForwarderAPI(params, paramsTypes, "createServiceFunctionForwarder");
+    public static SfcProviderServiceForwarderAPI getCheckServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceForwarderAPI(params, paramsTypes, "checkServiceFunctionForwarder");
     }
 
     public static SfcProviderServiceForwarderAPI getUpdateServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
@@ -178,15 +180,6 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     }
 
-    // TODO: need to check for sff-data-plane-locator
-    /*
-     * This method checks if a SFF is complete and can be sent to southbound devices
-     */
-    public static boolean checkServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
-        return ((serviceFunctionForwarder.getName() != null) &&
-                (serviceFunctionForwarder.getServiceFunctionDictionary() !=
-                        null));
-    }
 
     protected boolean putServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         boolean ret = false;
@@ -315,44 +308,51 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    /* We create a single service function forwarder from the first data-plane locator
-     * on the service function.
+    /**
+     * Check a SFF for consistency after datastore creation
+     * <p>
+     * @param serviceFunctionForwarder SFF object
+     * @return Nothing
      */
-    public void createServiceFunctionForwarder(ServiceFunction serviceFunction) {
+    public void checkServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
 
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionForwarder> sffIID;
-        String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
-                .get(0).getServiceFunctionForwarder();
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
-        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-                .build();
 
-        ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
+        invokeServiceForwarderRest(serviceFunctionForwarder, HttpMethod.PUT);
 
-        ArrayList<ServiceFunctionDictionary> serviceFunctionDictionaryList = new ArrayList<>();
-        ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder.setLocatorType(serviceFunction.getSfDataPlaneLocator().get(0).getLocatorType());
-
-        serviceFunctionDictionaryBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build());
-        serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
-
-        serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionDictionaryList);
-
-        LOG.debug("\n########## Creating Forwarder: {}  Service Function: {} "
-                , serviceFunctionForwarderName, serviceFunction.getName());
-
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-        writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                sffIID, serviceFunctionForwarderBuilder.build(), true);
-        writeTx.commit();
         printTraceStop(LOG);
     }
+
+    /**
+     * This method decouples the SFP API from the SouthBound REST client.
+     * SFP APIs call this method to convey SFP information to REST southbound
+     * devices
+     * <p>
+     * @param serviceFunctionForwarder SFF object
+     * @param httpMethod  HTTP method such as GET, PUT, POST..
+     * @return Nothing.
+     */
+    private void invokeServiceForwarderRest(ServiceFunctionForwarder serviceFunctionForwarder,
+                                            String httpMethod) {
+
+     /* Invoke SB REST API */
+
+        if (serviceFunctionForwarder != null)
+        {
+            if (httpMethod.equals(HttpMethod.PUT))
+            {
+                Object[] servicePathObj = {serviceFunctionForwarder};
+                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarder
+                        (servicePathObj,
+                                serviceForwarderClass));
+            }
+        } else {
+            LOG.error("SFF object is null");
+        }
+
+    }
+
 
     public void deleteServiceFunctionFromForwarder(ServiceFunction serviceFunction) {
         printTraceStart(LOG);
@@ -379,8 +379,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     public void updateServiceFunctionForwarder(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
-        deleteServiceFunctionFromForwarder(serviceFunction);
-        createServiceFunctionForwarder(serviceFunction);
+
 
     }
 

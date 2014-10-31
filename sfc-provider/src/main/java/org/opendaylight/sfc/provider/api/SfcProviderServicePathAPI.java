@@ -551,7 +551,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             if (httpMethod.equals(HttpMethod.PUT))
             {
                 Object[] servicePathObj = {serviceFunctionPath};
-                String className = serviceFunctionPath.getClass().getName();
                 Class[] servicePathClass = {ServiceFunctionPath.class};
                 odlSfc.executor.execute(SfcProviderRestAPI.
                         getPutServiceFunctionPath(servicePathObj,

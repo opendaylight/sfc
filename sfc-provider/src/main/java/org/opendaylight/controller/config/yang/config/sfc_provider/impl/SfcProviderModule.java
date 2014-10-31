@@ -79,11 +79,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.snIID, sfcProviderSnDataListener, DataBroker.DataChangeScope.SUBTREE );
 
-        //ServiceFunctionForwarder
-        SfcProviderSffDataListener sfcProviderSffDataListener = new SfcProviderSffDataListener();
+        //ServiceFunctionForwarder Entry
+        SfcProviderSffEntryDataListener sfcProviderSffEntryDataListener = new SfcProviderSffEntryDataListener();
         final ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration =
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                       OpendaylightSfc.sffIID, sfcProviderSffDataListener,  DataBroker.DataChangeScope.SUBTREE );
+                       OpendaylightSfc.sffIID, sfcProviderSffEntryDataListener,  DataBroker.DataChangeScope.SUBTREE );
 
 
         // ServiceFunction Entry

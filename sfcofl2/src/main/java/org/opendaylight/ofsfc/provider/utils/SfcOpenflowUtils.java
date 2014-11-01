@@ -7,6 +7,7 @@
  */
 package org.opendaylight.ofsfc.provider.utils;
 
+import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.ofsfc.provider.OpenflowSfcRenderer;
@@ -46,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
@@ -55,7 +57,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
@@ -185,4 +191,43 @@ public class SfcOpenflowUtils {
         return vlanMatchBuilder.build();
     }
 
+    public static FlowBuilder buildFlow(String flowId, short tableId, String flowName, BigInteger cookieValue,
+            MatchBuilder matchBuilder, InstructionsBuilder instructionsBuilder, int flowPriority) {
+        FlowBuilder newFlow = new FlowBuilder();
+        newFlow.setId(new FlowId(flowId));
+        newFlow.setKey(new FlowKey(new FlowId(flowId)));
+        newFlow.setTableId(tableId);
+        newFlow.setFlowName(flowName);
+        newFlow.setCookie(new FlowCookie(cookieValue));
+        newFlow.setCookieMask(new FlowCookie(cookieValue));
+        newFlow.setContainerName(null);
+        newFlow.setStrict(false);
+        newFlow.setMatch(matchBuilder.build());
+        newFlow.setInstructions(instructionsBuilder.build());
+        newFlow.setPriority(flowPriority);
+        newFlow.setHardTimeout(0);
+        newFlow.setIdleTimeout(0);
+        newFlow.setFlags(new FlowModFlags(false, false, false, false, false));
+        if (null == newFlow.isBarrier()) {
+            newFlow.setBarrier(Boolean.FALSE);
+        }
+        newFlow.setInstallHw(true);
+        return newFlow;
+    }
+
+    public static BigInteger getMetadataSFP(long sfpId) {
+        return (BigInteger.valueOf(sfpId).and(new BigInteger("FFFF", 16)));
+    }
+
+    public static BigInteger getCookieSFP(long sfpId) {
+        return SfcOfL2Constants.COOKIE_SFC_BASE.add(new BigInteger("0120000", 16)).add(BigInteger.valueOf(sfpId));
+    }
+
+    public static BigInteger getCookieIngress(long vlanId) {
+        return SfcOfL2Constants.COOKIE_SFC_BASE.add(new BigInteger("0130000", 16)).add(BigInteger.valueOf(vlanId));
+    }
+
+    public static BigInteger getCookieDefault(int tableId) {
+        return SfcOfL2Constants.COOKIE_SFC_BASE.add(new BigInteger("0100000", 16)).add(BigInteger.valueOf(tableId));
+    }
 }

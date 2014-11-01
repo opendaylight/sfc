@@ -173,6 +173,9 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                         int curSFFVlan = ((MacAddressLocator) curSffDataPlanelocator.getDataPlaneLocator()
                                 .getLocatorType()).getVlanId();
                         flowProgrammer.configureIngressFlow(curSFFVlan, isAddFlow);
+                        // flowProgrammer.configureClassificationFlow("10.0.0.1",
+                        // (short) 32, "10.0.2.3", (short) 32,
+                        // (short) 23, (short) 34, (byte) 6, 23, isAddFlow);
                         // TODO add support for multiple data plane locators
                         // break;
                     }

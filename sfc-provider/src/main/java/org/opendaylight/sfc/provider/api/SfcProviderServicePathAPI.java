@@ -590,7 +590,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
 
     @SuppressWarnings("unused")
-    private void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
+    public void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
 

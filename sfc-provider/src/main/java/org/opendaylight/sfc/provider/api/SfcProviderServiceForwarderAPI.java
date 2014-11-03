@@ -346,13 +346,19 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarder
                         (servicePathObj,
                                 serviceForwarderClass));
+            } else if (httpMethod.equals(HttpMethod.DELETE))
+            {
+                Object[] servicePathObj = {serviceFunctionForwarder};
+                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+                odlSfc.executor.execute(SfcProviderRestAPI.getDeleteServiceFunctionForwarder
+                        (servicePathObj,
+                                serviceForwarderClass));
             }
         } else {
             LOG.error("SFF object is null");
         }
 
     }
-
 
     public void deleteServiceFunctionFromForwarder(ServiceFunction serviceFunction) {
         printTraceStart(LOG);

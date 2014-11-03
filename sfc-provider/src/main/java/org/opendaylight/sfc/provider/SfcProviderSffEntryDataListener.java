@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -40,6 +41,32 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
+
+        // SF ORIGINAL
+        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
+
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
+            if( entry.getValue() instanceof  ServiceFunctionForwarder)
+            {
+                ServiceFunctionForwarder originalServiceFunctionForwarder =
+                        (ServiceFunctionForwarder) entry.getValue();
+            }
+        }
+
+        // SF DELETION
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if( dataObject instanceof ServiceFunctionForwarder) {
+                ServiceFunctionForwarder delServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
+                Object[] serviceForwarderObj = {delServiceFunctionForwarder};
+                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+
+                SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
+                        .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
+                odlSfc.executor.submit(sfcProviderRestAPI);
+            }
+        }
 
         // SFF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();

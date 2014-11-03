@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.provider;
 
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +84,14 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
                 method.invoke(this, parameters);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 LOG.error("Could not find method {} in class", methodName);
+                return;
+            } catch (UniformInterfaceException e) {
+                LOG.error("REST Server error. Message: {}",
+                        e.getMessage());
+                return;
+            } catch (ClientHandlerException e) {
+                LOG.error("Could not communicate with REST Server: {} ", e.getMessage());
+                return;
             }
         }
     }

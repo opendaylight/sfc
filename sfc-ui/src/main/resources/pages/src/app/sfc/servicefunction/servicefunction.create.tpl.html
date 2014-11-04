@@ -16,7 +16,7 @@
                 <label for="type" class="col-lg-6 control-label small-label">{{'SFC_FUNCTION_TYPE' | translate}}</label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="type" name="type" ui-select2 ng-model="data.type" ng-required="true"
+                    <select class="form-control input-sm" id="type" name="type" ui-select2="{allowClear: true}" ng-model="data.type" ng-required="true"
                             data-placeholder="{{'SFC_FUNCTION_CREATE_TYPE' | translate}}">
                         <option value=""></option>
                         <option ng-repeat="t in serviceFunctionConstants.type" value="{{t}}">{{t}}</option>
@@ -39,7 +39,7 @@
                     translate}}</label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="nshaware" ui-select2 ng-model="data['nsh-aware']"
+                    <select class="form-control input-sm" id="nshaware" ui-select2="{allowClear: true}" ng-model="data['nsh-aware']"
                             ng-required="false"
                             data-placeholder="{{'SFC_FUNCTION_CREATE_NSH_AWARE' | translate}}">
                         <option value=""></option>

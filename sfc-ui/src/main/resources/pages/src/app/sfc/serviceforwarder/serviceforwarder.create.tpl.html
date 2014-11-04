@@ -21,7 +21,7 @@
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="servicenode" ui-select2
+                    <select class="form-control input-sm" id="servicenode" ui-select2="{allowClear: true}"
                             ng-model="data['service-node']"
                             ng-required="false"
                             data-placeholder="{{'SFC_FORWARDER_CREATE_SERVICE_NODE' | translate}}">
@@ -79,24 +79,23 @@
             </button>
         </div>
         <div class="form-group" show-validation-error>
-            <label for="data_plane_name" class="col-lg-6 control-label small-label">
+            <label for="data_plane_name_{{$index}}" class="col-lg-6 control-label small-label">
                 {{'SFC_FORWARDER_DATA_PLANE_LOCATOR_NAME' | translate}}
             </label>
 
             <div class="col-lg-6">
                 <input type="text" class="form-control input-sm" ng-model="locator['name']"
-                       id="data_plane_name" name="data_plane_name"
+                       id="data_plane_name_{{$index}}" name="data_plane_name"
                        placeholder="{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_CREATE_NAME' | translate}}" required>
             </div>
         </div>
 
-        <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants"></service-locator>
+        <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants" id-suffix="loc_{{$index}}"></service-locator>
 
-        <h4>{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
-
-        <div class="formElement" sfc-watch-for-reinit="locator"
+        <div sfc-watch-for-reinit="locator"
              ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};">
-            <sff-bridge bridge="locator['ovs-bridge']"></sff-bridge>
+            <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+            <sff-bridge bridge="locator['ovs-bridge']" id-suffix="loc_{{$index}}"></sff-bridge>
         </div>
 
     </div>
@@ -125,13 +124,13 @@
 
         <div ng-if="!(function.nonExistent)">
             <div class="form-group" show-validation-error>
-                <label for="function_name" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_name_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_NAME_TYPE_IP' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="function_name" name="function_name"
-                            ui-select2 ng-model="function['name']"
+                    <select class="form-control input-sm" id="function_name_{{$index}}" name="function_name"
+                            ui-select2="{allowClear: true}" ng-model="function['name']"
                             ng-required="true" data-placeholder="{{'SFC_FUNCTION_CREATE_SELECT_NAME' | translate}}"
                             ng-change="sfChangeListener(function)">
                         <option value=""></option>
@@ -143,12 +142,12 @@
             </div>
 
             <div class="form-group" ng-show="function['name']">
-                <label for="function_failmode" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_failmode_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_FAILMODE' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="function_failmode" ui-select2 ng-model="function['failmode']"
+                    <select class="form-control input-sm" id="function_failmode_{{$index}}" ui-select2="{allowClear: true}" ng-model="function['failmode']"
                             ng-required="false" data-placeholder="{{'SFC_FUNCTION_CREATE_FAILMODE' | translate}}">
 
                         <option value=""></option>
@@ -157,16 +156,16 @@
                 </div>
             </div>
 
-            <service-locator-selector function="function" ng-show="function['name']"></service-locator-selector>
+            <service-locator-selector function="function" ng-show="function['name']" id-suffix="func_loc_{{$index}}"></service-locator-selector>
 
             <div class="form-group" ng-show="function['name']">
-                <label for="function_interfaces" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_interfaces_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_SFF_INTERFACES' |translate}}
                 </label>
 
                 <div class="col-lg-6">
                     <input type="hidden" class="form-control input-sm" ng-model="function['sff-interfaces']"
-                           id="function_interfaces" ui-select2="selectOptions"
+                           id="function_interfaces_{{$index}}" ui-select2="selectOptions"
                            data-placeholder="{{'SFC_FUNCTION_SFF_CREATE_INTERFACES' | translate}}">
                 </div>
 
@@ -175,23 +174,23 @@
 
         <div ng-if="function.nonExistent">
             <div class="form-group" show-validation-error>
-                <label for="function_name2" class="col-lg-6 control-label small-label">
+                <label for="function_name2_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_NAME' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm" id="function_name2" name="function_name2" required
+                    <input type="text" class="form-control input-sm" id="function_name2_{{$index}}" name="function_name2" required
                            ng-model="function['name']" placeholder="{{'SFC_FUNCTION_CREATE_NAME' | translate}}">
                 </div>
             </div>
 
             <div class="form-group" show-validation-error>
-                <label for="function_type" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_type_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_TYPE' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="function_type" name="function_type"
+                    <select class="form-control input-sm" id="function_type_{{$index}}" name="function_type"
                             ui-select2 ng-model="function['type']" ng-required="true"
                             data-placeholder="{{'SFC_FUNCTION_CREATE_TYPE' | translate}}">
 
@@ -202,12 +201,12 @@
             </div>
 
             <div class="form-group">
-                <label for="function_failmode2" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_failmode2_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_FAILMODE' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="function_failmode2" ui-select2
+                    <select class="form-control input-sm" id="function_failmode2_{{$index}}" ui-select2="{allowClear: true}"
                             ng-model="function['failmode']"
                             ng-required="false"
                             data-placeholder="{{'SFC_FUNCTION_CREATE_FAILMODE' | translate}}">
@@ -218,29 +217,29 @@
                 </div>
             </div>
 
-            <service-locator constants="serviceLocatorConstants" locator="function['sff-sf-data-plane-locator']"></service-locator>
+            <service-locator constants="serviceLocatorConstants" locator="function['sff-sf-data-plane-locator']" id-suffix="func_loc_{{$index}}"></service-locator>
 
             <div class="form-group">
-                <label for="function_interfaces2" class="col-lg-6 control-label small-label">
+                <label ui-select2-label="function_interfaces2_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_SFF_INTERFACES' | translate}}
                 </label>
 
                 <div class="col-lg-6">
                     <input type="hidden" class="form-control input-sm" ng-model="function['sff-interfaces']"
-                           id="function_interfaces2" ui-select2="selectOptions"
+                           id="function_interfaces2_{{$index}}" ui-select2="selectOptions"
                            data-placeholder="{{'SFC_FUNCTION_SFF_CREATE_INTERFACES' | translate}}">
                 </div>
             </div>
         </div>
 
-        <any ng-if="function['sff-sf-data-plane-locator']">
-            <h4>{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
-
-            <div class="formElement" sfc-watch-for-reinit="function['sff-sf-data-plane-locator']"
-                 ng-init="function['sff-sf-data-plane-locator']['ovs-bridge'] = function['sff-sf-data-plane-locator']['ovs-bridge'] || {};">
-                <sff-bridge bridge="function['sff-sf-data-plane-locator']['ovs-bridge']"></sff-bridge>
-            </div>
-        </any>
+        <div ng-if="function['sff-sf-data-plane-locator']"
+             sfc-watch-for-reinit="function['sff-sf-data-plane-locator']"
+             ng-init="function['sff-sf-data-plane-locator']['ovs-bridge'] = function['sff-sf-data-plane-locator']['ovs-bridge'] || {};">
+            <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+            <sff-bridge bridge="function['sff-sf-data-plane-locator']['ovs-bridge']"
+                        id-suffix="func_loc_{{$index}}">
+            </sff-bridge>
+        </div>
 
     </div>
 

@@ -5,8 +5,8 @@
         </label>
 
         <div class="col-lg-6">
-            <select class="form-control input-sm" id="sff{{idSuffix}}" name="sff" ui-select2
-                    ng-model="sff['name']" ng-required="true"
+            <select class="form-control input-sm" id="sff{{idSuffix}}" name="sff" ui-select2="{allowClear: true}"
+                    ng-model="sff['name']" ng-required="true" ng-change="resetAttachmentPointType(sff)"
                     data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_FORWARDER' | translate}}">
 
                 <option value=""></option>
@@ -22,7 +22,7 @@
 
         <div class="col-lg-6">
             <select class="form-control input-sm" id="sff_attachment_point{{idSuffix}}" name="sff_attachment_point"
-                    ui-select2 ng-model="attachmentPointType" ng-required="false"
+                    ui-select2="{allowClear: true}" ng-model="attachmentPointType" ng-required="false"
                     data-placeholder="{{'SFC_CLASSIFIER_CREATE_ATTACHMENT_POINT_TYPE' | translate}}"
                     ng-change="resetAttachmentPoints(sff)">
 
@@ -33,12 +33,19 @@
     </div>
 
     <div ng-if="attachmentPointType == classifierConstants['attachment-point-type'][0]" class="form-group" show-validation-error>
-        <label for="bridge{{idSuffix}}" class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_ATTACHMENT_POINT_BRIDGE_NAME' |
-            translate}}</label>
+
+        <label class="col-lg-6 control-label small-label" ui-select2-label="bridge{{idSuffix}}">
+            {{'SFC_CLASSIFIER_ATTACHMENT_POINT_BRIDGE_NAME' | translate}}
+        </label>
 
         <div class="col-lg-6">
-            <input type="text" class="form-control input-sm" ng-model="sff['bridge']" id="bridge{{idSuffix}}" name="bridge"
-                   placeholder="{{'SFC_CLASSIFIER_CREATE_ATTACHMENT_POINT_BRIDGE_NAME' | translate}}">
+            <select class="form-control input-sm" id="bridge{{idSuffix}}" name="bridge" ui-select2="{allowClear: true}"
+                    ng-model="sff['bridge']" ng-required="false"
+                    data-placeholder="{{'SFC_CLASSIFIER_CREATE_ATTACHMENT_POINT_BRIDGE_NAME' | translate}}">
+
+                <option value=""></option>
+                <option ng-repeat="br in brNames" value="{{br}}">{{br}}</option>
+            </select>
         </div>
     </div>
 

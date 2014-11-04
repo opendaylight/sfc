@@ -9,6 +9,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return ServiceLocatorHelper.getLocatorTooltipText(locator, $scope);
     };
 
+    $scope.getOVStooltipText = function (ovs) {
+      return ServiceForwarderHelper.getOVStooltipText(ovs, $scope);
+    };
+
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
       _.each($scope.sffs, function (sff) {

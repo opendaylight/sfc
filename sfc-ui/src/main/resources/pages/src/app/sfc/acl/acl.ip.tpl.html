@@ -126,7 +126,7 @@
         </label>
 
         <div class="col-lg-6">
-            <select class="form-control input-sm" id="ace-ip-version{{idSuffix}}" ui-select2
+            <select class="form-control input-sm" id="ace-ip-version{{idSuffix}}" ui-select2="{allowClear: true}"
                     ng-model="ace_ip" ng-required="true" name="ace-ip-version"
                     data-placeholder="{{'SFC_ACL_CREATE_ACE_IP_VERSION' | translate}}"
                     ng-change="onAceIpChange(ace_ip)">

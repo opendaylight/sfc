@@ -1,4 +1,4 @@
-<div class="form-horizontal" ng-form="f_bridge">
+<div ng-form="f_bridge">
 
     <div class="form-group">
         <label for="bridge_name_{{idSuffix}}" class="col-lg-6 control-label small-label">
@@ -26,29 +26,25 @@
         </div>
     </div>
 
-
-    <any ng-repeat="eid in bridge['external-ids'] track by $index">
-
-        <div ng-form="f_bridge_eid" class="form-group" show-validation-error>
-            <div class="col-lg-1">
-                <button type="button" class="btn btn-xs btn-danger" ng-click="removeEid($index)"><i
-                        class="icon-minus"></i></button>
-            </div>
-
-            <div class="col-lg-5">
-                <input type="text" class="form-control input-sm" ng-model="eid['name']"
-                       name="eid_name"
-                       placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_EID_NAME' | translate}}"
-                       required>
-            </div>
-
-            <div class="col-lg-6">
-                <input type="text" class="form-control input-sm" ng-model="eid['value']"
-                       placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_EID_VALUE' | translate}}">
-            </div>
+    <div ng-repeat="eid in bridge['external-ids'] track by $index" ng-form="f_bridge_eid" class="form-group"
+         show-validation-error>
+        <div class="col-lg-1">
+            <button type="button" class="btn btn-xs btn-danger" ng-click="removeEid($index)"><i
+                    class="icon-minus"></i></button>
         </div>
 
-    </any>
+        <div class="col-lg-5">
+            <input type="text" class="form-control input-sm" ng-model="eid['name']"
+                   name="eid_name"
+                   placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_EID_NAME' | translate}}"
+                   required>
+        </div>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="eid['value']"
+                   placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_EID_VALUE' | translate}}">
+        </div>
+    </div>
 
     <div style="text-align: right;">
         <span class="spanTip">{{ 'SFC_FORWARDER_BRIDGE_EID_ADD' | translate }}</span>

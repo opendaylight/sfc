@@ -47,7 +47,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           $scope.$broadcast('ace_ip_change', arg);
         };
 
-        $scope.onSourcePortRangeCheckChanged = function(boolValue) {
+        $scope.onSourcePortRangeCheckChanged = function (boolValue) {
           if (boolValue) {
             $scope['matches']['source-port-range'] = {};
           } else {
@@ -55,7 +55,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           }
         };
 
-        $scope.onDestinationPortRangeCheckChanged = function(boolValue) {
+        $scope.onDestinationPortRangeCheckChanged = function (boolValue) {
           if (boolValue) {
             $scope['matches']['destination-port-range'] = {};
           } else {
@@ -135,28 +135,51 @@ define(['app/sfc/sfc.module'], function (sfc) {
         classifierConstants: '='
       },
       controller: function ($scope) {
+        var thisCtrl = this;
         $scope.attachmentPointType = {};
 
-          $scope.$watch('sff', function(newVal){
-          if(angular.isUndefined(newVal)){
+        $scope.$watch('sff', function (newVal) {
+          if (angular.isUndefined(newVal)) {
             return;
           }
 
-          if(angular.isDefined(newVal['bridge'])){
+          $scope.brNames = thisCtrl.getSFFbridgeNames(newVal['name']);
+
+          if (angular.isDefined(newVal['bridge'])) {
             $scope.attachmentPointType = $scope.classifierConstants['attachment-point-type'][0];
           }
-          else if (angular.isDefined(newVal['interface'])){
+          else if (angular.isDefined(newVal['interface'])) {
             $scope.attachmentPointType = $scope.classifierConstants['attachment-point-type'][1];
           }
-        });
+        }, true);
 
-        $scope.resetAttachmentPoints = function(sff){
-          if(angular.isDefined(sff['bridge'])){
+        $scope.resetAttachmentPointType = function (sff) {
+          $scope.attachmentPointType = {};
+          $scope.resetAttachmentPoints(sff);
+        };
+
+        $scope.resetAttachmentPoints = function (sff) {
+          if (angular.isDefined(sff['bridge'])) {
             delete sff['bridge'];
           }
-          if(angular.isDefined(sff['interface'])){
+          if (angular.isDefined(sff['interface'])) {
             delete sff['interface'];
           }
+        };
+
+        this.getSFFbridgeNames = function (sffName) {
+          var bridgeNames = [];
+          var sff = _.findWhere($scope.sffs, {name: sffName});
+
+          if (angular.isDefined(sff)) {
+            _.each(sff['sff-data-plane-locator'], function (sffDpLocator) {
+              if (angular.isDefined(sffDpLocator['ovs-bridge'])) {
+                bridgeNames.push(sffDpLocator['ovs-bridge']['bridge-name']);
+              }
+            });
+          }
+
+          return bridgeNames;
         };
       }
     };

@@ -56,7 +56,7 @@
                     <div class="col-lg-6">
                         <input type="text" class="form-control input-sm"
                                ng-model="ace['actions']['service-function-path']" id="actions-sfp-name_{{$index}}" name="actions-sfp-name"
-                               placeholder="{{'SFC_ACL_CREATE_ACTIONS_SFP_NAME' | translate}}" required>
+                               placeholder="{{'SFC_ACL_CREATE_ACTIONS_SFP_NAME' | translate}}">
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@
                     </label>
 
                     <div class="col-lg-6">
-                        <select class="form-control input-sm" id="metadata-absolute-active_{{$index}}" ui-select2
+                        <select class="form-control input-sm" id="metadata-absolute-active_{{$index}}" ui-select2="{allowClear: true}"
                                 ng-model="ace['matches']['absolute']['active']"
                                 ng-required="false" ng-init="ace['matches']['absolute']['active'] = 'true'"
                                 data-placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_ACTIVE' | translate}}">
@@ -161,7 +161,7 @@
                     </label>
 
                     <div class="col-lg-6">
-                        <select class="form-control input-sm" id="ace-type{{$index}}" ui-select2
+                        <select class="form-control input-sm" id="ace-type{{$index}}" ui-select2="{allowClear: true}"
                                 ng-model="ace_type" ng-required="false"
                                 data-placeholder="{{'SFC_ACL_CREATE_ACE_TYPE' | translate}}"
                                 ng-change="$broadcast('ace_type_change', ace_type)">

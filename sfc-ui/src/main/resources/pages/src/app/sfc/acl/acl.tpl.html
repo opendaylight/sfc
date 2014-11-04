@@ -1,9 +1,6 @@
 <a class="btn btn-info add-row" href="index.html#/sfc/acl-create">
     {{'SFC_ACL_ADD' | translate}}
 </a>
-<a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
-    {{'SFC_CLASSIFIER_ADD' | translate}}
-</a>
 
 <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
     translate}}
@@ -76,6 +73,10 @@
 </table>
 
 <div ng-controller="sfcClassifierCtrl">
+    <a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
+        {{'SFC_CLASSIFIER_ADD' | translate}}
+    </a>
+
     <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
         translate}}
     </button>

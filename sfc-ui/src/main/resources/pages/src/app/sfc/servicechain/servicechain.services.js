@@ -26,6 +26,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
     svc.isReady = false;
 
     svc.init = function () {
+      allClassifiers = {};
+      originSfc2ClassMap = {};
+      sfc2ClassMap = {};
+      freeClassifiers = {};
+
       SfcClassifierSvc.getArray(function (classifiers) {
         _.each(classifiers, function (classifier) {
 

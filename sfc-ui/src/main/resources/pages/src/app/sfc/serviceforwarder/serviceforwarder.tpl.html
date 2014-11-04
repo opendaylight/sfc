@@ -9,6 +9,12 @@
         <td data-title="'SFC_FORWARDER_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
             {{sff['name']}}
         </td>
+        <td data-title="'SFC_FORWARDER_SHORT_IP_MGMT_ADDRESS' | translate" sortable="'valueOf()[\'ip-mgmt-address\']'" filter="{ 'ip-mgmt-address': 'text' }">
+            {{sff['ip-mgmt-address']}}
+        </td>
+        <td data-title="'SFC_FORWARDER_SHORT_REST_URI' | translate" sortable="'valueOf()[\'rest-uri\']'" filter="{ 'rest-uri': 'text' }">
+            {{sff['rest-uri']}}
+        </td>
         <td data-title="'SFC_FORWARDER_SERVICE_NODE' | translate" sortable="'valueOf()[\'service-node\']'" filter="{ 'service-node': 'text' }">
             {{sff['service-node']}}
         </td>
@@ -20,7 +26,8 @@
                       tooltip-placement="bottom"
                       tooltip-html-unsafe="
                           <div style='text-align: left'>
-                          {{getLocatorTooltipText(loc['data-plane-locator'])}}
+                          {{getLocatorTooltipText(loc['data-plane-locator'])}} <br/>
+                          {{getOVStooltipText(loc['ovs-bridge'])}}
                           </div>">
 
                     {{loc['name']}}{{$last ? '' : ', '}}
@@ -36,6 +43,7 @@
                           {{'SFC_TOOLTIP_FAILMODE' | translate}}: {{sf['failmode']}} <br/>
                           <br/>
                           {{getLocatorTooltipText(sf['sff-sf-data-plane-locator'])}} <br/>
+                          {{getOVStooltipText(sf['sff-sf-data-plane-locator']['ovs-bridge'])}}
                           <br/>
                           {{'SFC_TOOLTIP_INTERFACES' | translate}}: {{sffInterfaceToString(sf['sff-interfaces'])}}
                           </div>">

@@ -17,7 +17,7 @@
                     translate}}</label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="symmetric" ui-select2 ng-model="data.symmetric"
+                    <select class="form-control input-sm" id="symmetric" ui-select2="{allowClear: true}" ng-model="data.symmetric"
                             ng-required="false"
                             data-placeholder="{{'SFC_CHAIN_CREATE_SYMMETRIC' | translate}}">
                         <option value=""></option>

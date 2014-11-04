@@ -125,6 +125,25 @@ define(['app/sfc/sfc.module'], function (sfc) {
       };
     };
 
+    svc.getOVStooltipText = function (ovs, $scope) {
+      if(angular.isUndefined(ovs) || angular.isUndefined(ovs['bridge-name'])){
+        return;
+      }
+
+      var tootlip = "<br/>" + $scope.$eval('"SFC_FORWARDER_OVS_BRIDGE" | translate') + ": " + "<br/>";
+
+      tootlip += $scope.$eval('"SFC_FORWARDER_SHORT_BRIDGE_NAME" | translate') + ": " + ovs['bridge-name'] + "<br/>";
+
+      if(angular.isDefined(ovs['uuid'])){
+        tootlip += $scope.$eval('"SFC_FORWARDER_SHORT_BRIDGE_UUID" | translate') + ": " + ovs['uuid'] + "<br/>";
+      }
+
+      _.each(ovs['external-ids'], function (eid){
+        tootlip += $scope.$eval('"SFC_FORWARDER_SHORT_BRIDGE_EID" | translate') + ": " + eid['name'] + " : " + eid['value'] + "<br/>";
+      });
+
+      return tootlip;
+    };
 
     return svc;
   });

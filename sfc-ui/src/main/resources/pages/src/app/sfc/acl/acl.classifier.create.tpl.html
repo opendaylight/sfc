@@ -19,7 +19,7 @@
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="access-list" name="access-list" ui-select2
+                    <select class="form-control input-sm" id="access-list" name="access-list" ui-select2="{allowClear: true}"
                             ng-model="data['access-list']"
                             ng-required="false" data-placeholder="{{'SFC_CLASSIFIER_CREATE_ACCESS_LIST' | translate}}">
 
@@ -35,7 +35,7 @@
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="service-chain" name="service-chain" ui-select2
+                    <select class="form-control input-sm" id="service-chain" name="service-chain" ui-select2="{allowClear: true}"
                             ng-model="data['service-function-chain']"
                             ng-required="false"
                             data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_CHAIN' | translate}}">
@@ -53,7 +53,7 @@
                     </button>
                 </div>
 
-                <classifier-sff id-suffix="{{'_'+$index}}" sffs="sffs" sff="sff" classifier-constants="classifierConstants"></classifier-sff>
+                <classifier-sff ng-if="sffs" id-suffix="{{'_'+$index}}" sffs="sffs" sff="sff" classifier-constants="classifierConstants"></classifier-sff>
             </div>
 
 

@@ -81,6 +81,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
 
     $scope.select2Options = {
+      allowClear: true,
       query: function (query) {
         var data = {results: []};
         var exact = false;

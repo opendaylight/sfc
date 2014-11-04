@@ -14,8 +14,8 @@
             </label>
 
             <div class="col-lg-6">
-                <select class="form-control input-sm" id="context_metadata_{{idSuffix}}" name="context_metadata" ui-select2
-                        ng-model="selectedMetadata" ng-required="true"
+                <select class="form-control input-sm" id="context_metadata_{{idSuffix}}" name="context_metadata" ui-select2="{allowClear: true}"
+                        ng-model="selectedMetadata" ng-required="false"
                         data-placeholder="{{'SFC_PATH_MODAL_CREATE_SELECT_CONTEXT_METADATA' | translate}}">
 
                     <option value=""></option>
@@ -78,7 +78,7 @@
     </div>
     <button class="close" ng-click="closePopUp()">&times;</button>
     <div class="modal-footer">
-        <button class="btn btn-orange" ng-disabled="!(!!selectedMetadata)"
+        <button class="btn btn-orange"
                 ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}
         </button>
         <button class="btn btn-danger" ng-click="closePopUp()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL'

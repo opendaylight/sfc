@@ -8,7 +8,7 @@
         </label>
 
         <div class="col-lg-6">
-            <select class="form-control input-sm" id="context_metadata" name="context_metadata" ui-select2
+            <select class="form-control input-sm" id="context_metadata" name="context_metadata" ui-select2="{allowClear: true}"
                     ng-model="selectedContextMetadata" ng-required="false"
                     data-placeholder="{{'SFC_PATH_MODAL_CREATE_SELECT_CONTEXT_METADATA' | translate}}">
 
@@ -24,7 +24,7 @@
         </label>
 
         <div class="col-lg-6">
-            <select class="form-control input-sm" id="variable_metadata" name="variable_metadata" ui-select2
+            <select class="form-control input-sm" id="variable_metadata" name="variable_metadata" ui-select2="{allowClear: true}"
                     ng-model="selectedVariableMetadata" ng-required="false"
                     data-placeholder="{{'SFC_PATH_MODAL_CREATE_SELECT_VARIABLE_METADATA' | translate}}">
 

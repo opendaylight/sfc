@@ -5,17 +5,17 @@
 
     <div class="modal-body form-horizontal" ng-form="f_classifier">
         <div class="form-group" show-validation-error>
-            <label style="color:#444 !important;" for="classifier_{{idSuffix}}" class="col-lg-6 control-label small-label" ui-select2-label="context_metadata">
+            <label style="color:#444 !important;" class="col-lg-6 control-label small-label" ui-select2-label="classifier_{{idSuffix}}">
                 {{'SFC_CLASSIFIER_NAME' | translate}}
             </label>
 
             <div class="col-lg-6">
-                <select class="form-control input-sm" id="classifier_{{idSuffix}}" name="classifier" ui-select2
-                        ng-model="classifierName" ng-required="true" ng-change="onClassifierChange(classifierName)"
+                <select class="form-control input-sm" id="classifier_{{idSuffix}}" name="classifier" ui-select2="{allowClear: true}"
+                        ng-model="classifierName" ng-change="onClassifierChange(classifierName)"
                         data-placeholder="{{'SFC_CHAIN_CREATE_CLASSIFIER' | translate}}">
 
                     <option value=""></option>
-                    <option value="{{originClassifier.name}}">{{originClassifier.name}}</option>
+                    <option ng-if="originClassifier" value="{{originClassifier.name}}"><i>{{originClassifier.name}}</i></option>
                     <option ng-repeat="item in freeClassifiers" value="{{item.name}}">{{item.name}}</option>
                 </select>
             </div>

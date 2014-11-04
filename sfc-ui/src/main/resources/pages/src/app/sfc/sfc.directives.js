@@ -71,7 +71,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         $timeout(function () {
             if (iAttrs && iAttrs['uiSelect2Label']) {
               iElement.bind("click", function () {
-                $('#s2id_' + iAttrs['uiSelect2Label'] + " > input").focus();
+                $('#s2id_' + iAttrs['uiSelect2Label']).find("input").focus();
               });
             }
           }

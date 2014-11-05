@@ -14,12 +14,23 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.json.JSONObject;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff
+        .rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
+        .rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
+        .rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -52,19 +63,44 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
     public void putServiceFunctionForwarder (ServiceFunctionForwarder serviceFunctionForwarder) {
 
         printTraceStart(LOG);
+        JSONObject jsonObject = null;
+        String sffURI;
 
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
 
+        /*
+        {  <== topJsonObj
+             "service-function-forwarder": [  <== sffJsonArray
+            { <== sffJsonElement, sffJsonEntryobj
+                "name": "SFF-bootstrap",
+                   "rest-uri": "http://198.18.134.23", <== sffRestUriElement, restUri
+                    "sff-data-plane-locator": [
+                {
+
+
+
+        JsonParser parser = new JsonParser();
+        JsonObject topJsonObj = parser.parse(sffJSON).getAsJsonObject();
+
+        JsonArray sffJsonArray =  topJsonObj.getAsJsonArray("service-function-forwarder");
+        JsonElement sffJsonElement = sffJsonArray.get(0);
+        JsonObject sffJsonEntryobj = sffJsonElement.getAsJsonObject();
+        JsonElement sffRestUriElement = sffJsonEntryobj.get("rest-uri");
+        String restUri = sffRestUriElement.toString();
+        */
 
         String sffJSON = getRESTObj(getServiceFunctionForwarderURI(serviceFunctionForwarder));
+        String restURI = serviceFunctionForwarder.getRestUri().toString();
+        //restURI = "http://127.0.0.1:5000";
 
-        ClientResponse putClientRemoteResponse;
-
-        String sffURI = "http://127.0.0.1:5000/config/service" +
+        sffURI = restURI + "/config/service" +
                 "-function-forwarder:service-function-forwarders/service" +
                 "-function-forwarder/" +
                 serviceFunctionForwarder.getName();
+
+        ClientResponse putClientRemoteResponse;
+
         putClientRemoteResponse = client
                 .resource(sffURI).type(MediaType.APPLICATION_JSON_TYPE)
                 .put(ClientResponse.class, sffJSON);
@@ -149,10 +185,11 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
 
     /**
-     * Communicates SFP to SouthBound REST Server
+     * Communicates SFP to REST URI found in SFF configuration Server.
+     * It sends SFP information to each SFF present in the service-hop list.
      * <p>
-     * @param serviceFunctionPath Service Function Path Name
-     * @return The SFP in JSON format
+     * @param serviceFunctionPath Service Function Path object
+     * @return Nothing
      */
     public void putServiceFunctionPath (ServiceFunctionPath serviceFunctionPath) {
 
@@ -160,24 +197,60 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
+        String sfpURI;
+        String restURI;
 
         String sfpJSON = getRESTObj(getServiceFunctionPathURI(serviceFunctionPath));
 
-        ClientResponse putClientRemoteResponse;
+        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        Set<String> sffNameSet = new HashSet<>();
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+            String sffName = servicePathHop.getServiceFunctionForwarder();
+            // We send the SFP message to each SFF only once
+            if (sffNameSet.add(sffName))
+            {
+                Object[] serviceForwarderObj = {sffName};
+                Class[] serviceForwarderClass = {String.class};
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
+                        SfcProviderServiceForwarderAPI.getRead(serviceForwarderObj, serviceForwarderClass);
 
-        String sfpURI  = "http://127.0.0.1:5000/config/service" +
-                "-function-path:service-function-paths/" +
-                "service-function-path/" + serviceFunctionPath.getName();
-        putClientRemoteResponse = client
-                .resource(sfpURI).type(MediaType.APPLICATION_JSON_TYPE)
-                .put(ClientResponse.class, sfpJSON);
-        if (putClientRemoteResponse.getStatus() >= 300)
-        {
-            throw new UniformInterfaceException(HTTP_ERROR_MSG
-                    + putClientRemoteResponse.getStatus(),
-                    putClientRemoteResponse);
+                Future<Object> future = odlSfc.executor.submit
+                        (sfcProviderServiceForwarderAPI);
+                ClientResponse putClientRemoteResponse;
+
+                try
+                {
+                    ServiceFunctionForwarder serviceFunctionForwarder =
+                            (ServiceFunctionForwarder) future
+                                    .get();
+                    restURI = serviceFunctionForwarder.getRestUri().toString();
+                    // Testing
+                    //restURI = "http://127.0.0.1:5000";
+
+                    sfpURI = restURI + "/config/service" +
+                            "-function-path:service-function-paths/" +
+                            "service-function-path/" + serviceFunctionPath
+                            .getName();
+                    putClientRemoteResponse = client.resource(sfpURI).type(MediaType
+                            .APPLICATION_JSON_TYPE).put(ClientResponse.class, sfpJSON);
+                    if (putClientRemoteResponse.getStatus() >= 300)
+                    {
+                        throw new UniformInterfaceException(HTTP_ERROR_MSG
+                                + putClientRemoteResponse.getStatus(),
+                                putClientRemoteResponse);
+                    }
+                    putClientRemoteResponse.close();
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
-        putClientRemoteResponse.close();
+
+
         printTraceStop(LOG);
 
     }

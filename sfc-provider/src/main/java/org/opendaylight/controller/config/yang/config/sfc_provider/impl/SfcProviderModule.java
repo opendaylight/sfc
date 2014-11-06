@@ -99,6 +99,13 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                         OpendaylightSfc.sfcEntryIID, sfcProviderSfcEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
 
 
+        //ServiceClassifierEntry
+        SfcProviderScfEntryDataListener sfcProviderScfEntryDataListener = new SfcProviderScfEntryDataListener();
+        final ListenerRegistration<DataChangeListener> scfEntryDataChangeListenerRegistration =
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.scfEntryIID, sfcProviderScfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
+
+
         /* ServiceFunctionPathEntry Entry
          * We use DataBroker.DataChangeScope.BASE here so that further updates to a SFP do not trigger an inifinite
          * loop of onDataChanged(), update SFP, onDataChanged(), etc...
@@ -112,7 +119,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         final ListenerRegistration<DataChangeListener> sfpDataChangeListenerRegistration =
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.sfpIID, sfcProviderSfpDataListener, DataBroker.DataChangeScope.SUBTREE  );
-
 
         final BindingAwareBroker.RpcRegistration<ServiceFunctionService> sfRpcRegistration =
                 getRpcRegistryDependency()
@@ -136,6 +142,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
             public void close() {
                 sfEntryDataChangeListenerRegistration.close();
                 sfcEntryDataChangeListenerRegistration.close();
+                scfEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();
                 snDataChangeListenerRegistration.close();
                 sffDataChangeListenerRegistration.close();

@@ -62,10 +62,10 @@ module service-function-classifier {
         type string;
       }
 
-      leaf service-function-chain {
+      leaf service-function-path {
         description
-          "The classifier will direct packets to the SFC
-           specified here";
+           "The classifier will direct packets to the SFP
+          specified here";
         type string;
       }
       list service-function-forwarder {

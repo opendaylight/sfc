@@ -13,6 +13,12 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcProviderRestAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf
         .rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf
@@ -53,6 +59,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft
         .rev140701.service.function.types.service.function.type
         .SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.ActionsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +94,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * <p/>
  * <p/>
  * <p/>
- * @since       2014-06-30
+ * @since 2014-06-30
  */
 public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
@@ -104,50 +115,59 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServicePathAPI getPut(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putServiceFunctionPath");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readServiceFunctionPath");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServiceFunctionPath");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getPutAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putAllServiceFunctionPaths");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getReadAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readAllServiceFunctionPaths");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteAllServiceFunctionPaths");
     }
 
-    public static  SfcProviderServicePathAPI getDeleteServicePathContainingFunction (Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getDeleteServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
     }
+
     @SuppressWarnings("unused")
-    public static  SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain (Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathInstantiatedFromChain");
     }
 
-    public static  SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
     }
+
     @SuppressWarnings("unused")
-    public static  SfcProviderServicePathAPI getUpdateServicePathAPI(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getUpdateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServiceFunctionPathEntry");
     }
+
     @SuppressWarnings("unused")
-    public static  SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathInstantiatedFromChain");
     }
 
-    public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathContainingFunction");
     }
+
     @SuppressWarnings("unused")
     public static int numCreatedPathGetValue() {
         return numCreatedPath.get();
@@ -156,6 +176,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public int numCreatedPathIncrementGet() {
         return numCreatedPath.incrementAndGet();
     }
+
     @SuppressWarnings("unused")
     public int numCreatedPathDecrementGet() {
         return numCreatedPath.decrementAndGet();
@@ -169,7 +190,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             InstanceIdentifier<ServiceFunctionPath> sfpEntryIID =
                     InstanceIdentifier.builder(ServiceFunctionPaths.class).
-                    child(ServiceFunctionPath.class, sfp.getKey()).toInstance();
+                            child(ServiceFunctionPath.class, sfp.getKey()).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
@@ -289,13 +310,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * modifications, this is the safest approach.
      */
     @SuppressWarnings("unused")
-    private void updateServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
+    private void updateServicePathInstantiatedFromChain(ServiceFunctionPath serviceFunctionPath) {
         deleteServicePathInstantiatedFromChain(serviceFunctionPath);
         createServiceFunctionPathEntry(serviceFunctionPath);
     }
 
     // TODO:Needs change
-    private void deleteServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
+    private void deleteServicePathInstantiatedFromChain(ServiceFunctionPath serviceFunctionPath) {
 
         printTraceStart(LOG);
         ServiceFunctionChain serviceFunctionChain = null;
@@ -358,7 +379,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             /* After we are done removing all paths from the datastore we commit the updated the path list
              * under the Service Chain operational tree
              */
-            ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder  = new ServiceFunctionChainStateBuilder();
+            ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
             serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
             serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathList);
             WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
@@ -373,7 +394,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     }
 
     @SuppressWarnings("unused")
-    protected void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
+    protected void updateServiceFunctionPathEntry(ServiceFunctionPath serviceFunctionPath) {
         this.createServiceFunctionPathEntry(serviceFunctionPath);
     }
 
@@ -382,14 +403,16 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * the service chain name was given. In this function we patch the SFP with the
      * names of the chosen SFs
      */
+
     /**
      * This function is called whenever a SFP is created or updated. It recomputes
      * the SFP information and merges any missing data
-     * <p>
+     * <p/>
+     *
      * @param serviceFunctionPath Service Function Path Object
      * @return Nothing.
      */
-    protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
+    protected void createServiceFunctionPathEntry(ServiceFunctionPath serviceFunctionPath) {
 
         printTraceStart(LOG);
 
@@ -493,10 +516,10 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         //Build the service function path so it can be committed to datastore
 
 
-        pathId = (serviceFunctionPath.getPathId() != null)  ?  serviceFunctionPath.getPathId()
+        pathId = (serviceFunctionPath.getPathId() != null) ? serviceFunctionPath.getPathId()
                 : numCreatedPathIncrementGet();
         serviceFunctionPathBuilder.setServicePathHop(servicePathHopArrayList);
-        if (serviceFunctionPath.getName().isEmpty())  {
+        if (serviceFunctionPath.getName().isEmpty()) {
             serviceFunctionPathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
         } else {
             serviceFunctionPathBuilder.setName(serviceFunctionPath.getName());
@@ -524,6 +547,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
         SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
 
+        /* Process classifier */
+        updateServicePathAclEntries(newServiceFunctionPath);
+
         /* Prepare REST invocation */
 
         invokeServicePathRest(serviceFunctionPath.getName(), HttpMethod.PUT);
@@ -531,25 +557,96 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
 
     }
+
+    /**
+     * This method updates the SFP ACL entries according to classifier, reproducing these steps:
+     * 1. Classifier is derived from parent SFC
+     * 2. One ACL (from available Classifier ACLs) is selected according to SFP ACL
+     * 3. All ACL entries (ACEs) SfcAction are set to point to the SFP
+     * <p/>
+     *
+     * @param serviceFunctionPath Service Function Path Object
+     * @return Nothing.
+     */
+    private void updateServicePathAclEntries(ServiceFunctionPath serviceFunctionPath) {
+
+        ServiceFunctionClassifier serviceFunctionChainClassifier = null;
+        try {
+            serviceFunctionChainClassifier =
+                    (ServiceFunctionClassifier) odlSfc.executor.submit(SfcProviderServiceClassifierAPI
+                            .getReadBySfcName(new Object[]{serviceFunctionPath.getServiceChainName()},
+                                    new Class[]{String.class})).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error(" Could not read Service Function Classifier for Service Chain {} " +
+                    "\n", serviceFunctionPath.getServiceChainName());
+        }
+
+        if (serviceFunctionChainClassifier != null) {
+            LOG.info(" {} Classifier = {} \n", serviceFunctionPath.getServiceChainName(),
+                    serviceFunctionChainClassifier.getName());
+
+            AccessList acl = null;
+            try {
+                acl = (AccessList) odlSfc.executor.submit(SfcProviderAclAPI
+                        .getRead(new Object[]{serviceFunctionChainClassifier.getAccessList()},
+                                new Class[]{String.class})).get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error(" Could not read ACL {} " +
+                        "\n", serviceFunctionChainClassifier.getAccessList());
+            }
+
+            if (acl != null) {
+                ArrayList<AccessListEntries> aceArrayList = new ArrayList<>();
+                aceArrayList.addAll(acl.getAccessListEntries());
+
+                for (AccessListEntries ace : aceArrayList) {
+//                    SfcAction sfcAction = ace.getActions().getAugmentation(Actions1.class).getSfcAction();
+//                    String aclServicePathName = ((AclServiceFunctionPath) sfcAction).getServiceFunctionPath();
+//                    LOG.info(" SFC Action points to SFP = {} \n", aclServicePathName);
+
+                    AclServiceFunctionPathBuilder aclServiceFunctionPathBuilder = new AclServiceFunctionPathBuilder();
+                    aclServiceFunctionPathBuilder.setServiceFunctionPath(serviceFunctionPath.getName());
+
+                    Actions1Builder actions1Builder = new Actions1Builder();
+                    actions1Builder.setSfcAction(aclServiceFunctionPathBuilder.build());
+
+                    ActionsBuilder actionsBuilder = new ActionsBuilder();
+                    actionsBuilder.addAugmentation(Actions1.class, actions1Builder.build());
+
+                    AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder(ace);
+                    accessListEntriesBuilder.setActions(actionsBuilder.build());
+
+                    InstanceIdentifier<AccessListEntries> aceIID = InstanceIdentifier.builder(AccessLists.class)
+                            .child(AccessList.class, acl.getKey())
+                            .child(AccessListEntries.class, ace.getKey()).build();
+
+                    WriteTransaction aceWriteTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+                    aceWriteTx.merge(LogicalDatastoreType.CONFIGURATION,
+                            aceIID, accessListEntriesBuilder.build(), true);
+                    aceWriteTx.commit();
+                }
+            }
+        }
+    }
+
     /**
      * This method decouples the SFP API from the SouthBound REST client.
      * SFP APIs call this method to convey SFP information to REST southbound
      * devices
-     * <p>
-     * @param sfpName Service Function Path Name
-     * @param httpMethod  HTTP method such as GET, PUT, POST..
+     * <p/>
+     *
+     * @param sfpName    Service Function Path Name
+     * @param httpMethod HTTP method such as GET, PUT, POST..
      * @return Nothing.
      */
     private void invokeServicePathRest(String sfpName, String httpMethod) {
 
      /* Invoke SB REST API */
 
-        ServiceFunctionPath serviceFunctionPath =  readServiceFunctionPath(sfpName);
+        ServiceFunctionPath serviceFunctionPath = readServiceFunctionPath(sfpName);
 
-        if (serviceFunctionPath != null)
-        {
-            if (httpMethod.equals(HttpMethod.PUT))
-            {
+        if (serviceFunctionPath != null) {
+            if (httpMethod.equals(HttpMethod.PUT)) {
                 Object[] servicePathObj = {serviceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
                 odlSfc.executor.execute(SfcProviderRestAPI.
@@ -590,7 +687,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
 
     @SuppressWarnings("unused")
-    public void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
+    public void deleteServicePathContainingFunction(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
 
@@ -654,7 +751,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      *
      * The update can or not work.
      */
-    private void updateServicePathContainingFunction (ServiceFunction serviceFunction) {
+    private void updateServicePathContainingFunction(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
 
@@ -676,7 +773,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 try {
                     serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
                     if (serviceFunctionPathObject != null &&
-                            (serviceFunctionPathObject.get() instanceof  ServiceFunctionPath)) {
+                            (serviceFunctionPathObject.get() instanceof ServiceFunctionPath)) {
                         ServiceFunctionPath servicefunctionPath = serviceFunctionPathObject.get();
                         createServiceFunctionPathEntry(servicefunctionPath);
                     }

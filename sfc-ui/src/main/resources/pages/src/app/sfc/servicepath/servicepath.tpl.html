@@ -64,6 +64,7 @@
                     <span class="spanText" ng-show="isSFPstate(sfp, sfpState.EDITED)">({{'SFC_PATH_TEMPORARY' | translate}})</span>
 
                     <span class="pull-right">
+                        <service-path-classifier sfp="sfp" id-suffix="{{$index}}"></service-path-classifier>
                         <service-path-context-metadata-pop-up sfp-state="sfpState" sfp="sfp" context-metadata="contextMetadata" id-suffix="{{$index}}"></service-path-context-metadata-pop-up>
                     </span>
                 </p>

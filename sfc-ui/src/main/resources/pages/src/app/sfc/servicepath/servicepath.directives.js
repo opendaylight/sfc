@@ -58,4 +58,64 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('servicePathClassifier', function () {
+    return {
+      restrict: 'E',
+      templateUrl: 'src/app/sfc/servicepath/servicepath.classifier.tpl.html',
+      scope: {
+        sfp: "=",
+        idSuffix: "@"
+      },
+      controller: function ($scope, SfpToClassifierMappingSvc) {
+        $scope.popUpVisible = false;
+
+        $scope.fetchClassifier = function () {
+          return SfpToClassifierMappingSvc.getClassifier($scope.sfp['name']);
+        };
+
+        $scope.showPopUp = function () {
+          $scope.popUpVisible = true;
+        };
+
+        $scope.closePopUp = function () {
+          $scope.popUpVisible = false;
+        };
+      }
+    };
+  });
+
+  sfc.register.directive('servicePathClassifierPopUp', function () {
+    return {
+      restrict: 'E',
+      templateUrl: 'src/app/sfc/servicepath/servicepath.popup.classifier.tpl.html',
+      scope: {
+        sfp: "=",
+        idSuffix: "@",
+        closePopUp: "&"
+      },
+      controller: function ($scope, $rootScope, ServicePathHelper, SfpToClassifierMappingSvc) {
+        var thisCtrl = this;
+
+        $scope.classifier = SfpToClassifierMappingSvc.getClassifier($scope.sfp['name']);
+        $scope.originClassifier = SfpToClassifierMappingSvc.getOriginClassifier($scope.sfp['name']);
+
+        if(angular.isDefined($scope.classifier)){
+          $scope.classifierName = $scope.classifier['name'];
+        }
+
+        $scope.freeClassifiers = SfpToClassifierMappingSvc.getFreeClassifiers();
+
+        $scope.save = function () {
+          SfpToClassifierMappingSvc.setClassifier($scope.sfp['name'], $scope.classifierName);
+          ServicePathHelper.setSFPstate($scope.sfp, $rootScope.sfpState.EDITED);
+          $scope.closePopUp();
+        };
+
+        $scope.onClassifierChange = function (classifierName) {
+          $scope.classifier = SfpToClassifierMappingSvc.getClassifierByName(classifierName);
+        };
+
+      }
+    };
+  });
 });

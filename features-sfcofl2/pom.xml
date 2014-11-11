@@ -12,20 +12,20 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.0.2-Helium-SR1</version>
+    <version>0.0.3-SNAPSHOT</version>
   </parent>
    <artifactId>features-sfcofl2</artifactId>
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <branding.version>1.0.1-Helium-SR1</branding.version>
-      <karaf.resources.version>1.4.3-Helium-SR1</karaf.resources.version>
+      <branding.version>1.0.2-SNAPSHOT</branding.version>
+      <karaf.resources.version>1.4.4-SNAPSHOT</karaf.resources.version>
       <karaf.version>3.0.1</karaf.version>
-      <feature.test.version>0.6.3-Helium-SR1</feature.test.version>
-      <karaf.empty.version>1.4.3-Helium-SR1</karaf.empty.version>
-      <lisp.version>1.1.12-Helium-SR1</lisp.version>
+      <feature.test.version>0.6.4-SNAPSHOT</feature.test.version>
+      <karaf.empty.version>1.4.4-SNAPSHOT</karaf.empty.version>
+      <lisp.version>1.1.13-SNAPSHOT</lisp.version>
       <surefire.version>2.16</surefire.version>
-      <openflowplugin.version>0.0.4-Helium-SR1</openflowplugin.version>
+      <openflowplugin.version>0.0.5-SNAPSHOT</openflowplugin.version>
    </properties>
    <dependencies>
    <dependency>

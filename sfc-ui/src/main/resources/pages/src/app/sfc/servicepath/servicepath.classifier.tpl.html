@@ -1,0 +1,8 @@
+<a style="cursor: pointer; margin-right: 20px" ng-click="showPopUp()">
+    {{'SFC_CLASSIFIER_SHORT' | translate}}{{fetchClassifier()['name'] ? ": " + fetchClassifier()['name'] : ''}}
+</a>
+
+<div ng-if="popUpVisible">
+    <service-path-classifier-pop-up close-pop-up="closePopUp()" sfp="sfp"
+                                     id-suffix="{{idSuffix}}"></service-path-classifier-pop-up>
+</div>

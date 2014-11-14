@@ -82,8 +82,11 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
             try {
                 method = c.getDeclaredMethod(methodName, parameterTypes);
                 method.invoke(this, parameters);
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            } catch (IllegalAccessException | NoSuchMethodException e) {
                 LOG.error("Could not find method {} in class", methodName);
+                return;
+            } catch (InvocationTargetException e) {
+                LOG.error("Invocation target exception: {}", e.getMessage());
                 return;
             } catch (UniformInterfaceException e) {
                 LOG.error("REST Server error. Message: {}",

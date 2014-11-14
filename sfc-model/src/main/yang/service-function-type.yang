@@ -85,7 +85,7 @@ module service-function-type {
     list service-function-type {
       key "type";
       leaf type {
-        type string;
+        type service-function-type;
         description
             "The service function type";
       }

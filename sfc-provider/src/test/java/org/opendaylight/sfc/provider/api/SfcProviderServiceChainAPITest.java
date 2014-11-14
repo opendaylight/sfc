@@ -29,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -65,7 +67,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
         executor = opendaylightSfc.executor;
 
         final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
-        final String sfType = "firewall";
+        final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;
         final IpAddress[] ipMgmtAddress =
                 {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
                         new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])),

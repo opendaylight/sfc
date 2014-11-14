@@ -20,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -63,7 +65,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void testCreateReadServiceFunction() throws ExecutionException, InterruptedException {
 
         String name = "unittest-fw-1";
-        String type = "firewall";
+        Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
@@ -106,7 +108,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void testDeleteServiceFunction() throws ExecutionException, InterruptedException {
 
         String name = "unittest-fw-1";
-        String type = "firewall";
+        Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
@@ -153,7 +155,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void testCreateReadServiceFunctions() throws ExecutionException, InterruptedException {
 
         final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
-        final String sfType = "firewall";
+        final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;
         final IpAddress[] ipMgmtAddress =
                 {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
                         new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])),

@@ -10,6 +10,7 @@ module service-function-forwarder {
     revision-date 2013-07-15;
   }
   import service-locator        { prefix sfc-sl; }
+  import service-function-type  { prefix sfc-sft; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -140,7 +141,7 @@ module service-function-forwarder {
               "The name of the service function.";
         }
         leaf type {
-          type string;
+          type sfc-sft:service-function-type;
           description
             "Service Function Type from service-function-type yang
              model";

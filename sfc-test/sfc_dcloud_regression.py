@@ -43,11 +43,11 @@ def delete_configuration():
         print ("=>Deleted all Service Function Forwarders \n")
     else:
         print ("=>Failure to delete SFFs, response code = {} \n". format(r.status_code))
-    r = s.delete(SFT_URL, stream=False, auth=(USERNAME, PASSWORD))
-    if r.status_code == 200:
-        print ("=>Deleted all Service Function Types \n")
-    else:
-        print ("=>Failure to delete SFTs, response code = {} \n". format(r.status_code))
+    # r = s.delete(SFT_URL, stream=False, auth=(USERNAME, PASSWORD))
+    # if r.status_code == 200:
+    #     print ("=>Deleted all Service Function Types \n")
+    # else:
+    #     print ("=>Failure to delete SFTs, response code = {} \n". format(r.status_code))
     r = s.delete(SFP_URL, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         print ("=>Deleted all Service Function Paths \n")
@@ -75,7 +75,7 @@ def put_and_check(url, json_req, json_resp):
 if __name__ == "__main__":
     delete_configuration()
     put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
-    put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
-    put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
+    #put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
+    #put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
     #put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
 

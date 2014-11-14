@@ -91,7 +91,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         */
 
         String sffJSON = getRESTObj(getServiceFunctionForwarderURI(serviceFunctionForwarder));
-        String restURI = serviceFunctionForwarder.getRestUri().toString();
+        String restURI = serviceFunctionForwarder.getRestUri().getValue();
         //restURI = "http://127.0.0.1:5000";
 
         sffURI = restURI + "/config/service" +
@@ -223,7 +223,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     ServiceFunctionForwarder serviceFunctionForwarder =
                             (ServiceFunctionForwarder) future
                                     .get();
-                    restURI = serviceFunctionForwarder.getRestUri().toString();
+                    restURI = serviceFunctionForwarder.getRestUri().getValue();
                     // Testing
                     //restURI = "http://127.0.0.1:5000";
 

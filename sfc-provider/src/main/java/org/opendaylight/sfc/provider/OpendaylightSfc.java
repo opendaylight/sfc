@@ -75,7 +75,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(6);
+       executor = Executors.newFixedThreadPool(10);
        opendaylightSfcObj = this;
     }
 

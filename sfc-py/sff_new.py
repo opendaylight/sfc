@@ -113,7 +113,7 @@ def build_packet():
     vxlan_header = struct.pack('!B B H I', vxlan_values.flags, vxlan_values.reserved, vxlan_values.protocol_type,
                                (vxlan_values.vni << 8) + vxlan_values.reserved2)
     # Build base NSH header
-    base_header = struct.pack('!H B H I', (base_values.version << 14) + (base_values.flags << 6) + base_values.length,
+    base_header = struct.pack('!H B B I', (base_values.version << 14) + (base_values.flags << 6) + base_values.length,
                               base_values.md_type,
                               base_values.next_protocol, (base_values.service_path << 8) + base_values.service_index)
     #Build NSH context headers
@@ -130,7 +130,7 @@ def decode_vxlan(payload):
     server_vxlan_values.flags, server_vxlan_values.reserved, server_vxlan_values.protocol_type, \
     vni_rsvd2 = struct.unpack('!B B H I', vxlan_header)
 
-    server_vxlan_values.vni = vni_rsvd2 >> 8;
+    server_vxlan_values.vni = vni_rsvd2 >> 8
     server_vxlan_values.reserved2 = vni_rsvd2 & 0x000000FF
 
     # Yes, it is weird but the comparison is against False. Display debug if started with -O option.
@@ -145,18 +145,23 @@ def decode_vxlan(payload):
 
 
 # Decode the NSH base header for a received packet at this SFF.
+#       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+#      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#      |Ver|O|C|R|R|R|R|R|R|   Length  |    MD Type    | Next Protocol |
+#      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 
 def decode_baseheader(payload):
     # Base Service header
-    base_header = payload[8:17]  # starts at offset 8 of payload
+    base_header = payload[8:16]  # starts at offset 8 of payload
 
-    start_idx, server_base_values.md_type, server_base_values.next_protocol, path_idx = struct.unpack('!H B H I',
+    start_idx, server_base_values.md_type, server_base_values.next_protocol, path_idx = struct.unpack('!H B B I',
                                                                                                       base_header)
 
     server_base_values.version = start_idx >> 14
     server_base_values.flags = start_idx >> 6
     server_base_values.length = start_idx >> 0
-    server_base_values.service_path = path_idx >> 8;
+    server_base_values.service_path = path_idx >> 8
     server_base_values.service_index = path_idx & 0x000000FF
 
     if __debug__ is False:
@@ -175,7 +180,7 @@ def decode_baseheader(payload):
 
 def decode_contextheader(payload):
     # Context header
-    context_header = payload[17:33]
+    context_header = payload[16:32]
 
     server_ctx_values.network_platform, server_ctx_values.network_shared, server_ctx_values.service_platform, server_ctx_values.service_shared = struct.unpack(
         '!I I I I', context_header)
@@ -237,7 +242,7 @@ def send_next_service(next_sfi, rw_data, addr):
 
 
 def set_service_index(rw_data, service_index):
-    rw_data[16] = service_index
+    rw_data[15] = service_index
 
 
 def process_incoming_packet(data, addr):

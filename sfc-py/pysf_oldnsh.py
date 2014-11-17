@@ -116,7 +116,7 @@ def decode_baseheader(payload):
     #base_header = payload[8:17] #starts at offset 8 of payload
     base_header = payload[7:16]
     
-    start_idx, base_values.md_type, base_values.next_protocol, path_idx = struct.unpack('!H B H I', base_header)
+    start_idx, base_values.md_type, base_values.next_protocol, path_idx = struct.unpack('!H B B I', base_header)
     
     base_values.version = start_idx >> 14
     base_values.flags = start_idx >> 6
@@ -153,7 +153,7 @@ def decode_contextheader(payload):
         print ('Service Shared Context:', ctx_values.service_shared)
 
 def set_service_index(rw_data, service_index):
-    rw_data[16] = service_index
+    rw_data[15] = service_index
 
 def start_server(loop, addr, service, myip):
     t = asyncio.Task(loop.create_datagram_endpoint(

@@ -313,7 +313,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         CheckedFuture<Void,TransactionCommitFailedException> submitFuture = writeTx.submit();
         Futures.addCallback(submitFuture, sfcDataStoreCallback);
         if (!sfcDataStoreCallback.getTransactioSuccessful()) {
-            LOG.error("Failed to create Service Function Type entry for SF: {}",
+            LOG.warn("Failed to create Service Function Type entry for SF: {}",
                     serviceFunction.getName());
 
         }

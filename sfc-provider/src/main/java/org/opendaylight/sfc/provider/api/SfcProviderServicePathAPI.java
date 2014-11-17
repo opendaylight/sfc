@@ -624,7 +624,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 LOG.error("Could not remove all paths containing function: {} ", serviceFunction.getName());
             }
         } else {
-            LOG.warn("Failed to get reference to Service Function State {} ", serviceFunction.getName());
+            LOG.info("Could not find Service function Paths using Service Function: {} ", serviceFunction.getName());
         }
         printTraceStop(LOG);
     }

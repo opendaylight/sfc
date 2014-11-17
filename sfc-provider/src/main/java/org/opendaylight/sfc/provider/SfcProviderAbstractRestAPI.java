@@ -86,7 +86,7 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
                 LOG.error("Could not find method {} in class", methodName);
                 return;
             } catch (InvocationTargetException e) {
-                LOG.error("Invocation target exception: {}", e.getMessage());
+                LOG.error("Invocation target exception: {}", e.getTargetException().getMessage());
                 return;
             } catch (UniformInterfaceException e) {
                 LOG.error("REST Server error. Message: {}",
@@ -98,5 +98,4 @@ abstract public class SfcProviderAbstractRestAPI implements Runnable {
             }
         }
     }
-
 }

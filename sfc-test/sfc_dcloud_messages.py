@@ -130,7 +130,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "rest-uri": "http://198.18.134.23",
+        "rest-uri": "http://198.18.134.24",
         "service-function-dictionary": [
           {
             "name": "SF3",

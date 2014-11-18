@@ -1,3 +1,5 @@
+import json
+
 __author__ = "Reinaldo Penno, Jim Guichard, Paul Quinn"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.2"
@@ -116,7 +118,7 @@ def build_packet():
     base_header = struct.pack('!H B B I', (base_values.version << 14) + (base_values.flags << 6) + base_values.length,
                               base_values.md_type,
                               base_values.next_protocol, (base_values.service_path << 8) + base_values.service_index)
-    #Build NSH context headers
+    # Build NSH context headers
     context_header = struct.pack('!I I I I', ctx_values.network_platform, ctx_values.network_shared,
                                  ctx_values.service_platform, ctx_values.service_shared)
     return vxlan_header + base_header + context_header
@@ -145,7 +147,7 @@ def decode_vxlan(payload):
 
 
 # Decode the NSH base header for a received packet at this SFF.
-#       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+# 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 #      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #      |Ver|O|C|R|R|R|R|R|R|   Length  |    MD Type    | Next Protocol |
 #      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -165,15 +167,15 @@ def decode_baseheader(payload):
     server_base_values.service_index = path_idx & 0x000000FF
 
     if __debug__ is False:
-        print ("\nBase NSH Header Decode:")
-        print (binascii.hexlify(base_header))
-        print ('NSH Version:', server_base_values.version)
-        print ('NSH base header flags:', server_base_values.flags)
-        print ('NSH base header length:', server_base_values.length)
-        print ('NSH MD-type:', server_base_values.md_type)
-        print ('NSH base header next protocol:', server_base_values.next_protocol)
-        print ('Service Path Identifier:', server_base_values.service_path)
-        print ('Service Index:', server_base_values.service_index)
+        print("\nBase NSH Header Decode:")
+        print(binascii.hexlify(base_header))
+        print('NSH Version:', server_base_values.version)
+        print('NSH base header flags:', server_base_values.flags)
+        print('NSH base header length:', server_base_values.length)
+        print('NSH MD-type:', server_base_values.md_type)
+        print('NSH base header next protocol:', server_base_values.next_protocol)
+        print('Service Path Identifier:', server_base_values.service_path)
+        print('Service Index:', server_base_values.service_index)
 
 
 # Decode the NSH context headers for a received packet at this SFF.
@@ -186,12 +188,12 @@ def decode_contextheader(payload):
         '!I I I I', context_header)
 
     if __debug__ is False:
-        print ("\nNSH Context Header Decode:")
-        print (binascii.hexlify(context_header))
-        print ('First context header:', server_ctx_values.network_platform)
-        print ('Second context header:', server_ctx_values.network_shared)
-        print ('Third context header:', server_ctx_values.service_platform)
-        print ('Fourth context header:', server_ctx_values.service_shared)
+        print("\nNSH Context Header Decode:")
+        print(binascii.hexlify(context_header))
+        print('First context header:', server_ctx_values.network_platform)
+        print('Second context header:', server_ctx_values.network_shared)
+        print('Third context header:', server_ctx_values.service_platform)
+        print('Fourth context header:', server_ctx_values.service_shared)
 
 
 def lookup_next_sf(service_path, service_index):
@@ -301,6 +303,28 @@ class MyUdpServer:
         self.loop = loop
 
 
+class ControlUdpServer:
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        print('Control Server Received packet from:', addr)
+        data = data.decode('utf-8')
+        data_json = json.loads(data)
+        print(data_json)
+
+
+    def connection_refused(self, exc):
+        print('Connection refused:', exc)
+
+    def connection_lost(self, exc):
+        print('stop', exc)
+
+    def __init__(self, loop):
+        self.transport = None
+        self.loop = loop
+
+
 class MyUdpClient:
     def connection_made(self, transport):
         self.transport = transport
@@ -393,6 +417,8 @@ def main():
         if '--server' in sys.argv:
             udpserver = MyUdpServer(loop)
             start_server(loop, (args.host, args.port), udpserver)
+            control_udp_server = ControlUdpServer(loop)
+            start_server(loop, (args.host, 6000), control_udp_server)
         else:
             # Figure out a source IP address / source UDP port for the client connection
             udpclient = MyUdpClient(loop)

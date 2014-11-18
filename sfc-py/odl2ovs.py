@@ -42,6 +42,8 @@ SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-fu
 
 SFF_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/"
 
+SFF_NAME_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/{}"
+
 USERNAME = "admin"
 PASSWORD = "admin"
 
@@ -615,11 +617,12 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-def get_sff_from_odl(odl_ip_port):
+def get_sffs_from_odl(odl_ip_port):
     """
     Retrieves the list fo configured SFFs from ODL
     :return: Nothing
     """
+    global sff_topo
     s = requests.Session()
     print ("Getting SFF information from ODL... \n")
     r = s.get(SFF_PARAMETER_URL.format(odl_ip_port), stream=False, auth=(USERNAME, PASSWORD))
@@ -627,6 +630,21 @@ def get_sff_from_odl(odl_ip_port):
         sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
         for sff in sff_json:
             sff_topo[sff['name']] = sff
+    else:
+        print ("=>Failed to GET SFF from ODL \n")
+
+
+def get_sff_from_odl(odl_ip_port, sff_name):
+    """
+    Retrieves the list fo configured SFFs from ODL
+    :return: Nothing
+    """
+    global sff_topo
+    s = requests.Session()
+    print ("Getting SFF information from ODL... \n")
+    r = s.get(SFF_PARAMETER_URL.format(odl_ip_port, sff_name), stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        sff_topo[sff_name] = request.get_json()['service-function-forwarder'][0]
     else:
         print ("=>Failed to GET SFF from ODL \n")
 
@@ -663,7 +681,7 @@ def main(argv):
             rest = True
 
     if odl_get_sff:
-        get_sff_from_odl(ODLIP)
+        get_sffs_from_odl(ODLIP)
 
     if rest:
         app.debug = True

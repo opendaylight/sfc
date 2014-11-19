@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a91bd0f_ceb58b32",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderScfEntryDataListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-11-19T17:49:33Z",
+      "side": 1,
+      "message": "The two actions below run in different executors. This means that it is not guaranteed that you will first delete the old ACL action and then insert the new one. It might happens that you insert the new one and then it is deleted right after.\n\nIs there any reason you need to delete the old action first? It seems in setAclEntriesSfcAction you are building a new aceArrayList so why not use the new values directly.",
+      "revId": "b5e00219c654da51cd061ac26a981810b38bbfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

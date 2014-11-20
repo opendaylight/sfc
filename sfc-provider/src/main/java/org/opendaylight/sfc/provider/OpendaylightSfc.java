@@ -10,6 +10,8 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
@@ -47,6 +49,10 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
             InstanceIdentifier.builder(ServiceFunctionChains.class)
                     .child(ServiceFunctionChain.class).build();
+
+    public static final InstanceIdentifier<ServiceFunctionClassifier> scfEntryIID =
+            InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
+                    .child(ServiceFunctionClassifier.class).build();
 
     public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();

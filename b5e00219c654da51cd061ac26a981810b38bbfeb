@@ -16,6 +16,24 @@
       "revId": "b5e00219c654da51cd061ac26a981810b38bbfeb",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a91bd0f_598863e7",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderScfEntryDataListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2014-11-20T08:58:17Z",
+      "side": 1,
+      "message": "The reason for deleting old ACL Action is in case when different (new) ACL is used. Then, old ACL is unset to be available for further use. This is keeping only ONE ACL per Classifier.\n\nWhat you proposed (direct use of new values) is happening in case when the ACL is the same (see if condition comparing ACL names) and just its Action was changed. Then it\u0027s directly set to new Action.",
+      "parentUuid": "9a91bd0f_ceb58b32",
+      "revId": "b5e00219c654da51cd061ac26a981810b38bbfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

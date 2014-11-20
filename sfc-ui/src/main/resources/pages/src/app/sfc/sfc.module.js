@@ -57,8 +57,7 @@ define([
       'app/sfc/serviceforwarder/serviceforwarder.directives',
       'app/sfc/acl/acl.directives',
       'app/sfc/metadata/metadata.directives',
-      'app/sfc/servicepath/servicepath.directives',
-      'app/sfc/servicechain/servicechain.directives'
+      'app/sfc/servicepath/servicepath.directives'
     ];
 
     var loaded = $q.defer();

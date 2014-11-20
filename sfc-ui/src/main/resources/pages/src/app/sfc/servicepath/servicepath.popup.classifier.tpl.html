@@ -1,0 +1,68 @@
+<div class="popUp modal-content">
+    <div class="modal-header btn-info">
+        <h4 class="modal-title">{{'SFC_PATH_POPUP_SELECT_CLASSIFIER' | translate}} '{{sfp.name}}'</h4>
+    </div>
+
+    <div class="modal-body form-horizontal" ng-form="f_classifier">
+        <div class="form-group" show-validation-error>
+            <label style="color:#444 !important;" class="col-lg-6 control-label small-label" ui-select2-label="classifier_{{idSuffix}}">
+                {{'SFC_CLASSIFIER_NAME' | translate}}
+            </label>
+
+            <div class="col-lg-6">
+                <select class="form-control input-sm" id="classifier_{{idSuffix}}" name="classifier" ui-select2="{allowClear: true}"
+                        ng-model="classifierName" ng-change="onClassifierChange(classifierName)"
+                        data-placeholder="{{'SFC_PATH_CREATE_CLASSIFIER' | translate}}">
+
+                    <option value=""></option>
+                    <option ng-if="originClassifier" value="{{originClassifier.name}}"><i>{{originClassifier.name}}</i></option>
+                    <option ng-repeat="item in freeClassifiers" value="{{item.name}}">{{item.name}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="classifierName">
+            <label style="color:#444 !important;" for="access_list_{{idSuffix}}"
+                   class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_ACCESS_LIST'
+                | translate}}</label>
+
+            <div class="col-lg-6">
+                <input type="text" class="form-control input-sm" ng-model="classifier['access-list']"
+                       id="access_list_{{idSuffix}}" name="access_list" readonly>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="classifierName">
+            <label style="color:#444 !important;" for="service_path_{{idSuffix}}"
+                   class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_SERVICE_PATH'
+                | translate}}</label>
+
+            <div class="col-lg-6">
+                <input type="text" class="form-control input-sm" ng-model="classifier['service-function-path']"
+                       id="service_path_{{idSuffix}}" name="service_path" readonly>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="classifierName" ng-repeat="forwarder in classifier['service-function-forwarder'] track by $index">
+            <label style="color:#444 !important;" for="service_forwarders_{{idSuffix}}_{{$index}}"
+                   class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_SERVICE_FORWARDER'
+                | translate}}</label>
+
+            <div class="col-lg-6">
+                <input type="text" class="form-control input-sm" ng-model="forwarder['name']"
+                       id="service_forwarders_{{idSuffix}}_{{$index}}" name="service_forwarders}"
+                       readonly>
+            </div>
+        </div>
+
+    </div>
+    <button class="close" ng-click="closePopUp()">&times;</button>
+    <div class="modal-footer">
+        <button class="btn btn-orange"
+                ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_PATH_MODAL_OK' | translate}}
+        </button>
+        <button class="btn btn-danger" ng-click="closePopUp()"><i class="icon-remove-sign"></i> {{'SFC_PATH_MODAL_CANCEL'
+            | translate}}
+        </button>
+    </div>
+</div>

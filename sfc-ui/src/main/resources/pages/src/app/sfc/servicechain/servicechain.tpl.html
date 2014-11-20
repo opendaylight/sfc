@@ -64,7 +64,6 @@
                     <span class="spanText" ng-show="isSFCstate(sfc, sfcState.EDITED)">({{'SFC_CHAIN_EDITED' | translate}})</span>
 
                     <span class="spanText pull-right">
-                        <service-chain-classifier sfc="sfc" id-suffix="{{$index}}"></service-chain-classifier>
                         {{'SFC_CHAIN_SYMMETRIC' | translate}}
                         <input type="checkbox" ng-model="sfc.symmetric" ng-checked="sfc.symmetric" id="symmetricSFC" ng-change="setSFCstate(sfc, sfcState.EDITED)">
                     </span>

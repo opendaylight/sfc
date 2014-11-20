@@ -30,18 +30,18 @@
             </div>
 
             <div class="form-group">
-                <label class="col-lg-6 control-label small-label" ui-select2-label="service-chain">
-                    {{'SFC_CLASSIFIER_SERVICE_CHAIN' | translate}}
+                <label class="col-lg-6 control-label small-label" ui-select2-label="service-path">
+                    {{'SFC_CLASSIFIER_SERVICE_PATH' | translate}}
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="service-chain" name="service-chain" ui-select2="{allowClear: true}"
-                            ng-model="data['service-function-chain']"
+                    <select class="form-control input-sm" id="service-path" name="service-path" ui-select2="{allowClear: true}"
+                            ng-model="data['service-function-path']"
                             ng-required="false"
-                            data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_CHAIN' | translate}}">
+                            data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_PATH' | translate}}">
 
                         <option value=""></option>
-                        <option ng-repeat="sfc in sfcs" value="{{sfc['name']}}">{{sfc['name']}}</option>
+                        <option ng-repeat="sfp in sfps" value="{{sfp['name']}}">{{sfp['name']}}</option>
                     </select>
                 </div>
             </div>

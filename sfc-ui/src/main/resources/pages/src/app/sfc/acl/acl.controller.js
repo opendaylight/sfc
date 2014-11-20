@@ -160,7 +160,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     this.fetchData = function (){
       SfcClassifierSvc.getArray(function(data){
-        $scope.classifiers = data;
+        $scope.classifiers = data || [];
         $scope.tableParams.reload();
       });
     };
@@ -197,7 +197,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   });
 
-  sfc.register.controller('sfcClassifierCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcClassifierSvc, SfcClassifierHelper, SfcAclSvc, ServiceChainSvc, ServiceForwarderSvc){
+  sfc.register.controller('sfcClassifierCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcClassifierSvc, SfcClassifierHelper, SfcAclSvc, ServicePathSvc, ServiceForwarderSvc){
 
     $scope.data = {'service-function-forwarder': []};
 
@@ -209,8 +209,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.data['service-function-forwarder'].push({});
     }
 
-    ServiceChainSvc.getArray(function (data){
-      $scope.sfcs = data;
+    ServicePathSvc.getArray(function (data){
+      $scope.sfps = data;
     });
 
     SfcAclSvc.getArray(function (data){

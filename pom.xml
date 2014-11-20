@@ -93,6 +93,7 @@
         <module>sfc-test-consumer</module>
         <module>sfc-ui</module>
         <module>sfclisp</module>
+        <module>sfc-sb-rest</module>
         <module>sfc-distribution</module>
         <module>sfcofl2</module>
         <module>features</module>

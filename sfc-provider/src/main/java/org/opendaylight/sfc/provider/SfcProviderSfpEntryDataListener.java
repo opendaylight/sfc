@@ -13,13 +13,13 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.HttpMethod;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,10 +46,10 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if( entry.getValue() instanceof  ServiceFunction) {
-                ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
-                LOG.debug("\n########## getOriginalConfigurationData {}  {}",
-                        originalServiceFunction.getType(), originalServiceFunction.getName());
+            if( entry.getValue() instanceof  ServiceFunctionPath) {
+                ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
+                LOG.debug("\n########## Original Service path: {}",
+                        originalServiceFunctionPath.getName());
             }
         }
 
@@ -97,6 +97,11 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
                 odlSfc.executor.submit(SfcProviderServiceFunctionAPI
                         .getDeleteServicePathFromServiceFunctionState(serviceTypeObj, serviceTypeClass));
+
+                Object[] servicePathObj = {originalServiceFunctionPath, HttpMethod.DELETE};
+                Class[] servicePathClass = {ServiceFunctionPath.class, String.class};
+                odlSfc.executor.submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
+                        servicePathObj, servicePathClass));
             }
         }
 

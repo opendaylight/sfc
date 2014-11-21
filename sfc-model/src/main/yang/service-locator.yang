@@ -113,6 +113,16 @@ module service-locator {
     }
   }
 
+  grouping function-locator {
+    description
+      "When SF is co-located with SFF, this could be the name of a
+       function or method.";
+    leaf function-name {
+      type string;
+      description "Function or method name";
+    }
+  }
+
   grouping data-plane-locator {
     description
       "This group presents data-plane locator
@@ -127,6 +137,9 @@ module service-locator {
       }
       case mac {
         uses mac-address-locator;
+      }
+      case function {
+        uses function-locator;
       }
       description "The collection of all possible data-plane
         locators. Only one can be chosen";

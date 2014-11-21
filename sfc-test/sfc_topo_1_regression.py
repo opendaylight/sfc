@@ -8,7 +8,7 @@ __status__ = "Tested with SFC-Karaf distribution as of 10/05/2014"
 import requests
 import json
 import time
-from sfc_dcloud_messages import *
+from sfc_topo_1_messages import *
 
 putheaders = {'content-type': 'application/json'}
 getheaders = {'Accept': 'application/json'}

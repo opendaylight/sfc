@@ -16,12 +16,12 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.1.1.4",
-            "port": 4789
+            "ip": "10.0.1.41",
+            "port": 40001
           }
         ],
         "nsh-aware": true,
-        "ip-mgmt-address": "198.18.134.26",
+        "ip-mgmt-address": "10.0.1.41",
         "type": "dpi"
       },
       {
@@ -31,12 +31,12 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.1.1.5",
-            "port": 4789
+            "ip": "10.0.1.42",
+            "port": 40002
           }
         ],
         "nsh-aware": true,
-        "ip-mgmt-address": "198.18.134.27",
+        "ip-mgmt-address": "10.0.1.42",
         "type": "napt44"
       },
       {
@@ -46,12 +46,12 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF2",
-            "ip": "10.1.2.6",
-            "port": 4789
+            "ip": "10.0.1.43",
+            "port": 40003
           }
         ],
         "nsh-aware": true,
-        "ip-mgmt-address": "198.18.134.28",
+        "ip-mgmt-address": "10.0.1.43",
         "type": "firewall"
       }
     ]
@@ -78,19 +78,19 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             },
             "data-plane-locator": {
               "port": 4789,
-              "ip": "10.100.100.1",
+              "ip": "10.0.1.41",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.1.4:5000",
+        "rest-uri": "http://10.0.1.41:5000",
         "service-function-dictionary": [
           {
             "name": "SF1",
             "type": "dp1",
             "sff-sf-data-plane-locator": {
-              "port": 4789,
-              "ip": "10.1.1.4",
+              "port": 40001,
+              "ip": "10.0.1.41",
               "transport": "service-locator:vxlan-gpe",
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -101,8 +101,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             "name": "SF2",
             "type": "napt44",
             "sff-sf-data-plane-locator": {
-              "port": 4789,
-              "ip": "10.1.1.5",
+              "port": 40002,
+              "ip": "10.0.1.42",
               "transport": "service-locator:vxlan-gpe",
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -111,7 +111,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "classifier": "acl-sfp-1",
-        "ip-mgmt-address": "198.18.134.23"
+        "ip-mgmt-address": "10.0.1.41"
       },
       {
         "name": "SFF2",
@@ -125,19 +125,19 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             },
             "data-plane-locator": {
               "port": 4789,
-              "ip": "10.100.100.2",
+              "ip": "10.0.1.42",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://198.18.134.24",
+        "rest-uri": "http://10.0.1.42:5000",
         "service-function-dictionary": [
           {
             "name": "SF3",
             "type": "firewall",
             "sff-sf-data-plane-locator": {
-              "port": 4789,
-              "ip": "10.1.2.6",
+              "port": 40003,
+              "ip": "10.0.1.43",
               "transport": "service-locator:vxlan-gpe",
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -145,7 +145,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "ip-mgmt-address": "198.18.134.24"
+        "ip-mgmt-address": "10.0.1.42"
       }
     ]
   }

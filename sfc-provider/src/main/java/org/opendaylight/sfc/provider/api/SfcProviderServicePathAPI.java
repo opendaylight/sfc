@@ -129,6 +129,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathContainingFunction");
     }
+    public static SfcProviderServicePathAPI getCheckServicePathAPI(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServicePathAPI(params, paramsTypes, "checkServiceFunctionPath");
+    }
+
+
     @SuppressWarnings("unused")
     public static int numCreatedPathGetValue() {
         return numCreatedPath.get();
@@ -141,6 +146,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public int numCreatedPathDecrementGet() {
         return numCreatedPath.decrementAndGet();
     }
+
+
+
 
     @SuppressWarnings("unused")
     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
@@ -507,25 +515,40 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         /* Prepare REST invocation */
 
-        invokeServicePathRest(serviceFunctionPath.getName(), HttpMethod.PUT);
+        invokeServicePathRest(serviceFunctionPath, HttpMethod.PUT);
 
         printTraceStop(LOG);
 
     }
+
+    /**
+     * Check a SFF for consistency after datastore creation
+     * <p>
+     * @param serviceFunctionPath SFP object
+     * @param operation HttpMethod
+     * @return Nothing
+     */
+    public void checkServiceFunctionPath(ServiceFunctionPath serviceFunctionPath, String operation) {
+
+        printTraceStart(LOG);
+
+        invokeServicePathRest(serviceFunctionPath, operation);
+
+        printTraceStop(LOG);
+    }
+
     /**
      * This method decouples the SFP API from the SouthBound REST client.
      * SFP APIs call this method to convey SFP information to REST southbound
      * devices
      * <p>
-     * @param sfpName Service Function Path Name
+     * @param serviceFunctionPath Service Function Path Object
      * @param httpMethod  HTTP method such as GET, PUT, POST..
      * @return Nothing.
      */
-    private void invokeServicePathRest(String sfpName, String httpMethod) {
+    private void invokeServicePathRest(ServiceFunctionPath serviceFunctionPath, String httpMethod) {
 
      /* Invoke SB REST API */
-
-        ServiceFunctionPath serviceFunctionPath =  readServiceFunctionPath(sfpName);
 
         if (serviceFunctionPath != null)
         {
@@ -536,33 +559,19 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 odlSfc.executor.execute(SfcProviderRestAPI.
                         getPutServiceFunctionPath(servicePathObj,
                                 servicePathClass));
+            } else if (httpMethod.equals(HttpMethod.DELETE))
+            {
+                Object[] servicePathObj = {serviceFunctionPath};
+                Class[] servicePathClass = {ServiceFunctionPath.class};
+                odlSfc.executor.execute(SfcProviderRestAPI.
+                        getDeleteServiceFunctionPath(servicePathObj,
+                                servicePathClass));
             }
         } else {
-            LOG.error("Could not find Service Function path: {}", sfpName);
+            LOG.error("Could not find Service Function path: {}", serviceFunctionPath.getName());
         }
 
     }
-
-
-    /*
-    private void deleteServiceFunctionPathEntry (ServiceFunctionChain serviceFunctionChain) {
-
-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
-        String serviceFunctionChainName = serviceFunctionChain.getName();
-        ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionChainName + "-Path");
-        InstanceIdentifier<ServiceFunctionPath> sfpIID;
-        sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                .child(ServiceFunctionPath.class, serviceFunctionPathKey)
-                .build();
-
-        WriteTransaction writeTx = odlSfc.dataProvider.newWriteOnlyTransaction();
-        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                sfpIID);
-        writeTx.commit();
-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
-
-    }
-    */
 
 
     /*

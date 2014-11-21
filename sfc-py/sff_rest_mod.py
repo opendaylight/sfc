@@ -13,27 +13,35 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-""" SFF REST Server. This Server should be co-located python reference SFF implementation """
+""" SFF REST URI module. This file is imported from main SFF. """
+
+import logging
+import socket
 
 from flask import *
-import getopt
 import json
 import requests
-import sys
-from sff_thread import *
-from threading import Thread
 
 app = Flask(__name__)
+logger = logging.getLogger(__name__)
 
 # Globals
 
-my_topo = {}
+my_topo  = {}
 sff_topo = {}
+
+# Contains all Paths in JSON format as received from ODL
 path = {}
-data_plane_path = {}
+
+# Contains all SFP in a format easily consumable by the data plane when
+# processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
+# locator of the SF/SFF.
+#data_plane_path = {}
+# For unit testing, without ODL uncomment following line
+data_plane_path = {1: {1: {'port': 4789, 'ip': '10.100.100.2'}, 2: {'port': 4789, 'ip': '10.100.100.1'}, 3: {'port': 4789, 'ip': '10.100.100.1'}}}
+
+# Contains the name of this SFF. For example, SFF1
 my_sff_name = ""
-sff_threads = {}
-sff_control_port = 6000
 
 # ODL IP:port
 ODLIP = "127.0.0.1:8181"
@@ -55,11 +63,19 @@ SFF_SF_DATA_PLANE_LOCATOR_URL = "http://{}/restconf/config/service-function-forw
 USERNAME = "admin"
 PASSWORD = "admin"
 
-logger = logging.getLogger(__name__)
-
 
 def tree():
     return collections.defaultdict(tree)
+
+
+# This function does not work if machine has more than one IP/interface
+def get_my_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    myip = (s.getsockname()[0])
+    s.close()
+    myip = "http://" + myip + ":/paths"
+    return myip
 
 
 def find_sf_locator(sf_name, sff_name):
@@ -198,57 +214,13 @@ def delete_path(sfpname):
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['PUT'])
 def create_sff(sffname):
-    """
-    This function creates a SFF on-the-fly when it receives a PUT request from ODL. The SFF runs on a
-    separate thread. If a SFf thread already exist, it kills it first and then proceeds to create a
-    new one. This is the most common scenario when a SFF is modified or recreated
-    :param sffname: SFF name
-    :return:
-    """
     global sff_topo
-    global sff_control_port
-    global sff_threads
     if not request.json:
         abort(400)
     else:
-        if sffname in sff_threads.keys():
-            kill_sff_thread(sffname)
         sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
-        sff_port = sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
-        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, sff_control_port, sff_threads))
-
-        sff_threads[sffname] = {}
-        sff_threads[sffname]['thread'] = sff_thread
-        sff_threads[sffname]['sff_control_port'] = sff_control_port
-
-        sff_thread.start()
-
-        sff_control_port += 1
-
-
     return jsonify({'sff': sff_topo}), 201
 
-
-def kill_sff_thread(sffname):
-    """
-    This function kills a SFF thread
-    :param sffname:
-    :return:
-    """
-    global udpserver_socket
-    logger.info("Killing thread for SFF: %s", sffname)
-    SFF_UDP_IP = "127.0.0.1"
-    message = "Kill thread".encode(encoding="UTF-8")
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP,  sff_threads[sffname]['sff_control_port']))
-    if sff_threads[sffname]['thread'].is_alive():
-        sff_threads[sffname]['thread'].join()
-    if not sff_threads[sffname]['thread'].is_alive():
-        logger.info("Thread for SFF %s is dead", sffname)
-        sff_threads[sffname]['socket'].close()
-        sff_threads.pop(sffname, None)
-        #udpserver_socket.close()
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['DELETE'])
@@ -262,8 +234,6 @@ def delete_sff(sffname):
     global path
     global data_plane_path
     try:
-        if sffname in sff_threads.keys():
-            kill_sff_thread(sffname)
         sff_topo.pop(sffname, None)
         if sffname == my_sff_name:
             path = {}
@@ -358,44 +328,14 @@ def get_sff_from_odl(odl_ip_port, sff_name):
         return -1
 
 
-def main(argv):
+def flask_bootstrap(sff_name, odl_ip_port):
+    """
+    This function is called from SFF main module as the entry point
+    of flask thread
+    :param sff_name:
+    :param odl_ip_port:
+    :return:
+    """
     global ODLIP
     global my_sff_name
-    try:
-        logging.basicConfig(level=logging.INFO)
-        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port="])
-    except getopt.GetoptError:
-        print("rest2ovs --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port")
-        sys.exit(2)
-
-    odl_get_sff = False
-    rest = False
-    for opt, arg in opt:
-        if opt == "--odl-get-sff":
-            odl_get_sff = True
-            continue
-
-        if opt == "--odl-ip-port":
-            ODLIP = arg
-            continue
-
-        if opt in ('-h', '--help'):
-            print("rest2ovs -m cli | rest --odl-get-sff --odl-ip-port")
-            sys.exit()
-
-        if opt in ('-r', '--rest'):
-            rest = True
-
-        if opt == "--sff-name":
-            my_sff_name = arg
-
-    if odl_get_sff:
-        get_sffs_from_odl(ODLIP)
-
-    if rest:
-        app.debug = True
-        app.run(host='0.0.0.0')
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    app.run(host='0.0.0.0')

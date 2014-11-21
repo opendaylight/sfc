@@ -16,10 +16,9 @@ __status__ = "alpha"
 import argparse
 import asyncio
 import sys
-import struct
 import socket
-import binascii
 from ctypes import *
+from nsh_decode import *
 
 try:
     import signal
@@ -38,7 +37,7 @@ class BASEHEADER(Structure):
 
 # Decode base NSH header
 
-base_values = BASEHEADER()
+server_base_values = BASEHEADER()
 
 
 class MyFwService:
@@ -103,38 +102,14 @@ class MyDpiService:
 def process_incoming_packet(data):
     print('Processing recieved packet')
     rw_data = bytearray(data)
-    decode_baseheader(data)
-    base_values.service_index -= 1
-    set_service_index(rw_data, base_values.service_index)
+    decode_baseheader(data, server_base_values)
+    server_base_values.service_index -= 1
+    set_service_index(rw_data, server_base_values.service_index)
     return rw_data
 
 
-def decode_baseheader(payload):
-    # Base Service header
-    base_header = payload[8:17]  # starts at offset 8 of payload
-
-    start_idx, base_values.md_type, base_values.next_protocol, path_idx = struct.unpack('!H B H I', base_header)
-
-    base_values.version = start_idx >> 14
-    base_values.flags = start_idx >> 6
-    base_values.length = start_idx >> 0
-    base_values.service_path = path_idx >> 8
-    base_values.service_index = path_idx & 0x000000FF
-
-    if __debug__ is False:
-        print ("\nBase NSH Header Decode:")
-        print (binascii.hexlify(base_header))
-        print ('NSH Version:', base_values.version)
-        print ('NSH base header flags:', base_values.flags)
-        print ('NSH base header length:', base_values.length)
-        print ('NSH MD-type:', base_values.md_type)
-        print ('NSH base header next protocol:', base_values.next_protocol)
-        print ('Service Path Identifier:', base_values.service_path)
-        print ('Service Index:', base_values.service_index)
-
-
 def set_service_index(rw_data, service_index):
-    rw_data[16] = service_index
+    rw_data[15] = service_index
 
 
 def start_server(loop, addr, service, myip):
@@ -193,7 +168,7 @@ if __name__ == '__main__':
 
         if '--type' in sys.argv:
             # local_ip = get_service_ip()
-            local_ip = '127.0.0.1'
+            local_ip = '0.0.0.0'
             service = find_service(args.type)
             print('Starting', args.type, 'service...')
             start_server(loop, (args.host, args.port), service, local_ip)

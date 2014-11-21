@@ -127,7 +127,9 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
         ClientResponse deleteClientRemoteResponse;
 
-        String sffURI = "http://127.0.0.1:5000/config/service" +
+        String restURI = serviceFunctionForwarder.getRestUri().getValue();
+
+        String sffURI = restURI + "/config/service" +
                 "-function-forwarder:service-function-forwarders/service" +
                 "-function-forwarder/" +
                 serviceFunctionForwarder.getName();
@@ -255,6 +257,75 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     }
 
+    /**
+     * Communicates SFP to REST URI found in SFF configuration Server.
+     * It sends SFP information to each SFF present in the service-hop list.
+     * <p>
+     * @param serviceFunctionPath Service Function Path object
+     * @return Nothing
+     */
+    public void deleteServiceFunctionPath (ServiceFunctionPath serviceFunctionPath) {
+
+        printTraceStart(LOG);
+
+        ClientConfig clientConfig = new DefaultClientConfig();
+        Client client = Client.create(clientConfig);
+        String sfpURI;
+        String restURI;
+
+        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        Set<String> sffNameSet = new HashSet<>();
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+            String sffName = servicePathHop.getServiceFunctionForwarder();
+            // We send the SFP message to each SFF only once
+            if (sffNameSet.add(sffName))
+            {
+                Object[] serviceForwarderObj = {sffName};
+                Class[] serviceForwarderClass = {String.class};
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
+                        SfcProviderServiceForwarderAPI.getRead(serviceForwarderObj, serviceForwarderClass);
+
+                Future<Object> future = odlSfc.executor.submit
+                        (sfcProviderServiceForwarderAPI);
+                ClientResponse deleteClientRemoteResponse;
+
+                try
+                {
+                    ServiceFunctionForwarder serviceFunctionForwarder =
+                            (ServiceFunctionForwarder) future
+                                    .get();
+                    restURI = serviceFunctionForwarder.getRestUri().getValue();
+                    // Testing
+                    //restURI = "http://127.0.0.1:5000";
+
+                    sfpURI = restURI + "/config/service" +
+                            "-function-path:service-function-paths/" +
+                            "service-function-path/" + serviceFunctionPath
+                            .getName();
+                    deleteClientRemoteResponse = client.resource(sfpURI).type(MediaType
+                            .APPLICATION_JSON_TYPE).delete(ClientResponse.class);
+                    if (deleteClientRemoteResponse.getStatus() >= 300)
+                    {
+                        throw new UniformInterfaceException(HTTP_ERROR_MSG
+                                + deleteClientRemoteResponse.getStatus(),
+                                deleteClientRemoteResponse);
+                    }
+                    deleteClientRemoteResponse.close();
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                } catch (ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        printTraceStop(LOG);
+
+    }
+
     public static  SfcProviderRestAPI getPutServiceFunctionForwarder (Object[] params, Class[] paramsTypes) {
         return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionForwarder");
     }
@@ -265,5 +336,9 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
     public static  SfcProviderRestAPI getPutServiceFunctionPath (Object[] params, Class[] paramsTypes) {
         return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPath");
+    }
+
+    public static  SfcProviderRestAPI getDeleteServiceFunctionPath (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "deleteServiceFunctionPath");
     }
 }

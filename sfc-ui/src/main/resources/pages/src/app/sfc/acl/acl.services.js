@@ -224,7 +224,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       modalInstance = $modal.open({
         templateUrl: 'src/app/sfc/acl/acl.modal.metadata.tpl.html',
         backdrop: false,
-        size: "sm",
         controller: 'sfcAclModalMetadataCtrl',
         resolve: {
           ace: function () {

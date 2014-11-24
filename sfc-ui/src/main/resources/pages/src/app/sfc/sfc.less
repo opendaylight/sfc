@@ -6,7 +6,7 @@
 }
 
 div.tooltip {
-  a{
+  a {
     color: #428bca !important;
   }
   position: absolute;
@@ -38,42 +38,42 @@ div.tooltip {
   cursor: pointer;
 }
 
-.overlay{
+.overlay {
   //background-color:#EEE;
   background-image: none;
   border: none;
 }
 
 .node text {
-  font-size:12px;
-  font-family:sans-serif;
+  font-size: 12px;
+  font-family: sans-serif;
   fill: #ffffff;
   text-shadow: 2px 2px black;
 }
 
-.nodeLabelOutContainer{
+.nodeLabelOutContainer {
   width: 50%;
   height: 100%;
-  margin:auto;
+  margin: auto;
   display: table;
   table-layout: fixed;
 }
 
-.nodeLabelInContainer{
+.nodeLabelInContainer {
   display: table-cell;
   line-height: 1;
 }
 
-.nodeLabel{
-  font-size:12px;
-  font-family:sans-serif;
+.nodeLabel {
+  font-size: 12px;
+  font-family: sans-serif;
   color: white;
   background: #414042;
-//  -ms-word-break: break-all;
-//  -webkit-hyphens: auto;
-//  -moz-hyphens: auto;
-//  -ms-hyphens: auto;
-//  hyphens: auto;
+  //  -ms-word-break: break-all;
+  //  -webkit-hyphens: auto;
+  //  -moz-hyphens: auto;
+  //  -ms-hyphens: auto;
+  //  hyphens: auto;
   white-space: pre-wrap; /* css-3 */
   white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
   white-space: -pre-wrap; /* Opera 4-6 */
@@ -82,8 +82,10 @@ div.tooltip {
 }
 
 /* saf3+, chrome1+ */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  .nodeLabel  { word-wrap: inherit  }
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .nodeLabel {
+    word-wrap: inherit
+  }
 }
 
 .link {
@@ -92,33 +94,33 @@ div.tooltip {
   stroke-width: 2.5px;
 }
 
-.sfc-node-main{
+.sfc-node-main {
   margin-top: 30px;
   text-align: center;
 }
 
-.dropcontainer{
+.dropcontainer {
   display: table-cell;
-  float:left;
+  float: left;
 }
 
-.editable-input{
+.editable-input {
   color: #1C94C4 !important;
   background-color: white !important;
-  font-size:12px;
+  font-size: 12px;
   width: 80px;
   text-align: center;
   cursor: text;
 }
 
-.editable-click, a.editable-click{
+.editable-click, a.editable-click {
   text-decoration: none;
   color: #428bca;
   border-bottom: none;
   cursor: text;
 }
 
-.place{
+.place {
   width: 104px;
   height: 100px;
   background-image: url(images/arrow-right-part-small.png), url(images/arrow-left-part-small.png);
@@ -140,9 +142,9 @@ div.tooltip {
 }
 
 .error {
-  background: rgba(255,0,0,0.53);
+  background: rgba(255, 0, 0, 0.53);
   border-radius: 0px;
-  float:right;
+  float: right;
 }
 
 .warning {
@@ -192,7 +194,7 @@ div.tooltip {
   float: left;
 }
 
-.obr-box{
+.obr-box {
   width: 64px;
   height: 64px;
   -webkit-touch-callout: none;
@@ -204,11 +206,11 @@ div.tooltip {
   float: left;
 }
 
-.obr-box.sf{
+.obr-box.sf {
   background: url(images/Device_switch_3062_unknown_64.png) 0 0;
 }
 
-.obr-box.sff{
+.obr-box.sff {
   background: url(images/Device_switch_3062_unknown_64_orange.png) 0 0;
 }
 
@@ -247,6 +249,7 @@ div.tooltip {
 //---UI BOOTSTRAP MODAL OVERRIDE---
 // .modal-open      - body class for killing the scroll
 // .modal           - container to scroll within
+// .modal-body      - should be scrollable
 
 .modal-open {
   overflow: auto;
@@ -256,16 +259,21 @@ div.tooltip {
   overflow: hidden;
 }
 
-.has-error .select2-choice{
+.modal-body {
+  overflow: auto;
+}
+
+
+.has-error .select2-choice {
   border-color: #a94442 !important;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
 }
 
-.popUp{
+.popUp {
   width: 40%;
   left: 50%;
-//  top: 60px;
+  //  top: 60px;
   min-width: 450px;
   position: absolute;
   z-index: 15;
@@ -274,5 +282,96 @@ div.tooltip {
     top: 0px;
     right: 5px;
     color: #f1f1f1;
+  }
+}
+
+.nav-tabs li a {
+  color: white !important;
+  background-color: transparent !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+.nav-tabs {
+  border-bottom: none !important;
+}
+
+@-webkit-keyframes rotating {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes rotating {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-ms-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+  }
+}
+
+@-o-keyframes rotating {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  -moz-animation: rotating 1.5s linear infinite;
+  -webkit-animation: rotating 1.5s linear infinite;
+  -o-animation: rotating 1.5s linear infinite;
+  -ms-animation: rotating 1.5s linear infinite;
+  animation: rotating 1.5s linear infinite;
+}
+
+@media screen and ( max-height: 700px ){
+  .modal-body {
+    max-height: 355px;
+  }
+  
+  .modal-dialog{
+    height: 500px;
+  }
+  
+  .modal-content{
+    height: 100%;
+  }
+}
+
+@media screen and ( max-height: 540px ){
+  .modal-body {
+    max-height: 225px;
+  }
+
+  .modal-dialog{
+    height: 370px;
+  }
+
+  .modal-content{
+    height: 100%;
   }
 }

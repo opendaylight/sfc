@@ -12,12 +12,13 @@ define([
   'xeditable',
   'angular-sanitize',
   'ui-select2',
-  'ng-table'], function () {
+  'ng-table',
+  'ngStorage'], function () {
 
   var sfc = angular.module('app.sfc',
     [
       'app.core', 'ui.router.state', 'restangular', 'ui.bootstrap', 'ui.unique', 'ui.sortable', 'ngDragDrop', 'xeditable',
-      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable'
+      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable', 'ngStorage'
     ]);
 
   sfc.register = sfc; // for adding services, controllers, directives etc. to angular module before bootstrap
@@ -35,7 +36,8 @@ define([
       'app/sfc/utils/modal.controller',
       'app/sfc/acl/acl.controller',
       'app/sfc/metadata/metadata.controller',
-      'app/sfc/servicelocator/servicelocator.controller'];
+      'app/sfc/servicelocator/servicelocator.controller',
+      'app/sfc/system/system.controller'];
     var services = [
       'app/core/core.services',
       'app/sfc/sfc.services',
@@ -48,7 +50,8 @@ define([
       'app/sfc/servicefunction/servicefunction.services',
       'app/sfc/servicepath/servicepath.services',
       'app/sfc/servicelocator/servicelocator.services',
-      'app/sfc/acl/acl.services'];
+      'app/sfc/acl/acl.services',
+      'app/sfc/system/system.services'];
     var directives = [
       'app/sfc/sfc.directives',
       'app/sfc/servicenode/servicenode.directives',
@@ -318,6 +321,17 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/metadata/metadata.variable.create.tpl.html',
           controller: 'sfcMetadataVariableCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.system', {
+      url: '/system',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/system/system.tpl.html',
+          controller: 'sfcSystemCtrl'
         }
       }
     });

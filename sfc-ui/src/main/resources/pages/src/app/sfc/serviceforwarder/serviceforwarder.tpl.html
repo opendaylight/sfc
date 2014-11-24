@@ -1,27 +1,37 @@
-<a class="btn btn-info add-row" href="index.html#/sfc/serviceforwarder-create">
-    {{'SFC_FORWARDER_ADD' | translate}}
-</a>
+<div class="col-xs-12" style="padding: 0px">
 
-<button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}</button>
+    <a class="btn btn-info add-row" href="index.html#/sfc/serviceforwarder-create">
+        {{'SFC_FORWARDER_ADD' | translate}}
+    </a>
 
-<table ng-table="tableParams" show-filter="true" class="footable table">
-    <tr ng-repeat="sff in $data track by $index | filter:search" ng-model="sffs">
-        <td data-title="'SFC_FORWARDER_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
-            {{sff['name']}}
-        </td>
-        <td data-title="'SFC_FORWARDER_SHORT_IP_MGMT_ADDRESS' | translate" sortable="'valueOf()[\'ip-mgmt-address\']'" filter="{ 'ip-mgmt-address': 'text' }">
-            {{sff['ip-mgmt-address']}}
-        </td>
-        <td data-title="'SFC_FORWARDER_SHORT_REST_URI' | translate" sortable="'valueOf()[\'rest-uri\']'" filter="{ 'rest-uri': 'text' }">
-            {{sff['rest-uri']}}
-        </td>
-        <td data-title="'SFC_FORWARDER_SERVICE_NODE' | translate" sortable="'valueOf()[\'service-node\']'" filter="{ 'service-node': 'text' }">
-            {{sff['service-node']}}
-        </td>
-        <td data-title="'SFC_FORWARDER_CLASSIFIER' | translate" sortable="'classifier'" filter="{ 'classifier': 'text' }">
-            {{sff['classifier']}}
-        </td>
-        <td data-title="'SFC_FUNCTION_DATA_PLANE_LOCATOR' | translate" sortable="'valueOf()[\'sff-data-plane-locator-string\']'" filter = "{ 'sff-data-plane-locator-string': 'text' }">
+    <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
+        translate}}
+    </button>
+
+    <table ng-table="tableParams" show-filter="true" class="footable table">
+        <tr ng-repeat="sff in $data track by $index | filter:search" ng-model="sffs">
+            <td data-title="'SFC_FORWARDER_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
+                {{sff['name']}}
+            </td>
+            <td data-title="'SFC_FORWARDER_SHORT_IP_MGMT_ADDRESS' | translate"
+                sortable="'valueOf()[\'ip-mgmt-address\']'" filter="{ 'ip-mgmt-address': 'text' }">
+                {{sff['ip-mgmt-address']}}
+            </td>
+            <td data-title="'SFC_FORWARDER_SHORT_REST_URI' | translate" sortable="'valueOf()[\'rest-uri\']'"
+                filter="{ 'rest-uri': 'text' }">
+                {{sff['rest-uri']}}
+            </td>
+            <td data-title="'SFC_FORWARDER_SERVICE_NODE' | translate" sortable="'valueOf()[\'service-node\']'"
+                filter="{ 'service-node': 'text' }">
+                {{sff['service-node']}}
+            </td>
+            <td data-title="'SFC_FORWARDER_CLASSIFIER' | translate" sortable="'classifier'"
+                filter="{ 'classifier': 'text' }">
+                {{sff['classifier']}}
+            </td>
+            <td data-title="'SFC_FUNCTION_DATA_PLANE_LOCATOR' | translate"
+                sortable="'valueOf()[\'sff-data-plane-locator-string\']'"
+                filter="{ 'sff-data-plane-locator-string': 'text' }">
                 <span style="color: #1C94C4; cursor: pointer;" ng-repeat="loc in sff['sff-data-plane-locator']"
                       tooltip-placement="bottom"
                       tooltip-html-unsafe="
@@ -32,8 +42,10 @@
 
                     {{loc['name']}}{{$last ? '' : ', '}}
                 </span>
-        </td>
-        <td data-title="'SFC_FORWARDER_SF_DICTIONARY' | translate" sortable="'valueOf()[\'service-function-dictionary-string\']'" filter = "{ 'service-function-dictionary-string': 'text' }">
+            </td>
+            <td data-title="'SFC_FORWARDER_SF_DICTIONARY' | translate"
+                sortable="'valueOf()[\'service-function-dictionary-string\']'"
+                filter="{ 'service-function-dictionary-string': 'text' }">
                 <span style="color: #1C94C4; cursor: pointer;" ng-repeat="sf in sff['service-function-dictionary']"
                       tooltip-placement="bottom"
                       tooltip-html-unsafe="
@@ -50,16 +62,17 @@
 
                     {{sf['name']}}{{$last ? '' : ', '}}
                 </span>
-        </td>
-        <td data-title="'SFC_FORWARDER_ACTIONS' | translate">
-            <a ng-click="deleteSFF(sff)">
-                <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
-                   popover="{{ 'SFC_FORWARDER_DELETE' | translate }}"></i>
-            </a>
-            <a ng-click="editSFF(sff.name)">
-                <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
-                   popover="{{ 'SFC_FORWARDER_EDIT' | translate }}"></i>
-            </a>
-        </td>
-    </tr>
-</table>
+            </td>
+            <td data-title="'SFC_FORWARDER_ACTIONS' | translate">
+                <a ng-click="deleteSFF(sff)">
+                    <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_FORWARDER_DELETE' | translate }}"></i>
+                </a>
+                <a ng-click="editSFF(sff.name)">
+                    <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_FORWARDER_EDIT' | translate }}"></i>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>

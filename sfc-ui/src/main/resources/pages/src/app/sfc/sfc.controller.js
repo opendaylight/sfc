@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('rootSfcCtrl', function ($rootScope) {
+  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $localStorage) {
 
 //    // register watch for debugging - works only in firefox
 //    if (angular.isDefined($rootScope.watch)) {
@@ -54,6 +54,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
     {
       "attachment-point-type": ["bridge", "interface"]
     };
+
+    $rootScope.logConstants =
+    {
+      "level": ['INFO', 'DEBUG', 'WARN', 'ERROR']
+    };
+
+    $rootScope.experimental = true;
+
+    $localStorage.$default({
+      restangularBaseUrl: SfcRestangularSvc.getCurrentBaseUrl()
+    });
+    SfcRestangularSvc.changeBaseUrl($localStorage.restangularBaseUrl);
+
   });
 
   sfc.register.controller('sfcForwarderSelect2Ctrl', function ($scope) {

@@ -29,7 +29,8 @@ require.config({
     'ui-sortable' : '../vendor/angular-ui-sortable/sortable',
     'ngDragDrop' : '../vendor/angular-dragdrop/draganddrop',
     'xeditable' : '../vendor/angular-xeditable/dist/js/xeditable',
-    'ng-table': '../vendor/ng-table/ng-table'
+    'ng-table': '../vendor/ng-table/ng-table',
+    'ngStorage': '../vendor/ngStorage/ngStorage.min'
   },
 
   shim : {
@@ -54,6 +55,7 @@ require.config({
     'ngload' : ['angularAMD'],
     'ng-table': ['angular'],
     'ngDragDrop' : ['angular'],
+    'ngStorage' : ['angular'],
     'xeditable' : ['angular'],
     'jquery-ui' : ['jquery'],
     'jquery' : {

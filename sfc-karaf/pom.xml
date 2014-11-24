@@ -288,7 +288,8 @@
         <configuration>
           <bootFeatures>
             <feature>standard</feature>
-            <feature>odl-restconf</feature> 
+            <feature>webconsole</feature>
+            <feature>odl-restconf</feature>
             <feature>odl-sfc-all</feature>
             <feature>odl-mdsal-apidocs</feature>
             <!-- 

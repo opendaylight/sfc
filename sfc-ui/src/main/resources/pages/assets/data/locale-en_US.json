@@ -270,9 +270,11 @@
   "SFC_SERVICE_NODES": "Service Nodes",
   "SFC_SERVICE_FORWARDERS": "Service Function Forwarders",
   "SFC_SERVICE_FUNCTIONS": "Service Functions",
+  "SFC_SERVICE_FUNCTIONS_TYPES": "Service Function Types",
   "SFC_SERVICE_CHAINS": "Service Function Chains",
   "SFC_SERVICE_PATHS": "Service Function Paths",
   "SFC_CONFIG": "Config",
+  "SFC_SYSTEM": "System info",
   "SFC_ACCESS_LISTS": "Access Lists/Classifiers",
   "SFC_METADATA": "NSH Metadata",
   "SFC_RESTCONF_URL": "Restconf URL",
@@ -579,6 +581,12 @@
   "SFC_METADATA_CREATE_VARIABLE_TLV_DATA": "Type in a string",
   "SFC_METADATA_VARIABLE_TLV_LENGTH": "Length of the variable metadata",
   "SFC_METADATA_CREATE_VARIABLE_TLV_LENGTH": "Number in range 0-32",
+  "SFC_SYSTEM_FEATURE_ID": "Karaf Feature ID",
+  "SFC_SYSTEM_FEATURE_REPOSITORY_URL": "Repository URL",
+  "SFC_SYSTEM_FEATURE_STATUS": "Status",
+  "SFC_SYSTEM_FEATURE_UNINSTALL": "Uninstall feature",
+  "SFC_SYSTEM_FEATURE_INSTALL": "Install feature",
+  "SFC_SYSTEM_REPOSITORY_REFRESH": "Refresh repository",
 
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

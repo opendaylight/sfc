@@ -1,0 +1,42 @@
+<div class="col-xs-12" style="padding: 0px">
+
+    <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
+        translate}}
+    </button>
+    <table ng-table="tableParams" show-filter="true" class="footable table">
+        <!--<tr ng-hide="sfs.length">-->
+        <!--<td colspan="6" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
+        <!--</tr>-->
+        <tr ng-repeat="feature in $data track by $index" ng-model="features">
+            <td data-title="'SFC_SYSTEM_FEATURE_ID' | translate" sortable="'id'" filter="{ 'id': 'text' }">
+                {{feature['id']}}
+            </td>
+            <td data-title="'SFC_SYSTEM_FEATURE_REPOSITORY_URL' | translate" sortable="'valueOf()[\'repository-url\']'" filter="{ 'repository-url': 'text' }">
+                {{feature['repository-url']}}
+            </td>
+            <td data-title="'SFC_SYSTEM_FEATURE_STATUS' | translate" sortable="'state'" filter="{ 'state': 'text' }">
+                <i ng-show="isFeatureInstalled(feature)" class="icon-circle" style="color:green"></i>
+                <i ng-show="!isFeatureInstalled(feature)" class="icon-circle" style="color:red"></i>
+                {{feature['state']}}
+            </td>
+
+            <td data-title="'SFC_FUNCTION_ACTIONS' | translate">
+                <!--<a class="row-delete-sf" href="#">-->
+                <!--<i class="icon-edit"></i>-->
+                <!--</a>-->
+                <a ng-click="refreshRepository(feature)">
+                    <i class="icon-refresh" ng-class="{rotating: isFeatureReloading(feature)}" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_SYSTEM_REPOSITORY_REFRESH' | translate }}"></i>
+                </a>
+                <a ng-show="isFeatureInstalled(feature)" ng-click="uninstallFeature(feature)">
+                    <i class="icon-eject" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_SYSTEM_FEATURE_UNINSTALL' | translate }}"></i>
+                </a>
+                <a ng-show="!isFeatureInstalled(feature)" ng-click="installFeature(feature)">
+                    <i class="icon-play" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_SYSTEM_FEATURE_INSTALL' | translate }}"></i>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>

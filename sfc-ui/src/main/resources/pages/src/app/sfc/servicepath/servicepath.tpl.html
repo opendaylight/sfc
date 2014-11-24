@@ -1,45 +1,50 @@
-<div class="col-md-12" style="padding-right: 0px">
-    <button type="button" ng-click="tableParams.sorting({}); tableParamsSfName.sorting({}); tableParamsSffName.sorting({});" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}</button>
-</div>
+<div class="col-xs-12" style="padding: 0px">
 
-<div class="col-md-2" style="padding-left: 0px">
-    <table ng-table="tableParamsSfName" class="footable table">
-        <!--<tr ng-hide="sfs.length">-->
-        <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
-        <!--</tr>-->
-        <tr ng-repeat="item in $data track by $index"
-            ui-draggable="true" drag="'sf_' + item.name" class="draggable">
-            <td data-title="'SFC_FUNCTION_NAME' | translate" sortable="'name'">
+    <div class="col-md-12" style="padding-right: 0px">
+        <button type="button"
+                ng-click="tableParams.sorting({}); tableParamsSfName.sorting({}); tableParamsSffName.sorting({});"
+                class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+        </button>
+    </div>
+
+    <div class="col-md-2" style="padding-left: 0px">
+        <table ng-table="tableParamsSfName" class="footable table">
+            <!--<tr ng-hide="sfs.length">-->
+            <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
+            <!--</tr>-->
+            <tr ng-repeat="item in $data track by $index"
+                ui-draggable="true" drag="'sf_' + item.name" class="draggable">
+                <td data-title="'SFC_FUNCTION_NAME' | translate" sortable="'name'">
                 <span style="color:black;"
                       tooltip-html-unsafe="{{'SFC_TOOLTIP_TYPE' | translate}} {{item.type}} <br/> {{'SFC_TOOLTIP_IP' | translate}} {{item['ip-mgmt-address']}}"
                       tooltip-placement="right">{{item.name}}</span>
-            </td>
-        </tr>
-    </table>
-    <table ng-table="tableParamsSffName" class="footable table">
-        <!--<tr ng-hide="sfs.length">-->
-        <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
-        <!--</tr>-->
-        <tr ng-repeat="item in $data track by $index"
-            ui-draggable="true" drag="'sff_' + item.name" class="draggable">
-            <td data-title="'SFC_FUNCTION_SFF' | translate" sortable="'name'">
-                {{item.name}}
-            </td>
-        </tr>
-    </table>
-</div>
+                </td>
+            </tr>
+        </table>
+        <table ng-table="tableParamsSffName" class="footable table">
+            <!--<tr ng-hide="sfs.length">-->
+            <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
+            <!--</tr>-->
+            <tr ng-repeat="item in $data track by $index"
+                ui-draggable="true" drag="'sff_' + item.name" class="draggable">
+                <td data-title="'SFC_FUNCTION_SFF' | translate" sortable="'name'">
+                    {{item.name}}
+                </td>
+            </tr>
+        </table>
+    </div>
 
-<div class="col-md-10" style="padding-right: 0px">
+    <div class="col-md-10" style="padding-right: 0px">
 
-    <table ng-table="tableParams" class="footable table">
-        <!--<tr ng-hide="sfps.length">-->
-        <!--<td colspan="1" class="centerAlign">No data found</td>-->
-        <!--</tr>-->
-        <tr ng-repeat="sfp in $data track by $index" id="{{sfp.name}}~!~{{$index}}">
-            <td data-title="'SFC_PATH' | translate" sortable="'name'" ui-on-Drop="onSFPdrop($data, sfp)"
-                ng-class="getSFPstate(sfp)" effect-me="sfpEffectMe[sfp.name]" style="position: relative">
-                <p>
-                    <span class="spanText"><b>{{sfp.name}}</b></span>
+        <table ng-table="tableParams" class="footable table">
+            <!--<tr ng-hide="sfps.length">-->
+            <!--<td colspan="1" class="centerAlign">No data found</td>-->
+            <!--</tr>-->
+            <tr ng-repeat="sfp in $data track by $index" id="{{sfp.name}}~!~{{$index}}">
+                <td data-title="'SFC_PATH' | translate" sortable="'name'" ui-on-Drop="onSFPdrop($data, sfp)"
+                    ng-class="getSFPstate(sfp)" effect-me="sfpEffectMe[sfp.name]" style="position: relative">
+                    <p>
+                        <span class="spanText"><b>{{sfp.name}}</b></span>
                     <span class="spanText" ng-show="sfp['path-id'] && sfp['starting-index']">
                         ({{ 'SFC_PATH_ID' | translate }}: <b>{{sfp['path-id']}}</b>, {{ 'SFC_PATH_STARTING_INDEX' | translate }}: <b>{{sfp['starting-index']}}</b>)
                     </span>
@@ -61,44 +66,46 @@
                                popover-trigger="mouseenter" popover="{{ 'SFC_PATH_PERSIST' | translate }}"></i>
                         </a>
                     </span>
-                    <span class="spanText" ng-show="isSFPstate(sfp, sfpState.EDITED)">({{'SFC_PATH_TEMPORARY' | translate}})</span>
+                        <span class="spanText" ng-show="isSFPstate(sfp, sfpState.EDITED)">({{'SFC_PATH_TEMPORARY' | translate}})</span>
 
                     <span class="pull-right">
                         <service-path-classifier sfp="sfp" id-suffix="{{$index}}"></service-path-classifier>
                         <service-path-context-metadata-pop-up sfp-state="sfpState" sfp="sfp" context-metadata="contextMetadata" id-suffix="{{$index}}"></service-path-context-metadata-pop-up>
                     </span>
-                </p>
 
-                <div class="sfc-sf-component"
-                     style="width: 18px;">
-                    <div style="width: 100%; height: 64px;">
-                        <div class="arrow-left-part"></div>
-                    </div>
-                </div>
+                    </p>
 
-                <div class="connected-apps-container dropcontainer"
-                     ui-sortable="sortableOptions"
-                     ng-model="sfp['service-path-hop']">
-
-                    <div class="sfc-sf-component draggable"
-                         ng-repeat="s in sfp['service-path-hop'] track by $index">
-
+                    <div class="sfc-sf-component"
+                         style="width: 18px;">
                         <div style="width: 100%; height: 64px;">
-                            <div class="arrow-right-part"></div>
-                            <div class="obr-box" ng-class="getHopClass(s)">
-                                <i class="icon-remove"
-                                   style="cursor: pointer; position: relative; top: 0px; left: 60px;"
-                                   ng-click="removeSFfromSFP(sfp, $index)"
-                                   popover-trigger="mouseenter" popover="{{ 'SFC_FUNCTION_DELETE' | translate }}">
-                                </i>
-                            </div>
-                            <wbr>
                             <div class="arrow-left-part"></div>
                         </div>
+                    </div>
 
-                        <div style="width: 100%; height: 36px; text-align: center;">
-                            <div style="display: inline-block;">
-                                <span ng-if="getHopClass(s) == 'sf'" style="color: #1C94C4; cursor: pointer;" tooltip-placement="bottom"
+                    <div class="connected-apps-container dropcontainer"
+                         ui-sortable="sortableOptions"
+                         ng-model="sfp['service-path-hop']">
+
+                        <div class="sfc-sf-component draggable"
+                             ng-repeat="s in sfp['service-path-hop'] track by $index">
+
+                            <div style="width: 100%; height: 64px;">
+                                <div class="arrow-right-part"></div>
+                                <div class="obr-box" ng-class="getHopClass(s)">
+                                    <i class="icon-remove"
+                                       style="cursor: pointer; position: relative; top: 0px; left: 60px;"
+                                       ng-click="removeSFfromSFP(sfp, $index)"
+                                       popover-trigger="mouseenter" popover="{{ 'SFC_FUNCTION_DELETE' | translate }}">
+                                    </i>
+                                </div>
+                                <wbr>
+                                <div class="arrow-left-part"></div>
+                            </div>
+
+                            <div style="width: 100%; height: 36px; text-align: center;">
+                                <div style="display: inline-block;">
+                                <span ng-if="getHopClass(s) == 'sf'" style="color: #1C94C4; cursor: pointer;"
+                                      tooltip-placement="bottom"
                                       tooltip-html-unsafe="
                                   {{'SFC_FUNCTION' | translate}} <br/> <br/>
                                   <div style='text-align: left'>
@@ -111,7 +118,8 @@
                                   ">
                                     {{s['service-function-name']}}
                                 </span>
-                                <span ng-if="getHopClass(s) == 'sff'" style="color: orange; cursor: pointer;" tooltip-placement="bottom"
+                                <span ng-if="getHopClass(s) == 'sff'" style="color: orange; cursor: pointer;"
+                                      tooltip-placement="bottom"
                                       tooltip-html-unsafe="
                                   {{'SFC_FUNCTION_SFF' | translate}} <br/> <br/>
                                   <div style='text-align: left'>
@@ -121,21 +129,21 @@
                                   ">
                                     {{s['service-function-forwarder']}}
                                 </span>
+                                </div>
                             </div>
+
                         </div>
-
                     </div>
-                </div>
 
-                <div class="sfc-sf-component"
-                     style="width: 22px;">
-                    <div style="width: 100%; height: 64px;">
-                        <div class="arrow-right-part"></div>
+                    <div class="sfc-sf-component"
+                         style="width: 22px;">
+                        <div style="width: 100%; height: 64px;">
+                            <div class="arrow-right-part"></div>
+                        </div>
                     </div>
-                </div>
 
-            </td>
-        </tr>
-    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
-

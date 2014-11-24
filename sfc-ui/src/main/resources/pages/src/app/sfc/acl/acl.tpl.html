@@ -1,80 +1,7 @@
-<a class="btn btn-info add-row" href="index.html#/sfc/acl-create">
-    {{'SFC_ACL_ADD' | translate}}
-</a>
+<div class="col-xs-12" style="padding: 0px">
 
-<button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
-    translate}}
-</button>
-
-<table ng-table="tableParams" show-filter="true" class="footable table">
-    <tr ng-repeat="entry in $data track by $index">
-        <td data-title="'SFC_ACL_SHORT_NAME' | translate" sortable="'valueOf()[\'acl-name\']'"
-            filter="{ 'acl-name': 'text' }">
-            {{entry['acl-name']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_RULE_NAME' | translate" sortable="'valueOf()[\'rule-name\']'"
-            filter="{ 'rule-name': 'text' }">
-            {{entry['rule-name']}}
-        </td>
-        <td data-title="'SFC_ACL_ACTIONS_SFP' | translate"
-            sortable="'valueOf()[\'actions\'][\'service-function-path\']'" filter="{ 'actions': 'text' }">
-            {{entry['actions']['service-function-path']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_SRC_IP_MAC_ADDRESS' | translate"
-            sortable="'valueOf()[\'source-ip-mac-mask-string\']'" filter="{ 'source-ip-mac-mask-string': 'text' }">
-            {{entry['matches']['source-ipv4-address']}}{{entry['matches']['source-ipv6-address']}}
-            {{entry['matches']['source-mac-address']}}<span class="spanText"
-                                                            ng-if="entry['matches']['source-mac-address-mask']"><br/>({{entry['matches']['source-mac-address-mask']}})</span>
-
-        </td>
-        <td data-title="'SFC_ACL_SHORT_DST_IP_MAC_ADDRESS' | translate"
-            sortable="'valueOf()[\'destination-ip-mac-mask-string\']'"
-            filter="{ 'destination-ip-mac-mask-string': 'text' }">
-            {{entry['matches']['destination-ipv4-address']}}{{entry['matches']['destination-ipv6-address']}}
-            {{entry['matches']['destination-mac-address']}}<span class="spanText"
-                                                                 ng-if="entry['matches']['destination-mac-address-mask']"><br/>({{entry['matches']['destination-mac-address-mask']}})</span>
-        </td>
-        <td data-title="'SFC_ACL_SHORT_IPV6_FLOW_LABEL' | translate" sortable="'valueOf()[\'flow-label-string\']'"
-            filter="{ 'flow-label-string': 'text' }">
-            {{entry['matches']['flow-label']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_SRC_PORT_RANGE' | translate" sortable="'valueOf()[\'source-port-range-string\']'"
-            filter="{ 'source-port-range-string': 'text' }">
-            {{entry['matches']['source-port-range']['lower-port']}}-{{entry['matches']['source-port-range']['upper-port']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_DST_PORT_RANGE' | translate"
-            sortable="'valueOf()[\'destination-port-range-string\']'"
-            filter="{ 'destination-port-range-string': 'text' }">
-            {{entry['matches']['destination-port-range']['lower-port']}}-{{entry['matches']['destination-port-range']['upper-port']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_IP_PROTOCOL' | translate" sortable="'valueOf()[\'ip-protocol-string\']'"
-            filter="{ 'ip-protocol-string': 'text' }">
-            {{entry['matches']['ip-protocol']}}
-        </td>
-        <td data-title="'SFC_ACL_SHORT_DSCP' | translate" sortable="'valueOf()[\'dscp-string\']'"
-            filter="{ 'dscp-string': 'text' }">
-            {{entry['matches']['dscp']}}
-        </td>
-        <td data-title="'SFC_ACL_ACTIONS' | translate">
-            <a ng-click="showMetadata(entry)">
-                <i class="icon-list-alt" style="cursor: pointer" popover-trigger="mouseenter"
-                   popover="{{ 'SFC_ACL_SHORT_METADATA' | translate }}"></i>
-            </a>
-            <a ng-click="deleteItem(entry)">
-                <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
-                   popover="{{ 'SFC_ACL_DELETE' | translate }}"></i>
-            </a>
-            <a ng-click="editItem(entry)">
-                <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
-                   popover="{{ 'SFC_ACL_EDIT' | translate }}"></i>
-            </a>
-        </td>
-    </tr>
-</table>
-
-<div ng-controller="sfcClassifierCtrl">
-    <a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
-        {{'SFC_CLASSIFIER_ADD' | translate}}
+    <a class="btn btn-info add-row" href="index.html#/sfc/acl-create">
+        {{'SFC_ACL_ADD' | translate}}
     </a>
 
     <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' |
@@ -83,21 +10,101 @@
 
     <table ng-table="tableParams" show-filter="true" class="footable table">
         <tr ng-repeat="entry in $data track by $index">
-            <td data-title="'SFC_CLASSIFIER_NAME' | translate" sortable="'valueOf()[\'name\']'"
-                filter="{ 'name': 'text' }">
-                {{entry['name']}}
+            <td data-title="'SFC_ACL_SHORT_NAME' | translate" sortable="'valueOf()[\'acl-name\']'"
+                filter="{ 'acl-name': 'text' }">
+                {{entry['acl-name']}}
             </td>
-            <td data-title="'SFC_ACL_NAME' | translate" sortable="'valueOf()[\'access-list\']'"
-                filter="{ 'access-list': 'text' }">
-                {{entry['access-list']}}
+            <td data-title="'SFC_ACL_SHORT_RULE_NAME' | translate" sortable="'valueOf()[\'rule-name\']'"
+                filter="{ 'rule-name': 'text' }">
+                {{entry['rule-name']}}
             </td>
+            <td data-title="'SFC_ACL_ACTIONS_SFP' | translate"
+                sortable="'valueOf()[\'actions\'][\'service-function-path\']'" filter="{ 'actions': 'text' }">
+                {{entry['actions']['service-function-path']}}
+            </td>
+            <td data-title="'SFC_ACL_SHORT_SRC_IP_MAC_ADDRESS' | translate"
+                sortable="'valueOf()[\'source-ip-mac-mask-string\']'" filter="{ 'source-ip-mac-mask-string': 'text' }">
+                {{entry['matches']['source-ipv4-address']}}{{entry['matches']['source-ipv6-address']}}
+                {{entry['matches']['source-mac-address']}}
+                <span class="spanText" ng-if="entry['matches']['source-mac-address-mask']">
+                    <br/>({{entry['matches']['source-mac-address-mask']}})
+                </span>
+            </td>
+            <td data-title="'SFC_ACL_SHORT_DST_IP_MAC_ADDRESS' | translate"
+                sortable="'valueOf()[\'destination-ip-mac-mask-string\']'"
+                filter="{ 'destination-ip-mac-mask-string': 'text' }">
+                {{entry['matches']['destination-ipv4-address']}}{{entry['matches']['destination-ipv6-address']}}
+                {{entry['matches']['destination-mac-address']}}
+                <span class="spanText" ng-if="entry['matches']['destination-mac-address-mask']">
+                    <br/>({{entry['matches']['destination-mac-address-mask']}})
+                </span>
+            </td>
+            <td data-title="'SFC_ACL_SHORT_IPV6_FLOW_LABEL' | translate" sortable="'valueOf()[\'flow-label-string\']'"
+                filter="{ 'flow-label-string': 'text' }">
+                {{entry['matches']['flow-label']}}
+            </td>
+            <td data-title="'SFC_ACL_SHORT_SRC_PORT_RANGE' | translate"
+                sortable="'valueOf()[\'source-port-range-string\']'"
+                filter="{ 'source-port-range-string': 'text' }">
+                {{entry['matches']['source-port-range']['lower-port']}}-{{entry['matches']['source-port-range']['upper-port']}}
+            </td>
+            <td data-title="'SFC_ACL_SHORT_DST_PORT_RANGE' | translate"
+                sortable="'valueOf()[\'destination-port-range-string\']'"
+                filter="{ 'destination-port-range-string': 'text' }">
+                {{entry['matches']['destination-port-range']['lower-port']}}-{{entry['matches']['destination-port-range']['upper-port']}}
+            </td>
+            <td data-title="'SFC_ACL_SHORT_IP_PROTOCOL' | translate" sortable="'valueOf()[\'ip-protocol-string\']'"
+                filter="{ 'ip-protocol-string': 'text' }">
+                {{entry['matches']['ip-protocol']}}
+            </td>
+            <td data-title="'SFC_ACL_SHORT_DSCP' | translate" sortable="'valueOf()[\'dscp-string\']'"
+                filter="{ 'dscp-string': 'text' }">
+                {{entry['matches']['dscp']}}
+            </td>
+            <td data-title="'SFC_ACL_ACTIONS' | translate">
+                <a ng-click="showMetadata(entry)">
+                    <i class="icon-list-alt" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_ACL_SHORT_METADATA' | translate }}"></i>
+                </a>
+                <a ng-click="deleteItem(entry)">
+                    <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_ACL_DELETE' | translate }}"></i>
+                </a>
+                <a ng-click="editItem(entry)">
+                    <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_ACL_EDIT' | translate }}"></i>
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <div ng-controller="sfcClassifierCtrl">
+        <a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
+            {{'SFC_CLASSIFIER_ADD' | translate}}
+        </a>
+
+        <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">
+            {{'SFC_CLEAR_SORTING' |
+            translate}}
+        </button>
+
+        <table ng-table="tableParams" show-filter="true" class="footable table">
+            <tr ng-repeat="entry in $data track by $index">
+                <td data-title="'SFC_CLASSIFIER_NAME' | translate" sortable="'valueOf()[\'name\']'"
+                    filter="{ 'name': 'text' }">
+                    {{entry['name']}}
+                </td>
+                <td data-title="'SFC_ACL_NAME' | translate" sortable="'valueOf()[\'access-list\']'"
+                    filter="{ 'access-list': 'text' }">
+                    {{entry['access-list']}}
+                </td>
             <td data-title="'SFC_PATH' | translate" sortable="'valueOf()[\'service-function-path\']'"
                 filter="{ 'service-function-path': 'text' }">
                 {{entry['service-function-path']}}
-            </td>
-            <td data-title="'SFC_SERVICE_FORWARDERS' | translate"
-                sortable="'valueOf()[\'service-function-forwarder\'][\'name\']'"
-                filter="{ 'service-function-forwarder': 'text' }">
+                </td>
+                <td data-title="'SFC_SERVICE_FORWARDERS' | translate"
+                    sortable="'valueOf()[\'service-function-forwarder\'][\'name\']'"
+                    filter="{ 'service-function-forwarder': 'text' }">
            <span style="color: #1C94C4; cursor: pointer;" ng-repeat="sff in entry['service-function-forwarder']"
                  tooltip-placement="bottom"
                  tooltip-html-unsafe="
@@ -107,18 +114,19 @@
                       </div>">
                     {{sff['name']}}{{$last ? '' : ', '}}
                 </span>
-            </td>
+                </td>
 
-            <td data-title="'SFC_ACL_ACTIONS' | translate">
-                <a ng-click="deleteItem(entry)">
-                    <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
-                       popover="{{ 'SFC_CLASSIFIER_DELETE' | translate }}"></i>
-                </a>
-                <a ng-click="editItem(entry)">
-                    <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
-                       popover="{{ 'SFC_CLASSIFIER_EDIT' | translate }}"></i>
-                </a>
-            </td>
-        </tr>
-    </table>
+                <td data-title="'SFC_ACL_ACTIONS' | translate">
+                    <a ng-click="deleteItem(entry)">
+                        <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                           popover="{{ 'SFC_CLASSIFIER_DELETE' | translate }}"></i>
+                    </a>
+                    <a ng-click="editItem(entry)">
+                        <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                           popover="{{ 'SFC_CLASSIFIER_EDIT' | translate }}"></i>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>

@@ -1,12 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('configCtrl', function ($scope, SfcConfigSvc, SfcFileReaderSvc, SfcRestangularSvc, SfcConfigExportSvc, SfcRestconfError) {
+  sfc.register.controller('configCtrl', function ($scope, SfcConfigSvc, SfcFileReaderSvc, SfcRestangularSvc, SfcConfigExportSvc, SfcRestconfError, $localStorage) {
 
 
     $scope.validationRevision = SfcConfigSvc.getValidationRevision();
     $scope.validateBefore = false;
     $scope.fileContent = "";
-    $scope.restangularBaseUrl = SfcRestangularSvc.getCurrentBaseUrl();
+
+    $scope.$storage = $localStorage;
 
     $scope.getOnFileSelect = function (file) {
       SfcFileReaderSvc.readAsText(file, $scope)
@@ -48,12 +49,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.applyBaseUrl = function () {
       try {
-        SfcRestangularSvc.changeBaseUrl($scope.restangularBaseUrl);
-        alert('url set to: ' + $scope.restangularBaseUrl);
+        SfcRestangularSvc.changeBaseUrl($scope.$storage.restangularBaseUrl);
+        alert('url set to: ' + $scope.$storage.restangularBaseUrl);
       } catch (e) {
         alert(e.message);
       }
     };
+
   });
 
 });

@@ -1,0 +1,13 @@
+<div class="modal-header btn-danger">
+    <h4 class="modal-title">{{'SFC_SYSTEM_MODAL_EXCEPTION_HEAD' | translate}}: '{{log['bundleName']}}'</h4>
+</div>
+
+<div class="modal-body" style="text-align: left;">
+    <pre style="font-size: 11px">{{log['exception']}}</pre>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_SYSTEM_MODAL_EXCEPTION_CLOSE'
+        | translate}}
+    </button>
+</div>

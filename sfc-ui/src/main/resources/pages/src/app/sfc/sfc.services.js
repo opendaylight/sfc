@@ -112,7 +112,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return SfcRestangularSvc.getCurrentInstance().one('operations');
     };
 
-
     SfcRestBaseSvc.prototype.postRpc = function (input, operationName, params) {
       var headers = {
         "Content-Type": "application/yang.data+json",
@@ -315,6 +314,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     return new ServiceFunctionSvc();
+  });
+
+
+  // ******* ServiceFunctionTypeSvc *********
+  sfc.register.factory('ServiceFunctionTypeSvc', function (SfcRestBaseSvc) {
+    var modelUrl = 'service-function-type';
+    var containerName = 'service-function-types';
+    var listName = 'service-function-type';
+
+    // constructor
+    function ServiceFunctionTypeSvc() {
+    }
+
+    ServiceFunctionTypeSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new ServiceFunctionTypeSvc();
   });
 
 

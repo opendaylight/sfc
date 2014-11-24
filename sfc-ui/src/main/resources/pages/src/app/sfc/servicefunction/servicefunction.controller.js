@@ -34,7 +34,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         });
     });
 
-    $scope.getSfLocatorTooltipText = function(locator) {
+    $scope.getSfLocatorTooltipText = function (locator) {
       return ServiceLocatorHelper.getSfLocatorTooltipText(locator, $scope);
     };
 
@@ -70,7 +70,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editSF = function editSF(sfName) {
-      $state.transitionTo('main.sfc.servicefunction-edit', {sfName: sfName}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.servicefunction-edit', {sfName: sfName}, {
+        location: true,
+        inherit: true,
+        relative: $state.$current,
+        notify: true
+      });
     };
   });
 
@@ -81,7 +86,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
 
-      if(angular.isDefined($stateParams.sfName)){
+      if (angular.isDefined($stateParams.sfName)) {
         ServiceFunctionSvc.getItem($stateParams.sfName, function (item) {
           $scope.data = item;
           ServiceFunctionHelper.nshAwareToString($scope.data);
@@ -99,9 +104,63 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.submit = function () {
       ServiceFunctionSvc.putItem($scope.data, function () {
-        $state.transitionTo('main.sfc.servicefunction', null, { location: true, inherit: true, relative: $state.$current, notify: true });
+        $state.transitionTo('main.sfc.servicefunction', null, {
+          location: true,
+          inherit: true,
+          relative: $state.$current,
+          notify: true
+        });
       });
     };
+  });
+
+  sfc.register.controller('serviceFunctionTypeCtrl', function ($scope, ServiceFunctionTypeSvc, ngTableParams, $filter) {
+
+    $scope.sfts = [];
+
+    var NgTableParams = ngTableParams;
+    $scope.tableParams = new NgTableParams({
+        page: 1,            // show first page
+        count: 10,          // count per page
+        sorting: {
+          'type': 'asc'     // initial sorting
+        }
+      },
+      {
+        total: $scope.sfts.length,
+        getData: function ($defer, params) {
+          // use build-in angular filter
+          var filteredData = params.filter() ?
+            $filter('filter')($scope.sfts, params.filter()) :
+            $scope.sfts;
+
+          var orderedData = params.sorting() ?
+            $filter('orderBy')(filteredData, params.orderBy()) :
+            filteredData;
+
+          params.total(orderedData.length);
+          $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+      });
+
+    this.fetchData = function () {
+      $scope.sfts = [];
+      ServiceFunctionTypeSvc.getArray(function (data) {
+        //expand sf type into rows
+        _.each(data, function (sft) {
+          if (!_.isEmpty(sft['sft-service-function-name'])) {
+            _.each(sft['sft-service-function-name'], function (entry) {
+              entry['type'] = sft['type'];
+              $scope.sfts.push(entry);
+            });
+          }
+        });
+
+        $scope.tableParams.reload();
+      });
+    };
+
+    this.fetchData();
   });
 
 });

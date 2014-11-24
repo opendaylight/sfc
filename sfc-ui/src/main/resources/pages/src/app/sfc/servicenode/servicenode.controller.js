@@ -35,7 +35,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return sfObject = _.findWhere(sfs, {name: sfName});
   }
 
-  sfc.register.controller('serviceNodeCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceForwarderSvc, ServiceNodeSvc, ServiceNodeTopologyBackend, ModalDeleteSvc) {
+  sfc.register.controller('serviceNodeCtrl', function ($scope, $rootScope, $state, ServiceFunctionSvc, ServiceForwarderSvc, ServiceNodeSvc, ServiceNodeTopologyBackend, ModalDeleteSvc) {
+
     $scope.deleteServiceNode = function deleteServiceNode(snName) {
       ModalDeleteSvc.open(snName, function (result) {
         if (result == 'delete') {
@@ -66,15 +67,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return maxSf <= 10 ? "col-xs-12 col-md-6 col-lg-4" : "col-xs-12 col-md-12 col-lg-6";
     };
 
-    $scope.experimental = false;
-
-    $scope.toggleGraphData = function () {
-      if ($scope.experimental) {
+    function createGraphData() {
+      if ($rootScope.experimental) {
         $scope.snsGraph = ServiceNodeTopologyBackend.createGraphDataExperimentalSFF($scope.sns, $scope.sffs, $scope.sfs);
       }
       else {
         $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs);
       }
+    }
+
+    $scope.toggleGraphData = function () {
+      $rootScope.experimental = $rootScope.experimental ? false : true;
+      createGraphData();
     };
 
     ServiceFunctionSvc.getArray(function (data) {
@@ -85,7 +89,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         ServiceNodeSvc.getArray(function (data) {
           $scope.sns = data;
-          $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs);
+          createGraphData();
         });
       });
     });

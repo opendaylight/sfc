@@ -83,10 +83,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceChainAPI(params, paramsTypes, "deleteAllServiceFunctionChains");
     }
 
-    public static  SfcProviderServiceChainAPI getAddChainToChainState (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "addChainToChainState");
-    }
-
     protected boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
         boolean ret = false;
         printTraceStart(LOG);
@@ -135,6 +131,12 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return sfc;
     }
 
+    /**
+     * This method deletes a SFC from the datastore
+     * <p>
+     * @param serviceFunctionChainName SFC name
+     * @return true if SF was deleted, false otherwise
+     */
     protected boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
         boolean ret = false;
         printTraceStart(LOG);
@@ -144,12 +146,10 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
                 InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, serviceFunctionChainKey).toInstance();
 
-        if (dataBroker != null) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfcEntryIID);
-            writeTx.commit();
-
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfcEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
+        } else {
+            LOG.error("Could not delete SFC: {}", serviceFunctionChainName);
         }
         printTraceStop(LOG);
         return ret;
@@ -217,25 +217,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected void addChainToChainState (ServiceFunctionChain serviceFunctionChain) {
-
-        printTraceStart(LOG);
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
-                ServiceFunctionChainStateKey(serviceFunctionChain.getName());
-        InstanceIdentifier<ServiceFunctionChainState> sfcoIID =
-                InstanceIdentifier.builder(ServiceFunctionChainsState.class)
-                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey).build();
-
-        ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
-        serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
-
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-        writeTx.merge(LogicalDatastoreType.OPERATIONAL,
-                sfcoIID, serviceFunctionChainStateBuilder.build(), true);
-        writeTx.commit();
-        printTraceStop(LOG);
-    }
-
     public static void addPathToServiceFunctionChainState (ServiceFunctionChain serviceFunctionChain,
                                                      ServiceFunctionPath serviceFunctionPath) {
 
@@ -261,37 +242,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
 
     }
-/*
-    private InstanceIdentifier<SfcServiceFunction> getServiceFunctionIIDFromChain (ServiceFunctionChain sfc, ServiceFunction sf) {
-        SfcServiceFunctionKey serviceFunctionKey = new SfcServiceFunctionKey(sf.getName());
-        InstanceIdentifier<SfcServiceFunction> sfIID = InstanceIdentifier
-                .builder(ServiceFunctionChains.class)
-                .child(ServiceFunctionChain.class, sfc.getKey())
-                .child(SfcServiceFunction.class, serviceFunctionKey).build();
 
-        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-        Optional<SfcServiceFunction> serviceFunctionObject = null;
-        try {
-            serviceFunctionObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
-            if (serviceFunctionObject != null) {
-                serviceFunctionObject.get();
-                printTraceStop(LOG);
-                return sfIID;
-
-            } else {
-                printTraceStop(LOG);
-                return null;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("\n########## Failed to get Service Function IID " +
-                            "from Chain: {}",
-                    e.getMessage());
-            printTraceStop(LOG);
-            return null;
-        }
-    }
-
-*/
     public static ServiceFunctionChains getServiceFunctionChainsRef () {
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionChains> sfcsIID;

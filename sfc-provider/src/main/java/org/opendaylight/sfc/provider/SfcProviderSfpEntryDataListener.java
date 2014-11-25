@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -82,6 +83,26 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                         .getUpdateServicePathAPI(servicePathObj, servicePathClass);
                 odlSfc.executor.submit(sfcProviderServicePathAPI);
+
+                /* Add SFP name to the operational store of each SFF found in the path.
+                 * When a SFF is deleted or modified we delete all SFP associated with it.
+                 */
+                servicePathObj[0] = updatedServiceFunctionPath;
+                servicePathClass[0] = ServiceFunctionPath.class;
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                        .getAddPathToServiceForwarderState(servicePathObj, servicePathClass);
+                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+
+                /* Add SFP name to the operational store of each SFF found in the path.
+                 * When a SFF is deleted or modified we delete all SFP associated with it.
+                 */
+
+                servicePathObj[0] = updatedServiceFunctionPath;
+                servicePathClass[0] = ServiceFunctionPath.class;
+                SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                        .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
+                odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+
             }
         }
 
@@ -91,17 +112,28 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionPath) {
+
+                // If a SFP is deleted we remove it form SF operational state
                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;
-                Object[] serviceTypeObj = {originalServiceFunctionPath};
-                Class[] serviceTypeClass = {ServiceFunctionPath.class};
-
+                Object[] servicePathObj = {originalServiceFunctionPath};
+                Class[] servicePathClass = {ServiceFunctionPath.class};
                 odlSfc.executor.submit(SfcProviderServiceFunctionAPI
-                        .getDeleteServicePathFromServiceFunctionState(serviceTypeObj, serviceTypeClass));
+                        .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass));
 
-                Object[] servicePathObj = {originalServiceFunctionPath, HttpMethod.DELETE};
-                Class[] servicePathClass = {ServiceFunctionPath.class, String.class};
+                // If a SFP is deleted we remove it form SFF operational state
+                servicePathObj[0] = originalServiceFunctionPath;
+                servicePathClass[0] = ServiceFunctionPath.class;
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                        .getDeletePathFromServiceForwarderState(servicePathObj, servicePathClass);
+                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+
+                //Send to SB REST
+                Object[] servicePathRestObj= {originalServiceFunctionPath, HttpMethod.DELETE};
+                Class[] servicePathRestClass = {ServiceFunctionPath.class, String.class};
                 odlSfc.executor.submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
                         servicePathObj, servicePathClass));
+
+
             }
         }
 

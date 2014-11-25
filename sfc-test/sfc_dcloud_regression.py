@@ -20,6 +20,8 @@ SFC_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-f
 SFF_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:service-function-forwarders/"
 SFT_URL = "http://" + ODLIP + "/restconf/config/service-function-type:service-function-types/"
 SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
+SFF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function-forwarder:service-function-forwarders-state/"
+SF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function:service-functions-state/"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -35,9 +37,9 @@ def delete_configuration():
         print("=>Failure to delete SFs, response code = {} \n".format(r.status_code))
     r = s.delete(SFC_URL, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
-        print("=>Deleted all Service Function Chains \n")
+       print("=>Deleted all Service Function Chains \n")
     else:
-        print("=>Failure to delete SFs, response code = {} \n".format(r.status_code))
+       print("=>Failure to delete SFCs, response code = {} \n".format(r.status_code))
     r = s.delete(SFF_URL, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         print("=>Deleted all Service Function Forwarders \n")
@@ -67,15 +69,31 @@ def put_and_check(url, json_req, json_resp):
         if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
             print("=>Creation successfully \n")
         else:
-            print("=>Creation did not pass check, error code: {} \n".format(r.status_code))
+            print("=>Creation did not pass check, error code: {}. If error code was 2XX it is "
+                  "probably a false negative due to string compare \n".format(r.status_code))
     else:
         print("=>Failure \n")
+
+
+def check(url, json_resp, message):
+    s = requests.Session()
+    print(message, "\n")
+    r = s.get(url, stream=False, auth=(USERNAME, PASSWORD))
+    if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
+        print("=>Check successful \n")
+    else:
+        print("=>Check not successful, error code: {}. If error code was 2XX it is "
+              "probably a false negative due to string compare \n".format(r.status_code))
 
 
 if __name__ == "__main__":
     delete_configuration()
     put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
+    check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type")
     put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
     put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
-    # put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
+    put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
+    check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State")
+    check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State")
+    delete_configuration()
 

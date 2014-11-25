@@ -9,23 +9,14 @@
 package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.provider.SfcProviderRestAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
@@ -148,8 +139,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     }
 
 
-
-
     @SuppressWarnings("unused")
     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
         boolean ret = false;
@@ -181,7 +170,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         if (dataBroker != null) {
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<ServiceFunctionPath> serviceFunctionPathDataObject = null;
+            Optional<ServiceFunctionPath> serviceFunctionPathDataObject;
             try {
                 serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType
                         .CONFIGURATION, sfpIID).get();
@@ -197,18 +186,22 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return sfp;
     }
 
-    protected boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
+    /**
+     * This function deletes a SFP from the datastore
+     * <p>
+     * @param serviceFunctionPathName SFP name
+     * @return Nothing.
+     */
+    public static boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey).toInstance();
 
-        if (dataBroker != null) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfpEntryIID);
-            writeTx.commit();
-
+        if (!SfcDataStoreAPI.deleteTransactionAPI(sfpEntryIID, LogicalDatastoreType.CONFIGURATION)) {
+            LOG.error("Failed to delete SFP: {}", serviceFunctionPathName);
+        } else {
             ret = true;
         }
         printTraceStop(LOG);
@@ -259,107 +252,17 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     protected boolean deleteAllServiceFunctionPaths() {
         boolean ret = false;
         printTraceStart(LOG);
-        if (odlSfc.getDataProvider() != null) {
 
-            InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                    InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
+                InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
 
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfpsIID);
-            writeTx.commit();
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         }
         printTraceStop(LOG);
         return ret;
     }
 
-    /* Today A Service Function Chain modification is catastrophic. We delete all Paths
-     * and recreate them. Maybe a real patch is possible but given the complexities of the possible
-     * modifications, this is the safest approach.
-     */
-    @SuppressWarnings("unused")
-    private void updateServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
-        deleteServicePathInstantiatedFromChain(serviceFunctionPath);
-        createServiceFunctionPathEntry(serviceFunctionPath);
-    }
-
-    // TODO:Needs change
-    private void deleteServicePathInstantiatedFromChain (ServiceFunctionPath serviceFunctionPath) {
-
-        printTraceStart(LOG);
-        ServiceFunctionChain serviceFunctionChain = null;
-        String serviceChainName = serviceFunctionPath.getServiceChainName();
-        try {
-            serviceFunctionChain = serviceChainName != null ?
-                    (ServiceFunctionChain) odlSfc.executor
-                            .submit(SfcProviderServiceChainAPI.getRead(
-                                    new Object[]{serviceChainName},
-                                    new Class[]{String.class})).get()
-                    : null;
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("\n Could not read Service Function Chain configuration");
-        }
-        if (serviceFunctionChain == null) {
-            LOG.error("\n########## ServiceFunctionChain name for Path {} not provided",
-                    serviceFunctionPath.getName());
-            return;
-        }
-
-
-        InstanceIdentifier<ServiceFunctionPath> sfpIID;
-        ServiceFunctionChainState serviceFunctionChainState;
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey =
-                new ServiceFunctionChainStateKey(serviceFunctionChain.getName());
-        InstanceIdentifier<ServiceFunctionChainState> sfcStateIID =
-                InstanceIdentifier.builder(ServiceFunctionChainsState.class)
-                        .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-                        .build();
-
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-        Optional<ServiceFunctionChainState> serviceFunctionChainStateObject = null;
-        try {
-            serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcStateIID).get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("\n Could not read Service Function Chain operational data \n");
-        }
-        // TODO: Remove path name from Service Function path list
-        if (serviceFunctionChainStateObject instanceof ServiceFunctionChainState) {
-            serviceFunctionChainState = (ServiceFunctionChainState) serviceFunctionChainStateObject;
-            List<String> sfcServiceFunctionPathList =
-                    serviceFunctionChainState.getSfcServiceFunctionPath();
-            List<String> removedPaths = new ArrayList<>();
-            for (String pathName : sfcServiceFunctionPathList) {
-
-                ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(pathName);
-                sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                        .child(ServiceFunctionPath.class, serviceFunctionPathKey)
-                        .build();
-
-                WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                        sfpIID);
-                writeTx.commit();
-
-            }
-
-            sfcServiceFunctionPathList.removeAll(removedPaths);
-
-            /* After we are done removing all paths from the datastore we commit the updated the path list
-             * under the Service Chain operational tree
-             */
-            ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder  = new ServiceFunctionChainStateBuilder();
-            serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
-            serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathList);
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.OPERATIONAL,
-                    sfcStateIID, serviceFunctionChainStateBuilder.build(), true);
-            writeTx.commit();
-
-        } else {
-            LOG.error("Failed to get reference to Service Function Chain State {} ", serviceFunctionChain.getName());
-        }
-        printTraceStop(LOG);
-    }
 
     @SuppressWarnings("unused")
     protected void updateServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
@@ -376,7 +279,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * the SFP information and merges any missing data
      * <p>
      * @param serviceFunctionPath Service Function Path Object
-     * @return Nothing.
      */
     protected void createServiceFunctionPathEntry (ServiceFunctionPath serviceFunctionPath) {
 
@@ -392,8 +294,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                     (ServiceFunctionChain) odlSfc.executor
                             .submit(SfcProviderServiceChainAPI.getRead(
                                     new Object[]{serviceFunctionChainName},
-                                    new Class[]{String.class})).get()
-                    : null;
+                                    new Class[]{String.class})).get(): null;
         } catch (InterruptedException | ExecutionException e) {
             LOG.error(" \n Could not read Service Function Chain configuration for Service Path {}",
                     serviceFunctionPath.getName());
@@ -403,7 +304,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                     serviceFunctionPath.getName());
             return;
         }
-
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         ArrayList<ServicePathHop> servicePathHopArrayList = new ArrayList<>();
@@ -469,11 +369,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         }
                     }
                 } else {
-                    LOG.error("\n########## No configured SFs of type: {}", sfcServiceFunction.getType());
+                    LOG.error("Could not create path because there are no configured SFs of type: {}", sfcServiceFunction.getType());
                     return;
                 }
             } else {
-                LOG.error("\n########## No configured SFs of type: {}", sfcServiceFunction.getType());
+                LOG.error("Could not create path because there are no configured SFs of type: {}", sfcServiceFunction.getType());
                 return;
             }
 
@@ -506,12 +406,10 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         ServiceFunctionPath newServiceFunctionPath =
                 serviceFunctionPathBuilder.build();
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-        writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                sfpIID, newServiceFunctionPath, true);
-        writeTx.commit();
-        //SfcProviderServiceForwarderAPI.addPathIdtoServiceFunctionForwarder(newServiceFunctionPath);
-        SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(newServiceFunctionPath);
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(sfpIID, newServiceFunctionPath, LogicalDatastoreType.CONFIGURATION)) {
+            LOG.debug("Failed to create Service Function Path: {}",
+                    serviceFunctionPath.getName());
+        }
 
         /* Prepare REST invocation */
 
@@ -580,69 +478,38 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      */
 
     @SuppressWarnings("unused")
-    public void deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
+    public boolean deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionPath> sfpIID;
+        boolean ret = true;
         ServiceFunctionState serviceFunctionState;
-        ServiceFunctionStateKey serviceFunctionStateKey =
-                new ServiceFunctionStateKey(serviceFunction.getName());
-        InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                InstanceIdentifier.builder(ServiceFunctionsState.class)
-                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                        .build();
 
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-        Optional<ServiceFunctionState> serviceFunctionStateObject;
-        try {
-            serviceFunctionStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Could not read Service Function State operational data \n");
-            return;
-        }
-
-        if ((serviceFunctionStateObject.isPresent()) &&
-                (serviceFunctionStateObject.get() instanceof ServiceFunctionState)) {
-            serviceFunctionState = serviceFunctionStateObject.get();
+        serviceFunctionState = SfcProviderServiceFunctionAPI.readServiceFunctionState(serviceFunction.getName());
+        if (serviceFunctionState != null) {
             List<String> sfServiceFunctionPathList =
                     serviceFunctionState.getSfServiceFunctionPath();
             List<String> removedPaths = new ArrayList<>();
             for (String pathName : sfServiceFunctionPathList) {
 
-                ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(pathName);
-                sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                        .child(ServiceFunctionPath.class, serviceFunctionPathKey)
-                        .build();
-
-                WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                        sfpIID);
-                //writeTx.commit();
-                CheckedFuture<Void,TransactionCommitFailedException> submitFuture = writeTx.submit();
-                Futures.addCallback(submitFuture, new SfcDataStoreCallback());
-
-                // TODO: Need to consider failure of transaction
-                removedPaths.add(pathName);
-            }
-
-            // If no more SFP associated with this SF, remove the state.
-            if (removedPaths.containsAll(sfServiceFunctionPathList)) {
-                SfcProviderServiceFunctionAPI.deleteServiceFunctionState(serviceFunction.getName());
-            } else {
-                LOG.error("Could not remove all paths containing function: {} ", serviceFunction.getName());
+                if (deleteServiceFunctionPath(pathName)) {
+                    ret = ret && true;
+                } else {
+                    ret = ret && false;
+                }
             }
         } else {
-            LOG.info("Could not find Service function Paths using Service Function: {} ", serviceFunction.getName());
+            LOG.debug("Could not find Service function Paths using Service Function: {} ",
+                    serviceFunction.getName());
         }
         printTraceStop(LOG);
+        return ret;
     }
 
 
     /*
      * When a SF is updated, meaning key remains the same, but other fields change we need to
      * update all affected SFPs. We need to do that because admin can update critical fields
-     * as SFC type, rendering the path unfeasible. The update reads the current path from
+     * as SF type, rendering the path unfeasible. The update reads the current path from
      * data store, keeps pathID intact and rebuild the SF list.
      *
      * The update can or not work.
@@ -665,7 +532,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                         .build();
 
                 ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-                Optional<ServiceFunctionPath> serviceFunctionPathObject = null;
+                Optional<ServiceFunctionPath> serviceFunctionPathObject;
                 try {
                     serviceFunctionPathObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
                     if (serviceFunctionPathObject != null &&

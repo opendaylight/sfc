@@ -11,7 +11,8 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""Service Function Forwarder (SFF) with REST Server"""
+"""Service Function Forwarder (SFF). This SFF is spawned in a thread
+   by sff_rest.py. """
 
 import asyncio
 import logging
@@ -161,6 +162,11 @@ class MyUdpServer:
 
 
 class ControlUdpServer:
+    """
+    This control server class listen on a socket for commands from the main process.
+    For example, if a SFF is deleted the main program can send a command to
+    this data plane thread to exit.
+    """
     def connection_made(self, transport):
         self.transport = transport
 
@@ -254,6 +260,7 @@ def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
     global udpserver_socket
     logging.basicConfig(level=logging.INFO)
 
+    # Below is used for unit test. It is okay to leave it since a new SFP with the same ID will overwrite existing one.
     data_plane_path = {1: {1: {'port': 4789, 'ip': '10.100.100.2'}, 2: {'port': 4789, 'ip': '10.100.100.1'}, 3: {'port': 4789, 'ip': '10.100.100.1'}}}
 
     loop = asyncio.new_event_loop()
@@ -270,9 +277,7 @@ def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
     start_server(loop, (sff_ip, sff_control_port), control_udp_server, "Listening for Control messages on port: ")
 
     loop.run_forever()
-    #print("Closing socket")
     udpserver_socket.close()
-    #print("Socket closed")
     loop.close()
 
 

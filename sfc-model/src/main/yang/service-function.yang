@@ -71,10 +71,14 @@ module service-function {
         "Service Function Type from service-function-type yang
          model";
     }
+    leaf rest-uri {
+      description "URI of REST based management";
+      type inet:uri;
+    }
     leaf ip-mgmt-address {
       type inet:ip-address;
       description
-        "The IP and port used to configure this service-node";
+        "The IP and port used to configure this service-function";
     }
     leaf nsh-aware {
       type boolean;

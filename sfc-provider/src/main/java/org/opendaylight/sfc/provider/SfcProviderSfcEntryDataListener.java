@@ -10,7 +10,6 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -70,15 +69,14 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain createdServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionChain.getName());
-                Object[] serviceChainObj = {createdServiceFunctionChain};
-                Class[] serviceChainClass = {ServiceFunctionChain.class};
-                odlSfc.executor.submit(SfcProviderServiceChainAPI
-                        .getAddChainToChainState(serviceChainObj, serviceChainClass));
-                List<SfcServiceFunction>  sfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
-                for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
-                    LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
-
-                }
+                //Object[] serviceChainObj = {createdServiceFunctionChain};
+                //Class[] serviceChainClass = {ServiceFunctionChain.class};
+                //odlSfc.executor.submit(SfcProviderServiceChainAPI
+                //        .getAddChainToChainState(serviceChainObj, serviceChainClass));
+                //List<SfcServiceFunction>  sfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
+                //for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+                //    LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
+                //}
             }
         }
 
@@ -115,7 +113,4 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
 
         printTraceStop(LOG);
     }
-
-
-
 }

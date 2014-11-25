@@ -14,8 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements the general Datastore checked future
- * callback
+ * This class implements the general DataStore checked future
+ * callback. transaction_progress denotes whether the
+ * transaction is still in progress, in which case
+ * transaction_successful value does not reflect the
+ * outcome of the transaction.
  * <p/>
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
@@ -27,14 +30,23 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
 {
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreCallback.class);
     private boolean transaction_successful;
+    private boolean transaction_progress;
+
+    public SfcDataStoreCallback()
+    {
+        this.transaction_progress = true;
+    }
 
     public boolean getTransactioSuccessful() {return transaction_successful; }
+
+    public boolean getTransactioProgress() {return transaction_progress; }
 
     @Override
     public void onSuccess(final Void result)
     {
         // Commited successfully
         this.transaction_successful = true;
+        this.transaction_progress = false;
     }
 
     @Override
@@ -42,6 +54,7 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
     {
         // Transaction failed
         this.transaction_successful = false;
+        this.transaction_progress = false;
 
         if (t instanceof OptimisticLockFailedException)
         {

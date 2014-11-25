@@ -58,27 +58,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
             }
         }
 
-        // SF DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if( dataObject instanceof  ServiceFunction) {
-                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
-                Object[] serviceTypeObj = {originalServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
-
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getDeleteServiceFunctionFromServiceType(serviceTypeObj, serviceTypeClass));
-
-                Object[] functionParams = {originalServiceFunction};
-                Class[] functionParamsTypes = {ServiceFunction.class};
-
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
-            }
-        }
-
-
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
@@ -88,15 +67,34 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] serviceTypeObj = {createdServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
-
                 odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+                        .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
 
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
-                            createdServiceFunction.getType(), createdServiceFunction.getName());
+                        createdServiceFunction.getType(), createdServiceFunction.getName());
             }
 
         }
+
+        // SF DELETION
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if( dataObject instanceof  ServiceFunction) {
+                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
+
+                Object[] serviceFunctionObj = {originalServiceFunction};
+                Class[] serviceFunctionClass = {ServiceFunction.class};
+                odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                        .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
+
+                Object[] functionParams = {originalServiceFunction};
+                Class[] functionParamsTypes = {ServiceFunction.class};
+                odlSfc.executor.submit(SfcProviderServicePathAPI
+                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+            }
+        }
+
 
         // SF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
@@ -107,7 +105,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Object[] serviceTypeObj = {updatedServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
                 odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionToServiceType(serviceTypeObj, serviceTypeClass));
+                        .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
 
                 Object[] sfParams = {updatedServiceFunction};
                 Class[] sfParamsTypes = {ServiceFunction.class};

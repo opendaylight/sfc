@@ -16,12 +16,13 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.0.1.41",
+            "ip": "10.0.1.4",
             "port": 40001
           }
         ],
+        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.1.41",
+        "ip-mgmt-address": "10.0.1.4",
         "type": "dpi"
       },
       {
@@ -31,12 +32,13 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.0.1.42",
+            "ip": "10.0.1.4",
             "port": 40002
           }
         ],
+        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.1.42",
+        "ip-mgmt-address": "10.0.1.4",
         "type": "napt44"
       },
       {
@@ -60,8 +62,6 @@ SERVICE_FUNCTIONS_JSON = """
 """
 
 
-
-
 SERVICE_FUNCTION_FORWARDERS_JSON = """
 {
   "service-function-forwarders": {
@@ -77,13 +77,13 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
               "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
             },
             "data-plane-locator": {
-              "port": 4789,
-              "ip": "10.0.1.41",
+              "port": 40001,
+              "ip": "10.0.1.4",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.1.41:5000",
+        "rest-uri": "http://10.0.1.4:5000",
         "service-function-dictionary": [
           {
             "name": "SF1",

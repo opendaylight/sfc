@@ -15,18 +15,15 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -35,7 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
@@ -73,113 +72,39 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServiceForwarderAPI getPut(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "putServiceFunctionForwarder");
     }
-
     public static SfcProviderServiceForwarderAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "readServiceFunctionForwarder");
     }
-
     public static SfcProviderServiceForwarderAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteServiceFunctionForwarder");
     }
-
     public static SfcProviderServiceForwarderAPI getPutAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "putAllServiceFunctionForwarders");
     }
-
     public static SfcProviderServiceForwarderAPI getReadAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "readAllServiceFunctionForwarders");
     }
-
     public static SfcProviderServiceForwarderAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteAllServiceFunctionForwarders");
     }
-
     public static SfcProviderServiceForwarderAPI getDeleteServiceFunctionFromForwarder(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteServiceFunctionFromForwarder");
     }
-
     public static SfcProviderServiceForwarderAPI getCheckServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "checkServiceFunctionForwarder");
     }
-
     public static SfcProviderServiceForwarderAPI getUpdateServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "updateServiceFunctionForwarder");
     }
-
-    /*
-    public static ServiceFunctionForwarder readServiceFunctionForwarder(String name) {
-        printTraceStart(LOG)
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(name);
-        InstanceIdentifier<ServiceFunctionForwarder> sffIID;
-        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-                .build();
-
-        ReadOnlyTransaction readTx = odlSfc.dataProvider.newReadOnlyTransaction();
-        Optional<ServiceFunctionForwarder> serviceFunctionForwarderObject = null;
-        try {
-            serviceFunctionForwarderObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        if (serviceFunctionForwarderObject != null &&
-                (serviceFunctionForwarderObject.get() instanceof ServiceFunctionForwarder)) {
-            printTraceStop(LOG);
-            return serviceFunctionForwarderObject.get();
-        } else {
-            printTraceStop(LOG);
-            return null;
-        }
+    public static SfcProviderServiceForwarderAPI getAddPathToServiceForwarderState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceForwarderAPI(params, paramsTypes, "addPathToServiceForwarderState");
     }
-    */
-
-    public static void addPathIdtoServiceFunctionForwarder(ServiceFunctionPath serviceFunctionPath) throws ExecutionException, InterruptedException {
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionForwarders> sffsIID;
-        ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
-        ArrayList<ServiceFunctionForwarder> serviceFunctionForwarderList = new ArrayList<>();
-        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
-
-        for (ServicePathHop sfpServiceFunction : servicePathHopList) {
-
-            ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                    new ServiceFunctionForwarderKey(sfpServiceFunction.getServiceFunctionForwarder());
-            ServiceFunctionForwarder serviceFunctionForwarder =
-                    (ServiceFunctionForwarder) odlSfc.executor.submit(SfcProviderServiceForwarderAPI.getRead(
-                            new Object[]{sfpServiceFunction.getServiceFunctionForwarder()},
-                            new Class[]{String.class})).get();
-            ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-            if (serviceFunctionForwarder != null) {
-                //serviceFunctionForwarderBuilder.setPathId(serviceFunctionPath.getPathId());
-                serviceFunctionForwarderBuilder.setName(sfpServiceFunction.getServiceFunctionForwarder());
-                serviceFunctionForwarderBuilder.setSffDataPlaneLocator(serviceFunctionForwarder.getSffDataPlaneLocator());
-                serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionForwarder.getServiceFunctionDictionary());
-                serviceFunctionForwarderBuilder.setKey(serviceFunctionForwarderKey);
-
-            } else {
-                LOG.error("Failed to read Service Function Forwarder from data store");
-                continue;
-            }
-            serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
-        }
-
-        serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-        sffsIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
-
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-        writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                sffsIID, serviceFunctionForwardersBuilder.build(), true);
-        writeTx.commit();
-
-        printTraceStop(LOG);
-
-        //serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-
+    public static SfcProviderServiceForwarderAPI getDeletePathFromServiceForwarderState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deletePathFromServiceForwarderState");
     }
-
+    public static SfcProviderServiceForwarderAPI getDeletePathsUsedByServiceForwarder(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deletePathsUsedByServiceForwarder");
+    }
 
     protected boolean putServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         boolean ret = false;
@@ -200,6 +125,12 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method reads a SFF from the datastore
+     * <p>
+     * @param serviceFunctionForwarderName SFF name
+     * @return SF object or null if not found
+     */
     protected ServiceFunctionForwarder readServiceFunctionForwarder(String serviceFunctionForwarderName) {
         printTraceStart(LOG);
         ServiceFunctionForwarder sff = null;
@@ -214,20 +145,25 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             try {
                 serviceFunctionForwarderDataObject = readTx.
                         read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
+                if (serviceFunctionForwarderDataObject != null
+                        && serviceFunctionForwarderDataObject.isPresent()) {
+                    sff = serviceFunctionForwarderDataObject.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Could not read Service Function Forwarder {} " +
                         "configuration", serviceFunctionForwarderName);
-                return null;
-            }
-            if (serviceFunctionForwarderDataObject != null
-                    && serviceFunctionForwarderDataObject.isPresent()) {
-                sff = serviceFunctionForwarderDataObject.get();
             }
         }
         printTraceStop(LOG);
         return sff;
     }
 
+    /**
+     * This method deletes a SFF from the datastore
+     * <p>
+     * @param serviceFunctionForwarderName SFF name
+     * @return true if SF was deleted, false otherwise
+     */
     protected boolean deleteServiceFunctionForwarder(String serviceFunctionForwarderName) {
         boolean ret = false;
         printTraceStart(LOG);
@@ -235,12 +171,10 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
                 child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).toInstance();
 
-        if (dataBroker != null) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sffEntryIID);
-            writeTx.commit();
-
+        if (SfcDataStoreAPI.deleteTransactionAPI(sffEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
+        } else {
+            LOG.error("Could not delete SFF: {}", serviceFunctionForwarderName);
         }
         printTraceStop(LOG);
         return ret;
@@ -360,8 +294,17 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     }
 
-    public void deleteServiceFunctionFromForwarder(ServiceFunction serviceFunction) {
+    /**
+     * When a SF is deleted, we need to remove it from the corresponding SFF
+     * service function dictionary
+     * devices
+     * <p>
+     * @param serviceFunction SF object
+     * @return true is SF was deleted, false otherwise
+     */
+    public boolean deleteServiceFunctionFromForwarder(ServiceFunction serviceFunction) {
         printTraceStart(LOG);
+        boolean ret = false;
         String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
                 .get(0).getServiceFunctionForwarder();
         InstanceIdentifier<ServiceFunctionDictionary> sffIID;
@@ -374,11 +317,14 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
                 .build();
 
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                sffIID);
-        writeTx.commit();
+        if (SfcDataStoreAPI.deleteTransactionAPI(sffIID, LogicalDatastoreType.CONFIGURATION)) {
+            ret = true;
+        } else {
+            LOG.error("Could not delete SF {} from SFF {}", serviceFunction.getName(), serviceFunctionForwarderName);
+        }
         printTraceStop(LOG);
+        return ret;
+
     }
 
     @SuppressWarnings("unused")
@@ -386,104 +332,159 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
         printTraceStart(LOG);
 
-
     }
 
-    @SuppressWarnings("unused")
-    public void createServiceFunctionForwarders(ServiceFunctionChains serviceFunctionchains) {
+    /**
+     * We add the path name to the operational store of each SFF.
+     *
+     * <p>
+     * @param serviceFunctionPath Service Function Path Object
+     * @return Nothing.
+     */
+    public boolean addPathToServiceForwarderState(ServiceFunctionPath serviceFunctionPath) {
 
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionForwarders> sffIID;
 
-        // Prepare top container and list
-        ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
-        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                .build();
-        ArrayList<ServiceFunctionForwarder> serviceFunctionForwarderList = new ArrayList<>();
+        boolean ret = false;
+        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+                new ServiceFunctionForwarderStateBuilder();
 
-        List<ServiceFunctionChain> serviceFunctionChainList = serviceFunctionchains.getServiceFunctionChain();
-        // Iterate through all Service Function Chains
-        for (ServiceFunctionChain serviceFunctionChain : serviceFunctionChainList) {
+        ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
+        sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
 
-            // Iterate thorough all Service Functions in a single chain
-            List<SfcServiceFunction> sfcServiceFunctionList = serviceFunctionChain.getSfcServiceFunction();
-            for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+        serviceFunctionForwarderStateBuilder.setSffServiceFunctionPath(sfcServiceFunctionPathArrayList);
 
-                // Read a single Service Function
-                ServiceFunction serviceFunction = (ServiceFunction) SfcProviderServiceFunctionAPI
-                        .getRead(
-                                new Object[]{sfcServiceFunction.getName()}, new Class[]{String.class}).call();
+        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+            ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
+                    new ServiceFunctionForwarderStateKey(servicePathHop.getServiceFunctionForwarder());
+            InstanceIdentifier<ServiceFunctionForwarderState> sfStateIID =
+                    InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
+                    .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey).build();
+            serviceFunctionForwarderStateBuilder.setName(servicePathHop.getServiceFunctionForwarder());
 
-                // Build a single service function forwarder
-                String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
-                        .get(0).getServiceFunctionForwarder();
-                ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                        new ServiceFunctionForwarderKey(serviceFunction.getSfDataPlaneLocator()
-                                .get(0).getServiceFunctionForwarder());
-                ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-                serviceFunctionForwarderBuilder.setName(serviceFunctionForwarderName);
-                serviceFunctionForwarderBuilder.setKey(serviceFunctionForwarderKey);
-
-                ArrayList<ServiceFunctionDictionary> serviceFunctionDictionaryList = new ArrayList<>();
-                ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-                sffSfDataPlaneLocatorBuilder.setLocatorType(serviceFunction.getSfDataPlaneLocator().get(0).getLocatorType());
-
-                serviceFunctionDictionaryBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
-                        .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build());
-                serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
-
-                serviceFunctionForwarderBuilder.setServiceFunctionDictionary(serviceFunctionDictionaryList);
-
-                serviceFunctionForwarderList.add(serviceFunctionForwarderBuilder.build());
-
-                LOG.debug("\n########## Creating Forwarder: {}  Service " +
-                        "Function: {} "
-                        , serviceFunctionForwarderName, serviceFunction.getName());
-
-
+            if (SfcDataStoreAPI.writeMergeTransactionAPI(sfStateIID, serviceFunctionForwarderStateBuilder.build(),
+                    LogicalDatastoreType.OPERATIONAL)) {
+                ret = true;
+            } else {
+                LOG.error("Failed to add path {} to SFF {} state.",
+                        serviceFunctionPath.getName(), servicePathHop.getServiceFunctionForwarder());
             }
-            serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    sffIID, serviceFunctionForwardersBuilder.build(), true);
-            writeTx.commit();
         }
         printTraceStop(LOG);
-
+        return ret;
     }
 
+
+    /**
+     * Returns the list of SFPs anchored by a SFF
+     *
+     * <p>
+     * @param sffName SFF name
+     * @return ServiceFunctionState.
+     */
+    private List<String> readSffState(String sffName) {
+        printTraceStart(LOG);
+        List<String> ret = null;
+
+        ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
+                new ServiceFunctionForwarderStateKey(sffName);
+
+        InstanceIdentifier<ServiceFunctionForwarderState> sfStateIID =
+                InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
+                        .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey).build();
+
+        // Read the list of Service Function Path anchored by this SFF
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        Optional<ServiceFunctionForwarderState> sffStateDataObject;
+        try {
+            sffStateDataObject = readTx
+                    .read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
+            if (sffStateDataObject != null
+                    && sffStateDataObject.isPresent()) {
+                ret = sffStateDataObject.get().getSffServiceFunctionPath();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read operation state for SFF: {}", sffName);
+        }
+        return ret;
+    }
+
+
+    /**
+     * When a SFF is deleted directly we need to delete all associated SFPs
+     *
+     * <p>
+     * @param serviceFunctionForwarder SFF  Object
+     * @return Nothing.
+     */
     @SuppressWarnings("unused")
-    public void deleteServiceFunctionForwarderfromSF(ServiceFunction serviceFunction) {
-
-        /*
-         * TODO: We assume that if a ServiceFunction exists it belongs to a ServiceFunctionForwarder
-         *
-         * But this is not necessarily always true since the SFF could be deleted through
-         * RESTconf. So, later more checks will be necessary.
-         */
-
+    public void deletePathsUsedByServiceForwarder (ServiceFunctionForwarder serviceFunctionForwarder) {
 
         printTraceStart(LOG);
 
-        String serviceFunctionForwarderName = serviceFunction.getSfDataPlaneLocator()
-                .get(0).getServiceFunctionForwarder();
-        InstanceIdentifier<ServiceFunctionDictionary> sffIID;
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey =
-                new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
-        ServiceFunctionDictionaryKey serviceFunctionDictionaryKey =
-                new ServiceFunctionDictionaryKey(serviceFunction.getName());
-        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-                .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
-                .build();
-        LOG.debug("\n########## Deleting Forwarder: {}  Service Function: {} "
-                , serviceFunctionForwarderName, serviceFunction.getName());
+        List<String> sffServiceFunctionPathList = readSffState(serviceFunctionForwarder.getName());
+        if ((sffServiceFunctionPathList != null) && (!sffServiceFunctionPathList.isEmpty())) {
+            for (String sfpname : sffServiceFunctionPathList)
+            {
+                SfcProviderServicePathAPI.deleteServiceFunctionPath(sfpname);
+            }
+        }
+    }
 
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                sffIID);
-        writeTx.commit();
+    /**
+     * When a SFF is deleted we need to delete all SFPs from the
+     * associated SFF operational state
+     *
+     * <p>
+     * @param serviceFunctionPath SFP object
+     * @return true if all paths were deleted, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public boolean deletePathFromServiceForwarderState(ServiceFunctionPath serviceFunctionPath) {
+
+        printTraceStart(LOG);
+
+        boolean ret = true;
+        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+                new ServiceFunctionForwarderStateBuilder();
+
+        //ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
+        // sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
+
+        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        Set<String> sffNameSet = new HashSet<>();
+        for (ServicePathHop servicePathHop : servicePathHopList) {
+
+            String sffname = servicePathHop.getServiceFunctionForwarder();
+            if (sffNameSet.add(sffname))
+            {
+                List<String> sffServiceFunctionPathList = readSffState(sffname);
+                List<String> newPathList = new ArrayList<>();
+                newPathList.addAll(sffServiceFunctionPathList);
+                newPathList.remove(serviceFunctionPath.getName());
+
+                ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
+                        new ServiceFunctionForwarderStateKey(sffname);
+                InstanceIdentifier<ServiceFunctionForwarderState> sfStateIID =
+                        InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
+                                .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey).build();
+
+                serviceFunctionForwarderStateBuilder.setSffServiceFunctionPath(newPathList);
+                serviceFunctionForwarderStateBuilder.setName(sffname);
+
+                if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionForwarderStateBuilder.build(),
+                        LogicalDatastoreType.OPERATIONAL)) {
+                    ret = (ret && true);
+                } else {
+                    LOG.error("Failed to delete path {} from SFF {} operational state",
+                            serviceFunctionPath.getName(), sffname);
+                    ret = (ret && false);
+                }
+                //TODO If no more paths, remove SFF entry
+            }
+        }
         printTraceStop(LOG);
+        return ret;
     }
 }

@@ -27,14 +27,28 @@ app = Flask(__name__)
 
 # Globals
 
-my_topo = {}
 sff_topo = {}
+
+# Contains all Paths in JSON format as received from ODL
 path = {}
+
+# Contains all SFPs in a format easily consumable by the data plane when
+# processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
+# locator of the SF/SFF.
 data_plane_path = {}
+
+
+# Contains the name of this SFF. For example, SFF1
 my_sff_name = ""
+
+# A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
+
+# SFF data plane listens to commamds on this port.
 sff_control_port = 6000
 
+# IP address of assocaited SFF thread. WE assume agent and thread and co-located
+SFF_UDP_IP = "127.0.0.1"
 # ODL IP:port
 ODLIP = "127.0.0.1:8181"
 # Static URLs for testing
@@ -164,11 +178,6 @@ def create_path(sfpname):
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(path[sfpname])
         # json_string = json.dumps(data_plane_path)
-        #SFF_UDP_IP = "127.0.0.1"
-        #SFF_UDP_PORT = 6000
-
-        #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #sock.sendto(bytes(json_string, 'UTF-8'), (SFF_UDP_IP, SFF_UDP_PORT))
     return jsonify({'path': path}), 201
 
 
@@ -180,11 +189,6 @@ def delete_path(sfpname):
         data_plane_path.pop(sfp_id, None)
         path.pop(sfpname, None)
         json_string = json.dumps(data_plane_path)
-        # SFF_UDP_IP = "127.0.0.1"
-        #SFF_UDP_PORT = 6000
-
-        #sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        #sock.sendto(json_string, (SFF_UDP_IP, SFF_UDP_PORT))
     except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
         logger.warning(msg)
@@ -200,8 +204,8 @@ def delete_path(sfpname):
 def create_sff(sffname):
     """
     This function creates a SFF on-the-fly when it receives a PUT request from ODL. The SFF runs on a
-    separate thread. If a SFf thread already exist, it kills it first and then proceeds to create a
-    new one. This is the most common scenario when a SFF is modified or recreated
+    separate thread. If a SFF thread with same name already exist it is killed before a new one is created.
+    This happens when a SFF is modified or recreated
     :param sffname: SFF name
     :return:
     """
@@ -225,7 +229,6 @@ def create_sff(sffname):
 
         sff_control_port += 1
 
-
     return jsonify({'sff': sff_topo}), 201
 
 
@@ -235,9 +238,8 @@ def kill_sff_thread(sffname):
     :param sffname:
     :return:
     """
-    global udpserver_socket
     logger.info("Killing thread for SFF: %s", sffname)
-    SFF_UDP_IP = "127.0.0.1"
+    # Yes, we will come up with a better protocol in the future....
     message = "Kill thread".encode(encoding="UTF-8")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -246,6 +248,8 @@ def kill_sff_thread(sffname):
         sff_threads[sffname]['thread'].join()
     if not sff_threads[sffname]['thread'].is_alive():
         logger.info("Thread for SFF %s is dead", sffname)
+        # We need to close the socket used by thread here as well or we get an address reuse error. This is probably
+        # some bug in asyncio since it should be enough for the SFF thread to close the socket.
         sff_threads[sffname]['socket'].close()
         sff_threads.pop(sffname, None)
         #udpserver_socket.close()
@@ -254,7 +258,7 @@ def kill_sff_thread(sffname):
            methods=['DELETE'])
 def delete_sff(sffname):
     """
-    Deletes SFF from topology and if necessary remove all SFPs that depend on it
+    Deletes SFF from topology, kills associated thread  and if necessary remove all SFPs that depend on it
     :param sffname: SFF name
     :return:
     """
@@ -331,7 +335,7 @@ def get_sffs_from_odl(odl_ip_port):
     """
     global sff_topo
     s = requests.Session()
-    print("Getting SFF information from ODL... \n")
+    print("Getting SFFs configure in ODL... \n")
     r = s.get(SFF_PARAMETER_URL.format(odl_ip_port), stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
@@ -348,7 +352,7 @@ def get_sff_from_odl(odl_ip_port, sff_name):
     """
     global sff_topo
     s = requests.Session()
-    print("Getting SFF information from ODL... \n")
+    logger.info("Contacting ODL to get information for SFF: %s \n", sff_name)
     r = s.get(SFF_NAME_PARAMETER_URL.format(odl_ip_port, sff_name), stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         sff_topo[sff_name] = json.loads(r.text)['service-function-forwarder'][0]
@@ -362,10 +366,10 @@ def main(argv):
     global ODLIP
     global my_sff_name
     try:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.DEBUG)
         opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port="])
     except getopt.GetoptError:
-        print("rest2ovs --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port")
+        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port")
         sys.exit(2)
 
     odl_get_sff = False
@@ -380,7 +384,8 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("rest2ovs -m cli | rest --odl-get-sff --odl-ip-port")
+            print("sff_rest -m --rest --sff-name=<name of this SFF such as SFF1> --odl-get-sff "
+                  "--odl-ip-port=<ODL REST IP:port>")
             sys.exit()
 
         if opt in ('-r', '--rest'):

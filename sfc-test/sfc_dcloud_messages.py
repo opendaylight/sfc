@@ -16,12 +16,13 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.1.1.4",
-            "port": 4789
+            "ip": "10.0.1.4",
+            "port": 40001
           }
         ],
+        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "198.18.134.26",
+        "ip-mgmt-address": "10.0.1.4",
         "type": "dpi"
       },
       {
@@ -31,12 +32,13 @@ SERVICE_FUNCTIONS_JSON = """
             "name": "vxlan",
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1",
-            "ip": "10.1.1.5",
-            "port": 4789
+            "ip": "10.0.1.4",
+            "port": 40002
           }
         ],
+        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "198.18.134.27",
+        "ip-mgmt-address": "10.0.1.4",
         "type": "napt44"
       },
       {
@@ -233,6 +235,87 @@ SERVICE_PATH_RESP_JSON = """
             "service-function-name": "SF3",
             "service_index": 1,
             "service-function-forwarder": "SFF2"
+          }
+        ]
+      }
+    ]
+  }
+}
+"""
+
+SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
+{
+  "service-function-forwarders-state": {
+    "service-function-forwarder-state": [
+      {
+        "name": "SFF1",
+        "sff-service-function-path": [
+          "Path-1-SFC1"
+        ]
+      },
+      {
+        "name": "SFF2",
+        "sff-service-function-path": [
+          "Path-1-SFC1"
+        ]
+      }
+    ]
+  }
+}
+"""
+
+SERVICE_FUNCTION_OPER_JSON = """
+{
+  "service-functions-state": {
+    "service-function-state": [
+      {
+        "name": "SF3",
+        "sf-service-function-path": [
+          "Path-1-SFC1"
+        ]
+      },
+      {
+        "name": "SF2",
+        "sf-service-function-path": [
+          "Path-1-SFC1"
+        ]
+      },
+      {
+        "name": "SF1",
+        "sf-service-function-path": [
+          "Path-1-SFC1"
+        ]
+      }
+    ]
+  }
+}
+"""
+
+SERVICE_FUNCTION_TYPE_JSON = """
+{
+  "service-function-types": {
+    "service-function-type": [
+      {
+        "type": "dpi",
+        "sft-service-function-name": [
+          {
+            "name": "SF1"
+          }
+        ]
+      },
+      {
+        "type": "napt44",
+        "sft-service-function-name": [
+          {
+            "name": "SF2"
+          }
+        ]
+      },
+      {
+        "type": "firewall",
+        "sft-service-function-name": [
+          {
+            "name": "SF3"
           }
         ]
       }

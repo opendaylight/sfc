@@ -65,6 +65,13 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
                         .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
                 odlSfc.executor.submit(sfcProviderRestAPI);
+
+                // SFF deletion is a critical event. If a SFF is deleted we delete all associated SFPs
+                serviceForwarderObj[0] = delServiceFunctionForwarder;
+                serviceForwarderClass[0] = ServiceFunctionForwarder.class;
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                        .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
+                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
             }
         }
 
@@ -78,9 +85,10 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                         (ServiceFunctionForwarder) entry.getValue();
                 Object[] serviceForwarderObj = {createdServiceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
-                        SfcProviderServiceForwarderAPI
-                                .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
+
+                //Send to SB REST
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
                 odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
             }
         }

@@ -92,12 +92,14 @@
         <module>sfc-provider</module>
         <module>sfc-test-consumer</module>
         <module>sfc-ui</module>
+        <module>sfc-sb-rest</module>
         <module>sfclisp</module>
         <module>sfc-distribution</module>
         <module>sfcofl2</module>
         <module>features</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
+        <module>features-sfc-sb-rest</module>
         <module>features-sfclisp</module>
         <module>features-sfcofl2</module>
         <module>sfc-karaf</module>

@@ -34,6 +34,7 @@ public final class SfcProviderDebug {
     private static boolean on = false;
     private static String traceStart = "####### Start: {}";
     private static String traceStop  = "####### Stop: {}";
+    private static String trace = "####### Trace: {}";
 
     public static void setON(boolean on)
     {
@@ -73,5 +74,4 @@ public final class SfcProviderDebug {
     {
         log.debug(traceStop, Thread.currentThread().getStackTrace()[1]);
     }
-
 }

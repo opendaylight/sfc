@@ -190,6 +190,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
 
         executor.submit(SfcProviderServiceChainAPI
                 .getDelete(parameters2, parameterTypes2)).get();
+
         result = executor.submit(SfcProviderServiceChainAPI
                 .getRead(parameters2, parameterTypes2)).get();
 

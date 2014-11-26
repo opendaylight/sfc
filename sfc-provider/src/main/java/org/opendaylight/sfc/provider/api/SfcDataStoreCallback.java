@@ -13,6 +13,8 @@ import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedEx
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * This class implements the general DataStore checked future
  * callback. transaction_progress denotes whether the
@@ -31,10 +33,26 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreCallback.class);
     private boolean transaction_successful;
     private boolean transaction_progress;
+    private final Semaphore semaphore = new Semaphore(1, true);
 
     public SfcDataStoreCallback()
     {
+
         this.transaction_progress = true;
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getSemaphore() {
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return;
     }
 
     public boolean getTransactioSuccessful() {return transaction_successful; }
@@ -44,9 +62,10 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
     @Override
     public void onSuccess(final Void result)
     {
-        // Commited successfully
+        // Committed successfully
         this.transaction_successful = true;
         this.transaction_progress = false;
+        semaphore.release();
     }
 
     @Override
@@ -55,6 +74,7 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
         // Transaction failed
         this.transaction_successful = false;
         this.transaction_progress = false;
+        semaphore.release();
 
         if (t instanceof OptimisticLockFailedException)
         {

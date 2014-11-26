@@ -36,19 +36,16 @@ public class SfcDataStoreAPI {
     private static final DataBroker dataBroker = odlSfc.getDataProvider();
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
-            (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType) {
+            (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
         int num_tries = 1;
         while (!ret && (num_tries < 4)) {
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.delete(logicalDatastoreType, deleteIID);
-
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            while (sfcDataStoreCallback.getTransactioProgress()) {
-                LOG.debug("Transaction still in progress for IID: {}", deleteIID.toString());
-            }
+            sfcDataStoreCallback.getSemaphore();
             if (sfcDataStoreCallback.getTransactioSuccessful()) {
                 ret = true;
             } else {
@@ -69,13 +66,11 @@ public class SfcDataStoreAPI {
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            while (sfcDataStoreCallback.getTransactioProgress()) {
-                LOG.debug("Transaction still in progress for IID: {}", addIID.toString());
-            }
+            sfcDataStoreCallback.getSemaphore();
             if (sfcDataStoreCallback.getTransactioSuccessful()) {
                 ret = true;
             } else {
-                LOG.warn("Failed to merge IID: {}.  Retrying...Num tries: {}",
+                LOG.error("Failed to merge IID: {}.  Retrying...Num tries: {}",
                         addIID.toString(), num_tries);
                 num_tries++;
             }
@@ -84,7 +79,7 @@ public class SfcDataStoreAPI {
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
-            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
+            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
         int num_tries = 1;
         while (!ret && (num_tries < 4)) {
@@ -93,17 +88,25 @@ public class SfcDataStoreAPI {
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            while (sfcDataStoreCallback.getTransactioProgress()) {
-                LOG.debug("Transaction still in progress for IID: {}", addIID.toString());
-            }
+            sfcDataStoreCallback.getSemaphore();
             if (sfcDataStoreCallback.getTransactioSuccessful()) {
                 ret = true;
             } else {
-                LOG.warn("Failed to put IID: {}.  Retrying...Num tries: {}",
+                LOG.error("Failed to put IID: {}.  Retrying...Num tries: {}",
                         addIID.toString(), num_tries);
                 num_tries++;
             }
         }
+        return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeSynchPutTransactionAPI
+            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
+        boolean ret = false;
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.put(logicalDatastoreType, addIID, data, true);
+        writeTx.commit();
+        ret = true;
         return ret;
     }
 

@@ -83,23 +83,27 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceChainAPI(params, paramsTypes, "deleteAllServiceFunctionChains");
     }
 
+    /**
+     * This method creates a SFC from the datastore.
+     * <p>
+     * @param serviceFunctionChain SFC object
+     * @return true if SFC was created, false otherwise
+     */
     protected boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
         boolean ret = false;
         printTraceStart(LOG);
-        if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
-                    InstanceIdentifier.builder(ServiceFunctionChains.class)
-                            .child(ServiceFunctionChain.class,
-                                    serviceFunctionChain.getKey())
-                            .toInstance();
+        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class)
+                        .child(ServiceFunctionChain.class,serviceFunctionChain.getKey())
+                        .toInstance();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    sfcEntryIID, serviceFunctionChain, true);
-            writeTx.commit();
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcEntryIID, serviceFunctionChain, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
+        } else {
+            LOG.error("Failed to create Service Function Chain: {}", serviceFunctionChain);
         }
+
         printTraceStop(LOG);
         return ret;
     }
@@ -118,9 +122,10 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
             Optional<ServiceFunctionChain> serviceFunctionChainDataObject;
             try {
                 serviceFunctionChainDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcIID).get();
-                if (serviceFunctionChainDataObject != null
-                        && serviceFunctionChainDataObject.isPresent()) {
+                if ((serviceFunctionChainDataObject != null) && (serviceFunctionChainDataObject.isPresent())) {
                     sfc = serviceFunctionChainDataObject.get();
+                } else {
+                    LOG.error("Failed to read Service Function Chain: {}", serviceFunctionChainName);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Could not read Service Function Chain " +

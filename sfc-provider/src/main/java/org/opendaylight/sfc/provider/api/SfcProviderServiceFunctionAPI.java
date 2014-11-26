@@ -240,7 +240,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         if (odlSfc.getDataProvider() != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunction> serviceFunctionDataObject = null;
+            Optional<ServiceFunction> serviceFunctionDataObject;
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
                 if (serviceFunctionDataObject != null
@@ -282,15 +282,11 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     protected boolean putAllServiceFunctions(ServiceFunctions sfs) {
         boolean ret = false;
         printTraceStart(LOG);
-        if (odlSfc.getDataProvider() != null) {
-
-            InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
-
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfsIID, sfs);
-            writeTx.commit();
-
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+        if (SfcDataStoreAPI.writeSynchPutTransactionAPI(sfsIID, sfs, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
+        } else {
+            LOG.error("Could not add all Service Functions: {}", sfs.toString());
         }
         printTraceStop(LOG);
         return ret;
@@ -304,23 +300,18 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         if (odlSfc.getDataProvider() != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunctions> serviceFunctionsDataObject = null;
+            Optional<ServiceFunctions> serviceFunctionsDataObject;
             try {
                 serviceFunctionsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfsIID).get();
+                LOG.error("serviceFunctionsDataObject: {}", serviceFunctionsDataObject);
                 if (serviceFunctionsDataObject != null
                         && serviceFunctionsDataObject.isPresent()) {
                     sfs = serviceFunctionsDataObject.get();
-                    printTraceStop(LOG);
-                    return sfs;
                 } else {
-                    LOG.error("\n########## Could not find Service Functions");
-                    return null;
+                    LOG.error("Could not find Service Functions");
                 }
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("\n########## Could not read Service Functions from" +
-                        " DataStore");
-                printTraceStop(LOG);
-                return null;
+                LOG.error("Could not read Service Functions from DataStore");
             }
         }
         printTraceStop(LOG);
@@ -354,7 +345,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     public boolean deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
-        boolean ret = false;
+        boolean ret = true;
         List<ServicePathHop> sfpServiceFunctionList = serviceFunctionPath.getServicePathHop();
         for (ServicePathHop sfpServiceFunction : sfpServiceFunctionList) {
             String serviceFunctionName = sfpServiceFunction.getServiceFunctionName();
@@ -372,20 +363,27 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 newPathList.remove(serviceFunctionPath.getName());
                 // If no more SFPs associated with this SF, remove list
                 if (newPathList.size() == 0) {
-                    deleteServiceFunctionState(serviceFunctionName);
+                    if (deleteServiceFunctionState(serviceFunctionName)) {
+                        ret = ret && true;
+                    } else {
+                        ret = ret && false;
+                    }
                 } else {
                     ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
                     serviceFunctionStateBuilder.setName(serviceFunctionName);
                     serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
 
                     if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
-                            LogicalDatastoreType.CONFIGURATION)) {
-                        ret = true;
+                            LogicalDatastoreType.OPERATIONAL)) {
+                        ret = ret && true;
                     } else {
                         LOG.error("Could not delete path {} from operational state of SF: {}",
                                 serviceFunctionPath.getName(), serviceFunctionName);
+                        ret = ret && false;
                     }
                 }
+            } else {
+                ret = ret && true;
             }
         }
         return ret;

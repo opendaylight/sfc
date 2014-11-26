@@ -148,6 +148,8 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 if (serviceFunctionForwarderDataObject != null
                         && serviceFunctionForwarderDataObject.isPresent()) {
                     sff = serviceFunctionForwarderDataObject.get();
+                } else {
+                    LOG.error("Failed to read Service Function Forwarder: {}", serviceFunctionForwarderName);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Could not read Service Function Forwarder {} " +
@@ -331,6 +333,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     public void updateServiceFunctionForwarder(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
+        printTraceStop(LOG);
 
     }
 
@@ -419,17 +422,25 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * @return Nothing.
      */
     @SuppressWarnings("unused")
-    public void deletePathsUsedByServiceForwarder (ServiceFunctionForwarder serviceFunctionForwarder) {
+    public boolean deletePathsUsedByServiceForwarder (ServiceFunctionForwarder serviceFunctionForwarder) {
 
         printTraceStart(LOG);
 
+        boolean ret = true;
         List<String> sffServiceFunctionPathList = readSffState(serviceFunctionForwarder.getName());
         if ((sffServiceFunctionPathList != null) && (!sffServiceFunctionPathList.isEmpty())) {
             for (String sfpname : sffServiceFunctionPathList)
             {
-                SfcProviderServicePathAPI.deleteServiceFunctionPath(sfpname);
+                if (SfcProviderServicePathAPI.readServiceFunctionPath(sfpname) != null) {
+                    if (!SfcProviderServicePathAPI.deleteServiceFunctionPath(sfpname)) {
+                        ret = false;
+                    }
+                } else {
+                    LOG.info("SFP {} already deleted by another thread or client", sfpname);
+                }
             }
         }
+        return ret;
     }
 
     /**

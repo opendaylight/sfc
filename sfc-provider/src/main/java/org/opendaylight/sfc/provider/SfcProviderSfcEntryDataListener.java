@@ -40,7 +40,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
-    public void onDataChanged(
+    public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
@@ -69,14 +69,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             if( entry.getValue() instanceof ServiceFunctionChain) {
                 ServiceFunctionChain createdServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.debug("\n########## Created ServiceFunctionChain name: {}", createdServiceFunctionChain.getName());
-                //Object[] serviceChainObj = {createdServiceFunctionChain};
-                //Class[] serviceChainClass = {ServiceFunctionChain.class};
-                //odlSfc.executor.submit(SfcProviderServiceChainAPI
-                //        .getAddChainToChainState(serviceChainObj, serviceChainClass));
-                //List<SfcServiceFunction>  sfcServiceFunctionList = createdServiceFunctionChain.getSfcServiceFunction();
-                //for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
-                //    LOG.debug("\n########## Attached ServiceFunction name: {}", sfcServiceFunction.getName());
-                //}
             }
         }
 

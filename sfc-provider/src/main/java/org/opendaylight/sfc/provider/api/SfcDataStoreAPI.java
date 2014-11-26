@@ -36,7 +36,7 @@ public class SfcDataStoreAPI {
     private static final DataBroker dataBroker = odlSfc.getDataProvider();
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
-            (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType) {
+            (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
         int num_tries = 1;
         while (!ret && (num_tries < 4)) {
@@ -46,8 +46,9 @@ public class SfcDataStoreAPI {
 
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
+            sfcDataStoreCallback.getSemaphore();
             while (sfcDataStoreCallback.getTransactioProgress()) {
-                LOG.debug("Transaction still in progress for IID: {}", deleteIID.toString());
+                LOG.error("Transaction still in progress for IID: {}", deleteIID.toString());
             }
             if (sfcDataStoreCallback.getTransactioSuccessful()) {
                 ret = true;
@@ -69,8 +70,10 @@ public class SfcDataStoreAPI {
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
+            sfcDataStoreCallback.getSemaphore();
+
             while (sfcDataStoreCallback.getTransactioProgress()) {
-                LOG.debug("Transaction still in progress for IID: {}", addIID.toString());
+                LOG.error("Transaction still in progress for IID: {}", addIID.toString());
             }
             if (sfcDataStoreCallback.getTransactioSuccessful()) {
                 ret = true;
@@ -84,7 +87,7 @@ public class SfcDataStoreAPI {
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
-            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
+            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
         int num_tries = 1;
         while (!ret && (num_tries < 4)) {
@@ -93,6 +96,7 @@ public class SfcDataStoreAPI {
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
             Futures.addCallback(submitFuture, sfcDataStoreCallback);
+            sfcDataStoreCallback.getSemaphore();
             while (sfcDataStoreCallback.getTransactioProgress()) {
                 LOG.debug("Transaction still in progress for IID: {}", addIID.toString());
             }

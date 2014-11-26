@@ -14,7 +14,8 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths
+        .ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -23,6 +24,11 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.HttpMethod;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class is the DataListener for SFP Entry changes.
@@ -39,10 +45,13 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
-    public void onDataChanged(
+    public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+
+        printTraceStart(LOG);
+        odlSfc.getLock();
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
@@ -66,11 +75,19 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 Class[] servicePathClass = {ServiceFunctionPath.class};
                 SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                         .getCreateServicePathAPI(servicePathObj, servicePathClass);
-                odlSfc.executor.submit(sfcProviderServicePathAPI);
+                Future future = odlSfc.executor.submit(sfcProviderServicePathAPI);
+                try {
+                    LOG.info("getCreateServicePathAPI: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         // SFP UPDATE
+        // TODO
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =
                 change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
@@ -117,15 +134,32 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;
                 Object[] servicePathObj = {originalServiceFunctionPath};
                 Class[] servicePathClass = {ServiceFunctionPath.class};
-                odlSfc.executor.submit(SfcProviderServiceFunctionAPI
+                Future future = odlSfc.executor.submit(SfcProviderServiceFunctionAPI
                         .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass));
+
+                try {
+                    LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
 
                 // If a SFP is deleted we remove it form SFF operational state
                 servicePathObj[0] = originalServiceFunctionPath;
                 servicePathClass[0] = ServiceFunctionPath.class;
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                         .getDeletePathFromServiceForwarderState(servicePathObj, servicePathClass);
-                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+
+                try {
+                    LOG.info("getDeletePathFromServiceForwarderState: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
                 //Send to SB REST
                 Object[] servicePathRestObj= {originalServiceFunctionPath, HttpMethod.DELETE};
@@ -136,7 +170,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
             }
         }
-
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        odlSfc.releaseLock();
+        printTraceStop(LOG);
     }
 }

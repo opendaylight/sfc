@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
@@ -61,6 +62,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
+    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     static final Comparator<SfcServiceFunction> SF_ORDER =
             new Comparator<SfcServiceFunction>() {
                 public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
@@ -160,7 +162,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected ServiceFunctionPath readServiceFunctionPath(String serviceFunctionPathName) {
+    public static ServiceFunctionPath readServiceFunctionPath(String serviceFunctionPathName) {
         printTraceStart(LOG);
         ServiceFunctionPath sfp = null;
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
@@ -168,20 +170,20 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
                 .child(ServiceFunctionPath.class, serviceFunctionPathKey).build();
 
-        if (dataBroker != null) {
-            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<ServiceFunctionPath> serviceFunctionPathDataObject;
-            try {
-                serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType
-                        .CONFIGURATION, sfpIID).get();
-                if (serviceFunctionPathDataObject != null
-                        && serviceFunctionPathDataObject.isPresent()) {
-                    sfp = serviceFunctionPathDataObject.get();
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Function Path configuration data \n");
+
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        Optional<ServiceFunctionPath> serviceFunctionPathDataObject;
+        try {
+            serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType
+                    .CONFIGURATION, sfpIID).get();
+            if (serviceFunctionPathDataObject != null
+                    && serviceFunctionPathDataObject.isPresent()) {
+                sfp = serviceFunctionPathDataObject.get();
             }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read Service Function Path configuration data \n");
         }
+
         printTraceStop(LOG);
         return sfp;
     }
@@ -471,12 +473,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     }
 
-
-    /*
-     * We iterate through all service paths that use this service function and remove them.
-     * In the end since there is no more operational state, we remove the state tree.
+    /**
+     * We iterate through all service paths that use this service function and if
+     * necessary, remove them.
+     * <p>
+     * @param serviceFunction Service Function Object
+     * @return Nothing.
      */
-
     @SuppressWarnings("unused")
     public boolean deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
 
@@ -491,10 +494,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             List<String> removedPaths = new ArrayList<>();
             for (String pathName : sfServiceFunctionPathList) {
 
-                if (deleteServiceFunctionPath(pathName)) {
-                    ret = ret && true;
+                if (readServiceFunctionPath(pathName) != null) {
+                    if (deleteServiceFunctionPath(pathName)) {
+                        ret = ret && true;
+                    } else {
+                        ret = ret && false;
+                    }
                 } else {
-                    ret = ret && false;
+                    LOG.info("SFP {} already deleted by another thread or client", pathName);
                 }
             }
         } else {

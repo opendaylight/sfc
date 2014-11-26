@@ -88,12 +88,12 @@ def check(url, json_resp, message):
 
 if __name__ == "__main__":
     delete_configuration()
-    put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
-    check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type")
-    put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
-    put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
-    put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
-    check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State")
-    check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State")
-    delete_configuration()
+    # put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
+    # check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type")
+    # put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
+    # put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
+    # put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
+    # check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State")
+    # check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State")
+    # delete_configuration()
 

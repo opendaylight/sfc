@@ -299,9 +299,10 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * @param serviceFunction Service Function object
      * @return Service Function Type Object
      */
-    public void deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
+    public boolean deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
+        boolean ret = false;
         String sfkey = serviceFunction.getType();
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
 
@@ -313,10 +314,11 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey)
                 .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
 
-        if (!SfcDataStoreAPI.deleteTransactionAPI(sftentryIID, LogicalDatastoreType.CONFIGURATION)) {
+        if (SfcDataStoreAPI.deleteTransactionAPI(sftentryIID, LogicalDatastoreType.CONFIGURATION)) {
+            ret = true;
+        } else {
             LOG.error("Failed to delete Service Function Type: {}, for Service Function: {}",
                     serviceFunction.getType(), serviceFunction.getName());
-
         }
         List<SftServiceFunctionName> sftServiceFunctionNameList =
                 readServiceFunctionType(serviceFunction.getType()).getSftServiceFunctionName();
@@ -327,7 +329,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 deleteServiceFunctionType(serviceFunction.getType());
             }
         }
-
         printTraceStop(LOG);
+        return ret;
     }
 }

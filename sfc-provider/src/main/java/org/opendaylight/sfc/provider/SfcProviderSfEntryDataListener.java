@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -40,12 +42,15 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
+
     @Override
-    public void onDataChanged(
+    public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
 
         printTraceStart(LOG);
+
+        odlSfc.getLock();
 
         // SF ORIGINAL
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -67,8 +72,16 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] serviceTypeObj = {createdServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
+                try {
+                    LOG.info("getCreateServiceFunctionTypeEntry returns: {}", future.get());
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
                         createdServiceFunction.getType(), createdServiceFunction.getName());
@@ -85,13 +98,26 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] serviceFunctionObj = {originalServiceFunction};
                 Class[] serviceFunctionClass = {ServiceFunction.class};
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
-
+                try {
+                    LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 Object[] functionParams = {originalServiceFunction};
                 Class[] functionParamsTypes = {ServiceFunction.class};
-                odlSfc.executor.submit(SfcProviderServicePathAPI
+                future = odlSfc.executor.submit(SfcProviderServicePathAPI
                         .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+                try {
+                    LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -101,19 +127,43 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunction) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
+
+
+                DataObject dataObject = dataOriginalDataObject.get(entry.getKey());
+                ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
+                Object[] serviceFunctionObj = {originalServiceFunction};
+                Class[] serviceFunctionClass = {ServiceFunction.class};
+
+
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
-                Object[] serviceTypeObj = {updatedServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
-                odlSfc.executor.submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
 
-                Object[] sfParams = {updatedServiceFunction};
-                Class[] sfParamsTypes = {ServiceFunction.class};
+                // We only update SF type entry if type has changed
+                if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
 
+                    // We remove the original SF from SF type list
+                    Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                            .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
+                    try {
+                        LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    // We create a independent entry
+                    serviceFunctionObj[0] = updatedServiceFunction;
+                    serviceFunctionClass[0] = ServiceFunction.class;
+                    odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                            .getCreateServiceFunctionTypeEntry(serviceFunctionObj, serviceFunctionClass));
+                }
+
+                // We delete all paths that use this SF
                 odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getUpdateServicePathContainingFunction(sfParams, sfParamsTypes));
+                        .getDeleteServicePathContainingFunction(serviceFunctionObj, serviceFunctionClass));
+                //TODO Update SFF dictionary
             }
         }
+        odlSfc.releaseLock();
         printTraceStop(LOG);
     }
 

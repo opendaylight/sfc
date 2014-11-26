@@ -240,7 +240,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         if (odlSfc.getDataProvider() != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunction> serviceFunctionDataObject = null;
+            Optional<ServiceFunction> serviceFunctionDataObject;
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
                 if (serviceFunctionDataObject != null
@@ -354,7 +354,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     public boolean deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
-        boolean ret = false;
+        boolean ret = true;
         List<ServicePathHop> sfpServiceFunctionList = serviceFunctionPath.getServicePathHop();
         for (ServicePathHop sfpServiceFunction : sfpServiceFunctionList) {
             String serviceFunctionName = sfpServiceFunction.getServiceFunctionName();
@@ -372,20 +372,27 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 newPathList.remove(serviceFunctionPath.getName());
                 // If no more SFPs associated with this SF, remove list
                 if (newPathList.size() == 0) {
-                    deleteServiceFunctionState(serviceFunctionName);
+                    if (deleteServiceFunctionState(serviceFunctionName)) {
+                        ret = ret && true;
+                    } else {
+                        ret = ret && false;
+                    }
                 } else {
                     ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
                     serviceFunctionStateBuilder.setName(serviceFunctionName);
                     serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
 
                     if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
-                            LogicalDatastoreType.CONFIGURATION)) {
-                        ret = true;
+                            LogicalDatastoreType.OPERATIONAL)) {
+                        ret = ret && true;
                     } else {
                         LOG.error("Could not delete path {} from operational state of SF: {}",
                                 serviceFunctionPath.getName(), serviceFunctionName);
+                        ret = ret && false;
                     }
                 }
+            } else {
+                ret = ret && true;
             }
         }
         return ret;

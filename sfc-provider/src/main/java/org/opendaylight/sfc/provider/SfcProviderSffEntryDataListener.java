@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -37,12 +39,12 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
-    public void onDataChanged(
+    public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
 
-        // SF ORIGINAL
+        // SFF ORIGINAL
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
@@ -53,7 +55,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             }
         }
 
-        // SF DELETION
+        // SFF DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
@@ -71,7 +73,15 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 serviceForwarderClass[0] = ServiceFunctionForwarder.class;
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                         .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
-                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                try {
+                    LOG.info("getDeletePathsUsedByServiceForwarder: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
 
@@ -93,6 +103,27 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             }
         }
 
+        // SFF UPDATE
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
+                = change.getUpdatedData();
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
+            if ((entry.getValue() instanceof ServiceFunctionForwarder) &&
+                    (!(dataCreatedObject.containsKey(entry.getKey())))) {
+                ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
+                Object[] serviceForwarderObj = {serviceFunctionForwarder};
+                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                        .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
+                Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                try {
+                    LOG.info("getDeletePathsUsedByServiceForwarder: {}", future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         printTraceStop(LOG);
     }
 

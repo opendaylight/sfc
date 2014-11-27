@@ -191,8 +191,13 @@ module service-function-forwarder {
         description
           "the name of the service function forwarder";
       }
-      leaf-list sff-service-function-path {
-        type string;
+      list sff-service-path {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the Service Path";
+        }
         description
         "A list of all service function paths that contain this
          service function forwarder";

@@ -16,12 +16,9 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.json.JSONObject;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff
-        .rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
-        .rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
-        .rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,10 +176,9 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         return jsonOutput;
     }
 
-    private String getServiceFunctionPathURI(ServiceFunctionPath serviceFunctionPath) {
-        return  "http://localhost:8181/restconf/config/service" +
-                "-function-path:service-function-paths/" +
-                "service-function-path/" + serviceFunctionPath.getName();
+    private String getRenderedServicePathURI(RenderedServicePath renderedServicePath) {
+        return  "http://localhost:8181/restconf/operational/rendered-service-path:rendered-service-paths/" +
+                "rendered-service-path/" + renderedServicePath.getName();
     }
 
 
@@ -190,10 +186,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
      * Communicates SFP to REST URI found in SFF configuration Server.
      * It sends SFP information to each SFF present in the service-hop list.
      * <p>
-     * @param serviceFunctionPath Service Function Path object
+     * @param renderedServicePath Service Function Path object
      * @return Nothing
      */
-    public void putServiceFunctionPath (ServiceFunctionPath serviceFunctionPath) {
+    public void putRenderedServicePath (RenderedServicePath renderedServicePath) {
 
         printTraceStart(LOG);
 
@@ -202,12 +198,12 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         String sfpURI;
         String restURI;
 
-        String sfpJSON = getRESTObj(getServiceFunctionPathURI(serviceFunctionPath));
+        String sfpJSON = getRESTObj(getRenderedServicePathURI(renderedServicePath));
 
-        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         Set<String> sffNameSet = new HashSet<>();
-        for (ServicePathHop servicePathHop : servicePathHopList) {
-            String sffName = servicePathHop.getServiceFunctionForwarder();
+        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
+            String sffName = renderedServicePathHop.getServiceFunctionForwarder();
             // We send the SFP message to each SFF only once
             if (sffNameSet.add(sffName))
             {
@@ -229,10 +225,8 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     // Testing
                     //restURI = "http://127.0.0.1:5000";
 
-                    sfpURI = restURI + "/config/service" +
-                            "-function-path:service-function-paths/" +
-                            "service-function-path/" + serviceFunctionPath
-                            .getName();
+                    sfpURI = restURI + "/operational/rendered-service-path:" +
+                        "rendered-service-paths/rendered-service-path" + renderedServicePath.getName();
                     putClientRemoteResponse = client.resource(sfpURI).type(MediaType
                             .APPLICATION_JSON_TYPE).put(ClientResponse.class, sfpJSON);
                     if (putClientRemoteResponse.getStatus() >= 300)
@@ -261,10 +255,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
      * Communicates SFP to REST URI found in SFF configuration Server.
      * It sends SFP information to each SFF present in the service-hop list.
      * <p>
-     * @param serviceFunctionPath Service Function Path object
+     * @param renderedServicePath Service Function Path object
      * @return Nothing
      */
-    public void deleteServiceFunctionPath (ServiceFunctionPath serviceFunctionPath) {
+    public void deleteServiceFunctionPath (RenderedServicePath renderedServicePath) {
 
         printTraceStart(LOG);
 
@@ -273,10 +267,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         String sfpURI;
         String restURI;
 
-        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
+        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         Set<String> sffNameSet = new HashSet<>();
-        for (ServicePathHop servicePathHop : servicePathHopList) {
-            String sffName = servicePathHop.getServiceFunctionForwarder();
+        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
+            String sffName = renderedServicePathHop.getServiceFunctionForwarder();
             // We send the SFP message to each SFF only once
             if (sffNameSet.add(sffName))
             {
@@ -298,10 +292,8 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     // Testing
                     //restURI = "http://127.0.0.1:5000";
 
-                    sfpURI = restURI + "/config/service" +
-                            "-function-path:service-function-paths/" +
-                            "service-function-path/" + serviceFunctionPath
-                            .getName();
+                    sfpURI = restURI + "/operational/rendered-service-path:" +
+                            "rendered-service-paths/rendered-service-path" + renderedServicePath.getName();
                     deleteClientRemoteResponse = client.resource(sfpURI).type(MediaType
                             .APPLICATION_JSON_TYPE).delete(ClientResponse.class);
                     if (deleteClientRemoteResponse.getStatus() >= 300)
@@ -334,11 +326,11 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         return new SfcProviderRestAPI(params, paramsTypes, "deleteServiceFunctionForwarder");
     }
 
-    public static  SfcProviderRestAPI getPutServiceFunctionPath (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRestAPI(params, paramsTypes, "putServiceFunctionPath");
+    public static  SfcProviderRestAPI getPutRenderedServicePath (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "putRenderedServicePath");
     }
 
-    public static  SfcProviderRestAPI getDeleteServiceFunctionPath (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRestAPI(params, paramsTypes, "deleteServiceFunctionPath");
+    public static  SfcProviderRestAPI getDeleteRenderedServicePath (Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRestAPI(params, paramsTypes, "deleteRenderedServicePathh");
     }
 }

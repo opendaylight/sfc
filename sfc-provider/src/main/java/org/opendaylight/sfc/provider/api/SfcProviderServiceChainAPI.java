@@ -117,7 +117,9 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
 
-        if (dataBroker != null) {
+        sfc = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
+
+/*        if (dataBroker != null) {
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunctionChain> serviceFunctionChainDataObject;
             try {
@@ -131,7 +133,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
                 LOG.error("Could not read Service Function Chain " +
                         "configuration {}", serviceFunctionChainName);
             }
-        }
+        }*/
         printTraceStop(LOG);
         return sfc;
     }
@@ -184,7 +186,9 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
                 .builder(ServiceFunctionChains.class).toInstance();
 
-        if (dataBroker != null) {
+        sfcs = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION);
+
+/*        if (dataBroker != null) {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunctionChains> serviceFunctionChainsDataObject = null;
             try {
@@ -199,7 +203,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
                         "configuration");
             }
 
-        }
+        }*/
         printTraceStop(LOG);
         return sfcs;
     }

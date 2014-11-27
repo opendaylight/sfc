@@ -43,6 +43,11 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
 
+    /**
+     * This method is called whenever there is change in a SF. Before doing any changes
+     * it takes a global lock in order to ensure it is the only writer.
+     * @param change
+     */
     @Override
     public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
@@ -74,7 +79,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
                 try {
-                    LOG.info("getCreateServiceFunctionTypeEntry returns: {}", future.get());
+                    LOG.debug("getCreateServiceFunctionTypeEntry returns: {}", future.get());
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -100,23 +105,15 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                 try {
-                    LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                    LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
-                Object[] functionParams = {originalServiceFunction};
-                Class[] functionParamsTypes = {ServiceFunction.class};
-                future = odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
-                try {
-                    LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+
+                SfcProviderServicePathAPI
+                        .deleteServicePathContainingFunctionExecutor(originalServiceFunction);
             }
         }
 
@@ -143,7 +140,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                             .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                     try {
-                        LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                        LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -156,10 +153,12 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                             .getCreateServiceFunctionTypeEntry(serviceFunctionObj, serviceFunctionClass));
                 }
 
-                // We delete all paths that use this SF
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(serviceFunctionObj, serviceFunctionClass));
-                //TODO Update SFF dictionary
+                SfcProviderServicePathAPI
+                        .deleteServicePathContainingFunctionExecutor(originalServiceFunction);
+
+                /* We do not update the SFF dictionary. Since the user configured it in the first place,
+                 * (s)he is also responsible for updating it.
+                 */
             }
         }
         odlSfc.releaseLock();

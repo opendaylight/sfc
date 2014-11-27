@@ -12,15 +12,24 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths
+        .RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered
+        .service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state
+        .ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state
+        .ServiceFunctionStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state
+        .ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths
+        .ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service
+        .function.path.ServicePathHop;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -166,23 +176,50 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
 
         serviceFunctionStateBuilder.setSfServiceFunctionPath(sfcServiceFunctionPathArrayList);
-
-        List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
-        for (ServicePathHop servicePathHop : servicePathHopList) {
-            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(servicePathHop.getServiceFunctionName());
+        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(serviceFunctionPath.getName());
+        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
             InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
                     .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
-            serviceFunctionStateBuilder.setName(servicePathHop.getServiceFunctionName());
+            serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
 
             if (SfcDataStoreAPI.writeMergeTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
                     LogicalDatastoreType.OPERATIONAL)) {
                 ret = true;
             } else {
                 LOG.error("Could not add SFP {} to operational state of SF: {}",
-                        serviceFunctionPath.getName(), servicePathHop.getServiceFunctionName());
+                        serviceFunctionPath.getName(), renderedServicePathHop.getServiceFunctionName());
             }
             printTraceStop(LOG);
         }
+        return ret;
+    }
+
+    /**
+     * This method adds a SFP name to the corresponding SF operational state.
+     * <p>
+     * @param serviceFunctionPath SFP object
+     * @return true if SFP was added, false otherwise
+     */
+    public static boolean addPathToServiceFunctionStateExecutor(ServiceFunctionPath serviceFunctionPath) {
+        boolean ret =  false;
+        printTraceStart(LOG);
+
+        Object[] servicePathObj = {serviceFunctionPath};
+        Class[] servicePathClass = {ServiceFunctionPath.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
+        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        printTraceStop(LOG);
         return ret;
     }
 
@@ -343,6 +380,37 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * @return true if SF was deleted, false otherwise
      */
     @SuppressWarnings("unused")
+    public static boolean deleteServicePathFromServiceFunctionStateExecutor(ServiceFunctionPath serviceFunctionPath) {
+
+        boolean ret =  false;
+        printTraceStart(LOG);
+
+        Object[] servicePathObj = {serviceFunctionPath};
+        Class[] servicePathClass = {ServiceFunctionPath.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass);
+        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+
+    /**
+     * When a Service Path is deleted directly (not as a consequence of deleting a SF), we need
+     * to remove its reference from all the ServiceFunction states.
+     * <p>
+     * @param serviceFunctionPath SFP object that was removed from datastore
+     * @return true if SF was deleted, false otherwise
+     */
+    @SuppressWarnings("unused")
     public boolean deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
         boolean ret = true;
@@ -386,6 +454,58 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 ret = ret && true;
             }
         }
+        return ret;
+    }
+
+    /**
+     * Removes a single Service Path name from the given Service Function operational state
+     *
+     * <p>
+     * @param sfpName SF name
+     * @param sfName  SF name
+     * @return true if SF was deleted, false otherwise
+     */
+    public static boolean deleteServicePathFromServiceFunctionState(String sfpName, String sfName) {
+
+        boolean ret = true;
+
+        ServiceFunctionState serviceFunctionState = readServiceFunctionState(sfName);
+        if (serviceFunctionState != null) {
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
+            InstanceIdentifier<ServiceFunctionState> sfStateIID =
+                    InstanceIdentifier.builder(ServiceFunctionsState.class)
+                            .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                            .build();
+
+            List<String> sfServiceFunctionPathList = serviceFunctionState.getSfServiceFunctionPath();
+            List<String> newPathList = new ArrayList<>();
+            newPathList.addAll(sfServiceFunctionPathList);
+            newPathList.remove(sfpName);
+            // If no more SFPs associated with this SF, remove list
+            if (newPathList.size() == 0) {
+                if (deleteServiceFunctionState(sfName)) {
+                    ret = ret && true;
+                } else {
+                    ret = ret && false;
+                }
+            } else {
+                ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
+                serviceFunctionStateBuilder.setName(sfName);
+                serviceFunctionStateBuilder.setSfServiceFunctionPath(newPathList);
+
+                if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
+                        LogicalDatastoreType.OPERATIONAL)) {
+                    ret = ret && true;
+                } else {
+                    LOG.error("Could not delete path {} from operational state of SF: {}",
+                            sfpName, sfName);
+                    ret = ret && false;
+                }
+            }
+        } else {
+            ret = ret && true;
+        }
+
         return ret;
     }
 }

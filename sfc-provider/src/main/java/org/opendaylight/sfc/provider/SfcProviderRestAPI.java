@@ -179,10 +179,9 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         return jsonOutput;
     }
 
-    private String getServiceFunctionPathURI(ServiceFunctionPath serviceFunctionPath) {
-        return  "http://localhost:8181/restconf/config/service" +
-                "-function-path:service-function-paths/" +
-                "service-function-path/" + serviceFunctionPath.getName();
+    private String getRenderedServicePathURI(ServiceFunctionPath serviceFunctionPath) {
+        return  "http://localhost:8181/restconf/operational/rendered-service-path:rendered-service-paths/" +
+                "rendered-service-path/" + serviceFunctionPath.getName();
     }
 
 
@@ -202,7 +201,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         String sfpURI;
         String restURI;
 
-        String sfpJSON = getRESTObj(getServiceFunctionPathURI(serviceFunctionPath));
+        String sfpJSON = getRESTObj(getRenderedServicePathURI(serviceFunctionPath));
 
         List<ServicePathHop> servicePathHopList = serviceFunctionPath.getServicePathHop();
         Set<String> sffNameSet = new HashSet<>();

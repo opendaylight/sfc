@@ -11,14 +11,19 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state
+        .ServiceFunctionState;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +48,11 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
 
+    /**
+     * This method is called whenever there is change in a SF. Before doing any changes
+     * it takes a global lock in order to ensure it is the only writer.
+     * @param change
+     */
     @Override
     public synchronized void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
@@ -74,7 +84,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
                 try {
-                    LOG.info("getCreateServiceFunctionTypeEntry returns: {}", future.get());
+                    LOG.debug("getCreateServiceFunctionTypeEntry returns: {}", future.get());
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -100,23 +110,26 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                 try {
-                    LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                    LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
-                Object[] functionParams = {originalServiceFunction};
-                Class[] functionParamsTypes = {ServiceFunction.class};
-                future = odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
-                try {
-                    LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+
+                /* Before removing RSPs used by this Service Function, we need to remove all
+                 * references in the SFF/SF operational trees
+                 */
+                String sfName = originalServiceFunction.getName();
+                ServiceFunctionState serviceFunctionState = SfcProviderServiceFunctionAPI.
+                        readServiceFunctionStateExecutor(sfName);
+                List<String> sfpList = serviceFunctionState.getSfServiceFunctionPath();
+                for (String sfpName : sfpList) {
+                    SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(sfpName);
                 }
+                SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfName);
+                SfcProviderServicePathAPI
+                        .deleteServicePathContainingFunctionExecutor(originalServiceFunction);
             }
         }
 
@@ -143,7 +156,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
                             .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                     try {
-                        LOG.info("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
+                        LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -156,10 +169,27 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                             .getCreateServiceFunctionTypeEntry(serviceFunctionObj, serviceFunctionClass));
                 }
 
-                // We delete all paths that use this SF
-                odlSfc.executor.submit(SfcProviderServicePathAPI
-                        .getDeleteServicePathContainingFunction(serviceFunctionObj, serviceFunctionClass));
-                //TODO Update SFF dictionary
+                /* Before removing RSPs used by this Service Function, we need to remove all
+                 * references in the SFF/SF operational trees
+                 */
+                String sfName = originalServiceFunction.getName();
+                ServiceFunctionState serviceFunctionState = SfcProviderServiceFunctionAPI
+                        .readServiceFunctionStateExecutor(sfName);
+                List<String> sfpList = serviceFunctionState.getSfServiceFunctionPath();
+                for (String sfpName : sfpList) {
+                    SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor
+                            (sfpName, sfName);
+                    SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(sfpName);
+                }
+                /* We remove the entire SF operational state at the top level, instead
+                 * of one SFP at a time
+                 */
+                SfcProviderServicePathAPI
+                        .deleteServicePathContainingFunctionExecutor(originalServiceFunction);
+
+                /* We do not update the SFF dictionary. Since the user configured it in the first place,
+                 * (s)he is also responsible for updating it.
+                 */
             }
         }
         odlSfc.releaseLock();

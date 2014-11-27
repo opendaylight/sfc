@@ -11,16 +11,21 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders
+        .ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state
+        .service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -43,6 +48,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
+        odlSfc.getLock();
 
         // SFF ORIGINAL
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -60,27 +66,34 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionForwarder) {
-                ServiceFunctionForwarder delServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
-                Object[] serviceForwarderObj = {delServiceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+                ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
 
+
+                /* Before removing RSPs used by this Service Function, we need to remove all
+                 * references in the SFF/SF operational trees
+                 */
+
+                String sffName = serviceFunctionForwarder.getName();
+                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName);
+                List<String> rspList = new ArrayList<>();
+                List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+                if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
+                    for (SffServicePath sffServicePath : sffServicePathList) {
+                        String rspName = sffServicePath.getName();
+                        SfcProviderServiceFunctionAPI
+                                .deleteServicePathFromServiceFunctionStateExecutor(rspName);
+                        rspList.add(rspName);
+                    }
+                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                }
+
+                //REST
+                Object[] serviceForwarderObj = {serviceFunctionForwarder};
+                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
                         .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
                 odlSfc.executor.submit(sfcProviderRestAPI);
 
-                // SFF deletion is a critical event. If a SFF is deleted we delete all associated SFPs
-                serviceForwarderObj[0] = delServiceFunctionForwarder;
-                serviceForwarderClass[0] = ServiceFunctionForwarder.class;
-                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
-                        .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
-                Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
-                try {
-                    LOG.info("getDeletePathsUsedByServiceForwarder: {}", future.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
 
             }
         }
@@ -109,21 +122,36 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionForwarder) &&
                     (!(dataCreatedObject.containsKey(entry.getKey())))) {
+
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
+
+                /* Before removing RSPs used by this Service Function, we need to remove all
+                 * references in the SFF/SF operational trees
+                 */
+
+                String sffName = serviceFunctionForwarder.getName();
+                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName);
+                List<String> rspList = new ArrayList<>();
+                List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+                if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
+                    for (SffServicePath sffServicePath : sffServicePathList) {
+                        String rspName = sffServicePath.getName();
+                        SfcProviderServiceFunctionAPI
+                                .deleteServicePathFromServiceFunctionStateExecutor(rspName);
+                        rspList.add(rspName);
+                    }
+                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                }
+
+                //Send to SB REST
                 Object[] serviceForwarderObj = {serviceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
-                        .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
-                Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
-                try {
-                    LOG.info("getDeletePathsUsedByServiceForwarder: {}", future.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
+                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
             }
         }
+        odlSfc.releaseLock();
         printTraceStop(LOG);
     }
 

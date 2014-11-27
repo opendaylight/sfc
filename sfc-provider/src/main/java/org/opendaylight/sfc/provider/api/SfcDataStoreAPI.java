@@ -44,14 +44,13 @@ public class SfcDataStoreAPI {
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.delete(logicalDatastoreType, deleteIID);
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
+            Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+            try {
+                submitFuture.checkedGet();
                 ret = true;
-            } else {
-                LOG.warn("Failed to delete IID: {}.  Retrying...Num tries: {}",
-                        deleteIID.toString(), num_tries);
-                num_tries++;
+            } catch (TransactionCommitFailedException e) {
+                LOG.error("Transaction failed. Message: {}", e.getMessage());
+                ret = false;
             }
         }
         return ret;
@@ -65,14 +64,13 @@ public class SfcDataStoreAPI {
             writeTx.merge(logicalDatastoreType, addIID, data, true);
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
+            Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+            try {
+                submitFuture.checkedGet();
                 ret = true;
-            } else {
-                LOG.error("Failed to merge IID: {}.  Retrying...Num tries: {}",
-                        addIID.toString(), num_tries);
-                num_tries++;
+            } catch (TransactionCommitFailedException e) {
+                LOG.error("Transaction failed. Message: {}", e.getMessage());
+                ret = false;
             }
         }
         return ret;
@@ -87,14 +85,13 @@ public class SfcDataStoreAPI {
             writeTx.put(logicalDatastoreType, addIID, data, true);
             SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
+            Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+            try {
+                submitFuture.checkedGet();
                 ret = true;
-            } else {
-                LOG.error("Failed to put IID: {}.  Retrying...Num tries: {}",
-                        addIID.toString(), num_tries);
-                num_tries++;
+            } catch (TransactionCommitFailedException e) {
+                LOG.error("Transaction failed. Message: {}", e.getMessage());
+                ret = false;
             }
         }
         return ret;

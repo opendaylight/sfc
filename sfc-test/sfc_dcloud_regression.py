@@ -22,6 +22,7 @@ SFT_URL = "http://" + ODLIP + "/restconf/config/service-function-type:service-fu
 SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
 SFF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function-forwarder:service-function-forwarders-state/"
 SF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function:service-functions-state/"
+RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rendered-service-paths/"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -47,9 +48,9 @@ def delete_configuration():
         print("=>Failure to delete SFFs, response code = {} \n".format(r.status_code))
     # r = s.delete(SFT_URL, stream=False, auth=(USERNAME, PASSWORD))
     # if r.status_code == 200:
-    # print ("=>Deleted all Service Function Types \n")
+    #     print("=>Deleted all Service Function Types \n")
     # else:
-    #     print ("=>Failure to delete SFTs, response code = {} \n". format(r.status_code))
+    #     print("=>Failure to delete SFTs, response code = {} \n". format(r.status_code))
     r = s.delete(SFP_URL, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         print("=>Deleted all Service Function Paths \n")
@@ -88,12 +89,13 @@ def check(url, json_resp, message):
 
 if __name__ == "__main__":
     delete_configuration()
-    # put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
-    # check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type")
-    # put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
-    # put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
-    # put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
-    # check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State")
-    # check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State")
-    # delete_configuration()
+    put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
+    check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type...")
+    put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
+    put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
+    put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
+    check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
+    check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
+    check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
+    #delete_configuration()
 

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_33e249a0",
+        "filename": "sfc-py/service_classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-12-01T19:13:09Z",
+      "side": 1,
+      "message": "You need to pass parameters to the build packet function, otherwise it will not work. Please take a look",
+      "revId": "43a27754d75fb4dd352147754a4c06bcbd8621cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_e105ea14",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2014-12-01T16:14:52Z",
+      "side": 1,
+      "message": "I think the code here would me more maintainable if all the 1.7.4 versions were converted to a common variable.",
+      "range": {
+        "startLine": 433,
+        "startChar": 0,
+        "endLine": 433,
+        "endChar": 82
+      },
+      "revId": "c7f94a72b4c888fa6516fd08bbb54a97062407ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

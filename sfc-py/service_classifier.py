@@ -20,6 +20,7 @@ import socket
 import binascii
 
 from ctypes import *
+from nsh_encode import *
 
 class VXLANGPE(Structure):
     _fields_ = [("flags", c_ubyte),
@@ -51,19 +52,6 @@ vxlan_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('11111111111111111111
 ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
 base_values = BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, 0x000001, 0x4)
 
-def build_packet():
-    # Build VXLAN header
-    vxlan_header = struct.pack('!B B H I', vxlan_values.flags, vxlan_values.reserved, vxlan_values.protocol_type,
-                               (vxlan_values.vni << 8) + vxlan_values.reserved2)
-    # Build base NSH header
-    base_header = struct.pack('!H B H I', (base_values.version << 14) + (base_values.flags << 6) + base_values.length,
-                              base_values.md_type,
-                              base_values.next_protocol, (base_values.service_path << 8) + base_values.service_index)
-    #Build NSH context headers
-    context_header = struct.pack('!I I I I', ctx_values.network_platform, ctx_values.network_shared,
-                                 ctx_values.service_platform, ctx_values.service_shared)
-    return vxlan_header + base_header + context_header
-
 # Testing: Setup linux with:
 # iptables -I INPUT -d 172.16.6.140 -j NFQUEUE --queue_num 1
 #
@@ -79,7 +67,7 @@ def process_and_accept(Packet):
         if classify_map[lookup]['sff'] != '':
     
             print (binascii.hexlify(data))
-            packet = build_packet() + data
+            packet = build_packet(vxlan_values, base_values, ctx_values) + data
             print (binascii.hexlify(packet))
     
             UDP_IP = classify_map[lookup]['sff'] 

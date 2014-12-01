@@ -112,15 +112,16 @@ public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
         Object[] pathParameters = {path};
         Class[] pathParameterTypes = {ServiceFunctionPath.class};
 
-        executor.submit(SfcProviderServicePathAPI
+        Object result1 = executor.submit(SfcProviderServicePathAPI
                 .getPut(pathParameters, pathParameterTypes)).get();
+        boolean ret = (boolean) result1;
 
         Object[] pathParameters2 = {pathName};
         Class[] pathParameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServicePathAPI
+        Object result2 = executor.submit(SfcProviderServicePathAPI
                 .getRead(pathParameters2, pathParameterTypes2)).get();
 
-        ServiceFunctionPath path2 = (ServiceFunctionPath) result;
+        ServiceFunctionPath path2 = (ServiceFunctionPath) result2;
 
         assertNotNull("Must be not null", path2);
         assertEquals("Must be equal", path2.getServiceChainName(), sfcName);

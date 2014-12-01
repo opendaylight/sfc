@@ -108,7 +108,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
+    public static ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
         printTraceStart(LOG);
         ServiceFunctionChain sfc = null;
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
@@ -117,21 +117,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
 
-        if (dataBroker != null) {
-            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<ServiceFunctionChain> serviceFunctionChainDataObject;
-            try {
-                serviceFunctionChainDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcIID).get();
-                if ((serviceFunctionChainDataObject != null) && (serviceFunctionChainDataObject.isPresent())) {
-                    sfc = serviceFunctionChainDataObject.get();
-                } else {
-                    LOG.error("Failed to read Service Function Chain: {}", serviceFunctionChainName);
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Function Chain " +
-                        "configuration {}", serviceFunctionChainName);
-            }
-        }
+        sfc = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
+
         printTraceStop(LOG);
         return sfc;
     }
@@ -184,22 +171,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
                 .builder(ServiceFunctionChains.class).toInstance();
 
-        if (dataBroker != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunctionChains> serviceFunctionChainsDataObject = null;
-            try {
-                serviceFunctionChainsDataObject = readTx
-                        .read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
-                if (serviceFunctionChainsDataObject != null
-                        && serviceFunctionChainsDataObject.isPresent()) {
-                    sfcs = serviceFunctionChainsDataObject.get();
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Function Chains " +
-                        "configuration");
-            }
+        sfcs = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION);
 
-        }
         printTraceStop(LOG);
         return sfcs;
     }

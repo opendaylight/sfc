@@ -9,11 +9,14 @@ package org.opendaylight.sfc.provider.api;
  */
 
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,42 +41,36 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
-        int num_tries = 1;
-        while (!ret && (num_tries < 4)) {
-            SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(logicalDatastoreType, deleteIID);
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
-                ret = true;
-            } else {
-                LOG.warn("Failed to delete IID: {}.  Retrying...Num tries: {}",
-                        deleteIID.toString(), num_tries);
-                num_tries++;
-            }
+
+        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.delete(logicalDatastoreType, deleteIID);
+        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        try {
+            submitFuture.checkedGet();
+            ret = true;
+        } catch (TransactionCommitFailedException e) {
+            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            ret = false;
         }
         return ret;
     }
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeMergeTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
         boolean ret = false;
-        int num_tries = 1;
-        while (!ret && (num_tries < 4)) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(logicalDatastoreType, addIID, data, true);
-            SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
-                ret = true;
-            } else {
-                LOG.error("Failed to merge IID: {}.  Retrying...Num tries: {}",
-                        addIID.toString(), num_tries);
-                num_tries++;
-            }
+
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.merge(logicalDatastoreType, addIID, data, true);
+        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        try {
+            submitFuture.checkedGet();
+            ret = true;
+        } catch (TransactionCommitFailedException e) {
+            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            ret = false;
         }
         return ret;
     }
@@ -81,21 +78,38 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
-        int num_tries = 1;
-        while (!ret && (num_tries < 4)) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.put(logicalDatastoreType, addIID, data, true);
-            SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            Futures.addCallback(submitFuture, sfcDataStoreCallback);
-            sfcDataStoreCallback.getSemaphore();
-            if (sfcDataStoreCallback.getTransactioSuccessful()) {
-                ret = true;
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.put(logicalDatastoreType, addIID, data, true);
+        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        try {
+            submitFuture.checkedGet();
+            ret = true;
+        } catch (TransactionCommitFailedException e) {
+            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            ret = false;
+        }
+        return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI
+            (InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType)  {
+        U ret = null;
+        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        Optional<U> optionalDataObject;
+        CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
+        try {
+            optionalDataObject = submitFuture.checkedGet();
+            if (optionalDataObject != null
+                    && optionalDataObject.isPresent()) {
+                ret = optionalDataObject.get();
             } else {
-                LOG.error("Failed to put IID: {}.  Retrying...Num tries: {}",
-                        addIID.toString(), num_tries);
-                num_tries++;
+                LOG.error("{}: Failed to read",
+                        Thread.currentThread().getStackTrace()[1]);
             }
+        } catch (ReadFailedException e) {
+            e.printStackTrace();
         }
         return ret;
     }

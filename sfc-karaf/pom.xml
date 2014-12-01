@@ -27,6 +27,7 @@
     <branding.version>1.1.0-SNAPSHOT</branding.version>
     <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
     <karaf.version>3.0.1</karaf.version>
+    <pax.logging.version>1.7.4</pax.logging.version>
   </properties>
 
   <dependencies>
@@ -162,6 +163,16 @@
         <groupId>org.glassfish</groupId>
         <artifactId>javax.json</artifactId>
         <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-api</artifactId>
+      <version>${pax.logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-service</artifactId>
+      <version>${pax.logging.version}</version>
     </dependency>
 
     <!-- Project local feautures -->
@@ -339,6 +350,18 @@
                   <outputDirectory>target/assembly/lib</outputDirectory>
                   <destFileName>karaf.branding-${branding.version}.jar</destFileName>
                 </artifactItem>
+                <artifactItem>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-api</artifactId>
+                    <version>${pax.logging.version}</version>
+                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/${pax.logging.version}</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-service</artifactId>
+                    <version>${pax.logging.version}</version>
+                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-service/${pax.logging.version}</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -385,6 +408,33 @@
                 </configuration>
             </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <id>change-pax-logging-version</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>${project.build.directory}/assembly/etc/startup.properties</file>
+          <replacements>
+            <replacement>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-api/1.7.2</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.version}</value>
+            </replacement>
+            <replacement>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-service/1.7.2</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.version}</value>
+            </replacement>
+          </replacements>
+        </configuration>
       </plugin>
     </plugins>
   </build>

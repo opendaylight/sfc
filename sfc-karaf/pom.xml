@@ -163,6 +163,16 @@
         <artifactId>javax.json</artifactId>
         <version>1.0.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-api</artifactId>
+      <version>1.7.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-service</artifactId>
+      <version>1.7.4</version>
+    </dependency>
 
     <!-- Project local feautures -->
     <!--
@@ -339,6 +349,18 @@
                   <outputDirectory>target/assembly/lib</outputDirectory>
                   <destFileName>karaf.branding-${branding.version}.jar</destFileName>
                 </artifactItem>
+                <artifactItem>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-api</artifactId>
+                    <version>1.7.4</version>
+                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.7.4</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-service</artifactId>
+                    <version>1.7.4</version>
+                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-service/1.7.4</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -385,6 +407,33 @@
                 </configuration>
             </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <id>change-pax-logging-version</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>${project.build.directory}/assembly/etc/startup.properties</file>
+          <replacements>
+            <replacement>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-api/1.7.2</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-api/1.7.4</value>
+            </replacement>
+            <replacement>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-service/1.7.2</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-service/1.7.4</value>
+            </replacement>
+          </replacements>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_93e79de4",
+        "filename": "sfc-py/service_classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-12-01T18:43:39Z",
+      "side": 1,
+      "message": "Please import nsh_encode.py and use build_packet() function that is found there. Remove then one in this file",
+      "revId": "273f10125ec298bd40887742b2606542c6986f7f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

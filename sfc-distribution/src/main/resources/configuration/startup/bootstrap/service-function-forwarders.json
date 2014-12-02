@@ -27,7 +27,7 @@
               "ip": "10.1.1.1"
             },
             "name": "SF1",
-            "type": "dp1"
+            "type": "service-function-type:dp1"
           },
           {
             "sff-sf-data-plane-locator": {
@@ -35,7 +35,7 @@
               "ip": "10.1.1.2"
             },
             "name": "SF2",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           }
         ]
       },
@@ -64,7 +64,7 @@
               "ip": "10.1.1.5"
             },
             "name": "SF5",
-            "type": "qos"
+            "type": "service-function-type:dpi"
           },
           {
             "sff-sf-data-plane-locator": {
@@ -72,7 +72,7 @@
               "ip": "10.1.1.6"
             },
             "name": "SF6",
-            "type": "napt44"
+            "type": "service-function-type:napt44"
           }
         ]
       }

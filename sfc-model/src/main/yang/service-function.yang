@@ -65,7 +65,7 @@ module service-function {
           "The name of the service function.";
     }
     leaf type {
-      type string;
+      type sfc-sft:service-function-type;
       mandatory true;
       description
         "Service Function Type from service-function-type yang

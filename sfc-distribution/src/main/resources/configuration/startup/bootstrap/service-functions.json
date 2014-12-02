@@ -12,7 +12,7 @@
           }
         ],
         "name": "napt44-103-2",
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "nsh-aware": true
       },
       {
@@ -26,7 +26,7 @@
           }
         ],
         "name": "napt44-103-1",
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "nsh-aware": true
       },
       {
@@ -40,7 +40,7 @@
           }
         ],
         "name": "dpi-102-2",
-        "type": "dpi",
+        "type": "service-function-type:dpi",
         "nsh-aware": true
       },
       {
@@ -54,7 +54,7 @@
           }
         ],
         "name": "firewall-101-2",
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "nsh-aware": true
       },
       {
@@ -68,7 +68,7 @@
           }
         ],
         "name": "napt44-104",
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "nsh-aware": true
       },
       {
@@ -82,7 +82,7 @@
           }
         ],
         "name": "dpi-102-1",
-        "type": "dpi",
+        "type": "service-function-type:dpi",
         "nsh-aware": true
       },
       {
@@ -96,7 +96,7 @@
           }
         ],
         "name": "firewall-104",
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "nsh-aware": true
       },
       {
@@ -110,7 +110,7 @@
           }
         ],
         "name": "dpi-102-3",
-        "type": "dpi",
+        "type": "service-function-type:dpi",
         "nsh-aware": true
       },
       {
@@ -124,7 +124,7 @@
           }
         ],
         "name": "firewall-101-1",
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "nsh-aware": true
       }
     ]

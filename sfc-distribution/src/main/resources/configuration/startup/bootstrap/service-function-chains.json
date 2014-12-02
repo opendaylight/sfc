@@ -6,17 +6,17 @@
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi",
+            "type": "service-function-type:dpi",
             "order" : 0
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order" : 1
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order" : 2
           }
         ]
@@ -26,12 +26,12 @@
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order" : 0
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order" : 1
           }
         ]

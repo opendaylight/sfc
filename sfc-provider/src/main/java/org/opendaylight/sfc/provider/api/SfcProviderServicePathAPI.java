@@ -463,7 +463,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             ServiceFunctionType serviceFunctionType;
             try {
                 serviceFunctionType = (ServiceFunctionType) odlSfc.executor.submit(SfcProviderServiceTypeAPI.getRead(
-                        new Object[]{sfcServiceFunction.getType()}, new Class[]{String.class})).get();
+                        new Object[]{sfcServiceFunction.getType()}, new Class[]{Class.class})).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error(" Could not get list of Service Functions of type: {}", sfcServiceFunction.getType());
                 return ret;

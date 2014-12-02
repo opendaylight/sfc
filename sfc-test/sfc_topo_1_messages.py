@@ -23,7 +23,7 @@ SERVICE_FUNCTIONS_JSON = """
         "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
         "ip-mgmt-address": "10.0.1.4",
-        "type": "dpi"
+        "type": "service-function-type:dpi"
       },
       {
         "name": "SF2",
@@ -39,7 +39,7 @@ SERVICE_FUNCTIONS_JSON = """
         "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
         "ip-mgmt-address": "10.0.1.4",
-        "type": "napt44"
+        "type": "service-function-type:napt44"
       },
       {
         "name": "SF3",
@@ -54,7 +54,7 @@ SERVICE_FUNCTIONS_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.0.1.43",
-        "type": "firewall"
+        "type": "service-function-type:firewall"
       }
     ]
   }
@@ -87,7 +87,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF1",
-            "type": "dp1",
+            "type": "service-function-type:dp1",
             "sff-sf-data-plane-locator": {
               "port": 40001,
               "ip": "10.0.1.41",
@@ -99,7 +99,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           },
           {
             "name": "SF2",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "sff-sf-data-plane-locator": {
               "port": 40002,
               "ip": "10.0.1.42",
@@ -134,7 +134,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF3",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "sff-sf-data-plane-locator": {
               "port": 40003,
               "ip": "10.0.1.43",
@@ -160,17 +160,17 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi",
+            "type": "service-function-type:dpi",
             "order" : 0
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order" : 1
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order" : 2
           }
         ]
@@ -180,12 +180,12 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order" : 0
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order" : 1
           }
         ]

@@ -67,7 +67,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.104",
-        "type": "firewall"
+        "type": "service-function-type:firewall"
       },
       {
         "name": "napt44-104",
@@ -81,7 +81,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.104",
-        "type": "napt44"
+        "type": "service-function-type:napt44"
       },
       {
         "name": "napt44-103-2",
@@ -95,7 +95,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.103",
-        "type": "napt44"
+        "type": "service-function-type:napt44"
       },
       {
         "name": "napt44-103-1",
@@ -109,7 +109,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.103",
-        "type": "napt44"
+        "type": "service-function-type:napt44"
       },
       {
         "name": "firewall-101-1",
@@ -123,7 +123,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.101",
-        "type": "firewall"
+        "type": "service-function-type:firewall"
       },
       {
         "name": "dpi-102-3",
@@ -137,7 +137,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.102",
-        "type": "dpi"
+        "type": "service-function-type:dpi"
       },
       {
         "name": "firewall-101-2",
@@ -151,7 +151,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.101",
-        "type": "firewall"
+        "type": "service-function-type:firewall"
       },
       {
         "name": "dpi-102-2",
@@ -165,7 +165,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.102",
-        "type": "dpi"
+        "type": "service-function-type:dpi"
       },
       {
         "name": "dpi-102-1",
@@ -179,7 +179,7 @@ GET_ALL_SF_RESP_JSON = """
         ],
         "nsh-aware": true,
         "ip-mgmt-address": "10.3.1.102",
-        "type": "dpi"
+        "type": "service-function-type:dpi"
       }
     ]
   }
@@ -194,15 +194,15 @@ GET_ALL_SFC_RESP_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi"
+            "type": "service-function-type:dpi"
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44"
+            "type": "service-function-type:napt44"
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           }
         ]
       },
@@ -211,11 +211,11 @@ GET_ALL_SFC_RESP_JSON = """
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44"
+            "type": "service-function-type:napt44"
           }
         ]
       }
@@ -249,7 +249,7 @@ GET_ALL_SFF_RESP_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF1",
-            "type": "dp1",
+            "type": "service-function-type:dp1",
             "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.1"
@@ -257,7 +257,7 @@ GET_ALL_SFF_RESP_JSON = """
           },
           {
             "name": "SF2",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.2"
@@ -287,7 +287,7 @@ GET_ALL_SFF_RESP_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF5",
-            "type": "qos",
+            "type": "service-function-type:firewall",
             "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.5"
@@ -295,7 +295,7 @@ GET_ALL_SFF_RESP_JSON = """
           },
           {
             "name": "SF6",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "sff-sf-data-plane-locator": {
               "port": 5000,
               "ip": "10.1.1.6"
@@ -312,7 +312,7 @@ GET_ALL_SFT_RESP_JSON = """
   "service-function-types": {
     "service-function-type": [
       {
-        "type": "dpi",
+        "type": "service-function-type:dpi",
         "sft-service-function-name": [
           {
             "name": "dpi-102-1"
@@ -326,7 +326,7 @@ GET_ALL_SFT_RESP_JSON = """
         ]
       },
       {
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "sft-service-function-name": [
           {
             "name": "napt44-104"
@@ -340,7 +340,7 @@ GET_ALL_SFT_RESP_JSON = """
         ]
       },
       {
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "sft-service-function-name": [
           {
             "name": "firewall-104"
@@ -365,15 +365,15 @@ PUT_SFC3_JSON = """
       "sfc-service-function" : [
         {
         "name" : "Chain-3-service-1",
-        "type" : "dpi"
+        "type" : "service-function-type:dpi"
         },
         {
         "name" : "Chain-3-service-2",
-        "type" : "qos"
+        "type" : "service-function-type:napt44"
         },
         {
         "name" : "Chain-3-service-3",
-        "type" : "firewall"
+        "type" : "service-function-type:firewall"
         }
       ]
     }
@@ -389,15 +389,15 @@ GET_ALL_SFC3_RESP_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi"
+            "type": "service-function-type:dpi"
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44"
+            "type": "service-function-type:napt44"
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           }
         ]
       },
@@ -406,11 +406,11 @@ GET_ALL_SFC3_RESP_JSON = """
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44"
+            "type": "service-function-type:napt44"
           }
         ]
       },
@@ -419,15 +419,15 @@ GET_ALL_SFC3_RESP_JSON = """
         "sfc-service-function": [
           {
             "name": "Chain-3-service-3",
-            "type": "firewall"
+            "type": "service-function-type:firewall"
           },
           {
             "name": "Chain-3-service-2",
-            "type": "qos"
+            "type": "service-function-type:napt44"
           },
           {
             "name": "Chain-3-service-1",
-            "type": "dpi"
+            "type": "service-function-type:dpi"
           }
         ]
       }

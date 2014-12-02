@@ -108,6 +108,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return SfcRestangularSvc.getCurrentInstance().one('config');
     };
 
+    SfcRestBaseSvc.prototype.baseOperationalRest = function () {
+      return SfcRestangularSvc.getCurrentInstance().one('operational');
+    };
+
     SfcRestBaseSvc.prototype.baseRpcRest = function () {
       return SfcRestangularSvc.getCurrentInstance().one('operations');
     };
@@ -226,6 +230,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       this.checkRequired(item);
 
+      item = this.addNamespacePrefixes(item);
+
       var wrappedElem = this.wrapInListname(item);
 
       this.put(wrappedElem, this.getListKeyFromItem(item)).then(function () {
@@ -276,6 +282,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return itemArray;
     };
 
+    // to be overriden
+    SfcRestBaseSvc.prototype.addNamespacePrefixes = function (item) {
+      // noop
+      return item;
+    };
+
     return SfcRestBaseSvc;  // return uninstatiated prototype
   });
 
@@ -296,11 +308,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceFunctionSvc.prototype.stripNamespacePrefixes = function (sfsArray) {
 
       var matcher = new RegExp("^service-function:");
+      var sfTypeMatcher = new RegExp("^service-function-type:");
 
       _.each(sfsArray, function (sf) {
 
         if (!_.isEmpty(sf.type)) {
-          sf.type = sf.type.replace(matcher, "");
+          sf.type = sf.type.replace(sfTypeMatcher, "");
         }
 
         _.each(sf['sf-data-plane-locator'], function (locator) {
@@ -311,6 +324,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
 
       return sfsArray;
+    };
+
+    // @override
+    ServiceFunctionSvc.prototype.addNamespacePrefixes = function (sf) {
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+      var sfTypePrefix = "service-function-type:";
+
+      if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
+        // add prefix
+        sf.type = sfTypePrefix + sf.type;
+      }
+
+      return sf;
     };
 
     return new ServiceFunctionSvc();
@@ -328,6 +354,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
     }
 
     ServiceFunctionTypeSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    // @override
+    ServiceFunctionTypeSvc.prototype.stripNamespacePrefixes = function (sfsArray) {
+
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+
+      _.each(sfsArray, function (sf) {
+        if (!_.isEmpty(sf.type)) {
+          sf.type = sf.type.replace(sfTypeMatcher, "");
+        }
+      });
+
+      return sfsArray;
+    };
 
     return new ServiceFunctionTypeSvc();
   });
@@ -369,6 +409,37 @@ define(['app/sfc/sfc.module'], function (sfc) {
       };
 
       this.executeRpcOperation(input, "instantiate-service-function-chain", undefined, callback);
+    };
+
+    // @override
+    ServiceChainSvc.prototype.stripNamespacePrefixes = function (sfcsArray) {
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+
+      _.each(sfcsArray, function (sfc) {
+        _.each(sfc['sfc-service-function'], function (sf) {
+          if (!_.isEmpty(sf.type)) {
+            sf.type = sf.type.replace(sfTypeMatcher, "");
+          }
+        });
+      });
+
+      return sfcsArray;
+    };
+
+    // @override
+    ServiceChainSvc.prototype.addNamespacePrefixes = function (sfc) {
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+      var sfTypePrefix = "service-function-type:";
+
+      _.each(sfc['sfc-service-function'], function (sf) {
+        //if there is no prefix add it
+        if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
+            // add prefix
+            sf['type'] = sfTypePrefix + sf['type'];
+        }
+      });
+
+      return sfc;
     };
 
     return new ServiceChainSvc();
@@ -483,6 +554,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       var matcher = new RegExp("^service-function-forwarder:");
       var serviceLocatorMatcher = new RegExp("^service-locator:");
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+
 
       _.each(sffArray, function (sff) {
         if (!_.isEmpty(sff['sff-data-plane-locator'])) {
@@ -490,7 +563,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
           _.each(sff['sff-data-plane-locator'], function (locator) {
 
             if (angular.isDefined(locator['data-plane-locator']['transport'])) {
-//                locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(matcher, "");
               locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 
@@ -505,6 +577,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (!_.isEmpty(sff['service-function-dictionary'])) {
 
           _.each(sff['service-function-dictionary'], function (dictionary) {
+
+            if (angular.isDefined(dictionary['type'])) {
+              dictionary['type'] = dictionary['type'].replace(sfTypeMatcher, "");
+            }
 
             if (angular.isDefined(dictionary['failmode'])) {
               dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
@@ -525,6 +601,23 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       });
       return sffArray;
+    };
+
+    // @override
+    ServiceForwarderSvc.prototype.addNamespacePrefixes = function (sff) {
+      var sfTypeMatcher = new RegExp("^service-function-type:");
+      var sfTypePrefix = "service-function-type:";
+
+      if (!_.isEmpty(sff['service-function-dictionary'])) {
+        _.each(sff['service-function-dictionary'], function (sf) {
+          if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
+            // add prefix
+            sf['type'] = sfTypePrefix + sf['type'];
+          }
+        });
+      }
+
+      return sff;
     };
 
     return new ServiceForwarderSvc();
@@ -574,7 +667,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
 
     SfcAclSvc.prototype.deleteItemByKey = function (itemKey, callback) {
-      var item ={};
+      var item = {};
       item['acl-name'] = itemKey;
       this.deleteItem(item, callback);
     };

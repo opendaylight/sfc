@@ -1,6 +1,7 @@
 package org.opendaylight.sfc.provider.util;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 
 import java.util.*;
 
@@ -15,17 +16,17 @@ import java.util.*;
  * @since       2014-07-14
  */
 class SfcSnMapper {
-    private final String type;
+    private final Class<? extends ServiceFunctionTypeIdentity> type;
     // partial list of SFs, filtered by given SFType
     // SNodeName -> SFNameList
     private Map<String, List<ServiceFunction>> map;
 
-    public SfcSnMapper(String sfType) {
+    public SfcSnMapper(Class<? extends ServiceFunctionTypeIdentity> sfType) {
         this.type = sfType;
         this.map = new HashMap<>();
     }
 
-    public String getType() {
+    public Class<? extends ServiceFunctionTypeIdentity> getType() {
         return type;
     }
 

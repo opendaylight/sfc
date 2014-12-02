@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -31,8 +32,8 @@ import java.util.List;
 
 public class SimpleTestEntityBuilder {
 
-    static ServiceFunction buildServiceFunction(String name, String type, IpAddress ipMgmtAddress,
-                                                SfDataPlaneLocator sfDataPlaneLocator,
+    static ServiceFunction buildServiceFunction(String name, Class<? extends ServiceFunctionTypeIdentity> type,
+                                                IpAddress ipMgmtAddress, SfDataPlaneLocator sfDataPlaneLocator,
                                                 Boolean nshAware) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
@@ -41,8 +42,8 @@ public class SimpleTestEntityBuilder {
         return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
     }
 
-    static ServiceFunction buildServiceFunction(String name, String type, IpAddress ipMgmtAddress,
-                                                List<SfDataPlaneLocator> dsfDataPlaneLocatorList,
+    static ServiceFunction buildServiceFunction(String name, Class<? extends ServiceFunctionTypeIdentity> type,
+                                                IpAddress ipMgmtAddress, List<SfDataPlaneLocator> dsfDataPlaneLocatorList,
                                                 Boolean nshAware) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();

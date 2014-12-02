@@ -22,7 +22,7 @@ SERVICE_FUNCTIONS_JSON = """
         ],
         "nsh-aware": true,
         "rest-uri": "http://10.0.1.43:5000",
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "ip-mgmt-address": "10.0.1.43"
       },
       {
@@ -39,7 +39,7 @@ SERVICE_FUNCTIONS_JSON = """
         "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
         "ip-mgmt-address": "10.0.1.4",
-        "type": "dpi"
+        "type": "service-function-type:dpi"
       },
       {
         "name": "SF2",
@@ -55,7 +55,7 @@ SERVICE_FUNCTIONS_JSON = """
         "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
         "ip-mgmt-address": "10.0.1.4",
-        "type": "napt44"
+        "type": "service-function-type:napt44"
       },
       {
         "name": "SF3",
@@ -71,7 +71,7 @@ SERVICE_FUNCTIONS_JSON = """
         "nsh-aware": true,
         "rest-uri": "http://10.0.1.41:5000",
         "ip-mgmt-address": "10.0.1.41",
-        "type": "firewall"
+        "type": "service-function-type:firewall"
       },
       {
         "name": "SF4",
@@ -86,7 +86,7 @@ SERVICE_FUNCTIONS_JSON = """
         ],
         "nsh-aware": true,
         "rest-uri": "http://10.0.1.42:5000",
-        "type": "qos",
+        "type": "service-function-type:dpi",
         "ip-mgmt-address": "10.0.1.42"
       }
     ]
@@ -117,7 +117,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF5",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "sff-sf-data-plane-locator": {
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -152,7 +152,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF2",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "sff-sf-data-plane-locator": {
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -164,7 +164,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           },
           {
             "name": "SF1",
-            "type": "dp1",
+            "type": "service-function-type:dp1",
             "sff-sf-data-plane-locator": {
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -198,7 +198,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF3",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "sff-sf-data-plane-locator": {
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -232,7 +232,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "service-function-dictionary": [
           {
             "name": "SF4",
-            "type": "qos",
+            "type": "service-function-type:dpi",
             "sff-sf-data-plane-locator": {
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
@@ -259,12 +259,12 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order": 0
           },
           {
             "name": "napt44-abstract2",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order": 1
           }
         ]
@@ -274,17 +274,17 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "dpi",
+            "type": "service-function-type:dpi",
             "order": 0
           },
           {
             "name": "napt44-abstract1",
-            "type": "napt44",
+            "type": "service-function-type:napt44",
             "order": 1
           },
           {
             "name": "firewall-abstract1",
-            "type": "firewall",
+            "type": "service-function-type:firewall",
             "order": 2
           }
         ]
@@ -463,23 +463,18 @@ SERVICE_FUNCTION_TYPE_JSON = """
   "service-function-types": {
     "service-function-type": [
       {
-        "type": "dpi",
+        "type": "service-function-type:dpi",
         "sft-service-function-name": [
           {
             "name": "SF1"
-          }
-        ]
-      },
-      {
-        "type": "qos",
-        "sft-service-function-name": [
-          {
+          },
+	  {
             "name": "SF4"
           }
         ]
       },
       {
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "sft-service-function-name": [
           {
             "name": "SF5"
@@ -490,7 +485,7 @@ SERVICE_FUNCTION_TYPE_JSON = """
         ]
       },
       {
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "sft-service-function-name": [
           {
             "name": "SF3"
@@ -516,7 +511,7 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
   "service-function-types": {
     "service-function-type": [
       {
-        "type": "qos",
+        "type": "service-function-type:dpi",
         "sft-service-function-name": [
           {
             "name": "SF4"
@@ -524,7 +519,7 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
         ]
       },
       {
-        "type": "napt44",
+        "type": "service-function-type:napt44",
         "sft-service-function-name": [
           {
             "name": "SF5"
@@ -535,7 +530,7 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
         ]
       },
       {
-        "type": "firewall",
+        "type": "service-function-type:firewall",
         "sft-service-function-name": [
           {
             "name": "SF3"

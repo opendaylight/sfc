@@ -6,6 +6,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.ExecutionException;
  * @since       2014-07-14
  */
 public class SfcSftMapper {
-    private Map<String, SfcSnMapper> map;
+    private Map<Class<? extends ServiceFunctionTypeIdentity>, SfcSnMapper> map;
 
     private final OpendaylightSfc odlSfc;
 
@@ -73,7 +74,7 @@ public class SfcSftMapper {
         }
     }
 
-    public void add(String type, String snName, ServiceFunction sf){
+    public void add(Class<? extends ServiceFunctionTypeIdentity> type, String snName, ServiceFunction sf){
         if(this.map.containsKey(type)){
             this.map.get(type).add(snName, sf);
         }else{
@@ -83,7 +84,7 @@ public class SfcSftMapper {
         }
     }
 
-    public void addAll(String type, String snName, List<ServiceFunction> sfList){
+    public void addAll(Class<? extends ServiceFunctionTypeIdentity> type, String snName, List<ServiceFunction> sfList){
         if(this.map.containsKey(type)){
             this.map.get(type).addAll(snName, sfList);
         }else{
@@ -93,7 +94,7 @@ public class SfcSftMapper {
         }
     }
 
-    public List<ServiceFunction> getSfList(String type) {
+    public List<ServiceFunction> getSfList(Class<? extends ServiceFunctionTypeIdentity> type) {
         List<ServiceFunction> ret = new ArrayList<>();
         if (this.map.containsKey(type)) {
             SfcSnMapper snMapper = this.map.get(type);

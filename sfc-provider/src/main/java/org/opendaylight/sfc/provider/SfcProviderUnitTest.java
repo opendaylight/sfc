@@ -14,6 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,9 +121,9 @@ public class SfcProviderUnitTest {
         List<SfcServiceFunction> sftlist = new ArrayList<>();
 
         SfcServiceFunctionBuilder sftBuilder = new SfcServiceFunctionBuilder();
-        sftlist.add(sftBuilder.setName("napt44-testB").setType("napt44").build());
-        sftlist.add(sftBuilder.setName("firewall-testB").setType("firewall").build());
-        sftlist.add(sftBuilder.setName("dpi-testB").setType("dpi").build());
+        sftlist.add(sftBuilder.setName("napt44-testB").setType(Napt44.class).build());
+        sftlist.add(sftBuilder.setName("firewall-testB").setType(Firewall.class).build());
+        sftlist.add(sftBuilder.setName("dpi-testB").setType(Dpi.class).build());
 
         // Now we add list function type list to Service Chain list.
         sfclist.add(sfcbuilder.setName("Chain-1").setSfcServiceFunction(sftlist).build());

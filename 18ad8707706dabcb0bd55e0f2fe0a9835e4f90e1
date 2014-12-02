@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_b6408757",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/ofsfc/provider/utils/SfcOpenflowUtilsTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-12-02T13:48:49Z",
+      "side": 1,
+      "message": "Most of the style guides in ODL prefer not to use * and list the imports directly.",
+      "range": {
+        "startLine": 3,
+        "startChar": 24,
+        "endLine": 3,
+        "endChar": 30
+      },
+      "revId": "18ad8707706dabcb0bd55e0f2fe0a9835e4f90e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_562583c0",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/ofsfc/provider/utils/SfcOpenflowUtilsTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-12-02T13:48:49Z",
+      "side": 1,
+      "message": "alphabetical order is good also",
+      "range": {
+        "startLine": 17,
+        "startChar": 12,
+        "endLine": 17,
+        "endChar": 16
+      },
+      "revId": "18ad8707706dabcb0bd55e0f2fe0a9835e4f90e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_d618b386",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/ofsfc/provider/utils/SfcOpenflowUtilsTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-12-02T13:48:49Z",
+      "side": 1,
+      "message": "Are there any negative test cases? Any exceptions returned?\n\nMaybe passing a bad mac address, which might be hard since the mac is a string.",
+      "range": {
+        "startLine": 102,
+        "startChar": 5,
+        "endLine": 102,
+        "endChar": 9
+      },
+      "revId": "18ad8707706dabcb0bd55e0f2fe0a9835e4f90e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

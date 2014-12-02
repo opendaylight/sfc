@@ -1,3 +1,4 @@
+*.pyo
 *.class
 *.pyc
 **/target

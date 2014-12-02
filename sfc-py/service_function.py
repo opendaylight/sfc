@@ -19,6 +19,7 @@ import sys
 import socket
 from ctypes import *
 from nsh_decode import *
+from nsh_service_index import *
 
 try:
     import signal
@@ -35,8 +36,9 @@ class BASEHEADER(Structure):
                 ("service_path", c_uint, 24),
                 ("service_index", c_uint, 8)]
 
-# Decode base NSH header
-
+# Decode vxlan-gpe, base NSH header and NSH context headers
+server_vxlan_values = VXLANGPE()
+server_ctx_values = CONTEXTHEADER()
 server_base_values = BASEHEADER()
 
 
@@ -102,9 +104,16 @@ class MyDpiService:
 def process_incoming_packet(data):
     print('Processing recieved packet')
     rw_data = bytearray(data)
-    decode_baseheader(data, server_base_values)
-    server_base_values.service_index -= 1
-    set_service_index(rw_data, server_base_values.service_index)
+    decode_vxlan(data, server_vxlan_values) # decode vxlan-gpe header
+    decode_baseheader(data, server_base_values) # decode NSH base header
+    decode_contextheader(data, server_ctx_values) # decode NSH context headers
+    rw_data, si_result = process_service_index(rw_data, server_base_values.service_index)
+    if si_result == 0:
+        print('\nInvalid service index of 0 - packet will be dropped')
+        rw_data.__init__()
+        data = ""
+    #server_base_values.service_index -= 1
+    #set_service_index(rw_data, server_base_values.service_index)
     return rw_data
 
 

@@ -280,7 +280,7 @@ def get_client_ip():
     return client
 
 
-ARGS = argparse.ArgumentParser(description="UDP Echo example.")
+ARGS = argparse.ArgumentParser(description="Service Function Forwarder")
 ARGS.add_argument(
     '--server', action="store_true", dest='server',
     default=False, help='Run udp server')

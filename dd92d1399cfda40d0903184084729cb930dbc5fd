@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_69230006",
+        "filename": "sfc-py/nsh_service_index.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-12-02T23:43:04Z",
+      "side": 1,
+      "message": "You have not declared server_base_values as global. If it is not declared as global it will take local significance.",
+      "revId": "dd92d1399cfda40d0903184084729cb930dbc5fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_09203cf6",
+        "filename": "sfc-py/service_function.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-12-02T23:43:04Z",
+      "side": 1,
+      "message": "Remove dead code",
+      "revId": "dd92d1399cfda40d0903184084729cb930dbc5fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

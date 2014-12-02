@@ -187,7 +187,6 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
      * It sends SFP information to each SFF present in the service-hop list.
      * <p>
      * @param renderedServicePath Service Function Path object
-     * @return Nothing
      */
     public void putRenderedServicePath (RenderedServicePath renderedServicePath) {
 
@@ -226,7 +225,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     //restURI = "http://127.0.0.1:5000";
 
                     sfpURI = restURI + "/operational/rendered-service-path:" +
-                        "rendered-service-paths/rendered-service-path" + renderedServicePath.getName();
+                        "rendered-service-paths/rendered-service-path/" + renderedServicePath.getName();
                     putClientRemoteResponse = client.resource(sfpURI).type(MediaType
                             .APPLICATION_JSON_TYPE).put(ClientResponse.class, sfpJSON);
                     if (putClientRemoteResponse.getStatus() >= 300)
@@ -256,7 +255,6 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
      * It sends SFP information to each SFF present in the service-hop list.
      * <p>
      * @param renderedServicePath Service Function Path object
-     * @return Nothing
      */
     public void deleteServiceFunctionPath (RenderedServicePath renderedServicePath) {
 
@@ -293,7 +291,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     //restURI = "http://127.0.0.1:5000";
 
                     sfpURI = restURI + "/operational/rendered-service-path:" +
-                            "rendered-service-paths/rendered-service-path" + renderedServicePath.getName();
+                            "rendered-service-paths/rendered-service-path/" + renderedServicePath.getName();
                     deleteClientRemoteResponse = client.resource(sfpURI).type(MediaType
                             .APPLICATION_JSON_TYPE).delete(ClientResponse.class);
                     if (deleteClientRemoteResponse.getStatus() >= 300)

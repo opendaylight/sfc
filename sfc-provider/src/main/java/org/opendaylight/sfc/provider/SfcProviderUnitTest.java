@@ -40,7 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 public class SfcProviderUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderUnitTest.class);
 
-    private SfcProviderUnitTest() {};
+    private SfcProviderUnitTest() {}
 
     // Delete all Service Functions
     public static void sfcProviderUnitTest(SfcProviderRpc sfcRpcObj) {

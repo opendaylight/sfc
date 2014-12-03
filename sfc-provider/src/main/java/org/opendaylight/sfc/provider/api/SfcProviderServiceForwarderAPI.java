@@ -487,7 +487,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
+            LOG.info("getAddPathToServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -517,7 +517,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
+            LOG.info("getDeletePathFromServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -630,7 +630,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeleteServiceFunctionForwarderState: {}", future.get());
+            LOG.info("getDeleteServiceFunctionForwarderState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -688,7 +688,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (List<SffServicePath>) future.get();
-            LOG.error("getReadSffState: {}", ret);
+            LOG.info("getReadSffState: {}", ret);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -756,7 +756,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
+            LOG.info("getDeletePathFromServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

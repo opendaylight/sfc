@@ -262,7 +262,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServicePathAPI);
         try {
             ret = (boolean) future.get();
-            LOG.error("getDeleteRenderedServicePaths: {}", ret);
+            LOG.info("getDeleteRenderedServicePaths: {}", ret);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -278,6 +278,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionPathName SFP name
      * @return Nothing.
      */
+    @SfcReflection
+    @SuppressWarnings("unused")
     public static boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
         boolean ret = false;
         printTraceStart(LOG);
@@ -347,24 +349,22 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    @SuppressWarnings("unused")
     protected boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
         boolean ret = false;
         printTraceStart(LOG);
-        if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
-                    builder(ServiceFunctionPaths.class).toInstance();
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
+                builder(ServiceFunctionPaths.class).toInstance();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfpsIID, sfps);
-            writeTx.commit();
-
+        if (SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, sfps, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         }
         printTraceStop(LOG);
         return ret;
     }
 
+    @SuppressWarnings("unused")
     public static ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps;
         printTraceStart(LOG);
@@ -376,6 +376,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return sfps;
     }
 
+    @SuppressWarnings("unused")
     protected boolean deleteAllServiceFunctionPaths() {
         boolean ret = false;
         printTraceStart(LOG);
@@ -433,7 +434,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 SfcProviderServiceChainAPI.readServiceFunctionChain(serviceFunctionChainName)
                 : null;
         if (serviceFunctionChain == null) {
-            LOG.error("\n ServiceFunctionChain name for Path {} not provided",
+            LOG.error("ServiceFunctionChain name for Path {} not provided",
                     serviceFunctionPath.getName());
             return ret;
         }
@@ -452,7 +453,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER));
         serviceIndex = sfcServiceFunctionList.size();
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
-            LOG.debug("\n########## ServiceFunction name: {}", sfcServiceFunction.getName());
+            LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
 
             /*
              * We iterate thorough the list of service function types and for each one we try to get
@@ -626,7 +627,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 renderedPathObj, renderedPathClass));
         try {
             ret = (boolean) future.get();
-            LOG.debug("getCheckServicePathAPI returns: {}", future.get());
+            LOG.info("getCheckServicePathAPI returns: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -671,7 +672,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 }
             }
         } else {
-            LOG.debug("Could not find Service function Paths using Service Function: {} ",
+            LOG.info("Could not find Service function Paths using Service Function: {} ",
                     serviceFunction.getName());
         }
         printTraceStop(LOG);
@@ -696,7 +697,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeleteServicePathContainingFunction returns: {}", future.get());
+            LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

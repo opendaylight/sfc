@@ -23,6 +23,9 @@ SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-fu
 SFF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function-forwarder:service-function-forwarders-state/"
 SF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function:service-functions-state/"
 RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rendered-service-paths/"
+SFP_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/" \
+                                  "service-function-path/{}/"
+SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/{}/"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -87,6 +90,15 @@ def check(url, json_resp, message):
               "probably a false negative due to string compare \n".format(r.status_code))
 
 
+def delete_and_check(url, message):
+    s = requests.Session()
+    print(message, "\n")
+    r = s.delete(url, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("=>Check successful \n")
+    else:
+        print("=>Check not successful, error code: {} \n".format(r.status_code))
+
 if __name__ == "__main__":
     delete_configuration()
     put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
@@ -97,5 +109,10 @@ if __name__ == "__main__":
     check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
+    put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
+    check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")
+    delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
+    check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
+    check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
     #delete_configuration()
 

@@ -199,7 +199,7 @@ def create_path(sfpname):
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(local_path[sfpname])
         # json_string = json.dumps(data_plane_path)
-    return jsonify({'path': local_path}), 201
+    return jsonify(local_path), 201
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>',
@@ -207,7 +207,6 @@ def create_path(sfpname):
 def delete_path(sfpname):
     local_data_plane_path = get_data_plane_path()
     local_path = get_path()
-    #global path
     try:
         sfp_id = local_path[sfpname]['path-id']
         local_data_plane_path.pop(sfp_id, None)

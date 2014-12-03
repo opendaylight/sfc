@@ -62,10 +62,9 @@ def process_and_accept(Packet):
     data = Packet.get_payload()
     address = int(binascii.hexlify(data[16:20]), 16)
     lookup = socket.inet_ntoa(struct.pack(">I", address))
-
-    if lookup in classify_map:
-        if classify_map[lookup]['sff'] != '':
     
+    try:
+        if classify_map[lookup]['sff'] != '':
             print (binascii.hexlify(data))
             packet = build_packet(vxlan_values, base_values, ctx_values) + data
             print (binascii.hexlify(packet))
@@ -75,6 +74,8 @@ def process_and_accept(Packet):
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
             sock.sendto(packet, (UDP_IP, UDP_PORT))
             sock.close()
+    except KeyError as detail:
+        print ('Classification failed:', detail)
 
 nfqueue = NetfilterQueue()
 nfqueue.bind(1, process_and_accept)

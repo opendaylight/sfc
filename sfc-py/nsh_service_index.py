@@ -15,9 +15,9 @@ __status__ = "alpha"
 
 
 
-def process_service_index(rw_data, service_index):
+def process_service_index(rw_data, server_base_values):
     
-    if service_index == 0:
+    if server_base_values.service_index == 0:
         # mark this as an invalid index so packet can be dropped and error logged
         si_result = 0
         

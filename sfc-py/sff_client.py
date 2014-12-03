@@ -125,7 +125,7 @@ def start_client(loop, addr, myip, udpclient):
 def main(argv):
     global base_values
 
-    #Some Good defaults
+    # Some Good defaults
     remote_sff_port = 4789
     remote_sff_ip = "127.0.0.1"
     local_ip = "0.0.0.0"

@@ -254,6 +254,8 @@ def start_client(loop, addr, myip, udpclient):
     loop.run_until_complete(t)
 
 
+# The python agent uses this function as the thread start whenever it wants
+# to create a SFF
 def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
     print("Starting SFF thread \n")
     global data_plane_path

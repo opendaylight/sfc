@@ -13,7 +13,8 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-""" SFF REST Server. This Server should be co-located python reference SFF implementation """
+""" SFF REST Server. This Server should be co-located with the python SFF data
+    plane implementation (sff_thread.py)"""
 
 from flask import *
 import getopt
@@ -44,10 +45,10 @@ my_sff_name = ""
 # A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
 
-# SFF data plane listens to commamds on this port.
+# SFF data plane listens to commands on this port.
 sff_control_port = 6000
 
-# IP address of assocaited SFF thread. WE assume agent and thread and co-located
+# IP address of associated SFF thread. WE assume agent and thread and co-located
 SFF_UDP_IP = "127.0.0.1"
 # ODL IP:port
 ODLIP = "127.0.0.1:8181"
@@ -70,6 +71,24 @@ USERNAME = "admin"
 PASSWORD = "admin"
 
 logger = logging.getLogger(__name__)
+
+
+# Global Accessors
+
+
+def get_path():
+    global path
+    return path
+
+
+def get_sff_topo():
+    global sff_topo
+    return sff_topo
+
+
+def get_data_plane_path():
+    global data_plane_path
+    return data_plane_path
 
 
 def tree():
@@ -119,24 +138,24 @@ def find_sff_locator(sff_name):
     return sff_locator
 
 
-@app.route('/config/service-function-path:service-function-paths/', methods=['GET'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['GET'])
 def get_paths():
-    return jsonify({'Service paths': path})
+    return jsonify(path)
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['GET'])
 def get_sffs():
-    return jsonify({'SFFs': sff_topo})
+    return jsonify(sff_topo)
 
 
-@app.route('/config/service-function-path:service-function-paths/', methods=['PUT'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT'])
 def create_paths():
     global path
     if not request.json:
         abort(400)
     else:
         path = {
-            'service-function-paths': request.json['service-function-paths']
+            'rendered-service-paths': request.json['rendered-service-paths']
         }
     return jsonify({'path': path}), 201
 
@@ -148,45 +167,50 @@ def build_data_plane_service_path(service_path):
     :return:
     """
 
-    for service_hop in service_path['service-path-hop']:
+    local_data_plane_path = get_data_plane_path()
+
+    for service_hop in service_path['rendered-service-path-hop']:
 
         if service_hop['service-function-forwarder'] == my_sff_name:
             if service_path['path-id'] not in data_plane_path.keys():
-                data_plane_path[service_path['path-id']] = {}
-            data_plane_path[service_path['path-id']][service_hop['service_index']] = \
+                local_data_plane_path[service_path['path-id']] = {}
+            local_data_plane_path[service_path['path-id']][service_hop['service_index']] = \
                 find_sf_locator(service_hop['service-function-name'], service_hop['service-function-forwarder'])
         else:
             # If SF resides in another SFF, the locator is just the data plane
             # locator of that SFF.
-            if service_path['path-id'] not in data_plane_path.keys():
-                data_plane_path[service_path['path-id']] = {}
-            data_plane_path[service_path['path-id']][service_hop['service_index']] = \
+            if service_path['path-id'] not in local_data_plane_path.keys():
+                local_data_plane_path[service_path['path-id']] = {}
+            local_data_plane_path[service_path['path-id']][service_hop['service_index']] = \
                 find_sff_locator(service_hop['service-function-forwarder'])
 
     return
 
-
-@app.route('/config/service-function-path:service-function-paths/service-function-path/<sfpname>', methods=['PUT'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>', methods=['PUT'])
 def create_path(sfpname):
-    global path
+    #global path
+    local_path = get_path()
     if not request.json:
         abort(400)
     else:
         # print json.dumps(sfpjson)
         # sfpj_name = sfpjson["service-function-path"][0]['name']
-        path[sfpname] = request.get_json()["service-function-path"][0]
+        local_path[sfpname] = request.get_json()["rendered-service-path"][0]
         logger.info("Building Service Path for path: %s", sfpname)
-        build_data_plane_service_path(path[sfpname])
+        build_data_plane_service_path(local_path[sfpname])
         # json_string = json.dumps(data_plane_path)
-    return jsonify({'path': path}), 201
+    return jsonify({'path': local_path}), 201
 
 
-@app.route('/config/service-function-path:service-function-paths/service-function-path/<sfpname>', methods=['DELETE'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>',
+           methods=['DELETE'])
 def delete_path(sfpname):
-    global path
+    local_data_plane_path = get_data_plane_path()
+    local_path = get_path()
+    #global path
     try:
-        sfp_id = path[sfpname]['path-id']
-        data_plane_path.pop(sfp_id, None)
+        sfp_id = local_path[sfpname]['path-id']
+        local_data_plane_path.pop(sfp_id, None)
         path.pop(sfpname, None)
         json_string = json.dumps(data_plane_path)
     except KeyError:
@@ -209,7 +233,8 @@ def create_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    global sff_topo
+    #global sff_topo
+    local_sff_topo = get_sff_topo()
     global sff_control_port
     global sff_threads
     if not request.json:
@@ -217,8 +242,8 @@ def create_sff(sffname):
     else:
         if sffname in sff_threads.keys():
             kill_sff_thread(sffname)
-        sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
-        sff_port = sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
+        local_sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
+        sff_port = local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
         sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, sff_control_port, sff_threads))
 
         sff_threads[sffname] = {}
@@ -243,7 +268,7 @@ def kill_sff_thread(sffname):
     message = "Kill thread".encode(encoding="UTF-8")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP,  sff_threads[sffname]['sff_control_port']))
+    sock.sendto(message, (SFF_UDP_IP, sff_threads[sffname]['sff_control_port']))
     if sff_threads[sffname]['thread'].is_alive():
         sff_threads[sffname]['thread'].join()
     if not sff_threads[sffname]['thread'].is_alive():
@@ -252,7 +277,8 @@ def kill_sff_thread(sffname):
         # some bug in asyncio since it should be enough for the SFF thread to close the socket.
         sff_threads[sffname]['socket'].close()
         sff_threads.pop(sffname, None)
-        #udpserver_socket.close()
+        # udpserver_socket.close()
+
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['DELETE'])
@@ -262,16 +288,20 @@ def delete_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    global sff_topo
-    global path
-    global data_plane_path
+    #global sff_topo
+    #global path
+    #global data_plane_path
+    local_sff_topo = get_sff_topo()
+    local_path = get_path()
+    local_data_plane_path = get_data_plane_path()
+
     try:
         if sffname in sff_threads.keys():
             kill_sff_thread(sffname)
-        sff_topo.pop(sffname, None)
+        local_sff_topo.pop(sffname, None)
         if sffname == my_sff_name:
-            path = {}
-            data_plane_path = {}
+            local_path = {}
+            local_data_plane_path = {}
     except KeyError:
         msg = "SFF name {} not found, message".format(sffname)
         logger.warning(msg)
@@ -300,12 +330,17 @@ def delete_sffs():
     Delete all SFFs, SFPs
     :return:
     """
-    global sff_topo
-    global path
-    global data_plane_path
-    sff_topo = {}
-    path = {}
-    data_plane_path = {}
+
+    #global sff_topo
+    #global path
+    #global data_plane_path
+    local_sff_topo = get_sff_topo()
+    local_path = get_path()
+    local_data_plane_path = get_data_plane_path()
+
+    local_sff_topo = {}
+    local_path = {}
+    local_data_plane_path = {}
     return jsonify({'sff': sff_topo}), 201
 
 
@@ -315,7 +350,8 @@ def page_not_found(e):
 
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
-    global sff_topo
+    #global sff_topo
+    local_sff_topo = get_sff_topo()
     s = requests.Session()
     print("Getting SFF information from ODL... \n")
     r = s.get(SFF_SF_DATA_PLANE_LOCATOR_URL.format(odl_ip_port, sff_name, sf_name), stream=False,
@@ -323,7 +359,7 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
     if r.status_code == 200:
         sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
         for sff in sff_json:
-            sff_topo[sff['name']] = sff
+            local_sff_topo[sff['name']] = sff
     else:
         print("=>Failed to GET SFF from ODL \n")
 
@@ -333,14 +369,16 @@ def get_sffs_from_odl(odl_ip_port):
     Retrieves the list of configured SFFs from ODL and update global dictionary of SFFs
     :return: Nothing
     """
-    global sff_topo
+
+    #global sff_topo
+    local_sff_topo = get_sff_topo()
     s = requests.Session()
     print("Getting SFFs configure in ODL... \n")
     r = s.get(SFF_PARAMETER_URL.format(odl_ip_port), stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
         for sff in sff_json:
-            sff_topo[sff['name']] = sff
+            local_sff_topo[sff['name']] = sff
     else:
         print("=>Failed to GET SFF from ODL \n")
 
@@ -350,12 +388,14 @@ def get_sff_from_odl(odl_ip_port, sff_name):
     Retrieves a single configured SFF from ODL and update global dictionary of SFFs
     :return: Nothing
     """
-    global sff_topo
+
+    #global sff_topo
+    local_sff_topo = get_sff_topo()
     s = requests.Session()
     logger.info("Contacting ODL to get information for SFF: %s \n", sff_name)
     r = s.get(SFF_NAME_PARAMETER_URL.format(odl_ip_port, sff_name), stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
-        sff_topo[sff_name] = json.loads(r.text)['service-function-forwarder'][0]
+        local_sff_topo[sff_name] = json.loads(r.text)['service-function-forwarder'][0]
         return 0
     else:
         print("=>Failed to GET SFF from ODL \n")

@@ -72,10 +72,16 @@ def process_and_accept(Packet):
             UDP_IP = classify_map[lookup]['sff'] 
             UDP_PORT = int(classify_map[lookup]['port'])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-            sock.sendto(packet, (UDP_IP, UDP_PORT))
-            sock.close()
+            try:
+                sock.sendto(packet, (UDP_IP, UDP_PORT))
+                if __debug__ is False:
+                    print '\nSending NSH encapsulated packet to SFF: ', UDP_IP
+            except socket.error as detail:
+                print 'Socket Error:', detail
+            finally:
+                sock.close()
     except KeyError as detail:
-        print ('Classification failed:', detail)
+        print 'Classification failed:', detail
 
 nfqueue = NetfilterQueue()
 nfqueue.bind(1, process_and_accept)

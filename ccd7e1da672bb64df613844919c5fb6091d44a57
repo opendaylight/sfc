@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_47e70b13",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/ofsfc/provider/utils/SfcOpenflowUtilsTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 2616
+      },
+      "writtenOn": "2014-12-03T20:22:26Z",
+      "side": 1,
+      "message": "This line appears to produce characters which jenkins cannot read in TEST-org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtilsTest.xml results file.",
+      "revId": "ccd7e1da672bb64df613844919c5fb6091d44a57",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -282,7 +282,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
+            LOG.info("getAddPathToServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -373,7 +373,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (ServiceFunction) future.get();
-            LOG.debug("getRead: {}", future.get());
+            LOG.info("getRead: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -429,22 +429,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         sfs = SfcDataStoreAPI.readTransactionAPI(sfsIID, LogicalDatastoreType.CONFIGURATION);
 
-/*        if (odlSfc.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunctions> serviceFunctionsDataObject;
-            try {
-                serviceFunctionsDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfsIID).get();
-                LOG.error("serviceFunctionsDataObject: {}", serviceFunctionsDataObject);
-                if (serviceFunctionsDataObject != null
-                        && serviceFunctionsDataObject.isPresent()) {
-                    sfs = serviceFunctionsDataObject.get();
-                } else {
-                    LOG.error("Could not find Service Functions");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Functions from DataStore");
-            }
-        }*/
         printTraceStop(LOG);
         return sfs;
     }
@@ -452,16 +436,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     protected boolean deleteAllServiceFunctions() {
         boolean ret = false;
         printTraceStart(LOG);
-        if (odlSfc.getDataProvider() != null) {
 
-            InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
-
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfsIID);
-            writeTx.commit();
-
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfsIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         }
+
         printTraceStop(LOG);
         return ret;
     }
@@ -519,7 +499,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeleteServicePathFromServiceFunctionState: {}", future.get());
+            LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -594,7 +574,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getDeleteServicePathFromServiceFunctionState: {}", future.get());
+            LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

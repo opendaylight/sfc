@@ -44,6 +44,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
+        odlSfc.getLock();
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
 
@@ -102,7 +103,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                         originalServiceFunctionChain.getName());
             }
         }
-
+        odlSfc.releaseLock();
         printTraceStop(LOG);
     }
 }

@@ -129,6 +129,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionChainName SFC name
      * @return true if SF was deleted, false otherwise
      */
+    @SuppressWarnings("unused")
     protected boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
         boolean ret = false;
         printTraceStart(LOG);
@@ -147,24 +148,23 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    @SuppressWarnings("unused")
     protected boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
         boolean ret = false;
         printTraceStart(LOG);
-        if (dataBroker != null) {
 
-            InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                    InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfcsIID, sfcs);
-            writeTx.commit();
-
-            ret = true;
+        if (SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, sfcs, LogicalDatastoreType.CONFIGURATION)) {
+            ret =true;
         }
+
         printTraceStop(LOG);
         return ret;
     }
 
+    @SuppressWarnings("unused")
     protected ServiceFunctionChains readAllServiceFunctionChains() {
         ServiceFunctionChains sfcs = null;
         printTraceStart(LOG);
@@ -195,6 +195,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    @SuppressWarnings("unused")
     public static void addPathToServiceFunctionChainState (ServiceFunctionChain serviceFunctionChain,
                                                      ServiceFunctionPath serviceFunctionPath) {
 

@@ -22,7 +22,7 @@ SERVICE_FUNCTIONS_JSON = """
         ],
         "nsh-aware": true,
         "rest-uri": "http://10.0.1.43:5000",
-        "type": "service-function-type:napt44",
+        "type": "service-function-type:ids",
         "ip-mgmt-address": "10.0.1.43"
       },
       {
@@ -86,7 +86,7 @@ SERVICE_FUNCTIONS_JSON = """
         ],
         "nsh-aware": true,
         "rest-uri": "http://10.0.1.42:5000",
-        "type": "service-function-type:dpi",
+        "type": "service-function-type:qos",
         "ip-mgmt-address": "10.0.1.42"
       }
     ]
@@ -278,13 +278,13 @@ SERVICE_CHAINS_JSON = """
             "order": 0
           },
           {
-            "name": "napt44-abstract1",
-            "type": "service-function-type:napt44",
+            "name": "ids-abstract1",
+            "type": "service-function-type:ids",
             "order": 1
           },
           {
-            "name": "firewall-abstract1",
-            "type": "service-function-type:firewall",
+            "name": "qos-abstract1",
+            "type": "service-function-type:qos",
             "order": 2
           }
         ]
@@ -332,7 +332,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 2,
+        "path-id": 32,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -344,15 +344,15 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-1-SFC1",
-        "path-id": 1,
+        "path-id": 31,
         "service-chain-name": "SFC1",
         "starting-index": 3,
         "rendered-service-path-hop": [
@@ -370,8 +370,8 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
+            "service-function-name": "SF4",
+            "service-function-forwarder": "SFF3",
             "service_index": 1
           }
         ]
@@ -389,6 +389,9 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF1",
         "sff-service-path": [
           {
+            "name": "Path-2-SFC2"
+          },
+          {
             "name": "Path-1-SFC1"
           }
         ]
@@ -398,7 +401,12 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "sff-service-path": [
           {
             "name": "Path-2-SFC2"
-          },
+          }
+        ]
+      },
+      {
+        "name": "SFF3",
+        "sff-service-path": [
           {
             "name": "Path-1-SFC1"
           }
@@ -407,9 +415,6 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
       {
         "name": "SFF4",
         "sff-service-path": [
-          {
-            "name": "Path-2-SFC2"
-          },
           {
             "name": "Path-1-SFC1"
           }
@@ -424,13 +429,26 @@ SERVICE_FUNCTION_OPER_JSON = """
   "service-functions-state": {
     "service-function-state": [
       {
+        "name": "SF4",
+        "sf-service-path": [
+          {
+            "name": "Path-1-SFC1"
+          }
+        ]
+      },
+      {
         "name": "SF3",
         "sf-service-path": [
           {
             "name": "Path-2-SFC2"
-          },
+          }
+        ]
+      },
+      {
+        "name": "SF2",
+        "sf-service-path": [
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-2-SFC2"
           }
         ]
       },
@@ -445,9 +463,6 @@ SERVICE_FUNCTION_OPER_JSON = """
       {
         "name": "SF5",
         "sf-service-path": [
-          {
-            "name": "Path-2-SFC2"
-          },
           {
             "name": "Path-1-SFC1"
           }
@@ -467,18 +482,12 @@ SERVICE_FUNCTION_TYPE_JSON = """
         "sft-service-function-name": [
           {
             "name": "SF1"
-          },
-	  {
-            "name": "SF4"
           }
         ]
       },
       {
         "type": "service-function-type:napt44",
         "sft-service-function-name": [
-          {
-            "name": "SF5"
-          },
           {
             "name": "SF2"
           }
@@ -489,6 +498,22 @@ SERVICE_FUNCTION_TYPE_JSON = """
         "sft-service-function-name": [
           {
             "name": "SF3"
+          }
+        ]
+      },
+      {
+        "type": "service-function-type:qos",
+        "sft-service-function-name": [
+          {
+            "name": "SF4"
+          }
+        ]
+      },
+      {
+        "type": "service-function-type:ids",
+        "sft-service-function-name": [
+          {
+            "name": "SF5"
           }
         ]
       }
@@ -511,19 +536,8 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
   "service-function-types": {
     "service-function-type": [
       {
-        "type": "service-function-type:dpi",
-        "sft-service-function-name": [
-          {
-            "name": "SF4"
-          }
-        ]
-      },
-      {
         "type": "service-function-type:napt44",
         "sft-service-function-name": [
-          {
-            "name": "SF5"
-          },
           {
             "name": "SF2"
           }
@@ -534,6 +548,22 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
         "sft-service-function-name": [
           {
             "name": "SF3"
+          }
+        ]
+      },
+      {
+        "type": "service-function-type:qos",
+        "sft-service-function-name": [
+          {
+            "name": "SF4"
+          }
+        ]
+      },
+      {
+        "type": "ids",
+        "sft-service-function-name": [
+          {
+            "name": "SF5"
           }
         ]
       }
@@ -547,7 +577,7 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 6,
+        "path-id": 38,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -559,15 +589,15 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-1-SFC1",
-        "path-id": 5,
+        "path-id": 37,
         "service-chain-name": "SFC1",
         "starting-index": 3,
         "rendered-service-path-hop": [
@@ -585,15 +615,15 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
+            "service-function-name": "SF4",
+            "service-function-forwarder": "SFF3",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-3-SFC2",
-        "path-id": 7,
+        "path-id": 39,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -605,8 +635,8 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
@@ -662,3 +692,4 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
     ]
   }
 }"""
+

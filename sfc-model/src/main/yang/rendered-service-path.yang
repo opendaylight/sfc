@@ -68,7 +68,7 @@ module rendered-service-path {
        network";
     list rendered-service-path {
       description
-        "A list that holds configuration data for all RSPs in the
+        "A list that holds operational data for all RSPs in the
          domain";
       key "name";
       leaf name {

@@ -69,6 +69,16 @@ module service-function-type {
     description "Network Address and Port Translation 44";
   }
 
+  identity qos {
+    base "service-function-type-identity";
+    description "Quality of Service";
+  }
+
+  identity ids {
+    base "service-function-type-identity";
+    description "Intrusion Detection System";
+  }
+
   typedef service-function-type {
     type identityref {
       base "service-function-type-identity";

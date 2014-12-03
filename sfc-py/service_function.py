@@ -132,8 +132,6 @@ def process_incoming_packet(data):
         print('\nInvalid service index of 0 - packet will be dropped')
         rw_data.__init__()
         data = ""
-    #server_base_values.service_index -= 1
-    #set_service_index(rw_data, server_base_values.service_index)
     return rw_data
 
 

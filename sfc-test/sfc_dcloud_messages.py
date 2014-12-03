@@ -10,22 +10,6 @@ SERVICE_FUNCTIONS_JSON = """
   "service-functions": {
     "service-function": [
       {
-        "name": "SF5",
-        "sf-data-plane-locator": [
-          {
-            "name": "vxlan",
-            "ip": "10.0.1.43",
-            "port": 40001,
-            "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF4"
-          }
-        ],
-        "nsh-aware": true,
-        "rest-uri": "http://10.0.1.43:5000",
-        "type": "napt44",
-        "ip-mgmt-address": "10.0.1.43"
-      },
-      {
         "name": "SF1",
         "sf-data-plane-locator": [
           {
@@ -36,10 +20,26 @@ SERVICE_FUNCTIONS_JSON = """
             "service-function-forwarder": "SFF1"
           }
         ],
-        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.1.4",
-        "type": "dpi"
+        "rest-uri": "http://10.0.1.4:5000",
+        "type": "dpi",
+        "ip-mgmt-address": "10.0.1.4"
+      },
+      {
+        "name": "SF5",
+        "sf-data-plane-locator": [
+          {
+            "name": "vxlan",
+            "ip": "10.0.1.43",
+            "port": 40001,
+            "transport": "service-locator:vxlan-gpe",
+            "service-function-forwarder": "SFF4"
+          }
+        ],
+        "rest-uri": "http://10.0.1.43:5000",
+        "nsh-aware": true,
+        "ip-mgmt-address": "10.0.1.43",
+        "type": "ids"
       },
       {
         "name": "SF2",
@@ -52,10 +52,10 @@ SERVICE_FUNCTIONS_JSON = """
             "service-function-forwarder": "SFF1"
           }
         ],
-        "rest-uri": "http://10.0.1.4:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.1.4",
-        "type": "napt44"
+        "rest-uri": "http://10.0.1.4:5000",
+        "type": "napt44",
+        "ip-mgmt-address": "10.0.1.4"
       },
       {
         "name": "SF3",
@@ -68,10 +68,10 @@ SERVICE_FUNCTIONS_JSON = """
             "service-function-forwarder": "SFF2"
           }
         ],
-        "nsh-aware": true,
         "rest-uri": "http://10.0.1.41:5000",
-        "ip-mgmt-address": "10.0.1.41",
-        "type": "firewall"
+        "nsh-aware": true,
+        "type": "firewall",
+        "ip-mgmt-address": "10.0.1.41"
       },
       {
         "name": "SF4",
@@ -84,10 +84,10 @@ SERVICE_FUNCTIONS_JSON = """
             "service-function-forwarder": "SFF3"
           }
         ],
-        "nsh-aware": true,
         "rest-uri": "http://10.0.1.42:5000",
-        "type": "qos",
-        "ip-mgmt-address": "10.0.1.42"
+        "nsh-aware": true,
+        "ip-mgmt-address": "10.0.1.42",
+        "type": "qos"
       }
     ]
   }
@@ -278,13 +278,13 @@ SERVICE_CHAINS_JSON = """
             "order": 0
           },
           {
-            "name": "napt44-abstract1",
-            "type": "napt44",
+            "name": "ids-abstract1",
+            "type": "ids",
             "order": 1
           },
           {
-            "name": "firewall-abstract1",
-            "type": "firewall",
+            "name": "qos-abstract1",
+            "type": "qos",
             "order": 2
           }
         ]
@@ -332,7 +332,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 2,
+        "path-id": 32,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -344,15 +344,15 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-1-SFC1",
-        "path-id": 1,
+        "path-id": 31,
         "service-chain-name": "SFC1",
         "starting-index": 3,
         "rendered-service-path-hop": [
@@ -370,8 +370,8 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
+            "service-function-name": "SF4",
+            "service-function-forwarder": "SFF3",
             "service_index": 1
           }
         ]
@@ -389,6 +389,9 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF1",
         "sff-service-path": [
           {
+            "name": "Path-2-SFC2"
+          },
+          {
             "name": "Path-1-SFC1"
           }
         ]
@@ -398,7 +401,12 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "sff-service-path": [
           {
             "name": "Path-2-SFC2"
-          },
+          }
+        ]
+      },
+      {
+        "name": "SFF3",
+        "sff-service-path": [
           {
             "name": "Path-1-SFC1"
           }
@@ -407,9 +415,6 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
       {
         "name": "SFF4",
         "sff-service-path": [
-          {
-            "name": "Path-2-SFC2"
-          },
           {
             "name": "Path-1-SFC1"
           }
@@ -424,13 +429,26 @@ SERVICE_FUNCTION_OPER_JSON = """
   "service-functions-state": {
     "service-function-state": [
       {
+        "name": "SF4",
+        "sf-service-path": [
+          {
+            "name": "Path-1-SFC1"
+          }
+        ]
+      },
+      {
         "name": "SF3",
         "sf-service-path": [
           {
             "name": "Path-2-SFC2"
-          },
+          }
+        ]
+      },
+      {
+        "name": "SF2",
+        "sf-service-path": [
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-2-SFC2"
           }
         ]
       },
@@ -445,9 +463,6 @@ SERVICE_FUNCTION_OPER_JSON = """
       {
         "name": "SF5",
         "sf-service-path": [
-          {
-            "name": "Path-2-SFC2"
-          },
           {
             "name": "Path-1-SFC1"
           }
@@ -482,9 +497,6 @@ SERVICE_FUNCTION_TYPE_JSON = """
         "type": "napt44",
         "sft-service-function-name": [
           {
-            "name": "SF5"
-          },
-          {
             "name": "SF2"
           }
         ]
@@ -494,6 +506,14 @@ SERVICE_FUNCTION_TYPE_JSON = """
         "sft-service-function-name": [
           {
             "name": "SF3"
+          }
+        ]
+      },
+      {
+        "type": "ids",
+        "sft-service-function-name": [
+          {
+            "name": "SF5"
           }
         ]
       }
@@ -552,7 +572,7 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 6,
+        "path-id": 38,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -564,15 +584,15 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-1-SFC1",
-        "path-id": 5,
+        "path-id": 37,
         "service-chain-name": "SFC1",
         "starting-index": 3,
         "rendered-service-path-hop": [
@@ -590,15 +610,15 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
+            "service-function-name": "SF4",
+            "service-function-forwarder": "SFF3",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-3-SFC2",
-        "path-id": 7,
+        "path-id": 39,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -610,8 +630,8 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]

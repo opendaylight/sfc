@@ -42,11 +42,11 @@ public class SfcDataStoreAPI {
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
 
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.delete(logicalDatastoreType, deleteIID);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -62,9 +62,9 @@ public class SfcDataStoreAPI {
 
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -80,9 +80,9 @@ public class SfcDataStoreAPI {
         boolean ret = false;
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;

@@ -186,9 +186,10 @@ def build_data_plane_service_path(service_path):
 
     return
 
+
 @app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>', methods=['PUT'])
 def create_path(sfpname):
-    #global path
+    # global path
     local_path = get_path()
     if not request.json:
         abort(400)
@@ -232,7 +233,7 @@ def create_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    #global sff_topo
+    # global sff_topo
     local_sff_topo = get_sff_topo()
     global sff_control_port
     global sff_threads
@@ -287,7 +288,7 @@ def delete_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    #global sff_topo
+    # global sff_topo
     #global path
     #global data_plane_path
     local_sff_topo = get_sff_topo()
@@ -330,7 +331,7 @@ def delete_sffs():
     :return:
     """
 
-    #global sff_topo
+    # global sff_topo
     #global path
     #global data_plane_path
     local_sff_topo = get_sff_topo()
@@ -349,7 +350,7 @@ def page_not_found(e):
 
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
-    #global sff_topo
+    # global sff_topo
     local_sff_topo = get_sff_topo()
     s = requests.Session()
     print("Getting SFF information from ODL... \n")
@@ -369,7 +370,7 @@ def get_sffs_from_odl(odl_ip_port):
     :return: Nothing
     """
 
-    #global sff_topo
+    # global sff_topo
     local_sff_topo = get_sff_topo()
     s = requests.Session()
     print("Getting SFFs configure in ODL... \n")
@@ -388,7 +389,7 @@ def get_sff_from_odl(odl_ip_port, sff_name):
     :return: Nothing
     """
 
-    #global sff_topo
+    # global sff_topo
     local_sff_topo = get_sff_topo()
     s = requests.Session()
     logger.info("Contacting ODL to get information for SFF: %s \n", sff_name)

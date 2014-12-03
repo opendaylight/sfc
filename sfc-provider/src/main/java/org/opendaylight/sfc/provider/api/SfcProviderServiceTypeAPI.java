@@ -68,7 +68,6 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServiceTypeAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "readServiceFunctionType");
     }
-
     public static SfcProviderServiceTypeAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionType");
     }

@@ -42,11 +42,11 @@ public class SfcDataStoreAPI {
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
 
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.delete(logicalDatastoreType, deleteIID);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -56,15 +56,17 @@ public class SfcDataStoreAPI {
         }
         return ret;
     }
+
+
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeMergeTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
-        boolean ret = false;
+        boolean ret;
 
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -77,12 +79,12 @@ public class SfcDataStoreAPI {
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret = false;
+        boolean ret;
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
-        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
+        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -116,7 +118,7 @@ public class SfcDataStoreAPI {
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeSynchPutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret = false;
+        boolean ret;
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
         writeTx.commit();

@@ -100,7 +100,7 @@ module service-function-forwarder {
       leaf ip-mgmt-address {
         type inet:ip-address;
         description
-          "The IP and port used to configure this service-node";
+          "The IP and port used to configure this service-function-forwarder";
       }
 
       leaf rest-uri {

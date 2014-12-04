@@ -136,20 +136,20 @@ def main(argv):
         logging.basicConfig(level=logging.INFO)
         opt, args = getopt.getopt(argv, "h", ["help", "remote-sff-ip=", "remote-sff-port=", "sfp-id=", "sfp-index="])
     except getopt.GetoptError:
-        print("sff_client --help | --remote-sff-ip | --remote-sff-port | sfp-id | sfp-index")
+        print("sff_client --help | --remote-sff-ip | --remote-sff-port | --sfp-id | --sfp-index")
         sys.exit(2)
 
     for opt, arg in opt:
-        if opt == "sff-port":
+        if opt == "--remote-sff-port":
             remote_sff_port = arg
             continue
 
         if opt in ('-h', '--help'):
             print("sff_client --remote-sff-ip=<IP address of remote SFF> --remote-sff-port=<UDP port of remote SFF> "
-                  "sfp-id=<Service Function Path id> sfp-index<SFP starting index>")
+                  "--sfp-id=<Service Function Path id> --sfp-index<SFP starting index>")
             sys.exit()
 
-        if opt == "--sff-ip":
+        if opt == "--remote-sff-ip":
             remote_sff_ip = arg
             continue
 

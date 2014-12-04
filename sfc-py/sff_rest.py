@@ -1,5 +1,3 @@
-import collections
-
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.2"
@@ -16,6 +14,12 @@ __status__ = "alpha"
 """ SFF REST Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
+# Contains all SFPs in a format easily consumable by the data plane when
+# processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
+# locator of the SF/SFF.
+data_plane_path = {}
+
+import collections
 from flask import *
 import getopt
 import json
@@ -23,21 +27,16 @@ import requests
 import sys
 from sff_thread import *
 from threading import Thread
+from sff_globals import *
 
 app = Flask(__name__)
 
 # Globals
 
-sff_topo = {}
+
 
 # Contains all Paths in JSON format as received from ODL
 path = {}
-
-# Contains all SFPs in a format easily consumable by the data plane when
-# processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
-# locator of the SF/SFF.
-data_plane_path = {}
-
 
 # Contains the name of this SFF. For example, SFF1
 my_sff_name = ""
@@ -79,16 +78,6 @@ logger = logging.getLogger(__name__)
 def get_path():
     global path
     return path
-
-
-def get_sff_topo():
-    global sff_topo
-    return sff_topo
-
-
-def get_data_plane_path():
-    global data_plane_path
-    return data_plane_path
 
 
 def tree():
@@ -141,6 +130,11 @@ def find_sff_locator(sff_name):
 @app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['GET'])
 def get_paths():
     return jsonify(path)
+
+
+@app.route('/operational/data-plane-path:data-plane-paths/', methods=['GET'])
+def get_data_plane_paths():
+    return jsonify(data_plane_path)
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['GET'])
@@ -288,9 +282,7 @@ def delete_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    # global sff_topo
-    #global path
-    #global data_plane_path
+
     local_sff_topo = get_sff_topo()
     local_path = get_path()
     local_data_plane_path = get_data_plane_path()
@@ -331,9 +323,6 @@ def delete_sffs():
     :return:
     """
 
-    # global sff_topo
-    #global path
-    #global data_plane_path
     local_sff_topo = get_sff_topo()
     local_path = get_path()
     local_data_plane_path = get_data_plane_path()
@@ -407,9 +396,9 @@ def main(argv):
     global my_sff_name
     try:
         logging.basicConfig(level=logging.DEBUG)
-        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port="])
+        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port=", "sff-name="])
     except getopt.GetoptError:
-        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port")
+        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port | sff-name")
         sys.exit(2)
 
     odl_get_sff = False
@@ -425,7 +414,7 @@ def main(argv):
 
         if opt in ('-h', '--help'):
             print("sff_rest -m --rest --sff-name=<name of this SFF such as SFF1> --odl-get-sff "
-                  "--odl-ip-port=<ODL REST IP:port>")
+                  "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>")
             sys.exit()
 
         if opt in ('-r', '--rest'):

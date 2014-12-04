@@ -1,5 +1,3 @@
-import sys
-
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __license__ = "New-style BSD"
@@ -112,10 +110,10 @@ if __name__ == "__main__":
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
 
-    #put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
-    #check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")
-    #delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
-    #check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
-    #check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
+    # put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
+    # check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")
+    # delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
+    # check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
+    # check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
     #delete_configuration()
 

@@ -20,6 +20,7 @@ from ctypes import *
 from nsh_decode import *
 from nsh_encode import *
 import socket
+from sff_globals import *
 
 udpserver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -225,29 +226,16 @@ class MyUdpClient:
         self.loop = loop
 
 
-#app = Flask(__name__)
-
-
 def start_server(loop, addr, udpserver, message):
     #t = asyncio.Task(loop.create_datagram_endpoint(
     #    lambda: udpserver, local_addr=addr))
     listen = loop.create_datagram_endpoint(lambda: udpserver, local_addr=addr)
     transport, protocol = loop.run_until_complete(listen)
     print('\nStarting Service Function Forwarder (SFF)')
-    print(message, addr[1])
+    print(message, addr)
     return transport
 
 
-# note using port 57444 but could be any port, just remove port syntax and
-# update get_client_ip() to remove [0] from getsockname()
-# def start_client(loop, addr, myip, udpclient):
-#     t = asyncio.Task(loop.create_datagram_endpoint(
-#         lambda: udpclient, local_addr=(myip, 57444), remote_addr=addr))
-#     loop.run_until_complete(t)
-
-
-# note using port 57444 but could be any port, just remove port syntax and
-# update get_client_ip() to remove [0] from getsockname()
 def start_client(loop, addr, myip, udpclient):
     t = asyncio.Task(loop.create_datagram_endpoint(
         lambda: udpclient, remote_addr=addr))
@@ -258,18 +246,13 @@ def start_client(loop, addr, myip, udpclient):
 # to create a SFF
 def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
     print("Starting SFF thread \n")
-    global data_plane_path
     global udpserver_socket
     logging.basicConfig(level=logging.INFO)
-
-    # Below is used for unit test. It is okay to leave it since a new SFP with the same ID will overwrite existing one.
-    data_plane_path = {1: {1: {'port': 4789, 'ip': '10.100.100.2'}, 2: {'port': 4789, 'ip': '10.100.100.1'}, 3: {'port': 4789, 'ip': '10.100.100.1'}}}
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     # if signal is not None:
     # loop.add_signal_handler(signal.SIGINT, loop.stop)
-
 
     udpserver = MyUdpServer(loop)
     udpserver_transport = start_server(loop, (sff_ip, sff_port), udpserver, "Listening for NSH packets on port: ")

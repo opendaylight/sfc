@@ -157,7 +157,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
               },
-              "port": 40001,
+              "port": 40002,
               "ip": "10.0.1.4",
               "transport": "service-locator:vxlan-gpe"
             }
@@ -169,7 +169,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
               "service-function-forwarder-ovs:ovs-bridge": {
                 "bridge-name": "br-int"
               },
-              "port": 40002,
+              "port": 40001,
               "ip": "10.0.1.4",
               "transport": "service-locator:vxlan-gpe"
             }
@@ -560,7 +560,7 @@ SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
         ]
       },
       {
-        "type": "ids",
+        "type": "service-function-type:ids",
         "sft-service-function-name": [
           {
             "name": "SF5"
@@ -651,7 +651,7 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 9,
+        "path-id": 5,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -663,15 +663,15 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]
       },
       {
         "name": "Path-3-SFC2",
-        "path-id": 10,
+        "path-id": 6,
         "service-chain-name": "SFC2",
         "starting-index": 2,
         "rendered-service-path-hop": [
@@ -683,8 +683,8 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
+            "service-function-name": "SF2",
+            "service-function-forwarder": "SFF1",
             "service_index": 1
           }
         ]

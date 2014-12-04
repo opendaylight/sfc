@@ -79,6 +79,14 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>features-sfc-sb-rest</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
       <artifactId>features-sfclisp</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>

@@ -61,7 +61,7 @@ class CONTEXTHEADER(Structure):
 PACKET_CHAIN = 0b00000000  # Packet needs more processing within this SFF
 PACKET_CONSUMED = 0b00000001  # Packet was sent to another SFF or service function
 PACKET_ERROR = 0b00000010  # Packet will be dropped
-SERVICEFUNCTION_INVALID = 0xDEADBEEF  # Referenced service function is invalid
+SERVICE_HOP_INVALID = 0xDEADBEEF  # Referenced service function is invalid
 
 # Client side code: Choose values for VXLAN, base NSH and context headers as part of packet generation
 
@@ -94,12 +94,15 @@ def nat1_process_packet(data, addr):
 
 
 def lookup_next_sf(service_path, service_index):
-    next_sfi = SERVICEFUNCTION_INVALID
+    next_hop = SERVICE_HOP_INVALID
     # First we determine the list of SFs in the received packet based on SPI value extracted from packet
 
     #TODO more robust to keyerrors
-    next_sfi = data_plane_path[service_path][service_index]
-    return next_sfi
+    try:
+        next_hop = data_plane_path[service_path][service_index]
+    except KeyError:
+        logger.error("Could not determine next service hop. SP: %d, SI: %d", service_path, service_index)
+    return next_hop
 
 
 def set_service_index(rw_data, service_index):
@@ -107,7 +110,10 @@ def set_service_index(rw_data, service_index):
 
 
 def process_incoming_packet(data, addr):
-    print("Processing packet from:", addr)
+
+    address = ()  # empty tuple
+
+    logger.info("Processing packet from: %s", addr)
     # Copy payload into bytearray so it can be changed
     rw_data = bytearray(data)
     # Decode the incoming packet for debug purposes and to strip out various header values
@@ -115,20 +121,25 @@ def process_incoming_packet(data, addr):
     decode_baseheader(data, server_base_values)
     decode_contextheader(data, server_ctx_values)
     # Lookup what to do with the packet based on Service Path Identifier (SPI)
-    print("\nLooking up received Service Path Identifier...")
-    next_sfi = lookup_next_sf(server_base_values.service_path, server_base_values.service_index)
-    if next_sfi == SERVICEFUNCTION_INVALID:
-        # bye, bye packet
-        print('we reached end of chain')
-        print('ended up with:', binascii.hexlify(rw_data))
-        print('service index end up as:', server_base_values.service_index)
-        rw_data.__init__()
-        data = ""
-        addr = ""
+    if server_base_values.service_index == 0:
+        logger.info("End of Path")
+        logger.info("Packet dump: %s", binascii.hexlify(rw_data))
+        # Remove all SFC headers, leave only original packet
+        rw_data = find_payload_start_index()
+    else:
+        logger.info("Looking up next service hop...")
+        next_hop = lookup_next_sf(server_base_values.service_path, server_base_values.service_index)
+        if next_hop != SERVICE_HOP_INVALID:
+            address = next_hop['ip'], next_hop['port']
+        else:
+            # bye, bye packet
+            logger.error("Dropping packet")
+            logger.error("Packet dump: %s", binascii.hexlify(rw_data))
+            logger.info('service index end up as: %d', server_base_values.service_index)
+            rw_data.__init__()
+            data = ""
 
-    address = next_sfi['ip'], next_sfi['port']
-    print('\nfinished processing packet from:', addr)
-    print('\nlistening for NSH packets ...')
+    logger.info("Finished processing packet from: %s", addr)
     return rw_data, address
 
 
@@ -137,16 +148,14 @@ class MyUdpServer:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        print('Received packet from:', addr)
+        logger.info('Received packet from: %s', addr)
         # Process the incoming packet
         rw_data, address = process_incoming_packet(data, addr)
-        if address != '':
+        if address:
             # send the packet to the next SFF based on address
-            print("Sending packets to", address)
+            logger.info("Sending packets to: %s", address)
             self.transport.sendto(rw_data, address)
-        else:
-            # if want to echo packet back to client use following uncommented
-            self.transport.sendto(rw_data, addr)
+            logger.info("listening for NSH packets ...")
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -192,38 +201,38 @@ class ControlUdpServer:
         self.loop = loop
 
 
-class MyUdpClient:
-    def connection_made(self, transport):
-        self.transport = transport
-        # Building client packet to send to SFF
-        packet = build_packet(vxlan_values, base_values, ctx_values)
-        print('\nsending packet to SFF:\n', binascii.hexlify(packet))
-        # Send the packet
-        self.transport.sendto(packet)
-
-    def datagram_received(self, data, addr):
-        print('\nreceived packet from SFF:\n', binascii.hexlify(data))
-        print('\n')
-        # Decode all the headers
-        decode_vxlan(data, server_vxlan_values)
-        decode_baseheader(data, server_base_values)
-        decode_contextheader(data, server_ctx_values)
-        self.loop.stop()
-
-    def connection_refused(self, exc):
-        print('Connection refused:', exc)
-
-    def connection_lost(self, exc):
-        print('closing transport', exc)
-        self.loop = asyncio.get_event_loop()
-        self.loop.stop()
-
-    def error_received(self, exc):
-        print('Error received:', exc)
-
-    def __init__(self, loop):
-        self.transport = None
-        self.loop = loop
+# class MyUdpClient:
+#     def connection_made(self, transport):
+#         self.transport = transport
+#         # Building client packet to send to SFF
+#         packet = build_packet(vxlan_values, base_values, ctx_values)
+#         print('\nsending packet to SFF:\n', binascii.hexlify(packet))
+#         # Send the packet
+#         self.transport.sendto(packet)
+#
+#     def datagram_received(self, data, addr):
+#         print('\nreceived packet from SFF:\n', binascii.hexlify(data))
+#         print('\n')
+#         # Decode all the headers
+#         decode_vxlan(data, server_vxlan_values)
+#         decode_baseheader(data, server_base_values)
+#         decode_contextheader(data, server_ctx_values)
+#         self.loop.stop()
+#
+#     def connection_refused(self, exc):
+#         print('Connection refused:', exc)
+#
+#     def connection_lost(self, exc):
+#         print('closing transport', exc)
+#         self.loop = asyncio.get_event_loop()
+#         self.loop.stop()
+#
+#     def error_received(self, exc):
+#         print('Error received:', exc)
+#
+#     def __init__(self, loop):
+#         self.transport = None
+#         self.loop = loop
 
 
 def start_server(loop, addr, udpserver, message):

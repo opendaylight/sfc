@@ -14,10 +14,6 @@ __status__ = "alpha"
 """ SFF REST Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
-# Contains all SFPs in a format easily consumable by the data plane when
-# processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
-# locator of the SF/SFF.
-data_plane_path = {}
 
 import collections
 from flask import *
@@ -30,13 +26,6 @@ from threading import Thread
 from sff_globals import *
 
 app = Flask(__name__)
-
-# Globals
-
-
-
-# Contains all Paths in JSON format as received from ODL
-path = {}
 
 # Contains the name of this SFF. For example, SFF1
 my_sff_name = ""
@@ -72,12 +61,7 @@ PASSWORD = "admin"
 logger = logging.getLogger(__name__)
 
 
-# Global Accessors
 
-
-def get_path():
-    global path
-    return path
 
 
 def tree():

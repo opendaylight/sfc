@@ -14,7 +14,6 @@ __status__ = "alpha"
 """Network Service Header (NSH) Service Index Processing"""
 
 
-
 def process_service_index(rw_data, server_base_values):
     
     if server_base_values.service_index == 0:
@@ -22,11 +21,12 @@ def process_service_index(rw_data, server_base_values):
         si_result = 0
         
     else:
-        server_base_values.service_index -= 1 # decrement SI by 1
+        server_base_values.service_index -= 1  # decrement SI by 1
         set_service_index(rw_data, server_base_values.service_index)
         si_result = 1
     
     return rw_data, si_result
-    
+
+
 def set_service_index(rw_data, service_index):
     rw_data[15] = service_index

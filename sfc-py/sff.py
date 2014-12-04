@@ -60,7 +60,7 @@ class CONTEXTHEADER(Structure):
 PACKET_CHAIN = 0b00000000  # Packet needs more processing within this SFF
 PACKET_CONSUMED = 0b00000001  # Packet was sent to another SFF or service function
 PACKET_ERROR = 0b00000010  # Packet will be dropped
-SERVICEFUNCTION_INVALID = 0xDEADBEEF  # Referenced service function is invalid
+SERVICE_HOP_INVALID = 0xDEADBEEF  # Referenced service function is invalid
 
 # Client side code: Choose values for VXLAN, base NSH and context headers as part of packet generation
 
@@ -94,33 +94,15 @@ def nat1_process_packet(data, addr):
 
 
 def lookup_next_sf(service_path, service_index):
-    next_sfi = SERVICEFUNCTION_INVALID
+    next_hop = SERVICE_HOP_INVALID
     # First we determine the list of SFs in the received packet based on SPI value extracted from packet
 
     #TODO more robust to keyerrors
-    next_sfi = data_plane_path[service_path][service_index]
-    return next_sfi
-
-
-# def send_next_service(next_sfi, rw_data, addr):
-#     # First we need to find if this SFI is internal to this Service Node
-#     if next_sfi in sf_map:
-#
-#         if sf_map[next_sfi]['function'] != '' and sf_map[next_sfi]['ip_address'] == '':
-#             functionp = globals()[sf_map[next_sfi]['function']]
-#             address = sf_map[next_sfi]['ip_address']
-#             ret = functionp(rw_data, addr)
-#             if ret != PACKET_CONSUMED:
-#                 print('decrementing service index by 1 as packet processed by:', next_sfi)
-#                 server_base_values.service_index -= 1
-#                 set_service_index(rw_data, server_base_values.service_index)
-#                 print('current service index value:', server_base_values.service_index)
-#             return ret, address
-#         elif sf_map[next_sfi]['ip_address'] != '':
-#             address = sf_map[next_sfi]['ip_address'], int(sf_map[next_sfi]['port'])
-#             packet_status = PACKET_CONSUMED
-#             print('were done - service', next_sfi, 'at address', address, 'consumed the packet')
-#             return packet_status, address
+    try:
+        next_hop = data_plane_path[service_path][service_index]
+    except KeyError:
+        logger.error("Could not determine next service hop. SP: %d, SI: %d", service_path, service_index)
+    return next_hop
 
 
 def set_service_index(rw_data, service_index):
@@ -128,7 +110,10 @@ def set_service_index(rw_data, service_index):
 
 
 def process_incoming_packet(data, addr):
-    print("Processing packet from:", addr)
+
+    address = ()  # empty tuple
+
+    logger.info("Processing packet from:", addr)
     # Copy payload into bytearray so it can be changed
     rw_data = bytearray(data)
     # Decode the incoming packet for debug purposes and to strip out various header values
@@ -136,20 +121,23 @@ def process_incoming_packet(data, addr):
     decode_baseheader(data, server_base_values)
     decode_contextheader(data, server_ctx_values)
     # Lookup what to do with the packet based on Service Path Identifier (SPI)
-    print("\nLooking up received Service Path Identifier...")
-    next_sfi = lookup_next_sf(server_base_values.service_path, server_base_values.service_index)
-    if next_sfi == SERVICEFUNCTION_INVALID:
-        # bye, bye packet
-        print('we reached end of chain')
-        print('ended up with:', binascii.hexlify(rw_data))
-        print('service index end up as:', server_base_values.service_index)
-        rw_data.__init__()
-        data = ""
-        addr = ""
+    if server_base_values.service_index == 0:
+        logger.info("End of Path")
+        logger.info("Packet dump: %s", binascii.hexlify(rw_data))
+    else:
+        logger.info("Looking up next service hop...")
+        next_hop = lookup_next_sf(server_base_values.service_path, server_base_values.service_index)
+        if next_hop != SERVICE_HOP_INVALID:
+            address = next_hop['ip'], next_hop['port']
+        else:
+            # bye, bye packet
+            logger.error("Dropping packet")
+            logger.error("Packet dump: %s", binascii.hexlify(rw_data))
+            logger.info('service index end up as:', server_base_values.service_index)
+            rw_data.__init__()
+            data = ""
 
-    address = next_sfi['ip'], next_sfi['port']
-    print('\nfinished processing packet from:', addr)
-    print('\nlistening for NSH packets ...')
+    logger.info("Finished processing packet from:", addr)
     return rw_data, address
 
 
@@ -161,13 +149,11 @@ class MyUdpServer:
         print('Received packet from:', addr)
         # Process the incoming packet
         rw_data, address = process_incoming_packet(data, addr)
-        if address != '':
+        if not address:
             # send the packet to the next SFF based on address
             print("Sending packets to", address)
             self.transport.sendto(rw_data, address)
-        else:
-            # if want to echo packet back to client use following uncommented
-            self.transport.sendto(rw_data, addr)
+            print('\nlistening for NSH packets ...')
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -249,14 +235,6 @@ def start_server(loop, addr, udpserver, message):
     loop.run_until_complete(t)
     print('\nStarting Service Function Forwarder (SFF)')
     print(message, addr[1])
-
-
-# note using port 57444 but could be any port, just remove port syntax and
-# update get_client_ip() to remove [0] from getsockname()
-# def start_client(loop, addr, myip, udpclient):
-#     t = asyncio.Task(loop.create_datagram_endpoint(
-#         lambda: udpclient, local_addr=(myip, 57444), remote_addr=addr))
-#     loop.run_until_complete(t)
 
 
 # note using port 57444 but could be any port, just remove port syntax and

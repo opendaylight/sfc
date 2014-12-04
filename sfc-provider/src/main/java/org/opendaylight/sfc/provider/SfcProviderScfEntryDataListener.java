@@ -84,7 +84,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionClassifier) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionClassifier updatedServiceFunctionClassifier = (ServiceFunctionClassifier) entry.getValue();
-                LOG.info("\n########## Modified ServiceFunctionClassifier Name {}",
+                LOG.debug("\n########## Modified ServiceFunctionClassifier Name {}",
                         updatedServiceFunctionClassifier.getName());
 
                 //if ACL was changed, unset AclEntries in old ACL

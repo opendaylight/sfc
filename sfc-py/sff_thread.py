@@ -78,26 +78,25 @@ server_base_values = BASEHEADER()
 # Local service function callbacks. These are dummy services to track progress of packets through the service chain
 # at this SFF.
 
-def fw1_process_packet(data, addr):
-    print('fw1 processed packet from:', addr)
-    return PACKET_CHAIN
-
-
-def dpi1_process_packet(data, addr):
-    print('dpi1 processed packet from:', addr)
-    return PACKET_CHAIN
-
-
-def nat1_process_packet(data, addr):
-    print('nat1 processed packet from:', addr)
-    return PACKET_CHAIN
+# def fw1_process_packet(data, addr):
+#     print('fw1 processed packet from:', addr)
+#     return PACKET_CHAIN
+#
+#
+# def dpi1_process_packet(data, addr):
+#     print('dpi1 processed packet from:', addr)
+#     return PACKET_CHAIN
+#
+#
+# def nat1_process_packet(data, addr):
+#     print('nat1 processed packet from:', addr)
+#     return PACKET_CHAIN
 
 
 def lookup_next_sf(service_path, service_index):
     next_hop = SERVICE_HOP_INVALID
     # First we determine the list of SFs in the received packet based on SPI value extracted from packet
 
-    #TODO more robust to keyerrors
     try:
         next_hop = data_plane_path[service_path][service_index]
     except KeyError:
@@ -121,23 +120,23 @@ def process_incoming_packet(data, addr):
     decode_baseheader(data, server_base_values)
     decode_contextheader(data, server_ctx_values)
     # Lookup what to do with the packet based on Service Path Identifier (SPI)
-    if server_base_values.service_index == 0:
-        logger.info("End of Path")
-        logger.info("Packet dump: %s", binascii.hexlify(rw_data))
-        # Remove all SFC headers, leave only original packet
-        rw_data = find_payload_start_index()
-    else:
+    if server_base_values.service_index:
         logger.info("Looking up next service hop...")
         next_hop = lookup_next_sf(server_base_values.service_path, server_base_values.service_index)
         if next_hop != SERVICE_HOP_INVALID:
             address = next_hop['ip'], next_hop['port']
         else:
             # bye, bye packet
-            logger.error("Dropping packet")
-            logger.error("Packet dump: %s", binascii.hexlify(rw_data))
+            logger.info("End of path")
+            logger.info("Packet dump: %s", binascii.hexlify(rw_data))
             logger.info('service index end up as: %d', server_base_values.service_index)
-            rw_data.__init__()
-            data = ""
+            rw_data = find_payload_start_index()
+            # Remove all SFC headers, leave only original packet
+    else:
+        logger.error("Loop Detected")
+        logger.error("Packet dump: %s", binascii.hexlify(rw_data))
+        rw_data.__init__()
+        data = ""
 
     logger.info("Finished processing packet from: %s", addr)
     return rw_data, address

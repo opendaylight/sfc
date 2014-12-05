@@ -128,10 +128,6 @@ def process_incoming_packet(data):
     decode_baseheader(data, server_base_values) # decode NSH base header
     decode_contextheader(data, server_ctx_values) # decode NSH context headers
     rw_data, si_result = process_service_index(rw_data, server_base_values)
-    # if si_result == 0:
-    #    print('\nInvalid service index of 0 - packet will be dropped')
-    #    rw_data.__init__()
-    #    data = ""
     return rw_data
 
 

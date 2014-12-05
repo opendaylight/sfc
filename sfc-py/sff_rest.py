@@ -38,30 +38,8 @@ sff_control_port = 6000
 
 # IP address of associated SFF thread. WE assume agent and thread and co-located
 SFF_UDP_IP = "127.0.0.1"
-# ODL IP:port
-ODLIP = "127.0.0.1:8181"
-# Static URLs for testing
-SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"
-SFC_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-function-chains/"
-SFF_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:service-function-forwarders/"
-SFT_URL = "http://" + ODLIP + "/restconf/config/service-function-type:service-function-types/"
-SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
-
-SFF_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/"
-
-SFF_NAME_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/" + \
-                         "service-function-forwarder/{}"
-SFF_SF_DATA_PLANE_LOCATOR_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/" + \
-                                "service-function-forwarder/{}/service-function-dictionary/{}/" + \
-                                "sff-sf-data-plane-locator/"
-
-USERNAME = "admin"
-PASSWORD = "admin"
 
 logger = logging.getLogger(__name__)
-
-
-
 
 
 def tree():
@@ -307,6 +285,7 @@ def delete_sffs():
     :return:
     """
 
+    # We always use accessors
     local_sff_topo = get_sff_topo()
     local_path = get_path()
     local_data_plane_path = get_data_plane_path()

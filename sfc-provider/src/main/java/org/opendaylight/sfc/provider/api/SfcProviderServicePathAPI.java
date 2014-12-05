@@ -451,7 +451,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         sfcServiceFunctionList.addAll(serviceFunctionChain.getSfcServiceFunction());
 
         Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER));
-        serviceIndex = sfcServiceFunctionList.size();
+        //serviceIndex = sfcServiceFunctionList.size();
+        serviceIndex = 255;
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
 

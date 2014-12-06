@@ -157,7 +157,7 @@ def pathinit():
             "service-function-path": [
                 {
                     "name": "Path-1-SFC1",
-                    "path-id": 1,
+                    "path-id": 100,
                     "starting-index": 3,
                     "service-chain-name": "SFC1",
                     "service-path-hop": [
@@ -451,6 +451,8 @@ def mytopo(nextsffloc, vxlanid):
 
 
 def cli():
+    key = str(randint(1, 1000))
+    setupvxlan(key)
     global path
     global sff_topo
     path = pathinit()
@@ -459,7 +461,6 @@ def cli():
     bridge_info = parse_bridges(ovsbridges)
     my_sff = who_am_i(path, bridge_info)
     vxlanid = 0
-    key = hex(randint(1, 16777216))
     build_a_path(path, my_sff)
     mysflist, nextsffloc, nextsff, my_sff, pid = build_a_path(path, my_sff)
     vxlanid = mytopo(nextsffloc, vxlanid)
@@ -471,12 +472,13 @@ def cli():
 # Not used anymore
 def ovsbuildit(path):
     print "BUILDING CHAIN..."
+    key = str(randint(1, 1000))
     ovsbridges = get_bridge_info()
     bridge_info = parse_bridges(ovsbridges)
     my_sff = who_am_i(path, bridge_info)
     # my_topo = {}
     vxlanid = 0
-    key = hex(randint(1, 16777216))
+
 
     mysflist, nextsffloc, nextsff, me, pid = build_a_path(path, my_sff)
     my_topo, vxlanid = mytopo(nextsffloc, vxlanid)
@@ -497,7 +499,7 @@ def ovsbuild_one_path(service_path):
         return
     # Is this correct?
     vxlanid = 0
-    key = hex(randint(1, 16777216))
+    key = str(randint(1, 1000))
 
     mysflist, nextsffloc, nextsff = build_service_path(service_path, my_sff_name)
     vxlanid = mytopo(nextsffloc, vxlanid)

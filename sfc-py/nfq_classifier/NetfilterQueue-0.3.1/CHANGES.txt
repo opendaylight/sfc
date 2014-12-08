@@ -1,0 +1,9 @@
+v0.3.1, 2 Dec 2014
+    Added get_mark() function to Packet class.
+
+v0.2, 13 May 2011
+    Rename NetfilterQueue to QueueHandler.
+    Add API section to README.rst.
+
+v0.1, 12 May 2011
+    Initial release.

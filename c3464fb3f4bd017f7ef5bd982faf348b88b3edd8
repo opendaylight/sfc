@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_42c85674",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2014-12-08T14:58:42Z",
+      "side": 1,
+      "message": "Null pointer exception if leaf symmetric is not present. This occurs even when \"default: false\" is defined. Default:false doesn\u0027t grant presence of leaf symmetric, it just pre-defines its value. (e.g. when user inserts \"symmetric\": \"\", the actual key:value will be \"symmetric\":false.)\n\nPossible solution:\n(serviceFunctionChain.isSymmetric() !\u003d null \u0026\u0026 serviceFunctionChain.isSymmetric() \u0026\u0026 addPathToSfStateSuccessul)",
+      "range": {
+        "startLine": 127,
+        "startChar": 20,
+        "endLine": 127,
+        "endChar": 54
+      },
+      "revId": "c3464fb3f4bd017f7ef5bd982faf348b88b3edd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

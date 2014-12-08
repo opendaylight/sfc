@@ -244,7 +244,6 @@ SERVICE_CHAINS_JSON = """
     "service-function-chain": [
       {
         "name": "SFC2",
-        "symmetric": false,
         "sfc-service-function": [
           {
             "name": "firewall-abstract2",

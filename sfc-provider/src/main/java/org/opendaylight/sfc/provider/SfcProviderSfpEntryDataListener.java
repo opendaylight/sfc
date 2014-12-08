@@ -124,7 +124,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
                 // Reverse Path
                 ServiceFunctionChain serviceFunctionChain =  SfcProviderServiceChainAPI.readServiceFunctionChainExecutor(createdServiceFunctionPath.getServiceChainName());
-                if (serviceFunctionChain.isSymmetric() && addPathToSfStateSuccessul) {
+                if (serviceFunctionChain.isSymmetric() != null && serviceFunctionChain.isSymmetric() && addPathToSfStateSuccessul) {
                     if ((revRenderedServicePath = SfcProviderServicePathAPI
                             .createReverseRenderedServicePathEntryExecutor(renderedServicePath)) != null) {
                         revRspSuccessful = true;

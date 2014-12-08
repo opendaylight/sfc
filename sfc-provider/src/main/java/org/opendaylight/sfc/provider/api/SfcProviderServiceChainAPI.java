@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -25,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -108,6 +111,14 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method reads the service function chain specified by the given name from
+     * the datastore
+     * <p>
+     * @param serviceFunctionChainName SF name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
     public static ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
         printTraceStart(LOG);
         ServiceFunctionChain sfc = null;
@@ -121,6 +132,35 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
         printTraceStop(LOG);
         return sfc;
+    }
+
+
+    /**
+     * This method reads the operational state for a service function.
+     * <p>
+     * @param serviceFunctionName SF name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
+    public static ServiceFunctionChain readServiceFunctionChainExecutor(String serviceFunctionName) {
+
+        printTraceStart(LOG);
+        ServiceFunctionChain ret = null;
+        Object[] servicePathObj = {serviceFunctionName};
+        Class[] servicePathClass = {String.class};
+        SfcProviderServiceChainAPI sfcProviderServiceChainAPI = SfcProviderServiceChainAPI
+                .getRead(servicePathObj, servicePathClass);
+        Future future  = odlSfc.executor.submit(sfcProviderServiceChainAPI);
+        try {
+            ret = (ServiceFunctionChain) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        printTraceStop(LOG);
+        return ret;
     }
 
     /**
@@ -148,6 +188,14 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method puts all service functions from the given object in the
+     * datastore
+     * <p>
+     * @param sfcs Service Functions Object
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
     @SuppressWarnings("unused")
     protected boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
         boolean ret = false;
@@ -164,9 +212,14 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method reads all service function chains from datastore
+     * <p>
+     * @return ServiceFunctionChains A object that contains all Service Functions Object
+     */
     @SuppressWarnings("unused")
     protected ServiceFunctionChains readAllServiceFunctionChains() {
-        ServiceFunctionChains sfcs = null;
+        ServiceFunctionChains sfcs;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
                 .builder(ServiceFunctionChains.class).toInstance();

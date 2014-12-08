@@ -55,6 +55,7 @@ module service-function-chain {
       }
       leaf symmetric {
         type boolean;
+        default false;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse

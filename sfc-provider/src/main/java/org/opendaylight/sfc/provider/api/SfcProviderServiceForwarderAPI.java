@@ -333,10 +333,10 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * We add the path name to the operational store of each SFF.
      *
      * <p>
-     * @param serviceFunctionPath Service Function Path Object
+     * @param pathName Service Function Path Object
      * @return Nothing.
      */
-    public boolean addPathToServiceForwarderState(ServiceFunctionPath serviceFunctionPath) {
+    public boolean addPathToServiceForwarderState(String pathName) {
 
         printTraceStart(LOG);
 
@@ -345,15 +345,14 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                 new ServiceFunctionForwarderStateBuilder();
 
         //ArrayList<SffServicePath> sffServicePathArrayList = new ArrayList<>();
-        String rspName = serviceFunctionPath.getName();
-        SffServicePathKey sffServicePathKey = new SffServicePathKey(rspName);
+        SffServicePathKey sffServicePathKey = new SffServicePathKey(pathName);
         SffServicePathBuilder sffServicePathBuilder = new SffServicePathBuilder();
         sffServicePathBuilder.setKey(sffServicePathKey);
-        sffServicePathBuilder.setName(rspName);
+        sffServicePathBuilder.setName(pathName);
         //sffServicePathArrayList.add(sffServicePathBuilder.build());
         //serviceFunctionForwarderStateBuilder.setSffServicePath(sffServicePathArrayList);
 
-        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(rspName);
+        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(pathName);
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
             ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
@@ -370,7 +369,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             } else {
                 ret = ret && false;
                 LOG.error("Failed to add path {} to SFF {} state.",
-                        rspName, renderedServicePathHop.getServiceFunctionForwarder());
+                        pathName, renderedServicePathHop.getServiceFunctionForwarder());
             }
         }
         printTraceStop(LOG);
@@ -382,15 +381,15 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * We add the path name to the operational store of each SFF.
      *
      * <p>
-     * @param serviceFunctionPath Service Function Path Object
+     * @param pathName Service Function Path Object
      * @return Nothing.
      */
-    public static boolean addPathToServiceForwarderStateExecutor(ServiceFunctionPath serviceFunctionPath) {
+    public static boolean addPathToServiceForwarderStateExecutor(String pathName) {
 
         printTraceStart(LOG);
         boolean ret = false;
-        Object[] servicePathObj = {serviceFunctionPath};
-        Class[] servicePathClass = {ServiceFunctionPath.class};
+        Object[] servicePathObj = {pathName};
+        Class[] servicePathClass = {String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getAddPathToServiceForwarderState(servicePathObj, servicePathClass);
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);

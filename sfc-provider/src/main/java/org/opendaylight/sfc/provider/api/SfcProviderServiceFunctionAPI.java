@@ -224,23 +224,22 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     /**
      * This method adds a SFP name to the corresponding SF operational state.
      * <p>
-     * @param serviceFunctionPath SFP object
+     * @param pathName SFP name
      * @return true if SFP was added, false otherwise
      */
     @SuppressWarnings("unused")
-    public static boolean addPathToServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
+    public static boolean addPathToServiceFunctionState(String pathName) {
 
         boolean ret =  false;
         printTraceStart(LOG);
 
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
-        String rspName = serviceFunctionPath.getName();
-        SfServicePathKey sfServicePathKey = new SfServicePathKey(rspName);
+        SfServicePathKey sfServicePathKey = new SfServicePathKey(pathName);
         SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
         sfServicePathBuilder.setKey(sfServicePathKey);
-        sfServicePathBuilder.setName(rspName);
+        sfServicePathBuilder.setName(pathName);
 
-        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(serviceFunctionPath.getName());
+        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(pathName);
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
@@ -256,7 +255,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 ret = true;
             } else {
                 LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
-                        Thread.currentThread().getStackTrace()[1], serviceFunctionPath.getName(),
+                        Thread.currentThread().getStackTrace()[1], pathName,
                         renderedServicePathHop.getServiceFunctionName());
             }
         }
@@ -268,15 +267,15 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     /**
      * This method adds a SFP name to the corresponding SF operational state.
      * <p>
-     * @param serviceFunctionPath SFP object
+     * @param pathName SFP name
      * @return true if SFP was added, false otherwise
      */
-    public static boolean addPathToServiceFunctionStateExecutor(ServiceFunctionPath serviceFunctionPath) {
+    public static boolean addPathToServiceFunctionStateExecutor(String pathName) {
         boolean ret =  false;
         printTraceStart(LOG);
 
-        Object[] servicePathObj = {serviceFunctionPath};
-        Class[] servicePathClass = {ServiceFunctionPath.class};
+        Object[] servicePathObj = {pathName};
+        Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
@@ -373,7 +372,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (ServiceFunction) future.get();
-            LOG.info("getRead: {}", future.get());
+            LOG.debug("getRead: {}", future.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

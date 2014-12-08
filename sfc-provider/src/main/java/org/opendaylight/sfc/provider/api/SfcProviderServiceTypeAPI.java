@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -143,6 +145,35 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return sft;
+    }
+
+
+    /**
+     * This method reads the operational state for a service function.
+     * <p>
+     * @param serviceFunctionTypeIdentity SF name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
+    public static ServiceFunctionType readServiceFunctionTypeExecutor(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionTypeIdentity) {
+
+        printTraceStart(LOG);
+        ServiceFunctionType ret = null;
+        Object[] serviceTypeObj = {serviceFunctionTypeIdentity};
+        Class[] serviceTypeClass = {Class.class};
+        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
+                .getRead(serviceTypeObj, serviceTypeClass);
+        Future future  = odlSfc.executor.submit(sfcProviderServiceTypeAPI);
+        try {
+            ret = (ServiceFunctionType) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        printTraceStop(LOG);
+        return ret;
     }
 
     /**

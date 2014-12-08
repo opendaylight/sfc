@@ -4,7 +4,19 @@
     </div>
 
     <div class="modal-body form-horizontal" ng-form="f_classifier">
-        <div class="form-group" show-validation-error>
+
+        <div ng-show="sfp['rendered-service-path-hop']" class="form-group">
+            <label style="color:#444 !important;" for="classifier_name_{{idSuffix}}"
+                   class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_NAME'
+                | translate}}</label>
+
+            <div class="col-lg-6">
+                <input type="text" class="form-control input-sm" ng-model="classifierName"
+                       id="classifier_name_{{idSuffix}}" name="classifier_name" readonly>
+            </div>
+        </div>
+
+        <div ng-hide="sfp['rendered-service-path-hop']" class="form-group" show-validation-error>
             <label style="color:#444 !important;" class="col-lg-6 control-label small-label" ui-select2-label="classifier_{{idSuffix}}">
                 {{'SFC_CLASSIFIER_NAME' | translate}}
             </label>

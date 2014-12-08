@@ -6923,6 +6923,7 @@ a.editable-click {
 }
 .modal-body {
   overflow: auto;
+  max-height: 600px;
 }
 .has-error .select2-choice {
   border-color: #a94442 !important;
@@ -7001,21 +7002,9 @@ a.editable-click {
   .modal-body {
     max-height: 355px;
   }
-  .modal-dialog {
-    height: 500px;
-  }
-  .modal-content {
-    height: 100%;
-  }
 }
 @media screen and (max-height: 540px) {
   .modal-body {
     max-height: 225px;
-  }
-  .modal-dialog {
-    height: 370px;
-  }
-  .modal-content {
-    height: 100%;
   }
 }

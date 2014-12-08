@@ -220,7 +220,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     var svc = {};
     var modalInstance;
 
-    svc.open = function (ace, callback) {
+    svc.open = function (ace) {
       modalInstance = $modal.open({
         templateUrl: 'src/app/sfc/acl/acl.modal.metadata.tpl.html',
         backdrop: false,
@@ -232,11 +232,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
 
-      modalInstance.result.then(function (result) {
-        callback(result);
-      }, function (reason) {
-        callback(reason);
-      });
+      //modalInstance.result.then(function (result) {
+      //  callback(result);
+      //}, function (reason) {
+      //  callback(reason);
+      //});
 
       return modalInstance;
     };

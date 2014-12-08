@@ -116,32 +116,36 @@ define(['app/sfc/sfc.module'], function (sfc) {
         });
     });
 
-    ServicePathSvc.getArray(function (data) {
+    $scope.fetchData = function () {
+      ServicePathSvc.getArray(function (data) {
 
-      //temporary SFPs are kept in rootScope, persisted SFPs should be removed from it
-      var tempSfps = [];
-      _.each($rootScope.sfps, function (sfp) {
-        if ($scope.getSFPstate(sfp) !== $rootScope.sfpState.PERSISTED) {
-          tempSfps.push(sfp);
-        }
-      });
-
-      //concat temporary with loaded data (dont add edited sfcs which are already in tempSfps)
-      if (angular.isDefined(data)) {
-        _.each(data, function (sfp) {
-          //if it is not in tempSfps add it
-          if (angular.isUndefined(_.findWhere(tempSfps, {name: sfp.name}))) {
-            $scope.setSFPstate(sfp, $rootScope.sfpState.PERSISTED);
-            ServicePathHelper.orderHopsInSFP(sfp);
+        //temporary SFPs are kept in rootScope, persisted SFPs should be removed from it
+        var tempSfps = [];
+        _.each($rootScope.sfps, function (sfp) {
+          if ($scope.getSFPstate(sfp) !== $rootScope.sfpState.PERSISTED) {
             tempSfps.push(sfp);
           }
         });
-      }
 
-      $rootScope.sfps = tempSfps;
+        //concat temporary with loaded data (dont add edited sfcs which are already in tempSfps)
+        if (angular.isDefined(data)) {
+          _.each(data, function (sfp) {
+            //if it is not in tempSfps add it
+            if (angular.isUndefined(_.findWhere(tempSfps, {name: sfp.name}))) {
+              $scope.setSFPstate(sfp, $rootScope.sfpState.PERSISTED);
+              ServicePathHelper.orderHopsInSFP(sfp);
+              tempSfps.push(sfp);
+            }
+          });
+        }
 
-      thisCtrl.registerSfpsWatcher();
-    });
+        $rootScope.sfps = tempSfps;
+
+        thisCtrl.registerSfpsWatcher();
+      });
+    };
+
+    $scope.fetchData();
 
     $scope.undoSFPchanges = function undoSFPchanges(sfp) {
       ServicePathSvc.getItem(sfp.name, function (oldSfp) {

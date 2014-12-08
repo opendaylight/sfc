@@ -7,7 +7,7 @@
     </div>
 
     <tabset>
-        <tab heading="{{'SFC_SYSTEM_KARAF_FEATURES' | translate}}">
+        <tab heading="{{'SFC_SYSTEM_KARAF_FEATURES' | translate}}" select="fetchData()">
 
             <table ng-table="tableParams" show-filter="true" class="footable table" style="font-size:12px; margin-top: 0">
                 <tr ng-repeat="feature in $data track by $index" ng-model="features">
@@ -44,8 +44,8 @@
             </table>
         </tab>
 
-        <tab heading="{{'SFC_SYSTEM_KARAF_LOGS' | translate}}">
-            <table ng-controller="sfcSystemLogCtrl" ng-table="tableParams" show-filter="true" class="footable table"
+        <tab heading="{{'SFC_SYSTEM_KARAF_LOGS' | translate}}" select="fetchData()" ng-controller="sfcSystemLogCtrl">
+            <table ng-table="tableParams" show-filter="true" class="footable table"
                    style="font-size:12px; margin-top: 0">
                 <tr ng-repeat="log in $data track by $index" ng-model="logs">
                     <td data-title="'SFC_SYSTEM_LOG_RECEIVED' | translate" sortable="'received'"

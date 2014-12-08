@@ -155,6 +155,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return this.baseRest().customGET(this.modelUrl + ":" + this.containerName + '/' + this.listName + '/' + key);
     };
 
+    SfcRestBaseSvc.prototype.getOperationalOne = function (key) {
+      return this.baseOperationalRest().customGET(this.modelUrl + ":" + this.containerName + '/' + this.listName + '/' + key);
+    };
+
     SfcRestBaseSvc.prototype.getItem = function (key, callback) {
       var instance = this; // save 'this' to closure
 
@@ -173,8 +177,30 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    SfcRestBaseSvc.prototype.getOperationalItem = function (key, callback) {
+      var instance = this; // save 'this' to closure
+
+      this.getOperationalOne(key).then(function (result) {
+        var stripped = instance.stripNamespacePrefixes(result[instance.listName]);
+        callback(stripped[0]); // return only nested object
+      }, /* on error*/ function (response) {
+
+        if (response.status = "404") {
+          console.log("No data, returning empty item");
+        } else {
+          console.error("Error with status code ", response.status);
+        }
+
+        callback({}); // return empty item
+      });
+    };
+
     SfcRestBaseSvc.prototype.getAll = function () {
       return this.baseRest().customGET(this.modelUrl + ":" + this.containerName);
+    };
+
+    SfcRestBaseSvc.prototype.getOperationalAll = function () {
+      return this.baseOperationalRest().customGET(this.modelUrl + ":" + this.containerName);
     };
 
     SfcRestBaseSvc.prototype.exportContainer = function (receiveCallback) {
@@ -198,6 +224,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var instance = this; // save 'this' to closure
 
       this.getAll().then(function (result) {
+        var stripped = instance.stripNamespacePrefixes(result[instance.containerName][instance.listName]);
+        callback(stripped); // return only nested array
+      }, /* on error*/ function (response) {
+
+        if (response.status = "404") {
+          console.log("No data, returning empty array");
+        } else {
+          console.error("Error with status code ", response.status);
+        }
+
+        callback([]); // return empty array
+      });
+    };
+
+    SfcRestBaseSvc.prototype.getOperationalArray = function (callback) {
+      var instance = this; // save 'this' to closure
+
+      this.getOperationalAll().then(function (result) {
         var stripped = instance.stripNamespacePrefixes(result[instance.containerName][instance.listName]);
         callback(stripped); // return only nested array
       }, /* on error*/ function (response) {
@@ -742,6 +786,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
     SfcClassifierSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
 
     return new SfcClassifierSvc();
+  });
+
+  // ******* RenderedServicePathSvc *********
+  sfc.register.factory('RenderedServicePathSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'rendered-service-path';
+    var containerName = 'rendered-service-paths';
+    var listName = 'rendered-service-path';
+
+    // constructor
+    function RenderedServicePathSvc() {
+    }
+
+    RenderedServicePathSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new RenderedServicePathSvc();
   });
 
 

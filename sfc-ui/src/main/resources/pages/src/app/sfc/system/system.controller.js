@@ -30,7 +30,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
 
-    this.fetchData = function () {
+    $scope.fetchData = function () {
       SfcSystemSvc.getFeatures(function (data) {
         $scope.features = SfcSystemSvc.getSfcFeatures(data);
         $scope.tableParams.reload();
@@ -42,7 +42,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.tableParams.reload();
     };
 
-    this.fetchData();
+    $scope.fetchData();
 
     $scope.isFeatureInstalled = function (feature) {
       return feature['state'] === "Installed";
@@ -115,18 +115,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
 
-    this.fetchData = function () {
+    $scope.fetchData = function () {
       SfcSystemSvc.getLogs(function (data) {
         $scope.logs = data;
         $scope.tableParams.reload();
       });
     };
 
-    this.reloadData = function () {
-      $scope.tableParams.reload();
-    };
-
-    this.fetchData();
+    $scope.fetchData();
 
     $scope.logLevels = function () {
       var def = $q.defer();

@@ -3,36 +3,44 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter, $q) {
     var NgTableParams = ngTableParams;
 
-    ServiceFunctionSvc.getArray(function (data) {
-      $scope.sfs = data;
-      _.each($scope.sfs, function (sf) {
-        sf['sf-data-plane-locator-string'] = ServiceFunctionHelper.sfDpLocatorToString(sf['sf-data-plane-locator']);
+    $scope.sfs = [];
+
+    $scope.tableParams = new NgTableParams({
+        page: 1,            // show first page
+        count: 10,          // count per page
+        sorting: {
+          name: 'asc'     // initial sorting
+        }
+      },
+      {
+        total: $scope.sfs.length,
+        getData: function ($defer, params) {
+          // use build-in angular filter
+          var filteredData = params.filter() ?
+            $filter('filter')($scope.sfs, params.filter()) :
+            $scope.sfs;
+
+          var orderedData = params.sorting() ?
+            $filter('orderBy')(filteredData, params.orderBy()) :
+            filteredData;
+
+          params.total(orderedData.length);
+          $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
       });
 
-      $scope.tableParams = new NgTableParams({
-          page: 1,            // show first page
-          count: 10,          // count per page
-          sorting: {
-            name: 'asc'     // initial sorting
-          }
-        },
-        {
-          total: $scope.sfs.length,
-          getData: function ($defer, params) {
-            // use build-in angular filter
-            var filteredData = params.filter() ?
-              $filter('filter')($scope.sfs, params.filter()) :
-              $scope.sfs;
-
-            var orderedData = params.sorting() ?
-              $filter('orderBy')(filteredData, params.orderBy()) :
-              filteredData;
-
-            params.total(orderedData.length);
-            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-          }
+    $scope.fetchData = function () {
+      ServiceFunctionSvc.getArray(function (data) {
+        $scope.sfs = data;
+        _.each($scope.sfs, function (sf) {
+          sf['sf-data-plane-locator-string'] = ServiceFunctionHelper.sfDpLocatorToString(sf['sf-data-plane-locator']);
         });
-    });
+
+        $scope.tableParams.reload();
+      });
+    };
+
+    $scope.fetchData();
 
     $scope.getSfLocatorTooltipText = function (locator) {
       return ServiceLocatorHelper.getSfLocatorTooltipText(locator, $scope);
@@ -143,7 +151,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
 
-    this.fetchData = function () {
+    $scope.fetchData = function () {
       $scope.sfts = [];
       ServiceFunctionTypeSvc.getArray(function (data) {
         //expand sf type into rows
@@ -160,7 +168,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
-    this.fetchData();
+    $scope.fetchData();
   });
 
 });

@@ -8,7 +8,7 @@
     </button>
 
     <tabset>
-        <tab heading="{{'SFC_SERVICE_FUNCTIONS' | translate}}">
+        <tab heading="{{'SFC_SERVICE_FUNCTIONS' | translate}}" select="fetchData()">
             <table ng-table="tableParams" show-filter="true" class="footable table" style="margin-top: 0px">
                 <!--<tr ng-hide="sfs.length">-->
                 <!--<td colspan="6" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
@@ -24,6 +24,10 @@
                     <td data-title="'SFC_FUNCTION_IP' | translate" sortable="'valueOf()[\'ip-mgmt-address\']'"
                         filter="{ 'ip-mgmt-address': 'text' }">
                         {{sf['ip-mgmt-address']}}
+                    </td>
+                    <td data-title="'SFC_FUNCTION_SHORT_REST_URI' | translate" sortable="'valueOf()[\'rest-uri\']'"
+                        filter="{ 'rest-uri': 'text' }">
+                        {{sf['rest-uri']}}
                     </td>
                     <td data-title="'SFC_FUNCTION_NSH_AWARE' | translate" sortable="'valueOf()[\'nsh-aware\']'"
                         filter="{ 'nsh-aware': 'select' }" filter-data="sfNshAware()">
@@ -57,8 +61,8 @@
             </table>
         </tab>
 
-        <tab heading="{{'SFC_SERVICE_FUNCTIONS_TYPES' | translate}}">
-            <table ng-controller="serviceFunctionTypeCtrl" ng-table="tableParams" show-filter="true"
+        <tab heading="{{'SFC_SERVICE_FUNCTIONS_TYPES' | translate}}" select="fetchData()" ng-controller="serviceFunctionTypeCtrl">
+            <table ng-table="tableParams" show-filter="true"
                    class="footable table" style="margin-top: 0px">
                 <!--<tr ng-hide="sfs.length">-->
                 <!--<td colspan="6" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->

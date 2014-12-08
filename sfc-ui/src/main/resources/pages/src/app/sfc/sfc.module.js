@@ -37,7 +37,8 @@ define([
       'app/sfc/acl/acl.controller',
       'app/sfc/metadata/metadata.controller',
       'app/sfc/servicelocator/servicelocator.controller',
-      'app/sfc/system/system.controller'];
+      'app/sfc/system/system.controller',
+      'app/sfc/servicepath/renderedservicepath/renderedservicepath.controller'];
     var services = [
       'app/core/core.services',
       'app/sfc/sfc.services',

@@ -8,7 +8,19 @@
     </div>
 
     <div class="modal-body form-horizontal" ng-form="f_context_metadata">
-        <div class="form-group" show-validation-error>
+
+        <div ng-show="sfp['rendered-service-path-hop']" class="form-group">
+            <label style="color:#444 !important;" for="context_metadata_name_{{idSuffix}}"
+                   class="col-lg-6 control-label small-label">{{'SFC_PATH_MODAL_SELECT_CONTEXT_METADATA'
+                | translate}}</label>
+
+            <div class="col-lg-6">
+                <input type="text" class="form-control input-sm" ng-model="selectedMetadata"
+                       id="context_metadata_name_{{idSuffix}}" name="context_metadata_name" readonly>
+            </div>
+        </div>
+
+        <div ng-hide="sfp['rendered-service-path-hop']" class="form-group" show-validation-error>
             <label style="color:#444 !important;" for="context_metadata_{{idSuffix}}" class="col-lg-6 control-label small-label" ui-select2-label="context_metadata">
                 {{'SFC_PATH_MODAL_SELECT_CONTEXT_METADATA' | translate}}
             </label>

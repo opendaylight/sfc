@@ -353,6 +353,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       if (m) {
         prefix = parseInt(m[2]);
         a = a.replace(/\/[0-9]+$/, ""); // trim prefix
+      } else {
+        return false;
       }
     }
 

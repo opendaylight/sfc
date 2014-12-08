@@ -2,6 +2,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.factory('ServicePathHelper', function ($filter, $rootScope) {
     var svc = {};
+    var MAX_SERVICE_INDEX = 255;
 
     svc.orderHopsInSFP = function (sfp) {
       var orderedHops = $filter('orderBy')(sfp['service-path-hop'], "+'hop-number'");
@@ -19,7 +20,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     svc.updateHopsOrderInSFP = function (sfp) {
-      var serviceIndex = svc.getCountOfSfsInSFP(sfp);
+      var serviceIndex = MAX_SERVICE_INDEX;
       sfp['starting-index'] = serviceIndex;
 
       _.each(sfp['service-path-hop'], function (hop, index) {

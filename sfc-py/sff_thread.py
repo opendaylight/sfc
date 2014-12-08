@@ -12,7 +12,7 @@ __status__ = "alpha"
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 """Service Function Forwarder (SFF). This SFF is spawned in a thread
-   by sff_rest.py. """
+   by sfc_agent.py. """
 
 import asyncio
 import logging

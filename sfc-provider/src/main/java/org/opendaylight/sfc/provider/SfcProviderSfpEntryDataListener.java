@@ -160,68 +160,6 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
             }
         }
 
-
-/*        RenderedServicePath renderedServicePath;
-        RenderedServicePath revRenderedServicePath;
-        boolean transactionSuccessful = false;
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
-        {
-            ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
-            if (entry.getValue() instanceof ServiceFunctionPath) {
-                if ((renderedServicePath = SfcProviderServicePathAPI
-                        .createRenderedServicePathEntryExecutor(createdServiceFunctionPath)) != null) {
-
-                    if  (SfcProviderServiceForwarderAPI
-                                .addPathToServiceForwarderStateExecutor(createdServiceFunctionPath)) {
-                        if (SfcProviderServiceFunctionAPI
-                                .addPathToServiceFunctionStateExecutor(createdServiceFunctionPath)) {
-
-                            transactionSuccessful = true;
-                            //Send to SB REST
-                            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                                    (createdServiceFunctionPath,HttpMethod.PUT);
-                        } else {
-                            SfcProviderServiceForwarderAPI
-                                    .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
-                            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
-                        }
-                    } else {
-                        //rollback RSP
-                        SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
-                    }
-                } else {
-                    LOG.error("Could not create RSP. System state inconsistent. Deleting and add SFP {} back",
-                            createdServiceFunctionPath.getName());
-                }
-                if (transactionSuccessful) {
-                    if ((revRenderedServicePath = SfcProviderServicePathAPI
-                            .createReverseRenderedServicePathEntryExecutor(renderedServicePath)) != null) {
-                        if  (SfcProviderServiceForwarderAPI
-                                .addPathToServiceForwarderStateExecutor(createdServiceFunctionPath)) {
-                            if (SfcProviderServiceFunctionAPI
-                                    .addPathToServiceFunctionStateExecutor(createdServiceFunctionPath)) {
-
-                                transactionSuccessful = true;
-                                //Send to SB REST
-                                SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                                        (createdServiceFunctionPath,HttpMethod.PUT);
-                            } else {
-                                SfcProviderServiceForwarderAPI
-                                        .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
-                                SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
-                            }
-                        } else {
-                            //rollback RSP
-                            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
-                        }
-                    }
-                } else {
-                    LOG.error("Could not create RSP. System state inconsistent. Deleting and add SFP {} back",
-                            createdServiceFunctionPath.getName());
-                }
-            }
-        }*/
-
         // SFP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =
                 change.getUpdatedData();

@@ -87,9 +87,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     LOG.debug("getCreateServiceFunctionTypeEntry returns: {}", future.get());
 
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 }
 
                 LOG.debug("\n########## getCreatedConfigurationData {}  {}",
@@ -112,9 +112,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 try {
                     LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 }
 
                 /* Before removing RSPs used by this Service Function, we need to remove all
@@ -166,9 +166,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     try {
                         LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        LOG.warn("failed to ...." , e);
                     } catch (ExecutionException e) {
-                        e.printStackTrace();
+                        LOG.warn("failed to ...." , e);
                     }
                     // We create a independent entry
                     serviceFunctionObj[0] = updatedServiceFunction;

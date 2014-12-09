@@ -9,6 +9,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ public class SfcSftMapper {
     private Map<Class<? extends ServiceFunctionTypeIdentity>, SfcSnMapper> map;
 
     private final OpendaylightSfc odlSfc;
+    private static final Logger LOG = LoggerFactory.getLogger(SfcSftMapper.class);
 
     public SfcSftMapper(OpendaylightSfc odlSfc){
         this.map = new HashMap<>();
@@ -43,7 +46,7 @@ public class SfcSftMapper {
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.snIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.warn("failed to ...." , e);
             }
             if (dataObject instanceof ServiceNodes) {
                 ServiceNodes nodes = (ServiceNodes) dataObject;
@@ -57,7 +60,7 @@ public class SfcSftMapper {
                             sf = (ServiceFunction) odlSfc.executor.submit(SfcProviderServiceFunctionAPI.getRead(
                                     new Object[]{sfName}, new Class[]{String.class})).get();
                         } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
+                            LOG.warn("failed to ...." , e);
                         }
                         if ( sf != null) {
                             this.add(sf.getType(), sn.getName(), sf);

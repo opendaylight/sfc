@@ -159,9 +159,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (List<SfServicePath>) future.get();
             LOG.debug("getRead: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -186,9 +186,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -283,9 +283,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.info("getAddPathToServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -374,9 +374,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (ServiceFunction) future.get();
             LOG.debug("getRead: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -468,9 +468,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -500,9 +500,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -575,9 +575,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.info("getDeleteServicePathFromServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;

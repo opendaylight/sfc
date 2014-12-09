@@ -108,7 +108,7 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
     }
 

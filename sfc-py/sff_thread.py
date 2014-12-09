@@ -75,23 +75,6 @@ server_vxlan_values = VXLANGPE()
 server_ctx_values = CONTEXTHEADER()
 server_base_values = BASEHEADER()
 
-# Local service function callbacks. These are dummy services to track progress of packets through the service chain
-# at this SFF.
-
-# def fw1_process_packet(data, addr):
-#     print('fw1 processed packet from:', addr)
-#     return PACKET_CHAIN
-#
-#
-# def dpi1_process_packet(data, addr):
-#     print('dpi1 processed packet from:', addr)
-#     return PACKET_CHAIN
-#
-#
-# def nat1_process_packet(data, addr):
-#     print('nat1 processed packet from:', addr)
-#     return PACKET_CHAIN
-
 
 def lookup_next_sf(service_path, service_index):
     next_hop = SERVICE_HOP_INVALID

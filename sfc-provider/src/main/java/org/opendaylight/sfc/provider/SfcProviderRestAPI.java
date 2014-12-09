@@ -237,10 +237,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     putClientRemoteResponse.close();
                 } catch (InterruptedException e)
                 {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 } catch (ExecutionException e)
                 {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 }
             }
         }
@@ -303,10 +303,10 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                     deleteClientRemoteResponse.close();
                 } catch (InterruptedException e)
                 {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 } catch (ExecutionException e)
                 {
-                    e.printStackTrace();
+                    LOG.warn("failed to ...." , e);
                 }
             }
         }

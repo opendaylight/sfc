@@ -154,11 +154,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         try {
             ret = (ServiceFunctionChain) future.get();
             LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        } catch (InterruptedException e) {             LOG.warn("failed to ...." , e);         } catch (ExecutionException e) {             LOG.warn("failed to ...." , e);         }
         printTraceStop(LOG);
         return ret;
     }

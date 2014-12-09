@@ -397,9 +397,9 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -486,11 +486,11 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.info("getAddPathToServiceForwarderState: {}", future.get());
+            LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -516,11 +516,11 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.info("getDeletePathFromServiceForwarderState: {}", future.get());
+            LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -629,11 +629,11 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.info("getDeleteServiceFunctionForwarderState: {}", future.get());
+            LOG.debug("getDeleteServiceFunctionForwarderState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -687,11 +687,11 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (List<SffServicePath>) future.get();
-            LOG.info("getReadSffState: {}", ret);
+            LOG.debug("getReadSffState: {}", ret);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         return ret;
     }
@@ -755,11 +755,11 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
-            LOG.info("getDeletePathFromServiceForwarderState: {}", future.get());
+            LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -788,9 +788,9 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             ret = (boolean) future.get();
             LOG.info("getDeletePathsUsedByServiceForwarder: {}", ret);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;

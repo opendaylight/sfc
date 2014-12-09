@@ -42,7 +42,7 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
     }
 
@@ -50,7 +50,7 @@ public class SfcDataStoreCallback implements FutureCallback<Void>
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         return;
     }

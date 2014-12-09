@@ -111,7 +111,7 @@ public class SfcDataStoreAPI {
                         Thread.currentThread().getStackTrace()[1]);
             }
         } catch (ReadFailedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         return ret;
     }

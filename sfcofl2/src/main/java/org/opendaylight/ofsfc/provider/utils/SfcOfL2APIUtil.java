@@ -55,7 +55,7 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionForwarderDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.warn("failed to ...." , e);
             }
             if (serviceFunctionForwarderDataObject != null && serviceFunctionForwarderDataObject.isPresent()) {
                 sff = serviceFunctionForwarderDataObject.get();
@@ -81,7 +81,7 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.warn("failed to ...." , e);
             }
             if (serviceFunctionDataObject != null && serviceFunctionDataObject.isPresent()) {
                 sf = serviceFunctionDataObject.get();
@@ -104,7 +104,7 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOG.warn("failed to ...." , e);
             }
             if (serviceFunctionPathDataObject != null && serviceFunctionPathDataObject.isPresent()) {
                 sff = serviceFunctionPathDataObject.get();

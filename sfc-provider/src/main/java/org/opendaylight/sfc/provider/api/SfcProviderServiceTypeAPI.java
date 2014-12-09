@@ -168,9 +168,9 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
             ret = (ServiceFunctionType) future.get();
             LOG.debug("getRead: {}", future.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;

@@ -6,7 +6,6 @@
         <maven>3.0.4</maven>
     </prerequisites>
 
-    
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
@@ -43,6 +42,8 @@
         <maven.release.version>2.4.2</maven.release.version>
         <maven.source.version>2.2.1</maven.source.version>
         <maven.surefire.version>2.16</maven.surefire.version>
+        <maven.resources.version>2.6</maven.resources.version>
+        <maven.helper.version>1.8</maven.helper.version>
 
         <ietf.model.version>2010.09.24.7-SNAPSHOT</ietf.model.version>
         <ietf.yang.types.version>2013.07.15.7-SNAPSHOT</ietf.yang.types.version>
@@ -123,6 +124,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler.version}</version>
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>

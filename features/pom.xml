@@ -291,6 +291,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
+            <version>${maven.resources.version}</version>
             <executions>
                <execution>
                   <id>filter</id>
@@ -304,6 +305,7 @@
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
+            <version>${maven.helper.version}</version>
             <executions>
                <execution>
                   <id>attach-artifacts</id>

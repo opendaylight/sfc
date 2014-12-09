@@ -54,7 +54,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${bundle.plugin.version}</version>
-                <inherited>true</inherited>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>

@@ -1,10 +1,11 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter, $q) {
+  sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter, $q) {
     var NgTableParams = ngTableParams;
 
     $scope.sfs = [];
 
+    SfcTableParamsSvc.initializeSvcForTable('serviceFunctionTable');
     $scope.tableParams = new NgTableParams({
         page: 1,            // show first page
         count: 10,          // count per page
@@ -15,8 +16,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: $scope.sfs.length,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('serviceFunctionTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('serviceFunctionTable', $scope.tableParams) ?
             $filter('filter')($scope.sfs, params.filter()) :
             $scope.sfs;
 
@@ -77,6 +80,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    $scope.cloneSF = function cloneSF(sf) {
+      delete sf['sf-data-plane-locator-string'];
+      sf['name'] = sf['name'] + "_copy";
+      ServiceFunctionSvc.putItem(sf, function () {
+        $scope.fetchData();
+      });
+    };
+
     $scope.editSF = function editSF(sfName) {
       $state.transitionTo('main.sfc.servicefunction-edit', {sfName: sfName}, {
         location: true,
@@ -122,11 +133,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceFunctionTypeCtrl', function ($scope, ServiceFunctionTypeSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceFunctionTypeCtrl', function ($scope, ServiceFunctionTypeSvc, SfcTableParamsSvc ,ngTableParams, $filter) {
 
     $scope.sfts = [];
 
     var NgTableParams = ngTableParams;
+    SfcTableParamsSvc.initializeSvcForTable('serviceFunctionTypeTable');
+
     $scope.tableParams = new NgTableParams({
         page: 1,            // show first page
         count: 10,          // count per page
@@ -137,8 +150,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: $scope.sfts.length,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('serviceFunctionTypeTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('serviceFunctionTypeTable', $scope.tableParams) ?
             $filter('filter')($scope.sfts, params.filter()) :
             $scope.sfts;
 

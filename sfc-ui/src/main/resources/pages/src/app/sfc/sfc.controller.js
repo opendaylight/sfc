@@ -69,27 +69,27 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   });
 
-  sfc.register.controller('sfcForwarderSelect2Ctrl', function ($scope) {
+  sfc.register.controller('sfcSelect2CreateSearchChoiceCtrl', function ($scope) {
     var thisCtrl = this;
 
-    //wait for data load, then prefill select2Model
-    this.unregisterSffPropWatch = $scope.$watch('sffProp', function (newVal){
+    //wait for data load, then prefill select2Model($scope.tmpForSelect2) - do it only once
+    this.unregisterBindingPropertyWatch = $scope.$watch('bindingProperty', function (newVal){
       if(angular.isUndefined(newVal) || newVal === null){
         return;
       }
 
-      $scope.tmpSffForSelect2 = {
+      $scope.tmpForSelect2 = {
         id: newVal,
         text: newVal
       };
 
-      thisCtrl.unregisterSffPropWatch();
+      thisCtrl.unregisterBindingPropertyWatch();
     });
 
-    // sync/copy 'id' to model
+    // sync/copy 'id' (id = selected value) to bindingProperty
     $scope.$watch(function () {
-      if ($scope.tmpSffForSelect2) {
-        $scope.sffProp = $scope.tmpSffForSelect2.id;
+      if ($scope.tmpForSelect2) {
+        $scope.bindingProperty = $scope.tmpForSelect2.id;
       }
     });
 
@@ -100,8 +100,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
         var exact = false;
         var blank = _.str.isBlank(query.term);
 
-        _.each($scope.sffs, function (sff) {
-          var name = sff.name;
+        _.each($scope.availableOptionsArray, function (option) {
+          var name = option.name;
           var addThis = false;
 
           if (!blank) {

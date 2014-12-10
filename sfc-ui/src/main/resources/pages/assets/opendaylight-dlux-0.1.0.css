@@ -6951,6 +6951,13 @@ a.editable-click {
 .nav-tabs {
   border-bottom: none !important;
 }
+select.filter.filter-select.form-control {
+  font-size: 10px;
+  padding: 1px;
+}
+input.input-filter.form-control {
+  font-size: 10px;
+}
 @-webkit-keyframes rotating {
   from {
     -webkit-transform: rotate(0deg);

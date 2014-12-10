@@ -1,7 +1,37 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
+    var thisCtrl = this;
+    $scope.sffs = [];
+
     var NgTableParams = ngTableParams;
+
+    SfcTableParamsSvc.initializeSvcForTable('serviceForwarderTable');
+    $scope.tableParams = new NgTableParams({
+        page: 1,            // show first page
+        count: 10,          // count per page
+        sorting: {
+          name: 'asc'     // initial sorting
+        }
+      },
+      {
+        total: $scope.sffs.length,
+        getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('serviceForwarderTable', params.filter());
+
+          // use build-in angular filter
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('serviceForwarderTable', $scope.tableParams) ?
+            $filter('filter')($scope.sffs, params.filter()) :
+            $scope.sffs;
+
+          var orderedData = params.sorting() ?
+            $filter('orderBy')(filteredData, params.orderBy()) :
+            filteredData;
+
+          params.total(orderedData.length);
+          $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+      });
 
     $scope.sffInterfaceToString = ServiceForwarderHelper.sffInterfaceToString;
 
@@ -13,37 +43,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return ServiceForwarderHelper.getOVStooltipText(ovs, $scope);
     };
 
-    ServiceForwarderSvc.getArray(function (data) {
-      $scope.sffs = data;
-      _.each($scope.sffs, function (sff) {
-        sff['sff-data-plane-locator-string'] = ServiceForwarderHelper.sffDpLocatorToString(sff['sff-data-plane-locator']);
-        sff['service-function-dictionary-string'] = ServiceForwarderHelper.sffFunctionDictionaryToString(sff['service-function-dictionary']);
-      });
-
-      $scope.tableParams = new NgTableParams({
-          page: 1,            // show first page
-          count: 10,          // count per page
-          sorting: {
-            name: 'asc'     // initial sorting
-          }
-        },
-        {
-          total: $scope.sffs.length,
-          getData: function ($defer, params) {
-            // use build-in angular filter
-            var filteredData = params.filter() ?
-              $filter('filter')($scope.sffs, params.filter()) :
-              $scope.sffs;
-
-            var orderedData = params.sorting() ?
-              $filter('orderBy')(filteredData, params.orderBy()) :
-              filteredData;
-
-            params.total(orderedData.length);
-            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-          }
+    this.fetchData = function () {
+      ServiceForwarderSvc.getArray(function (data) {
+        $scope.sffs = data;
+        _.each($scope.sffs, function (sff) {
+          sff['sff-data-plane-locator-string'] = ServiceForwarderHelper.sffDpLocatorToString(sff['sff-data-plane-locator']);
+          sff['service-function-dictionary-string'] = ServiceForwarderHelper.sffFunctionDictionaryToString(sff['service-function-dictionary']);
         });
-    });
+
+        $scope.tableParams.reload();
+      });
+    };
+
+    this.fetchData();
 
     $scope.deleteSFF = function deleteSFF(sff) {
       ModalDeleteSvc.open(sff.name, function (result) {
@@ -54,6 +66,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
             $scope.tableParams.reload();
           });
         }
+      });
+    };
+
+    $scope.cloneSFF = function cloneSFF (sff) {
+      delete sff['sff-data-plane-locator-string'];
+      delete sff['service-function-dictionary-string'];
+      sff['name'] = sff['name'] + "_copy";
+      ServiceForwarderSvc.putItem(sff, function () {
+        thisCtrl.fetchData();
       });
     };
 

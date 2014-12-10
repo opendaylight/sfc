@@ -1,12 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('sfcAclCtrl', function ($scope, $state, SfcAclSvc, SfcAclHelper, SfcAclModalMetadata, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('sfcAclCtrl', function ($scope, $state, SfcAclSvc, SfcAclHelper, SfcAclModalMetadata, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
 
     var thisCtrl = this;
 
     $scope.acls = [];
 
     var NgTableParams = ngTableParams; // checkstyle
+    SfcTableParamsSvc.initializeSvcForTable('aclTable');
 
     $scope.tableParams = new NgTableParams({
         page: 1,          // show first page
@@ -18,8 +19,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: 0,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('aclTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('aclTable', $scope.tableParams) ?
             $filter('filter')($scope.acls, params.filter()) :
             $scope.acls;
 
@@ -55,6 +58,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     this.fetchData();
+
+    $scope.$on('reloadAcl', function () {
+      thisCtrl.fetchData();
+    });
 
     this.stringifyComposedProperties = function (entry){
       entry['source-ip-mac-mask-string'] = SfcAclHelper.sourceIpMacMaskToString(entry['matches']);
@@ -128,11 +135,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   });
 
-  sfc.register.controller('sfcClassifierCtrl', function ($scope, $state, SfcClassifierSvc, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('sfcClassifierCtrl', function ($scope, $state, SfcClassifierSvc, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle
 
     $scope.classifiers = [];
+    SfcTableParamsSvc.initializeSvcForTable('classifierTable');
 
     $scope.tableParams = new NgTableParams({
         page: 1,          // show first page
@@ -144,8 +152,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: 0,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('classifierTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('classifierTable', $scope.tableParams) ?
             $filter('filter')($scope.classifiers, params.filter()) :
             $scope.classifiers;
 
@@ -232,6 +242,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.submit = function (){
       SfcClassifierSvc.putItem($scope.data, function (){
+        $scope.$emit('reloadAcl');
         $state.transitionTo('main.sfc.acl', null, { location: true, inherit: true, relative: $state.$current, notify: true });
       });
     };

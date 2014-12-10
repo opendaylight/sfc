@@ -1,11 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('sfcSystemCtrl', function ($scope, SfcSystemSvc, ngTableParams, $filter) {
+  sfc.register.controller('sfcSystemCtrl', function ($scope, SfcSystemSvc, SfcTableParamsSvc, ngTableParams, $filter) {
     var thisCtrl = this;
 
     $scope.features = [];
 
     var NgTableParams = ngTableParams;
+    SfcTableParamsSvc.initializeSvcForTable('systemTable');
+
     $scope.tableParams = new NgTableParams({
         page: 1,            // show first page
         count: 10,          // count per page
@@ -16,8 +18,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: $scope.features.length,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('systemTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('systemTable', $scope.tableParams) ?
             $filter('filter')($scope.features, params.filter()) :
             $scope.features;
 
@@ -85,12 +89,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
   });
 
-  sfc.register.controller('sfcSystemLogCtrl', function ($scope, SfcSystemSvc, ngTableParams, $filter, $q, SfcSystemModalException) {
+  sfc.register.controller('sfcSystemLogCtrl', function ($scope, SfcSystemSvc, SfcTableParamsSvc, ngTableParams, $filter, $q, SfcSystemModalException) {
     var thisCtrl = this;
 
     $scope.logs = [];
 
     var NgTableParams = ngTableParams;
+    SfcTableParamsSvc.initializeSvcForTable('systemLogTable');
+
     $scope.tableParams = new NgTableParams({
         page: 1,            // show first page
         count: 25,          // count per page
@@ -101,8 +107,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       {
         total: $scope.logs.length,
         getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('systemLogTable', params.filter());
+
           // use build-in angular filter
-          var filteredData = params.filter() ?
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('systemLogTable', $scope.tableParams) ?
             $filter('filter')($scope.logs, params.filter()) :
             $scope.logs;
 

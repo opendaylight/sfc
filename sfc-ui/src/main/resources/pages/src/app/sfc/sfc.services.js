@@ -1,5 +1,36 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
+  sfc.register.factory('SfcTableParamsSvc', function () {
+
+    var svc = {};
+
+    svc.filterTableParams = {};
+
+    svc.initializeSvcForTable = function (tableId) {
+      if (angular.isUndefined(svc.filterTableParams[tableId])){
+        svc.filterTableParams[tableId] = {};
+      }
+    };
+
+    svc.setFilterTableParams = function (tableId, newFilterTableParams) {
+      if (!_.isEmpty(Object.keys(newFilterTableParams))) {
+        svc.filterTableParams[tableId] = newFilterTableParams;
+      }
+    };
+
+    svc.getFilterTableParams = function (tableId) {
+      return svc.filterTableParams[tableId];
+    };
+
+    svc.checkAndSetFilterTableParams = function (tableId, tableParams) {
+      tableParams.filter(svc.getFilterTableParams(tableId));
+
+      return svc.filterTableParams[tableId] ? true : false;
+    };
+
+    return svc;
+  });
+
   sfc.register.factory('sfcFormatMessage', function () {
 
     // message formatting helper function; replace placeholders ; usage:  format("... {0} {1}", arg0, arg1);
@@ -23,7 +54,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         if (index + 1 < templateArgs.length) {
           arg = templateArgs[index + 1];
-          return stringify(arg);
         }
 
         return match;
@@ -34,7 +64,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     return formatMessageFunc;
   });
-
 
   sfc.register.factory('SfcErrorSvc', function (sfcFormatMessage) {
 

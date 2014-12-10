@@ -1,11 +1,12 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('sfcMetadataCtrl', function ($scope, $state, SfcContextMetadataSvc, SfcVariableMetadataSvc, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('sfcMetadataCtrl', function ($scope, $state, SfcContextMetadataSvc, SfcVariableMetadataSvc, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
 
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle
 
     this.getNgTableParams = function (dataKey) {
+      SfcTableParamsSvc.initializeSvcForTable(dataKey + 'Table');
       return new NgTableParams({
           page: 1,          // show first page
           count: 10,        // count per page
@@ -16,8 +17,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
         {
           total: 0,
           getData: function ($defer, params) {
+            SfcTableParamsSvc.setFilterTableParams(dataKey + 'Table', params.filter());
+
             // use build-in angular filter
-            var filteredData = params.filter() ?
+            var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams(dataKey + 'Table', $scope[dataKey + 'TableParams']) ?
               $filter('filter')($scope[dataKey], params.filter()) :
               $scope[dataKey];
 
@@ -36,7 +39,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       SfcContextMetadataSvc.getArray(function (data) {
         $scope.contextMetadata = data || [];
-        $scope.tableParamsContext.reload();
+
+        _.each($scope.contextMetadata, function (item) {
+          item['context-header1'] = $scope.decimalToHex(item['context-header1']);
+          item['context-header2'] = $scope.decimalToHex(item['context-header2']);
+          item['context-header3'] = $scope.decimalToHex(item['context-header3']);
+          item['context-header4'] = $scope.decimalToHex(item['context-header4']);
+        });
+
+        $scope.contextMetadataTableParams.reload();
       });
     };
 
@@ -49,6 +60,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (!_.isEmpty(item['tlv-metadata'])) {
             _.each(item['tlv-metadata'], function (tlv) {
               tlv['name'] = item['name'];
+              tlv['tlv-class'] = $scope.decimalToHex(tlv['tlv-class']);
+              tlv['tlv-type'] = $scope.decimalToHex(tlv['tlv-type']);
               $scope.variableMetadata.push(tlv);
             });
           }
@@ -59,7 +72,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           }
         });
 
-        $scope.tableParamsVariable.reload();
+        $scope.variableMetadataTableParams.reload();
       });
     };
 
@@ -71,9 +84,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
     this.init = function () {
       $scope.contextMetadata = [];
       $scope.variableMetadata = [];
-      $scope.tableParamsContext = this.getNgTableParams('contextMetadata');
-      $scope.tableParamsVariable = this.getNgTableParams('variableMetadata');
-      this.fetchData();
+      $scope.contextMetadataTableParams = this.getNgTableParams('contextMetadata');
+      $scope.variableMetadataTableParams = this.getNgTableParams('variableMetadata');
+      thisCtrl.fetchData();
     };
 
     //init controller

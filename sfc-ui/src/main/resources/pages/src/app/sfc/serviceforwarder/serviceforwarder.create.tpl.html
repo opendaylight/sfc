@@ -21,14 +21,9 @@
                 </label>
 
                 <div class="col-lg-6">
-                    <select class="form-control input-sm" id="servicenode" ui-select2="{allowClear: true}"
-                            ng-model="data['service-node']"
-                            ng-required="false"
-                            data-placeholder="{{'SFC_FORWARDER_CREATE_SERVICE_NODE' | translate}}">
-                        <option value=""></option>
-                        <option ng-repeat="sn in sns" value="{{sn.name}}">{{sn.name}}/{{sn['ip-mgmt-address']}}
-                        </option>
-                    </select>
+                    <sfc-select2-create-search-choice input-id="servicenode" binding-property="data['service-node']"
+                                                      available-options-array="sns" place-holder="SFC_FORWARDER_CREATE_SERVICE_NODE">
+                    </sfc-select2-create-search-choice>
                 </div>
             </div>
 

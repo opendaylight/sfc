@@ -6,30 +6,30 @@
         {{'SFC_METADATA_VARIABLE_ADD' | translate}}
     </a>
 
-    <button type="button" ng-click="tableParamsContext.sorting({}); tableParamsVariable.sorting({})"
+    <button type="button" ng-click="contextMetadataTableParams.sorting({}); variableMetadataTableParams.sorting({})"
             class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
     </button>
 
-    <table ng-table="tableParamsContext" show-filter="true" class="footable table">
+    <table ng-table="contextMetadataTableParams" show-filter="true" class="footable table">
         <tr ng-repeat="entry in $data track by $index">
             <td data-title="'SFC_METADATA_CONTEXT_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
                 {{entry['name']}}
             </td>
             <td data-title="'SFC_METADATA_CONTEXT_HEADER1' | translate" sortable="'valueOf([\'context-header1\'])'"
                 filter="{ 'context-header1': 'text' }">
-                {{decimalToHex(entry['context-header1'])}}
+                {{entry['context-header1']}}
             </td>
             <td data-title="'SFC_METADATA_CONTEXT_HEADER2' | translate" sortable="'valueOf([\'context-header2\'])'"
                 filter="{ 'context-header2': 'text' }">
-                {{decimalToHex(entry['context-header2'])}}
+                {{entry['context-header2']}}
             </td>
             <td data-title="'SFC_METADATA_CONTEXT_HEADER3' | translate" sortable="'valueOf([\'context-header3\'])'"
                 filter="{ 'context-header3': 'text' }">
-                {{decimalToHex(entry['context-header3'])}}
+                {{entry['context-header3']}}
             </td>
             <td data-title="'SFC_METADATA_CONTEXT_HEADER4' | translate" sortable="'valueOf([\'context-header4\'])'"
                 filter="{ 'context-header4': 'text' }">
-                {{decimalToHex(entry['context-header4'])}}
+                {{entry['context-header4']}}
             </td>
             <td data-title="'SFC_METADATA_ACTIONS' | translate">
                 <a ng-click="deleteContextItem(entry)">
@@ -44,18 +44,18 @@
         </tr>
     </table>
 
-    <table ng-table="tableParamsVariable" show-filter="true" class="footable table">
+    <table ng-table="variableMetadataTableParams" show-filter="true" class="footable table">
         <tr ng-repeat="entry in $data track by $index">
             <td data-title="'SFC_METADATA_VARIABLE_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
                 {{entry['name']}}
             </td>
             <td data-title="'SFC_METADATA_VARIABLE_TLV_CLASS' | translate" sortable="'valueOf([\'tlv-class\'])'"
                 filter="{ 'tlv-class': 'text' }">
-                {{decimalToHex(entry['tlv-class'])}}
+                {{entry['tlv-class']}}
             </td>
             <td data-title="'SFC_METADATA_VARIABLE_TLV_TYPE' | translate" sortable="'valueOf([\'tlv-type\'])'"
                 filter="{ 'tlv-type': 'text' }">
-                {{decimalToHex(entry['tlv-type'])}}
+                {{entry['tlv-type']}}
             </td>
             <td data-title="'SFC_METADATA_VARIABLE_FLAGS' | translate" sortable="'valueOf([\'flags\'])'"
                 filter="{ 'flags': 'text' }">

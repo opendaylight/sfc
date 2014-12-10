@@ -1,6 +1,6 @@
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.2"
+__version__ = "0.3"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
 
@@ -30,9 +30,6 @@ app = Flask(__name__)
 # Contains the name of this SFF. For example, SFF1
 my_sff_name = ""
 
-# A dictionary of all SFF threads and its associated data this agent is aware.
-sff_threads = {}
-
 # SFF data plane listens to commands on this port.
 sff_control_port = 6000
 
@@ -56,11 +53,13 @@ def find_sf_locator(sf_name, sff_name):
     :param  sff_name: SFF name
     :return: SF data plane locator
     """
+
+    local_sff_topo = get_sff_topo()
     sf_locator = {}
-    if sff_name not in sff_topo.keys():
+    if sff_name not in local_sff_topo.keys():
         if get_sff_from_odl(ODLIP, sff_name) != 0:
             return None
-    service_dictionary = sff_topo[sff_name]['service-function-dictionary']
+    service_dictionary = local_sff_topo[sff_name]['service-function-dictionary']
     for service_function in service_dictionary:
         if sf_name == service_function['name']:
             sf_locator['ip'] = service_function['sff-sf-data-plane-locator']['ip']
@@ -79,13 +78,14 @@ def find_sff_locator(sff_name):
     :return: SFF data plane locator
     """
 
+    local_sff_topo = get_sff_topo()
     sff_locator = {}
-    if sff_name not in sff_topo.keys():
+    if sff_name not in local_sff_topo.keys():
         if get_sff_from_odl(ODLIP, sff_name) != 0:
             return None
 
-    sff_locator['ip'] = sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
-    sff_locator['port'] = sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['port']
+    sff_locator['ip'] = local_sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
+    sff_locator['port'] = local_sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['port']
     return sff_locator
 
 
@@ -192,19 +192,20 @@ def create_sff(sffname):
     # global sff_topo
     local_sff_topo = get_sff_topo()
     global sff_control_port
-    global sff_threads
+    local_sff_threads = get_sff_threads()
+
     if not request.json:
         abort(400)
     else:
-        if sffname in sff_threads.keys():
+        if sffname in local_sff_threads.keys():
             kill_sff_thread(sffname)
         local_sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
         sff_port = local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
-        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, sff_control_port, sff_threads))
+        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, sff_control_port, local_sff_threads))
 
-        sff_threads[sffname] = {}
-        sff_threads[sffname]['thread'] = sff_thread
-        sff_threads[sffname]['sff_control_port'] = sff_control_port
+        local_sff_threads[sffname] = {}
+        local_sff_threads[sffname]['thread'] = sff_thread
+        local_sff_threads[sffname]['sff_control_port'] = sff_control_port
 
         sff_thread.start()
 
@@ -219,20 +220,22 @@ def kill_sff_thread(sffname):
     :param sffname:
     :return:
     """
+
+    local_sff_threads = get_sff_threads()
     logger.info("Killing thread for SFF: %s", sffname)
     # Yes, we will come up with a better protocol in the future....
     message = "Kill thread".encode(encoding="UTF-8")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP, sff_threads[sffname]['sff_control_port']))
-    if sff_threads[sffname]['thread'].is_alive():
-        sff_threads[sffname]['thread'].join()
-    if not sff_threads[sffname]['thread'].is_alive():
+    sock.sendto(message, (SFF_UDP_IP, local_sff_threads[sffname]['sff_control_port']))
+    if local_sff_threads[sffname]['thread'].is_alive():
+        local_sff_threads[sffname]['thread'].join()
+    if not local_sff_threads[sffname]['thread'].is_alive():
         logger.info("Thread for SFF %s is dead", sffname)
         # We need to close the socket used by thread here as well or we get an address reuse error. This is probably
         # some bug in asyncio since it should be enough for the SFF thread to close the socket.
-        sff_threads[sffname]['socket'].close()
-        sff_threads.pop(sffname, None)
+        local_sff_threads[sffname]['socket'].close()
+        local_sff_threads.pop(sffname, None)
         # udpserver_socket.close()
 
 
@@ -248,9 +251,10 @@ def delete_sff(sffname):
     local_sff_topo = get_sff_topo()
     local_path = get_path()
     local_data_plane_path = get_data_plane_path()
+    local_sff_threads = get_sff_threads()
 
     try:
-        if sffname in sff_threads.keys():
+        if sffname in local_sff_threads.keys():
             kill_sff_thread(sffname)
         local_sff_topo.pop(sffname, None)
         if sffname == my_sff_name:

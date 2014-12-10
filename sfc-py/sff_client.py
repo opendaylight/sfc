@@ -20,42 +20,16 @@ __status__ = "alpha"
    in the path"""
 
 import asyncio
-from ctypes import *
 from nsh_decode import *
 from nsh_encode import *
+
+logger = logging.getLogger(__name__)
 
 try:
     import signal
 except ImportError:
     signal = None
 
-sfp_topo = {}
-
-# VXLAN, NSH Base Header, and NSH Context Header data structures.
-
-class VXLANGPE(Structure):
-    _fields_ = [("flags", c_ubyte),
-                ("reserved", c_ubyte),
-                ("protocol_type", c_ushort),
-                ("vni", c_uint, 24),
-                ("reserved2", c_uint, 8)]
-
-
-class BASEHEADER(Structure):
-    _fields_ = [("version", c_ushort, 2),
-                ("flags", c_ushort, 8),
-                ("length", c_ushort, 6),
-                ("md_type", c_ubyte),
-                ("next_protocol", c_ubyte),
-                ("service_path", c_uint, 24),
-                ("service_index", c_uint, 8)]
-
-
-class CONTEXTHEADER(Structure):
-    _fields_ = [("network_platform", c_uint),
-                ("network_shared", c_uint),
-                ("service_platform", c_uint),
-                ("service_shared", c_uint)]
 
 # Global flags used for indication of current packet processing status.
 
@@ -85,13 +59,12 @@ class MyUdpClient:
         self.transport = transport
         # Building client packet to send to SFF
         packet = build_packet(vxlan_values, base_values, ctx_values)
-        print('\nsending packet to SFF:\n', binascii.hexlify(packet))
+        logger.info("Sending packet to SFF: %s", binascii.hexlify(packet))
         # Send the packet
         self.transport.sendto(packet)
 
     def datagram_received(self, data, addr):
-        print('\nreceived packet from SFF:\n', binascii.hexlify(data))
-        print('\n')
+        logger.info("received packet from SFF: %s", binascii.hexlify(data))
         # Decode all the headers
         decode_vxlan(data, server_vxlan_values)
         decode_baseheader(data, server_base_values)
@@ -99,15 +72,15 @@ class MyUdpClient:
         self.loop.stop()
 
     def connection_refused(self, exc):
-        print('Connection refused:', exc)
+        logger.error('Connection refused:', exc)
 
     def connection_lost(self, exc):
-        print('closing transport', exc)
+        logger.error('closing transport', exc)
         self.loop = asyncio.get_event_loop()
         self.loop.stop()
 
     def error_received(self, exc):
-        print('Error received:', exc)
+        logger.error('Error received:', exc)
 
     def __init__(self, loop):
         self.transport = None
@@ -123,6 +96,13 @@ def start_client(loop, addr, myip, udpclient):
 
 
 def main(argv):
+    """
+    Example:
+    python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
+    python3.4 sff_client.py --remote-sff-ip 10.0.1.43 --remote-sff-port 4789 --sfp-id 2 --sfp-index 255
+    :param argv:
+    :return:
+    """
     global base_values
 
     # Some Good defaults

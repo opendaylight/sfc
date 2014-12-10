@@ -25,7 +25,11 @@ sff_topo = {}
 path = {}
 
 
+# A dictionary of all SFF threads and its associated data this agent is aware.
+sff_threads = {}
+
 # Global Accessors
+
 
 def get_path():
     #global path
@@ -40,6 +44,11 @@ def get_sff_topo():
 def get_data_plane_path():
     #global data_plane_path
     return data_plane_path
+
+
+def get_sff_threads():
+    #global data_plane_path
+    return sff_threads
 
 # ODL IP:port
 ODLIP = "127.0.0.1:8181"

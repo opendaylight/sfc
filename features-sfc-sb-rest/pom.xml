@@ -33,11 +33,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
-    <!--dependency>
+    <dependency>
        <groupId>org.opendaylight.sfc</groupId>
        <artifactId>sfc-provider</artifactId>
        <version>${project.version}</version>
-    </dependency-->
+    </dependency>
     <dependency>
        <groupId>org.opendaylight.sfc</groupId>
        <artifactId>sfc-sb-rest</artifactId>

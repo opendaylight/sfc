@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sbrest.provider;
+package org.opendaylight.sfc.sbrest.provider;
 
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
@@ -20,9 +21,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public class SbRestSffDataListener extends SbRestAbstractDataListener {
+public class SbRestSffDataListener extends SbRestAbstractDataListener
+{
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffDataListener.class);
+    private static final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     public SbRestSffDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
@@ -33,7 +36,7 @@ public class SbRestSffDataListener extends SbRestAbstractDataListener {
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.error("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         boolean isValid = true;

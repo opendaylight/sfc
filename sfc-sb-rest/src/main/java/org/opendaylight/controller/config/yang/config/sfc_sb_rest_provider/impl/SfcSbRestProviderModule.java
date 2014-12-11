@@ -8,8 +8,12 @@
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.sbrest.provider.SbRestSffDataListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.sbrest.provider.SbRestSffDataListener;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sbrest.provider.SbRestSfpDataListener;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +39,12 @@ public class SfcSbRestProviderModule extends org.opendaylight.controller.config.
     @Override
     public java.lang.AutoCloseable createInstance() {
 
-        final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+        final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
-        DataBroker dataBrokerService = getDataBrokerDependency();
-        opendaylightSfc.setDataProvider(dataBrokerService);
+        final DataBroker dataBrokerService = opendaylightSfc.getDataProvider();
 
         final SbRestSffDataListener sbRestSffDataListener = new SbRestSffDataListener(opendaylightSfc);
+        final SbRestSfpDataListener sbRestSfpDataListener = new SbRestSfpDataListener(opendaylightSfc);
 
         // close()
         final class AutoCloseableSfcSbRest implements AutoCloseable {
@@ -48,6 +52,7 @@ public class SfcSbRestProviderModule extends org.opendaylight.controller.config.
             @Override
             public void close() {
                 sbRestSffDataListener.getDataChangeListenerRegistration().close();
+                sbRestSfpDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

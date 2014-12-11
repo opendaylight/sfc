@@ -281,7 +281,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
-            LOG.info("getAddPathToServiceFunctionState: {}", future.get());
+            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
         } catch (InterruptedException e) {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {

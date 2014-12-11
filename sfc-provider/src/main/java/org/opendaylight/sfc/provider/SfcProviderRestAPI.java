@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.provider;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.net.ConnectException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,20 +98,33 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 "-function-forwarder/" +
                 serviceFunctionForwarder.getName();
 
-        ClientResponse putClientRemoteResponse;
+        ClientResponse putClientRemoteResponse = null;
 
-        putClientRemoteResponse = client
-                .resource(sffURI).type(MediaType.APPLICATION_JSON_TYPE)
-                .put(ClientResponse.class, sffJSON);
-
-        if (putClientRemoteResponse.getStatus() >= 300)
-        {
-            throw new UniformInterfaceException(HTTP_ERROR_MSG
-                    + putClientRemoteResponse.getStatus(),
-                    putClientRemoteResponse);
+        try {
+            putClientRemoteResponse = client
+                    .resource(sffURI).type(MediaType.APPLICATION_JSON_TYPE)
+                    .put(ClientResponse.class, sffJSON);
+            if (putClientRemoteResponse.getStatus() >= 300)
+            {
+                throw new UniformInterfaceException(sffURI + " " + HTTP_ERROR_MSG
+                        + putClientRemoteResponse.getStatus(),
+                        putClientRemoteResponse);
+            }
+        } catch (UniformInterfaceException e) {
+            // http://stackoverflow.com/questions/12502233/jersey-uniforminterfaceexception-trying-to-proxy-to-rest-post-service
+            LOG.error("REST Server error. Message: {}", e.getMessage());
+        } catch (ClientHandlerException e) {
+            if (e.getCause() instanceof ConnectException) {
+                LOG.error("Failed to communicate with REST Server: {} ", sffURI);
+            } else {
+                LOG.error("Failed to ... {}", e.getMessage());
+            }
+        } finally {
+            if (putClientRemoteResponse != null) {
+                putClientRemoteResponse.close();
+            }
         }
 
-        putClientRemoteResponse.close();
         printTraceStop(LOG);
 
     }
@@ -122,7 +137,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
 
-        ClientResponse deleteClientRemoteResponse;
+        ClientResponse deleteClientRemoteResponse = null;
 
         String restURI = serviceFunctionForwarder.getRestUri().getValue();
 
@@ -130,15 +145,30 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 "-function-forwarder:service-function-forwarders/service" +
                 "-function-forwarder/" +
                 serviceFunctionForwarder.getName();
-        deleteClientRemoteResponse = client
-                .resource(sffURI).type(MediaType.APPLICATION_JSON_TYPE)
-                .delete(ClientResponse.class);
 
-        if (deleteClientRemoteResponse.getStatus() >= 300)
-        {
-            throw new UniformInterfaceException(HTTP_ERROR_MSG
-                    + deleteClientRemoteResponse.getStatus(),
-                    deleteClientRemoteResponse);
+
+        try {
+            deleteClientRemoteResponse = client
+                    .resource(sffURI).type(MediaType.APPLICATION_JSON_TYPE)
+                    .delete(ClientResponse.class);
+            if (deleteClientRemoteResponse.getStatus() >= 300)
+            {
+                throw new UniformInterfaceException(sffURI + " " + HTTP_ERROR_MSG
+                        + deleteClientRemoteResponse.getStatus(),
+                        deleteClientRemoteResponse);
+            }
+        } catch (UniformInterfaceException e) {
+            LOG.error("REST Server error. Message: {}", e.getMessage());
+        } catch (ClientHandlerException e) {
+            if (e.getCause() instanceof ConnectException) {
+                LOG.error("Failed to communicate with REST Server: {} ", sffURI);
+            } else {
+                LOG.error("Failed to ... {}", e.getMessage());
+            }
+        } finally {
+            if (deleteClientRemoteResponse != null) {
+                deleteClientRemoteResponse.close();
+            }
         }
 
         deleteClientRemoteResponse.close();
@@ -166,7 +196,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 .get(ClientResponse.class);
         if (getClientResponse.getStatus() != 200)
         {
-            throw new UniformInterfaceException(HTTP_ERROR_MSG
+            throw new UniformInterfaceException(restURI + " " + HTTP_ERROR_MSG
                     + getClientResponse.getStatus(),
                     getClientResponse);
         }
@@ -194,7 +224,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);
-        String sfpURI;
+        String sfpURI = null;
         String restURI;
 
         String sfpJSON = getRESTObj(getRenderedServicePathURI(renderedServicePath));
@@ -213,7 +243,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
                 Future<Object> future = odlSfc.executor.submit
                         (sfcProviderServiceForwarderAPI);
-                ClientResponse putClientRemoteResponse;
+                ClientResponse putClientRemoteResponse = null;
 
                 try
                 {
@@ -221,23 +251,34 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                             (ServiceFunctionForwarder) future
                                     .get();
                     restURI = serviceFunctionForwarder.getRestUri().getValue();
-                    // Testing
-                    //restURI = "http://127.0.0.1:5000";
 
-                    sfpURI = restURI + "/operational/rendered-service-path:" +
-                        "rendered-service-paths/rendered-service-path/" + renderedServicePath.getName();
-                    putClientRemoteResponse = client.resource(sfpURI).type(MediaType
-                            .APPLICATION_JSON_TYPE).put(ClientResponse.class, sfpJSON);
-                    if (putClientRemoteResponse.getStatus() >= 300)
-                    {
-                        throw new UniformInterfaceException(HTTP_ERROR_MSG
-                                + putClientRemoteResponse.getStatus(),
-                                putClientRemoteResponse);
+                    try {
+                        sfpURI = restURI + "/operational/rendered-service-path:" +
+                            "rendered-service-paths/rendered-service-path/" + renderedServicePath.getName();
+                        putClientRemoteResponse = client.resource(sfpURI).type(MediaType
+                                .APPLICATION_JSON_TYPE).put(ClientResponse.class, sfpJSON);
+                        if (putClientRemoteResponse.getStatus() >= 300)
+                        {
+                            throw new UniformInterfaceException(sfpURI + " " + HTTP_ERROR_MSG
+                                    + putClientRemoteResponse.getStatus(),
+                                    putClientRemoteResponse);
+                        }
+                    } catch (UniformInterfaceException e) {
+                        LOG.error("REST Server error. Message: {}", e.getMessage());
+                    } catch (ClientHandlerException e) {
+                        if (e.getCause() instanceof ConnectException) {
+                            LOG.error("Failed to communicate with REST Server: {} ", sfpURI);
+                        } else {
+                            LOG.error("Failed to ... {}", e.getMessage());
+                        }
+                    } finally {
+                        if (putClientRemoteResponse != null) {
+                            putClientRemoteResponse.close();
+                        }
                     }
-                    putClientRemoteResponse.close();
                 } catch (InterruptedException e)
                 {
-                    LOG.warn("failed to ...." , e);
+                    LOG.warn("failed to ....", e);
                 } catch (ExecutionException e)
                 {
                     LOG.warn("failed to ...." , e);
@@ -279,7 +320,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
 
                 Future<Object> future = odlSfc.executor.submit
                         (sfcProviderServiceForwarderAPI);
-                ClientResponse deleteClientRemoteResponse;
+                ClientResponse deleteClientRemoteResponse = null;
 
                 try
                 {
@@ -287,20 +328,32 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                             (ServiceFunctionForwarder) future
                                     .get();
                     restURI = serviceFunctionForwarder.getRestUri().getValue();
-                    // Testing
-                    //restURI = "http://127.0.0.1:5000";
 
                     sfpURI = restURI + "/operational/rendered-service-path:" +
                             "rendered-service-paths/rendered-service-path/" + renderedServicePath.getName();
-                    deleteClientRemoteResponse = client.resource(sfpURI).type(MediaType
-                            .APPLICATION_JSON_TYPE).delete(ClientResponse.class);
-                    if (deleteClientRemoteResponse.getStatus() >= 300)
-                    {
-                        throw new UniformInterfaceException(HTTP_ERROR_MSG
-                                + deleteClientRemoteResponse.getStatus(),
-                                deleteClientRemoteResponse);
+                    try {
+                        deleteClientRemoteResponse = client.resource(sfpURI).type(MediaType
+                                .APPLICATION_JSON_TYPE).delete(ClientResponse.class);
+                        if (deleteClientRemoteResponse.getStatus() >= 300)
+                        {
+                            throw new UniformInterfaceException(sfpURI + " " + HTTP_ERROR_MSG
+                                    + deleteClientRemoteResponse.getStatus(),
+                                    deleteClientRemoteResponse);
+                        }
+                    } catch (UniformInterfaceException e) {
+                        LOG.error("REST Server error. Message: {}", e.getMessage());
+                    } catch (ClientHandlerException e) {
+                        if (e.getCause() instanceof ConnectException) {
+                            LOG.error("Failed to communicate with REST Server: {} ", sfpURI);
+                        } else {
+                            LOG.error("Failed to ... {}", e.getMessage());
+                        }
+                    } finally {
+                        if (deleteClientRemoteResponse != null) {
+                            deleteClientRemoteResponse.close();
+                        }
                     }
-                    deleteClientRemoteResponse.close();
+
                 } catch (InterruptedException e)
                 {
                     LOG.warn("failed to ...." , e);

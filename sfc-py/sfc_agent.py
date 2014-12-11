@@ -24,6 +24,7 @@ import sys
 from sff_thread import *
 from threading import Thread
 from sff_globals import *
+from xe_cli import *
 
 app = Flask(__name__)
 
@@ -155,6 +156,8 @@ def create_path(sfpname):
         local_path[sfpname] = request.get_json()["rendered-service-path"][0]
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(local_path[sfpname])
+        # Testing XE cli processing module
+        process_xe_cli(data_plane_path)
         # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 

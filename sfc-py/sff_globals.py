@@ -28,12 +28,27 @@ path = {}
 # A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
 
+
+# Contains all Access-Lists in JSON format as received from ODL
+acl = {}
+
 # Global Accessors
 
+def get_global_acl():
+    global acl
+    return acl
+    
+def set_global_acl(arg):
+    global acl
+    acl = arg
 
 def get_path():
-    #global path
+    global path
     return path
+    
+def set_path(arg):
+    global path
+    path = arg
 
 
 def get_sff_topo():

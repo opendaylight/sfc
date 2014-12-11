@@ -1,0 +1,29 @@
+# compile and install following three netfilter C libraries
+
+git clone git://git.netfilter.org/libnfnetlink
+git clone git://git.netfilter.org/libmnl
+git clone git://git.netfilter.org/libnetfilter_queue
+
+# to run autogen requires libtool
+
+cd libnfnetlink
+sudo sh autogen.sh
+./configure
+sudo make install
+cd ..
+
+cd libmnl
+sh autogen.sh
+./configure
+sudo make install
+cd ..
+
+cd libnetfilter_queue
+sudo sh autogen.sh
+./configure PKG_CONFIG_PATH=../libnfnetlink/:../libmnl/
+sudo make install
+cd ..
+
+# install patched and ported NFQ wrapper for python3
+cd NetfilterQueue-0.3.1-P3.3
+python3 setup.py install

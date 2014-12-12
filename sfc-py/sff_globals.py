@@ -28,8 +28,12 @@ path = {}
 # A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
 
-# Global Accessors
 
+of_tableid = 0
+
+
+
+# Global Accessors
 
 def get_path():
     #global path
@@ -49,6 +53,11 @@ def get_data_plane_path():
 def get_sff_threads():
     #global data_plane_path
     return sff_threads
+
+def get_of_table_id():
+    #global table ID for OF rules
+    return of_tableid
+
 
 # ODL IP:port
 ODLIP = "127.0.0.1:8181"

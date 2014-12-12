@@ -14,7 +14,6 @@ __status__ = "alpha"
 """ SFF REST Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
-
 import collections
 from flask import *
 import getopt
@@ -22,9 +21,11 @@ import json
 import requests
 import sys
 from sff_thread import *
+
 from threading import Thread
 from sff_globals import *
-from xe_cli import *
+import xe_cli
+import ovs_cli
 
 app = Flask(__name__)
 
@@ -157,8 +158,16 @@ def create_path(sfpname):
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(local_path[sfpname])
         # Testing XE cli processing module
-        process_xe_cli(data_plane_path)
-        # json_string = json.dumps(data_plane_path)
+        if sff_os == 'XE':
+            logger.info("Provisioning %s SFF", sff_os)
+            xe_cli.process_xe_cli(data_plane_path)
+        elif sff_os == 'OVS':
+            logger.info("Provisioning %s SFF", sff_os)
+            # process_ovs_cli(data_plane_path)
+            ovs_cli.process_ovs_sff__cli(data_plane_path)
+        else:
+            logger.error("Unkown SFF OS: %2", sff_os)  # should never get here
+            # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 
 
@@ -364,11 +373,13 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 def main(argv):
     global ODLIP
     global my_sff_name
+    global sff_os
     try:
         logging.basicConfig(level=logging.DEBUG)
-        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port=", "sff-name="])
+        opt, args = getopt.getopt(argv, "hr",
+                                  ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port=", "sff-name=", "sff-os="])
     except getopt.GetoptError:
-        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port | sff-name")
+        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port | sff-name | sff-os (XE | OVS)")
         sys.exit(2)
 
     odl_get_sff = False
@@ -392,6 +403,17 @@ def main(argv):
 
         if opt == "--sff-name":
             my_sff_name = arg
+
+        if opt == "--sff-os":
+            sff_os = arg
+            if sff_os.upper() == "XE":
+                sff_os = 'XE'
+            elif sff_os.upper() == "OVS":
+                sff_os = 'OVS'
+                ovs_cli.init_ovs()
+            else:
+                print(sff_os + ' is an unsupported SFF switch OS')
+                sys.exit()
 
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)

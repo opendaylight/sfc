@@ -310,6 +310,7 @@
             <feature>webconsole</feature>
             <feature>odl-restconf</feature>
             <feature>odl-sfc-all</feature>
+            <feature>odl-sfc-sb-rest</feature>
             <feature>odl-mdsal-apidocs</feature>
             <!-- 
               Optional TODO: Add entries here for the features you want in your local distro

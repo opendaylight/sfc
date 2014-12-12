@@ -1,3 +1,18 @@
+__author__ = "Jim Guichard"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "jguichar@cisco.com"
+__status__ = "alpha"
+
+#
+# Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+"""XE CLI processing module"""
+
 import os
 import paramiko
 
@@ -44,11 +59,11 @@ def send_command_and_wait_for_execution(channel, command, wait_string, should_pr
     return
 
 
-def ssh_execute_cli(cli):
+def ssh_execute_cli(cli, sff_locator):
     remoteConnectionSetup = paramiko.SSHClient()
     remoteConnectionSetup.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     #  connect to the router - using a hardcoded IP address for now
-    remoteConnectionSetup.connect('172.16.6.54', username='cisco', password='cisco', allow_agent=False, look_for_keys=False)
+    remoteConnectionSetup.connect(sff_locator, username='cisco', password='cisco', allow_agent=False, look_for_keys=False)
 
     sshChannel = remoteConnectionSetup.invoke_shell()  # invoke the shell so can send multiple commands
 
@@ -61,14 +76,15 @@ def ssh_execute_cli(cli):
     remoteConnectionSetup.close()  # close the connection
 
 
-def process_xe_cli(data_plane_path):
-    print('\nXE module received data plane path: \n', data_plane_path)
+def process_xe_cli(data_plane_path, my_sff_name, sfc_topo):
+
+    sff_locator = sfc_topo[my_sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
 
     for key in data_plane_path:
         spi = key  # store the SPI value
         rsp = data_plane_path[key]  # store the rendered service path
         cli_to_push = process_received_service_path(spi, rsp)  # process the cli
-        ssh_execute_cli(cli_to_push)  # send cli to configure XE router
+        ssh_execute_cli(cli_to_push, sff_locator)  # send cli to configure XE router
     return
 
 #{254: {'port': 6633, 'ip': '2.2.2.2'}, 255: {'port': 6633, 'ip': '10.1.1.1'}}

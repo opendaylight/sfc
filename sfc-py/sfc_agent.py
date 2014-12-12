@@ -157,7 +157,7 @@ def create_path(sfpname):
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(local_path[sfpname])
         # Testing XE cli processing module
-        process_xe_cli(data_plane_path)
+        process_xe_cli(data_plane_path, my_sff_name, sff_topo)
         # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 
@@ -364,14 +364,16 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 def main(argv):
     global ODLIP
     global my_sff_name
+
     try:
         logging.basicConfig(level=logging.DEBUG)
-        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "sff-name=", "odl-get-sff", "odl-ip-port=", "sff-name="])
+        opt, args = getopt.getopt(argv, "hr", ["help", "rest", "odl-get-sff", "odl-ip-port=", "sff-name=", "sff-port="])
     except getopt.GetoptError:
-        print("sff_rest --help | --rest | --sff-name | --odl-get-sff | --odl-ip-port | sff-name")
+        print("sff_agent --help | --rest | --odl-get-sff | --odl-ip-port | --sff-name | --sff-port")
         sys.exit(2)
 
     odl_get_sff = False
+    sff_port = 5000
     rest = False
     for opt, arg in opt:
         if opt == "--odl-get-sff":
@@ -383,8 +385,8 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sff_rest -m --rest --sff-name=<name of this SFF such as SFF1> --odl-get-sff "
-                  "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>")
+            print("sff_agent --rest --odl-get-sff "
+                  "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>" "--sff-port=<my SFF port>")
             sys.exit()
 
         if opt in ('-r', '--rest'):
@@ -393,12 +395,15 @@ def main(argv):
         if opt == "--sff-name":
             my_sff_name = arg
 
+        if opt == "--sff-port":
+            sff_port = int(arg)
+
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)
 
     if rest:
         app.debug = True
-        app.run(host='0.0.0.0')
+        app.run(host='0.0.0.0', port=sff_port)  # this allows to run multiple SFF threads concurrently
 
 
 if __name__ == "__main__":

@@ -160,13 +160,13 @@ def create_path(sfpname):
         # Testing XE cli processing module
         if sff_os == 'XE':
             logger.info("Provisioning %s SFF", sff_os)
-            xe_cli.process_xe_cli(data_plane_path)
+            xe_cli.process_xe_cli(data_plane_path, my_sff_name, sff_topo)
         elif sff_os == 'OVS':
             logger.info("Provisioning %s SFF", sff_os)
             # process_ovs_cli(data_plane_path)
             ovs_cli.process_ovs_sff__cli(data_plane_path)
         else:
-            logger.error("Unkown SFF OS: %2", sff_os)  # should never get here
+            logger.error("Unknown SFF OS: %2", sff_os)  # should never get here
             # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 

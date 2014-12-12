@@ -127,6 +127,8 @@ def build_data_plane_service_path(service_path):
 
     local_data_plane_path = get_data_plane_path()
 
+    print("MY NAME: " + my_sff_name)
+
     for service_hop in service_path['rendered-service-path-hop']:
 
         if service_hop['service-function-forwarder'] == my_sff_name:
@@ -166,7 +168,7 @@ def create_path(sfpname):
             # process_ovs_cli(data_plane_path)
             ovs_cli.process_ovs_sff__cli(data_plane_path)
         else:
-            logger.error("Unkown SFF OS: %2", sff_os)  # should never get here
+            logger.error("Unkown SFF OS: %s", sff_os)  # should never get here
             # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 
@@ -410,7 +412,7 @@ def main(argv):
                 sff_os = 'XE'
             elif sff_os.upper() == "OVS":
                 sff_os = 'OVS'
-                ovs_cli.init_ovs()
+                #ovs_cli.init_ovs()
             else:
                 print(sff_os + ' is an unsupported SFF switch OS')
                 sys.exit()
@@ -419,6 +421,7 @@ def main(argv):
         get_sffs_from_odl(ODLIP)
 
     if rest:
+        #ovs_cli.init_ovs()
         app.debug = True
         app.run(host='0.0.0.0')
 

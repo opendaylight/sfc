@@ -21,19 +21,21 @@ data_plane_path = {}
 #Contains all SFFs known by the agent
 sff_topo = {}
 
-# Contains all Paths in JSON format as received from ODL
+# Contains all Paths as dictionary of path items by path_name as key
 path = {}
-
 
 # A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
 
 # Global Accessors
 
-
 def get_path():
-    #global path
+    global path
     return path
+    
+def set_path(arg):
+    global path
+    path = arg
 
 
 def get_sff_topo():
@@ -51,7 +53,8 @@ def get_sff_threads():
     return sff_threads
 
 # ODL IP:port
-ODLIP = "127.0.0.1:8181"
+#ODLIP = "127.0.0.1:8181"
+ODLIP = "192.168.1.1:8181"
 
 # Static URLs for testing
 SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"

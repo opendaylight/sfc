@@ -377,13 +377,13 @@ def main(argv):
     try:
         logging.basicConfig(level=logging.DEBUG)
         opt, args = getopt.getopt(argv, "hr",
-                                  ["help", "rest", "odl-get-sff", "odl-ip-port=", "sff-name=", "sff-port=", "sff-os="])
+                                  ["help", "rest", "odl-get-sff", "odl-ip-port=", "sff-name=", "agent-port=", "sff-os="])
     except getopt.GetoptError:
-        print("sff_agent --help | --rest | --odl-get-sff | --odl-ip-port | sff-name | sff-os (XE | OVS)")
+        print("sff_agent --help | --rest | --odl-get-sff | --odl-ip-port | sff-name | agent-port | sff-os (XE | OVS)")
         sys.exit(2)
 
     odl_get_sff = False
-    sff_port = 5000
+    agent_port = 5000
     rest = False
     for opt, arg in opt:
         if opt == "--odl-get-sff":
@@ -396,7 +396,7 @@ def main(argv):
 
         if opt in ('-h', '--help'):
             print("sff_agent --rest --sff-name=<name of this SFF such as SFF1> --odl-get-sff "
-                  "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>" "--sff-port=<my SFF port>")
+                  "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>" "--agent-port=<my agent port>")
             sys.exit()
 
         if opt in ('-r', '--rest'):
@@ -405,8 +405,8 @@ def main(argv):
         if opt == "--sff-name":
             my_sff_name = arg
 
-        if opt == "--sff-port":
-            sff_port = int(arg)
+        if opt == "--agent-port":
+            agent_port = int(arg)
 
         if opt == "--sff-os":
             sff_os = arg
@@ -424,7 +424,7 @@ def main(argv):
 
     if rest:
         app.debug = True
-        app.run(host='0.0.0.0', port=sff_port)  # this allows to run multiple SFF threads concurrently)
+        app.run(host='0.0.0.0', port=agent_port)
 
 
 if __name__ == "__main__":

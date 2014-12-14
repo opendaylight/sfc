@@ -29,7 +29,21 @@ sff_threads = {}
 
 of_tableid = 0
 
+my_sff_name = ""
+
+sff_os = ""
+
+sff_os_set = {"OVS", "XE"}
+
 # Global Accessors
+
+
+def get_sff_os():
+    return sff_os
+
+
+def get_my_sff_name():
+    return my_sff_name
 
 
 def get_path():

@@ -14,17 +14,20 @@ __status__ = "alpha"
 """ SFF REST Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
+import logging
+import socket
+from sff_thread import start_sff
+from threading import Thread
+from sff_globals import *
 import collections
 from flask import *
 import getopt
 import json
 import requests
 import sys
-from sff_thread import *
-from nfq_classifier import *
 
-from threading import Thread
-from sff_globals import *
+if sys.platform.startswith('linux'):
+    from nfq_classifier import *
 import xe_cli
 import ovs_cli
 
@@ -116,7 +119,7 @@ def create_paths():
         path_json = {
             'rendered-service-paths': request.json['rendered-service-paths']
         }
-        
+
         # reset path data
         local_data_plane_path = get_data_plane_path()
         local_path = get_path()
@@ -171,7 +174,7 @@ def create_path(sfpname):
         # Testing XE cli processing module
         if sff_os == 'XE':
             logger.info("Provisioning %s SFF", sff_os)
-            xe_cli.process_xe_cli(data_plane_path, my_sff_name, sff_topo)
+            xe_cli.process_xe_cli(data_plane_path)
         elif sff_os == 'OVS':
             logger.info("Provisioning %s SFF", sff_os)
             # process_ovs_cli(data_plane_path)
@@ -193,10 +196,11 @@ def delete_path(sfpname):
         local_path.pop(sfpname, None)
 
         # remove nfq classifier for this path
-        nfq_class_manager = get_nfq_class_manager_ref()
-        if nfq_class_manager:
-            nfq_class_manager.destroy_packet_forwarder(sfp_id)
-        
+        if sys.platform.startswith('linux'):
+            nfq_class_manager = get_nfq_class_manager_ref()
+            if nfq_class_manager:
+                nfq_class_manager.destroy_packet_forwarder(sfp_id)
+
         json_string = json.dumps(data_plane_path)
     except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
@@ -329,63 +333,64 @@ def delete_sffs():
     return jsonify({'sff': sff_topo}), 201
 
 
-###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+# ##  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 @app.route('/config/ietf-acl:access-lists/', methods=['PUT'])
 def apply_all_acls():
-    nfq_class_manager = get_nfq_class_manager_ref()
-    try:
-        logger.debug("apply_all_acls: nfq_class_manager=%s", nfq_class_manager)
+    if sys.platform.startswith('linux'):
+        nfq_class_manager = get_nfq_class_manager_ref()
+        try:
+            logger.debug("apply_all_acls: nfq_class_manager=%s", nfq_class_manager)
 
-        # check nfq
-        if not nfq_class_manager:
-            return "NFQ not running. Received acl data has been ignored", 500
+            # check nfq
+            if not nfq_class_manager:
+                return "NFQ not running. Received acl data has been ignored", 500
 
-        if not request.json:
-            abort(400)
-        else:
-            acls = {
-                'access-lists': request.json['access-lists']
-            }
-
-            result = nfq_class_manager.recompile_all_acls(acls)
-
-            if len(result) > 0:
-                return "Acl compiled with errors. " + str(result), 201
+            if not request.json:
+                abort(400)
             else:
-                return "Acl compiled", 201
+                acls = {
+                    'access-lists': request.json['access-lists']
+                }
 
-    except:
-        logger.exception('apply_all_acls: exception')
-        raise
+                result = nfq_class_manager.recompile_all_acls(acls)
+
+                if len(result) > 0:
+                    return "Acl compiled with errors. " + str(result), 201
+                else:
+                    return "Acl compiled", 201
+
+        except:
+            logger.exception('apply_all_acls: exception')
+            raise
 
 
 ###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 @app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT'])
 def apply_one_acl(aclname):
-    nfq_class_manager = get_nfq_class_manager_ref()
-    try:
-        logger.debug("apply_one_acl: nfq_class_manager=%s", nfq_class_manager)
+    if sys.platform.startswith('linux'):
+        nfq_class_manager = get_nfq_class_manager_ref()
+        try:
+            logger.debug("apply_one_acl: nfq_class_manager=%s", nfq_class_manager)
 
-        # check nfq
-        if not nfq_class_manager:
-            return "NFQ not running. Received acl data has been ignored", 500
+            # check nfq
+            if not nfq_class_manager:
+                return "NFQ not running. Received acl data has been ignored", 500
 
-        if not request.json:
-            abort(400)
-        else:
-            acl_item = request.get_json()["access-list"][0]
-
-            result = nfq_class_manager.compile_one_acl(acl_item)
-
-            if len(result) > 0:
-                return "Acl compiled with errors. " + str(result), 201
+            if not request.json:
+                abort(400)
             else:
-                return "Acl compiled", 201
+                acl_item = request.get_json()["access-list"][0]
 
-    except:
-        logger.exception('apply_one_acl: exception')
-        raise
+                result = nfq_class_manager.compile_one_acl(acl_item)
 
+                if len(result) > 0:
+                    return "Acl compiled with errors. " + str(result), 201
+                else:
+                    return "Acl compiled", 201
+
+        except:
+            logger.exception('apply_one_acl: exception')
+            raise
 
 
 @app.errorhandler(404)
@@ -448,15 +453,15 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
 def main(argv):
     global ODLIP
-    global my_sff_name
-    global sff_os
+
     try:
         logging.basicConfig(level=logging.DEBUG)
+        logger.setLevel(level=logging.INFO)
         opt, args = getopt.getopt(argv, "hr",
-                                  ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=", "agent-port=",
-                                   "sff-os="])
+                                  ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=",
+                                   "agent-port=", "sff-os="])
     except getopt.GetoptError:
-        print("sfc_agent --help | --rest | --odl-get-sff | --odl-ip-port | --sff-name" +
+        print("sfc_agent --help | --nfq-class | --rest | --odl-get-sff | --odl-ip-port | --sff-name" +
               " | --agent-port | --sff-os (XE | OVS)")
         sys.exit(2)
 
@@ -475,7 +480,7 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sfc_agent --rest  --odl-get-sff --odl-ip-port=<ODL REST IP:port>"
+            print("sfc_agent --rest --nfq-class --odl-get-sff --odl-ip-port=<ODL REST IP:port>"
                   " --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
             sys.exit()
 
@@ -483,7 +488,8 @@ def main(argv):
             rest = True
 
         if opt == "--sff-name":
-            my_sff_name = arg
+            local_my_sff_name = get_my_sff_name()
+            local_my_sff_name = arg
 
         if opt == "--nfq-class":
             nfq_class = True
@@ -492,24 +498,24 @@ def main(argv):
             agent_port = int(arg)
 
         if opt == "--sff-os":
-            sff_os = arg
-            if sff_os.upper() == "XE":
-                sff_os = 'XE'
-            elif sff_os.upper() == "OVS":
-                sff_os = 'OVS'
-                ovs_cli.init_ovs()
-            else:
-                logger.error(sff_os + ' is an unsupported SFF switch OS')
+            local_sff_os = get_sff_os()
+            local_sff_os = arg.upper()
+            if local_sff_os not in sff_os_set:
+                logger.error(local_sff_os + ' is an unsupported SFF switch OS')
                 sys.exit()
+
+            if local_sff_os == "OVS":
+                ovs_cli.init_ovs()
 
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)
 
     if nfq_class:
-        start_nfq_classifier()
+        if sys.platform.startswith('linux'):
+            start_nfq_classifier()
 
     if rest:
-        app.run(host='0.0.0.0', debug=True, port=agent_port)  # this allows to run multiple SFF threads concurrently)
+        app.run(host='0.0.0.0', debug=True, port=agent_port, use_reloader=False)
 
 
 if __name__ == "__main__":

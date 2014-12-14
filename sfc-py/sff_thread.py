@@ -17,7 +17,6 @@ __status__ = "alpha"
 import asyncio
 import logging
 from nsh_decode import *
-from nsh_encode import *
 import socket
 from sff_globals import *
 

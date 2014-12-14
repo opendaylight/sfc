@@ -18,26 +18,28 @@ __status__ = "alpha"
 
 data_plane_path = {}
 
-#Contains all SFFs known by the agent
+# Contains all SFFs known by the agent
 sff_topo = {}
 
-# Contains all Paths in JSON format as received from ODL
+# Contains all Paths as dictionary of path items by path_name as key
 path = {}
-
 
 # A dictionary of all SFF threads and its associated data this agent is aware.
 sff_threads = {}
 
-
 of_tableid = 0
 
-
-
 # Global Accessors
+
 
 def get_path():
     #global path
     return path
+
+
+def set_path(arg):
+    #global path
+    path = arg
 
 
 def get_sff_topo():

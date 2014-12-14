@@ -78,7 +78,7 @@ module service-function-classifier {
           type string;
         }
         uses attachment-point {
-          description "Classifier attchment point";
+          description "Classifier attachment point";
         }
       }
     }

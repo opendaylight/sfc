@@ -21,6 +21,7 @@ import json
 import requests
 import sys
 from sff_thread import *
+from nfq_classifier import *
 
 from threading import Thread
 from sff_globals import *
@@ -106,15 +107,25 @@ def get_sffs():
     return jsonify(sff_topo)
 
 
+# RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP
 @app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT'])
 def create_paths():
-    global path
     if not request.json:
         abort(400)
     else:
-        path = {
+        path_json = {
             'rendered-service-paths': request.json['rendered-service-paths']
         }
+        
+        # reset path data
+        local_data_plane_path = get_data_plane_path()
+        local_path = get_path()
+
+        for path_item in path_json['rendered-service-paths']['rendered-service-path']:
+            local_path[path_item['name']] = path_item
+            # rebuild path data
+            build_data_plane_service_path(path_item)
+
     return jsonify({'path': path}), 201
 
 
@@ -179,7 +190,13 @@ def delete_path(sfpname):
     try:
         sfp_id = local_path[sfpname]['path-id']
         local_data_plane_path.pop(sfp_id, None)
-        path.pop(sfpname, None)
+        local_path.pop(sfpname, None)
+
+        # remove nfq classifier for this path
+        nfq_class_manager = get_nfq_class_manager_ref()
+        if nfq_class_manager:
+            nfq_class_manager.destroy_packet_forwarder(sfp_id)
+        
         json_string = json.dumps(data_plane_path)
     except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
@@ -312,6 +329,65 @@ def delete_sffs():
     return jsonify({'sff': sff_topo}), 201
 
 
+###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+@app.route('/config/ietf-acl:access-lists/', methods=['PUT'])
+def apply_all_acls():
+    nfq_class_manager = get_nfq_class_manager_ref()
+    try:
+        logger.debug("apply_all_acls: nfq_class_manager=%s", nfq_class_manager)
+
+        # check nfq
+        if not nfq_class_manager:
+            return "NFQ not running. Received acl data has been ignored", 500
+
+        if not request.json:
+            abort(400)
+        else:
+            acls = {
+                'access-lists': request.json['access-lists']
+            }
+
+            result = nfq_class_manager.recompile_all_acls(acls)
+
+            if len(result) > 0:
+                return "Acl compiled with errors. " + str(result), 201
+            else:
+                return "Acl compiled", 201
+
+    except:
+        logger.exception('apply_all_acls: exception')
+        raise
+
+
+###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+@app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT'])
+def apply_one_acl(aclname):
+    nfq_class_manager = get_nfq_class_manager_ref()
+    try:
+        logger.debug("apply_one_acl: nfq_class_manager=%s", nfq_class_manager)
+
+        # check nfq
+        if not nfq_class_manager:
+            return "NFQ not running. Received acl data has been ignored", 500
+
+        if not request.json:
+            abort(400)
+        else:
+            acl_item = request.get_json()["access-list"][0]
+
+            result = nfq_class_manager.compile_one_acl(acl_item)
+
+            if len(result) > 0:
+                return "Acl compiled with errors. " + str(result), 201
+            else:
+                return "Acl compiled", 201
+
+    except:
+        logger.exception('apply_one_acl: exception')
+        raise
+
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -377,7 +453,7 @@ def main(argv):
     try:
         logging.basicConfig(level=logging.DEBUG)
         opt, args = getopt.getopt(argv, "hr",
-                                  ["help", "rest", "odl-get-sff", "odl-ip-port=", "sff-name=", "agent-port=",
+                                  ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=", "agent-port=",
                                    "sff-os="])
     except getopt.GetoptError:
         print("sfc_agent --help | --rest | --odl-get-sff | --odl-ip-port | --sff-name" +
@@ -387,7 +463,9 @@ def main(argv):
     odl_get_sff = False
     agent_port = 5000
     rest = False
+    nfq_class = False
     for opt, arg in opt:
+        logger.debug(opt)
         if opt == "--odl-get-sff":
             odl_get_sff = True
             continue
@@ -407,6 +485,9 @@ def main(argv):
         if opt == "--sff-name":
             my_sff_name = arg
 
+        if opt == "--nfq-class":
+            nfq_class = True
+
         if opt == "--agent-port":
             agent_port = int(arg)
 
@@ -424,9 +505,11 @@ def main(argv):
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)
 
+    if nfq_class:
+        start_nfq_classifier()
+
     if rest:
-        app.debug = True
-        app.run(host='0.0.0.0', port=agent_port)  # this allows to run multiple SFF threads concurrently)
+        app.run(host='0.0.0.0', debug=True, port=agent_port)  # this allows to run multiple SFF threads concurrently)
 
 
 if __name__ == "__main__":

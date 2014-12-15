@@ -1,26 +1,33 @@
 <form role="form" id="createForm" name="createForm">
     <div class="col-md-12 form-horizontal">
-        <h3>{{'SFC_ACL' | translate}}</h3>
+        <div class="col-md-6" style="padding: 0">
+            <h3>
+                {{'SFC_ACL' | translate}}
+                <sfc-data-template template-data-model="data"
+                                   default-template-data-model="defaultTemplates['aclDefault']"
+                                   dialog-id="createAcl"></sfc-data-template>
+            </h3>
 
-        <div class="formElement col-md-5">
-            <div class="form-group" show-validation-error>
-                <label for="acl-name" class="col-lg-6 control-label small-label">{{'SFC_ACL_NAME' |
-                    translate}}</label>
+            <div class="formElement">
+                <div class="form-group" show-validation-error>
+                    <label for="acl-name" class="col-lg-6 control-label small-label">{{'SFC_ACL_NAME' |
+                        translate}}</label>
 
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm" ng-model="data['acl-name']" id="acl-name" name="acl-name"
-                           placeholder="{{'SFC_ACL_CREATE_NAME' | translate}}" required focus-me="{{true}}">
+                    <div class="col-lg-6">
+                        <input type="text" class="form-control input-sm" ng-model="data['acl-name']" id="acl-name" name="acl-name"
+                               placeholder="{{'SFC_ACL_CREATE_NAME' | translate}}" required focus-me="{{true}}">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-7"></div>
+        <div class="col-md-6"></div>
     </div>
 
     <div class="col-md-12 form-horizontal">
         <h3>{{'SFC_ACL_ACE' | translate}}</h3>
 
-        <div class="col-md-10 formElement"
+        <div class="col-md-12 formElement"
              ng-form="acl_entry_form_{{$index}}"
              ng-repeat="ace in data['access-list-entries'] track by $index"
              >
@@ -181,12 +188,10 @@
 
             </div>
         </div>
-
-        <div class="col-md-2"></div>
     </div>
 
     <div class="col-md-12">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div style="text-align: right;">
                 <span class="spanTip">{{ 'SFC_ACL_ACE_ADD' | translate }}</span>
                 <button type="button" class="btn btn-xs btn-primary" ng-click="addAce()"><i class="icon-plus"></i>

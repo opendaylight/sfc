@@ -54,6 +54,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         if (index + 1 < templateArgs.length) {
           arg = templateArgs[index + 1];
+          return stringify(arg);
         }
 
         return match;

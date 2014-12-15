@@ -1,67 +1,83 @@
 <form role="form" id="createForm" name="createForm">
     <div class="col-md-12 form-horizontal">
-        <h3>{{'SFC_CLASSIFIER' | translate}}</h3>
+        <div class="col-md-6">
 
-        <div class="formElement col-md-5">
-            <div class="form-group" show-validation-error>
-                <label for="name" class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_NAME' |
-                    translate}}</label>
+            <h3>
+                {{'SFC_CLASSIFIER' | translate}}
+                <sfc-data-template template-data-model="data"
+                                   default-template-data-model="defaultTemplates['classifierDefault']"
+                                   dialog-id="createClassifier"></sfc-data-template>
+            </h3>
 
-                <div class="col-lg-6">
-                    <input type="text" class="form-control input-sm" ng-model="data['name']" id="name" name="name"
-                           placeholder="{{'SFC_CLASSIFIER_CREATE_NAME' | translate}}" required focus-me="{{true}}">
+            <div class="formElement">
+                <div class="form-group" show-validation-error>
+                    <label for="name" class="col-lg-6 control-label small-label">{{'SFC_CLASSIFIER_NAME' |
+                        translate}}</label>
+
+                    <div class="col-lg-6">
+                        <input type="text" class="form-control input-sm" ng-model="data['name']" id="name" name="name"
+                               placeholder="{{'SFC_CLASSIFIER_CREATE_NAME' | translate}}" required focus-me="{{true}}">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label class="col-lg-6 control-label small-label" ui-select2-label="access-list">
-                    {{'SFC_CLASSIFIER_ACCESS_LIST' | translate}}
-                </label>
+                <div class="form-group">
+                    <label class="col-lg-6 control-label small-label" ui-select2-label="access-list">
+                        {{'SFC_CLASSIFIER_ACCESS_LIST' | translate}}
+                    </label>
 
-                <div class="col-lg-6">
-                    <select class="form-control input-sm" id="access-list" name="access-list" ui-select2="{allowClear: true}"
-                            ng-model="data['access-list']"
-                            ng-required="false" data-placeholder="{{'SFC_CLASSIFIER_CREATE_ACCESS_LIST' | translate}}">
+                    <div class="col-lg-6">
+                        <select class="form-control input-sm" id="access-list" name="access-list"
+                                ui-select2="{allowClear: true}"
+                                ng-model="data['access-list']"
+                                ng-required="false"
+                                data-placeholder="{{'SFC_CLASSIFIER_CREATE_ACCESS_LIST' | translate}}">
 
-                        <option value=""></option>
-                        <option ng-repeat="acl in acls" value="{{acl['acl-name']}}">{{acl['acl-name']}}</option>
-                    </select>
+                            <option value=""></option>
+                            <option ng-repeat="acl in acls" value="{{acl['acl-name']}}">{{acl['acl-name']}}</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label class="col-lg-6 control-label small-label" ui-select2-label="service-path">
-                    {{'SFC_CLASSIFIER_SERVICE_PATH' | translate}}
-                </label>
+                <div class="form-group">
+                    <label class="col-lg-6 control-label small-label" ui-select2-label="service-path">
+                        {{'SFC_CLASSIFIER_SERVICE_PATH' | translate}}
+                    </label>
 
-                <div class="col-lg-6">
-                    <select class="form-control input-sm" id="service-path" name="service-path" ui-select2="{allowClear: true}"
-                            ng-model="data['service-function-path']"
-                            ng-required="false"
-                            data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_PATH' | translate}}">
+                    <div class="col-lg-6">
+                        <select class="form-control input-sm" id="service-path" name="service-path"
+                                ui-select2="{allowClear: true}"
+                                ng-model="data['service-function-path']"
+                                ng-required="false"
+                                data-placeholder="{{'SFC_CLASSIFIER_CREATE_SERVICE_PATH' | translate}}">
 
-                        <option value=""></option>
-                        <option ng-repeat="sfp in sfps" value="{{sfp['name']}}">{{sfp['name']}}</option>
-                    </select>
+                            <option value=""></option>
+                            <option ng-repeat="sfp in sfps" value="{{sfp['name']}}">{{sfp['name']}}</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <h4>{{'SFC_SERVICE_FORWARDERS' | translate}}</h4>
-            <div style="padding-bottom: 10px" ng-form="f_sff_{{$index}}" ng-repeat="sff in data['service-function-forwarder'] track by $index">
-                <div style="text-align: right; margin-bottom: 10px">
-                    <span class="spanTip">{{ 'SFC_CLASSIFIER_REMOVE_SERVICE_FORWARDER' | translate }}</span>
-                    <button type="button" class="btn btn-xs btn-danger" ng-click="removeSff($index)"><i class="icon-minus"></i>
+                <h4>{{'SFC_SERVICE_FORWARDERS' | translate}}</h4>
+
+                <div style="padding-bottom: 10px" ng-form="f_sff_{{$index}}"
+                     ng-repeat="sff in data['service-function-forwarder'] track by $index">
+                    <div style="text-align: right; margin-bottom: 10px">
+                        <span class="spanTip">{{ 'SFC_CLASSIFIER_REMOVE_SERVICE_FORWARDER' | translate }}</span>
+                        <button type="button" class="btn btn-xs btn-danger" ng-click="removeSff($index)"><i
+                                class="icon-minus"></i>
+                        </button>
+                    </div>
+
+                    <classifier-sff ng-if="sffs" id-suffix="{{'_'+$index}}" sffs="sffs" sff="sff"
+                                    classifier-constants="classifierConstants"></classifier-sff>
+                </div>
+
+
+                <div style="text-align: right;">
+                    <span class="spanTip">{{ 'SFC_CLASSIFIER_ADD_SERVICE_FORWARDER' | translate }}</span>
+                    <button type="button" class="btn btn-xs btn-primary" ng-click="addSff()"><i class="icon-plus"></i>
                     </button>
                 </div>
 
-                <classifier-sff ng-if="sffs" id-suffix="{{'_'+$index}}" sffs="sffs" sff="sff" classifier-constants="classifierConstants"></classifier-sff>
             </div>
-
-
-            <div style="text-align: right;">
-                <span class="spanTip">{{ 'SFC_CLASSIFIER_ADD_SERVICE_FORWARDER' | translate }}</span>
-                <button type="button" class="btn btn-xs btn-primary" ng-click="addSff()"><i class="icon-plus"></i></button>
-            </div>
-
         </div>
     </div>
 

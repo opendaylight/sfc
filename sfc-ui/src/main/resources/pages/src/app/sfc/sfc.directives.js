@@ -87,8 +87,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       scope: {
         'inputId': '@inputId',
         'placeHolder': '@placeHolder',
-        'availableOptionsArray': '=',
-        'bindingProperty': '='
+        'bindingProperty': '=',
+        'availableOptionsArray': '=?',
+        'tmpForSelect2': '=?internalDataModel',
+        'ngChangeFunction': '&?'
       },
       template: '<input type="hidden" id="{{inputId}}" class="form-control input-sm" ui-select2="select2Options" ng-model="tmpForSelect2" ng-required="false" data-placeholder="{{placeHolder | translate}}">',
       controller: 'sfcSelect2CreateSearchChoiceCtrl'

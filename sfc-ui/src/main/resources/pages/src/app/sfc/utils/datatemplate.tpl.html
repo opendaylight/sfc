@@ -1,0 +1,22 @@
+<div class="form-group">
+    <label for="dataTemplateName" class="col-lg-6 control-label small-label">
+        <a ng-if="templateSaveRequired" ng-click="saveTemplate(selectedDataTemplateName)">
+            <i class="icon-save" style="cursor: pointer; color: greenyellow" popover-trigger="mouseenter"
+               popover="{{ 'SFC_DATA_TEMPLATE_SAVE' | translate }}"></i>
+        </a>
+        <a ng-if="isAllowedToRemoveTemplate(selectedDataTemplateName)" ng-click="removeTemplate(selectedDataTemplateName)">
+            <i class="icon-remove" style="cursor: pointer; color: red" popover-trigger="mouseenter"
+               popover="{{ 'SFC_DATA_TEMPLATE_REMOVE' | translate }}"></i>
+        </a>
+        {{'SFC_DATA_TEMPLATE' | translate}}
+    </label>
+
+    <div class="col-lg-6">
+        <sfc-select2-create-search-choice input-id="dataTemplateName" place-holder="SFC_DATA_TEMPLATE_PLACEHOLDER"
+                binding-property="selectedDataTemplateName" available-options-array="dataTemplates"
+                ng-change-function="loadTemplate(selected)" internal-data-model="selectedDataTemplateNameInternalDataModel">
+        </sfc-select2-create-search-choice>
+
+    </div>
+</div>
+

@@ -1,7 +1,16 @@
 <form role="form" id="createForm" name="createForm">
-    <div class="col-md-12 form-horizontal">
-        <h3>{{'SFC_METADATA_VARIABLE_NAME' | translate}}</h3>
+    <div class="col-md-12 form-horizontal" style="padding: 0">
+        <div class="col-md-6">
+            <h3>
+                {{'SFC_METADATA_VARIABLE_NAME' | translate}}
+                <sfc-data-template template-data-model="data"
+                                   default-template-data-model="defaultTemplates['variableMetadataDefault']"
+                                   dialog-id="createVariableMetadata"></sfc-data-template>
+            </h3>
+        </div>
+    </div>
 
+    <div class="col-md-12 form-horizontal" style="padding: 0">
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="formElement">
                 <div class="form-group" show-validation-error>
@@ -23,7 +32,7 @@
     <div class="col-md-12">
         <h3>{{'SFC_METADATA_VARIABLE_TLV_CREATE' | translate}}</h3>
 
-        <div class="col-lg-6 col-md-6 col-sm-12"
+        <div class="col-lg-6 col-md-6 col-sm-12" style="padding: 0"
              ng-repeat="tlv in data['tlv-metadata'] track by $index"
              ng-init="tlv['flags'] = tlv['flags'] || {}">
             <div class="formElement form-horizontal" ng-form="tlv_entry_form_{{$index}}">

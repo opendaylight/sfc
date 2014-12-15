@@ -83,13 +83,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.cloneSF = function cloneSF(sf) {
       delete sf['sf-data-plane-locator-string'];
       sf['name'] = sf['name'] + "_copy";
-      ServiceFunctionSvc.putItem(sf, function () {
-        $scope.fetchData();
+      $state.transitionTo('main.sfc.servicefunction-clone', {"sf": JSON.stringify(sf)}, {
+        location: true,
+        inherit: true,
+        relative: $state.$current,
+        notify: true
       });
     };
 
     $scope.editSF = function editSF(sfName) {
-      $state.transitionTo('main.sfc.servicefunction-edit', {sfName: sfName}, {
+      $state.transitionTo('main.sfc.servicefunction-edit', {"sfName": sfName}, {
         location: true,
         inherit: true,
         relative: $state.$current,
@@ -98,14 +101,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, $stateParams, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
+  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, $stateParams, SfcDataTemplateSvc, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
 
     $scope.data = {"sf-data-plane-locator": [{}]};
 
     ServiceForwarderSvc.getArray(function (data) {
       $scope.sffs = data;
 
-      if (angular.isDefined($stateParams.sfName)) {
+      if (angular.isDefined($stateParams.sf)) {
+        $scope.data = JSON.parse($stateParams.sf);
+        ServiceFunctionHelper.nshAwareToString($scope.data);
+      }
+      else if (angular.isDefined($stateParams.sfName)) {
         ServiceFunctionSvc.getItem($stateParams.sfName, function (item) {
           $scope.data = item;
           ServiceFunctionHelper.nshAwareToString($scope.data);
@@ -133,7 +140,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceFunctionTypeCtrl', function ($scope, ServiceFunctionTypeSvc, SfcTableParamsSvc ,ngTableParams, $filter) {
+  sfc.register.controller('serviceFunctionTypeCtrl', function ($scope, ServiceFunctionTypeSvc, SfcTableParamsSvc, ngTableParams, $filter) {
 
     $scope.sfts = [];
 

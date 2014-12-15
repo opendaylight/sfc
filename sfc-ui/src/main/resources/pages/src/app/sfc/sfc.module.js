@@ -43,6 +43,7 @@ define([
       'app/core/core.services',
       'app/sfc/sfc.services',
       'app/sfc/utils/modal.services',
+      'app/sfc/utils/datatemplate.services',
       'app/sfc/servicechain/servicechain.services',
       'app/sfc/servicenode/servicenode.services',
       'app/sfc/config/config.services',
@@ -61,7 +62,8 @@ define([
       'app/sfc/serviceforwarder/serviceforwarder.directives',
       'app/sfc/acl/acl.directives',
       'app/sfc/metadata/metadata.directives',
-      'app/sfc/servicepath/servicepath.directives'
+      'app/sfc/servicepath/servicepath.directives',
+      'app/sfc/utils/datatemplate.directives'
     ];
 
     var loaded = $q.defer();
@@ -183,6 +185,17 @@ define([
       }
     });
 
+    $stateProvider.state('main.sfc.serviceforwarder-clone', {
+      url: '/serviceforwarder-edit:sff',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.create.tpl.html',
+          controller: 'serviceForwarderCreateCtrl'
+        }
+      }
+    });
+
     $stateProvider.state('main.sfc.servicefunction', {
       url: '/servicefunction',
       access: access.public,
@@ -207,6 +220,17 @@ define([
 
     $stateProvider.state('main.sfc.servicefunction-edit', {
       url: '/servicefunction-edit:sfName',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/servicefunction/servicefunction.create.tpl.html',
+          controller: 'serviceFunctionCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.servicefunction-clone', {
+      url: '/servicefunction-clone:sf',
       access: access.public,
       views: {
         'sfc': {

@@ -62,6 +62,69 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $rootScope.experimental = true;
 
+    $rootScope.defaultTemplates =
+    {
+      sfDefault: {
+        "sf-data-plane-locator": [{
+          "service-function-forwarder": null,
+          "name": "dp1",
+          "ip": "10.0.0.1",
+          "transport": "vxlan-gpe"
+        }],
+        "name": "SF1", "type": "firewall", "nsh-aware": "true"
+      },
+      sffDefault: {
+        "sff-data-plane-locator": [{
+          "data-plane-locator": {"ip": "10.0.0.1", "transport": "vxlan-gpe"},
+          "ovs-bridge": {},
+          "name": "eth0"
+        }],
+        "service-function-dictionary": [{
+          "nonExistent": false,
+          "sff-sf-data-plane-locator": {"ovs-bridge": {}},
+          "sff-interfaces": [],
+          "type": "dpi"
+        }],
+        "service-node": null, "name": "SFF1", "rest-uri": "http://www.example.com/sffs/sff-bootstrap"
+      },
+      classifierDefault: {
+        "service-function-forwarder": [{}],
+        "name": "Classifier1"
+      },
+      aclDefault: {
+        "access-list-entries": [
+          {
+            "matches": {
+              "absolute": {"active": "true"},
+              "source-ipv4-address": "0.0.0.0/0",
+              "destination-ipv4-address": "0.0.0.0/0",
+              "source-port-range": {"lower-port": "80", "upper-port": "80"},
+              "ip-protocol": "7"
+            },
+            "actions": {}, "rule-name": "ACE1"
+          }
+        ],
+        "acl-name": "ACL1"
+      },
+      contextMetadataDefault: [
+        {
+          "name": "ContextMetadata1",
+          "context-header1": "0x1234",
+          "context-header2": "0x1234",
+          "context-header3": "0x1234",
+          "context-header4": "0x1234"
+        }
+      ],
+      variableMetadataDefault: {
+        "tlv-metadata": [
+          {"flags": {}, "tlv-class": "0x123", "tlv-type": "0x12", "tlv-data": "data", "length": "4"}
+        ],
+        "name": "VariableMetadata1"
+      }
+
+    };
+
+
     $localStorage.$default({
       restangularBaseUrl: SfcRestangularSvc.getCurrentBaseUrl()
     });
@@ -73,8 +136,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
     var thisCtrl = this;
 
     //wait for data load, then prefill select2Model($scope.tmpForSelect2) - do it only once
-    this.unregisterBindingPropertyWatch = $scope.$watch('bindingProperty', function (newVal){
-      if(angular.isUndefined(newVal) || newVal === null){
+    this.unregisterBindingPropertyWatch = $scope.$watch('bindingProperty', function (newVal) {
+      if (angular.isUndefined(newVal) || newVal === null) {
         return;
       }
 
@@ -87,9 +150,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
 
     // sync/copy 'id' (id = selected value) to bindingProperty
-    $scope.$watch(function () {
-      if ($scope.tmpForSelect2) {
-        $scope.bindingProperty = $scope.tmpForSelect2.id;
+    $scope.$watch('tmpForSelect2', function (newVal, oldVal) {
+      if (newVal && newVal['id']) {
+        $scope.bindingProperty = newVal['id'];
+      }
+      else {
+        $scope.bindingProperty = null;
+      }
+
+      if (!_.isEqual(newVal, oldVal)) {
+        $scope.ngChangeFunction({selected: $scope.bindingProperty});
       }
     });
 

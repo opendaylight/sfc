@@ -1,7 +1,11 @@
 <form role="form" id="createForm" name="createForm">
 <div class="col-md-12" style="padding: 0px">
-    <div class="col-md-5 form-horizontal">
-        <h3>{{'SFC_FUNCTION_SFF' | translate}}</h3>
+    <div class="col-md-6 form-horizontal">
+        <h3>
+            {{'SFC_FUNCTION_SFF' | translate}}
+            <sfc-data-template template-data-model="data" default-template-data-model="defaultTemplates['sffDefault']"
+                               dialog-id="createServiceForwarder"></sfc-data-template>
+        </h3>
 
         <div class="formElement">
             <div class="form-group" show-validation-error>
@@ -64,7 +68,7 @@
     </div>
 </div>
 
-<div class="col-md-5 form-horizontal">
+<div class="col-md-6 form-horizontal">
     <h3>{{'SFC_FORWARDER_DATA_PLANE_LOCATOR' | translate}}</h3>
 
     <div class="formElement" ng-form="data_plane_form_{{$index}}" ng-repeat="locator in data['sff-data-plane-locator'] track by $index">
@@ -99,8 +103,6 @@
         <button type="button" class="btn btn-xs btn-primary" ng-click="addLocator()"><i class="icon-plus"></i></button>
     </div>
 </div>
-
-<!--<div class="col-md-1"></div>-->
 
 <div class="col-md-6 form-horizontal">
     <h3>{{'SFC_FORWARDER_SF_DICTIONARY' | translate}}</h3>

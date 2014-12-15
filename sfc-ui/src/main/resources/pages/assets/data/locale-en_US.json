@@ -603,6 +603,13 @@
   "SFC_SYSTEM_LOG_SHOW_EXCEPTION": "Show exception",
   "SFC_SYSTEM_MODAL_EXCEPTION_HEAD": "Bundle exception",
   "SFC_SYSTEM_MODAL_EXCEPTION_CLOSE": "Close",
+  "SFC_DATA_TEMPLATE": "Data template",
+  "SFC_DATA_TEMPLATE_PLACEHOLDER": "Type in to create or select a template",
+  "SFC_DATA_TEMPLATE_LOAD": "Load template",
+  "SFC_DATA_TEMPLATE_SAVE": "Save template",
+  "SFC_DATA_TEMPLATE_SAVE_CHANGES": "Save changes",
+  "SFC_DATA_TEMPLATE_REMOVE": "Remove template",
+
 
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

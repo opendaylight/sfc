@@ -281,7 +281,7 @@ class NfqClassifierManager:
         if ('destination-mac-address' in ace_matches):
             logger.warn('destination-mac-address match not implemented')
 
-        #nw_src/ipv6_src
+        # nw_src/ipv6_src
         nw_src = ''
         if ('source-ipv4-address' in ace_matches):
             nw_src = ' -s ' + ace_matches['source-ipv4-address']

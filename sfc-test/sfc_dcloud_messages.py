@@ -674,6 +674,58 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
   }
 }"""
 
+
+IETF_ACL_JSON = """
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "acl-1",
+        "access-list-entries": [
+          {
+            "rule-name": "ace-1",
+            "matches": {
+              "absolute": {
+                "active": true
+              },
+              "destination-port-range": {
+                "lower-port": 8080,
+                "upper-port": 8081
+              },
+              "ip-protocol": 6,
+              "source-port-range": {
+                "lower-port": 32000,
+                "upper-port": 65535
+              },
+              "source-ipv4-address": "192.168.0.0/24"
+            },
+            "actions": {
+              "service-function-acl:service-function-path": "Path-1-SFC1"
+            }
+          },
+          {
+            "rule-name": "ace-2",
+            "matches": {
+              "absolute": {
+                "active": true
+              },
+              "ip-protocol": 17,
+              "destination-port-range": {
+                "lower-port": 53,
+                "upper-port": 53
+              },
+              "source-ipv4-address": "10.0.0.0/8"
+            },
+            "actions": {
+              "service-function-acl:service-function-path": "Path-1-SFC1-Reverse"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}"""
+
 RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
 {
   "rendered-service-paths": {

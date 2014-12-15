@@ -391,6 +391,8 @@ def apply_one_acl(aclname):
         except:
             logger.exception('apply_one_acl: exception')
             raise
+    else:
+        return "ACLs only supported on Linux Platforms", 403
 
 
 @app.errorhandler(404)

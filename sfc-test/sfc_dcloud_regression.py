@@ -26,6 +26,7 @@ RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rende
 SFP_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/" \
                                   "service-function-path/{}/"
 SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/{}/"
+IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -59,6 +60,12 @@ def delete_configuration():
         print("=>Deleted all Service Function Paths \n")
     else:
         print("=>Failure to delete SFPs, response code = {} \n".format(r.status_code))
+
+    r = s.delete(IETF_ACL_URL, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("=>Deleted all Access Lists \n")
+    else:
+        print("=>Failure to delete ACLs, response code = {} \n".format(r.status_code))
 
 
 def put_and_check(url, json_req, json_resp):
@@ -109,6 +116,7 @@ if __name__ == "__main__":
     check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
+    put_and_check(IETF_ACL_URL, IETF_ACL_JSON, IETF_ACL_JSON)
 
     # put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
     # check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")

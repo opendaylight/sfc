@@ -53,7 +53,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                 ServiceFunctionClassifier originalServiceFunctionClassifier = (ServiceFunctionClassifier) entry.getValue();
                 LOG.debug("\n########## Original ServiceFunctionClassifier name: {}", originalServiceFunctionClassifier.getName());
                 LOG.debug("\n########## Original ServiceFunctionClassifier ACL: {}", originalServiceFunctionClassifier.getAccessList());
-                LOG.debug("\n########## Original ServiceFunctionClassifier SFP: {}", originalServiceFunctionClassifier.getServiceFunctionPath());
+                LOG.debug("\n########## Original ServiceFunctionClassifier SFP: {}", originalServiceFunctionClassifier.getRenderedServicePath());
             }
         }
 
@@ -66,10 +66,10 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Created ServiceFunctionClassifier name: {}", createdServiceFunctionClassifier.getName());
 
                 String serviceFunctionPathName = null;
-                serviceFunctionPathName = createdServiceFunctionClassifier.getServiceFunctionPath();
+                serviceFunctionPathName = createdServiceFunctionClassifier.getRenderedServicePath();
                 if (serviceFunctionPathName != null) {
                     Object[] params = {createdServiceFunctionClassifier.getAccessList(),
-                            createdServiceFunctionClassifier.getServiceFunctionPath()};
+                            createdServiceFunctionClassifier.getRenderedServicePath()};
                     Class[] paramsTypes = {String.class, String.class};
 
                     odlSfc.executor.submit(SfcProviderAclAPI
@@ -102,7 +102,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                 //set AclEntries in new ACL
                 Object[] params = {updatedServiceFunctionClassifier.getAccessList(),
-                        updatedServiceFunctionClassifier.getServiceFunctionPath()};
+                        updatedServiceFunctionClassifier.getRenderedServicePath()};
                 Class[] paramsTypes = {String.class, String.class};
                 odlSfc.executor.submit(SfcProviderAclAPI
                         .getSetAclEntriesSfcAction(params, paramsTypes));

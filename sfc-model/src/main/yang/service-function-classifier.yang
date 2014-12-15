@@ -62,7 +62,7 @@ module service-function-classifier {
         type string;
       }
 
-      leaf service-function-path {
+      leaf rendered-service-path {
         description
            "The classifier will direct packets to the SFP
           specified here";

@@ -11,8 +11,6 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -20,7 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListKey;
@@ -30,6 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev1405
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -137,15 +138,15 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
             aceArrayList.addAll(accessList.getAccessListEntries());
 
             for (AccessListEntries ace : aceArrayList) {
-                AclServiceFunctionPathBuilder aclServiceFunctionPathBuilder = new AclServiceFunctionPathBuilder();
+                AclRenderedServicePathBuilder aclRenderedServicePathBuilder = new AclRenderedServicePathBuilder();
                 if (sfpName != null) {
-                    aclServiceFunctionPathBuilder.setServiceFunctionPath(sfpName);
+                    aclRenderedServicePathBuilder.setRenderedServicePath(sfpName);
                 } else {
-                    aclServiceFunctionPathBuilder.setServiceFunctionPath("");
+                    aclRenderedServicePathBuilder.setRenderedServicePath("");
                 }
 
                 Actions1Builder actions1Builder = new Actions1Builder();
-                actions1Builder.setSfcAction(aclServiceFunctionPathBuilder.build());
+                actions1Builder.setSfcAction(aclRenderedServicePathBuilder.build());
 
                 ActionsBuilder actionsBuilder = new ActionsBuilder();
                 actionsBuilder.addAugmentation(Actions1.class, actions1Builder.build());

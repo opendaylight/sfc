@@ -77,7 +77,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
     public void before() throws ExecutionException, InterruptedException {
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.executor;
+        executor = opendaylightSfc.getExecutor();
 
         final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
         final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;

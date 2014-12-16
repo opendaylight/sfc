@@ -43,7 +43,7 @@ public class SfcProviderServiceLispAPI extends SfcProviderAbstractAPI {
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
                     .child(ServiceFunction.class, sf.getKey()).toInstance();
 
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
             writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
             writeTx.commit();
 
@@ -60,7 +60,7 @@ public class SfcProviderServiceLispAPI extends SfcProviderAbstractAPI {
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
                     .child(ServiceFunctionForwarder.class, sff.getKey()).toInstance();
 
-            WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, sff, true);
             writeTx.commit();
 

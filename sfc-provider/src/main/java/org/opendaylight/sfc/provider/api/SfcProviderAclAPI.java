@@ -158,7 +158,7 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
                         .child(AccessList.class, accessList.getKey())
                         .child(AccessListEntries.class, ace.getKey()).build();
 
-                WriteTransaction aceWriteTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+                WriteTransaction aceWriteTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
                 aceWriteTx.merge(LogicalDatastoreType.CONFIGURATION,
                         aceIID, accessListEntriesBuilder.build(), true);
                 aceWriteTx.commit();

@@ -18,7 +18,6 @@ import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -43,14 +42,14 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfpEntryDataListener.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
-        odlSfc.getLock();
+        ODL_SFC.getLock();
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
@@ -77,7 +76,6 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
         RenderedServicePath renderedServicePath;
         RenderedServicePath revRenderedServicePath;
-        boolean transactionSuccessful = false;
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
         {
             if (entry.getValue() instanceof ServiceFunctionPath) {
@@ -172,7 +170,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 Class[] servicePathClass = {ServiceFunctionPath.class};
                 SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                         .getUpdateRenderedServicePathAPI(servicePathObj, servicePathClass);
-                odlSfc.executor.submit(sfcProviderServicePathAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
             }
         }
 
@@ -195,7 +193,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         (originalServiceFunctionPath, HttpMethod.DELETE);
             }
         }
-        odlSfc.releaseLock();
+        ODL_SFC.releaseLock();
         printTraceStop(LOG);
     }
 }

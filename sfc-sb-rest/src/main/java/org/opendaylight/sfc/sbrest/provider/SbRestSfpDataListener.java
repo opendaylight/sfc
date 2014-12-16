@@ -34,7 +34,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
     public SbRestSfpDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
         setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.sfpIID);
+        setInstanceIdentifier(OpendaylightSfc.SFP_IID);
         registerAsDataChangeListener();
     }
 
@@ -58,7 +58,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = new ArrayList<>();
                 try {
                     serviceFunctionForwardersObject =
-                            readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sffIID).get();
+                            readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFF_IID).get();
                     if (serviceFunctionForwardersObject != null) {
                         serviceFunctionForwarderList =
                                 serviceFunctionForwardersObject.get().getServiceFunctionForwarder();
@@ -76,7 +76,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
                     String urlMgmt = uri.getValue();
                     System.out.println("PUT url:" + urlMgmt);
                     SbRestPutSfpTask putSfpTask = new SbRestPutSfpTask(updatedServiceFunctionPaths, urlMgmt);
-                    opendaylightSfc.executor.submit(putSfpTask);
+                    opendaylightSfc.getExecutor().submit(putSfpTask);
                 }
 
             }

@@ -160,7 +160,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         if (dataBroker != null) {
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.delete(LogicalDatastoreType.CONFIGURATION,
-                    OpendaylightSfc.sfsIID);
+                    OpendaylightSfc.SFS_IID);
             writeTx.commit();
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
@@ -179,7 +179,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunctions> dataObject = null;
             try {
-                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sfsIID).get();
+                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFS_IID).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Failed to deleteServiceFunction");
                 return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
@@ -215,7 +215,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         if (dataBroker != null) {
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    OpendaylightSfc.sfcIID, sfcs, true);
+                    OpendaylightSfc.SFC_IID, sfcs, true);
             writeTx.commit();
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
@@ -291,7 +291,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
                     WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
                     writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                            OpendaylightSfc.sfpIID, paths, true);
+                            OpendaylightSfc.SFP_IID, paths, true);
                     writeTx.commit();
                     InstantiateServiceFunctionChainOutputBuilder outputBuilder = new InstantiateServiceFunctionChainOutputBuilder();
                     outputBuilder.setName(pathName);

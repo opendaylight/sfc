@@ -57,7 +57,7 @@ public class SfcLispProviderSffDataListener implements DataChangeListener  {
                     if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
                         Object[] serviceFunctionForwarderObj = { serviceFunctionForwarder };
                         Class[] serviceFunctionForwarderClass = { ServiceFunctionForwarder.class };
-                        OpendaylightSfc.getOpendaylightSfcObj().executor.submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceFunctionForwarderObj,
+                        OpendaylightSfc.getOpendaylightSfcObj().getExecutor().submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceFunctionForwarderObj,
                                 serviceFunctionForwarderClass));
                     }
 

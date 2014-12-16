@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
  */
 public abstract class SfcProviderAbstractAPI implements Callable<Object> {
 
-    protected static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    protected static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger
             (SfcProviderAbstractAPI.class);
     private String methodName = null;
@@ -81,7 +81,7 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
         this.parameters = new Object[params.length];
         this.parameterTypes = new Class[params.length];
         setParameters(params);
-        setDataBroker(odlSfc.getDataProvider());
+        setDataBroker(ODL_SFC.getDataProvider());
 
         for (int i = 0; i < params.length; i++) {
             this.parameterTypes[i] = params[i].getClass();
@@ -94,7 +94,7 @@ public abstract class SfcProviderAbstractAPI implements Callable<Object> {
         this.parameterTypes = new Class[params.length];
         setParameters(params);
         setParameterTypes(paramsTypes);
-        setDataBroker(odlSfc.getDataProvider());
+        setDataBroker(ODL_SFC.getDataProvider());
     }
 
     @Override

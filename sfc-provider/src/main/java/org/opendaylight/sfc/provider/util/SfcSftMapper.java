@@ -44,7 +44,7 @@ public class SfcSftMapper {
             ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceNodes> dataObject = null;
             try {
-                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.snIID).get();
+                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SN_IID).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("failed to ...." , e);
             }
@@ -57,7 +57,7 @@ public class SfcSftMapper {
                     for(String sfName : sfNameList){
                         ServiceFunction sf = null;
                         try {
-                            sf = (ServiceFunction) odlSfc.executor.submit(SfcProviderServiceFunctionAPI.getRead(
+                            sf = (ServiceFunction) odlSfc.getExecutor().submit(SfcProviderServiceFunctionAPI.getRead(
                                     new Object[]{sfName}, new Class[]{String.class})).get();
                         } catch (InterruptedException | ExecutionException e) {
                             LOG.warn("failed to ...." , e);

@@ -24,12 +24,12 @@ public class SfcLispListener implements ISfcLispListener, BindingAwareConsumer {
 
         // ServiceFunctionFowarder Entry
         SfcLispProviderSffDataListener sfcProviderSffDataListener = new SfcLispProviderSffDataListener();
-        dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sffIID, sfcProviderSffDataListener,
+        dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFF_IID, sfcProviderSffDataListener,
                 DataBroker.DataChangeScope.SUBTREE);
 
         // ServiceFunction Entry
         SfcLispProviderSfEntryDataListener sfcProviderSfEntryDataListener = new SfcLispProviderSfEntryDataListener();
-        dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.sfEntryIID, sfcProviderSfEntryDataListener,
+        dataBrokerService.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SF_ENTRY_IID, sfcProviderSfEntryDataListener,
                 DataBroker.DataChangeScope.SUBTREE);
 
     }

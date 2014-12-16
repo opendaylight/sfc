@@ -39,14 +39,14 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSffEntryDataListener implements DataChangeListener  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffEntryDataListener.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         printTraceStart(LOG);
-        odlSfc.getLock();
+        ODL_SFC.getLock();
 
         // SFF ORIGINAL
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -94,7 +94,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
                         .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
-                odlSfc.executor.submit(sfcProviderRestAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderRestAPI);
             }
         }
 
@@ -112,7 +112,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 //Send to SB REST
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                         .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
             }
         }
 
@@ -148,10 +148,10 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                         .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
             }
         }
-        odlSfc.releaseLock();
+        ODL_SFC.releaseLock();
         printTraceStop(LOG);
     }
 

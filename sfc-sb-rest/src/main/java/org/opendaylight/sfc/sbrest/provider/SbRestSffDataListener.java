@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.sbrest.provider;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
@@ -25,12 +24,12 @@ public class SbRestSffDataListener extends SbRestAbstractDataListener
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffDataListener.class);
-    private static final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
 
-    public SbRestSffDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.sffIID);
+    public SbRestSffDataListener(OpendaylightSfc ODL_SFC) {
+        setOpendaylightSfc(ODL_SFC);
+        setDataBroker(ODL_SFC.getDataProvider());
+        setInstanceIdentifier(OpendaylightSfc.SFF_IID);
         registerAsDataChangeListener();
     }
 
@@ -58,9 +57,9 @@ public class SbRestSffDataListener extends SbRestAbstractDataListener
                     for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
                         Uri uri = serviceFunctionForwarder.getRestUri();
                         String urlMgmt = uri.getValue();
-                        System.out.println("PUT url:" + urlMgmt);
+                        LOG.info("PUT url:{}", urlMgmt);
                         SbRestPutSffTask putSffTask = new SbRestPutSffTask(updatedServiceFunctionForwarders, urlMgmt);
-                        opendaylightSfc.executor.submit(putSffTask);
+                        ODL_SFC.getExecutor().submit(putSffTask);
                     }
                 }
             }

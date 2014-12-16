@@ -49,47 +49,49 @@ public class OpendaylightSfc implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
 
-    public static final InstanceIdentifier<ServiceFunctionChain>  sfcEntryIID =
+    public static final InstanceIdentifier<ServiceFunctionChain>  SFC_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionChains.class)
                     .child(ServiceFunctionChain.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionClassifier> scfEntryIID =
+    public static final InstanceIdentifier<ServiceFunctionClassifier> SCF_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
                     .child(ServiceFunctionClassifier.class).build();
 
-    public static final InstanceIdentifier<ServiceFunction>  sfEntryIID =
+    public static final InstanceIdentifier<ServiceFunction>  SF_ENTRY_IID =
            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionPath>  sfpEntryIID =
+    public static final InstanceIdentifier<ServiceFunctionPath>  SFP_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionPaths.class)
                     .child(ServiceFunctionPath.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctions>  sfsIID =
+    public static final InstanceIdentifier<ServiceFunctions>  SFS_IID =
             InstanceIdentifier.builder(ServiceFunctions.class).build();
-    public static final InstanceIdentifier<ServiceNodes>  snIID =
+    public static final InstanceIdentifier<ServiceNodes>  SN_IID =
            InstanceIdentifier.builder(ServiceNodes.class).build();
-    public static final InstanceIdentifier<ServiceFunctionPaths>  sfpIID =
+    public static final InstanceIdentifier<ServiceFunctionPaths>  SFP_IID =
            InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
-    public static final InstanceIdentifier<ServiceFunctionChains>  sfcIID =
+    public static final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionForwarders>  sffIID =
+    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
-    public static final InstanceIdentifier<ServiceFunctionTypes>  sftIID =
+    public static final InstanceIdentifier<ServiceFunctionTypes>  SFT_IID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-    public static final InstanceIdentifier<ServiceFunctionClassifiers>  scfIID =
+    public static final InstanceIdentifier<ServiceFunctionClassifiers>  SCF_IID =
             InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
-    public static final InstanceIdentifier<AccessLists>  aclIID =
+    public static final InstanceIdentifier<AccessLists>  ACL_IID =
             InstanceIdentifier.builder(AccessLists.class).build();
 
-    public final ExecutorService executor;
+    public static final int EXECUTOR_THREAD_POOL_SIZE = 40;
+
+    private final ExecutorService executor;
     protected DataBroker dataProvider;
     private static OpendaylightSfc opendaylightSfcObj;
     private final Lock lock = new ReentrantLock();
 
     public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(40);
+       executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE);
        opendaylightSfcObj = this;
     }
 
@@ -101,6 +103,10 @@ public class OpendaylightSfc implements AutoCloseable {
     public void releaseLock() {
         lock.unlock();
         return;
+    }
+
+    public ExecutorService getExecutor() {
+    	return executor;
     }
 
     public void setDataProvider(DataBroker salDataProvider) {
@@ -125,15 +131,15 @@ public class OpendaylightSfc implements AutoCloseable {
 
         if (dataProvider != null) {
             final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfEntryIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfcEntryIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfsIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, snIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sffIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sfpIID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, sftIID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFC_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFS_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SN_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFP_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFT_IID);
             t.commit().get();
         }
     }

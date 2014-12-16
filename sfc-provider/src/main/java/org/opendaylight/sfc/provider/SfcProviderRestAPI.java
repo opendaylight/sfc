@@ -241,7 +241,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
                         SfcProviderServiceForwarderAPI.getRead(serviceForwarderObj, serviceForwarderClass);
 
-                Future<Object> future = odlSfc.executor.submit
+                Future<Object> future = ODL_SFC.getExecutor().submit
                         (sfcProviderServiceForwarderAPI);
                 ClientResponse putClientRemoteResponse = null;
 
@@ -318,7 +318,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
                         SfcProviderServiceForwarderAPI.getRead(serviceForwarderObj, serviceForwarderClass);
 
-                Future<Object> future = odlSfc.executor.submit
+                Future<Object> future = ODL_SFC.getExecutor().submit
                         (sfcProviderServiceForwarderAPI);
                 ClientResponse deleteClientRemoteResponse = null;
 

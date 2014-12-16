@@ -118,7 +118,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         }
 
 /*
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
 
         try {
             dataSfcStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfStateIID).get();
@@ -154,7 +154,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getReadServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (List<SfServicePath>) future.get();
             LOG.debug("getRead: {}", future.get());
@@ -181,7 +181,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getDeleteServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServiceFunctionState: {}", future.get());
@@ -278,7 +278,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
@@ -335,8 +335,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         sf = SfcDataStoreAPI.readTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
 
-/*        if (odlSfc.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+/*        if (ODL_SFC.getDataProvider() != null) {
+            ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunction> serviceFunctionDataObject;
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
@@ -369,7 +369,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getRead(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (ServiceFunction) future.get();
             LOG.debug("getRead: {}", future.get());
@@ -463,7 +463,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {ServiceFunctionPath.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServicePathFromServiceFunctionState: {}", future.get());
@@ -495,7 +495,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {List.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServicePathFromServiceFunctionState: {}", future.get());
@@ -570,7 +570,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getDeleteServicePathFromServiceFunctionState(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServicePathFromServiceFunctionState: {}", future.get());

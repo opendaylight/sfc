@@ -163,7 +163,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         Class[] serviceTypeClass = {Class.class};
         SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
                 .getRead(serviceTypeObj, serviceTypeClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceTypeAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
         try {
             ret = (ServiceFunctionType) future.get();
             LOG.debug("getRead: {}", future.get());

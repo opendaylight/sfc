@@ -81,7 +81,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] serviceTypeObj = {createdServiceFunction};
                 Class[] serviceTypeClass = {ServiceFunction.class};
-                Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                Future future = odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
                         .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
                 try {
                     LOG.debug("getCreateServiceFunctionTypeEntry returns: {}", future.get());
@@ -107,7 +107,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
                 Object[] serviceFunctionObj = {originalServiceFunction};
                 Class[] serviceFunctionClass = {ServiceFunction.class};
-                Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                Future future = odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
                         .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                 try {
                     LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
@@ -161,7 +161,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
 
                     // We remove the original SF from SF type list
-                    Future future = odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                    Future future = odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
                             .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
                     try {
                         LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
@@ -173,7 +173,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                     // We create a independent entry
                     serviceFunctionObj[0] = updatedServiceFunction;
                     serviceFunctionClass[0] = ServiceFunction.class;
-                    odlSfc.executor.submit(SfcProviderServiceTypeAPI
+                    odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
                             .getCreateServiceFunctionTypeEntry(serviceFunctionObj, serviceFunctionClass));
                 }
 

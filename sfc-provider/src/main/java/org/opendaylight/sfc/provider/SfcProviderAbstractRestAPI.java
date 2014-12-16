@@ -26,8 +26,8 @@ import java.util.Arrays;
  * @version 0.1
  * @since 2014-07-28
  */
-abstract public class SfcProviderAbstractRestAPI implements Runnable {
-    protected static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+public abstract class SfcProviderAbstractRestAPI implements Runnable {
+    protected static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger
             (SfcProviderAbstractRestAPI.class);
     private String methodName = null;

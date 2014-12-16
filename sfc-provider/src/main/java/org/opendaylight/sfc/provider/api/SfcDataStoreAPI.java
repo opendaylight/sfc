@@ -34,19 +34,21 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcDataStoreAPI {
 
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+	// Hiding the implicit public constructor
+	private SfcDataStoreAPI() {	
+	}
+
+	private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
-    private static final DataBroker dataBroker = odlSfc.getDataProvider();
+    private static final DataBroker DATA_BROKER = ODL_SFC.getDataProvider();
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret = false;
 
-        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
         writeTx.delete(logicalDatastoreType, deleteIID);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -62,11 +64,9 @@ public class SfcDataStoreAPI {
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
         boolean ret;
 
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);
-        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -80,11 +80,9 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret;
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
-        //SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-        //Futures.addCallback(submitFuture, sfcDataStoreCallback, odlSfc.executor);
         try {
             submitFuture.checkedGet();
             ret = true;
@@ -98,7 +96,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI
             (InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType)  {
         U ret = null;
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
         Optional<U> optionalDataObject;
         CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
         try {
@@ -119,7 +117,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeSynchPutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret;
-        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
         writeTx.commit();
         ret = true;

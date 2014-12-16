@@ -72,7 +72,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                             createdServiceFunctionClassifier.getRenderedServicePath()};
                     Class[] paramsTypes = {String.class, String.class};
 
-                    odlSfc.executor.submit(SfcProviderAclAPI
+                    odlSfc.getExecutor().submit(SfcProviderAclAPI
                             .getSetAclEntriesSfcAction(params, paramsTypes));
 
                 }
@@ -96,7 +96,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                     Object[] params = {originalServiceFunctionClassifier.getAccessList(), ""};
                     Class[] paramsTypes = {String.class, String.class};
-                    odlSfc.executor.submit(SfcProviderAclAPI
+                    odlSfc.getExecutor().submit(SfcProviderAclAPI
                             .getSetAclEntriesSfcAction(params, paramsTypes));
                 }
 
@@ -104,7 +104,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                 Object[] params = {updatedServiceFunctionClassifier.getAccessList(),
                         updatedServiceFunctionClassifier.getRenderedServicePath()};
                 Class[] paramsTypes = {String.class, String.class};
-                odlSfc.executor.submit(SfcProviderAclAPI
+                odlSfc.getExecutor().submit(SfcProviderAclAPI
                         .getSetAclEntriesSfcAction(params, paramsTypes));
             }
         }
@@ -118,7 +118,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                 Object[] params = {originalServiceFunctionClassifier.getAccessList(), ""};
                 Class[] paramsTypes = {String.class, String.class};
-                odlSfc.executor.submit(SfcProviderAclAPI
+                odlSfc.getExecutor().submit(SfcProviderAclAPI
                         .getSetAclEntriesSfcAction(params, paramsTypes));
             }
         }

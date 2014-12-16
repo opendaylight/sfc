@@ -56,7 +56,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataBr
     public void before() {
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.executor;
+        executor = opendaylightSfc.getExecutor();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.6")), 555);
         SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("kyiv-5.5.5.6:555-vxlan", dummyIp, "sff-kyiv", VxlanGpe.class);

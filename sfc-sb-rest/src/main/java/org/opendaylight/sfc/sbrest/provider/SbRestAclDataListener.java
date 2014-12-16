@@ -37,7 +37,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
     public SbRestAclDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
         setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.aclIID);
+        setInstanceIdentifier(OpendaylightSfc.ACL_IID);
         registerAsDataChangeListener();
     }
 
@@ -59,7 +59,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
                 List<ServiceFunctionClassifier> serviceFunctionClassifierList = new ArrayList<>();
                 try {
                     serviceFunctionClassifiersObject =
-                            readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.scfIID).get();
+                            readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SCF_IID).get();
                     if (serviceFunctionClassifiersObject != null) {
                         serviceFunctionClassifierList =
                                 serviceFunctionClassifiersObject.get().getServiceFunctionClassifier();
@@ -82,7 +82,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
                         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI =
                                 SfcProviderServiceForwarderAPI.getRead(serviceForwarderObj, serviceForwarderClass);
 
-                        Future<Object> future = opendaylightSfc.executor.submit(sfcProviderServiceForwarderAPI);
+                        Future<Object> future = opendaylightSfc.getExecutor().submit(sfcProviderServiceForwarderAPI);
                         ServiceFunctionForwarder serviceFunctionForwarder = null;
                         try {
                             serviceFunctionForwarder = (ServiceFunctionForwarder) future.get();
@@ -95,7 +95,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
                             String urlMgmt = uri.getValue();
                             LOG.info("PUT ACL to url: {}", urlMgmt);
                             SbRestPutAclTask putAclTask = new SbRestPutAclTask(serviceFunctionClassifier.getAccessList(), urlMgmt);
-                            opendaylightSfc.executor.submit(putAclTask);
+                            opendaylightSfc.getExecutor().submit(putAclTask);
                         }
                     }
                 }

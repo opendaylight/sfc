@@ -150,11 +150,14 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceChainAPI sfcProviderServiceChainAPI = SfcProviderServiceChainAPI
                 .getRead(servicePathObj, servicePathClass);
-        Future future  = odlSfc.executor.submit(sfcProviderServiceChainAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
         try {
             ret = (ServiceFunctionChain) future.get();
             LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException e) {             LOG.warn("failed to ...." , e);         } catch (ExecutionException e) {             LOG.warn("failed to ...." , e);         }
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);        
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);         }
         printTraceStop(LOG);
         return ret;
     }
@@ -262,7 +265,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathArrayList);
         serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
 
-        WriteTransaction writeTx = odlSfc.getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction writeTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.OPERATIONAL,
                 sfcoIID, serviceFunctionChainStateBuilder.build(), true);
         writeTx.commit();
@@ -276,7 +279,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChains> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionChains> serviceFunctionChainsObject = null;
         try {
             serviceFunctionChainsObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfcsIID).get();
@@ -300,7 +303,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;
         sfcsIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
 
-        ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
         Optional<ServiceFunctionChainsState> serviceFunctionChainStateObject = null;
         try {
             serviceFunctionChainStateObject = readTx.read(LogicalDatastoreType.OPERATIONAL, sfcsIID).get();

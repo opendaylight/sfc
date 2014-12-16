@@ -199,8 +199,8 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
                 InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
 
-        if (odlSfc.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+        if (ODL_SFC.getDataProvider() != null) {
+            ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
             Optional<ServiceFunctionForwarders> serviceFunctionForwardersDataObject;
             try {
                 serviceFunctionForwardersDataObject = readTx.
@@ -222,7 +222,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     protected boolean deleteAllServiceFunctionForwarders() {
         boolean ret = false;
         printTraceStart(LOG);
-        if (odlSfc.getDataProvider() != null) {
+        if (ODL_SFC.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
                     InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
@@ -271,14 +271,14 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             {
                 Object[] servicePathObj = {serviceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.getPutServiceFunctionForwarder
+                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.getPutServiceFunctionForwarder
                         (servicePathObj,
                                 serviceForwarderClass));
             } else if (httpMethod.equals(HttpMethod.DELETE))
             {
                 Object[] servicePathObj = {serviceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.getDeleteServiceFunctionForwarder
+                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.getDeleteServiceFunctionForwarder
                         (servicePathObj,
                                 serviceForwarderClass));
             }
@@ -392,7 +392,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getAddPathToServiceForwarderState(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
@@ -483,7 +483,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {ServiceFunctionPath.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getDeletePathFromServiceForwarderState(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
@@ -513,7 +513,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getDeletePathFromServiceForwarderState(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
@@ -626,7 +626,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getDeleteServiceFunctionForwarderState(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServiceFunctionForwarderState: {}", future.get());
@@ -684,7 +684,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] serviceForwarderClass = {String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getReadSffState(serviceForwarderObj, serviceForwarderClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (List<SffServicePath>) future.get();
             LOG.debug("getReadSffState: {}", ret);
@@ -752,7 +752,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class, String.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getDeletePathFromServiceForwarderState(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeletePathFromServiceForwarderState: {}", future.get());
@@ -783,7 +783,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
         SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 .getDeletePathsUsedByServiceForwarder(serviceForwarderObj, serviceForwarderClass);
-        Future future = odlSfc.executor.submit(sfcProviderServiceForwarderAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
         try {
             ret = (boolean) future.get();
             LOG.info("getDeletePathsUsedByServiceForwarder: {}", ret);

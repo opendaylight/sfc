@@ -60,7 +60,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void before() {
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.executor;
+        executor = opendaylightSfc.getExecutor();
     }
 
     @Test

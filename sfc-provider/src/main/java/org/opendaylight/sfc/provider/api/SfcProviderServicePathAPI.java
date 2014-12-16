@@ -64,9 +64,10 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
-    private static final int maxStartingIndex = 255;
+    private static final int MAX_STARTING_INDEX = 255;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final String FAILED_TO_STR = "failed to ...";
     static final Comparator<SfcServiceFunction> SF_ORDER =
             new Comparator<SfcServiceFunction>() {
                 public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
@@ -275,14 +276,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                 .getDeleteRenderedServicePaths(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServicePathAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
         try {
             ret = (boolean) future.get();
             LOG.info("getDeleteRenderedServicePaths: {}", ret);
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
 
         return ret;
@@ -348,14 +349,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                 .getDeleteRenderedServicePath(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServicePathAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
         try {
             ret = (boolean) future.get();
             LOG.info("getDeleteRenderedServicePath: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
         if (!ret) {
             LOG.error("{}: Failed to delete RSP {}", Thread.currentThread().getStackTrace()[1],
@@ -418,14 +419,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {ServiceFunctionPath.class};
         SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                 .getCreateRenderedServicePathAPI(servicePathObj, servicePathClass);
-        Future futureCreateRSP = odlSfc.executor.submit(sfcProviderServicePathAPI);
+        Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
         try {
             ret = (RenderedServicePath) futureCreateRSP.get();
             LOG.debug("getCreateRenderedServicePathAPI: {}", futureCreateRSP.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
         return ret;
     }
@@ -456,7 +457,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         }
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
-        ArrayList<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
+        List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
         RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
         /*
@@ -471,7 +472,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         // Descending order
         //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER_REV));
         //serviceIndex = sfcServiceFunctionList.size();
-        serviceIndex = maxStartingIndex;
+        serviceIndex = MAX_STARTING_INDEX;
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
 
@@ -484,7 +485,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
             ServiceFunctionType serviceFunctionType;
 /*            try {
-                serviceFunctionType = (ServiceFunctionType) odlSfc.executor.submit(SfcProviderServiceTypeAPI.getRead(
+                serviceFunctionType = (ServiceFunctionType) ODL_SFC.getExecutor().submit(SfcProviderServiceTypeAPI.getRead(
                         new Object[]{sfcServiceFunction.getType()}, new Class[]{Class.class})).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error(" Could not get list of Service Functions of type: {}", sfcServiceFunction.getType());
@@ -545,7 +546,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         renderedServicePathBuilder.setPathId(pathId);
         // TODO: Find out the exact rules for service index generation
         //renderedServicePathBuilder.setStartingIndex((short) renderedServicePathHopArrayList.size());
-        renderedServicePathBuilder.setStartingIndex((short) maxStartingIndex);
+        renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
 
         RenderedServicePathKey renderedServicePathKey = new
@@ -575,14 +576,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {RenderedServicePath.class};
         SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                 .getCreateReverseRenderedServicePathAPI(servicePathObj, servicePathClass);
-        Future future = odlSfc.executor.submit(sfcProviderServicePathAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
         try {
             ret = (RenderedServicePath) future.get();
             LOG.debug("getCreateRenderedServicePathAPI: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
         return ret;
     }
@@ -602,7 +603,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         String revPathName;
         short revServiceHop;
         //int numServiceHops = renderedServicePath.getRenderedServicePathHop().size();
-        ArrayList<RenderedServicePathHop> revRenderedServicePathHopArrayList = new ArrayList<>();
+        List<RenderedServicePathHop> revRenderedServicePathHopArrayList = new ArrayList<>();
         printTraceStart(LOG);
 
         RenderedServicePathBuilder revRenderedServicePathBuilder = new RenderedServicePathBuilder(renderedServicePath);
@@ -615,7 +616,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         // Populate new array with elements from existing service path. They will be replaced as we go along
         revRenderedServicePathHopArrayList.addAll(renderedServicePathHopList);
-        //int serviceIndex = maxStartingIndex - numServiceHops + 1;
+        //int serviceIndex = MAX_STARTING_INDEX - numServiceHops + 1;
 
         ListIterator<RenderedServicePathHop> iter = renderedServicePathHopList.listIterator(renderedServicePathHopList.size());
         revServiceHop = 0;
@@ -625,7 +626,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             RenderedServicePathHopKey revRenderedServicePathHopKey = new RenderedServicePathHopKey(revServiceHop);
             RenderedServicePathHopBuilder revRenderedServicePathHopBuilder = new RenderedServicePathHopBuilder(renderedServicePathHop);
             revRenderedServicePathHopBuilder.setHopNumber(revServiceHop);
-            revRenderedServicePathHopBuilder.setServiceIndex((short) (maxStartingIndex - revServiceHop));
+            revRenderedServicePathHopBuilder.setServiceIndex((short) (MAX_STARTING_INDEX - revServiceHop));
             revRenderedServicePathHopBuilder.setKey(revRenderedServicePathHopKey);
             revRenderedServicePathHopArrayList.set(revServiceHop, revRenderedServicePathHopBuilder.build());
             revServiceHop++;
@@ -704,14 +705,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
             {
                 Object[] servicePathObj = {renderedServicePath};
                 Class[] servicePathClass = {RenderedServicePath.class};
-                 odlSfc.executor.execute(SfcProviderRestAPI.
+                 ODL_SFC.getExecutor().execute(SfcProviderRestAPI.
                         getPutRenderedServicePath(servicePathObj,
                                 servicePathClass));
             } else if (httpMethod.equals(HttpMethod.DELETE))
             {
                 Object[] servicePathObj = {renderedServicePath};
                 Class[] servicePathClass = {RenderedServicePath.class};
-                odlSfc.executor.execute(SfcProviderRestAPI.
+                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.
                         getDeleteRenderedServicePath(servicePathObj,
                                 servicePathClass));
             }
@@ -743,15 +744,15 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         }
         Object[] renderedPathObj = {renderedServicePath, operation};
         Class[] renderedPathClass = {RenderedServicePath.class, String.class};
-        Future future = odlSfc.executor.submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
                 renderedPathObj, renderedPathClass));
         try {
             ret = (boolean) future.get();
             LOG.info("getCheckServicePathAPI returns: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -772,15 +773,15 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         Object[] renderedPathObj = {renderedServicePath, operation};
         Class[] renderedPathClass = {RenderedServicePath.class, String.class};
-        Future future = odlSfc.executor.submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getCheckServicePathAPI(
                 renderedPathObj, renderedPathClass));
         try {
             ret = (boolean) future.get();
             LOG.debug("getCheckServicePathAPI returns: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("Failed to ...", e);
+            LOG.warn(FAILED_TO_STR, e);
         } catch (ExecutionException e) {
-            LOG.warn("Failed to ...", e);
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -842,15 +843,15 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         boolean ret = true;
         Object[] functionParams = {serviceFunction};
         Class[] functionParamsTypes = {ServiceFunction.class};
-        Future future = odlSfc.executor.submit(SfcProviderServicePathAPI
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI
                 .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
         try {
             ret = (boolean) future.get();
             LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn(FAILED_TO_STR , e);
         }
         printTraceStop(LOG);
         return ret;

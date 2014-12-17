@@ -35,11 +35,9 @@ sff_os = ""
 
 sff_os_set = {"OVS", "XE"}
 
+
 # Global Accessors
 
-
-def get_sff_os():
-    return sff_os
 
 
 def get_my_sff_name():

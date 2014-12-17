@@ -180,7 +180,7 @@ def create_path(sfpname):
             # process_ovs_cli(data_plane_path)
             ovs_cli.process_ovs_sff__cli(data_plane_path)
         else:
-            logger.error("Unknown SFF OS: %2", sff_os)  # should never get here
+            logger.error("Unknown SFF OS: %s", sff_os)  # should never get here
             # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 
@@ -455,15 +455,19 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
 def main(argv):
     global ODLIP
+    global sff_os
+
+
+    local_sff_ip = '0.0.0.0'
 
     try:
         logging.basicConfig(level=logging.DEBUG)
         logger.setLevel(level=logging.INFO)
         opt, args = getopt.getopt(argv, "hr",
                                   ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=",
-                                   "agent-port=", "sff-os="])
+                                   "agent-port=", "sff-ip=", "sff-os="])
     except getopt.GetoptError:
-        print("sfc_agent --help | --nfq-class | --rest | --odl-get-sff | --odl-ip-port | --sff-name" +
+        print("sfc_agent --help | --nfq-class | --rest | --sff-ip | --odl-get-sff | --odl-ip-port | --sff-name" +
               " | --agent-port | --sff-os (XE | OVS)")
         sys.exit(2)
 
@@ -482,7 +486,7 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sfc_agent --rest --nfq-class --odl-get-sff --odl-ip-port=<ODL REST IP:port>"
+            print("sfc_agent --rest --nfq-class --odl-get-sff --sff-ip=<local SFF IP dataplane address> --odl-ip-port=<ODL REST IP:port>"
                   " --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
             sys.exit()
 
@@ -493,6 +497,9 @@ def main(argv):
             local_my_sff_name = get_my_sff_name()
             local_my_sff_name = arg
 
+        if opt == "--sff-ip":
+            local_sff_ip = arg
+
         if opt == "--nfq-class":
             nfq_class = True
 
@@ -500,14 +507,24 @@ def main(argv):
             agent_port = int(arg)
 
         if opt == "--sff-os":
-            local_sff_os = get_sff_os()
-            local_sff_os = arg.upper()
-            if local_sff_os not in sff_os_set:
+            sff_os = get_sff_os()
+            sff_os = arg.upper()
+            if sff_os not in sff_os_set:
                 logger.error(local_sff_os + ' is an unsupported SFF switch OS')
                 sys.exit()
+            if sff_os.upper() == "XE":
+                sff_os = 'XE'
+            elif sff_os.upper() == "OVS":
+                sff_os = 'OVS'
+                #ovs_cli.init_ovs()
+            else:
+                print(sff_os + ' is an unsupported SFF switch OS')
+                sys.exit()
 
-            if local_sff_os == "OVS":
+            if sff_os == "OVS":
                 ovs_cli.init_ovs()
+
+
 
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)
@@ -517,7 +534,7 @@ def main(argv):
             start_nfq_classifier()
 
     if rest:
-        app.run(host='0.0.0.0', debug=True, port=agent_port, use_reloader=False)
+        app.run(host=local_sff_ip, debug=False, port=agent_port, use_reloader=False)
 
 
 if __name__ == "__main__":

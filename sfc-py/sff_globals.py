@@ -35,6 +35,8 @@ sff_os = ""
 
 sff_os_set = {"OVS", "XE"}
 
+sff_os = ''
+
 # Global Accessors
 
 

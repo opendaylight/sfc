@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_5deef0ed",
+        "filename": "sfc-py/sfc_agent.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-12-18T02:49:33Z",
+      "side": 1,
+      "message": "518-525 is not needed. sff_os is already assigned a properly upper value in line 512. And if value if not in set, program terminates.",
+      "range": {
+        "startLine": 518,
+        "startChar": 0,
+        "endLine": 525,
+        "endChar": 26
+      },
+      "revId": "18ae768874b10e83b70df0a70233f9df392b817e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

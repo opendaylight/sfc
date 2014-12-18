@@ -27,7 +27,7 @@ import requests
 import sys
 
 if sys.platform.startswith('linux'):
-    from nfq_classifier import *
+    from nfq_class_thread import *
 import xe_cli
 import ovs_cli
 
@@ -333,37 +333,6 @@ def delete_sffs():
     return jsonify({'sff': sff_topo}), 201
 
 
-# ##  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-@app.route('/config/ietf-acl:access-lists/', methods=['PUT'])
-def apply_all_acls():
-    if sys.platform.startswith('linux'):
-        nfq_class_manager = get_nfq_class_manager_ref()
-        try:
-            logger.debug("apply_all_acls: nfq_class_manager=%s", nfq_class_manager)
-
-            # check nfq
-            if not nfq_class_manager:
-                return "NFQ not running. Received acl data has been ignored", 500
-
-            if not request.json:
-                abort(400)
-            else:
-                acls = {
-                    'access-lists': request.json['access-lists']
-                }
-
-                result = nfq_class_manager.recompile_all_acls(acls)
-
-                if len(result) > 0:
-                    return "Acl compiled with errors. " + str(result), 201
-                else:
-                    return "Acl compiled", 201
-
-        except:
-            logger.exception('apply_all_acls: exception')
-            raise
-
-
 ###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 @app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT'])
 def apply_one_acl(aclname):
@@ -514,7 +483,7 @@ def main(argv):
 
     if nfq_class:
         if sys.platform.startswith('linux'):
-            start_nfq_classifier()
+            start_nfq_classifier(True)
 
     if rest:
         app.run(host='0.0.0.0', debug=True, port=agent_port, use_reloader=False)

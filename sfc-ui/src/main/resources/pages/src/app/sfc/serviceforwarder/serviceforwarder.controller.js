@@ -89,6 +89,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
         notify: true
       });
     };
+
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_SERVICE_FORWARDERS" | translate'), function (result) {
+        if (result == 'delete') {
+          ServiceForwarderSvc.deleteAll(function () {
+            thisCtrl.fetchData();
+          });
+        }
+      });
+    };
   });
 
   sfc.register.controller('serviceForwarderCreateCtrl', function ($scope, $state, $stateParams, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc) {

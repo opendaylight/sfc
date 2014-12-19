@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $localStorage) {
+  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $sessionStorage, $location) {
 
 //    // register watch for debugging - works only in firefox
 //    if (angular.isDefined($rootScope.watch)) {
@@ -125,10 +125,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
 
-    $localStorage.$default({
-      restangularBaseUrl: SfcRestangularSvc.getCurrentBaseUrl()
+    $sessionStorage.$default({
+      restangularBaseUrl: $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/restconf"
     });
-    SfcRestangularSvc.changeBaseUrl($localStorage.restangularBaseUrl);
+    SfcRestangularSvc.changeBaseUrl($sessionStorage.restangularBaseUrl);
 
   });
 

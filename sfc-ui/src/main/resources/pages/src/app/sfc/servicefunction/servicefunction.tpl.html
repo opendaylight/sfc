@@ -63,6 +63,9 @@
                     </td>
                 </tr>
             </table>
+            <button type="button" ng-click="deleteAll()" class="btn btn-danger pull-right">
+                {{'SFC_DELETE_ALL' | translate}}
+            </button>
         </tab>
 
         <tab heading="{{'SFC_SERVICE_FUNCTIONS_TYPES' | translate}}" select="fetchData()" ng-controller="serviceFunctionTypeCtrl">

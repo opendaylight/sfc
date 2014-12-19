@@ -17,7 +17,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       },
       {
-        total: 0,
+        total: $scope.acls.length,
         getData: function ($defer, params) {
           SfcTableParamsSvc.setFilterTableParams('aclTable', params.filter());
 
@@ -89,6 +89,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_ACCESS_LISTS" | translate'), function (result) {
+        if (result == 'delete') {
+          SfcAclSvc.deleteAll(function () {
+            thisCtrl.fetchData();
+          });
+        }
+      });
+    };
+
     $scope.editItem = function editItem(ace) {
       $state.transitionTo('main.sfc.acl-create', {itemKey: ace['acl-name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
@@ -150,7 +160,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       },
       {
-        total: 0,
+        total: $scope.classifiers.length,
         getData: function ($defer, params) {
           SfcTableParamsSvc.setFilterTableParams('classifierTable', params.filter());
 
@@ -195,6 +205,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (result == 'delete') {
           //delete the row
           SfcClassifierSvc.deleteItem(classifier, function () {
+            thisCtrl.fetchData();
+          });
+        }
+      });
+    };
+
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_CLASSIFIERS" | translate'), function (result) {
+        if (result == 'delete') {
+          SfcClassifierSvc.deleteAll(function () {
             thisCtrl.fetchData();
           });
         }

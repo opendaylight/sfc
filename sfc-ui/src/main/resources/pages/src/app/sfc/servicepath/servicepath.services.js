@@ -98,9 +98,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
       SfcClassifierSvc.getArray(function (classifiers) {
         _.each(classifiers, function (classifier) {
 
-          if (classifier['service-function-path']) {
-            originSfp2ClassMap[classifier['service-function-path']] = classifier;
-            sfp2ClassMap[classifier['service-function-path']] = classifier;
+          if (classifier['rendered-service-path']) {
+            originSfp2ClassMap[classifier['rendered-service-path']] = classifier;
+            sfp2ClassMap[classifier['rendered-service-path']] = classifier;
           } else {
             freeClassifiers[classifier['name']] = classifier;
           }
@@ -148,7 +148,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       var persistNew = function () {
         if (newClassifier && freeClassifiers[newClassifier['name']]) {
-          newClassifier['service-function-path'] = sfpName;
+          newClassifier['rendered-service-path'] = sfpName;
           SfcClassifierSvc.putItem(newClassifier, function () {
             delete freeClassifiers[newClassifier['name']];
             originSfp2ClassMap[sfpName] = newClassifier;
@@ -161,7 +161,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       };
 
       if (originClassifier) {
-        delete originClassifier['service-function-path'];
+        delete originClassifier['rendered-service-path'];
         SfcClassifierSvc.putItem(originClassifier, function () {
           freeClassifiers[originClassifier['name']] = originClassifier;
           delete originSfp2ClassMap[sfpName];

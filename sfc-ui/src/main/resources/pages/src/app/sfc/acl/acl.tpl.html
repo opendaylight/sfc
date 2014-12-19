@@ -18,7 +18,7 @@
                 filter="{ 'rule-name': 'text' }">
                 {{entry['rule-name']}}
             </td>
-            <td data-title="'SFC_ACL_ACTIONS_SFP' | translate"
+            <td data-title="'SFC_ACL_ACTIONS_RSP' | translate"
                 sortable="'valueOf()[\'actions\'][\'service-function-path\']'" filter="{ 'actions': 'text' }">
                 {{entry['actions']['service-function-path']}}
             </td>
@@ -77,16 +77,20 @@
             </td>
         </tr>
     </table>
+    <button type="button" ng-click="deleteAll()" class="btn btn-danger pull-right">
+        {{'SFC_DELETE_ALL' | translate}}
+    </button>
 
     <div ng-controller="sfcClassifierCtrl">
-        <a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
-            {{'SFC_CLASSIFIER_ADD' | translate}}
-        </a>
+        <div class="col-md-12" style="padding: 0; margin-bottom: 20px; margin-top: 20px">
+            <a class="btn btn-info add-row" href="index.html#/sfc/classifier-create">
+                {{'SFC_CLASSIFIER_ADD' | translate}}
+            </a>
 
-        <button type="button" ng-click="tableParams.sorting({})" class="btn btn-default pull-right">
-            {{'SFC_CLEAR_SORTING' |
-            translate}}
-        </button>
+            <button type="button" ng-click="variableMetadataTableParams.sorting({})"
+                    class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+            </button>
+        </div>
 
         <table ng-table="tableParams" show-filter="true" class="footable table">
             <tr ng-repeat="entry in $data track by $index">
@@ -98,9 +102,9 @@
                     filter="{ 'access-list': 'text' }">
                     {{entry['access-list']}}
                 </td>
-            <td data-title="'SFC_PATH' | translate" sortable="'valueOf()[\'service-function-path\']'"
-                filter="{ 'service-function-path': 'text' }">
-                {{entry['service-function-path']}}
+            <td data-title="'SFC_RENDERED_PATH' | translate" sortable="'valueOf()[\'rendered-service-path\']'"
+                filter="{ 'rendered-service-path': 'text' }">
+                {{entry['rendered-service-path']}}
                 </td>
                 <td data-title="'SFC_SERVICE_FORWARDERS' | translate"
                     sortable="'valueOf()[\'service-function-forwarder\'][\'name\']'"
@@ -128,5 +132,8 @@
                 </td>
             </tr>
         </table>
+        <button type="button" ng-click="deleteAll()" class="btn btn-danger pull-right">
+            {{'SFC_DELETE_ALL' | translate}}
+        </button>
     </div>
 </div>

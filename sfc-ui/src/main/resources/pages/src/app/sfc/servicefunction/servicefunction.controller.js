@@ -1,6 +1,7 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter, $q) {
+    var thisCtrl = this;
     var NgTableParams = ngTableParams;
 
     $scope.sfs = [];
@@ -97,6 +98,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
         inherit: true,
         relative: $state.$current,
         notify: true
+      });
+    };
+
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_SERVICE_FUNCTIONS" | translate'), function (result) {
+        if (result == 'delete') {
+          ServiceFunctionSvc.deleteAll(function () {
+            $scope.fetchData();
+          });
+        }
       });
     };
   });

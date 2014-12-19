@@ -1,13 +1,13 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('configCtrl', function ($scope, SfcConfigSvc, SfcFileReaderSvc, SfcRestangularSvc, SfcConfigExportSvc, SfcRestconfError, $localStorage) {
+  sfc.register.controller('configCtrl', function ($scope, SfcConfigSvc, SfcFileReaderSvc, SfcRestangularSvc, SfcConfigExportSvc, SfcRestconfError, $sessionStorage) {
 
 
     $scope.validationRevision = SfcConfigSvc.getValidationRevision();
     $scope.validateBefore = false;
     $scope.fileContent = "";
 
-    $scope.$storage = $localStorage;
+    $scope.$storage = $sessionStorage;
 
     $scope.getOnFileSelect = function (file) {
       SfcFileReaderSvc.readAsText(file, $scope)

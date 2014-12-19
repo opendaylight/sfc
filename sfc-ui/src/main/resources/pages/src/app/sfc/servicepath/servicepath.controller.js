@@ -258,6 +258,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_SERVICE_PATHS" | translate'), function (result) {
+        if (result == 'delete') {
+          ServicePathSvc.deleteAll(function () {
+            $scope.fetchData();
+          });
+        }
+      });
+    };
+
     $scope.removeSFfromSFP = function removeSFfromSFP(sfp, index) {
       sfp['service-path-hop'].splice(index, 1);
       $scope.setSFPstate(sfp, $rootScope.sfpState.EDITED);

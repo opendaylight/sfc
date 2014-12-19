@@ -1,0 +1,7 @@
+Verified+1: jenkins-sfc <jenkins-sfc@opendaylight.org>
+Code-Review+2: Konstantin Blagov <kblagov@cisco.com>
+Submitted-by: Konstantin Blagov <kblagov@cisco.com>
+Submitted-at: Fri, 19 Dec 2014 14:07:11 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/13754
+Project: sfc
+Branch: refs/heads/master

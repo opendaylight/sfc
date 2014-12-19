@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.0.2-Helium-SR1</version>
+        <version>0.0.2-Helium-SR1.1</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -108,7 +108,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>0.2.6-Helium-SR1</version>
+                        <version>0.2.6-Helium-SR1.1</version>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>

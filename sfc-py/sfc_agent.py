@@ -457,7 +457,7 @@ def main(argv):
     global ODLIP
     global sff_os
 
-    ovs_local_sff_dp_ip = '0.0.0.0'
+    ovs_local_sff_cp_ip = '0.0.0.0'
 
 
     try:
@@ -465,9 +465,9 @@ def main(argv):
         logger.setLevel(level=logging.INFO)
         opt, args = getopt.getopt(argv, "hr",
                                   ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=",
-                                   "agent-port=", "ovs-sff-dp-ip=", "sff-os="])
+                                   "agent-port=", "ovs-sff-cp-ip=", "sff-os="])
     except getopt.GetoptError:
-        print("sfc_agent --help | --nfq-class | --rest | --ovs-sff-dp-ip | --odl-get-sff | --odl-ip-port | --sff-name" +
+        print("sfc_agent --help | --nfq-class | --rest | --ovs-sff-cp-ip | --odl-get-sff | --odl-ip-port | --sff-name" +
               " | --agent-port | --sff-os (XE | OVS)")
         sys.exit(2)
 
@@ -486,7 +486,7 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-dp-ip=<local SFF IP dataplane address> --odl-ip-port=<ODL REST IP:port>"
+            print("sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-cp-ip=<local SFF IP dataplane address> --odl-ip-port=<ODL REST IP:port>"
                   " --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
             sys.exit()
 
@@ -498,8 +498,8 @@ def main(argv):
             local_my_sff_name = arg
 
 
-        if opt == "--ovs-sff-dp-ip":
-            ovs_local_sff_dp_ip = arg
+        if opt == "--ovs-sff-cp-ip":
+            ovs_local_sff_cp_ip = arg
 
         if opt == "--nfq-class":
             nfq_class = True
@@ -524,7 +524,7 @@ def main(argv):
             start_nfq_classifier()
 
     if rest:
-        app.run(host=ovs_local_sff_dp_ip, debug=False, port=agent_port, use_reloader=False)
+        app.run(host=ovs_local_sff_cp_ip, debug=False, port=agent_port, use_reloader=False)
 
 
 if __name__ == "__main__":

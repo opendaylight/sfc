@@ -5,26 +5,23 @@ from nsh_decode import *
 from nsh_encode import *
 import subprocess
 import logging
-# from logging_config import *
 import socket
+import os
 import threading
-from sff_globals import *
-from sfc_agent import find_sff_locator
+import json
 
-logger = logging.getLogger('sfc.' + __name__)
+if __name__ == '__main__':
+	from logging_config import *
+
+
+logger = logging.getLogger('sfc.nfq_class_server')
 
 NFQ_NUMBER = 1
 TUNNEL_ID = 0x0500  # TO DO add tunnel_id to sff yang model
 SUDO = True
 
 # global ref to manager
-nfq_class_manager = None
-
-
-def get_nfq_class_manager_ref():
-    global nfq_class_manager
-    return nfq_class_manager
-
+nfq_class_server_manager = None
 
 # common command executor
 def execute_cli(cli):
@@ -35,114 +32,49 @@ def execute_cli(cli):
     return
 
 
-# To DO - implement class like this like global helper class managing path infos
-class NfqPathInfoSupplier:
-    def __init__(self):
-        self.path_name_2_id_map = {}
-        self.path_id_2_info_map = {}
+# transforms tunnel params for packet forwarder
+class NfqTunnelParamsTransformer:
 
-    def get_path_id(self, path_name):
-        if path_name in self.path_name_2_id_map:
-            return self.path_name_2_id_map[path_name]
-
-        if self.__add_path_info(path_name):
-            return self.get_path_id(path_name)  # call this one once more
-        else:
-            logger.warn('get_path_id: path not found (path_name=%s)', path_name)
-            return None
-
-    def delete_path_info(self, path_id):
-        # remove data from maps for given path
-        if path_id in self.path_id_2_info_map:
-            path_item = self.path_id_2_info_map.pop(path_id)
-            path_name = path_item['name']
-            if path_name in self.path_name_2_id_map:
-                self.path_name_2_id_map.pop(path_name)
-                return True
-        else:
-            logger.debug('delete_path_info: path not found (path_id=%d)', path_id)
-
-        return False
-
-    # private  - returns True if path_item was found in global path data
-    def __add_path_info(self, path_name):
-        if not get_path():
-            logger.warn('__add_path_info: No path data')
-            return False
-
-        if path_name in get_path():
-            path_item = get_path()[path_name]
-            path_id = path_item['path-id']
-            self.path_name_2_id_map[path_name] = path_id
-            self.path_id_2_info_map[path_id] = path_item
-            return True
-
-        return False
-
-    # assuming info already added by requesting path_id before
-    def get_forwarding_params(self, path_id):
-        if path_id not in self.path_id_2_info_map:
-            logger.warn('get_forwarding_params: path data not found for path_id=%d', path_id)
-            return None
-
-        path_item = self.path_id_2_info_map[path_id]
-
-        # string ref for sff for first hop
-        sff_name = path_item['rendered-service-path-hop'][0]['service-function-forwarder']
-
-        sff_locator = find_sff_locator(sff_name)
-        if not sff_locator:
-            logger.warn('get_forwarding_params: sff data not found for sff_name=%s', sff_name)
-
-        return sff_locator
-
-    # assuming info already added by requesting path_id before
-    def get_tunnel_params(self, path_id):
-        if path_id not in self.path_id_2_info_map:
-            logger.warn('get_tunnel_params: path data not found for path_id=%d', path_id)
-            return None
-
-        path_item = self.path_id_2_info_map[path_id]
-
-        if 'context-metadata' in path_item:
-            ctx_metadata = path_item['context-metadata']
+    def transform_tunnel_params(self, tun_params):
+        if 'context-metadata' in tun_params:
+            ctx_metadata = tun_params['context-metadata']
             ctx_values = CONTEXTHEADER(ctx_metadata['context-header1'], ctx_metadata['context-header2'],
                                        ctx_metadata['context-header3'], ctx_metadata['context-header4'])
         else:
             ctx_values = CONTEXTHEADER(0, 0, 0, 0)  # empty default ctx
 
         # set path_id, starting-index to VXLAN+NSH template
-        tunnel_params = {
+        transformed_tunnel_params = {
             "vxlan_values": VXLANGPE(int('00000100', 2), 0, 0x894F, TUNNEL_ID, 64),
-            "base_values": BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, path_id, path_item['starting-index']),
+            "base_values": BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, tun_params['nsp'], tun_params['starting-index']),
             "ctx_values": ctx_values
         }
 
-        return tunnel_params
+        return transformed_tunnel_params
 
 
-class NfqClassifierManager:
+class NfqClassifierServerManager:
     # we use mark that will be equal to path_id
     def __init__(self, nfq_number):
         self.nfq_number = nfq_number
         self.nfqueue = NetfilterQueue()
+        self.tun_params_transformer = NfqTunnelParamsTransformer()
         self.__reset()
         return
 
     # private reset
     def __reset(self):
-        self.path_info_supp = NfqPathInfoSupplier()
-        self.clear_all_rules()
+        self.__clear_all_rules()
         return
 
     # wannabe destructor - does not work
     def __del__(self):
-        self.clear_all_rules()
+        self.__clear_all_rules()
         # NetfilterQueue should destroy itself properly automatically
         return
 
     # deletes all forwarder and iptables rules
-    def clear_all_rules(self):
+    def __clear_all_rules(self):
         logger.info("clear_all_rules: Reset iptables rules.")
         # init map
         self.path_id_2_pfw_map = {}
@@ -158,7 +90,7 @@ class NfqClassifierManager:
         return "sfp-nfq-" + str(path_id)
 
     # main NFQ callback for received packets
-    def common_process_packet(self, packet):
+    def __common_process_packet(self, packet):
         try:
             logger.debug("common_process_packet: received packet=%s, mark=%d", packet, packet.get_mark())
 
@@ -176,70 +108,49 @@ class NfqClassifierManager:
         except Exception as e:
             logger.exception('common_process_packet: exception')
 
-    def run(self):
-        self.nfqueue.bind(self.nfq_number, self.common_process_packet)
+    # bind to queue and run listening loop
+    def bind_and_run(self):
+        self.nfqueue.bind(self.nfq_number, self.__common_process_packet)
 
         logger.info("NFQ binded to queue number %d", self.nfq_number)
 
         self.nfqueue.run()
         return
 
-    # recompile_all_acls -  list
-    def recompile_all_acls(self, acls):
-        self.__reset()
+    # apply new configuration
+    def process_input(self, message_dict):
 
-        collected_results = {}  # add error info to this dictionary
+        # input
+        path_id = message_dict['path-id']
+        acl = message_dict['acl']
 
-        for acl_item in acls['access-lists']['access-list']:
-            self.compile_one_acl(acl_item, collected_results)
+        # check if 'delete' operation
+        if acl == 'delete':
+            self.__destroy_packet_forwarder(path_id)
+            return # done
 
-        return collected_results  # return info about unsuccesful ace-s
+        # additional input
+        fw_params = message_dict['forwarding-params']
+        tun_params = message_dict['tunnel-params']
 
-    # compile_one_acl
-    # !assumed! all aces in alc_item are for one and only path
-    def compile_one_acl(self, acl_item, collected_results):
-        logger.debug("compile_one_acl: acl_item=%s", acl_item)
+        # delete possible former forwarder
+        if path_id in self.path_id_2_pfw_map:
+            self.__destroy_packet_forwarder(path_id)
+        # init new forwarder
+        self.__init_new_packet_forwarder(path_id, fw_params, self.tun_params_transformer.transform_tunnel_params(tun_params))
+        # create rules
+        self.__compile_acl(acl, path_id)
+        return
 
-        if not collected_results:
-            collected_results = {}  # add error info to this dictionary
 
-        path_id = None
-
+    def __compile_acl(self, acl_item, path_id):
+        logger.debug("__compile_acl: acl_item=%s", acl_item)
         for ace in acl_item['access-list-entries']:
-
-            # first ace in list
-            if path_id == None:
-                path_name = ace['actions']['service-function-acl:service-function-path']
-                path_id = self.path_info_supp.get_path_id(path_name)
-
-                if not path_id:
-                    logger.error("compile_one_acl: path_id not found for path_name=%s", path_name)
-                    collected_results[path_name] = 'Path data not found'
-                    return collected_results
-
-                logger.debug("compile_one_acl: found path_id=%d", path_id)
-
-                # delete possible former forwarder
-                if path_id in self.path_id_2_pfw_map:
-                    self.destroy_packet_forwarder(path_id)
-
-                # init new forwarder
-                self.init_new_packet_forwarder(path_id)
-
-            self.add_iptables_classification_rule(ace, path_id)
-
-        return collected_results  # return info about unsuccesful ace-s
+            self.__add_iptables_classification_rule(ace, path_id)
+        return
 
 
-    def get_packet_forwarder(self, path_id):
-        try:
-            return self.path_id_2_pfw_map[path_id]
-        except:
-            logger.warn('get_packet_forwarder: None for path_id=%d', path_id)
-            return None
-
-
-    def init_new_packet_forwarder(self, path_id):
+    def __init_new_packet_forwarder(self, path_id, forwarding_params, tunnel_params):
         sub_chain_name = self.get_sub_chain_name(path_id)
 
         # create sub-chain for the path, this way we can in future easily remove the rules for particular path
@@ -248,22 +159,51 @@ class NfqClassifierManager:
         # insert jump to sub-chain
         cli = "iptables -t raw -I PREROUTING -j " + sub_chain_name
         execute_cli(cli)
-        # add jump to queue 1 in case of match mark (ACL matching rules will have to be inserted before this one)
+        # add jump to queue 'nfq_number' in case of match mark (ACL matching rules will have to be inserted before this one)
         cli = "iptables -t raw -A " + sub_chain_name + " -m mark --mark " + str(
             path_id) + " -j NFQUEUE --queue-num " + str(self.nfq_number)
         execute_cli(cli)
 
         packet_forwarder = PacketForwarder(path_id)
 
-        packet_forwarder.update_forwarding_params(self.path_info_supp.get_forwarding_params(path_id))
-        packet_forwarder.update_tunnel_params(self.path_info_supp.get_tunnel_params(path_id))
+        packet_forwarder.update_forwarding_params(forwarding_params)
+        packet_forwarder.update_tunnel_params(tunnel_params)
 
         self.path_id_2_pfw_map[path_id] = packet_forwarder
         return
 
 
+
+    # destroy PacketForwader with iptables rules and chains
+    def __destroy_packet_forwarder(self, path_id):
+        # check
+        assert path_id
+
+        if path_id in self.path_id_2_pfw_map:
+            logger.debug("destroy_packet_forwarder: Removing classifier for path_id=%d", path_id)
+
+            del self.path_id_2_pfw_map[path_id]
+
+            sub_chain_name = self.get_sub_chain_name(path_id)
+
+            # -D - delete the jump to sub-chain
+            cli = "iptables -t raw -D PREROUTING -j " + sub_chain_name
+            execute_cli(cli)
+            # delete rules in sub-chain
+            cli = "iptables -t raw -F  " + sub_chain_name
+            execute_cli(cli)
+            # delete sub-chain
+            cli = "iptables -t raw -X " + sub_chain_name
+            execute_cli(cli)
+
+            logger.info("destroy_packet_forwarder: Classifier for path_id=%d removed", path_id)
+        else:
+            logger.debug("destroy_packet_forwarder: Classifier for path_id=%d not found", path_id)
+
+
+
     # create iptables matches for sending packets to NFQ of given number
-    def add_iptables_classification_rule(self, ace, path_id):
+    def __add_iptables_classification_rule(self, ace, path_id):
         assert ace
         assert path_id
 
@@ -338,34 +278,7 @@ class NfqClassifierManager:
         execute_cli(cli)
         return
 
-    # destroy PacketForwader with iptables rules and chains
-    def destroy_packet_forwarder(self, path_id):
-        # check
-        assert path_id
 
-        # delete info from path_info_supplier instance
-        self.path_info_supp.delete_path_info(path_id)
-
-        if path_id in self.path_id_2_pfw_map:
-            logger.debug("destroy_packet_forwarder: Removing classifier for path_id=%d", path_id)
-
-            del self.path_id_2_pfw_map[path_id]
-
-            sub_chain_name = get_sub_chain_name(path_id)
-
-            # -D - delete the jump to sub-chain
-            cli = "iptables -t raw -D PREROUTING -j " + sub_chain_name
-            execute_cli(cli)
-            # delete rules in sub-chain
-            cli = "iptables -t raw -F  " + sub_chain_name
-            execute_cli(cli)
-            # delete sub-chain
-            cli = "iptables -t raw -X " + sub_chain_name
-            execute_cli(cli)
-
-            logger.info("destroy_packet_forwarder: Classifier for path_id=%d removed", path_id)
-        else:
-            logger.debug("destroy_packet_forwarder: Classifier for path_id=%d not found", path_id)
 
 
 class PacketForwarder:
@@ -415,27 +328,74 @@ class PacketForwarder:
         return
 
 
-# globals
 
-def start_nfq_class_manager():
-    global nfq_class_manager
 
-    if nfq_class_manager:
-        logger.error('Nfq classifier already started in other thread!')
+# global procedures
+def start_nfq_class_server_manager():
+    global nfq_class_server_manager
 
-    nfq_class_manager = NfqClassifierManager(NFQ_NUMBER)
-    nfq_class_manager.run()
+    if nfq_class_server_manager:
+        logger.error('Nfq classifier already started!')
+        return
+
+    nfq_class_server_manager = NfqClassifierServerManager(NFQ_NUMBER)
+    nfq_class_server_manager.bind_and_run()
     return
 
 
-def start_nfq_classifier():
-    global nfq_class_manager
+# starts nfq thread and listens on socket
+def nfq_class_server_start():
+    global nfq_class_server_manager
 
-    if nfq_class_manager:
-        logger.error('Nfq classifier already started in other thread!')
-
-    logger.info('starting nfq classifier')
-    t = threading.Thread(target=start_nfq_class_manager, args=())
+    logger.info('starting thread for NetfilterQueue.run()')
+    t = threading.Thread(target=start_nfq_class_server_manager, args=())
     t.daemon = True
     t.start()
+
+    # create and listen on stream socket
+    logger.info('creating socket')
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        os.remove("/tmp/nfq-class.sock")
+    except OSError:
+        pass
+
+    s.bind("/tmp/nfq-class.sock")
+    # allow not root access
+    execute_cli('chmod 777 /tmp/nfq-class.sock')
+
+    logger.info('listening on socket')
+    while True:
+        s.listen(1)
+        conn, addr = s.accept()
+        message = ""
+        message_dict = None
+        try:
+            # collect message
+            while True:
+                data = conn.recv(1024) # buffer
+                if not data: break # end of stream
+                message = message + data.decode()
+
+            # convert received message
+            logger.debug('socket received message: %s', message)
+            message_dict = json.loads(message)
+        except:
+            logger.exception("exception while receiving data, message %s not applied", message)
+            break
+
+        try:
+            # apply message
+            nfq_class_server_manager.process_input(message_dict)
+        except:
+            logger.exception("exception while applying message %s", message)
+            break
+
+
+    conn.close()
     return
+
+
+# launch main loop
+if __name__ == '__main__':
+    nfq_class_server_start()

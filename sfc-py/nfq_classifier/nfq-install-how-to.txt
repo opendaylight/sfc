@@ -1,10 +1,14 @@
+How to setup environment to run sfc_agent with iptables/nfq classifier
+
+### 1a. install nfqueue from sources OR 1b. from distribution repository (below)
+
 # compile and install following three netfilter C libraries
 
 git clone git://git.netfilter.org/libnfnetlink
 git clone git://git.netfilter.org/libmnl
 git clone git://git.netfilter.org/libnetfilter_queue
 
-# to run autogen requires libtool
+#  to run autogen requires libtool
 
 cd libnfnetlink
 sudo sh autogen.sh
@@ -18,12 +22,41 @@ sh autogen.sh
 sudo make install
 cd ..
 
+# install pkg-config - required by libnetfilter_queue's 'configure'
+sudo apt-get install pkg-config
+
 cd libnetfilter_queue
 sudo sh autogen.sh
 ./configure PKG_CONFIG_PATH=../libnfnetlink/:../libmnl/
 sudo make install
 cd ..
 
-# install patched and ported NFQ wrapper for python3
+
+### 1b. or from distribution repository 
+# this will install following packages: libglib2.0-0 libglib2.0-data libmnl0 libnetfilter-queue-dev
+#  libnetfilter-queue1 libnfnetlink-dev libnfnetlink0 libxml2 pkg-config
+#  sgml-base shared-mime-info xml-core
+
+sudo apt-get install libnetfilter-queue-dev
+
+# 2. install python3-dev
+sudo apt-get install python3-dev
+
+# 3 install patched and ported NFQ wrapper for python3
 cd NetfilterQueue-0.3.1-P3.3
-python3 setup.py install
+sudo python3 setup.py install
+cd ..
+
+# 4 install iptables
+sudo apt-get install iptables
+
+
+# optionally install pip3 for installing additional requirement modules int python3
+wget --no-check-certificate http://raw.github.com/pypa/pip/master/contrib/get-pip.py
+sudo python3 get-pip.py
+
+sudo pip3 install flask
+sudo pip3 install requests
+sudo pip3 install paramiko
+
+

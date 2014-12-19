@@ -2,11 +2,8 @@
     <a class="btn btn-info add-row" href="index.html#/sfc/metadata-context-create">
         {{'SFC_METADATA_CONTEXT_ADD' | translate}}
     </a>
-    <a class="btn btn-info add-row" href="index.html#/sfc/metadata-variable-create">
-        {{'SFC_METADATA_VARIABLE_ADD' | translate}}
-    </a>
 
-    <button type="button" ng-click="contextMetadataTableParams.sorting({}); variableMetadataTableParams.sorting({})"
+    <button type="button" ng-click="contextMetadataTableParams.sorting({})"
             class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
     </button>
 
@@ -43,6 +40,21 @@
             </td>
         </tr>
     </table>
+    <button type="button" ng-click="deleteAllContextMetadata()" class="btn btn-danger pull-right" style="margin-bottom: 20px">
+        {{'SFC_DELETE_ALL' | translate}}
+    </button>
+
+    <div class="col-md-12" style="padding: 0; margin-bottom: 20px; margin-top: 20px">
+        <a class="btn btn-info add-row" href="index.html#/sfc/metadata-variable-create">
+        {{'SFC_METADATA_VARIABLE_ADD' | translate}}
+        </a>
+
+        <button type="button" ng-click="variableMetadataTableParams.sorting({})"
+                class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+        </button>
+    </div>
+
+
 
     <table ng-table="variableMetadataTableParams" show-filter="true" class="footable table">
         <tr ng-repeat="entry in $data track by $index">
@@ -81,4 +93,8 @@
             </td>
         </tr>
     </table>
+    <button type="button" ng-click="deleteAllVariableMetadata()" class="btn btn-danger pull-right">
+        {{'SFC_DELETE_ALL' | translate}}
+    </button>
+
 </div>

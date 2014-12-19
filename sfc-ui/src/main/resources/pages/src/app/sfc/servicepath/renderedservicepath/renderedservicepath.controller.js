@@ -30,7 +30,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.fetchData = function () {
       RenderedServicePathSvc.getOperationalArray(function (data) {
-        $scope.rsps = data;
+        $scope.rsps = data || [];
         $scope.tableParams.reload();
       });
     };

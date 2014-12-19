@@ -206,6 +206,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    $scope.deleteAll = function deleteAll() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_SERVICE_CHAINS" | translate'), function (result) {
+        if (result == 'delete') {
+          ServiceChainSvc.deleteAll(function () {
+            ServiceChainSvc.getArray(function (data) {
+              $rootScope.sfcs = data;
+              $scope.tableParams.reload();
+            });
+          });
+        }
+      });
+    };
+
     $scope.removeSFfromSFC = function removeSFfromSFC(sfc, index) {
       sfc['sfc-service-function'].splice(index, 1);
       $scope.setSFCstate(sfc, $rootScope.sfcState.EDITED);

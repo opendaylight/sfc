@@ -103,6 +103,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
 
+    $scope.deleteAllContextMetadata = function deleteAllContextMetadata() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_ACL_SHORT_METADATA_CONTEXT" | translate'), function (result) {
+        if (result == 'delete') {
+          SfcContextMetadataSvc.deleteAll(function () {
+            thisCtrl.fetchContextMetadata();
+          });
+        }
+      });
+    };
+
     $scope.editContextItem = function editContextItem(contextItem) {
       $state.transitionTo('main.sfc.metadata-context-create', {itemKey: contextItem['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
@@ -112,6 +122,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (result == 'delete') {
           //delete the row
           SfcVariableMetadataSvc.deleteItem(variableItem, function () {
+            thisCtrl.fetchVariableMetadata();
+          });
+        }
+      });
+    };
+
+    $scope.deleteAllVariableMetadata = function deleteAllVariableetadata() {
+      ModalDeleteSvc.open($scope.$eval('"SFC_ACL_SHORT_METADATA_VARIABLE" | translate'), function (result) {
+        if (result == 'delete') {
+          SfcVariableMetadataSvc.deleteAll(function () {
             thisCtrl.fetchVariableMetadata();
           });
         }

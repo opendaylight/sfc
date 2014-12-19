@@ -92,11 +92,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return SfcRestconfError;
   });
 
-  sfc.register.factory('SfcRestangularSvc', function (Restangular) {
+  sfc.register.factory('SfcRestangularSvc', function (Restangular, $location) {
 
     var svc = {};
 
-    svc.newBaseUrl = "http://localhost:8181/restconf";
+    svc.newBaseUrl = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/restconf";
 
     svc.currentInstance = Restangular;
 
@@ -179,6 +179,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     SfcRestBaseSvc.prototype._delete = function (key) {
       return this.baseRest().customDELETE(this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key);
+    };
+
+    SfcRestBaseSvc.prototype._deleteAll = function () {
+      return this.baseRest().customDELETE(this.modelUrl + ':' + this.containerName);
     };
 
     SfcRestBaseSvc.prototype.getOne = function (key) {
@@ -339,6 +343,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
       this.checkRequired(item);
 
       this._delete(this.getListKeyFromItem(item)).then(function () {
+        if (callback) {
+          callback();
+        }
+      }, /* on error*/ function (response) {
+        console.log("Error with status code", response.status, " while DELETE");
+        if (callback) {
+          callback(response); // on REST error pass response
+        }
+      });
+    };
+
+    SfcRestBaseSvc.prototype.deleteAll = function (callback) {
+
+
+      this._deleteAll().then(function () {
         if (callback) {
           callback();
         }

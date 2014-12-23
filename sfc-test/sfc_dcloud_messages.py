@@ -128,12 +128,11 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "service-node": "OVSDB2",
-        "ip-mgmt-address": "10.0.1.44"
+        "ip-mgmt-address": "10.0.1.44",
+        "service-node": "OVSDB2"
       },
       {
         "name": "SFF1",
-        "service-node": "OVSDB1",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
@@ -163,8 +162,28 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "classifier": "acl-sfp-1",
-        "ip-mgmt-address": "10.0.1.41"
+        "ip-mgmt-address": "10.0.1.41",
+        "service-node": "OVSDB1"
+      },
+      {
+        "name": "SFF5",
+        "sff-data-plane-locator": [
+          {
+            "name": "eth0",
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "bridge-name": "br-tun",
+              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
+            },
+            "data-plane-locator": {
+              "port": 4789,
+              "ip": "10.0.1.45",
+              "transport": "service-locator:vxlan-gpe"
+            }
+          }
+        ],
+        "rest-uri": "http://10.0.1.45:5000",
+        "ip-mgmt-address": "10.0.1.44",
+        "service-node": "OVSDB2"
       },
       {
         "name": "SFF2",
@@ -197,8 +216,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "service-node": "OVSDB2",
-        "ip-mgmt-address": "10.0.1.42"
+        "ip-mgmt-address": "10.0.1.42",
+        "service-node": "OVSDB2"
       },
       {
         "name": "SFF3",
@@ -231,8 +250,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             }
           }
         ],
-        "service-node": "OVSDB2",
-        "ip-mgmt-address": "10.0.1.43"
+        "ip-mgmt-address": "10.0.1.43",
+        "service-node": "OVSDB2"
       }
     ]
   }
@@ -285,7 +304,8 @@ SERVICE_PATH_JSON = """
     "service-function-path": [
       {
         "name": "Path-1-SFC1",
-        "service-chain-name": "SFC1"
+        "service-chain-name": "SFC1",
+        "symmetric": true
       },
       {
         "name": "Path-2-SFC2",
@@ -689,35 +709,18 @@ IETF_ACL_JSON = """
                 "active": true
               },
               "destination-port-range": {
-                "lower-port": 8080,
-                "upper-port": 8081
+                "lower-port": 80,
+                "upper-port": 80
               },
               "ip-protocol": 6,
               "source-port-range": {
-                "lower-port": 32000,
+                "lower-port": 0,
                 "upper-port": 65535
               },
               "source-ipv4-address": "192.168.0.0/24"
             },
             "actions": {
-              "service-function-acl:service-function-path": "Path-1-SFC1"
-            }
-          },
-          {
-            "rule-name": "ace-2",
-            "matches": {
-              "absolute": {
-                "active": true
-              },
-              "ip-protocol": 17,
-              "destination-port-range": {
-                "lower-port": 53,
-                "upper-port": 53
-              },
-              "source-ipv4-address": "10.0.0.0/8"
-            },
-            "actions": {
-              "service-function-acl:service-function-path": "Path-1-SFC1-Reverse"
+              "service-function-acl:rendered-service-path": "Path-1-SFC1"
             }
           }
         ]

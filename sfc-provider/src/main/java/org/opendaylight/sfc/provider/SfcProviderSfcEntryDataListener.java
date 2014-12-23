@@ -80,10 +80,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
                 LOG.info("\n########## Modified Service Function Chain Name {}",
                         updatedServiceFunctionChain.getName());
-                Object[] serviceChainObj = {updatedServiceFunctionChain};
-                Class[] serviceChainClass = {ServiceFunctionChain.class};
-                //odlSfc.executor.execute(SfcProviderServicePathAPI
-                //        .getUpdateServicePathInstantiatedFromChain(serviceChainObj, serviceChainClass));
             }
         }
 

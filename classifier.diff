@@ -1,0 +1,3628 @@
+diff --git a/sfc-model/src/main/yang/rendered-service-path.yang b/sfc-model/src/main/yang/rendered-service-path.yang
+index 75f41a4..330361e 100644
+--- a/sfc-model/src/main/yang/rendered-service-path.yang
++++ b/sfc-model/src/main/yang/rendered-service-path.yang
+@@ -77,6 +77,12 @@ module rendered-service-path {
+           "The name of this rendered function path. This is the same
+            name as the associated SFP";
+       }
++      leaf parent-service-function-path {
++        type string;
++        description
++          "Service Function Path from which this RSP was instantiated";
++
++      }
+       leaf context-metadata {
+         type sfc-md:context-metadata-ref;
+         description
+@@ -146,4 +152,46 @@ module rendered-service-path {
+       }
+     }
+   }
++
++  rpc create-rendered-path {
++    description
++      "Created a Rendered Service Path";
++    input {
++      leaf name {
++        type string;
++        description
++          "The name of this rendered function path. This is the same
++           name as the associated SFP";
++      }
++      leaf parent-service-function-path {
++        type string;
++        description
++          "Service Function Path from which this RSP was instantiated";
++      }
++      leaf symmetric {
++        type boolean;
++        default false;
++        description
++          "If the chain is symmetric we will create two service
++           paths, one ingress and another egress. Packets traverse
++           the egress service path in the reverse order of the
++           ingress path";
++      }
++      leaf classifier {
++        type string;
++        description "The classifier responsible for directing"
++          + "packets to this service path";
++      }
++      leaf symmetric-classifier {
++        type string;
++        description "The classifier responsible for directing"
++          + "packets to this service path";
++      }
++    }
++    output {
++      leaf result {
++        type boolean;
++      }
++    }
++  }
+ }
+diff --git a/sfc-model/src/main/yang/service-function-classifier.yang b/sfc-model/src/main/yang/service-function-classifier.yang
+index e378566..15872d3 100644
+--- a/sfc-model/src/main/yang/service-function-classifier.yang
++++ b/sfc-model/src/main/yang/service-function-classifier.yang
+@@ -68,7 +68,7 @@ module service-function-classifier {
+           specified here";
+         type string;
+       }
+-      list service-function-forwarder {
++      list scl-service-function-forwarder {
+         description
+           "The classifier will be attached to these SFFs";
+         key "name";
+@@ -83,4 +83,32 @@ module service-function-classifier {
+       }
+     }
+   }
++
++  container service-function-classifiers-state {
++    description
++      "This container hold operational state for all service
++       function classifiers";
++    config false;
++    list service-function-classifier-state {
++      description
++        "This list holds operational data for all service function
++         classifiers in the domain";
++      key "name";
++      leaf name {
++        type string;
++        description
++          "The name of the service function classifier";
++      }
++      list scl-rendered-service-path {
++        key "name";
++        leaf name {
++          type string;
++          description
++            "The name of the Rendered Service Path";
++        }
++        description
++        "A list of all rendered service paths that use this classifier";
++      }
++    }
++  }
+ }
+\ No newline at end of file
+diff --git a/sfc-model/src/main/yang/service-function-forwarder.yang b/sfc-model/src/main/yang/service-function-forwarder.yang
+index 760a93d..d8ef0b0 100644
+--- a/sfc-model/src/main/yang/service-function-forwarder.yang
++++ b/sfc-model/src/main/yang/service-function-forwarder.yang
+@@ -109,12 +109,6 @@ module service-function-forwarder {
+         type inet:uri;
+       }
+ 
+-      leaf classifier {
+-        type string;
+-        description "the access-list responsible for directing"
+-          + "packets to a specific service path";
+-      }
+-
+       list sff-data-plane-locator {
+         description
+           "A list of all data-plane-locators of this SFF.";
+diff --git a/sfc-model/src/main/yang/service-function-path.yang b/sfc-model/src/main/yang/service-function-path.yang
+index 3b55b98..8bce4b7 100644
+--- a/sfc-model/src/main/yang/service-function-path.yang
++++ b/sfc-model/src/main/yang/service-function-path.yang
+@@ -75,6 +75,25 @@ module service-function-path {
+         description
+           "The name of this service function path";
+       }
++      leaf symmetric {
++        type boolean;
++        default false;
++        description
++          "If the chain is symmetric we will create two service
++           paths, one ingress and another egress. Packets traverse
++           the egress service path in the reverse order of the
++           ingress path";
++      }
++      leaf classifier {
++        type string;
++        description "The classifier responsible for directing"
++          + "packets to this service path";
++      }
++      leaf symmetric-classifier {
++        type string;
++        description "The classifier responsible for directing"
++          + "packets to this service path";
++      }
+       leaf context-metadata {
+         type sfc-md:context-metadata-ref;
+         description
+@@ -144,4 +163,34 @@ module service-function-path {
+       }
+     }
+   }
++
++  container service-function-paths-state {
++    description
++      "This container hold operational state for all service
++       function paths";
++    config false;
++    list service-function-path-state {
++      description
++        "This list holds operational data for all service function
++         paths in the domain";
++      key "name";
++      leaf name {
++        type string;
++        description
++          "The name of the service function path";
++      }
++      list sfp-rendered-service-path {
++        key "name";
++        leaf name {
++          type string;
++          description
++            "The name of the Rendered Service Path";
++        }
++        description
++        "A list of all rendered service paths instantiated
++         from this service path";
++      }
++    }
++  }
++
+ }
+diff --git a/sfc-model/src/main/yang/service-function.yang b/sfc-model/src/main/yang/service-function.yang
+index e58e1a6..ea4d17f 100644
+--- a/sfc-model/src/main/yang/service-function.yang
++++ b/sfc-model/src/main/yang/service-function.yang
+@@ -80,6 +80,11 @@ module service-function {
+       description
+         "The IP and port used to configure this service-function";
+     }
++    leaf request_reclassification {
++      description "This leaf determines whether SF can request
++        reclassification by the SFF";
++      type boolean;
++    }
+     leaf nsh-aware {
+       type boolean;
+       description "Whether this SF can process NSH headers";
+diff --git a/sfc-model/src/main/yang/service-node.yang b/sfc-model/src/main/yang/service-node.yang
+index e5eaf29..bb8a09d 100644
+--- a/sfc-model/src/main/yang/service-node.yang
++++ b/sfc-model/src/main/yang/service-node.yang
+@@ -94,14 +94,4 @@ module service-node {
+          domain";
+     }
+   }
+-
+-  // Remote procedure calls
+-
+-  rpc put-service-node {
+-    description
+-      "RPC used to create a single service-node";
+-    input {
+-      uses service-node-grouping;
+-    }
+-  }
+ }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java b/sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java
+index e35c83a..524e2ae 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java
++++ b/sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java
+@@ -15,9 +15,9 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+ import org.opendaylight.sfc.provider.*;
+ import org.opendaylight.sfc.provider.bootstrap.SfcProviderBootstrapRestAPI;
+ import org.opendaylight.sfc.provider.logback.SfcProviderLogbackLoader;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
+ import org.opendaylight.yangtools.concepts.ListenerRegistration;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+@@ -77,7 +77,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
+         SfcProviderSffEntryDataListener sfcProviderSffEntryDataListener = new SfcProviderSffEntryDataListener();
+         final ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration =
+                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+-                       OpendaylightSfc.SFF_IID, sfcProviderSffEntryDataListener,  DataBroker.DataChangeScope.SUBTREE );
++                       OpendaylightSfc.SFF_ENTRY_IID, sfcProviderSffEntryDataListener,  DataBroker.DataChangeScope.SUBTREE );
+ 
+ 
+         // ServiceFunction Entry
+@@ -109,11 +109,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
+                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                         OpendaylightSfc.SFP_ENTRY_IID, sfcProviderSfpEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
+ 
+-        SfcProviderSfpDataListener sfcProviderSfpDataListener = new SfcProviderSfpDataListener();
+-        final ListenerRegistration<DataChangeListener> sfpDataChangeListenerRegistration =
+-                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+-                        OpendaylightSfc.SFP_IID, sfcProviderSfpDataListener, DataBroker.DataChangeScope.SUBTREE  );
+-
+         final BindingAwareBroker.RpcRegistration<ServiceFunctionService> sfRpcRegistration =
+                 getRpcRegistryDependency()
+                         .addRpcImplementation(ServiceFunctionService.class,
+@@ -124,9 +119,9 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
+                         .addRpcImplementation(ServiceFunctionChainService.class,
+                                 sfcProviderRpc);
+ 
+-        final BindingAwareBroker.RpcRegistration<ServiceNodeService> snRpcRegistration =
++        final BindingAwareBroker.RpcRegistration<RenderedServicePathService> rspRpcRegistration =
+                 getRpcRegistryDependency()
+-                        .addRpcImplementation(ServiceNodeService.class,
++                        .addRpcImplementation(RenderedServicePathService.class,
+                                 sfcProviderRpc);
+ 
+         // close()
+@@ -141,7 +136,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
+                 sffDataChangeListenerRegistration.close();
+                 sfRpcRegistration.close();
+                 sfcRpcRegistration.close();
+-                snRpcRegistration.close();
++                rspRpcRegistration.close();
+ 
+                 try
+                 {
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java
+index 4a1490e..461bfe9 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java
+@@ -17,10 +17,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
+ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
+ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+ import org.slf4j.Logger;
+@@ -60,28 +60,26 @@ public class OpendaylightSfc implements AutoCloseable {
+     public static final InstanceIdentifier<ServiceFunction>  SF_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
+ 
++    public static final InstanceIdentifier<ServiceFunctionForwarder>  SFF_ENTRY_IID =
++            InstanceIdentifier.builder(ServiceFunctionForwarders.class)
++                    .child(ServiceFunctionForwarder.class).build();
++
+     public static final InstanceIdentifier<ServiceFunctionPath>  SFP_ENTRY_IID =
+             InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                     .child(ServiceFunctionPath.class).build();
+ 
+-    public static final InstanceIdentifier<ServiceFunctions>  SFS_IID =
+-            InstanceIdentifier.builder(ServiceFunctions.class).build();
+-    public static final InstanceIdentifier<ServiceNodes>  SN_IID =
+-           InstanceIdentifier.builder(ServiceNodes.class).build();
+-    public static final InstanceIdentifier<ServiceFunctionPaths>  SFP_IID =
+-           InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+     public static final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
+            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+ 
+-    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
+-           InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
+     public static final InstanceIdentifier<ServiceFunctionTypes>  SFT_IID =
+            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
+-    public static final InstanceIdentifier<ServiceFunctionClassifiers>  SCF_IID =
+-            InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
++
+     public static final InstanceIdentifier<AccessLists>  ACL_IID =
+             InstanceIdentifier.builder(AccessLists.class).build();
+ 
++    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
++            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
++
+     public static final int EXECUTOR_THREAD_POOL_SIZE = 40;
+ 
+     private final ExecutorService executor;
+@@ -132,13 +130,9 @@ public class OpendaylightSfc implements AutoCloseable {
+         if (dataProvider != null) {
+             final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
+             t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
++            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_ENTRY_IID);
++            t.delete(LogicalDatastoreType.CONFIGURATION, SCF_ENTRY_IID);
+             t.delete(LogicalDatastoreType.CONFIGURATION, SFC_ENTRY_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SFS_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SN_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_IID);
+-            t.delete(LogicalDatastoreType.CONFIGURATION, SFP_IID);
+             t.delete(LogicalDatastoreType.CONFIGURATION, SFT_IID);
+             t.commit().get();
+         }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRestAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRestAPI.java
+index d11e05f..8364f94 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRestAPI.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRestAPI.java
+@@ -297,7 +297,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
+      * <p>
+      * @param renderedServicePath Service Function Path object
+      */
+-    public void deleteServiceFunctionPath (RenderedServicePath renderedServicePath) {
++    public void deleteRenderedServicePath (RenderedServicePath renderedServicePath) {
+ 
+         printTraceStart(LOG);
+ 
+@@ -382,6 +382,6 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
+     }
+ 
+     public static  SfcProviderRestAPI getDeleteRenderedServicePath (Object[] params, Class[] paramsTypes) {
+-        return new SfcProviderRestAPI(params, paramsTypes, "deleteRenderedServicePathh");
++        return new SfcProviderRestAPI(params, paramsTypes, "deleteRenderedServicePath");
+     }
+ }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java
+index d49c4f2..6175386 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java
+@@ -15,7 +15,14 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+ import org.opendaylight.controller.sal.common.util.Rpcs;
++import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
++import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
++import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+ import org.opendaylight.sfc.provider.util.SfcSftMapper;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+@@ -24,20 +31,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInput;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeBuilder;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNodeKey;
+ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+ import org.opendaylight.yangtools.yang.common.RpcError;
+ import org.opendaylight.yangtools.yang.common.RpcResult;
+@@ -47,7 +46,6 @@ import org.slf4j.LoggerFactory;
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
+-import java.util.Random;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.Future;
+ 
+@@ -66,7 +64,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+  */
+ 
+ public class SfcProviderRpc implements ServiceFunctionService,
+-        ServiceFunctionChainService, ServiceNodeService {
++        ServiceFunctionChainService, RenderedServicePathService {
+ 
+     private static final Logger LOG = LoggerFactory
+             .getLogger(SfcProviderRpc.class);
+@@ -80,6 +78,16 @@ public class SfcProviderRpc implements ServiceFunctionService,
+ 
+ 
+     @Override
++    public Future<RpcResult<Void>> deleteAllServiceFunction() {
++        return null;
++    }
++
++    @Override
++    public Future<RpcResult<Void>> deleteServiceFunction(DeleteServiceFunctionInput input) {
++        return null;
++    }
++
++    @Override
+     public Future<RpcResult<Void>> putServiceFunction(PutServiceFunctionInput input) {
+         printTraceStart(LOG);
+         LOG.info("\n####### Input: " + input);
+@@ -155,54 +163,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
+     }
+ 
+     @Override
+-    public Future<RpcResult<Void>> deleteAllServiceFunction() {
+-        printTraceStart(LOG);
+-        if (dataBroker != null) {
+-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+-            writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+-                    OpendaylightSfc.SFS_IID);
+-            writeTx.commit();
+-        } else {
+-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+-        }
+-        printTraceStop(LOG);
+-        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+-                Collections.<RpcError>emptySet()));
+-    }
+-
+-    @Override
+-    public Future<RpcResult<Void>> deleteServiceFunction(DeleteServiceFunctionInput input) {
+-        printTraceStart(LOG);
+-        LOG.info("Input: " + input);
+-        if (dataBroker != null) {
+-
+-            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+-            Optional<ServiceFunctions> dataObject = null;
+-            try {
+-                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFS_IID).get();
+-            } catch (InterruptedException | ExecutionException e) {
+-                LOG.error("Failed to deleteServiceFunction");
+-                return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+-                        Collections.<RpcError>emptySet()));
+-            }
+-            if (dataObject instanceof ServiceFunctions) {
+-
+-                ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
+-                InstanceIdentifier<ServiceFunction> sfIID;
+-                sfIID = InstanceIdentifier.builder(ServiceFunctions.class).
+-                        child(ServiceFunction.class, sfkey).toInstance();
+-
+-                WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+-                writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+-                        sfIID);
+-                writeTx.commit();
+-            }
+-        } else {
+-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+-        }
+-        printTraceStop(LOG);
+-        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+-                Collections.<RpcError>emptySet()));
++    public Future<RpcResult<InstantiateServiceFunctionChainOutput>> instantiateServiceFunctionChain(InstantiateServiceFunctionChainInput input) {
++        return null;
+     }
+ 
+     @Override
+@@ -224,95 +186,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
+                 Collections.<RpcError>emptySet()));
+     }
+ 
+-    @Override
+-    public Future<RpcResult<Void>> putServiceNode(PutServiceNodeInput input) {
+-        printTraceStart(LOG);
+-        LOG.info("\n####### Input: " + input);
+-
+-        if (dataBroker != null) {
+-            ServiceNodeKey snKey = new ServiceNodeKey(input.getName());
+-            ServiceNodeBuilder builder = new ServiceNodeBuilder();
+-            ServiceNode sn = builder.setKey(snKey)
+-                    .setName(input.getName())
+-                    .setIpMgmtAddress(input.getIpMgmtAddress())
+-                    .setServiceFunction(input.getServiceFunction())
+-                    .build();
+-
+-            InstanceIdentifier<ServiceNode> snEntryIID = InstanceIdentifier.builder(ServiceNodes.class).
+-                    child(ServiceNode.class, sn.getKey()).toInstance();
+-
+-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+-            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+-                    snEntryIID, sn, true);
+-            writeTx.commit();
+-        } else {
+-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+-        }
+-        printTraceStop(LOG);
+-        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
+-                Collections.<RpcError>emptySet()));
+-    }
+-
+-    @Override
+-    public Future<RpcResult<InstantiateServiceFunctionChainOutput>> instantiateServiceFunctionChain(InstantiateServiceFunctionChainInput input) {
+-        if (dataBroker != null) {
+-            ServiceFunctionChain chain = findServiceFunctionChain(input.getName());
+-
+-            if (chain != null) {
+-                List<SfcServiceFunction> sfRefList = chain.getSfcServiceFunction();
+-                LOG.debug("\n********** sfRefList ***********\n" + sfRefList);
+-                if (sfRefList != null && sfRefList.size() > 0) {
+-
+-                    ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
+-                    List<ServicePathHop> instances = new ArrayList<>();
+-
+-                    Random rand = new Random(); // temporarily
+-                    for (SfcServiceFunction ref : sfRefList) {
+-                        List<ServicePathHop> instanceList = findInstancesByType(ref.getType());
+-                        LOG.debug("\n********** instanceList ***********\n" +
+-                                instanceList);
+-                        if (instanceList != null && instanceList.size() > 0) {
+-                            // select instance
+-                            // for now, takes an element randomly
+-                            instances.add(instanceList.get(rand.nextInt(instanceList.size())));
+-                        } else {
+-                            throw new IllegalStateException("No instances found for Service Function \"" + ref.getName() + "\"");
+-                        }
+-                    }
+-                    String pathName = input.getName() + "-" + java.lang.System.currentTimeMillis();
+-                    ServiceFunctionPath path = pathBuilder.setName(pathName)
+-                            .setServicePathHop(instances)
+-                            .setServiceChainName(input.getName())
+-                            .build();
+-                    List<ServiceFunctionPath> list = new ArrayList<>();
+-                    list.add(path);
+-
+-                    ServiceFunctionPaths paths = buildServiceFunctionPaths(list);
+-
+-                    WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+-                    writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+-                            OpendaylightSfc.SFP_IID, paths, true);
+-                    writeTx.commit();
+-                    InstantiateServiceFunctionChainOutputBuilder outputBuilder = new InstantiateServiceFunctionChainOutputBuilder();
+-                    outputBuilder.setName(pathName);
+-                    return Futures.immediateFuture(Rpcs.getRpcResult(true,
+-                            outputBuilder.build(),
+-                            Collections.<RpcError>emptySet()));
+-
+-                } else {
+-                    throw new IllegalStateException("Service function chain's SF list is null or empty.");
+-                }
+-            } else {
+-                throw new IllegalStateException("Service function chain \"" + input.getName() + "\" not found.");
+-            }
+-
+-        } else {
+-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+-        }
+-        return Futures.immediateFuture(Rpcs.<InstantiateServiceFunctionChainOutput>getRpcResult(false,
+-                Collections.<RpcError>emptySet()));
+-    }
+-
+     private ServiceFunctionChain findServiceFunctionChain(String name) {
+         ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
+         InstanceIdentifier<ServiceFunctionChain> iid =
+@@ -361,4 +234,35 @@ public class SfcProviderRpc implements ServiceFunctionService,
+         return builder.build();
+     }
+ 
++    @Override
++    public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(CreateRenderedPathInput input) {
++
++        ServiceFunctionPath serviceFunctionPath;
++        RenderedServicePath renderedServicePath;
++        RenderedServicePath revRenderedServicePath;
++        serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(input.getParentServiceFunctionPath());
++
++        if (serviceFunctionPath != null) {
++            if (SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(serviceFunctionPath.getName()) != null) {
++                renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath);
++                if (renderedServicePath != null) {
++                    SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                            (serviceFunctionPath.getClassifier(), renderedServicePath.getName());
++
++                    if (serviceFunctionPath.isSymmetric() != null && serviceFunctionPath.isSymmetric() &&
++                            (SfcProviderServiceClassifierAPI
++                                    .readServiceClassifierExecutor(serviceFunctionPath.getSymmetricClassifier()) != null)) {
++
++                        revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
++                        if (revRenderedServicePath != null) {
++                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                                    (serviceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
++
++                        }
++                    }
++                }
++            }
++        }
++        return null;
++    }
+ }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfcEntryDataListener.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfcEntryDataListener.java
+index ed11dfb..63e1b2a 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfcEntryDataListener.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfcEntryDataListener.java
+@@ -80,10 +80,6 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
+                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
+                 LOG.info("\n########## Modified Service Function Chain Name {}",
+                         updatedServiceFunctionChain.getName());
+-                Object[] serviceChainObj = {updatedServiceFunctionChain};
+-                Class[] serviceChainClass = {ServiceFunctionChain.class};
+-                //odlSfc.executor.execute(SfcProviderServicePathAPI
+-                //        .getUpdateServicePathInstantiatedFromChain(serviceChainObj, serviceChainClass));
+             }
+         }
+ 
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSffEntryDataListener.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSffEntryDataListener.java
+index 24ca7d8..f67804b 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSffEntryDataListener.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSffEntryDataListener.java
+@@ -56,6 +56,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
+             {
+                 ServiceFunctionForwarder originalServiceFunctionForwarder =
+                         (ServiceFunctionForwarder) entry.getValue();
++                LOG.debug("Original SFF: {}", originalServiceFunctionForwarder.getName());
+             }
+         }
+ 
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpDataListener.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpDataListener.java
+deleted file mode 100644
+index b3b5a05..0000000
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpDataListener.java
++++ /dev/null
+@@ -1,59 +0,0 @@
+-/*
+- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+- *
+- * This program and the accompanying materials are made available under the
+- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+- * and is available at http://www.eclipse.org/legal/epl-v10.html
+- */
+-
+-
+-package org.opendaylight.sfc.provider;
+-
+-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp
+-        .rev140701.ServiceFunctionPaths;
+-import org.opendaylight.yangtools.yang.binding.DataObject;
+-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+-import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+-
+-import java.util.Map;
+-
+-/**
+- * This class is the DataListener for SFP changes.
+- *
+- * <p>
+- * @author Reinaldo Penno (rapenno@gmail.com)
+- * @version 0.1
+- * @since       2014-06-30
+- */
+-
+-public class SfcProviderSfpDataListener implements DataChangeListener {
+-
+-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfpDataListener.class);
+-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+-
+-    @Override
+-    public void onDataChanged(
+-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+-
+-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+-        /*
+-         * when a SFF is created we will process and send it to southbound devices. But first we need
+-         * to mae sure all info is present or we will pass.
+-         */
+-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
+-
+-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
+-        {
+-            if( entry.getValue() instanceof ServiceFunctionPaths) {
+-                ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
+-                Object[] servicePathObj = {updatedServiceFunctionPaths};
+-                Class[] servicePathClass = {ServiceFunctionPaths.class};
+-  //              ODL_SFC.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPath (servicePathObj, servicePathClass));
+-            }
+-        }
+-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+-    }
+-}
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpEntryDataListener.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpEntryDataListener.java
+index 6959227..0bccce4 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpEntryDataListener.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfpEntryDataListener.java
+@@ -11,19 +11,17 @@ package org.opendaylight.sfc.provider;
+ 
+ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+-import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
+-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
++import org.opendaylight.sfc.provider.api.*;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
+ import org.opendaylight.yangtools.yang.binding.DataObject;
+ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
+ import javax.ws.rs.HttpMethod;
++import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ 
+@@ -65,6 +63,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
+         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
+ 
+         /* For each SFP we perform the following transactions:
++         *   0 - Check if classifier exists
+          *   1 - Create RSP
+          *   2 - Add Path to SFF State
+          *   3 - Add path to SF state
+@@ -79,82 +78,28 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
+         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
+         {
+             if (entry.getValue() instanceof ServiceFunctionPath) {
+-                boolean rspSuccessful = false;
+-                boolean revRspSuccessful = false;
+-                boolean addPathToSffStateSuccessul = false;
+-                boolean addRevPathToSffStateSuccessul = false;
+-                boolean addPathToSfStateSuccessul = false;
+-                boolean addRevPathToSfStateSuccessul = false;
+-                ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
+-
+-                // Create RSP
+-                if ((renderedServicePath = SfcProviderServicePathAPI
+-                        .createRenderedServicePathEntryExecutor(createdServiceFunctionPath)) != null) {
+-                    rspSuccessful = true;
+-
+-                } else {
+-                    LOG.error("Could not create RSP. System state inconsistent. Deleting and add SFP {} back",
+-                            createdServiceFunctionPath.getName());
+-                }
+-                // Add Path name to SFF operational state
+-                if (rspSuccessful &&  SfcProviderServiceForwarderAPI
+-                        .addPathToServiceForwarderStateExecutor(renderedServicePath.getName())) {
+-                    addPathToSffStateSuccessul = true;
+-                } else {
+-                    SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
+-                }
+-
+-                // Add Path to SF operational state
+-                if (rspSuccessful  && addPathToSffStateSuccessul &&
+-                        SfcProviderServiceFunctionAPI
+-                                .addPathToServiceFunctionStateExecutor(renderedServicePath.getName())) {
+-
+-                    addPathToSfStateSuccessul = true;
+-                    //Send to SB REST
+-                    SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+-                            (renderedServicePath,HttpMethod.PUT);
+-                } else {
+-                    SfcProviderServiceForwarderAPI
+-                            .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
+-                    SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
+ 
+-                }
++                ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
+ 
+-                // Reverse Path
+-                ServiceFunctionChain serviceFunctionChain =  SfcProviderServiceChainAPI.readServiceFunctionChainExecutor(createdServiceFunctionPath.getServiceChainName());
+-                if (serviceFunctionChain.isSymmetric() != null && serviceFunctionChain.isSymmetric() && addPathToSfStateSuccessul) {
+-                    if ((revRenderedServicePath = SfcProviderServicePathAPI
+-                            .createReverseRenderedServicePathEntryExecutor(renderedServicePath)) != null) {
+-                        revRspSuccessful = true;
+-                    } else {
+-                        LOG.error("Could not create Reverse RSP {}",  createdServiceFunctionPath.getName());
+-                    }
++                if (SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(createdServiceFunctionPath.getName()) != null) {
++                    renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(createdServiceFunctionPath);
++                    if (renderedServicePath != null) {
++                        SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                                (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
+ 
+-                    // Add Path name to SFF operational state
+-                    if (revRspSuccessful &&  SfcProviderServiceForwarderAPI
+-                            .addPathToServiceForwarderStateExecutor(revRenderedServicePath.getName())) {
+-                        addRevPathToSffStateSuccessul = true;
+-                    } else {
+-                        SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
+-                    }
++                        if (createdServiceFunctionPath.isSymmetric() != null && createdServiceFunctionPath.isSymmetric() &&
++                                (SfcProviderServiceClassifierAPI
++                                        .readServiceClassifierExecutor(createdServiceFunctionPath.getSymmetricClassifier()) != null)) {
+ 
+-                    // Add Path to SF operational state
+-                    if (revRspSuccessful  && addRevPathToSffStateSuccessul &&
+-                            SfcProviderServiceFunctionAPI
+-                                    .addPathToServiceFunctionStateExecutor(revRenderedServicePath.getName())) {
+-
+-                        addRevPathToSfStateSuccessul = true;
+-                        //Send to SB REST
+-                        SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+-                                (revRenderedServicePath,HttpMethod.PUT);
+-                    } else {
+-                        SfcProviderServiceForwarderAPI
+-                                .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());
+-                        SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
++                            revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
++                            if (revRenderedServicePath != null) {
++                                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                                        (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
+ 
++                            }
++                        }
+                     }
+                 }
+-
+             }
+         }
+ 
+@@ -166,11 +111,32 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
+                 ServiceFunctionPath updatedServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
+                 LOG.debug("\n########## Modified Service Function Path Name {}",
+                         updatedServiceFunctionPath.getName());
+-                Object[] servicePathObj = {updatedServiceFunctionPath};
++
++                if (SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(updatedServiceFunctionPath.getName()) != null) {
++                    renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(updatedServiceFunctionPath);
++                    if (renderedServicePath != null) {
++                        SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                                (updatedServiceFunctionPath.getClassifier(), renderedServicePath.getName());
++
++                        if (updatedServiceFunctionPath.isSymmetric() != null && updatedServiceFunctionPath.isSymmetric() &&
++                                (SfcProviderServiceClassifierAPI
++                                        .readServiceClassifierExecutor(updatedServiceFunctionPath.getSymmetricClassifier()) != null)) {
++
++                            revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
++                            if (revRenderedServicePath != null) {
++                                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
++                                        (updatedServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
++
++                            }
++                        }
++                    }
++                }
++
++/*                Object[] servicePathObj = {updatedServiceFunctionPath};
+                 Class[] servicePathClass = {ServiceFunctionPath.class};
+                 SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
+                         .getUpdateRenderedServicePathAPI(servicePathObj, servicePathClass);
+-                ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
++                ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);*/
+             }
+         }
+ 
+@@ -185,15 +151,25 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
+                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;
+                 SfcProviderServiceForwarderAPI
+                         .deletePathFromServiceForwarderStateExecutor(originalServiceFunctionPath);
+-                SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(originalServiceFunctionPath);
+-                SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(originalServiceFunctionPath.getName());
+-
+-                //Send to SB REST
+-                SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+-                        (originalServiceFunctionPath, HttpMethod.DELETE);
++                SfcProviderServiceFunctionAPI
++                        .deleteServicePathFromServiceFunctionStateExecutor(originalServiceFunctionPath);
++
++                List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI
++                        .readServicePathStateExecutor(originalServiceFunctionPath.getName());
++                if ((sfpRenderedServicePathList != null) && (!sfpRenderedServicePathList.isEmpty())) {
++                    for (SfpRenderedServicePath sfpRenderedServicePath : sfpRenderedServicePathList) {
++                        String rspName = sfpRenderedServicePath.getName();
++                        SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(rspName);
++                        //Send to SB REST
++                        SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
++                                (originalServiceFunctionPath, HttpMethod.DELETE);
++                    }
++                }
++                SfcProviderServicePathAPI.deleteServicePathStateExecutor(originalServiceFunctionPath.getName());
+             }
+         }
+         ODL_SFC.releaseLock();
+         printTraceStop(LOG);
+     }
++
+ }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfsDataListener.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfsDataListener.java
+deleted file mode 100644
+index 839746b..0000000
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfsDataListener.java
++++ /dev/null
+@@ -1,44 +0,0 @@
+-/*
+- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+- *
+- * This program and the accompanying materials are made available under the
+- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+- * and is available at http://www.eclipse.org/legal/epl-v10.html
+- */
+-
+-
+-package org.opendaylight.sfc.provider;
+-
+-
+-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+-import org.opendaylight.yangtools.yang.binding.DataObject;
+-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+-import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+-
+-/**
+- * This class gets called whenever there is a change to
+- * the Service Functions data store.
+- *
+- * <p>
+- * @author Reinaldo Penno (rapenno@gmail.com)
+- * @version 0.1
+- * @since       2014-06-30
+- */
+-
+-public class SfcProviderSfsDataListener implements DataChangeListener {
+-
+-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfsDataListener.class);
+-
+-    @Override
+-    public void onDataChanged(
+-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+-
+-        LOG.info("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+-
+-
+-
+-        LOG.info("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+-    }
+- }
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java
+new file mode 100644
+index 0000000..db38a98
+--- /dev/null
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java
+@@ -0,0 +1,227 @@
++/*
++ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
++ *
++ * This program and the accompanying materials are made available under the
++ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
++ * and is available at http://www.eclipse.org/legal/epl-v10.html
++ */
++
++package org.opendaylight.sfc.provider.api;
++
++import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
++import org.opendaylight.sfc.provider.SfcReflection;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierState;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierStateKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePath;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePathBuilder;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePathKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
++import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++import javax.ws.rs.HttpMethod;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.Future;
++
++import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
++import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
++
++
++/**
++ * This class has the APIs to operate on the Service Classifier datastore.
++ * <p/>
++ * It is normally called from onDataChanged() through a executor
++ * service. We need to use an executor service because we can not
++ * operate on a datastore while on onDataChanged() context.
++ *
++ * @author Reinaldo Penno (rapenno@gmail.com)
++ * @version 0.1
++ * <p/>
++ * @since 2014-11-04
++ */
++public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
++
++    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
++    private static final String FAILED_TO_STR = "failed to ...";
++
++    SfcProviderRenderedPathAPI(Object[] params, String m) {
++        super(params, m);
++    }
++
++    SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
++        super(params, paramsTypes, m);
++    }
++
++
++    public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readServiceClassifier");
++    }
++
++    public static  SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");
++    }
++    public static  SfcProviderRenderedPathAPI getCreateReverseRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderRenderedPathAPI(params, paramsTypes, "createReverseRenderedServicePathEntry");
++    }
++
++    public static RenderedServicePath createRenderedServicePathEntryExecutor(ServiceFunctionPath serviceFunctionPath) {
++        RenderedServicePath ret = null;
++        Object[] servicePathObj = {serviceFunctionPath};
++        Class[] servicePathClass = {ServiceFunctionPath.class};
++        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = SfcProviderRenderedPathAPI
++                .getCreateRenderedServicePathEntryAPI(servicePathObj, servicePathClass);
++        Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
++        try {
++            ret = (RenderedServicePath) futureCreateRSP.get();
++            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", futureCreateRSP.get());
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        return ret;
++    }
++
++    public static RenderedServicePath createReverseRenderedServicePathEntryExecutor(RenderedServicePath renderedServicePath) {
++        RenderedServicePath ret = null;
++        Object[] servicePathObj = {renderedServicePath};
++        Class[] servicePathClass = {RenderedServicePath.class};
++        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = SfcProviderRenderedPathAPI
++                .getCreateReverseRenderedServicePathEntryAPI(servicePathObj, servicePathClass);
++        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
++        try {
++            ret = (RenderedServicePath) future.get();
++            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        return ret;
++    }
++
++    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath) {
++
++        RenderedServicePath renderedServicePath;
++
++        boolean rspSuccessful = false;
++        boolean addPathToSffStateSuccessful = false;
++        boolean addPathToSfStateSuccessful = false;
++        boolean addPathtoSfpStateSuccessful = false;
++
++        // Create RSP
++        if ((renderedServicePath = SfcProviderRenderedPathAPI
++                .createRenderedServicePathEntryExecutor(createdServiceFunctionPath)) != null) {
++            rspSuccessful = true;
++
++        } else {
++            LOG.error("Could not create RSP. System state inconsistent. Deleting and add SFP {} back",
++                    createdServiceFunctionPath.getName());
++        }
++        // Add Path name to SFF operational state
++        if (rspSuccessful &&  SfcProviderServiceForwarderAPI
++                .addPathToServiceForwarderStateExecutor(renderedServicePath)) {
++            addPathToSffStateSuccessful = true;
++        } else {
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
++        }
++
++        // Add Path to SF operational state
++        if (addPathToSffStateSuccessful &&
++                SfcProviderServiceFunctionAPI
++                        .addPathToServiceFunctionStateExecutor(renderedServicePath)) {
++
++            addPathToSfStateSuccessful = true;
++
++            //Send to SB REST
++            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
++                    (renderedServicePath, HttpMethod.PUT);
++        } else {
++            SfcProviderServiceForwarderAPI
++                    .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
++
++        }
++        // Add RSP to SFP operational state
++        if (addPathToSfStateSuccessful &&
++                SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor
++                        (createdServiceFunctionPath.getName(),renderedServicePath.getName())) {
++            addPathtoSfpStateSuccessful = true;
++
++        } else {
++            SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(createdServiceFunctionPath.getName());
++            SfcProviderServiceForwarderAPI
++                    .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(createdServiceFunctionPath.getName());
++
++        }
++
++        return renderedServicePath;
++    }
++
++    public static RenderedServicePath createSymmetricRenderedServicePathAndState(RenderedServicePath renderedServicePath) {
++
++        RenderedServicePath revRenderedServicePath = null;
++        boolean revRspSuccessful = false;
++        boolean addRevPathToSffStateSuccessul = false;
++        boolean addRevPathToSfStateSuccessul = false;
++        boolean addRevPathToSfpStateSuccessul = false;
++
++        // Reverse Path
++
++        if ((revRenderedServicePath = SfcProviderRenderedPathAPI
++                .createReverseRenderedServicePathEntryExecutor(renderedServicePath)) != null) {
++            revRspSuccessful = true;
++        } else {
++            LOG.error("Could not create Reverse RSP {}",  renderedServicePath.getName());
++        }
++
++        // Add Path name to SFF operational state
++        if (revRspSuccessful &&  SfcProviderServiceForwarderAPI
++                .addPathToServiceForwarderStateExecutor(revRenderedServicePath)) {
++            addRevPathToSffStateSuccessul = true;
++        } else {
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
++        }
++
++        // Add Path to SF operational state
++        if (addRevPathToSffStateSuccessul &&
++                SfcProviderServiceFunctionAPI
++                        .addPathToServiceFunctionStateExecutor(revRenderedServicePath)) {
++
++            addRevPathToSfStateSuccessul = true;
++            //Send to SB REST
++            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
++                    (revRenderedServicePath,HttpMethod.PUT);
++        } else {
++            SfcProviderServiceForwarderAPI
++                    .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
++
++        }
++        // Add RSP to SFP operational state
++        if (addRevPathToSfStateSuccessul &&
++                SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor
++                        (renderedServicePath.getParentServiceFunctionPath(), revRenderedServicePath.getName())) {
++            addRevPathToSfpStateSuccessul = true;
++
++        } else {
++            SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor
++                    (revRenderedServicePath.getName());
++            SfcProviderServiceForwarderAPI
++                    .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());
++            SfcProviderServicePathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
++
++        }
++
++        return revRenderedServicePath;
++
++
++    }
++}
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceClassifierAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceClassifierAPI.java
+new file mode 100644
+index 0000000..c01f114
+--- /dev/null
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceClassifierAPI.java
+@@ -0,0 +1,189 @@
++/*
++ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
++ *
++ * This program and the accompanying materials are made available under the
++ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
++ * and is available at http://www.eclipse.org/legal/epl-v10.html
++ */
++
++package org.opendaylight.sfc.provider.api;
++
++import com.google.common.base.Optional;
++import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
++import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
++import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
++import org.opendaylight.sfc.provider.SfcReflection;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierState;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierStateKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePath;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePathBuilder;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePathKey;
++import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++import java.util.ArrayList;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.Future;
++
++import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
++import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
++
++
++/**
++ * This class has the APIs to operate on the Service Classifier datastore.
++ * <p/>
++ * It is normally called from onDataChanged() through a executor
++ * service. We need to use an executor service because we can not
++ * operate on a datastore while on onDataChanged() context.
++ *
++ * @author Reinaldo Penno (rapenno@gmail.com)
++ * @version 0.1
++ * <p/>
++ * @since 2014-11-04
++ */
++public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
++
++    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceClassifierAPI.class);
++    private static final String FAILED_TO_STR = "failed to ...";
++
++    SfcProviderServiceClassifierAPI(Object[] params, String m) {
++        super(params, m);
++    }
++
++    SfcProviderServiceClassifierAPI(Object[] params, Class[] paramsTypes, String m) {
++        super(params, paramsTypes, m);
++    }
++
++
++    public static SfcProviderServiceClassifierAPI getRead(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderServiceClassifierAPI(params, paramsTypes, "readServiceClassifier");
++    }
++
++    public static SfcProviderServiceClassifierAPI getAddRenderedPathToServiceClassifierStateExecutor
++            (Object[] params, Class[] paramsTypes) {
++        return new SfcProviderServiceClassifierAPI(params, paramsTypes, "addRenderedPathToServiceClassifierState");
++    }
++
++    /**
++     * We iterate through all service paths that use this service function and if
++     * necessary, remove them.
++     * <p>
++     * @param serviceClassifierName Service Function Classifier name
++     * @param renderedPathName Rendered Path name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean addRenderedPathToServiceClassifierState (String serviceClassifierName, String renderedPathName) {
++
++        printTraceStart(LOG);
++        InstanceIdentifier<SclRenderedServicePath> sclIID;
++        boolean ret = false;
++
++        SclRenderedServicePathBuilder sclRenderedServicePathBuilder = new SclRenderedServicePathBuilder();
++        SclRenderedServicePathKey sclRenderedServicePathKey = new SclRenderedServicePathKey(renderedPathName);
++        sclRenderedServicePathBuilder.setKey(sclRenderedServicePathKey).setName(renderedPathName);
++
++        ServiceFunctionClassifierStateKey serviceFunctionClassifierStateKey = new ServiceFunctionClassifierStateKey(serviceClassifierName);
++
++        sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
++                .child(ServiceFunctionClassifierState.class, serviceFunctionClassifierStateKey)
++                .child(SclRenderedServicePath.class, sclRenderedServicePathKey).toInstance();
++
++        if (SfcDataStoreAPI.writeMergeTransactionAPI(sclIID, sclRenderedServicePathBuilder.build(),
++                LogicalDatastoreType.OPERATIONAL)) {
++            ret = true;
++        } else {
++            LOG.error("{}: Failed to create Service Function Classifier {} state. Rendered Service Path: {}",
++                    Thread.currentThread().getStackTrace()[1], serviceClassifierName, renderedPathName);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
++     * We iterate through all service paths that use this service function and if
++     * necessary, remove them.
++     * <p>
++     * @param serviceClassifierName Service Function Classifier name
++     * @param renderedPathName Rendered Path name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean addRenderedPathToServiceClassifierStateExecutor (String serviceClassifierName, String renderedPathName) {
++
++        printTraceStart(LOG);
++        boolean ret = true;
++        Object[] functionParams = {serviceClassifierName, renderedPathName};
++        Class[] functionParamsTypes = {String.class, String.class};
++        Future future = ODL_SFC.getExecutor().submit(SfcProviderServiceClassifierAPI
++                .getAddRenderedPathToServiceClassifierStateExecutor(functionParams, functionParamsTypes));
++        try {
++            ret = (boolean) future.get();
++            LOG.debug("getAddRenderedPathToServiceClassifierStateExecutor returns: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
++     * This method reads a classifier from DataStore
++     * <p>
++     * @param serviceClassifierName Classifier name
++     * @return SF object or null if not found
++     */
++    @SuppressWarnings("unused")
++    @SfcReflection
++    protected ServiceFunctionClassifier readServiceClassifier(String serviceClassifierName) {
++        printTraceStart(LOG);
++        ServiceFunctionClassifier scl;
++        InstanceIdentifier<ServiceFunctionClassifier> sclIID;
++        ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(serviceClassifierName);
++        sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
++                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
++
++        scl = SfcDataStoreAPI.readTransactionAPI(sclIID, LogicalDatastoreType.CONFIGURATION);
++
++        printTraceStop(LOG);
++        return scl;
++    }
++
++
++    /**
++     * Wrapper API to reads a service function classifier from datastore
++     * <p>
++     * @param serviceClassifierName Service Classifier Name
++     * @return A ServiceFunctionState object that is a list of all paths using
++     * this service function, null otherwise
++     */
++    public static ServiceFunctionClassifier readServiceClassifierExecutor(String serviceClassifierName) {
++
++        printTraceStart(LOG);
++        ServiceFunctionClassifier ret = null;
++        Object[] servicePathObj = {serviceClassifierName};
++        Class[] servicePathClass = {String.class};
++        SfcProviderServiceClassifierAPI sfcProviderServiceClassifierAPI = SfcProviderServiceClassifierAPI
++                .getRead(servicePathObj, servicePathClass);
++        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceClassifierAPI);
++        try {
++            ret = (ServiceFunctionClassifier) future.get();
++            LOG.debug("getRead: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn("failed to ...." , e);
++        } catch (ExecutionException e) {
++            LOG.warn("failed to ...." , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++
++}
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java
+index 85b81e4..8d48fcb 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java
+@@ -344,13 +344,10 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+         ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+                 new ServiceFunctionForwarderStateBuilder();
+ 
+-        //ArrayList<SffServicePath> sffServicePathArrayList = new ArrayList<>();
+         SffServicePathKey sffServicePathKey = new SffServicePathKey(pathName);
+         SffServicePathBuilder sffServicePathBuilder = new SffServicePathBuilder();
+         sffServicePathBuilder.setKey(sffServicePathKey);
+         sffServicePathBuilder.setName(pathName);
+-        //sffServicePathArrayList.add(sffServicePathBuilder.build());
+-        //serviceFunctionForwarderStateBuilder.setSffServicePath(sffServicePathArrayList);
+ 
+         RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(pathName);
+         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+@@ -381,6 +378,49 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+      * We add the path name to the operational store of each SFF.
+      *
+      * <p>
++     * @param renderedServicePath RSP Object
++     * @return Nothing.
++     */
++    public boolean addPathToServiceForwarderState(RenderedServicePath renderedServicePath) {
++
++        printTraceStart(LOG);
++
++        boolean ret = true;
++        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
++                new ServiceFunctionForwarderStateBuilder();
++
++        SffServicePathKey sffServicePathKey = new SffServicePathKey(renderedServicePath.getName());
++        SffServicePathBuilder sffServicePathBuilder = new SffServicePathBuilder();
++        sffServicePathBuilder.setKey(sffServicePathKey);
++        sffServicePathBuilder.setName(renderedServicePath.getName());
++
++        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
++        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
++            ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
++                    new ServiceFunctionForwarderStateKey(renderedServicePathHop.getServiceFunctionForwarder());
++            InstanceIdentifier<SffServicePath> sfStateIID =
++                    InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
++                            .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
++                            .child(SffServicePath.class, sffServicePathKey).build();
++            serviceFunctionForwarderStateBuilder.setName(renderedServicePathHop.getServiceFunctionForwarder());
++
++            if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sffServicePathBuilder.build(),
++                    LogicalDatastoreType.OPERATIONAL)) {
++                ret = ret && true;
++            } else {
++                ret = ret && false;
++                LOG.error("Failed to add path {} to SFF {} state.",
++                        renderedServicePath.getName(), renderedServicePathHop.getServiceFunctionForwarder());
++            }
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
++     * We add the path name to the operational store of each SFF.
++     *
++     * <p>
+      * @param pathName Service Function Path Object
+      * @return Nothing.
+      */
+@@ -406,6 +446,34 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+     }
+ 
+     /**
++     * We add the path name to the operational store of each SFF.
++     *
++     * <p>
++     * @param renderedServicePath RSP Object
++     * @return Nothing.
++     */
++    public static boolean addPathToServiceForwarderStateExecutor(RenderedServicePath renderedServicePath) {
++
++        printTraceStart(LOG);
++        boolean ret = false;
++        Object[] servicePathObj = {renderedServicePath};
++        Class[] servicePathClass = {RenderedServicePath.class};
++        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
++                .getAddPathToServiceForwarderState(servicePathObj, servicePathClass);
++        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
++        try {
++            ret = (boolean) future.get();
++            LOG.debug("getAddPathToServiceForwarderState: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn("failed to ...." , e);
++        } catch (ExecutionException e) {
++            LOG.warn("failed to ...." , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
+      * When a SFF is deleted we need to delete all SFPs from the
+      * associated SFF operational state
+      *
+@@ -419,8 +487,6 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+         printTraceStart(LOG);
+ 
+         boolean ret = true;
+-        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+-                new ServiceFunctionForwarderStateBuilder();
+ 
+         String rspName = serviceFunctionPath.getName();
+         RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(serviceFunctionPath.getName());
+@@ -542,8 +608,6 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+         printTraceStart(LOG);
+ 
+         boolean ret = true;
+-        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+-                new ServiceFunctionForwarderStateBuilder();
+ 
+         RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(rspName);
+ 
+@@ -812,8 +876,6 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
+         printTraceStart(LOG);
+ 
+         boolean ret = true;
+-        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
+-                new ServiceFunctionForwarderStateBuilder();
+ 
+         SffServicePathKey sffServicePathKey = new SffServicePathKey(rspName);
+         ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java
+index 3fb1b5d..84ec971 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java
+@@ -264,12 +264,57 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
+ 
+     }
+ 
++
+     /**
+-     * This method adds a SFP name to the corresponding SF operational state.
++     * This method adds a RSP name to the corresponding SF operational state.
+      * <p>
+-     * @param pathName SFP name
++     * @param renderedServicePath RSP object
+      * @return true if SFP was added, false otherwise
+      */
++    @SuppressWarnings("unused")
++    public static boolean addPathToServiceFunctionState(RenderedServicePath renderedServicePath) {
++
++        boolean ret =  false;
++        printTraceStart(LOG);
++
++        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
++        SfServicePathKey sfServicePathKey = new SfServicePathKey(renderedServicePath.getName());
++        SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
++        sfServicePathBuilder.setKey(sfServicePathKey);
++        sfServicePathBuilder.setName(renderedServicePath.getName());
++
++        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
++        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
++            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
++
++            InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
++                    .builder(ServiceFunctionsState.class)
++                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
++                    .child(SfServicePath.class, sfServicePathKey).build();
++            serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
++
++            if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
++                    LogicalDatastoreType.OPERATIONAL)) {
++                ret = true;
++            } else {
++                LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
++                        Thread.currentThread().getStackTrace()[1], renderedServicePath.getName(),
++                        renderedServicePathHop.getServiceFunctionName());
++            }
++        }
++        printTraceStop(LOG);
++        return ret;
++
++    }
++
++
++
++    /**
++     * This method adds a RSP name to the corresponding SF operational state.
++     * <p>
++     * @param pathName RSP name
++     * @return true if RSP name was added, false otherwise
++     */
+     public static boolean addPathToServiceFunctionStateExecutor(String pathName) {
+         boolean ret =  false;
+         printTraceStart(LOG);
+@@ -291,6 +336,34 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
+         return ret;
+     }
+ 
++    /**
++     * This method adds a SFP name to the corresponding SF operational state.
++     * <p>
++     * @param renderedServicePath RSP object
++     * @return true if SFP was added, false otherwise
++     */
++    public static boolean addPathToServiceFunctionStateExecutor(RenderedServicePath renderedServicePath) {
++        boolean ret =  false;
++        printTraceStart(LOG);
++
++        Object[] servicePathObj = {renderedServicePath};
++        Class[] servicePathClass = {RenderedServicePath.class};
++        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
++                .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
++        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
++        try {
++            ret = (boolean) future.get();
++            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn("failed to ...." , e);
++        } catch (ExecutionException e) {
++            LOG.warn("failed to ...." , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++
+     protected static boolean putServiceFunction(ServiceFunction sf) {
+         boolean ret;
+         printTraceStart(LOG);
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java
+index 55934b8..dbe0484 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java
+@@ -23,9 +23,15 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsState;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathState;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathStateKey;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePathBuilder;
++import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePathKey;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+@@ -130,12 +136,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+     public static  SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
+         return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
+     }
+-    public static  SfcProviderServicePathAPI getCreateRenderedServicePathAPI(Object[] params, Class[] paramsTypes) {
+-        return new SfcProviderServicePathAPI(params, paramsTypes, "createRenderedServicePathEntry");
+-    }
+-    public static  SfcProviderServicePathAPI getCreateReverseRenderedServicePathAPI(Object[] params, Class[] paramsTypes) {
+-        return new SfcProviderServicePathAPI(params, paramsTypes, "createReverseRenderedServicePath");
+-    }
++
+     @SuppressWarnings("unused")
+     public static  SfcProviderServicePathAPI getUpdateRenderedServicePathAPI(Object[] params, Class[] paramsTypes) {
+         return new SfcProviderServicePathAPI(params, paramsTypes, "updateRenderedServicePathEntry");
+@@ -151,6 +152,15 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+     public static SfcProviderServicePathAPI getCheckServicePathAPI(Object[] params, Class[] paramsTypes) {
+         return new SfcProviderServicePathAPI(params, paramsTypes, "checkServiceFunctionPath");
+     }
++    public static SfcProviderServicePathAPI getAddRenderedPathToServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderServicePathAPI(params, paramsTypes, "addRenderedPathToServicePathState");
++    }
++    public static SfcProviderServicePathAPI getDeleteServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathStateExecutor");
++    }
++    public static SfcProviderServicePathAPI getReadServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
++        return new SfcProviderServicePathAPI(params, paramsTypes, "readServicePathState");
++    }
+ 
+     @SuppressWarnings("unused")
+     public static int numCreatedPathGetValue() {
+@@ -166,6 +176,195 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+     }
+ 
+ 
++    /**
++     * API to read the Service Function Path operational state
++     *
++     * <p>
++     * @param servicePathName Service Path Name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static List<SfpRenderedServicePath> readServicePathState(String servicePathName) {
++
++        printTraceStart(LOG);
++        InstanceIdentifier<ServiceFunctionPathState> sfpIID;
++        List<SfpRenderedServicePath> ret = null;
++
++        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
++
++        sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
++                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).toInstance();
++
++        ServiceFunctionPathState serviceFunctionPathState = SfcDataStoreAPI.readTransactionAPI(sfpIID,
++                LogicalDatastoreType.OPERATIONAL);
++        if (serviceFunctionPathState != null) {
++            ret = serviceFunctionPathState.getSfpRenderedServicePath();
++        }
++        printTraceStop(LOG);
++
++        return ret;
++    }
++
++    /**
++     * Wrapper API to read the Service Function Path operational state
++     *
++     * <p>
++     * @param servicePathName Service Path Name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static List<SfpRenderedServicePath> readServicePathStateExecutor(String servicePathName) {
++
++        printTraceStart(LOG);
++        List<SfpRenderedServicePath> ret = null;
++
++        Object[] servicePathObj = {servicePathName};
++        Class[] servicePathClass = {String.class};
++
++        SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
++                .getReadServicePathStateExecutor(servicePathObj, servicePathClass);
++        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
++        try {
++            ret = (List<SfpRenderedServicePath>) future.get();
++            LOG.debug("getReadServicePathStateExecutor: {}", ret);
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
++     * Wrapper API to delete the Service Function Path operational state
++     *
++     * <p>
++     * @param servicePathName Service Path Name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean deleteServicePathState(String servicePathName) {
++
++        printTraceStart(LOG);
++        InstanceIdentifier<ServiceFunctionPathState> sfpIID;
++        boolean ret = false;
++
++        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
++
++        sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
++                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).toInstance();
++
++        if (SfcDataStoreAPI.deleteTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL)) {
++            ret = true;
++        } else {
++            LOG.error("{}: Failed to delete Service Function Path {} state.",
++                    Thread.currentThread().getStackTrace()[1], servicePathName);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++
++    /**
++     * Wrapper API to delete the Service Function Path operational state
++     *
++     * <p>
++     * @param servicePathName Service Path Name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean deleteServicePathStateExecutor(String servicePathName) {
++
++        printTraceStart(LOG);
++        boolean ret = true;
++
++        // SFF deletion is a critical event. If a SFF is deleted we delete all associated SFPs
++        Object[] servicePathObj = {servicePathName};
++        Class[] servicePathClass = {String.class};
++
++        SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
++                .getDeleteServicePathStateExecutor(servicePathObj, servicePathClass);
++        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
++        try {
++            ret = (boolean) future.get();
++            LOG.debug("getDeleteServicePathStateExecutor: {}", ret);
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++
++    /**
++     * We iterate through all service paths that use this service function and if
++     * necessary, remove them.
++     * <p>
++     * @param servicePathName Service Function Path name
++     * @param renderedPathName Rendered Path name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean addRenderedPathToServicePathState (String servicePathName, String renderedPathName) {
++
++        printTraceStart(LOG);
++        InstanceIdentifier<SfpRenderedServicePath> rspIID;
++        boolean ret = false;
++
++        SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
++        SfpRenderedServicePathKey sfpRenderedServicePathKey = new SfpRenderedServicePathKey(renderedPathName);
++        sfpRenderedServicePathBuilder.setKey(sfpRenderedServicePathKey).setName(renderedPathName);
++
++        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
++
++        rspIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
++                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
++                .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).toInstance();
++
++        if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, sfpRenderedServicePathBuilder.build(),
++                LogicalDatastoreType.OPERATIONAL)) {
++            ret = true;
++        } else {
++            LOG.error("{}: Failed to create Service Function Path {} state. Rendered Service Path: {}",
++                    Thread.currentThread().getStackTrace()[1], servicePathName, renderedPathName);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
++     * We iterate through all service paths that use this service function and if
++     * necessary, remove them.
++     * <p>
++     * @param servicePathName Service Function Path name
++     * @param renderedPathName Rendered Path name
++     * @return Nothing.
++     */
++    @SuppressWarnings("unused")
++    public static boolean addRenderedPathToServicePathStateExecutor (String servicePathName, String renderedPathName) {
++
++        printTraceStart(LOG);
++        boolean ret = true;
++        Object[] functionParams = {servicePathName, renderedPathName};
++        Class[] functionParamsTypes = {String.class, String.class};
++        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI
++                .getAddRenderedPathToServicePathStateExecutor(functionParams, functionParamsTypes));
++        try {
++            ret = (boolean) future.get();
++            LOG.debug("getAddRenderedPathToServicePathStateExecutor returns: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        } catch (ExecutionException e) {
++            LOG.warn(FAILED_TO_STR , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++
+     @SuppressWarnings("unused")
+     protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
+         boolean ret = false;
+@@ -206,6 +405,34 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+     }
+ 
+     /**
++     * This method reads the operational state for a service function.
++     * <p>
++     * @param serviceFunctionName SF name
++     * @return A ServiceFunctionState object that is a list of all paths using
++     * this service function, null otherwise
++     */
++    public static ServiceFunctionPath readServiceFunctionPathExecutor(String serviceFunctionName) {
++
++        printTraceStart(LOG);
++        ServiceFunctionPath ret = null;
++        Object[] servicePathObj = {serviceFunctionName};
++        Class[] servicePathClass = {String.class};
++        SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
++                .getRead(servicePathObj, servicePathClass);
++        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
++        try {
++            ret = (ServiceFunctionPath) future.get();
++            LOG.debug("readServiceFunctionPathExecutor: {}", future.get());
++        } catch (InterruptedException e) {
++            LOG.warn("failed to ...." , e);
++        } catch (ExecutionException e) {
++            LOG.warn("failed to ...." , e);
++        }
++        printTraceStop(LOG);
++        return ret;
++    }
++
++    /**
+      * This function reads a RSP from the datastore
+      * <p>
+      * @param rspName RSP name
+@@ -249,7 +476,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+                     ret = false;
+                 }
+             } else {
+-                LOG.info("RSP {} already deleted by another thread or client", rspName);
++                LOG.debug("RSP {} already deleted by another thread or client", rspName);
+                 ret = true;
+             }
+         }
+@@ -279,7 +506,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+         Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
+         try {
+             ret = (boolean) future.get();
+-            LOG.info("getDeleteRenderedServicePaths: {}", ret);
++            LOG.debug("getDeleteRenderedServicePaths: {}", ret);
+         } catch (InterruptedException e) {
+             LOG.warn(FAILED_TO_STR , e);
+         } catch (ExecutionException e) {
+@@ -352,7 +579,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+         Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
+         try {
+             ret = (boolean) future.get();
+-            LOG.info("getDeleteRenderedServicePath: {}", future.get());
++            LOG.debug("getDeleteRenderedServicePath: {}", future.get());
+         } catch (InterruptedException e) {
+             LOG.warn(FAILED_TO_STR , e);
+         } catch (ExecutionException e) {
+@@ -413,23 +640,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+         this.createRenderedServicePathEntry(serviceFunctionPath);
+     }
+ 
+-    public static RenderedServicePath createRenderedServicePathEntryExecutor(ServiceFunctionPath serviceFunctionPath) {
+-        RenderedServicePath ret = null;
+-        Object[] servicePathObj = {serviceFunctionPath};
+-        Class[] servicePathClass = {ServiceFunctionPath.class};
+-        SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
+-                .getCreateRenderedServicePathAPI(servicePathObj, servicePathClass);
+-        Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
+-        try {
+-            ret = (RenderedServicePath) futureCreateRSP.get();
+-            LOG.debug("getCreateRenderedServicePathAPI: {}", futureCreateRSP.get());
+-        } catch (InterruptedException e) {
+-            LOG.warn(FAILED_TO_STR , e);
+-        } catch (ExecutionException e) {
+-            LOG.warn(FAILED_TO_STR , e);
+-        }
+-        return ret;
+-    }
++
+ 
+     /**
+      * This function is called whenever a SFP is created or updated. It recomputes
+@@ -548,6 +759,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+         //renderedServicePathBuilder.setStartingIndex((short) renderedServicePathHopArrayList.size());
+         renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
+         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
++        renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
+ 
+         RenderedServicePathKey renderedServicePathKey = new
+                 RenderedServicePathKey(renderedServicePathBuilder.getName());
+@@ -569,25 +781,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+ 
+     }
+ 
+-
+-    public static RenderedServicePath createReverseRenderedServicePathEntryExecutor(RenderedServicePath renderedServicePath) {
+-        RenderedServicePath ret = null;
+-        Object[] servicePathObj = {renderedServicePath};
+-        Class[] servicePathClass = {RenderedServicePath.class};
+-        SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
+-                .getCreateReverseRenderedServicePathAPI(servicePathObj, servicePathClass);
+-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
+-        try {
+-            ret = (RenderedServicePath) future.get();
+-            LOG.debug("getCreateRenderedServicePathAPI: {}", future.get());
+-        } catch (InterruptedException e) {
+-            LOG.warn(FAILED_TO_STR , e);
+-        } catch (ExecutionException e) {
+-            LOG.warn(FAILED_TO_STR , e);
+-        }
+-        return ret;
+-    }
+-
+     /**
+      * Creates a RSP that is mirror image of the given one. It reverses the
+      * hop list and adjusts hop number and service index accordingly
+@@ -595,7 +788,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+      * @param renderedServicePath RSP object
+      * @return Nothing
+      */
+-    public RenderedServicePath createReverseRenderedServicePath(RenderedServicePath renderedServicePath) {
++    public RenderedServicePath createReverseRenderedServicePathEntry(RenderedServicePath renderedServicePath) {
+ 
+ 
+         RenderedServicePath ret = null;
+@@ -748,7 +941,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+                 renderedPathObj, renderedPathClass));
+         try {
+             ret = (boolean) future.get();
+-            LOG.info("getCheckServicePathAPI returns: {}", future.get());
++            LOG.debug("getCheckServicePathAPI returns: {}", future.get());
+         } catch (InterruptedException e) {
+             LOG.warn(FAILED_TO_STR , e);
+         } catch (ExecutionException e) {
+@@ -817,12 +1010,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+                         ret = ret && false;
+                     }
+                 } else {
+-                    LOG.info("{}: SFP {} already deleted by another thread or client",
++                    LOG.debug("{}: SFP {} already deleted by another thread or client",
+                             Thread.currentThread().getStackTrace()[1], rspName);
+                 }
+             }
+         } else {
+-            LOG.info("Could not find Service function Paths using Service Function: {} ",
++            LOG.debug("Could not find Service function Paths using Service Function: {} ",
+                     serviceFunction.getName());
+         }
+         printTraceStop(LOG);
+@@ -847,7 +1040,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
+                 .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+         try {
+             ret = (boolean) future.get();
+-            LOG.info("getDeleteServicePathContainingFunction returns: {}", future.get());
++            LOG.debug("getDeleteServicePathContainingFunction returns: {}", future.get());
+         } catch (InterruptedException e) {
+             LOG.warn(FAILED_TO_STR , e);
+         } catch (ExecutionException e) {
+diff --git a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcSftMapper.java b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcSftMapper.java
+index f740999..3cd0b68 100755
+--- a/sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcSftMapper.java
++++ b/sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcSftMapper.java
+@@ -36,46 +36,8 @@ public class SfcSftMapper {
+     public SfcSftMapper(OpendaylightSfc odlSfc){
+         this.map = new HashMap<>();
+         this.odlSfc = odlSfc;
+-        this.update();
+     }
+ 
+-    public void update() {
+-        if (odlSfc != null) {
+-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
+-            Optional<ServiceNodes> dataObject = null;
+-            try {
+-                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SN_IID).get();
+-            } catch (InterruptedException | ExecutionException e) {
+-                LOG.warn("failed to ...." , e);
+-            }
+-            if (dataObject instanceof ServiceNodes) {
+-                ServiceNodes nodes = (ServiceNodes) dataObject;
+-                List<ServiceNode> snList = nodes.getServiceNode();
+-
+-                for(ServiceNode sn : snList){
+-                    List<String> sfNameList = sn.getServiceFunction();
+-                    for(String sfName : sfNameList){
+-                        ServiceFunction sf = null;
+-                        try {
+-                            sf = (ServiceFunction) odlSfc.getExecutor().submit(SfcProviderServiceFunctionAPI.getRead(
+-                                    new Object[]{sfName}, new Class[]{String.class})).get();
+-                        } catch (InterruptedException | ExecutionException e) {
+-                            LOG.warn("failed to ...." , e);
+-                        }
+-                        if ( sf != null) {
+-                            this.add(sf.getType(), sn.getName(), sf);
+-                        } else {
+-                            throw new IllegalStateException("Service Function not found in datastore");
+-                        }
+-                    }
+-                }
+-            } else {
+-                throw new IllegalStateException("Wrong dataObject instance.");
+-            }
+-        } else {
+-            throw new NullPointerException("odlSfc is null");
+-        }
+-    }
+ 
+     public void add(Class<? extends ServiceFunctionTypeIdentity> type, String snName, ServiceFunction sf){
+         if(this.map.containsKey(type)){
+diff --git a/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SimpleTestEntityBuilder.java b/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SimpleTestEntityBuilder.java
+index cc4b57f..84953af 100755
+--- a/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SimpleTestEntityBuilder.java
++++ b/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SimpleTestEntityBuilder.java
+@@ -85,7 +85,6 @@ public class SimpleTestEntityBuilder {
+                                                                   String classifier) {
+         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
+         sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
+-                .setClassifier(classifier)
+                 .setSffDataPlaneLocator(sffDataplaneLocatorList)
+                 .setServiceFunctionDictionary(dictionaryList)
+                 .setServiceNode(null);
+diff --git a/sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java b/sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java
+index 81b6bc2..e2c9c97 100755
+--- a/sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java
++++ b/sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java
+@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
+ 
+ import java.util.concurrent.ExecutionException;
+ 
+-public class SfcSbRestProviderModule extends org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl.AbstractSfcSbRestProviderModule {
++public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
+ 
+     private static final Logger LOG = LoggerFactory.getLogger(SfcSbRestProviderModule.class);
+ 
+diff --git a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestAclDataListener.java b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestAclDataListener.java
+index 813b1af..933e9ac 100755
+--- a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestAclDataListener.java
++++ b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestAclDataListener.java
+@@ -53,7 +53,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
+                 AccessLists updatedAccessLists =
+                         (AccessLists) entry.getValue();
+ 
+-                DataBroker dataBroker = getDataBroker();
++/*                DataBroker dataBroker = getDataBroker();
+                 ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+                 Optional<ServiceFunctionClassifiers> serviceFunctionClassifiersObject = null;
+                 List<ServiceFunctionClassifier> serviceFunctionClassifierList = new ArrayList<>();
+@@ -98,7 +98,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
+                             opendaylightSfc.getExecutor().submit(putAclTask);
+                         }
+                     }
+-                }
++                }*/
+ 
+             }
+         }
+diff --git a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSffDataListener.java b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSffDataListener.java
+index 403e9c0..892a031 100755
+--- a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSffDataListener.java
++++ b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSffDataListener.java
+@@ -29,7 +29,7 @@ public class SbRestSffDataListener extends SbRestAbstractDataListener
+     public SbRestSffDataListener(OpendaylightSfc ODL_SFC) {
+         setOpendaylightSfc(ODL_SFC);
+         setDataBroker(ODL_SFC.getDataProvider());
+-        setInstanceIdentifier(OpendaylightSfc.SFF_IID);
++        setInstanceIdentifier(OpendaylightSfc.SFF_ENTRY_IID);
+         registerAsDataChangeListener();
+     }
+ 
+diff --git a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSfpDataListener.java b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSfpDataListener.java
+index f6c553c..3604c63 100755
+--- a/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSfpDataListener.java
++++ b/sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/SbRestSfpDataListener.java
+@@ -34,7 +34,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
+     public SbRestSfpDataListener(OpendaylightSfc opendaylightSfc) {
+         setOpendaylightSfc(opendaylightSfc);
+         setDataBroker(opendaylightSfc.getDataProvider());
+-        setInstanceIdentifier(OpendaylightSfc.SFP_IID);
++        setInstanceIdentifier(OpendaylightSfc.SFP_ENTRY_IID);
+         registerAsDataChangeListener();
+     }
+ 
+@@ -52,7 +52,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
+                 ServiceFunctionPaths updatedServiceFunctionPaths =
+                         (ServiceFunctionPaths) entry.getValue();
+ 
+-                DataBroker dataBroker = getDataBroker();
++/*                DataBroker dataBroker = getDataBroker();
+                 ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+                 Optional<ServiceFunctionForwarders> serviceFunctionForwardersObject = null;
+                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = new ArrayList<>();
+@@ -77,7 +77,7 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
+                     System.out.println("PUT url:" + urlMgmt);
+                     SbRestPutSfpTask putSfpTask = new SbRestPutSfpTask(updatedServiceFunctionPaths, urlMgmt);
+                     opendaylightSfc.getExecutor().submit(putSfpTask);
+-                }
++                }*/
+ 
+             }
+         }
+diff --git a/sfc-test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/sfc_test_consumer/impl/SfcTestConsumerModule.java b/sfc-test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/sfc_test_consumer/impl/SfcTestConsumerModule.java
+index 414a299..7385189 100755
+--- a/sfc-test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/sfc_test_consumer/impl/SfcTestConsumerModule.java
++++ b/sfc-test-consumer/src/main/java/org/opendaylight/controller/config/yang/config/sfc_test_consumer/impl/SfcTestConsumerModule.java
+@@ -6,7 +6,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.
+         rev140701.service.function.chain.grouping.ServiceFunctionChain;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
+ 
+ public class SfcTestConsumerModule extends org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.AbstractSfcTestConsumerModule {
+     public SfcTestConsumerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
+@@ -26,9 +25,8 @@ public class SfcTestConsumerModule extends org.opendaylight.controller.config.ya
+     public java.lang.AutoCloseable createInstance() {
+         ServiceFunctionService sfService = getRpcRegistryDependency().getRpcService(ServiceFunctionService.class);
+         ServiceFunctionChainService sfcService = getRpcRegistryDependency().getRpcService(ServiceFunctionChainService.class);
+-        ServiceNodeService snService = getRpcRegistryDependency().getRpcService(ServiceNodeService.class);
+ 
+-        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService, snService);
++        final SfcTestConsumerImpl sfcTestConsumer = new SfcTestConsumerImpl(sfService, sfcService);
+ 
+         final SfcTestConsumerRuntimeRegistration runtimeReg =
+                 getRootRuntimeBeanRegistratorWrapper().register(sfcTestConsumer);
+diff --git a/sfc-test-consumer/src/main/java/org/opendaylight/sfc/sfc_test_consumer/SfcTestConsumerImpl.java b/sfc-test-consumer/src/main/java/org/opendaylight/sfc/sfc_test_consumer/SfcTestConsumerImpl.java
+index 3c68426..d0b4f96 100755
+--- a/sfc-test-consumer/src/main/java/org/opendaylight/sfc/sfc_test_consumer/SfcTestConsumerImpl.java
++++ b/sfc-test-consumer/src/main/java/org/opendaylight/sfc/sfc_test_consumer/SfcTestConsumerImpl.java
+@@ -23,8 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInputBuilder;
+-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
+ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+@@ -73,15 +71,13 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
+ 
+     private final ServiceFunctionService sfService;
+     private final ServiceFunctionChainService sfcService;
+-    private final ServiceNodeService snService;
+ 
+     public SfcTestConsumerImpl(
+             ServiceFunctionService sfService,
+-            ServiceFunctionChainService sfcService,
+-            ServiceNodeService snService) {
++            ServiceFunctionChainService sfcService) {
++
+         this.sfService = sfService;
+         this.sfcService = sfcService;
+-        this.snService = snService;
+     }
+ 
+     /**
+@@ -137,37 +133,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
+         }
+     }
+ 
+-    private Boolean putNode(String name,
+-                            String ip,
+-                            List<String> sfList) {
+-
+-        //printTraceStart(LOG);
+-        PutServiceNodeInputBuilder input = new PutServiceNodeInputBuilder();
+-
+-        input.setName(name)
+-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ip)))
+-                .setServiceFunction(sfList);
+-        try {
+-            Future<RpcResult<Void>> fr = snService.putServiceNode(input.build());
+-            RpcResult<Void> result = fr.get();
+-            if (result != null) {
+-                LOG.info("\n####### {} result: {}", Thread.currentThread().getStackTrace()[1], result);
+-                if (result.isSuccessful()) {
+-                    LOG.info("\n####### {}: successfully finished", Thread.currentThread().getStackTrace()[1]);
+-                } else {
+-                    LOG.warn("\n####### {}: not successfully finished", Thread.currentThread().getStackTrace()[1]);
+-                }
+-                return result.isSuccessful();
+-            } else {
+-                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
+-                return Boolean.FALSE;
+-            }
+-
+-        } catch (Exception e) {
+-            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
+-            return Boolean.FALSE;
+-        }
+-    }
+ 
+     /**
+      * Puts an SFChain
+@@ -397,27 +362,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
+         iList.add("firewall-101-1");
+         iList.add("firewall-101-2");
+ 
+-        res = putNode("node-101", "10.3.1.101", iList) && res;
+-
+-        iList.clear();
+-        iList.add("dpi-102-1");
+-        iList.add("dpi-102-2");
+-        iList.add("dpi-102-3");
+-
+-        res = putNode("node-102", "10.3.1.102", iList) && res;
+-
+-        iList.clear();
+-        iList.add("napt44-103-1");
+-        iList.add("napt44-103-2");
+-
+-        res = putNode("node-103", "10.3.1.103", iList) && res;
+-
+-        iList.clear();
+-        iList.add("firewall-104");
+-        iList.add("napt44-104");
+-
+-        res = putNode("node-104", "10.3.1.104", iList) && res;
+-
+         return res;
+     }
+ }
+diff --git a/sfc-test/sfc_basic_rest_regression.py b/sfc-test/sfc_basic_rest_regression.py
+index f979b8e..bf0eca0 100644
+--- a/sfc-test/sfc_basic_rest_regression.py
++++ b/sfc-test/sfc_basic_rest_regression.py
+@@ -8,109 +8,120 @@ __status__ = "Tested with SFC-Karaf distribution as of 10/05/2014"
+ import requests
+ import json
+ import time
+-from sfc_basic_rest_regression_messages import *
++from sfc_dcloud_messages import *
+ 
+ putheaders = {'content-type': 'application/json'}
+ getheaders = {'Accept': 'application/json'}
+ # ODL IP:port
+ ODLIP = "127.0.0.1:8181"
+ # Static URLs for testing
+-GET_ALL_SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"
+-GET_ALL_SFC_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-function-chains/"
+-GET_ALL_SFF_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:service-function-forwarders/"
+-GET_ALL_SFT_URL = "http://" + ODLIP + "/restconf/config/service-function-type:service-function-types/"
+-GET_ALL_SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
+-PUT_ONE_SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
+-PUT_SFC3_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-function-chains/" \
+-                                   "service-function-chain/SFC3/"
+-
+-GETURL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/%d/"
+-# Incremental PUT. This URL is for a list element
+-PUTURL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/%d/"
++SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"
++SFC_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-function-chains/"
++SFF_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:service-function-forwarders/"
++SFT_URL = "http://" + ODLIP + "/restconf/config/service-function-type:service-function-types/"
++SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/"
++SFF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function-forwarder:service-function-forwarders-state/"
++SF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function:service-functions-state/"
++RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rendered-service-paths/"
++SFP_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/" \
++                                  "service-function-path/{}/"
++SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/{}/"
++IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
+ 
+ USERNAME = "admin"
+ PASSWORD = "admin"
+ 
+ 
+-def get_initial_sf():
++def delete_configuration():
+     s = requests.Session()
+-    print ("GETTing initially configured Service Functions \n")
+-    r = s.get(GET_ALL_SF_URL, stream=False, auth=(USERNAME, PASSWORD))
+-    if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SF_RESP_JSON)):
+-        print ("=>Success \n")
++    print("Deleting previous config... \n")
++    r = s.delete(SF_URL, stream=False, auth=(USERNAME, PASSWORD))
++    if r.status_code == 200:
++        print("=>Deleted all Service Functions \n")
+     else:
+-        print ("=>Failure to get SFs \n")
+-
+-
+-def get_initial_sfc():
+-    s = requests.Session()
+-    print ("GETTing initially configured Service Functions Chains \n")
+-    r = s.get(GET_ALL_SFC_URL, stream=False, auth=(USERNAME, PASSWORD))
+-    if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SFC_RESP_JSON)):
+-        print ("=>Success \n")
++        print("=>Failure to delete SFs, response code = {} \n".format(r.status_code))
++    r = s.delete(SFC_URL, stream=False, auth=(USERNAME, PASSWORD))
++    if r.status_code == 200:
++       print("=>Deleted all Service Function Chains \n")
+     else:
+-        print ("=>Failure to get SFCs \n")
+-
+-
+-def get_initial_sff():
+-    s = requests.Session()
+-    print ("GETTing initially configured Service Functions Forwarders \n")
+-    r = s.get(GET_ALL_SFF_URL, stream=False, auth=(USERNAME, PASSWORD))
+-    if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SFF_RESP_JSON)):
+-        print ("=>Success \n")
++       print("=>Failure to delete SFCs, response code = {} \n".format(r.status_code))
++    r = s.delete(SFF_URL, stream=False, auth=(USERNAME, PASSWORD))
++    if r.status_code == 200:
++        print("=>Deleted all Service Function Forwarders \n")
+     else:
+-        print ("=>Failure to get SFFs \n")
+-
++        print("=>Failure to delete SFFs, response code = {} \n".format(r.status_code))
++    # r = s.delete(SFT_URL, stream=False, auth=(USERNAME, PASSWORD))
++    # if r.status_code == 200:
++    #     print("=>Deleted all Service Function Types \n")
++    # else:
++    #     print("=>Failure to delete SFTs, response code = {} \n". format(r.status_code))
++    r = s.delete(SFP_URL, stream=False, auth=(USERNAME, PASSWORD))
++    if r.status_code == 200:
++        print("=>Deleted all Service Function Paths \n")
++    else:
++        print("=>Failure to delete SFPs, response code = {} \n".format(r.status_code))
+ 
+-def get_initial_sft():
+-    s = requests.Session()
+-    print ("GETTing initially configured Service Functions Types \n")
+-    r = s.get(GET_ALL_SFT_URL, stream=False, auth=(USERNAME, PASSWORD))
+-    if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SFT_RESP_JSON)):
+-        print ("=>Success \n")
++    r = s.delete(IETF_ACL_URL, stream=False, auth=(USERNAME, PASSWORD))
++    if r.status_code == 200:
++        print("=>Deleted all Access Lists \n")
+     else:
+-        print ("=>Failure to get SFTs \n")
++        print("=>Failure to delete ACLs, response code = {} \n".format(r.status_code))
+ 
+ 
+-def put_one_sfp():
++def put_and_check(url, json_req, json_resp):
+     s = requests.Session()
+-    print ("PUTing a single SFP \n")
+-    r = s.put(PUT_ONE_SFP_URL, data=PUT_ONE_SFP_JSON, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
++    print("PUTing {} \n".format(url))
++    r = s.put(url, data=json_req, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
+     if r.status_code == 200:
+-        print ("Checking created SFP \n")
++        print("Checking... \n")
+         # Creation of SFPs is slow, need to pause here.
+         time.sleep(2)
+-        r = s.get(GET_ALL_SFP_URL, stream=False, auth=(USERNAME, PASSWORD))
+-        if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SFP_RESP_JSON)):
+-            print ("=>SFP created successfully \n")
++        r = s.get(url, stream=False, auth=(USERNAME, PASSWORD))
++        if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
++            print("=>Creation successfully \n")
+         else:
+-            print ("=>Created SFP did not pass check - Failure \n")
++            print("=>Creation did not pass check, error code: {}. If error code was 2XX it is "
++                  "probably a false negative due to string compare \n".format(r.status_code))
++    else:
++        print("=>Failure \n")
++
+ 
++def check(url, json_resp, message):
++    s = requests.Session()
++    print(message, "\n")
++    r = s.get(url, stream=False, auth=(USERNAME, PASSWORD))
++    if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
++        print("=>Check successful \n")
+     else:
+-        print ("=>Failed to create SFP \n")
++        print("=>Check not successful, error code: {}. If error code was 2XX it is "
++              "probably a false negative due to string compare \n".format(r.status_code))
+ 
+ 
+-def put_sfc3():
++def delete_and_check(url, message):
+     s = requests.Session()
+-    print ("PUTing a single SFC \n")
+-    r = s.put(PUT_SFC3_URL, data=PUT_SFC3_JSON, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
++    print(message, "\n")
++    r = s.delete(url, stream=False, auth=(USERNAME, PASSWORD))
+     if r.status_code == 200:
+-        print ("Checking created SFC \n")
+-        # Creation of SFPs is slow, need to pause here.
+-        time.sleep(2)
+-        r = s.get(GET_ALL_SFC_URL, stream=False, auth=(USERNAME, PASSWORD))
+-        if (r.status_code == 200) and (json.loads(r.text) == json.loads(GET_ALL_SFC3_RESP_JSON)):
+-            print ("=>SFC created successfully \n")
+-        else:
+-            print ("=>Created SFC did not pass check - Failure \n")
++        print("=>Check successful \n")
+     else:
+-        print ("=>Failed to create SFC \n")
+-
++        print("=>Check not successful, error code: {} \n".format(r.status_code))
+ 
+ if __name__ == "__main__":
+-    get_initial_sf()
+-    get_initial_sfc()
+-    get_initial_sff()
+-    get_initial_sft()
+-    put_one_sfp()
+-    put_sfc3()
++    delete_configuration()
++    put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
++    check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type...")
++    put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
++    put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
++    put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_RESP_JSON)
++    check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
++    check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
++    check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
++    put_and_check(IETF_ACL_URL, IETF_ACL_JSON, IETF_ACL_JSON)
++
++    # put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
++    # check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")
++    # delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
++    # check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
++    # check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
++    #delete_configuration()
++
+diff --git a/sfc-test/sfc_basic_rest_regression_messages.py b/sfc-test/sfc_basic_rest_regression_messages.py
+index 027040b..e64e2c0 100644
+--- a/sfc-test/sfc_basic_rest_regression_messages.py
++++ b/sfc-test/sfc_basic_rest_regression_messages.py
+@@ -1,305 +1,521 @@
+ __author__ = "Reinaldo Penno"
+ __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+ __license__ = "New-style BSD"
+-__version__ = "0.2"
++__version__ = "0.1"
+ __email__ = "rapenno@gmail.com"
+-__status__ = "Tested with SFC-Karaf distribution as of 10/05/2014"
++__status__ = ""
+ 
+-PUT_ONE_SFP_JSON = """
+-{
+-  "service-function-paths": {
+-    "service-function-path": [
+-      {
+-        "name": "Path-1-SFC1",
+-        "service-chain-name": "SFC1"
+-      }
+-    ]
+-  }
+-}"""
+-
+-GET_ALL_SFP_RESP_JSON = """
+-{
+-  "service-function-paths": {
+-    "service-function-path": [
+-      {
+-        "name": "Path-1-SFC1",
+-        "path-id": 1,
+-        "starting-index": 3,
+-        "service-chain-name": "SFC1",
+-        "service-path-hop": [
+-          {
+-            "hop-number": 0,
+-            "service-function-name": "dpi-102-1",
+-            "service_index": 3,
+-            "service-function-forwarder": "SFF-bootstrap"
+-          },
+-          {
+-            "hop-number": 1,
+-            "service-function-name": "napt44-104",
+-            "service_index": 2,
+-            "service-function-forwarder": "SFF-bootstrap"
+-          },
+-          {
+-            "hop-number": 2,
+-            "service-function-name": "firewall-104",
+-            "service_index": 1,
+-            "service-function-forwarder": "SFF-bootstrap"
+-          }
+-        ]
+-      }
+-    ]
+-  }
+-}"""
+-
+-GET_ALL_SF_RESP_JSON = """
++SERVICE_FUNCTIONS_JSON = """
+ {
+   "service-functions": {
+     "service-function": [
+       {
+-        "name": "firewall-104",
++        "name": "SF5",
+         "sf-data-plane-locator": [
+           {
+-            "name": "my-locator",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.104",
+-            "port": 10001
++            "name": "vxlan",
++            "ip": "10.0.1.43",
++            "port": 40001,
++            "transport": "service-locator:vxlan-gpe",
++            "service-function-forwarder": "SFF4"
+           }
+         ],
+         "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.104",
+-        "type": "service-function-type:firewall"
++        "rest-uri": "http://10.0.1.43:5000",
++        "ip-mgmt-address": "10.0.1.43",
++        "type": "service-function-type:napt44"
+       },
+       {
+-        "name": "napt44-104",
++        "name": "SF1",
+         "sf-data-plane-locator": [
+           {
+-            "name": "3",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.104",
+-            "port": 10020
++            "name": "vxlan",
++            "ip": "10.0.1.41",
++            "port": 40001,
++            "transport": "service-locator:vxlan-gpe",
++            "service-function-forwarder": "SFF1"
+           }
+         ],
++        "rest-uri": "http://10.0.1.41:5000",
+         "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.104",
+-        "type": "service-function-type:napt44"
++        "ip-mgmt-address": "10.0.1.41",
++        "type": "service-function-type:dpi"
+       },
+       {
+-        "name": "napt44-103-2",
++        "name": "SF2",
+         "sf-data-plane-locator": [
+           {
+-            "name": "preferred",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.103",
+-            "port": 10002
++            "name": "vxlan",
++            "ip": "10.0.1.42",
++            "port": 40001,
++            "transport": "service-locator:vxlan-gpe",
++            "service-function-forwarder": "SFF2"
+           }
+         ],
++        "rest-uri": "http://10.0.1.42:5000",
+         "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.103",
+-        "type": "service-function-type:napt44"
++        "ip-mgmt-address": "10.0.1.42",
++        "type": "service-function-type:ids"
+       },
+       {
+-        "name": "napt44-103-1",
++        "name": "SF3",
+         "sf-data-plane-locator": [
+           {
+-            "name": "master",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.103",
+-            "port": 10001
++            "name": "vxlan",
++            "ip": "10.0.1.43",
++            "port": 40001,
++            "transport": "service-locator:vxlan-gpe",
++            "service-function-forwarder": "SFF3"
+           }
+         ],
+         "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.103",
+-        "type": "service-function-type:napt44"
++        "rest-uri": "http://10.0.1.43:5000",
++        "ip-mgmt-address": "10.0.1.43",
++        "type": "service-function-type:qos"
+       },
+       {
+-        "name": "firewall-101-1",
++        "name": "SF4",
+         "sf-data-plane-locator": [
+           {
+-            "name": "007",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.101",
+-            "port": 10001
++            "name": "vxlan",
++            "ip": "10.0.1.42",
++            "port": 40001,
++            "transport": "service-locator:vxlan-gpe",
++            "service-function-forwarder": "SFF3"
+           }
+         ],
+         "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.101",
++        "rest-uri": "http://10.0.1.42:5000",
++        "ip-mgmt-address": "10.0.1.42",
+         "type": "service-function-type:firewall"
++      }
++    ]
++  }
++}"""
++
++SERVICE_FUNCTION_FORWARDERS_JSON = """
++{
++  "service-function-forwarders": {
++    "service-function-forwarder": [
++      {
++        "name": "SFF5",
++        "sff-data-plane-locator": [
++          {
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.45",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "rest-uri": "http://10.0.1.45:5000",
++        "service-node": "OVSDB2",
++        "ip-mgmt-address": "10.0.1.44"
+       },
+       {
+-        "name": "dpi-102-3",
+-        "sf-data-plane-locator": [
++        "name": "SFF4",
++        "sff-data-plane-locator": [
+           {
+-            "name": "101",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.102",
+-            "port": 10003
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.44",
++              "transport": "service-locator:vxlan-gpe"
++            }
+           }
+         ],
+-        "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.102",
+-        "type": "service-function-type:dpi"
++        "rest-uri": "http://10.0.1.44:5000",
++        "service-function-dictionary": [
++          {
++            "name": "SF4",
++            "type": "service-function-type:firewall",
++            "sff-sf-data-plane-locator": {
++              "service-function-forwarder-ovs:ovs-bridge": {
++                "bridge-name": "br-int"
++              },
++              "port": 40001,
++              "ip": "10.0.1.44",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "service-node": "OVSDB2",
++        "ip-mgmt-address": "10.0.1.44"
+       },
+       {
+-        "name": "firewall-101-2",
+-        "sf-data-plane-locator": [
++        "name": "SFF1",
++        "service-node": "OVSDB1",
++        "sff-data-plane-locator": [
++          {
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.41",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "rest-uri": "http://10.0.1.41:5000",
++        "service-function-dictionary": [
+           {
+-            "name": "2",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.101",
+-            "port": 10002
++            "name": "SF1",
++            "type": "service-function-type:dpi",
++            "sff-sf-data-plane-locator": {
++              "service-function-forwarder-ovs:ovs-bridge": {
++                "bridge-name": "br-int"
++              },
++              "port": 40001,
++              "ip": "10.0.1.41",
++              "transport": "service-locator:vxlan-gpe"
++            }
+           }
+         ],
+-        "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.101",
+-        "type": "service-function-type:firewall"
++        "classifier": "acl-sfp-1",
++        "ip-mgmt-address": "10.0.1.41"
+       },
+       {
+-        "name": "dpi-102-2",
+-        "sf-data-plane-locator": [
++        "name": "SFF2",
++        "sff-data-plane-locator": [
+           {
+-            "name": "1",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.102",
+-            "port": 10002
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.42",
++              "transport": "service-locator:vxlan-gpe"
++            }
+           }
+         ],
+-        "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.102",
+-        "type": "service-function-type:dpi"
++        "rest-uri": "http://10.0.1.42:5000",
++        "service-function-dictionary": [
++          {
++            "name": "SF2",
++            "type": "service-function-type:ids",
++            "sff-sf-data-plane-locator": {
++              "service-function-forwarder-ovs:ovs-bridge": {
++                "bridge-name": "br-int"
++              },
++              "port": 40001,
++              "ip": "10.0.1.42",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "service-node": "OVSDB2",
++        "ip-mgmt-address": "10.0.1.42"
+       },
+       {
+-        "name": "dpi-102-1",
+-        "sf-data-plane-locator": [
++        "name": "SFF3",
++        "sff-data-plane-locator": [
+           {
+-            "name": "4",
+-            "service-function-forwarder": "SFF-bootstrap",
+-            "ip": "10.3.1.102",
+-            "port": 10001
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.43",
++              "transport": "service-locator:vxlan-gpe"
++            }
+           }
+         ],
+-        "nsh-aware": true,
+-        "ip-mgmt-address": "10.3.1.102",
+-        "type": "service-function-type:dpi"
++        "rest-uri": "http://10.0.1.43:5000",
++        "service-function-dictionary": [
++          {
++            "name": "SF3",
++            "type": "service-function-type:qos",
++            "sff-sf-data-plane-locator": {
++              "service-function-forwarder-ovs:ovs-bridge": {
++                "bridge-name": "br-int"
++              },
++              "port": 40001,
++              "ip": "10.0.1.43",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "service-node": "OVSDB2",
++        "ip-mgmt-address": "10.0.1.43"
+       }
+     ]
+   }
+ }"""
+ 
+-GET_ALL_SFC_RESP_JSON = """
++SERVICE_CHAINS_JSON = """
+ {
+   "service-function-chains": {
+     "service-function-chain": [
+       {
++        "name": "SFC2",
++        "sfc-service-function": [
++          {
++            "name": "firewall-abstract2",
++            "type": "service-function-type:firewall",
++            "order": 0
++          },
++          {
++            "name": "napt44-abstract2",
++            "type": "service-function-type:napt44",
++            "order": 1
++          }
++        ]
++      },
++      {
+         "name": "SFC1",
++        "symmetric": true,
+         "sfc-service-function": [
+           {
+             "name": "dpi-abstract1",
+             "type": "service-function-type:dpi"
+           },
+           {
+-            "name": "napt44-abstract1",
+-            "type": "service-function-type:napt44"
++            "name": "ids-abstract1",
++            "type": "service-function-type:ids"
+           },
+           {
+-            "name": "firewall-abstract1",
+-            "type": "service-function-type:firewall"
++            "name": "qos-abstract1",
++            "type": "service-function-type:qos"
+           }
+         ]
++      }
++    ]
++  }
++}"""
++
++SERVICE_PATH_JSON = """
++{
++  "service-function-paths": {
++    "service-function-path": [
++      {
++        "name": "Path-1-SFC1",
++        "service-chain-name": "SFC1",
++        "symmetric": true
+       },
+       {
+-        "name": "SFC2",
+-        "sfc-service-function": [
++        "name": "Path-2-SFC2",
++        "service-chain-name": "SFC2"
++      }
++    ]
++  }
++}"""
++
++SERVICE_PATH_RESP_JSON = """
++{
++  "service-function-paths": {
++    "service-function-path": [
++      {
++        "name": "Path-1-SFC1",
++        "service-chain-name": "SFC1"
++      },
++      {
++        "name": "Path-2-SFC2",
++        "service-chain-name": "SFC2"
++      }
++    ]
++  }
++}
++"""
++
++RENDERED_SERVICE_PATH_RESP_JSON = """
++{
++  "rendered-service-paths": {
++    "rendered-service-path": [
++      {
++        "name": "Path-2-SFC2",
++        "path-id": 1,
++        "service-chain-name": "SFC2",
++        "starting-index": 255,
++        "rendered-service-path-hop": [
+           {
+-            "name": "firewall-abstract2",
+-            "type": "service-function-type:firewall"
++            "hop-number": 0,
++            "service-function-name": "SF4",
++            "service-function-forwarder": "SFF3",
++            "service_index": 255
+           },
+           {
+-            "name": "napt44-abstract2",
+-            "type": "service-function-type:napt44"
++            "hop-number": 1,
++            "service-function-name": "SF5",
++            "service-function-forwarder": "SFF4",
++            "service_index": 254
++          }
++        ]
++      },
++      {
++        "name": "Path-1-SFC1-Reverse",
++        "path-id": 3,
++        "service-chain-name": "SFC1",
++        "starting-index": 255,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF3",
++            "service_index": 255
++          },
++          {
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF2",
++            "service_index": 254
++          },
++          {
++            "hop-number": 2,
++            "service-function-name": "SF1",
++            "service-function-forwarder": "SFF1",
++            "service_index": 253
++          }
++        ]
++      },
++      {
++        "name": "Path-1-SFC1",
++        "path-id": 2,
++        "service-chain-name": "SFC1",
++        "starting-index": 255,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF1",
++            "service-function-forwarder": "SFF1",
++            "service_index": 255
++          },
++          {
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF2",
++            "service_index": 254
++          },
++          {
++            "hop-number": 2,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF3",
++            "service_index": 253
+           }
+         ]
+       }
+     ]
+   }
+-}"""
++}
++"""
+ 
++SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
++{
++  "service-function-forwarders-state": {
++    "service-function-forwarder-state": [
++      {
++        "name": "SFF1",
++        "sff-service-path": [
++          {
++            "name": "Path-1-SFC1"
++          },
++          {
++            "name": "Path-1-SFC1-Reverse"
++          }
++        ]
++      },
++      {
++        "name": "SFF2",
++        "sff-service-path": [
++          {
++            "name": "Path-1-SFC1"
++          },
++          {
++            "name": "Path-1-SFC1-Reverse"
++          }
++        ]
++      },
++      {
++        "name": "SFF3",
++        "sff-service-path": [
++          {
++            "name": "Path-2-SFC2"
++          },
++          {
++            "name": "Path-1-SFC1"
++          },
++          {
++            "name": "Path-1-SFC1-Reverse"
++          }
++        ]
++      },
++      {
++        "name": "SFF4",
++        "sff-service-path": [
++          {
++            "name": "Path-2-SFC2"
++          }
++        ]
++      }
++    ]
++  }
++}"""
+ 
+-GET_ALL_SFF_RESP_JSON = """
++SERVICE_FUNCTION_OPER_JSON = """
+ {
+-  "service-function-forwarders": {
+-    "service-function-forwarder": [
++  "service-functions-state": {
++    "service-function-state": [
+       {
+-        "name": "SFF-bootstrap",
+-        "service-node": "OVSDB1",
+-        "sff-data-plane-locator": [
++        "name": "SF4",
++        "sf-service-path": [
+           {
+-            "name": "eth0",
+-            "service-function-forwarder-ovs:ovs-bridge": {
+-              "bridge-name": "br-tun",
+-              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
+-            },
+-            "data-plane-locator": {
+-              "port": 5000,
+-              "ip": "192.168.1.1",
+-              "transport": "service-locator:vxlan-gpe"
+-            }
++            "name": "Path-2-SFC2"
+           }
+-        ],
+-        "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+-        "service-function-dictionary": [
++        ]
++      },
++      {
++        "name": "SF3",
++        "sf-service-path": [
+           {
+-            "name": "SF1",
+-            "type": "service-function-type:dp1",
+-            "sff-sf-data-plane-locator": {
+-              "port": 5000,
+-              "ip": "10.1.1.1"
+-            }
++            "name": "Path-1-SFC1-Reverse"
+           },
+           {
+-            "name": "SF2",
+-            "type": "service-function-type:firewall",
+-            "sff-sf-data-plane-locator": {
+-              "port": 5000,
+-              "ip": "10.1.1.2"
+-            }
++            "name": "Path-1-SFC1"
+           }
+-        ],
+-        "classifier": "acl-sfp-1"
++        ]
+       },
+       {
+-        "name": "br-int-ovs-2",
+-        "service-node": "OVSDB2",
+-        "sff-data-plane-locator": [
++        "name": "SF2",
++        "sf-service-path": [
+           {
+-            "name": "eth0",
+-            "service-function-forwarder-ovs:ovs-bridge": {
+-              "bridge-name": "br-tun",
+-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
+-            },
+-            "data-plane-locator": {
+-              "port": 5000,
+-              "ip": "192.168.1.2",
+-              "transport": "service-locator:vxlan-gpe"
+-            }
++            "name": "Path-1-SFC1-Reverse"
++          },
++          {
++            "name": "Path-1-SFC1"
+           }
+-        ],
+-        "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+-        "service-function-dictionary": [
++        ]
++      },
++      {
++        "name": "SF1",
++        "sf-service-path": [
+           {
+-            "name": "SF5",
+-            "type": "service-function-type:firewall",
+-            "sff-sf-data-plane-locator": {
+-              "port": 5000,
+-              "ip": "10.1.1.5"
+-            }
++            "name": "Path-1-SFC1-Reverse"
+           },
+           {
+-            "name": "SF6",
+-            "type": "service-function-type:napt44",
+-            "sff-sf-data-plane-locator": {
+-              "port": 5000,
+-              "ip": "10.1.1.6"
+-            }
++            "name": "Path-1-SFC1"
++          }
++        ]
++      },
++      {
++        "name": "SF5",
++        "sf-service-path": [
++          {
++            "name": "Path-2-SFC2"
+           }
+         ]
+       }
+@@ -307,7 +523,7 @@ GET_ALL_SFF_RESP_JSON = """
+   }
+ }"""
+ 
+-GET_ALL_SFT_RESP_JSON = """
++SERVICE_FUNCTION_TYPE_JSON = """
+ {
+   "service-function-types": {
+     "service-function-type": [
+@@ -315,13 +531,7 @@ GET_ALL_SFT_RESP_JSON = """
+         "type": "service-function-type:dpi",
+         "sft-service-function-name": [
+           {
+-            "name": "dpi-102-1"
+-          },
+-          {
+-            "name": "dpi-102-2"
+-          },
+-          {
+-            "name": "dpi-102-3"
++            "name": "SF1"
+           }
+         ]
+       },
+@@ -329,13 +539,7 @@ GET_ALL_SFT_RESP_JSON = """
+         "type": "service-function-type:napt44",
+         "sft-service-function-name": [
+           {
+-            "name": "napt44-104"
+-          },
+-          {
+-            "name": "napt44-103-1"
+-          },
+-          {
+-            "name": "napt44-103-2"
++            "name": "SF5"
+           }
+         ]
+       },
+@@ -343,13 +547,23 @@ GET_ALL_SFT_RESP_JSON = """
+         "type": "service-function-type:firewall",
+         "sft-service-function-name": [
+           {
+-            "name": "firewall-104"
+-          },
++            "name": "SF4"
++          }
++        ]
++      },
++      {
++        "type": "service-function-type:qos",
++        "sft-service-function-name": [
+           {
+-            "name": "firewall-101-2"
+-          },
++            "name": "SF3"
++          }
++        ]
++      },
++      {
++        "type": "service-function-type:ids",
++        "sft-service-function-name": [
+           {
+-            "name": "firewall-101-1"
++            "name": "SF2"
+           }
+         ]
+       }
+@@ -357,77 +571,158 @@ GET_ALL_SFT_RESP_JSON = """
+   }
+ }"""
+ 
+-PUT_SFC3_JSON = """
++SERVICE_PATH_ADD_ONE_JSON = """
+ {
+-  "service-function-chain": [
++  "service-function-path": [
+     {
+-      "name": "SFC3",
+-      "sfc-service-function" : [
+-        {
+-        "name" : "Chain-3-service-1",
+-        "type" : "service-function-type:dpi"
+-        },
+-        {
+-        "name" : "Chain-3-service-2",
+-        "type" : "service-function-type:napt44"
+-        },
+-        {
+-        "name" : "Chain-3-service-3",
+-        "type" : "service-function-type:firewall"
+-        }
+-      ]
++      "name": "Path-3-SFC2",
++      "service-chain-name": "SFC2"
+     }
+   ]
+ }"""
+ 
+-GET_ALL_SFC3_RESP_JSON = """
++SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """
+ {
+-  "service-function-chains": {
+-    "service-function-chain": [
++  "service-function-types": {
++    "service-function-type": [
+       {
+-        "name": "SFC1",
+-        "sfc-service-function": [
++        "type": "service-function-type:napt44",
++        "sft-service-function-name": [
+           {
+-            "name": "dpi-abstract1",
+-            "type": "service-function-type:dpi"
+-          },
++            "name": "SF2"
++          }
++        ]
++      },
++      {
++        "type": "service-function-type:firewall",
++        "sft-service-function-name": [
+           {
+-            "name": "napt44-abstract1",
+-            "type": "service-function-type:napt44"
+-          },
++            "name": "SF3"
++          }
++        ]
++      },
++      {
++        "type": "service-function-type:qos",
++        "sft-service-function-name": [
+           {
+-            "name": "firewall-abstract1",
+-            "type": "service-function-type:firewall"
++            "name": "SF4"
+           }
+         ]
+       },
+       {
+-        "name": "SFC2",
+-        "sfc-service-function": [
++        "type": "service-function-type:ids",
++        "sft-service-function-name": [
+           {
+-            "name": "firewall-abstract2",
+-            "type": "service-function-type:firewall"
++            "name": "SF5"
++          }
++        ]
++      }
++    ]
++  }
++}"""
++
++RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
++{
++  "rendered-service-paths": {
++    "rendered-service-path": [
++      {
++        "name": "Path-2-SFC2",
++        "path-id": 38,
++        "service-chain-name": "SFC2",
++        "starting-index": 2,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF2",
++            "service_index": 2
+           },
+           {
+-            "name": "napt44-abstract2",
+-            "type": "service-function-type:napt44"
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF1",
++            "service_index": 1
+           }
+         ]
+       },
+       {
+-        "name": "SFC3",
+-        "sfc-service-function": [
++        "name": "Path-1-SFC1",
++        "path-id": 37,
++        "service-chain-name": "SFC1",
++        "starting-index": 3,
++        "rendered-service-path-hop": [
+           {
+-            "name": "Chain-3-service-3",
+-            "type": "service-function-type:firewall"
++            "hop-number": 0,
++            "service-function-name": "SF1",
++            "service-function-forwarder": "SFF1",
++            "service_index": 3
+           },
+           {
+-            "name": "Chain-3-service-2",
+-            "type": "service-function-type:napt44"
++            "hop-number": 1,
++            "service-function-name": "SF5",
++            "service-function-forwarder": "SFF4",
++            "service_index": 2
+           },
+           {
+-            "name": "Chain-3-service-1",
+-            "type": "service-function-type:dpi"
++            "hop-number": 2,
++            "service-function-name": "SF4",
++            "service-function-forwarder": "SFF3",
++            "service_index": 1
++          }
++        ]
++      },
++      {
++        "name": "Path-3-SFC2",
++        "path-id": 39,
++        "service-chain-name": "SFC2",
++        "starting-index": 2,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF2",
++            "service_index": 2
++          },
++          {
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF1",
++            "service_index": 1
++          }
++        ]
++      }
++    ]
++  }
++}"""
++
++
++IETF_ACL_JSON = """
++{
++  "access-lists": {
++    "access-list": [
++      {
++        "acl-name": "acl-1",
++        "access-list-entries": [
++          {
++            "rule-name": "ace-1",
++            "matches": {
++              "absolute": {
++                "active": true
++              },
++              "destination-port-range": {
++                "lower-port": 80,
++                "upper-port": 80
++              },
++              "ip-protocol": 6,
++              "source-port-range": {
++                "lower-port": 0,
++                "upper-port": 65535
++              },
++              "source-ipv4-address": "192.168.0.0/24"
++            },
++            "actions": {
++              "service-function-acl:rendered-service-path": "Path-1-SFC1"
++            }
+           }
+         ]
+       }
+@@ -435,4 +730,51 @@ GET_ALL_SFC3_RESP_JSON = """
+   }
+ }"""
+ 
++RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
++{
++  "rendered-service-paths": {
++    "rendered-service-path": [
++      {
++        "name": "Path-2-SFC2",
++        "path-id": 5,
++        "service-chain-name": "SFC2",
++        "starting-index": 2,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF2",
++            "service_index": 2
++          },
++          {
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF1",
++            "service_index": 1
++          }
++        ]
++      },
++      {
++        "name": "Path-3-SFC2",
++        "path-id": 6,
++        "service-chain-name": "SFC2",
++        "starting-index": 2,
++        "rendered-service-path-hop": [
++          {
++            "hop-number": 0,
++            "service-function-name": "SF3",
++            "service-function-forwarder": "SFF2",
++            "service_index": 2
++          },
++          {
++            "hop-number": 1,
++            "service-function-name": "SF2",
++            "service-function-forwarder": "SFF1",
++            "service_index": 1
++          }
++        ]
++      }
++    ]
++  }
++}"""
+ 
+diff --git a/sfc-test/sfc_dcloud_messages.py b/sfc-test/sfc_dcloud_messages.py
+index 2dea9d7..e64e2c0 100644
+--- a/sfc-test/sfc_dcloud_messages.py
++++ b/sfc-test/sfc_dcloud_messages.py
+@@ -98,6 +98,26 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
+   "service-function-forwarders": {
+     "service-function-forwarder": [
+       {
++        "name": "SFF5",
++        "sff-data-plane-locator": [
++          {
++            "name": "eth0",
++            "service-function-forwarder-ovs:ovs-bridge": {
++              "bridge-name": "br-tun",
++              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
++            },
++            "data-plane-locator": {
++              "port": 4789,
++              "ip": "10.0.1.45",
++              "transport": "service-locator:vxlan-gpe"
++            }
++          }
++        ],
++        "rest-uri": "http://10.0.1.45:5000",
++        "service-node": "OVSDB2",
++        "ip-mgmt-address": "10.0.1.44"
++      },
++      {
+         "name": "SFF4",
+         "sff-data-plane-locator": [
+           {
+@@ -285,7 +305,8 @@ SERVICE_PATH_JSON = """
+     "service-function-path": [
+       {
+         "name": "Path-1-SFC1",
+-        "service-chain-name": "SFC1"
++        "service-chain-name": "SFC1",
++        "symmetric": true
+       },
+       {
+         "name": "Path-2-SFC2",
+@@ -689,35 +710,18 @@ IETF_ACL_JSON = """
+                 "active": true
+               },
+               "destination-port-range": {
+-                "lower-port": 8080,
+-                "upper-port": 8081
++                "lower-port": 80,
++                "upper-port": 80
+               },
+               "ip-protocol": 6,
+               "source-port-range": {
+-                "lower-port": 32000,
++                "lower-port": 0,
+                 "upper-port": 65535
+               },
+               "source-ipv4-address": "192.168.0.0/24"
+             },
+             "actions": {
+-              "service-function-acl:service-function-path": "Path-1-SFC1"
+-            }
+-          },
+-          {
+-            "rule-name": "ace-2",
+-            "matches": {
+-              "absolute": {
+-                "active": true
+-              },
+-              "ip-protocol": 17,
+-              "destination-port-range": {
+-                "lower-port": 53,
+-                "upper-port": 53
+-              },
+-              "source-ipv4-address": "10.0.0.0/8"
+-            },
+-            "actions": {
+-              "service-function-acl:service-function-path": "Path-1-SFC1-Reverse"
++              "service-function-acl:rendered-service-path": "Path-1-SFC1"
+             }
+           }
+         ]

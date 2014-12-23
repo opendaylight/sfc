@@ -53,7 +53,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
                 AccessLists updatedAccessLists =
                         (AccessLists) entry.getValue();
 
-                DataBroker dataBroker = getDataBroker();
+/*                DataBroker dataBroker = getDataBroker();
                 ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
                 Optional<ServiceFunctionClassifiers> serviceFunctionClassifiersObject = null;
                 List<ServiceFunctionClassifier> serviceFunctionClassifierList = new ArrayList<>();
@@ -98,7 +98,7 @@ public class SbRestAclDataListener extends SbRestAbstractDataListener {
                             opendaylightSfc.getExecutor().submit(putAclTask);
                         }
                     }
-                }
+                }*/
 
             }
         }

@@ -80,6 +80,11 @@ module service-function {
       description
         "The IP and port used to configure this service-function";
     }
+    leaf request_reclassification {
+      description "This leaf determines whether SF can request
+        reclassification by the SFF";
+      type boolean;
+    }
     leaf nsh-aware {
       type boolean;
       description "Whether this SF can process NSH headers";

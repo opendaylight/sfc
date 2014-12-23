@@ -297,7 +297,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
      * <p>
      * @param renderedServicePath Service Function Path object
      */
-    public void deleteServiceFunctionPath (RenderedServicePath renderedServicePath) {
+    public void deleteRenderedServicePath (RenderedServicePath renderedServicePath) {
 
         printTraceStart(LOG);
 
@@ -382,6 +382,6 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
     }
 
     public static  SfcProviderRestAPI getDeleteRenderedServicePath (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRestAPI(params, paramsTypes, "deleteRenderedServicePathh");
+        return new SfcProviderRestAPI(params, paramsTypes, "deleteRenderedServicePath");
     }
 }

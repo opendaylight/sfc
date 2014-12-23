@@ -75,6 +75,25 @@ module service-function-path {
         description
           "The name of this service function path";
       }
+      leaf symmetric {
+        type boolean;
+        default false;
+        description
+          "If the chain is symmetric we will create two service
+           paths, one ingress and another egress. Packets traverse
+           the egress service path in the reverse order of the
+           ingress path";
+      }
+      leaf classifier {
+        type string;
+        description "The classifier responsible for directing"
+          + "packets to this service path";
+      }
+      leaf symmetric-classifier {
+        type string;
+        description "The classifier responsible for directing"
+          + "packets to this service path";
+      }
       leaf context-metadata {
         type sfc-md:context-metadata-ref;
         description
@@ -144,4 +163,34 @@ module service-function-path {
       }
     }
   }
+
+  container service-function-paths-state {
+    description
+      "This container hold operational state for all service
+       function paths";
+    config false;
+    list service-function-path-state {
+      description
+        "This list holds operational data for all service function
+         paths in the domain";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "The name of the service function path";
+      }
+      list sfp-rendered-service-path {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the Rendered Service Path";
+        }
+        description
+        "A list of all rendered service paths instantiated
+         from this service path";
+      }
+    }
+  }
+
 }

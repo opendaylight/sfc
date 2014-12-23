@@ -17,10 +17,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -60,27 +60,25 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunction>  SF_ENTRY_IID =
            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
 
+    public static final InstanceIdentifier<ServiceFunctionForwarder>  SFF_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctionForwarders.class)
+                    .child(ServiceFunctionForwarder.class).build();
+
     public static final InstanceIdentifier<ServiceFunctionPath>  SFP_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionPaths.class)
                     .child(ServiceFunctionPath.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctions>  SFS_IID =
-            InstanceIdentifier.builder(ServiceFunctions.class).build();
-    public static final InstanceIdentifier<ServiceNodes>  SN_IID =
-           InstanceIdentifier.builder(ServiceNodes.class).build();
-    public static final InstanceIdentifier<ServiceFunctionPaths>  SFP_IID =
-           InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
     public static final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
-           InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
     public static final InstanceIdentifier<ServiceFunctionTypes>  SFT_IID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-    public static final InstanceIdentifier<ServiceFunctionClassifiers>  SCF_IID =
-            InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
+
     public static final InstanceIdentifier<AccessLists>  ACL_IID =
             InstanceIdentifier.builder(AccessLists.class).build();
+
+    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
+            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
     public static final int EXECUTOR_THREAD_POOL_SIZE = 40;
 
@@ -132,13 +130,9 @@ public class OpendaylightSfc implements AutoCloseable {
         if (dataProvider != null) {
             final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
             t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_ENTRY_IID);
+            t.delete(LogicalDatastoreType.CONFIGURATION, SCF_ENTRY_IID);
             t.delete(LogicalDatastoreType.CONFIGURATION, SFC_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFS_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SN_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFP_IID);
             t.delete(LogicalDatastoreType.CONFIGURATION, SFT_IID);
             t.commit().get();
         }

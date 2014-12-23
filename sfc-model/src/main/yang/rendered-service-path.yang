@@ -77,6 +77,12 @@ module rendered-service-path {
           "The name of this rendered function path. This is the same
            name as the associated SFP";
       }
+      leaf parent-service-function-path {
+        type string;
+        description
+          "Service Function Path from which this RSP was instantiated";
+
+      }
       leaf context-metadata {
         type sfc-md:context-metadata-ref;
         description
@@ -143,6 +149,66 @@ module rendered-service-path {
            selection.  An administrator can use the service path
            value for reporting and troubleshooting packets along
            a specific path.";
+      }
+    }
+  }
+
+  rpc delete-rendered-path {
+    description
+      "Delete a Rendered Service Path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered function path. This is the same
+           name as the associated SFP";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+      }
+    }
+  }
+
+  rpc create-rendered-path {
+    description
+      "Created a Rendered Service Path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered function path. This is the same
+           name as the associated SFP";
+      }
+      leaf parent-service-function-path {
+        type string;
+        description
+          "Service Function Path from which this RSP was instantiated";
+      }
+      leaf symmetric {
+        type boolean;
+        default false;
+        description
+          "If the chain is symmetric we will create two service
+           paths, one ingress and another egress. Packets traverse
+           the egress service path in the reverse order of the
+           ingress path";
+      }
+      leaf classifier {
+        type string;
+        description "The classifier responsible for directing"
+          + "packets to this service path";
+      }
+      leaf symmetric-classifier {
+        type string;
+        description "The classifier responsible for directing"
+          + "packets to this service path";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
       }
     }
   }

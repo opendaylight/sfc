@@ -11,10 +11,7 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.sfc.provider.api.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -78,24 +75,11 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
-
-                Object[] serviceTypeObj = {createdServiceFunction};
-                Class[] serviceTypeClass = {ServiceFunction.class};
-                Future future = odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
-                        .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass));
-                try {
-                    LOG.debug("getCreateServiceFunctionTypeEntry returns: {}", future.get());
-
-                } catch (InterruptedException e) {
-                    LOG.warn("failed to ...." , e);
-                } catch (ExecutionException e) {
-                    LOG.warn("failed to ...." , e);
+                LOG.error("XXXXXXXXX Got here XXXXXXXXX: {}", createdServiceFunction.getType());
+                if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(createdServiceFunction)) {
+                    LOG.error("Failed to create service function type: {}", createdServiceFunction.getType());
                 }
-
-                LOG.debug("\n########## getCreatedConfigurationData {}  {}",
-                        createdServiceFunction.getType(), createdServiceFunction.getName());
             }
-
         }
 
         // SF DELETION
@@ -105,38 +89,26 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
             if( dataObject instanceof  ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
 
-                Object[] serviceFunctionObj = {originalServiceFunction};
-                Class[] serviceFunctionClass = {ServiceFunction.class};
-                Future future = odlSfc.getExecutor().submit(SfcProviderServiceTypeAPI
-                        .getDeleteServiceFunctionFromServiceType(serviceFunctionObj, serviceFunctionClass));
-                try {
-                    LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
-                } catch (InterruptedException e) {
-                    LOG.warn("failed to ...." , e);
-                } catch (ExecutionException e) {
-                    LOG.warn("failed to ...." , e);
+                if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntryExecutor(originalServiceFunction)) {
+                    LOG.error("Failed to delete Service Function Type for SF: {}", originalServiceFunction.getName());
                 }
 
                 /* Before removing RSPs used by this Service Function, we need to remove all
                  * references in the SFF/SF operational trees
                  */
                 String sfName = originalServiceFunction.getName();
-                List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.
-                        readServiceFunctionStateExecutor(sfName);
-                List<String> rspList = new ArrayList<>();
-                if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
+                List<String> rspList = SfcProviderServiceFunctionAPI.
+                        readServiceFunctionStateAsStringListExecutor(sfName);
+                if ((rspList != null) && (!rspList.isEmpty())) {
                     if (SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfName)) {
                     } else {
                         LOG.error("{}: Failed to delete SF {} operational state",
                                 Thread.currentThread().getStackTrace()[1], sfName);
                     }
-                    for (SfServicePath sfServicePath : sfServicePathList) {
-                        String rspName = sfServicePath.getName();
-                        SfcProviderServiceForwarderAPI
-                                .deletePathFromServiceForwarderStateExecutor(rspName);
-                        rspList.add(rspName);
-                    }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderServiceForwarderAPI
+                            .deletePathFromServiceForwarderStateExecutor(rspList);
+
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
             }
         }
@@ -196,7 +168,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                                 .deletePathFromServiceForwarderStateExecutor(rspName);
                         rspList.add(rspName);
                     }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
                 /* We do not update the SFF dictionary. Since the user configured it in the first place,
                  * (s)he is also responsible for updating it.

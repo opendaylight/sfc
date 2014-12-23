@@ -68,7 +68,7 @@ module service-function-classifier {
           specified here";
         type string;
       }
-      list service-function-forwarder {
+      list scl-service-function-forwarder {
         description
           "The classifier will be attached to these SFFs";
         key "name";
@@ -80,6 +80,34 @@ module service-function-classifier {
         uses attachment-point {
           description "Classifier attachment point";
         }
+      }
+    }
+  }
+
+  container service-function-classifiers-state {
+    description
+      "This container hold operational state for all service
+       function classifiers";
+    config false;
+    list service-function-classifier-state {
+      description
+        "This list holds operational data for all service function
+         classifiers in the domain";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "The name of the service function classifier";
+      }
+      list scl-rendered-service-path {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the Rendered Service Path";
+        }
+        description
+        "A list of all rendered service paths that use this classifier";
       }
     }
   }

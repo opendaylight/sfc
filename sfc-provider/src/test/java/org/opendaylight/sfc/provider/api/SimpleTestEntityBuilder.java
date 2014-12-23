@@ -85,7 +85,6 @@ public class SimpleTestEntityBuilder {
                                                                   String classifier) {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
         sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
-                .setClassifier(classifier)
                 .setSffDataPlaneLocator(sffDataplaneLocatorList)
                 .setServiceFunctionDictionary(dictionaryList)
                 .setServiceNode(null);

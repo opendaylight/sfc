@@ -29,7 +29,7 @@ public class SbRestSffDataListener extends SbRestAbstractDataListener
     public SbRestSffDataListener(OpendaylightSfc ODL_SFC) {
         setOpendaylightSfc(ODL_SFC);
         setDataBroker(ODL_SFC.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SFF_IID);
+        setInstanceIdentifier(OpendaylightSfc.SFF_ENTRY_IID);
         registerAsDataChangeListener();
     }
 

@@ -239,7 +239,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         sfServicePathBuilder.setKey(sfServicePathKey);
         sfServicePathBuilder.setName(pathName);
 
-        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(pathName);
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(pathName);
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
@@ -264,11 +264,56 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     }
 
+
     /**
-     * This method adds a SFP name to the corresponding SF operational state.
+     * This method adds a RSP name to the corresponding SF operational state.
      * <p>
-     * @param pathName SFP name
+     * @param renderedServicePath RSP object
      * @return true if SFP was added, false otherwise
+     */
+    @SuppressWarnings("unused")
+    public static boolean addPathToServiceFunctionState(RenderedServicePath renderedServicePath) {
+
+        boolean ret =  false;
+        printTraceStart(LOG);
+
+        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
+        SfServicePathKey sfServicePathKey = new SfServicePathKey(renderedServicePath.getName());
+        SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
+        sfServicePathBuilder.setKey(sfServicePathKey);
+        sfServicePathBuilder.setName(renderedServicePath.getName());
+
+        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+        for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
+
+            InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
+                    .builder(ServiceFunctionsState.class)
+                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                    .child(SfServicePath.class, sfServicePathKey).build();
+            serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
+
+            if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
+                    LogicalDatastoreType.OPERATIONAL)) {
+                ret = true;
+            } else {
+                LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
+                        Thread.currentThread().getStackTrace()[1], renderedServicePath.getName(),
+                        renderedServicePathHop.getServiceFunctionName());
+            }
+        }
+        printTraceStop(LOG);
+        return ret;
+
+    }
+
+
+
+    /**
+     * This method adds a RSP name to the corresponding SF operational state.
+     * <p>
+     * @param pathName RSP name
+     * @return true if RSP name was added, false otherwise
      */
     public static boolean addPathToServiceFunctionStateExecutor(String pathName) {
         boolean ret =  false;
@@ -290,6 +335,34 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
         return ret;
     }
+
+    /**
+     * This method adds a SFP name to the corresponding SF operational state.
+     * <p>
+     * @param renderedServicePath RSP object
+     * @return true if SFP was added, false otherwise
+     */
+    public static boolean addPathToServiceFunctionStateExecutor(RenderedServicePath renderedServicePath) {
+        boolean ret =  false;
+        printTraceStart(LOG);
+
+        Object[] servicePathObj = {renderedServicePath};
+        Class[] servicePathClass = {RenderedServicePath.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getAddPathToServiceFunctionState(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
 
     protected static boolean putServiceFunction(ServiceFunction sf) {
         boolean ret;
@@ -521,7 +594,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     public boolean deleteServicePathFromServiceFunctionState(ServiceFunctionPath serviceFunctionPath) {
 
         boolean ret = true;
-        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(serviceFunctionPath.getName());
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(serviceFunctionPath.getName());
         if (renderedServicePath != null) {
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
             for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
@@ -582,6 +655,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
         return ret;
     }
+
     /**
      * This method removes the given Service Path from the all SF operational
      * states that use it.
@@ -600,7 +674,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         boolean ret = true;
 
-        RenderedServicePath renderedServicePath = SfcProviderServicePathAPI.readRenderedServicePath(sfpName);
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(sfpName);
 
         if (renderedServicePath != null) {
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();

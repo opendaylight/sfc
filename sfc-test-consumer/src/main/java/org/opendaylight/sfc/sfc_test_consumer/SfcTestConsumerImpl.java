@@ -23,8 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.PutServiceNodeInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodeService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
@@ -73,15 +71,13 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
     private final ServiceFunctionService sfService;
     private final ServiceFunctionChainService sfcService;
-    private final ServiceNodeService snService;
 
     public SfcTestConsumerImpl(
             ServiceFunctionService sfService,
-            ServiceFunctionChainService sfcService,
-            ServiceNodeService snService) {
+            ServiceFunctionChainService sfcService) {
+
         this.sfService = sfService;
         this.sfcService = sfcService;
-        this.snService = snService;
     }
 
     /**
@@ -137,37 +133,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         }
     }
 
-    private Boolean putNode(String name,
-                            String ip,
-                            List<String> sfList) {
-
-        //printTraceStart(LOG);
-        PutServiceNodeInputBuilder input = new PutServiceNodeInputBuilder();
-
-        input.setName(name)
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ip)))
-                .setServiceFunction(sfList);
-        try {
-            Future<RpcResult<Void>> fr = snService.putServiceNode(input.build());
-            RpcResult<Void> result = fr.get();
-            if (result != null) {
-                LOG.info("\n####### {} result: {}", Thread.currentThread().getStackTrace()[1], result);
-                if (result.isSuccessful()) {
-                    LOG.info("\n####### {}: successfully finished", Thread.currentThread().getStackTrace()[1]);
-                } else {
-                    LOG.warn("\n####### {}: not successfully finished", Thread.currentThread().getStackTrace()[1]);
-                }
-                return result.isSuccessful();
-            } else {
-                LOG.warn("\n####### {} result is NULL", Thread.currentThread().getStackTrace()[1]);
-                return Boolean.FALSE;
-            }
-
-        } catch (Exception e) {
-            LOG.warn("\n####### {} Error occurred: {}", Thread.currentThread().getStackTrace()[1], e);
-            return Boolean.FALSE;
-        }
-    }
 
     /**
      * Puts an SFChain
@@ -396,27 +361,6 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         List<String> iList = new ArrayList<>();
         iList.add("firewall-101-1");
         iList.add("firewall-101-2");
-
-        res = putNode("node-101", "10.3.1.101", iList) && res;
-
-        iList.clear();
-        iList.add("dpi-102-1");
-        iList.add("dpi-102-2");
-        iList.add("dpi-102-3");
-
-        res = putNode("node-102", "10.3.1.102", iList) && res;
-
-        iList.clear();
-        iList.add("napt44-103-1");
-        iList.add("napt44-103-2");
-
-        res = putNode("node-103", "10.3.1.103", iList) && res;
-
-        iList.clear();
-        iList.add("firewall-104");
-        iList.add("napt44-104");
-
-        res = putNode("node-104", "10.3.1.104", iList) && res;
 
         return res;
     }

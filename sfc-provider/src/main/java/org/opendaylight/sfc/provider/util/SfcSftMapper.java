@@ -36,46 +36,8 @@ public class SfcSftMapper {
     public SfcSftMapper(OpendaylightSfc odlSfc){
         this.map = new HashMap<>();
         this.odlSfc = odlSfc;
-        this.update();
     }
 
-    public void update() {
-        if (odlSfc != null) {
-            ReadOnlyTransaction readTx = odlSfc.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceNodes> dataObject = null;
-            try {
-                dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SN_IID).get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("failed to ...." , e);
-            }
-            if (dataObject instanceof ServiceNodes) {
-                ServiceNodes nodes = (ServiceNodes) dataObject;
-                List<ServiceNode> snList = nodes.getServiceNode();
-
-                for(ServiceNode sn : snList){
-                    List<String> sfNameList = sn.getServiceFunction();
-                    for(String sfName : sfNameList){
-                        ServiceFunction sf = null;
-                        try {
-                            sf = (ServiceFunction) odlSfc.getExecutor().submit(SfcProviderServiceFunctionAPI.getRead(
-                                    new Object[]{sfName}, new Class[]{String.class})).get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            LOG.warn("failed to ...." , e);
-                        }
-                        if ( sf != null) {
-                            this.add(sf.getType(), sn.getName(), sf);
-                        } else {
-                            throw new IllegalStateException("Service Function not found in datastore");
-                        }
-                    }
-                }
-            } else {
-                throw new IllegalStateException("Wrong dataObject instance.");
-            }
-        } else {
-            throw new NullPointerException("odlSfc is null");
-        }
-    }
 
     public void add(Class<? extends ServiceFunctionTypeIdentity> type, String snName, ServiceFunction sf){
         if(this.map.containsKey(type)){

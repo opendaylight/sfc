@@ -4,7 +4,6 @@
       {
         "name": "SFF-bootstrap",
         "service-node": "OVSDB1",
-        "classifier": "acl-sfp-1",
         "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
         "sff-data-plane-locator": [
           {

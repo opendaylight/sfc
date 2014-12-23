@@ -10,6 +10,7 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
@@ -56,6 +57,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             {
                 ServiceFunctionForwarder originalServiceFunctionForwarder =
                         (ServiceFunctionForwarder) entry.getValue();
+                LOG.debug("Original SFF: {}", originalServiceFunctionForwarder.getName());
             }
         }
 
@@ -86,7 +88,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                                 .deleteServicePathFromServiceFunctionStateExecutor(rspName);
                         rspList.add(rspName);
                     }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
 
                 //REST
@@ -140,7 +142,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                                 .deleteServicePathFromServiceFunctionStateExecutor(rspName);
                         rspList.add(rspName);
                     }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
 
                 //Send to SB REST

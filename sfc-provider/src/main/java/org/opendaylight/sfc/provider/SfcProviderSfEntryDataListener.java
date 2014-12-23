@@ -11,10 +11,7 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.sfc.provider.api.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -136,7 +133,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                                 .deletePathFromServiceForwarderStateExecutor(rspName);
                         rspList.add(rspName);
                     }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
             }
         }
@@ -196,7 +193,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                                 .deletePathFromServiceForwarderStateExecutor(rspName);
                         rspList.add(rspName);
                     }
-                    SfcProviderServicePathAPI.deleteRenderedServicePathsExecutor(rspList);
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
                 /* We do not update the SFF dictionary. Since the user configured it in the first place,
                  * (s)he is also responsible for updating it.

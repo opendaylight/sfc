@@ -94,14 +94,4 @@ module service-node {
          domain";
     }
   }
-
-  // Remote procedure calls
-
-  rpc put-service-node {
-    description
-      "RPC used to create a single service-node";
-    input {
-      uses service-node-grouping;
-    }
-  }
 }

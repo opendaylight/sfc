@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
 
-public class SfcSbRestProviderModule extends org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl.AbstractSfcSbRestProviderModule {
+public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcSbRestProviderModule.class);
 

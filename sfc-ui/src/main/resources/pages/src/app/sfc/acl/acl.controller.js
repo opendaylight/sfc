@@ -229,14 +229,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('sfcClassifierCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcClassifierSvc, SfcClassifierHelper, SfcAclSvc, ServicePathSvc, ServiceForwarderSvc){
 
-    $scope.data = {'service-function-forwarder': []};
+    $scope.data = {'scl-service-function-forwarder': []};
 
     if ($stateParams.itemKey) {
       SfcClassifierSvc.getItem($stateParams.itemKey, function (item) {
         $scope.data = item;
       });
     } else {
-      $scope.data['service-function-forwarder'].push({});
+      $scope.data['scl-service-function-forwarder'].push({});
     }
 
     ServicePathSvc.getArray(function (data){

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="rendered-service-path"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-rsp="urn:cisco:params:xml:ns:yang:sfc-rsp"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-rsp"/>
+  <prefix value="sfc-rsp"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="service-function">
+    <prefix value="sfc-sf"/>
+  </import>
+  <import module="service-function-metadata">
+    <prefix value="sfc-md"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions to
+manage Rendered Service Paths.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Changes based on Opendaylight Testing and IETF SFC ml.</text>
+    </description>
+  </revision>
+  <typedef name="rendered-service-path-ref">
+    <type name="leafref">
+      <path value="/sfc-rsp:service-function-paths/sfc-rsp:rendered-service-path/sfc-rsp:name"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference
+rendered service paths.</text>
+    </description>
+  </typedef>
+  <container name="rendered-service-paths">
+    <config value="false"/>
+    <description>
+      <text>The SFP provides a level of indirection
+between the fully abstract notion of service chain as an
+abstract sequence of functions to be delivered, and the
+fully specified notion of exactly what SFF/SFs the packet
+will visit when it actually traverses the network.  By
+allowing the control components to specify the use of this
+level of indirection, the deployment may choose the degree
+of SFF/SF selection authority that is delegated to the
+network</text>
+    </description>
+    <list name="rendered-service-path">
+      <description>
+        <text>A list that holds operational data for all RSPs in the
+domain</text>
+      </description>
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>The name of this rendered function path. This is the same
+name as the associated SFP</text>
+        </description>
+      </leaf>
+      <leaf name="context-metadata">
+        <type name="sfc-md:context-metadata-ref"/>
+        <description>
+          <text>The name of the associated context metadata</text>
+        </description>
+      </leaf>
+      <leaf name="variable-metadata">
+        <type name="sfc-md:variable-metadata-ref"/>
+        <description>
+          <text>The name of the associated variable metadata</text>
+        </description>
+      </leaf>
+      <list name="rendered-service-path-hop">
+        <key value="hop-number"/>
+        <leaf name="hop-number">
+          <type name="uint8"/>
+          <description>
+            <text>A Monotonically increasing number</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-name">
+          <type name="string"/>
+          <description>
+            <text>Service Function name</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-forwarder">
+          <type name="string"/>
+          <description>
+            <text>Service Function Forwarder name</text>
+          </description>
+        </leaf>
+        <leaf name="service_index">
+          <type name="uint8"/>
+          <description>
+            <text>Provides location within the service path.
+Service index MUST be decremented by service functions
+or proxy nodes after performing required services.  MAY
+be used in conjunction with service path for path
+selection.  Service Index is also valuable when
+troubleshooting/reporting service paths.  In addition to
+location within a path, SI can be used for loop
+detection.</text>
+          </description>
+        </leaf>
+        <ordered-by value="user"/>
+        <description>
+          <text>A list of service functions that compose the
+service path</text>
+        </description>
+      </list>
+      <leaf name="service-chain-name">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The Service Function Chain used as blueprint for this
+path</text>
+        </description>
+      </leaf>
+      <leaf name="starting-index">
+        <type name="uint8"/>
+        <description>
+          <text>Starting service index</text>
+        </description>
+      </leaf>
+      <leaf name="path-id">
+        <type name="uint32">
+          <range value="0..16777216"/>
+        </type>
+        <description>
+          <text>Identifies a service path.
+Participating nodes MUST use this identifier for path
+selection.  An administrator can use the service path
+value for reporting and troubleshooting packets along
+a specific path.</text>
+        </description>
+      </leaf>
+    </list>
+  </container>
+</module>

@@ -13,6 +13,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('serviceLocatorDynamic', function () {
+    return {
+      restrict: 'E',
+      templateUrl: 'src/app/sfc/servicelocator/servicelocator.dynamic.tpl.html',
+      replace: true,
+      scope: {
+        idSuffix: '@idSuffix',
+        service_locator: '=locator',
+        locatorType: '@locatorType',
+        formFields: '=formFields',
+        resetOn: '@resetOn',
+        notResetCondition: '@notResetCondition'
+      },
+      controller: 'serviceLocatorCtrlDynamic'
+    };
+
+  });
+
   sfc.register.directive('serviceLocatorIp', function () {
     return {
       restrict: 'E',

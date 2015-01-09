@@ -53,7 +53,7 @@ define(module, function(ng) {
   // The overal config he is done here.
   app.config(function ($stateProvider, $urlRouterProvider,  $ocLazyLoadProvider, $translateProvider, cssInjectorProvider) {
 
-    $urlRouterProvider.otherwise("/sfc/servicefunction"); // set the default route
+    $urlRouterProvider.otherwise("/sfc/serviceforwarder"); // set the default route
 
     cssInjectorProvider.setSinglePageMode(true); // remove all added CSS files when the page change
 

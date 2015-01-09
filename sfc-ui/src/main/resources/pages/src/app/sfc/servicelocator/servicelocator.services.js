@@ -1,40 +1,55 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.factory('ServiceLocatorHelper', function () {
+  sfc.register.factory('ServiceLocatorHelper', function ($rootScope) {
     var svc = {};
 
-    var serviceLocatorType = {IP: "ip", MAC: "mac", LISP: "lisp"};
-    if (angular.isDefined(Object.freeze)) {
-      Object.freeze(serviceLocatorType);
-    }
+    //returns keys like (ip, port) for specified locatorType
+    svc.__getMatchingKeys = function (locatorType) {
+      var matchingKeysArray = [];
+
+      _.each($rootScope.serviceLocatorConstants['typeFormFields'][locatorType], function (formField) {
+        matchingKeysArray.push(formField['model']);
+      });
+
+      return matchingKeysArray;
+    };
 
     svc.getLocatorType = function (locator) {
-      if (!_.isEmpty(locator['ip'] || !_.isEmpty(locator['port']))){
-        return serviceLocatorType.IP;
-      }
-      else if (!_.isEmpty(locator['eid'])) {
-        return serviceLocatorType.LISP;
-      }
-      else if (!_.isEmpty(locator['mac']) || !_.isEmpty(locator['vlan-id'])){
-        return serviceLocatorType.MAC;
-      }
+
+      var locatorKeys = _.keys(locator);
+      var matchingKeys = [];
+      var locatorTypeString = null;
+
+      _.find($rootScope.serviceLocatorConstants['type'], function (locatorType) {
+        matchingKeys = svc.__getMatchingKeys(locatorType);
+
+        if (_.every(matchingKeys, function (key) {
+            return _.contains(locatorKeys, key);
+          })) {
+
+          matchingKeys = [];
+          locatorTypeString = locatorType;
+          return true;
+        }
+        else {
+          matchingKeys = [];
+        }
+      });
+
+      return locatorTypeString;
     };
 
     svc.getLocatorName = function (locator, locatorObjectArray) {
       var locatorModel;
       var locatorType = svc.getLocatorType(locator);
+      var matchingKeys = svc.__getMatchingKeys(locatorType);
+      var matchingObject = {};
 
-      switch (locatorType) {
-        case serviceLocatorType.IP :
-          locatorModel = _.findWhere(locatorObjectArray, {ip: locator['ip'], port: locator['port']});
-          break;
-        case serviceLocatorType.LISP :
-          locatorModel = _.findWhere(locatorObjectArray, {eid: locator['eid']});
-          break;
-        case serviceLocatorType.MAC :
-          locatorModel = _.findWhere(locatorObjectArray, {mac: locator['mac'], 'vlan-id': locator['vlan-id']});
-          break;
-      }
+      _.each(matchingKeys, function (key) {
+        matchingObject[key] = locator[key];
+      });
+
+      locatorModel = _.findWhere(locatorObjectArray, matchingObject);
 
       return angular.isDefined(locatorModel) ? locatorModel['name'] : undefined;
     };
@@ -43,17 +58,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var locatorType = svc.getLocatorType(locator);
       var locatorString = $scope.$eval('"SFC_TOOLTIP_NAME" | translate') + ": " + locator['name'] + ", ";
 
-      switch (locatorType) {
-        case serviceLocatorType.IP :
-          locatorString += $scope.$eval('"SFC_TOOLTIP_IP" | translate') + ": " + locator['ip'] + ", " + $scope.$eval('"SFC_TOOLTIP_PORT" | translate') + ": " + locator['port'] + ", ";
-          break;
-        case serviceLocatorType.LISP :
-          locatorString += $scope.$eval('"SFC_TOOLTIP_EID" | translate') + ": " + locator['eid'] + ", ";
-          break;
-        case serviceLocatorType.MAC :
-          locatorString += $scope.$eval('"SFC_TOOLTIP_MAC" | translate') + ": " + locator['mac'] + ", " + $scope.$eval('"SFC_TOOLTIP_VLAN_ID" | translate') + ": " + locator['vlan-id'] + ", ";
-          break;
-      }
+      _.each($rootScope.serviceLocatorConstants['typeFormFields'][locatorType], function (field) {
+        locatorString += field['label'] + ": " + locator[field['model']] + " ";
+      });
+
       locatorString += $scope.$eval('"SFC_TOOLTIP_TRANSPORT" | translate') + ": " + locator['transport'];
       return locatorString;
     };
@@ -62,17 +70,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var locatorType = svc.getLocatorType(locator);
       var locatorTooltip = $scope.$eval('"SFC_TOOLTIP_DATA_PLANE_LOCATOR" | translate') + ": " + "<br/>";
 
-      switch (locatorType) {
-        case serviceLocatorType.IP :
-          locatorTooltip += $scope.$eval('"SFC_TOOLTIP_IP" | translate') + ": " + locator['ip'] + ", " + $scope.$eval('"SFC_TOOLTIP_PORT" | translate') + ": " + locator['port'] + "<br/>";
-          break;
-        case serviceLocatorType.LISP :
-          locatorTooltip += $scope.$eval('"SFC_TOOLTIP_EID" | translate') + ": " + locator['eid'] + "<br/>";
-          break;
-        case serviceLocatorType.MAC :
-          locatorTooltip += $scope.$eval('"SFC_TOOLTIP_MAC" | translate') + ": " + locator['mac'] + ", " + $scope.$eval('"SFC_TOOLTIP_VLAN_ID" | translate') + ": " + locator['vlan-id'] + "<br/>";
-          break;
-      }
+      _.each($rootScope.serviceLocatorConstants['typeFormFields'][locatorType], function (field) {
+          locatorTooltip += field['label'] + ": " + locator[field['model']] + "<br/>";
+      });
+
       locatorTooltip += $scope.$eval('"SFC_TOOLTIP_TRANSPORT" | translate') + ": " + locator['transport'];
       return locatorTooltip;
     };

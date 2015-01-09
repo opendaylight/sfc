@@ -12,6 +12,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
     });
   });
 
+  sfc.register.controller('serviceLocatorCtrlDynamic', function ($scope) {
+
+    $scope.$on($scope.resetOn, function(event, arg){
+      if (arg != $scope.notResetCondition){
+        _.each($scope.formFields, function (field) {
+          if (angular.isDefined($scope['service_locator'][field['model']])){
+            delete $scope['service_locator'][field['model']];
+          }
+        });
+      }
+    });
+
+  });
+
   sfc.register.controller('serviceLocatorCtrlIp', function ($scope) {
 
     $scope.$on($scope.resetOn, function(event, arg){

@@ -613,7 +613,11 @@
   "SFC_DATA_TEMPLATE_SAVE": "Save template",
   "SFC_DATA_TEMPLATE_SAVE_CHANGES": "Save changes",
   "SFC_DATA_TEMPLATE_REMOVE": "Remove template",
-
+  "SFC_PLACEHOLDER_string": "Type in a string",
+  "SFC_PLACEHOLDER_uint16": "Type in a number",
+  "SFC_PLACEHOLDER_yang:mac-address": "Example: 00:0A:95:9D:68:16",
+  "SFC_PLACEHOLDER_inet:ip-address": "Example: 10.0.0.1",
+  "SFC_PLACEHOLDER_inet:port-number": "Number in range 0-65535",
 
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

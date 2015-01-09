@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $sessionStorage, $location) {
+  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $sessionStorage, $location, yangUtils) {
 
 //    // register watch for debugging - works only in firefox
 //    if (angular.isDefined($rootScope.watch)) {
@@ -124,12 +124,36 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     };
 
-
     $sessionStorage.$default({
       restangularBaseUrl: $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/restconf"
     });
     SfcRestangularSvc.changeBaseUrl($sessionStorage.restangularBaseUrl);
 
+    var thisCtrl = this;
+
+    this.initCtrl = function () {
+      thisCtrl.getServiceFunctionTypes();
+    };
+
+    this.getServiceFunctionTypes = function () {
+      var yangModuleToParse = {module: [{name: "service-function-type"}]};
+
+      yangUtils.processModules(yangModuleToParse, function (node) {
+        var serviceFunctionTypesArray = [];
+
+        _.each(node, function (item) {
+          if (item['type'] == 'identity' && item['children']['length'] >= 2) {
+            serviceFunctionTypesArray.push(item['label']);
+          }
+        });
+
+        if (!_.isEmpty(serviceFunctionTypesArray)){
+          $rootScope.serviceFunctionConstants['type'] = serviceFunctionTypesArray;
+        }
+      });
+    };
+    
+    this.initCtrl();
   });
 
   sfc.register.controller('sfcSelect2CreateSearchChoiceCtrl', function ($scope) {

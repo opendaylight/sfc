@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-forwarder-ovs"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sff-ovs="urn:cisco:params:xml:ns:yang:sfc-sff-ovs"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sff-ovs"/>
+  <prefix value="sfc-sff-ovs"/>
+  <import module="service-function-forwarder">
+    <prefix value="sfc-sff"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2013-07-15"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <revision date="2014-07-01">
+    <description>
+      <text>Augmentation of SFF for OVS</text>
+    </description>
+  </revision>
+  <grouping name="bridge">
+    <container name="ovs-bridge">
+      <leaf name="bridge-name">
+        <description>
+          <text>Open vSwitch bridge name. In Openstack it is usuallybr-tun or br-int depending if it is used in the overlay orfacing virtual machines respectively</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+      <leaf name="uuid">
+        <description>
+          <text>Open vSwitch bridge UUID</text>
+        </description>
+        <type name="yang:uuid"/>
+      </leaf>
+      <list name="external-ids">
+        <description>
+          <text>The list of external ids associated with this
+bridge</text>
+        </description>
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>A unique string that represents this external-id such
+as attached-mac</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="string"/>
+          <description>
+            <text>A unique string that represents the value of the
+external-id such as fa:16:3e:56:47:10</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:sff-data-plane-locator">
+    <uses name="bridge"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:service-function-dictionary/sfc-sff:sff-sf-data-plane-locator">
+    <uses name="bridge"/>
+  </augment>
+</module>

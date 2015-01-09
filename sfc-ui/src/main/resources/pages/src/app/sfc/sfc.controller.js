@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $sessionStorage, $location) {
+  sfc.register.controller('rootSfcCtrl', function ($rootScope, SfcRestangularSvc, $sessionStorage, $location, yangUtils) {
 
 //    // register watch for debugging - works only in firefox
 //    if (angular.isDefined($rootScope.watch)) {
@@ -35,21 +35,29 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $rootScope.sfcs = [];
     $rootScope.sfps = [];
     $rootScope.sfpEffectMe = {};
-    $rootScope.serviceFunctionConstants =
-    {
-      type: ["napt44", "dpi", "firewall"],
-      failmode: ["open", "close"]
-    };
-    $rootScope.serviceLocatorConstants =
-    {
-      transport: ["vxlan-gpe", "gre", "other"],
-      type: ["ip", "mac", "lisp"]
-    };
+
+    if (angular.isUndefined($rootScope.serviceFunctionConstants)){
+      $rootScope.serviceFunctionConstants =
+      {
+        type: ["napt44", "dpiss", "firewall", "qos", "ids"],
+        failmode: ["open", "close"]
+      };
+    }
+
+    if (angular.isUndefined($rootScope.serviceLocatorConstants)) {
+      $rootScope.serviceLocatorConstants =
+      {
+        transport: ["vxlan-gpe", "gre", "other"],
+        type: ["ip", "mac", "lisp", "function"]
+      };
+    }
+
     $rootScope.aclConstants =
     {
       "ace-type": ["ip", "eth"],
       "ace-ip": ["IPv4", "IPv6"]
     };
+
     $rootScope.classifierConstants =
     {
       "attachment-point-type": ["bridge", "interface"]
@@ -124,12 +132,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     };
 
-
     $sessionStorage.$default({
       restangularBaseUrl: $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/restconf"
     });
     SfcRestangularSvc.changeBaseUrl($sessionStorage.restangularBaseUrl);
-
   });
 
   sfc.register.controller('sfcSelect2CreateSearchChoiceCtrl', function ($scope) {

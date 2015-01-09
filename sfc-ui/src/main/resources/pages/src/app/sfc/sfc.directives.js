@@ -97,329 +97,115 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.directive('dateAndTime', function () {
+  sfc.register.directive('dynamicValidation', function ($parse, SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('dateAndTime', true);
-            return null;
-          }
-          else if (viewValue.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-]\d{2}:\d{2})/)) {
-            ctrl.$setValidity('dateAndTime', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('dateAndTime', false);
-            return undefined;
+        attrs.$observe('dynamicValidation', function (newVal) {
+          var validation = $parse(newVal)();
+
+          if (angular.isDefined(validation['type'])) {
+            ctrl.$parsers.unshift(function (viewValue){
+              if (angular.isUndefined(viewValue)){
+                ctrl.$setValidity(validation['type'], false);
+              }
+              else {
+                ctrl.$setValidity(validation['type'], true);
+              }
+            });
+
+            ctrl.$parsers.unshift(SfcValidatorSvc[validation['type']](ctrl));
           }
         });
       }
     };
   });
 
-  sfc.register.directive('vlanId', function () {
+  sfc.register.directive('dateAndTime', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('vlanId', true);
-            return null;
-          }
-          else if (viewValue >= 1 && viewValue <= 4094) {
-            ctrl.$setValidity('vlanId', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('vlanId', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.dateAndTime(ctrl));
       }
     };
   });
 
-  sfc.register.directive('macAddress', function () {
+  sfc.register.directive('vlanId', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('macAddress', true);
-            return null;
-          }
-          else if (viewValue.match(/^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/)) {
-            ctrl.$setValidity('macAddress', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('macAddress', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.vlanId(ctrl));
       }
     };
   });
 
-  sfc.register.directive('numberRange', function ($parse) {
+  sfc.register.directive('macAddress', function (SfcValidatorSvc) {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(SfcValidatorSvc.macAddress);
+      }
+    };
+  });
+
+  sfc.register.directive('numberRange', function ($parse, SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
 
         var params = $parse(attrs['numberRange'])();
 
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('numberRange', true);
-            return null;
-          }
-          else if (viewValue >= params.from && viewValue <= params.to) {
-            ctrl.$setValidity('numberRange', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('numberRange', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.numberRange(ctrl, params));
       }
     };
   });
 
-  sfc.register.directive('uint8', function () {
+  sfc.register.directive('uint8', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('uint8', true);
-            return null;
-          }
-          else if (isHexadecimal(viewValue)){
-            var decimal = parseInt(viewValue, 16);
-            if(decimal >= 0 && decimal <= 255){
-              ctrl.$setValidity('uint8', true);
-              return viewValue;
-            }
-            else {
-              ctrl.$setValidity('uint8', false);
-              return undefined;
-            }
-          }
-          else if (viewValue >= 0 && viewValue <= 255) {
-            ctrl.$setValidity('uint8', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('uint8', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.uint8(ctrl));
       }
     };
   });
 
-  sfc.register.directive('uint16', function () {
+  sfc.register.directive('uint16', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('uint16', true);
-            return null;
-          }
-          else if (isHexadecimal(viewValue)){
-            var decimal = parseInt(viewValue, 16);
-            if(decimal >= 0 && decimal <= 65535){
-              ctrl.$setValidity('uint16', true);
-              return viewValue;
-            }
-            else {
-              ctrl.$setValidity('uint16', false);
-              return undefined;
-            }
-          }
-          else if (viewValue >= 0 && viewValue <= 65535) {
-            ctrl.$setValidity('uint16', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('uint16', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.uint16(ctrl));
       }
     };
   });
 
-  sfc.register.directive('uint32', function () {
+  sfc.register.directive('uint32', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('uint32', true);
-            return null;
-          }
-          else if (isHexadecimal(viewValue)){
-            var decimal = parseInt(viewValue, 16);
-            if(decimal >= 0 && decimal <= 4294967295){
-              ctrl.$setValidity('uint32', true);
-              return viewValue;
-            }
-            else {
-              ctrl.$setValidity('uint32', false);
-              return undefined;
-            }
-          }
-          else if (viewValue >= 0 && viewValue <= 4294967295) {
-            ctrl.$setValidity('uint32', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('uint32', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.uint32(ctrl));
       }
     };
   });
 
-  sfc.register.directive('port', function () {
+  sfc.register.directive('port', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('port', true);
-            return null;
-          }
-          else if (viewValue >= 0 && viewValue <= 65535) {
-            ctrl.$setValidity('port', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('port', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.port(ctrl));
       }
     };
   });
 
-  sfc.register.directive('ipAddress', function ($parse) {
+  sfc.register.directive('ipAddress', function ($parse, SfcValidatorSvc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-
         var params = $parse(attrs['ipAddress'])();
 
-        ctrl.$parsers.unshift(function (viewValue) {
-          if (viewValue === null || viewValue === "") {
-            ctrl.$setValidity('ipAddress', true);
-            return null;
-          }
-          else if (inet_pton(viewValue, params)) {
-            ctrl.$setValidity('ipAddress', true);
-            return viewValue;
-          }
-          else {
-            ctrl.$setValidity('ipAddress', false);
-            return undefined;
-          }
-        });
+        ctrl.$parsers.unshift(SfcValidatorSvc.ipAddress(ctrl, params));
       }
     };
   });
-
-  function isHexadecimal(string) {
-    return string.match(/^0x[0-9A-Fa-f]+$/) ? true : false;
-  }
-
-  function inet_pton(a, params) {
-    //  discuss at: http://phpjs.org/functions/inet_pton/
-    // original by: Theriault
-    //   example 1: inet_pton('::');
-    //   returns 1: '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
-    //   example 2: inet_pton('127.0.0.1');
-    //   returns 2: '\x7F\x00\x00\x01'
-
-    // enhanced by: Andrej Kincel (akincel@cisco.com)
-    //    features: IPv4 regex checks for valid range
-
-    var r, m, x, i, j, f = String.fromCharCode, prefix;
-
-    if (params && params.prefix === true) {
-      m = a.match(/(\/)([0-9]+)$/);
-      if (m) {
-        prefix = parseInt(m[2]);
-        a = a.replace(/\/[0-9]+$/, ""); // trim prefix
-      } else {
-        return false;
-      }
-    }
-
-    // IPv4
-    if (!params || params.version != 6) {
-      m = a.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
-      if (m) {
-
-        if (prefix && prefix > 32) {
-          return false;
-        }
-
-        m = m[0].split('.');
-        m = f(m[0]) + f(m[1]) + f(m[2]) + f(m[3]);
-        // Return if 4 bytes, otherwise false.
-        return m.length === 4 ? m : false;
-      }
-    }
-
-    if (!params || params.version != 4) {
-      // IPv6
-      r = /^((?:[\da-fA-F]{1,4}(?::|)){0,8})(::)?((?:[\da-fA-F]{1,4}(?::|)){0,8})$/;
-      m = a.match(r);
-      if (m) {
-
-        if (prefix && prefix > 128) {
-          return false;
-        }
-
-        // Translate each hexadecimal value.
-        for (j = 1; j < 4; j++) {
-          // Indice 2 is :: and if no length, continue.
-          if (j === 2 || m[j].length === 0) {
-            continue;
-          }
-          m[j] = m[j].split(':');
-          for (i = 0; i < m[j].length; i++) {
-            m[j][i] = parseInt(m[j][i], 16);
-            // Would be NaN if it was blank, return false.
-            if (isNaN(m[j][i])) {
-              // Invalid IP.
-              return false;
-            }
-            m[j][i] = f(m[j][i] >> 8) + f(m[j][i] & 0xFF);
-          }
-          m[j] = m[j].join('');
-        }
-        x = m[1].length + m[3].length;
-        if (x === 16) {
-          return m[1] + m[3];
-        }
-        else if (m[2] !== undefined) {
-          if (x < 16 && m[2].length > 0) {
-            return m[1] + (new Array(16 - x + 1))
-              .join('\x00') + m[3];
-          }
-        }
-      }
-    }
-    // Invalid IP.
-    return false;
-  }
 
   //textarea from xeditable enhanced with save on blur event
   sfc.register.directive('easyEditableTextarea', ['editableDirectiveFactory',

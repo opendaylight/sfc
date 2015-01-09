@@ -1,5 +1,285 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
+  sfc.register.factory('SfcValidatorSvc', function () {
+
+    var svc = {};
+
+    svc.port = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('port', true);
+          return null;
+        }
+        else if (viewValue >= 0 && viewValue <= 65535) {
+          ctrl.$setValidity('port', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('port', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.ipAddress = function (ctrl, params) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('ipAddress', true);
+          return null;
+        }
+        else if (svc.__inet_pton(viewValue, params)) {
+          ctrl.$setValidity('ipAddress', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('ipAddress', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.__isHexadecimal = function (string) {
+      return string.match(/^0x[0-9A-Fa-f]+$/) ? true : false;
+    }
+
+    svc.__inet_pton = function (a, params) {
+      //  discuss at: http://phpjs.org/functions/inet_pton/
+      // original by: Theriault
+      //   example 1: inet_pton('::');
+      //   returns 1: '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
+      //   example 2: inet_pton('127.0.0.1');
+      //   returns 2: '\x7F\x00\x00\x01'
+
+      // enhanced by: Andrej Kincel (akincel@cisco.com)
+      //    features: IPv4 regex checks for valid range
+
+      var r, m, x, i, j, f = String.fromCharCode, prefix;
+
+      if (params && params.prefix === true) {
+        m = a.match(/(\/)([0-9]+)$/);
+        if (m) {
+          prefix = parseInt(m[2]);
+          a = a.replace(/\/[0-9]+$/, ""); // trim prefix
+        } else {
+          return false;
+        }
+      }
+
+      // IPv4
+      if (!params || params.version != 6) {
+        m = a.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+        if (m) {
+
+          if (prefix && prefix > 32) {
+            return false;
+          }
+
+          m = m[0].split('.');
+          m = f(m[0]) + f(m[1]) + f(m[2]) + f(m[3]);
+          // Return if 4 bytes, otherwise false.
+          return m.length === 4 ? m : false;
+        }
+      }
+
+      if (!params || params.version != 4) {
+        // IPv6
+        r = /^((?:[\da-fA-F]{1,4}(?::|)){0,8})(::)?((?:[\da-fA-F]{1,4}(?::|)){0,8})$/;
+        m = a.match(r);
+        if (m) {
+
+          if (prefix && prefix > 128) {
+            return false;
+          }
+
+          // Translate each hexadecimal value.
+          for (j = 1; j < 4; j++) {
+            // Indice 2 is :: and if no length, continue.
+            if (j === 2 || m[j].length === 0) {
+              continue;
+            }
+            m[j] = m[j].split(':');
+            for (i = 0; i < m[j].length; i++) {
+              m[j][i] = parseInt(m[j][i], 16);
+              // Would be NaN if it was blank, return false.
+              if (isNaN(m[j][i])) {
+                // Invalid IP.
+                return false;
+              }
+              m[j][i] = f(m[j][i] >> 8) + f(m[j][i] & 0xFF);
+            }
+            m[j] = m[j].join('');
+          }
+          x = m[1].length + m[3].length;
+          if (x === 16) {
+            return m[1] + m[3];
+          }
+          else if (m[2] !== undefined) {
+            if (x < 16 && m[2].length > 0) {
+              return m[1] + (new Array(16 - x + 1))
+                  .join('\x00') + m[3];
+            }
+          }
+        }
+      }
+      // Invalid IP.
+      return false;
+    };
+
+    svc.dateAndTime = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('dateAndTime', true);
+          return null;
+        }
+        else if (viewValue.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-]\d{2}:\d{2})/)) {
+          ctrl.$setValidity('dateAndTime', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('dateAndTime', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.vlanId = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('vlanId', true);
+          return null;
+        }
+        else if (viewValue >= 1 && viewValue <= 4094) {
+          ctrl.$setValidity('vlanId', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('vlanId', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.macAddress = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('macAddress', true);
+          return null;
+        }
+        else if (viewValue.match(/^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/)) {
+          ctrl.$setValidity('macAddress', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('macAddress', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.numberRange = function (ctrl, params) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('numberRange', true);
+          return null;
+        }
+        else if (viewValue >= params.from && viewValue <= params.to) {
+          ctrl.$setValidity('numberRange', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('numberRange', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.uint8 = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('uint8', true);
+          return null;
+        }
+        else if (svc.__isHexadecimal(viewValue)) {
+          var decimal = parseInt(viewValue, 16);
+          if (decimal >= 0 && decimal <= 255) {
+            ctrl.$setValidity('uint8', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint8', false);
+            return undefined;
+          }
+        }
+        else if (viewValue >= 0 && viewValue <= 255) {
+          ctrl.$setValidity('uint8', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('uint8', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.uint16 = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('uint16', true);
+          return null;
+        }
+        else if (svc.__isHexadecimal(viewValue)(viewValue)) {
+          var decimal = parseInt(viewValue, 16);
+          if (decimal >= 0 && decimal <= 65535) {
+            ctrl.$setValidity('uint16', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint16', false);
+            return undefined;
+          }
+        }
+        else if (viewValue >= 0 && viewValue <= 65535) {
+          ctrl.$setValidity('uint16', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('uint16', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.uint32 = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('uint32', true);
+          return null;
+        }
+        else if (svc.__isHexadecimal(viewValue)(viewValue)) {
+          var decimal = parseInt(viewValue, 16);
+          if (decimal >= 0 && decimal <= 4294967295) {
+            ctrl.$setValidity('uint32', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint32', false);
+            return undefined;
+          }
+        }
+        else if (viewValue >= 0 && viewValue <= 4294967295) {
+          ctrl.$setValidity('uint32', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('uint32', false);
+          return undefined;
+        }
+      };
+    };
+
+    return svc;
+  });
+
   sfc.register.factory('SfcTableParamsSvc', function () {
 
     var svc = {};
@@ -7,7 +287,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     svc.filterTableParams = {};
 
     svc.initializeSvcForTable = function (tableId) {
-      if (angular.isUndefined(svc.filterTableParams[tableId])){
+      if (angular.isUndefined(svc.filterTableParams[tableId])) {
         svc.filterTableParams[tableId] = {};
       }
     };
@@ -385,7 +665,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // ******* ServiceFunctionSvc *********
+// ******* ServiceFunctionSvc *********
   sfc.register.factory('ServiceFunctionSvc', function (SfcRestBaseSvc) {
     var modelUrl = 'service-function';
     var containerName = 'service-functions';
@@ -436,7 +716,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // ******* ServiceFunctionTypeSvc *********
+// ******* ServiceFunctionTypeSvc *********
   sfc.register.factory('ServiceFunctionTypeSvc', function (SfcRestBaseSvc) {
     var modelUrl = 'service-function-type';
     var containerName = 'service-function-types';
@@ -466,7 +746,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // ******* ServiceChainSvc *********
+// ******* ServiceChainSvc *********
   sfc.register.factory('ServiceChainSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-function-chain';
@@ -527,8 +807,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       _.each(sfc['sfc-service-function'], function (sf) {
         //if there is no prefix add it
         if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
-            // add prefix
-            sf['type'] = sfTypePrefix + sf['type'];
+          // add prefix
+          sf['type'] = sfTypePrefix + sf['type'];
         }
       });
 
@@ -539,7 +819,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // ******* ServicePathSvc *********
+// ******* ServicePathSvc *********
   sfc.register.factory('ServicePathSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-function-path';
@@ -572,7 +852,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // *** ServiceNodeSvc **********************
+// *** ServiceNodeSvc **********************
   sfc.register.factory('ServiceNodeSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-node';
@@ -717,7 +997,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-  // *** SfcAclSvc **********************
+// *** SfcAclSvc **********************
   sfc.register.factory('SfcAclSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'ietf-acl';
@@ -805,7 +1085,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcContextMetadataSvc();
   });
 
-  // ******* SfcVariableMetadataSvc *********
+// ******* SfcVariableMetadataSvc *********
   sfc.register.factory('SfcVariableMetadataSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-function-metadata';
@@ -821,7 +1101,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcVariableMetadataSvc();
   });
 
-  // ******* SfcClassifierSvc *********
+// ******* SfcClassifierSvc *********
   sfc.register.factory('SfcClassifierSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-function-classifier';
@@ -837,7 +1117,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcClassifierSvc();
   });
 
-  // ******* RenderedServicePathSvc *********
+// ******* RenderedServicePathSvc *********
   sfc.register.factory('RenderedServicePathSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'rendered-service-path';
@@ -854,4 +1134,5 @@ define(['app/sfc/sfc.module'], function (sfc) {
   });
 
 
-}); // end define
+})
+; // end define

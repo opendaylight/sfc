@@ -13,17 +13,142 @@ define([
   'angular-sanitize',
   'ui-select2',
   'ng-table',
-  'ngStorage'], function () {
+  'ngStorage',
+  'common/yangutils/yangutils.services'], function () {
 
   var sfc = angular.module('app.sfc',
     [
       'app.core', 'ui.router.state', 'restangular', 'ui.bootstrap', 'ui.unique', 'ui.sortable', 'ngDragDrop', 'xeditable',
-      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable', 'ngStorage'
+      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable', 'ngStorage', 'app.common.yangUtils'
     ]);
 
   sfc.register = sfc; // for adding services, controllers, directives etc. to angular module before bootstrap
 
-  sfc.factory("sfcLoaderSvc", function ($q) {
+  sfc.factory("sfcYangParseSvc", function ($q, yangUtils, $rootScope) {
+    var svc = {};
+
+    svc.processed = $q.defer();
+
+    svc.unfinishedGatherFunctions = 4;
+
+    svc.init = function () {
+      svc.gatherServiceFunctionTypes();
+      svc.gatherServiceFunctionFailmodes();
+      svc.gatherServiceLocatorTypes();
+      svc.gatherServiceLocatorTransportTypes();
+
+      return svc.processed.promise;
+    };
+
+    svc.gatherFinished = function () {
+      svc.unfinishedGatherFunctions--;
+
+      if (svc.unfinishedGatherFunctions === 0) {
+        svc.processed.resolve(true);
+        console.info("sfcYangParseSvc:  completed");
+      }
+    };
+
+    svc.gatherIdentityNames = function (moduleName, baseIdentityName, callback) {
+      var yangModuleToParse = {module: [{name: moduleName}]};
+
+      yangUtils.processModules(yangModuleToParse, function (node) {
+        var identityNameArray = [];
+
+        _.each(node, function (item) {
+          if (item['type'] == 'identity' && _.findWhere(item['children'], {
+              type: 'base',
+              label: baseIdentityName
+            })) {
+            identityNameArray.push(item['label']);
+          }
+        });
+
+        callback(identityNameArray);
+      });
+    };
+
+    svc.gatherServiceFunctionTypes = function () {
+      svc.gatherIdentityNames('service-function-type', 'service-function-type-identity', function (data) {
+        if (!_.isEmpty(data)) {
+          if (angular.isUndefined($rootScope.serviceFunctionConstants)){
+            $rootScope.serviceFunctionConstants = {type: [], failmodes: []};
+          }
+          $rootScope.serviceFunctionConstants['type'] = data;
+        }
+
+        svc.gatherFinished();
+      });
+    };
+
+    svc.gatherServiceFunctionFailmodes = function () {
+      svc.gatherIdentityNames('service-function-forwarder', 'failmode-type-identity', function (data) {
+        if (!_.isEmpty(data)) {
+          if (angular.isUndefined($rootScope.serviceFunctionConstants)){
+            $rootScope.serviceFunctionConstants = {type: [], failmodes: []};
+          }
+          $rootScope.serviceFunctionConstants['failmode'] = data;
+        }
+
+        svc.gatherFinished();
+      });
+    };
+
+    svc.gatherServiceLocatorTypes = function () {
+      var yangModuleToParse = {module: [{name: "service-locator"}]};
+
+      yangUtils.processModules(yangModuleToParse, function (node) {
+        var serviceLocatorTypeArray = [];
+
+        _.each(node, function (grouping) {
+          if (grouping['type'] == 'grouping' && grouping['label'] == 'data-plane-locator') {
+            _.each(grouping['children'], function (choice) {
+              if (choice['type'] == 'choice' && choice['label'] == 'locator-type') {
+                _.each(choice['children'], function (_case_) {
+                  if (_case_['type'] == 'case') {
+                    serviceLocatorTypeArray.push(_case_['label']);
+                  }
+                });
+              }
+            });
+          }
+        });
+
+        if (!_.isEmpty(serviceLocatorTypeArray)) {
+          if (angular.isUndefined($rootScope.serviceLocatorConstants)){
+            $rootScope.serviceLocatorConstants = {type: [], transport: []};
+          }
+          $rootScope.serviceLocatorConstants['type'] = serviceLocatorTypeArray;
+        }
+
+        svc.gatherFinished();
+      });
+    };
+
+    svc.gatherServiceLocatorTransportTypes = function () {
+      svc.gatherIdentityNames('service-locator', 'transport-type', function (serviceLocatorTransportIdentityArray) {
+
+        _.each(serviceLocatorTransportIdentityArray, function (transportIdentity) {
+          svc.gatherIdentityNames('service-locator', transportIdentity, function (data) {
+            if (!_.isEmpty(data)) {
+              if (angular.isUndefined($rootScope.serviceLocatorConstants)){
+                $rootScope.serviceLocatorConstants = {type: [], transport: []};
+              }
+              _.each(data, function (item) {
+                  $rootScope.serviceLocatorConstants['transport'].push(item);
+              });
+            }
+          });
+        });
+
+        svc.gatherFinished();
+      });
+    };
+
+    return svc;
+  });
+
+  sfc.factory("sfcLoaderSvc", function ($q, sfcYangParseSvc) {
 
     var controllers = [
       'app/sfc/sfc.controller',
@@ -69,8 +194,11 @@ define([
     var loaded = $q.defer();
 
     require([].concat(services).concat(directives).concat(controllers), function () {
-      console.trace("sfcLoaderSvc:  completed");
-      loaded.resolve(true);
+      //if init is done
+      sfcYangParseSvc.init().then(function (){
+        loaded.resolve(true);
+        console.info("sfcLoaderSvc:  completed");
+      });
     });
 
     return loaded.promise; // return promise to wait for in $state transition

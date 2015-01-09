@@ -13,12 +13,13 @@ define([
   'angular-sanitize',
   'ui-select2',
   'ng-table',
-  'ngStorage'], function () {
+  'ngStorage',
+  'common/yangutils/yangutils.services'], function () {
 
   var sfc = angular.module('app.sfc',
     [
       'app.core', 'ui.router.state', 'restangular', 'ui.bootstrap', 'ui.unique', 'ui.sortable', 'ngDragDrop', 'xeditable',
-      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable', 'ngStorage'
+      'ngSanitize', 'ui.select2', 'pascalprecht.translate', 'ngTable', 'ngStorage', 'app.common.yangUtils'
     ]);
 
   sfc.register = sfc; // for adding services, controllers, directives etc. to angular module before bootstrap

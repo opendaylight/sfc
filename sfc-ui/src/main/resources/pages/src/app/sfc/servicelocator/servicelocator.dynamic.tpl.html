@@ -1,0 +1,14 @@
+<ng-form name="{{'f_' + locatorType}}">
+    <div class="form-group" show-validation-error ng-repeat="field in formFields">
+        <label for="{{field['model'] + idSuffix}}" class="col-lg-6 control-label small-label">
+            {{field['label']}}
+        </label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="service_locator[field['model']]"
+                   name="{{field['model']}}"
+                   id="{{field['model'] + idSuffix}}" placeholder="{{field['typePlaceholder'] | translate}}"
+                   dynamic-validation="{type: '{{field['type']}}', typeRange: {{field['typeRange']}}}">
+        </div>
+    </div>
+</ng-form>

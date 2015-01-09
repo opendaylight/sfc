@@ -58,7 +58,7 @@
                 <h4>{{'SFC_SERVICE_FORWARDERS' | translate}}</h4>
 
                 <div style="padding-bottom: 10px" ng-form="f_sff_{{$index}}"
-                     ng-repeat="sff in data['service-function-forwarder'] track by $index">
+                     ng-repeat="sff in data['scl-service-function-forwarder'] track by $index">
                     <div style="text-align: right; margin-bottom: 10px">
                         <span class="spanTip">{{ 'SFC_CLASSIFIER_REMOVE_SERVICE_FORWARDER' | translate }}</span>
                         <button type="button" class="btn btn-xs btn-danger" ng-click="removeSff($index)"><i

@@ -15,12 +15,16 @@
         </div>
     </div>
 
-    <service-locator-ip locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[0]"
-                        reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[0]}}"></service-locator-ip>
-    <service-locator-mac locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[1]"
-                         reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[1]}}"></service-locator-mac>
-    <service-locator-lisp locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[2]"
-                          reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[2]}}"></service-locator-lisp>
+    <!--<service-locator-ip locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[0]"-->
+                        <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[0]}}"></service-locator-ip>-->
+    <!--<service-locator-mac locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[1]"-->
+                         <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[1]}}"></service-locator-mac>-->
+    <!--<service-locator-lisp locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[2]"-->
+                          <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[2]}}"></service-locator-lisp>-->
+
+    <service-locator-dynamic ng-if="locator_type" locator="service_locator" id-suffix="{{idSuffix}}" reset-on="service_locator_type_change"
+                             not-reset-condition="{{locator_type}}" locator-type="{{locator_type}}"
+                             form-fields="serviceLocatorConstants.typeFormFields[locator_type]"></service-locator-dynamic>
 
     <div class="form-group">
         <label ui-select2-label="transport{{idSuffix}}" class="col-lg-6 control-label small-label">

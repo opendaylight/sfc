@@ -9,6 +9,7 @@
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>sfc-parent</artifactId>
     <version>0.0.3-SNAPSHOT</version>
+    <name>sfc</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
     <!--

@@ -11,14 +11,9 @@ package org.opendaylight.ofsfc.provider;
 
 import org.opendaylight.ofsfc.provider.utils.SfcInstanceIdentifierUtils;
 import org.opendaylight.ofsfc.provider.utils.SfcOfL2APIUtil;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -27,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,15 +32,11 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfpDataListener.class);
-    private static final OpenflowSfcRenderer odlSfc = OpenflowSfcRenderer.getOpendaylightSfcObj();
+    private static final OpenflowSfcRenderer ODL_SFC = OpenflowSfcRenderer.getOpendaylightSfcObj();
 
     public OpenflowSfpDataListener(DataBroker dataBroker) {
         setDataBroker(dataBroker);
@@ -163,7 +153,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 flowProgrammer.configureIngressTransportFlow(isAddFlow);
                 flowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);
 
-                ServiceFunctionForwarder curSff = SfcOfL2APIUtil.readServiceFunctionForwarder(odlSfc.getDataProvider(),
+                ServiceFunctionForwarder curSff = SfcOfL2APIUtil.readServiceFunctionForwarder(ODL_SFC.getDataProvider(),
                         curSFFName);
 
                 List<SffDataPlaneLocator> curSffDataPlanelocatorList = curSff.getSffDataPlaneLocator();
@@ -174,7 +164,6 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                 .getLocatorType()).getVlanId();
                         flowProgrammer.configureIngressFlow(curSFFVlan, isAddFlow);
                         // TODO add support for multiple data plane locators
-                        // break;
                     }
                 }
 
@@ -188,7 +177,6 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                         flowProgrammer.configureIngressFlow(curSFVlan, isAddFlow);
 
                         // TODO add support for multiple data plane locators
-                        // break;
                     }
                 }
 
@@ -201,7 +189,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                     ServiceFunctionForwarder prevSFF;
                     List<SfDataPlaneLocator> prevSFDataPlaneLocatorList;
 
-                    prevSFF = SfcOfL2APIUtil.readServiceFunctionForwarder(odlSfc.getDataProvider(),
+                    prevSFF = SfcOfL2APIUtil.readServiceFunctionForwarder(ODL_SFC.getDataProvider(),
                             servicePathHopPrev.getServiceFunctionForwarder());
                     prevSF = SfcOfL2APIUtil.readServiceFunction(servicePathHopPrev.getServiceFunctionName());
 
@@ -276,8 +264,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                     }
                                 }
 
-                                // TODO add support for multiple data plane
-                                // locators
+                                // TODO add support for multiple data plane locators
                                 break;
                             }
                         }

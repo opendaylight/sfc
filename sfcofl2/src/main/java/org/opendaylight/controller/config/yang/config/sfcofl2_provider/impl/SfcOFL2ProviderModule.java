@@ -37,7 +37,7 @@ public class SfcOFL2ProviderModule extends
         DataBroker dataBroker = getDataBrokerDependency();
         RpcProviderRegistry rpcProvider = getRpcRegistryDependency();
         final OpenflowSfcRenderer openflowSfcRenderer = new OpenflowSfcRenderer(dataBroker, rpcProvider);
-        OpenflowSfcFlowProgrammer.createFlowProgrammer(dataBroker);
+        OpenflowSfcFlowProgrammer.createFlowProgrammer();
 
         return new AutoCloseable() {
             @Override

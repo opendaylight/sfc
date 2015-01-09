@@ -11,21 +11,13 @@ package org.opendaylight.ofsfc.provider;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.math.BigInteger;
-
-import com.google.common.base.Joiner;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Ints;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
@@ -67,47 +56,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
@@ -121,15 +87,22 @@ public class OpenflowSfcFlowProgrammer {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfcFlowProgrammer.class);
     private static OpenflowSfcFlowProgrammer instance = null;
-    private final AtomicInteger m_atomicInteger = new AtomicInteger();
+    private final AtomicInteger atomicInteger = new AtomicInteger();
 
     // Which bits in the metadata field to set, used for the Bucket and allows
     // 4095 sfpid's
     // TODO check how many sfpid's there can be
 
-    public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", 16);
-    public static final BigInteger METADATA_BASE_MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-    public static final BigInteger COOKIE_SFC_BASE = new BigInteger("1000000", 16);
+    private static final int COOKIE_BIGINT_INT_RADIX = 10;
+    private static final int COOKIE_BIGINT_HEX_RADIX = 16;
+
+    public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
+    public static final BigInteger METADATA_BASE_MASK = new BigInteger("FFFFFFFFFFFFFFFF", COOKIE_BIGINT_HEX_RADIX);
+    public static final BigInteger COOKIE_SFC_BASE = new BigInteger("1000000", COOKIE_BIGINT_HEX_RADIX);
+
+    private static final int L4_PORT_MASK = 0x0000FFFF;
+    private static final int L4_PROTOCOL_TCP = 6;
+    private static final long ETHERTYPE_IPV4 = 0x0800l;
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
     private static final short TABLE_INDEX_INGRESS = 1;
@@ -141,29 +114,30 @@ public class OpenflowSfcFlowProgrammer {
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
     private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
-
-    private final AtomicLong flowIdInc = new AtomicLong();
+ 
     private short tableBase = (short) 0;
-    private final DataBroker dataBroker;
     private boolean isReady;
     private String sffNodeName;
 
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
     private static final int QUEUE_SIZE = 50;
-    private static final int ASYNC_THREAD_POOL_CORE_SIZE = 1;
-    private static final int ASYNC_THREAD_POOL_MAX_SIZE = 1;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
 
+    private static final int DEFAULT_SB_CAPACITY = 16;
+    private static final int FLOWREF_CAPACITY = 256;
     public static final String FLOWID_PREFIX = "SFC";
     public static final String FLOWID_SEPARATOR = ".";
 
-    private ExecutorService s_ThreadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
+    private static final String LOGSTR_NOT_READY_TO_WRITE = "{} NOT ready to write yet";
+    private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
+
+    private ExecutorService threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
             SCHEDULED_THREAD_POOL_SIZE, ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
 
-    public static void createFlowProgrammer(DataBroker dataBroker) {
+    public static void createFlowProgrammer() {
         if (instance == null) {
-            instance = new OpenflowSfcFlowProgrammer(dataBroker);
+            instance = new OpenflowSfcFlowProgrammer();
         }
     }
 
@@ -172,8 +146,7 @@ public class OpenflowSfcFlowProgrammer {
         return instance;
     }
 
-    public OpenflowSfcFlowProgrammer(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
+    public OpenflowSfcFlowProgrammer() {
         isReady = false;
     }
 
@@ -195,19 +168,19 @@ public class OpenflowSfcFlowProgrammer {
     }
 
     public static BigInteger getMetadataSFP(long sfpId) {
-        return (BigInteger.valueOf(sfpId).and(new BigInteger("FFFF", 16)));
+        return (BigInteger.valueOf(sfpId).and(new BigInteger("FFFF", COOKIE_BIGINT_HEX_RADIX)));
     }
 
     public static BigInteger getCookieSFP(long sfpId) {
-        return COOKIE_SFC_BASE.add(new BigInteger("0120000", 16)).add(BigInteger.valueOf(sfpId));
+        return COOKIE_SFC_BASE.add(new BigInteger("0120000", COOKIE_BIGINT_HEX_RADIX)).add(BigInteger.valueOf(sfpId));
     }
 
     public static BigInteger getCookieIngress(long vlanId) {
-        return COOKIE_SFC_BASE.add(new BigInteger("0130000", 16)).add(BigInteger.valueOf(vlanId));
+        return COOKIE_SFC_BASE.add(new BigInteger("0130000", COOKIE_BIGINT_HEX_RADIX)).add(BigInteger.valueOf(vlanId));
     }
 
     public static BigInteger getCookieDefault(int tableId) {
-        return COOKIE_SFC_BASE.add(new BigInteger("0100000", 16)).add(BigInteger.valueOf(tableId));
+        return COOKIE_SFC_BASE.add(new BigInteger("0100000", COOKIE_BIGINT_HEX_RADIX)).add(BigInteger.valueOf(tableId));
     }
 
     /**
@@ -231,9 +204,9 @@ public class OpenflowSfcFlowProgrammer {
         ConfigureClassificationFlowThread configureClassificationFlowThread = new ConfigureClassificationFlowThread(
                 srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId, isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureClassificationFlowThread);
+            threadPoolExecutorService.execute(configureClassificationFlowThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -267,7 +240,7 @@ public class OpenflowSfcFlowProgrammer {
         public void run() {
             try {
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
 
@@ -281,7 +254,7 @@ public class OpenflowSfcFlowProgrammer {
                 // To do an IP match, the EtherType needs to be set to
                 // 0x0800 which indicates IP
                 EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-                ethTypeBuilder.setType(new EtherType(0x0800L));
+                ethTypeBuilder.setType(new EtherType(ETHERTYPE_IPV4));
                 EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
                 ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
                 MatchBuilder match = new MatchBuilder();
@@ -296,7 +269,7 @@ public class OpenflowSfcFlowProgrammer {
                     ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(longToIp(dstIp, dstMask)));
                     isIpMatch = true;
                 }
-                if (isIpMatch == true) {
+                if (isIpMatch) {
                     match.setLayer3Match(ipv4MatchBuilder.build());
                 }
 
@@ -305,34 +278,33 @@ public class OpenflowSfcFlowProgrammer {
                     ipmatch.setIpProtocol((short) protocol);
                     match.setIpMatch(ipmatch.build());
 
-                    if (protocol == 6) {
+                    if (protocol == L4_PROTOCOL_TCP) {
                         TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
-                        // There must be a bug in
-                        // setTcpSource/DestinationPort(), because its
-                        // looking at the upper 2 bytes of the port and thinks
-                        // its out of range
+                        // There must be a bug in setTcpSource/DestinationPort(),
+                        // because its looking at the upper 2 bytes of the port
+                        // and thinks its out of range
                         if (srcPort != 0) {
-                            tcpMatch.setTcpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                            tcpMatch.setTcpSourcePort(new PortNumber(Integer.valueOf(L4_PORT_MASK & srcPort)));
                             isPortMatch = true;
                         }
                         if (dstPort != 0) {
-                            tcpMatch.setTcpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
+                            tcpMatch.setTcpDestinationPort(new PortNumber(Integer.valueOf(L4_PORT_MASK & dstPort)));
                             isPortMatch = true;
                         }
-                        if (isPortMatch == true) {
+                        if (isPortMatch) {
                             match.setLayer4Match(tcpMatch.build());
                         }
                     } else {
                         UdpMatchBuilder udpMatch = new UdpMatchBuilder();
                         if (srcPort != 0) {
-                            udpMatch.setUdpSourcePort(new PortNumber(new Integer(0x0000FFFF & srcPort)));
+                            udpMatch.setUdpSourcePort(new PortNumber(Integer.valueOf(L4_PORT_MASK & srcPort)));
                             isPortMatch = true;
                         }
                         if (dstPort != 0) {
-                            udpMatch.setUdpDestinationPort(new PortNumber(new Integer(0x0000FFFF & dstPort)));
+                            udpMatch.setUdpDestinationPort(new PortNumber(Integer.valueOf(L4_PORT_MASK & dstPort)));
                             isPortMatch = true;
                         }
-                        if (isPortMatch == true) {
+                        if (isPortMatch) {
                             match.setLayer4Match(udpMatch.build());
                         }
                     }
@@ -396,7 +368,7 @@ public class OpenflowSfcFlowProgrammer {
                     aclFlow.setBarrier(Boolean.FALSE);
                 }
 
-                if (isAddFlow == true) {
+                if (isAddFlow) {
                     writeFlowToConfig(aclFlow);
                 } else {
                     removeFlowFromConfig(aclFlow);
@@ -413,11 +385,9 @@ public class OpenflowSfcFlowProgrammer {
         ConfigureSffNextHopDefaultFlowThread configureSffNextHopDefaultFlowThread = new ConfigureSffNextHopDefaultFlowThread(
                 isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureSffNextHopDefaultFlowThread);
-            // s_ThreadPoolExecutorService.schedule(configureSffNextHopDefaultFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureSffNextHopDefaultFlowThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -433,7 +403,7 @@ public class OpenflowSfcFlowProgrammer {
             try {
 
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
                 LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop default entry dstMac{}, dstVlan{}");
@@ -478,14 +448,13 @@ public class OpenflowSfcFlowProgrammer {
                 if (null == defNextHopFlow.isBarrier()) {
                     defNextHopFlow.setBarrier(Boolean.FALSE);
                 }
-                if (isAddFlow == true) {
-
+                if (isAddFlow) {
                     writeFlowToConfig(defNextHopFlow);
                 } else {
                     removeFlowFromConfig(defNextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                LOG.trace("+++++++++++++++++  SffNextHopDefaultFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
 
@@ -498,11 +467,9 @@ public class OpenflowSfcFlowProgrammer {
         ConfigureNextHopFlowThread configureNextHopFlowThread = new ConfigureNextHopFlowThread(sfpId, srcMac, dstMac,
                 dstVlan, isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureNextHopFlowThread);
-            // s_ThreadPoolExecutorService.schedule(configureNextHopFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureNextHopFlowThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -528,7 +495,7 @@ public class OpenflowSfcFlowProgrammer {
         public void run() {
             try {
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
 
@@ -542,14 +509,10 @@ public class OpenflowSfcFlowProgrammer {
                 metadata.setMetadataMask(METADATA_MASK_SFP_MATCH);
                 match.setMetadata(metadata.build());
 
-                EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-                EtherType type = new EtherType(0x0800L);
-
                 // match the src mac
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                 ethSourceBuilder.setAddress(new MacAddress(srcMac));
-                // ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetSource(ethSourceBuilder.build());
                 match.setEthernetMatch(ethernetMatch.build());
 
@@ -613,13 +576,13 @@ public class OpenflowSfcFlowProgrammer {
                     nextHopFlow.setBarrier(Boolean.FALSE);
                 }
 
-                if (isAddFlow == true) {
+                if (isAddFlow) {
                     writeFlowToConfig(nextHopFlow);
                 } else {
                     removeFlowFromConfig(nextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                LOG.trace("+++++++++++++++++  ConfigureNextHopFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -629,11 +592,9 @@ public class OpenflowSfcFlowProgrammer {
 
         ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(vlan, isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureIngressFlowThread);
-            // s_ThreadPoolExecutorService.schedule(configureIngressFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureIngressFlowThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -650,7 +611,7 @@ public class OpenflowSfcFlowProgrammer {
         public void run() {
             try {
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
 
@@ -690,9 +651,8 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setId(new FlowId(getFlowRef(vlan)));
                 nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(vlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_INGRESS));
-                nextHopFlow.setFlowName("ingress_flow"); // should this name
-                // be
-                // unique??
+                    // should this name be unique??
+                nextHopFlow.setFlowName("ingress_flow"); 
                 BigInteger cookieValue = getCookieIngress(vlan);
                 nextHopFlow.setCookie(new FlowCookie(cookieValue));
                 nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
@@ -708,13 +668,13 @@ public class OpenflowSfcFlowProgrammer {
                     nextHopFlow.setBarrier(Boolean.FALSE);
                 }
 
-                if (isAddFlow == true) {
+                if (isAddFlow) {
                     writeFlowToConfig(nextHopFlow);
                 } else {
                     removeFlowFromConfig(nextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                LOG.trace("+++++++++++++++++  ConfigureIngressFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -726,11 +686,9 @@ public class OpenflowSfcFlowProgrammer {
         ConfigureDefaultNextHopFlowThread configureDefaultNextHopFlowThread = new ConfigureDefaultNextHopFlowThread(
                 sfpId, dstMac, dstVlan, isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureDefaultNextHopFlowThread);
-            // s_ThreadPoolExecutorService.schedule(configureDefaultNextHopFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureDefaultNextHopFlowThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -752,7 +710,7 @@ public class OpenflowSfcFlowProgrammer {
         public void run() {
             try {
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
 
@@ -770,11 +728,8 @@ public class OpenflowSfcFlowProgrammer {
                 match.setMetadata(metadata.build());
 
                 EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
-                EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-                EtherType type = new EtherType(0x0800L);
-                // ethmatch.setEthernetType(ethtype.setType(type).build());
-
                 match.setEthernetMatch(ethmatch.build());
+
                 // Create the Actions
 
                 // Set the DL (Data Link) Dest Mac Address
@@ -840,14 +795,13 @@ public class OpenflowSfcFlowProgrammer {
 
                 //
                 // Now write the Flow Entry
-                // getResult(writeFlowToConfig(nextHopFlow));
-                if (isAddFlow == true) {
+                if (isAddFlow) {
                     writeFlowToConfig(nextHopFlow);
                 } else {
                     removeFlowFromConfig(nextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                LOG.trace("+++++++++++++++++  ConfigureDefaultNextHopFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -858,11 +812,9 @@ public class OpenflowSfcFlowProgrammer {
         ConfigureEgressTransportThread configureEgressTransportThread = new ConfigureEgressTransportThread(dstMac,
                 dstVlan, isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureEgressTransportThread);
-            // s_ThreadPoolExecutorService.schedule(configureSffNextHopDefaultFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
 
     }
@@ -885,20 +837,16 @@ public class OpenflowSfcFlowProgrammer {
             try {
 
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
                 MatchBuilder matchBuilder = new MatchBuilder();
                 matchBuilder.setVlanMatch(SfcOpenflowUtils.createVlanMatch(dstVlan));
 
-                EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-                EtherType type = new EtherType(0x8100L);
-
                 // match the dst mac
                 EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
                 EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
                 ethDestinationBuilder.setAddress(new MacAddress(dstMac));
-                // ethernetMatch.setEthernetType(ethtype.setType(type).build());
                 ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
                 matchBuilder.setEthernetMatch(ethernetMatch.build());
 
@@ -936,7 +884,7 @@ public class OpenflowSfcFlowProgrammer {
                 egressTransportFlow.setFlowName("default_egress_flow ");
                 // be
                 // unique??
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
                 egressTransportFlow.setCookie(new FlowCookie(cookieValue));
                 egressTransportFlow.setCookieMask(new FlowCookie(cookieValue));
                 egressTransportFlow.setContainerName(null);
@@ -953,15 +901,14 @@ public class OpenflowSfcFlowProgrammer {
 
                 //
                 // Now write the Flow Entry
-                // getResult(writeFlowToConfig(nextHopFlow));
-                if (isAddFlow == true) {
+                if (isAddFlow) {
                     writeFlowToConfig(egressTransportFlow);
                 } else {
                     removeFlowFromConfig(egressTransportFlow);
                 }
 
             } catch (Exception ex) {
-
+                LOG.error("Caught an exception in ConfigureEgressTransportThread.run() : {}", ex.toString());
             }
         }
     }
@@ -970,11 +917,9 @@ public class OpenflowSfcFlowProgrammer {
 
         ConfigureIngressTransportThread configureIngressTransportThread = new ConfigureIngressTransportThread(isAddFlow);
         try {
-            s_ThreadPoolExecutorService.execute(configureIngressTransportThread);
-            // s_ThreadPoolExecutorService.schedule(configureSffNextHopDefaultFlowThread,
-            // 1, TimeUnit.SECONDS);
+            threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
-            LOG.error("Queue size is full");
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -990,7 +935,7 @@ public class OpenflowSfcFlowProgrammer {
             try {
 
                 if (!isReady) {
-                    LOG.error("{} NOT ready to write yet", Thread.currentThread().getStackTrace()[0]);
+                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
                 LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop default entry dstMac{}, dstVlan{}");
@@ -1021,28 +966,28 @@ public class OpenflowSfcFlowProgrammer {
                 defNextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE))));
                 defNextHopFlow.setTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
                 defNextHopFlow.setFlowName("ingress_Transport_Default_Flow");
-                BigInteger cookieValue = new BigInteger("20", 10);
+                BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
                 defNextHopFlow.setCookie(new FlowCookie(cookieValue));
                 defNextHopFlow.setCookieMask(new FlowCookie(cookieValue));
                 defNextHopFlow.setContainerName(null);
                 defNextHopFlow.setStrict(false);
                 defNextHopFlow.setMatch(match.build());
                 defNextHopFlow.setInstructions(isb.build());
-                defNextHopFlow.setPriority(100);
+                defNextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
                 defNextHopFlow.setHardTimeout(0);
                 defNextHopFlow.setIdleTimeout(0);
                 defNextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
                 if (null == defNextHopFlow.isBarrier()) {
                     defNextHopFlow.setBarrier(Boolean.FALSE);
                 }
-                if (isAddFlow == true) {
+                if (isAddFlow) {
 
                     writeFlowToConfig(defNextHopFlow);
                 } else {
                     removeFlowFromConfig(defNextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop() caught an Exception: ");
+                LOG.trace("+++++++++++++++++  ConfigureIngressTransport writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
 
@@ -1107,7 +1052,7 @@ public class OpenflowSfcFlowProgrammer {
 
     private String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,
             final short srcPort, final short dstPort, final byte protocol, final long sfpId) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
                 .append(FLOWID_SEPARATOR).append(srcIp).append(FLOWID_SEPARATOR).append(srcMask)
                 .append(FLOWID_SEPARATOR).append(dstIp).append(FLOWID_SEPARATOR).append(dstMask)
                 .append(FLOWID_SEPARATOR).append(srcPort).append(FLOWID_SEPARATOR).append(dstPort)
@@ -1115,37 +1060,37 @@ public class OpenflowSfcFlowProgrammer {
     }
 
     private String getFlowRef(final long sfpId, final String dstMac, final int dstVlan) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
                 .append(FLOWID_SEPARATOR).append(dstMac).append(FLOWID_SEPARATOR).append(dstVlan).toString();
     }
 
     private String getFlowRef(final String dstMac, final int dstVlan) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(dstMac)
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(dstMac)
                 .append(FLOWID_SEPARATOR).append(dstVlan).toString();
     }
 
     private String getFlowRef(final int vlan) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(vlan).toString();
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(vlan).toString();
     }
 
     private String getFlowRef(final long sfpId, final String srcMac, final String dstMac, final int dstVlan) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
                 .append(FLOWID_SEPARATOR).append(srcMac).append(FLOWID_SEPARATOR).append(dstMac)
                 .append(FLOWID_SEPARATOR).append(dstVlan).toString();
     }
 
     private String getFlowRef(final short tableId) {
-        return new StringBuilder(256).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append("default")
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append("default")
                 .append(FLOWID_SEPARATOR).append(tableId).toString();
     }
 
     private String generateTransactionUri() {
-        long lTransactionIdOut = m_atomicInteger.incrementAndGet();
-        return new StringBuilder(16).append(lTransactionIdOut).toString();
+        long lTransactionIdOut = atomicInteger.incrementAndGet();
+        return new StringBuilder(DEFAULT_SB_CAPACITY).append(lTransactionIdOut).toString();
     }
 
     public static String longToIp(String ip, short mask) {
-        StringBuilder sb = new StringBuilder(16);
+        StringBuilder sb = new StringBuilder(DEFAULT_SB_CAPACITY);
         sb.append(ip).append("/").append(mask);
         return sb.toString();
     }

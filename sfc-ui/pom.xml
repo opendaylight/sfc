@@ -12,6 +12,13 @@
     <version>0.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <properties>
+        <pyang.dir>${project.basedir}/pyang-1.5</pyang.dir>
+        <pyang.executable>${pyang.dir}/bin/pyang</pyang.executable>
+        <pyang.output.dir>${project.build.directory}/generated-resources/pages/assets/yang2xml</pyang.output.dir>
+        <sfc-model.yang.dir>${project.parent.basedir}/sfc-model/src/main/yang/</sfc-model.yang.dir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
@@ -56,8 +63,8 @@
                 <version>${compiler.version}</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -76,7 +83,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven.dependency.version}</version>
                 <executions>
                     <!--dlux Resources-->
                     <execution>
@@ -97,8 +104,36 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${maven.exec.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-xmls-from-yangs</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>python</executable>
+                    <workingDirectory>${pyang.dir}</workingDirectory>
+                    <environmentVariables>
+                        <PYTHONPATH>${pyang.dir}:$PYTHONPATH</PYTHONPATH>
+                        <YANG_MODPATH>${pyang.dir}/modules:$YANG_MODPATH</YANG_MODPATH>
+                        <PYANG_XSLT_DIR>${pyang.dir}/xslt</PYANG_XSLT_DIR>
+                        <PYANG_RNG_LIBDIR>${pyang.dir}/schema</PYANG_RNG_LIBDIR>
+                        <W>${pyang.dir}</W>
+                    </environmentVariables>
+                    <commandlineArgs>${pyang.executable} ${sfc-model.yang.dir}/service-function-type.yang
+                        --ignore-errors -f yin -o ${pyang.output.dir}/service-function-type.yang.xml
+                    </commandlineArgs>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven.resources.version}</version>
                 <executions>
                     <execution>
                         <id>copy-resources</id>
@@ -188,4 +223,3 @@
     </distributionManagement>
 
 </project>
-

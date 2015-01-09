@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pyang
+Version: 1.5
+Summary: A YANG (RFC 6020) validator and converter
+Home-page: http://code.google.com/p/pyang
+Author: Martin Bjorklund
+Author-email: mbj@tail-f.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN

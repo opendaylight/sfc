@@ -25,8 +25,8 @@ public abstract class OpenflowAbstractDataListener implements DataChangeListener
         this.dataBroker = dataBroker;
     }
 
-    public void setIID(InstanceIdentifier<?> IID) {
-        iID = IID;
+    public void setIID(InstanceIdentifier<?> iID) {
+        this.iID = iID;
     }
 
     public DataBroker getDataBroker() {

@@ -78,12 +78,9 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionChain) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionChain updatedServiceFunctionChain = (ServiceFunctionChain) entry.getValue();
+                // Currently, nothing to be done here, just log it
                 LOG.info("\n########## Modified Service Function Chain Name {}",
                         updatedServiceFunctionChain.getName());
-                Object[] serviceChainObj = {updatedServiceFunctionChain};
-                Class[] serviceChainClass = {ServiceFunctionChain.class};
-                //odlSfc.executor.execute(SfcProviderServicePathAPI
-                //        .getUpdateServicePathInstantiatedFromChain(serviceChainObj, serviceChainClass));
             }
         }
 
@@ -93,12 +90,7 @@ public class SfcProviderSfcEntryDataListener implements DataChangeListener {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if( dataObject instanceof ServiceFunctionChain) {
                 ServiceFunctionChain originalServiceFunctionChain = (ServiceFunctionChain) dataObject;
-                /* Could bring back
-                Object[] serviceChainParams = {originalServiceFunctionChain};
-                Class[] serviceChainTypes = {ServiceFunctionChain.class};
-                odlSfc.executor.execute(SfcProviderServicePathAPI
-                        .getDeleteServicePathInstantiatedFromChain(serviceChainParams, serviceChainTypes));
-                */
+                // Currently, nothing to be done here, just log it. If you need the previous code, look in git
                 LOG.debug("\n########## getOriginalConfigurationData {}",
                         originalServiceFunctionChain.getName());
             }

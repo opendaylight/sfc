@@ -1,47 +1,40 @@
 package org.opendaylight.ofsfc.provider.utils;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 
 import com.google.common.base.Optional;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ofsfc.provider.OpenflowSfcRenderer;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.*;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class SfcOfL2APIUtil {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfL2APIUtil.class);
+    private static final String LOG_STR_FAILED_TO = "failed to .... {}";
+    private static final String LOG_STR_START = "\n########## Start: {}";
+    private static final String LOG_STR_STOP  = "\n########## Stop: {}";
+
+    // Hiding the implicit public constructor
+    private SfcOfL2APIUtil() {
+    }
 
     public static ServiceFunctionForwarder readServiceFunctionForwarder(DataBroker databroker,
             String serviceFunctionForwarderName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug(LOG_STR_START, Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionForwarder sff = null;
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;
         ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(
@@ -55,7 +48,7 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionForwarderDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sffIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("failed to ...." , e);
+                LOG.warn(LOG_STR_FAILED_TO, e);
             }
             if (serviceFunctionForwarderDataObject != null && serviceFunctionForwarderDataObject.isPresent()) {
                 sff = serviceFunctionForwarderDataObject.get();
@@ -63,12 +56,12 @@ public class SfcOfL2APIUtil {
         } else {
             LOG.debug("Databroker is null", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug(LOG_STR_STOP, Thread.currentThread().getStackTrace()[1]);
         return sff;
     }
 
     public static ServiceFunction readServiceFunction(String serviceFunctionName) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug(LOG_STR_START, Thread.currentThread().getStackTrace()[1]);
         ServiceFunction sf = null;
         InstanceIdentifier<ServiceFunction> sfIID;
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
@@ -81,17 +74,18 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("failed to ...." , e);
+                LOG.warn(LOG_STR_FAILED_TO, e);
             }
             if (serviceFunctionDataObject != null && serviceFunctionDataObject.isPresent()) {
                 sf = serviceFunctionDataObject.get();
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug(LOG_STR_STOP, Thread.currentThread().getStackTrace()[1]);
         return sf;
     }
 
     public static ServiceFunctionPath readServiceFunctionPath(DataBroker databroker, String serviceFunctionPathName) {
+        LOG.debug(LOG_STR_START, Thread.currentThread().getStackTrace()[1]);
         ServiceFunctionPath sff = null;
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
@@ -104,7 +98,7 @@ public class SfcOfL2APIUtil {
             try {
                 serviceFunctionPathDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfpIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("failed to ...." , e);
+                LOG.warn(LOG_STR_FAILED_TO, e);
             }
             if (serviceFunctionPathDataObject != null && serviceFunctionPathDataObject.isPresent()) {
                 sff = serviceFunctionPathDataObject.get();
@@ -112,7 +106,7 @@ public class SfcOfL2APIUtil {
         } else {
             LOG.debug("Databroker is null", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        LOG.debug(LOG_STR_STOP, Thread.currentThread().getStackTrace()[1]);
         return sff;
     }
 }

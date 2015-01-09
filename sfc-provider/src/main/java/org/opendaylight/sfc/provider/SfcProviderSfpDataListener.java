@@ -32,28 +32,20 @@ import java.util.Map;
 public class SfcProviderSfpDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfpDataListener.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
 
     @Override
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+
+        // Currently this method is empty, just log Start and Stop
+
         /*
          * when a SFF is created we will process and send it to southbound devices. But first we need
-         * to mae sure all info is present or we will pass.
+         * to make sure all info is present or we will pass.
          */
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet())
-        {
-            if( entry.getValue() instanceof ServiceFunctionPaths) {
-                ServiceFunctionPaths updatedServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-                Object[] servicePathObj = {updatedServiceFunctionPaths};
-                Class[] servicePathClass = {ServiceFunctionPaths.class};
-  //              ODL_SFC.executor.execute(SfcProviderRestAPI.getPutServiceFunctionPath (servicePathObj, servicePathClass));
-            }
-        }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
 }

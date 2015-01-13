@@ -75,7 +75,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
-                LOG.error("XXXXXXXXX Got here XXXXXXXXX: {}", createdServiceFunction.getType());
                 if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(createdServiceFunction)) {
                     LOG.error("Failed to create service function type: {}", createdServiceFunction.getType());
                 }

@@ -159,18 +159,16 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         .deletePathFromServiceForwarderStateExecutor(originalServiceFunctionPath);
                 SfcProviderServiceFunctionAPI
                         .deleteServicePathFromServiceFunctionStateExecutor(originalServiceFunctionPath);
-                LOG.error("XXXXXXX Service Path Name is {}", originalServiceFunctionPath.getName());
 
                 List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI
                         .readServicePathStateExecutor(originalServiceFunctionPath.getName());
                 if ((sfpRenderedServicePathList != null) && (!sfpRenderedServicePathList.isEmpty())) {
                     for (SfpRenderedServicePath sfpRenderedServicePath : sfpRenderedServicePathList) {
                         String rspName = sfpRenderedServicePath.getName();
-                        LOG.error("XXXXXXX Rendered Path Name is {}", rspName);
                         SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(rspName);
                         //Send to SB REST
-                        //SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                        //        (originalServiceFunctionPath, HttpMethod.DELETE);
+                        SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+                               (originalServiceFunctionPath, HttpMethod.DELETE);
                     }
                 }
                 SfcProviderServicePathAPI.deleteServicePathStateExecutor(originalServiceFunctionPath.getName());

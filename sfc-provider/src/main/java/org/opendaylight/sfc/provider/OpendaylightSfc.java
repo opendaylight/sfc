@@ -104,7 +104,7 @@ public class OpendaylightSfc implements AutoCloseable {
     }
 
     public ExecutorService getExecutor() {
-    	return executor;
+        return executor;
     }
 
     public void setDataProvider(DataBroker salDataProvider) {

@@ -282,8 +282,8 @@
                     <consoleOutput>true</consoleOutput>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <sourceDirectory>${project.basedir}</sourceDirectory>
-                    <includes>**\/*.yang</includes>
-                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal</excludes>
+                    <includes>**\/*.yang,**\/*.java,**\/*.xml,**\/*.ini,**\/*.sh,**\/*.bat</includes>
+                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal\/</excludes>
                 </configuration>
                 <executions>
                     <execution>

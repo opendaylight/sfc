@@ -16,7 +16,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.math.BigInteger;
 
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -78,7 +76,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * This class writes Flow Entries to the SFF once an SFF has been configured.
  * <p>
- * 
+ *
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
  * @since 2014-08-07
@@ -114,7 +112,7 @@ public class OpenflowSfcFlowProgrammer {
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
     private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
- 
+
     private short tableBase = (short) 0;
     private boolean isReady;
     private String sffNodeName;
@@ -185,7 +183,7 @@ public class OpenflowSfcFlowProgrammer {
 
     /**
      * getTableId
-     * 
+     *
      * Having a TableBase allows us to "offset" the SFF tables by this.tableBase
      * tables Doing so allows for OFS tables previous to the SFF tables.
      * tableIndex should be one of: TABLE_INDEX_SFF_ACL or
@@ -652,7 +650,7 @@ public class OpenflowSfcFlowProgrammer {
                 nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(vlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_INGRESS));
                     // should this name be unique??
-                nextHopFlow.setFlowName("ingress_flow"); 
+                nextHopFlow.setFlowName("ingress_flow");
                 BigInteger cookieValue = getCookieIngress(vlan);
                 nextHopFlow.setCookie(new FlowCookie(cookieValue));
                 nextHopFlow.setCookieMask(new FlowCookie(cookieValue));

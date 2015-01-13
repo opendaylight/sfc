@@ -33,7 +33,7 @@ public class SfcLispProviderSffDataListener implements DataChangeListener  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispProviderSffDataListener.class);
     private LispUpdater lispUpdater;
-    
+
     public SfcLispProviderSffDataListener() {
         lispUpdater = LispUpdater.getLispUpdaterObj();
     }

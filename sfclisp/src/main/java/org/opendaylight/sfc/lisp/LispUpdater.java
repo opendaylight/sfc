@@ -247,7 +247,7 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
     @Override
     public void onSessionInitiated(ProviderContext session) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

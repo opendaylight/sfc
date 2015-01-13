@@ -143,7 +143,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         int countRoundRobin = 0;
 
         if(mapCountRoundRobin.size() != 0){
-            for(java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){        
+            for(java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){
                 if(sfType.equals(serviceFunctionType.getType())){
                     countRoundRobin = mapCountRoundRobin.get(sfType);
                     LOG.debug("countRoundRobin: {}", countRoundRobin);

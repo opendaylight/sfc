@@ -11,7 +11,6 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -34,11 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcDataStoreAPI {
 
-	// Hiding the implicit public constructor
-	private SfcDataStoreAPI() {	
-	}
+    // Hiding the implicit public constructor
+    private SfcDataStoreAPI() {
+    }
 
-	private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
     private static final DataBroker DATA_BROKER = ODL_SFC.getDataProvider();
 

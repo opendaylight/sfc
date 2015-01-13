@@ -42,8 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SfcProviderModule extends org.opendaylight.controller.config.yang.config.sfc_provider.impl.AbstractSfcProviderModule {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderModule.class);    
-    
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderModule.class);
+
     public SfcProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }

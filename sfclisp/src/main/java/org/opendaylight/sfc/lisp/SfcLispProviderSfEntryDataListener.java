@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class SfcLispProviderSfEntryDataListener implements DataChangeListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispProviderSfEntryDataListener.class);
     private LispUpdater lispUpdater;
-    
+
     public SfcLispProviderSfEntryDataListener() {
         lispUpdater = LispUpdater.getLispUpdaterObj();
     }

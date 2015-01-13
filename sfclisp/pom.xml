@@ -12,7 +12,7 @@
     <packaging>bundle</packaging>
 
     <dependencies>
-       
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-model</artifactId>
@@ -28,7 +28,7 @@
             <artifactId>mappingservice.api</artifactId>
             <version>1.2.0-SNAPSHOT</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -128,8 +128,8 @@
                     <consoleOutput>true</consoleOutput>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <sourceDirectory>${project.basedir}</sourceDirectory>
-                    <includes>**\/*.yang</includes>
-                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal</excludes>
+                    <includes>**\/*.yang,**\/*.java,**\/*.xml,**\/*.ini,**\/*.sh,**\/*.bat</includes>
+                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal\/</excludes>
                 </configuration>
                 <executions>
                     <execution>

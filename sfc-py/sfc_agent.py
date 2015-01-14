@@ -33,9 +33,6 @@ import ovs_cli
 
 app = Flask(__name__)
 
-# Contains the name of this SFF. For example, SFF1
-my_sff_name = ""
-
 # SFF data plane listens to commands on this port.
 sff_control_port = 6000
 
@@ -110,7 +107,6 @@ def get_sffs():
     return jsonify(sff_topo)
 
 
-# RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP RSP
 @app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT'])
 def create_paths():
     if not request.json:
@@ -163,6 +159,7 @@ def build_data_plane_service_path(service_path):
 def create_path(sfpname):
     # global path
     local_path = get_path()
+    local_sff_os = get_sff_os()
     if not request.json:
         abort(400)
     else:
@@ -172,15 +169,17 @@ def create_path(sfpname):
         logger.info("Building Service Path for path: %s", sfpname)
         build_data_plane_service_path(local_path[sfpname])
         # Testing XE cli processing module
-        if sff_os == 'XE':
-            logger.info("Provisioning %s SFF", sff_os)
+        if local_sff_os == 'XE':
+            logger.info("Provisioning %s SFF", local_sff_os)
             xe_cli.process_xe_cli(data_plane_path)
-        elif sff_os == 'OVS':
-            logger.info("Provisioning %s SFF", sff_os)
+        elif local_sff_os == 'OVS':
+            logger.info("Provisioning %s SFF", local_sff_os)
             # process_ovs_cli(data_plane_path)
             ovs_cli.process_ovs_sff__cli(data_plane_path)
+        elif local_sff_os == "ODL":
+            logger.info("Provisioning %s SFF", local_sff_os)
         else:
-            logger.error("Unknown SFF OS: %s", sff_os)  # should never get here
+            logger.error("Unknown SFF OS: %s", local_sff_os)  # should never get here
             # json_string = json.dumps(data_plane_path)
     return jsonify(local_path), 201
 
@@ -332,8 +331,6 @@ def delete_sffs():
     local_data_plane_path = {}
     return jsonify({'sff': sff_topo}), 201
 
-
-###  NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 @app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT'])
 def apply_one_acl(aclname):
     if sys.platform.startswith('linux'):
@@ -424,10 +421,8 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
 def main(argv):
     global ODLIP
-    global sff_os
 
     ovs_local_sff_cp_ip = '0.0.0.0'
-
 
     try:
         logging.basicConfig(level=logging.DEBUG)
@@ -455,8 +450,9 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-cp-ip=<local SFF IP dataplane address> --odl-ip-port=<ODL REST IP:port>"
-                  " --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
+            print(
+                "sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-cp-ip=<local SFF IP dataplane address>" +
+                "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
             sys.exit()
 
         if opt in ('-r', '--rest'):
@@ -465,7 +461,6 @@ def main(argv):
         if opt == "--sff-name":
             local_my_sff_name = get_my_sff_name()
             local_my_sff_name = arg
-
 
         if opt == "--ovs-sff-cp-ip":
             ovs_local_sff_cp_ip = arg
@@ -477,12 +472,13 @@ def main(argv):
             agent_port = int(arg)
 
         if opt == "--sff-os":
-            sff_os = arg.upper()
-            if sff_os not in sff_os_set:
-                logger.error(sff_os + ' is an unsupported SFF switch OS')
+            local_sff_os = arg.upper()
+            set_sff_os(local_sff_os)
+            if local_sff_os not in sff_os_set:
+                logger.error(local_sff_os + ' is an unsupported SFF switch OS')
                 sys.exit()
 
-            if sff_os == "OVS":
+            if local_sff_os == "OVS":
                 ovs_cli.init_ovs()
 
     if odl_get_sff:

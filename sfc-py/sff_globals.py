@@ -33,9 +33,18 @@ my_sff_name = ""
 
 sff_os_set = {"OVS", "XE"}
 
+sff_os = "ODL"
+
 # Global Accessors
 
 
+def get_sff_os():
+    return sff_os
+
+
+def set_sff_os(new_sff_os):
+    global sff_os
+    sff_os = new_sff_os
 
 
 def get_my_sff_name():
@@ -48,7 +57,7 @@ def get_path():
 
 
 def set_path(arg):
-    #global path
+    global path
     path = arg
 
 
@@ -72,7 +81,7 @@ def get_of_table_id():
 
 
 # ODL IP:port
-ODLIP = "127.0.0.1:8181"
+ODLIP = "localhost:8181"
 
 # Static URLs for testing
 SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"

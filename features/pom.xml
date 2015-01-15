@@ -90,6 +90,14 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.ovsdb</groupId>
+      <artifactId>features-ovsdb</artifactId>
+      <version>${feature.ovsdb.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
     <!--
       Necessary TODO: Put dependencies for bundles directly referenced
       in your features.xml file.  For every <bundle> reference in your

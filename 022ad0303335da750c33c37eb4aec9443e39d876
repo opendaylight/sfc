@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_9f05377c",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-15T08:53:23Z",
+      "side": 1,
+      "message": "Once the namespace in \"service-function-description-monitor-report.yang\" and \"service-function-description-monitor.yang\" have been modified, update these.",
+      "range": {
+        "startLine": 64,
+        "startChar": 28,
+        "endLine": 65,
+        "endChar": 105
+      },
+      "revId": "022ad0303335da750c33c37eb4aec9443e39d876",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_7feb8bb0",
+        "filename": "sfc-model/src/main/yang/service-function-description-monitor-report.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-15T08:53:23Z",
+      "side": 1,
+      "message": "Use a more standard namespace like this: \"urn:intel:params:xml:ns:service-appliance\".\n\nUse any of the existing sfc-model/src/main/yang/*.yang files as an example.\n\nThe package names in sfc-model will then be much nicer:\n\"org.opendaylight.yang.gen.v1.urn.intel.service.appliance.rev141201.*\"",
+      "range": {
+        "startLine": 2,
+        "startChar": 15,
+        "endLine": 2,
+        "endChar": 19
+      },
+      "revId": "022ad0303335da750c33c37eb4aec9443e39d876",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_3fcd035e",
+        "filename": "sfc-model/src/main/yang/service-function-description-monitor.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-15T08:53:23Z",
+      "side": 1,
+      "message": "Same comment as for service-function-description-monitor-report.yang",
+      "revId": "022ad0303335da750c33c37eb4aec9443e39d876",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

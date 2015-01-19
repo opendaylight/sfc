@@ -15,8 +15,8 @@ import java.util.Set;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.ofsfc.provider.utils.SfcInstanceIdentifierUtils;
-import org.opendaylight.ofsfc.provider.utils.SfcOfL2APIUtil;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
@@ -39,7 +39,7 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
     public OpenflowAclDataListener(DataBroker dataBroker) {
         setDataBroker(dataBroker);
-        setIID(SfcInstanceIdentifierUtils.createServiceFunctionAclsPath());
+        setIID(OpendaylightSfc.SFP_ENTRY_IID);
         registerAsDataChangeListener();
     }
 
@@ -114,8 +114,7 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
                         .getSfcAction();
                 String aclServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
 
-                ServiceFunctionPath servicefunctionPath = SfcOfL2APIUtil.readServiceFunctionPath(getDataBroker(),
-                        aclServicePathName);
+                ServiceFunctionPath servicefunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(aclServicePathName);
 
                 Long pathId = servicefunctionPath.getPathId();
 

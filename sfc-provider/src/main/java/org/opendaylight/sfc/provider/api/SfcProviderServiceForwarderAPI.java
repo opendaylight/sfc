@@ -821,6 +821,34 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * Wrapper API to read a SFF given the SFF name. It
+     * includes Executor creation and response management
+     *
+     * <p>
+     * @param sffName SFF name
+     * @return ServiceFunctionForwarder.
+     */
+    public static ServiceFunctionForwarder readServiceFunctionForwarderExecutor(String sffName) {
+        printTraceStart(LOG);
+        ServiceFunctionForwarder ret = null;
+
+        Object[] serviceFunctionForwarderObj = {sffName};
+        Class[] serviceFunctionForwarderClass = {String.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceFunctionForwarderAPI = SfcProviderServiceForwarderAPI
+                .getRead(serviceFunctionForwarderObj, serviceFunctionForwarderClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionForwarderAPI);
+        try {
+            ret = (ServiceFunctionForwarder) future.get();
+            LOG.debug("getReadServiceFunctionForwarder: {}", ret);
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        return ret;
+    }
+
+    /**
      * Deletes all RSPs used by the given SFF object
      *
      * <p>

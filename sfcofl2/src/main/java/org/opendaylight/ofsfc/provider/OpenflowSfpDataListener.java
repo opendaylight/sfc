@@ -9,8 +9,9 @@
 
 package org.opendaylight.ofsfc.provider;
 
-import org.opendaylight.ofsfc.provider.utils.SfcInstanceIdentifierUtils;
-import org.opendaylight.ofsfc.provider.utils.SfcOfL2APIUtil;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -40,7 +41,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
 
     public OpenflowSfpDataListener(DataBroker dataBroker) {
         setDataBroker(dataBroker);
-        setIID(SfcInstanceIdentifierUtils.createServiceFunctionPathsPath());
+        setIID(OpendaylightSfc.SFP_ENTRY_IID);
         registerAsDataChangeListener();
     }
 
@@ -53,7 +54,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
 
         OpenflowSfcFlowProgrammer.getInstance().setNodeInfo(servicePathHop.getServiceFunctionForwarder());
 
-        ServiceFunction sf = SfcOfL2APIUtil.readServiceFunction(servicePathHop.getServiceFunctionName());
+        ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(servicePathHop.getServiceFunctionName());
         List<SfDataPlaneLocator> curSfDataPlaneLocatorList = sf.getSfDataPlaneLocator();
 
         for (SfDataPlaneLocator sfDataPlanelocator : curSfDataPlaneLocatorList) {
@@ -153,8 +154,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 flowProgrammer.configureIngressTransportFlow(isAddFlow);
                 flowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);
 
-                ServiceFunctionForwarder curSff = SfcOfL2APIUtil.readServiceFunctionForwarder(ODL_SFC.getDataProvider(),
-                        curSFFName);
+                ServiceFunctionForwarder curSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(curSFFName);
 
                 List<SffDataPlaneLocator> curSffDataPlanelocatorList = curSff.getSffDataPlaneLocator();
                 for (SffDataPlaneLocator curSffDataPlanelocator : curSffDataPlanelocatorList) {
@@ -167,7 +167,8 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                     }
                 }
 
-                ServiceFunction curSF = SfcOfL2APIUtil.readServiceFunction(servicePathHopCur.getServiceFunctionName());
+                ServiceFunction curSF = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(servicePathHopCur.getServiceFunctionName());
+
                 List<SfDataPlaneLocator> curSfDataPlaneLocatorList = curSF.getSfDataPlaneLocator();
                 for (SfDataPlaneLocator curSfDataPlanelocator : curSfDataPlaneLocatorList) {
                     LocatorType curSFLocatorType = curSfDataPlanelocator.getLocatorType();
@@ -189,9 +190,8 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                     ServiceFunctionForwarder prevSFF;
                     List<SfDataPlaneLocator> prevSFDataPlaneLocatorList;
 
-                    prevSFF = SfcOfL2APIUtil.readServiceFunctionForwarder(ODL_SFC.getDataProvider(),
-                            servicePathHopPrev.getServiceFunctionForwarder());
-                    prevSF = SfcOfL2APIUtil.readServiceFunction(servicePathHopPrev.getServiceFunctionName());
+                    prevSFF = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(servicePathHopPrev.getServiceFunctionForwarder());
+                    prevSF  = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(servicePathHopPrev.getServiceFunctionName());
 
                     prevSFDataPlaneLocatorList = prevSF.getSfDataPlaneLocator();
 

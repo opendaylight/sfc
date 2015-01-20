@@ -1,11 +1,13 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Function;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Lisp;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,7 @@ public class Util {
 
     private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
-    public static String convertIpAddress(IpAddress ip) {
+    protected static String convertIpAddress(IpAddress ip) {
         String ret;
         if (ip.getIpv4Address() != null) {
             ret = ip.getIpv4Address().getValue();
@@ -24,7 +26,7 @@ public class Util {
         return ret;
     }
 
-    public static ObjectNode ObjectNodeFromSfDataPlaneLocator(SfDataPlaneLocator locator) {
+    protected static ObjectNode ObjectNodeFromSfDataPlaneLocator(SfDataPlaneLocator locator) {
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -32,25 +34,15 @@ public class Util {
 
         node.put("name", locator.getName())
                 .put("service-function-forwarder", locator.getServiceFunctionForwarder());
+        node.put("transport", getTransportFromDataPlaneLocator(locator));
 
-        // TODO I'm not sure if "transport" should be a field or just a case-selector
-        /*
-        String transport;
-        switch (locator.getTransport().getSimpleName().toLowerCase()) {
-            case "vxlangpe":
-                transport = "vxlan-gpe";
-                break;
-            case "gre":
-                transport = "gre";
-                break;
-            default:
-                transport = "other";
-        }
-        node.put("transport", transport);
-        */
+        addVaryingLeafs(node, locator);
 
-        String type = locator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
-        DataPlaneLocator dpLocator = (DataPlaneLocator) locator;
+        return node;
+    }
+
+    protected static void addVaryingLeafs(final ObjectNode node, DataPlaneLocator dpLocator) {
+        String type = dpLocator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
         switch (type) {
             case "function":
                 Function functionLocator = (Function) dpLocator;
@@ -64,14 +56,26 @@ public class Util {
             case "lisp":
                 Lisp lispLocator = (Lisp) dpLocator;
                 node.put("eid", convertIpAddress(lispLocator.getEid()));
-                ;
                 break;
             case "mac":
                 Mac macLocator = (Mac) dpLocator;
                 node.put("mac", macLocator.getMac().getValue());
                 node.put("vlan-id", macLocator.getVlanId());
         }
+    }
 
-        return node;
+    protected static String getTransportFromDataPlaneLocator(DataPlaneLocator locator) {
+        String transport;
+        switch (locator.getTransport().getSimpleName().toLowerCase()) {
+            case "vxlangpe":
+                transport = "vxlan-gpe";
+                break;
+            case "gre":
+                transport = "gre";
+                break;
+            default:
+                transport = "other";
+        }
+        return transport;
     }
 }

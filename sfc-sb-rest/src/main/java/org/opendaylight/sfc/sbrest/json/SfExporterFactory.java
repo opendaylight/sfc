@@ -35,9 +35,9 @@ class SfExporter implements Exporter {
 
             ArrayNode locatorArray = mapper.getNodeFactory().arrayNode();
             for (SfDataPlaneLocator e : sf.getSfDataPlaneLocator()) {
-                //ObjectNode o = Util.ObjectNodeFromSfDataPlaneLocator(e);
-                ObjectNode o = mapper.getNodeFactory().objectNode();
-                o.put("test-name", e.getName());
+                ObjectNode o = Util.ObjectNodeFromSfDataPlaneLocator(e);
+                //ObjectNode o = mapper.getNodeFactory().objectNode();
+                //o.put("test-name", e.getName());
                 locatorArray.add(o);
             }
             node.putArray("sf-data-plane-locator").addAll(locatorArray);

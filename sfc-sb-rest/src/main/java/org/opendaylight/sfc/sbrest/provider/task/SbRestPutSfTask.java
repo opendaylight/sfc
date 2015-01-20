@@ -1,4 +1,4 @@
-package org.opendaylight.sfc.sbrest.provider;
+package org.opendaylight.sfc.sbrest.provider.task;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -11,6 +11,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 
 import java.util.concurrent.Callable;
 
+@Deprecated
 public class SbRestPutSfTask implements Callable {
     private static final String ACCEPT = "application/json";
     private static final String HTTP_ERROR_MSG = "Failed, HTTP error code : ";

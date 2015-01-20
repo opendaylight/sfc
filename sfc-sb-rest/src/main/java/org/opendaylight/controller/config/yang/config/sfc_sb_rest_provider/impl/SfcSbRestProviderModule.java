@@ -7,9 +7,8 @@
  */
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.sbrest.provider.*;
+import org.opendaylight.sfc.sbrest.provider.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +35,6 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
     public java.lang.AutoCloseable createInstance() {
 
         final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
-
-        final DataBroker dataBrokerService = opendaylightSfc.getDataProvider();
 
         final SbRestSffDataListener sbRestSffDataListener = new SbRestSffDataListener(opendaylightSfc);
         final SbRestSfpDataListener sbRestSfpDataListener = new SbRestSfpDataListener(opendaylightSfc);

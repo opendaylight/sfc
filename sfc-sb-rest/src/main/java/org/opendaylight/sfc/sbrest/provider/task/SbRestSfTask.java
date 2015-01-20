@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.opendaylight.sfc.sbrest.provider.task;
+
+import org.opendaylight.sfc.sbrest.json.SfExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+
+public class SbRestSfTask extends SbRestAbstractTask {
+
+    public SbRestSfTask(RestOperation restOperation, ServiceFunction dataObject, String urlMgmt) {
+
+        super(restOperation, urlMgmt);
+
+        this.exporterFactory = new SfExporterFactory();
+        this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+    }
+
+}

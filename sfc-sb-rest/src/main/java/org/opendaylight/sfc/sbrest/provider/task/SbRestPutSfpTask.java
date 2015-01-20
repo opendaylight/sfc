@@ -5,41 +5,80 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.sbrest.provider;
+package org.opendaylight.sfc.sbrest.provider.task;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 
 import java.util.concurrent.Callable;
 
-public class SbRestPutSffTask implements Callable {
+@Deprecated
+public class SbRestPutSfpTask implements Callable {
 
     private static final String ACCEPT = "application/json";
-    private static final String HTTP_ERROR_MSG = "Failed : HTTP error code : ";
-    private static final String URL_DATA_SRC = "http://localhost:8181/restconf/config/service-function-forwarder:service-function-forwarders/";
+    private static final String HTTP_ERROR_MSG = "Failed, HTTP error code : ";
+    private static final String URL_DATA_SRC = "http://localhost:8181/restconf/config/service-function-path:service-function-paths/";
     private static final int HTTP_OK = 200;
 
-    private ServiceFunctionForwarders serviceFunctionForwarders;
+    private ServiceFunctionPath serviceFunctionPath;
+    private ServiceFunctionPaths serviceFunctionPaths; // deprecated
     private String urlMgmt;
 
-    public SbRestPutSffTask(ServiceFunctionForwarders serviceFunctionForwarders, String urlMgmt){
+    public SbRestPutSfpTask(ServiceFunctionPath serviceFunctionPath, String urlMgmt){
 
-        this.serviceFunctionForwarders = serviceFunctionForwarders;
+        this.serviceFunctionPath = serviceFunctionPath;
+        this.urlMgmt = urlMgmt;
+    }
+
+    @Deprecated
+    public SbRestPutSfpTask(ServiceFunctionPaths serviceFunctionPaths, String urlMgmt){
+
+        this.serviceFunctionPaths = serviceFunctionPaths;
         this.urlMgmt = urlMgmt;
     }
 
     @Override
     public Object call() throws Exception {
-        putServiceFunctionForwarders(serviceFunctionForwarders);
+        //putServiceFunctionPaths(serviceFunctionPaths);
+        //putServiceFunctionPath(serviceFunctionPath);
         return null;
     }
 
 
-    private void putServiceFunctionForwarders(ServiceFunctionForwarders serviceFunctionForwarders) {
+    /*
+    private void putServiceFunctionPath(ServiceFunctionPath serviceFunctionPath) {
+
+        ExporterFactory ef = new SfpExporterFactory();
+        String jsonOutput = ef.getExporter().exportJson(serviceFunctionPath);
+
+        ClientConfig clientConfig = new DefaultClientConfig();
+        Client client = Client.create(clientConfig);
+
+        ClientResponse putClientRemoteResponse;
+
+        putClientRemoteResponse = client
+                .resource(urlMgmt).type(ACCEPT)
+                .put(ClientResponse.class, jsonOutput);
+
+
+        if (putClientRemoteResponse.getStatus() != HTTP_OK) {
+            throw new UniformInterfaceException(HTTP_ERROR_MSG
+                    + putClientRemoteResponse.getStatus(),
+                    putClientRemoteResponse);
+        }
+
+        putClientRemoteResponse.close();
+
+    }
+    */
+
+    @Deprecated
+    private void putServiceFunctionPaths(ServiceFunctionPaths serviceFunctionPaths) {
 
         ClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create(clientConfig);

@@ -1,4 +1,4 @@
-package org.opendaylight.sfc.sbrest.provider;
+package org.opendaylight.sfc.sbrest.provider.listener;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -31,7 +31,7 @@ public class SbRestSfpEntryDataListener extends SbRestAbstractDataListener {
 
     @Override
     public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         printTraceStart(LOG);
         opendaylightSfc.getLock();
@@ -39,7 +39,7 @@ public class SbRestSfpEntryDataListener extends SbRestAbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if( entry.getValue() instanceof ServiceFunctionPath) {
+            if (entry.getValue() instanceof ServiceFunctionPath) {
                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
                 LOG.debug("\n########## Original Service path: {}",
                         originalServiceFunctionPath.getName());
@@ -62,39 +62,11 @@ public class SbRestSfpEntryDataListener extends SbRestAbstractDataListener {
 
         RenderedServicePath renderedServicePath;
         RenderedServicePath revRenderedServicePath;
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
-        {
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionPath) {
 
                 ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
 
-                renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(createdServiceFunctionPath);
-                if (renderedServicePath != null) {
-
-                    if ((createdServiceFunctionPath.getClassifier() != null) &&
-                            SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(createdServiceFunctionPath.getClassifier()) != null) {
-                        SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
-                                (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
-                    }
-
-                    if (createdServiceFunctionPath.isSymmetric() != null && createdServiceFunctionPath.isSymmetric()) {
-
-                        revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
-                        if (revRenderedServicePath == null) {
-                            LOG.error("Failed to create symmetric service path: {}");
-                        } else if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
-                                SfcProviderServiceClassifierAPI
-                                        .readServiceClassifierExecutor(createdServiceFunctionPath.getSymmetricClassifier()) != null) {
-                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
-                                    (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
-
-                        } else {
-                            LOG.warn("Symmetric Classifier not provided or does not exist");
-                        }
-                    }
-                } else {
-                    LOG.error("Failed to create RSP");
-                }
 
             }
         }
@@ -135,7 +107,7 @@ public class SbRestSfpEntryDataListener extends SbRestAbstractDataListener {
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if( dataObject instanceof ServiceFunctionPath) {
+            if (dataObject instanceof ServiceFunctionPath) {
 
                 // If a SFP is deleted we remove RSP and both SF and SFF operational states.
                 ServiceFunctionPath originalServiceFunctionPath = (ServiceFunctionPath) dataObject;

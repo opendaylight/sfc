@@ -1,16 +1,16 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+//import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.ovs.bridge.ExternalIds;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.ovs.bridge.ExternalIds;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocator;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public class SffExporterFactory implements ExporterFactory {
@@ -32,11 +32,12 @@ class SffExporter implements Exporter {
             ObjectMapper mapper = new ObjectMapper();
 
             ObjectNode node = mapper.getNodeFactory().objectNode();
-            node.put("name", sff.getName())
-                    .put("ip-mgmt-address", Util.convertIpAddress(sff.getIpMgmtAddress()))
-                    .put("rest-uri", sff.getRestUri().getValue())
-                    .put("service-node", sff.getServiceNode());
+            node.put("name", sff.getName());
+//                    .put("ip-mgmt-address", Util.convertIpAddress(sff.getIpMgmtAddress()))
+//                    .put("rest-uri", sff.getRestUri().getValue())
+//                    .put("service-node", sff.getServiceNode());
 
+            /*
             ArrayNode locatorArray = mapper.getNodeFactory().arrayNode();
             for (SffDataPlaneLocator e : sff.getSffDataPlaneLocator()) {
                 ObjectNode o = mapper.getNodeFactory().objectNode();
@@ -82,6 +83,7 @@ class SffExporter implements Exporter {
                 dictionaryArray.add(o);
             }
             node.putArray("service-function-dictionary").addAll(locatorArray);
+            */
 
             ret = "{ \"service-function-forwarder\" : " + node.toString() + " }";
 
@@ -92,4 +94,22 @@ class SffExporter implements Exporter {
         return ret;
     }
 
+    @Override
+    public String exportJsonNameOnly(DataObject dataObject) {
+
+        String ret = null;
+        if (dataObject instanceof ServiceFunctionForwarder) {
+            ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            ObjectNode node = mapper.getNodeFactory().objectNode();
+            node.put("name", obj.getName());
+            ret = "{ \"service-function-forwarder\" : " + node.toString() + " }";
+        } else {
+            throw new IllegalArgumentException("Argument is not an instance of ServiceFunctionForwarder");
+        }
+
+        return ret;
+    }
 }

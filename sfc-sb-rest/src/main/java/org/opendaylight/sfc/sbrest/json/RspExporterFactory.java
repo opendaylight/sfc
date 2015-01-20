@@ -1,10 +1,10 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+//import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public class RspExporterFactory implements ExporterFactory {
@@ -34,6 +34,7 @@ class RspExporter implements Exporter {
                     .put("starting-index", rsp.getStartingIndex())
                     .put("variable-metadata", rsp.getVariableMetadata());
 
+            /*
             ArrayNode hopArray = mapper.getNodeFactory().arrayNode();
             for (RenderedServicePathHop e : rsp.getRenderedServicePathHop()) {
                 ObjectNode o = mapper.getNodeFactory().objectNode();
@@ -44,9 +45,29 @@ class RspExporter implements Exporter {
                 hopArray.add(o);
             }
             node.putArray("rendered-service-path-hop").addAll(hopArray);
+            */
 
             ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
 
+        } else {
+            throw new IllegalArgumentException("Argument is not an instance of RenderedServicePath");
+        }
+
+        return ret;
+    }
+
+    @Override
+    public String exportJsonNameOnly(DataObject dataObject) {
+
+        String ret = null;
+        if (dataObject instanceof RenderedServicePath) {
+            RenderedServicePath obj = (RenderedServicePath) dataObject;
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            ObjectNode node = mapper.getNodeFactory().objectNode();
+            node.put("name", obj.getName());
+            ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
         } else {
             throw new IllegalArgumentException("Argument is not an instance of RenderedServicePath");
         }

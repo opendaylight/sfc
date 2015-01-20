@@ -2,6 +2,7 @@
   "service-functions": {
     "service-function": [
       {
+        "rest-uri": "http://localhost:10002",
         "ip-mgmt-address": "10.3.1.103",
         "sf-data-plane-locator": [
           {
@@ -16,6 +17,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10001",
         "ip-mgmt-address": "10.3.1.103",
         "sf-data-plane-locator": [
           {
@@ -30,6 +32,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10002",
         "ip-mgmt-address": "10.3.1.102",
         "sf-data-plane-locator": [
           {
@@ -44,6 +47,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10002",
         "ip-mgmt-address": "10.3.1.101",
         "sf-data-plane-locator": [
           {
@@ -58,6 +62,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10002",
         "ip-mgmt-address": "10.3.1.104",
         "sf-data-plane-locator": [
           {
@@ -72,6 +77,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10001",
         "ip-mgmt-address": "10.3.1.102",
         "sf-data-plane-locator": [
           {
@@ -86,6 +92,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10001",
         "ip-mgmt-address": "10.3.1.104",
         "sf-data-plane-locator": [
           {
@@ -100,6 +107,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10003",
         "ip-mgmt-address": "10.3.1.102",
         "sf-data-plane-locator": [
           {
@@ -114,6 +122,7 @@
         "nsh-aware": true
       },
       {
+        "rest-uri": "http://localhost:10001",
         "ip-mgmt-address": "10.3.1.101",
         "sf-data-plane-locator": [
           {

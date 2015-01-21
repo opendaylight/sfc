@@ -425,10 +425,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.factory('SfcRestBaseSvc', function (SfcRestangularSvc, SfcRestconfError) {
 
     // constructor
-    function SfcRestBaseSvc(_modelUrl, _containerName, _listName) {
+    function SfcRestBaseSvc(_modelUrl, _containerName, _listName, _availabilityCheckFunction) {
       this.modelUrl = _modelUrl;
       this.containerName = _containerName;
       this.listName = _listName;
+      this.availabilityCheckFunction = this[_availabilityCheckFunction] || this['getArray'];
     }
 
 
@@ -566,7 +567,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           console.error("Error with status code ", response.status);
         }
 
-        callback([]); // return empty array
+        callback([], response); // return empty array
       });
     };
 
@@ -584,7 +585,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           console.error("Error with status code ", response.status);
         }
 
-        callback([]); // return empty array
+        callback([], response); // return empty array
       });
     };
 
@@ -1141,12 +1142,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
     var modelUrl = 'rendered-service-path';
     var containerName = 'rendered-service-paths';
     var listName = 'rendered-service-path';
+    var availabilityCheckFunction = 'getOperationalArray';
 
     // constructor
     function RenderedServicePathSvc() {
     }
 
-    RenderedServicePathSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+    RenderedServicePathSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName, availabilityCheckFunction);
 
     return new RenderedServicePathSvc();
   });

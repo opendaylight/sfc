@@ -39,7 +39,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     if (angular.isUndefined($rootScope.serviceFunctionConstants)){
       $rootScope.serviceFunctionConstants =
       {
-        type: ["napt44", "dpiss", "firewall", "qos", "ids"],
+        type: ["napt44", "dpi", "firewall", "qos", "ids"],
         failmode: ["open", "close"]
       };
     }

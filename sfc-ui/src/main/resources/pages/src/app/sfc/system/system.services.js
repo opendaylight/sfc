@@ -27,7 +27,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     svc.getLogs = function (callback) {
-      return svc.baseSystemRest().customPOST("traces=true", 'logs', null, {'Authorization': 'Basic ' + svc.getBasicAuthHeader(), 'Content-type': contentType})
+      return svc.baseSystemRest().customPOST("traces=true", 'logs', null, {
+        'Authorization': 'Basic ' + svc.getBasicAuthHeader(),
+        'Content-type': contentType
+      })
         .then(function (result) {
           if (angular.isDefined(result.data)) {
             _.each(result.data, function (item) {
@@ -116,4 +119,53 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return svc;
   });
 
+  sfc.register.factory('SfcMdsalCheckSvc', function (ServiceFunctionSvc, ServiceFunctionTypeSvc, ServiceChainSvc,
+                                                     ServicePathSvc, ServiceNodeSvc, ServiceForwarderSvc, SfcAclSvc,
+                                                     SfcContextMetadataSvc, SfcVariableMetadataSvc, SfcClassifierSvc, RenderedServicePathSvc) {
+
+    var self = this;
+
+    this.servicesCount = arguments.length;
+
+    this.arguments = arguments;
+
+    this.checkMdsalStatus = function (callback) {
+      var mdsalStatusArray = [];
+
+      _.each(self.arguments, function (argument) {
+        argument.availabilityCheckFunction(function (data, response) {
+          if (angular.isDefined(response)) {
+            if (response.statusText == "Not Found") {
+              response.statusText = response.statusText.concat(" (empty datastore or wrong RESTconf URL)");
+            }
+
+            mdsalStatusArray.push({
+              moduleName: argument.modelUrl,
+              containerName: argument.containerName,
+              listName: argument.listName,
+              status: response.status,
+              statusText: response.statusText
+            });
+          }
+          else if (angular.isDefined(data)) {
+            mdsalStatusArray.push({
+              moduleName: argument.modelUrl,
+              containerName: argument.containerName,
+              listName: argument.listName,
+              status: "200",
+              statusText: "OK"
+            });
+          }
+
+          self.servicesCount--;
+          if (self.servicesCount === 0) {
+            self.servicesCount = self.arguments.length;
+            return callback(mdsalStatusArray);
+          }
+        });
+      });
+    };
+
+    return this;
+  });
 });

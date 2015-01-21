@@ -262,7 +262,7 @@ define([
 
     NavHelperProvider.addControllerUrl('app/sfc/sfc.controller');
     NavHelperProvider.addToMenu('sfc', {
-      "link": "#/sfc/servicenode",
+      "link": "#/sfc/serviceforwarder",
       "active": "main.sfc",
       "title": "SFC",
       "icon": "icon-sitemap",

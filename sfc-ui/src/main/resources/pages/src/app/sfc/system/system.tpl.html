@@ -7,7 +7,7 @@
     </div>
 
     <tabset>
-        <tab heading="{{'SFC_SYSTEM_KARAF_FEATURES' | translate}}" select="fetchData()">
+        <tab heading="{{'SFC_SYSTEM_KARAF_FEATURES' | translate}}" select="fetchTableData()">
 
             <table ng-table="tableParams" show-filter="true" class="footable table" style="font-size:12px; margin-top: 0">
                 <tr ng-repeat="feature in $data track by $index" ng-model="features">
@@ -39,6 +39,27 @@
                             <i class="icon-play" style="cursor: pointer; font-size: 14px" popover-trigger="mouseenter"
                                popover="{{ 'SFC_SYSTEM_FEATURE_INSTALL' | translate }}"></i>
                         </a>
+                    </td>
+                </tr>
+            </table>
+
+            <table ng-table="tableParams" show-filter="true" class="footable table" style="font-size:12px; margin-top: 0" ng-controller="sfcMdsalCtrl">
+                <tr ng-repeat="datastore in $data track by $index" ng-model="mdsalStatusArray">
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE' | translate" sortable="'moduleName'" filter="{ 'moduleName': 'text' }">
+                        {{datastore['moduleName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_CONTAINER' | translate" sortable="'containerName'" filter="{ 'containerName': 'text' }">
+                        {{datastore['containerName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_LIST' | translate" sortable="'listName'" filter="{ 'listName': 'text' }">
+                        {{datastore['listName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_STATUS' | translate" sortable="'status'" filter="{ 'status': 'text' }">
+                        <i ng-show="(datastore['status'])" class="icon-circle" ng-style="{color: getStatusColor(datastore['status'])}"></i>
+                        {{datastore['status']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_STATUS_TEXT' | translate" sortable="'statusText'" filter="{ 'statusText': 'text' }">
+                        {{datastore['statusText']}}
                     </td>
                 </tr>
             </table>

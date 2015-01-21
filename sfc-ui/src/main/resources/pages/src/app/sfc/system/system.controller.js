@@ -12,7 +12,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         page: 1,            // show first page
         count: 10,          // count per page
         sorting: {
-          name: 'asc'     // initial sorting
+          moduleName: 'asc'     // initial sorting
         }
       },
       {
@@ -34,7 +34,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
 
-    $scope.fetchData = function () {
+    this.fetchData = function () {
       SfcSystemSvc.getFeatures(function (data) {
         $scope.features = SfcSystemSvc.getSfcFeatures(data);
         $scope.tableParams.reload();
@@ -46,7 +46,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.tableParams.reload();
     };
 
-    $scope.fetchData();
+    this.fetchData();
 
     $scope.isFeatureInstalled = function (feature) {
       return feature['state'] === "Installed";
@@ -82,11 +82,78 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.clearSorting = function () {
       $scope.$broadcast('clearTableSorting');
+      $scope.tableParams.sorting({});
     };
+
+    $scope.fetchTableData = function () {
+      $scope.$broadcast('fetchTableData');
+      thisCtrl.fetchData();
+    };
+  });
+
+  sfc.register.controller('sfcMdsalCtrl', function ($scope, SfcMdsalCheckSvc, SfcTableParamsSvc, ngTableParams, $filter) {
+    var thisCtrl = this;
+
+    $scope.mdsalStatusArray = [];
+
+    var NgTableParams = ngTableParams;
+    SfcTableParamsSvc.initializeSvcForTable('mdsalTable');
+
+    $scope.tableParams = new NgTableParams({
+        page: 1,            // show first page
+        count: 15,          // count per page
+        sorting: {
+          module: 'asc'     // initial sorting
+        }
+      },
+      {
+        counts: [15, 25, 50, 100],
+        total: $scope.mdsalStatusArray.length,
+        getData: function ($defer, params) {
+          SfcTableParamsSvc.setFilterTableParams('mdsalTable', params.filter());
+
+          // use build-in angular filter
+          var filteredData = SfcTableParamsSvc.checkAndSetFilterTableParams('mdsalTable', $scope.tableParams) ?
+            $filter('filter')($scope.mdsalStatusArray, params.filter()) :
+            $scope.mdsalStatusArray;
+
+          var orderedData = params.sorting() ?
+            $filter('orderBy')(filteredData, params.orderBy()) :
+            filteredData;
+
+          params.total(orderedData.length);
+          $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+      });
+
+    this.fetchData = function () {
+      SfcMdsalCheckSvc.checkMdsalStatus(function (data) {
+        $scope.mdsalStatusArray = data;
+        $scope.tableParams.reload();
+      });
+    };
+
+    this.fetchData();
 
     $scope.$on('clearTableSorting', function () {
       $scope.tableParams.sorting({});
     });
+
+    $scope.$on('fetchTableData', function () {
+      thisCtrl.fetchData();
+    });
+
+    $scope.getStatusColor = function (status) {
+      switch (status) {
+        case "200":
+          return 'green';
+        case "404":
+          return 'orange';
+        default:
+          return 'red';
+      }
+    };
+
   });
 
   sfc.register.controller('sfcSystemLogCtrl', function ($scope, SfcSystemSvc, SfcTableParamsSvc, ngTableParams, $filter, $q, SfcSystemModalException) {

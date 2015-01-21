@@ -15,21 +15,6 @@
         </div>
     </div>
 
-    <div class="form-group" show-validation-error>
-        <label style="color:#444 !important;" class="col-lg-6 control-label small-label" ui-select2-label="classifier">
-            {{'SFC_CLASSIFIER_NAME' | translate}}
-        </label>
-
-        <div class="col-lg-6">
-            <select class="form-control input-sm" id="classifier" name="classifier" ui-select2="{allowClear: true}"
-                    ng-model="data.classifierName" data-placeholder="{{'SFC_PATH_CREATE_CLASSIFIER' | translate}}">
-
-                <option value=""></option>
-                <option ng-repeat="item in freeClassifiers" value="{{item.name}}">{{item.name}}</option>
-            </select>
-        </div>
-    </div>
-
 </div>
 <div class="modal-footer">
     <button class="btn btn-orange" ng-disabled="!(!!data.name)"  ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>

@@ -64,14 +64,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
       templateUrl: 'src/app/sfc/servicepath/servicepath.classifier.tpl.html',
       scope: {
         sfp: "=",
+        classifierLeaf: "@",
+        symmetric: "=",
         idSuffix: "@"
       },
-      controller: function ($scope, SfpToClassifierMappingSvc) {
+      controller: function ($scope) {
         $scope.popUpVisible = false;
-
-        $scope.fetchClassifier = function () {
-          return SfpToClassifierMappingSvc.getClassifier($scope.sfp['name']);
-        };
 
         $scope.showPopUp = function () {
           $scope.popUpVisible = true;
@@ -90,31 +88,37 @@ define(['app/sfc/sfc.module'], function (sfc) {
       templateUrl: 'src/app/sfc/servicepath/servicepath.popup.classifier.tpl.html',
       scope: {
         sfp: "=",
+        classifierLeaf: "@",
         idSuffix: "@",
         closePopUp: "&"
       },
-      controller: function ($scope, $rootScope, ServicePathHelper, SfpToClassifierMappingSvc) {
+      controller: function ($scope, $rootScope, ServicePathHelper, SfcClassifierSvc) {
         var thisCtrl = this;
 
-        $scope.classifier = SfpToClassifierMappingSvc.getClassifier($scope.sfp['name']);
-        $scope.originClassifier = SfpToClassifierMappingSvc.getOriginClassifier($scope.sfp['name']);
+        this.getClassifierByName = function (classifiersArray, classifierName) {
+          if(angular.isDefined(classifiersArray) && angular.isDefined(classifierName)){
+            return _.findWhere(classifiersArray, {name: classifierName});
+          }
+          else {
+            return undefined;
+          }
+        };
 
-        if(angular.isDefined($scope.classifier)){
-          $scope.classifierName = $scope.classifier['name'];
-        }
+        $scope.classifiersArray = [];
 
-        $scope.freeClassifiers = SfpToClassifierMappingSvc.getFreeClassifiers();
+        SfcClassifierSvc.getArray(function (data) {
+          $scope.classifiersArray = data;
+          $scope.classifier = thisCtrl.getClassifierByName($scope.classifiersArray, $scope.sfp[$scope.classifierLeaf]);
+        });
+
+        $scope.onClassifierChange = function (classifierName) {
+          $scope.classifier = thisCtrl.getClassifierByName($scope.classifiersArray, classifierName);
+        };
 
         $scope.save = function () {
-          SfpToClassifierMappingSvc.setClassifier($scope.sfp['name'], $scope.classifierName);
           ServicePathHelper.setSFPstate($scope.sfp, $rootScope.sfpState.EDITED);
           $scope.closePopUp();
         };
-
-        $scope.onClassifierChange = function (classifierName) {
-          $scope.classifier = SfpToClassifierMappingSvc.getClassifierByName(classifierName);
-        };
-
       }
     };
   });

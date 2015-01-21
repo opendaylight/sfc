@@ -1136,6 +1136,23 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcClassifierSvc();
   });
 
+  // ******* SfcClassifierStateSvc *********
+  sfc.register.factory('SfcClassifierStateSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-classifier';
+    var containerName = 'service-function-classifiers-state';
+    var listName = 'service-function-classifier-state';
+    var availabilityCheckFunction = 'getOperationalArray';
+
+    // constructor
+    function SfcClassifierStateSvc() {
+    }
+
+    SfcClassifierStateSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName, availabilityCheckFunction);
+
+    return new SfcClassifierStateSvc();
+  });
+
 // ******* RenderedServicePathSvc *********
   sfc.register.factory('RenderedServicePathSvc', function (SfcRestBaseSvc) {
 

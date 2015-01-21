@@ -1,11 +1,9 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, SfpToClassifierMappingSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     var thisCtrl = this;
-
-    SfpToClassifierMappingSvc.init();
 
     $scope.tableParams = new NgTableParams(
       {
@@ -259,12 +257,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
               $rootScope.sfpEffectMe[sfp.name] = 1; // schedule for effect of recently deployed
               var modalBody = $scope.$eval('"SFC_CHAIN_MODAL_PATH_SUCCESS_BODY" | translate') + ": <b>'" + sfp.name + "'</b>.";
 
-              if (angular.isDefined(SfpToClassifierMappingSvc.getClassifier(sfp['name']))) {
-                SfpToClassifierMappingSvc.persistClassifier(sfp['name']);
-                modalBody += "<br/><br/>" + $scope.$eval('"SFC_CHAIN_MODAL_PATH_SUCESSS_BODY_CLASSIFIER" | translate') + ": <b>'" +
-                  SfpToClassifierMappingSvc.getClassifier(sfp['name'])['name'] + "'</b>.";
-              }
-
               ModalInfoSvc.open({
                 "head": $scope.$eval('"SFC_CHAIN_MODAL_PATH_SUCCESS_HEAD" | translate'),
                 "body": modalBody
@@ -281,16 +273,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     var thisCtrl = this;
 
-    this.symmetricToBoolean = function (sfc) {
-      if (angular.isDefined(sfc.symmetric)) {
-        sfc.symmetric = sfc.symmetric == "true" ? true : false;
-      }
-    };
-
     $scope.submit = function () {
       $scope.data['sfc-service-function'] = [];
       $scope.data['state'] = $rootScope.sfcState.NEW;
-      thisCtrl.symmetricToBoolean($scope.data);
 
       $rootScope.sfcs.push($scope.data);
       $state.transitionTo('main.sfc.servicechain', null, {
@@ -302,10 +287,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('ModalSfpInstantiateCtrl', function ($scope, $modalInstance, sfc, SfpToClassifierMappingSvc) {
+  sfc.register.controller('ModalSfpInstantiateCtrl', function ($scope, $modalInstance, sfc) {
 
     $scope.sfc = sfc;
-    $scope.freeClassifiers = SfpToClassifierMappingSvc.getFreeClassifiers();
     $scope.data = {};
     $scope.data.name = sfc.name + "-";
 
@@ -313,8 +297,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var sfp = {};
       sfp.name = this.data.name;
       sfp['service-chain-name'] = sfc.name;
-
-      SfpToClassifierMappingSvc.setClassifier(sfp['name'], this.data.classifierName);
 
       $modalInstance.close(sfp);
     };

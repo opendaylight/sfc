@@ -38,23 +38,23 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="col-lg-6 control-label small-label" ui-select2-label="service-path">
-                        {{'SFC_CLASSIFIER_RENDERED_SERVICE_PATH' | translate}}
-                    </label>
+                <!--<div class="form-group">-->
+                    <!--<label class="col-lg-6 control-label small-label" ui-select2-label="service-path">-->
+                        <!--{{'SFC_CLASSIFIER_RENDERED_SERVICE_PATH' | translate}}-->
+                    <!--</label>-->
 
-                    <div class="col-lg-6">
-                        <select class="form-control input-sm" id="service-path" name="service-path"
-                                ui-select2="{allowClear: true}"
-                                ng-model="data['rendered-service-path']"
-                                ng-required="false"
-                                data-placeholder="{{'SFC_CLASSIFIER_CREATE_RENDERED_SERVICE_PATH' | translate}}">
+                    <!--<div class="col-lg-6">-->
+                        <!--<select class="form-control input-sm" id="service-path" name="service-path"-->
+                                <!--ui-select2="{allowClear: true}"-->
+                                <!--ng-model="data['rendered-service-path']"-->
+                                <!--ng-required="false"-->
+                                <!--data-placeholder="{{'SFC_CLASSIFIER_CREATE_RENDERED_SERVICE_PATH' | translate}}">-->
 
-                            <option value=""></option>
-                            <option ng-repeat="sfp in sfps" value="{{sfp['name']}}">{{sfp['name']}}</option>
-                        </select>
-                    </div>
-                </div>
+                            <!--<option value=""></option>-->
+                            <!--<option ng-repeat="sfp in sfps" value="{{sfp['name']}}">{{sfp['name']}}</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <h4>{{'SFC_SERVICE_FORWARDERS' | translate}}</h4>
 
                 <div style="padding-bottom: 10px" ng-form="f_sff_{{$index}}"

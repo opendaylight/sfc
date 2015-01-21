@@ -2,15 +2,24 @@
 
         <table ng-table="tableParams" class="footable table" style="margin-top: 0px">
             <tr ng-repeat="rsp in $data track by $index" id="{{rsp.name}}~!~{{$index}}">
-                <td data-title="'SFC_PATH' | translate" sortable="'name'" style="position: relative">
+                <td data-title="'SFC_RENDERED_PATH' | translate" sortable="'name'" style="position: relative">
                     <p>
-                        <span class="spanText"><b>{{rsp.name}}</b></span>
+                    <span class="spanText"><b>{{rsp.name}}</b></span>
+                    <span class="spanText" ng-show="rsp['parent-service-function-path']">
+                            ({{ 'SFC_RENDERED_PATH_PARENT_SFP' | translate}}: <b>{{rsp['parent-service-function-path']}}</b>)
+                    </span>
                     <span class="spanText" ng-show="rsp['path-id'] && rsp['starting-index']">
                         ({{ 'SFC_PATH_ID' | translate }}: <b>{{rsp['path-id']}}</b>, {{ 'SFC_PATH_STARTING_INDEX' | translate }}: <b>{{rsp['starting-index']}}</b>)
                     </span>
+                    <span>
+                        <a>
+                            <i class="icon-remove" style="cursor: pointer" ng-click="rpcDeleteRsp(rsp)"
+                               popover-trigger="mouseenter" popover="{{ 'SFC_RENDERED_PATH_DELETE_RPC' | translate }}"></i>
+                        </a>
+                    </span>
 
                     <span class="pull-right">
-                        <service-path-classifier sfp="rsp" id-suffix="{{$index}}"></service-path-classifier>
+                        <service-path-classifier sfp="rsp" classifier-leaf="classifier" id-suffix="{{$index}}"></service-path-classifier>
                         <service-path-context-metadata-pop-up sfp-state="sfpState" sfp="rsp" context-metadata="contextMetadata" id-suffix="{{$index}}"></service-path-context-metadata-pop-up>
                     </span>
                     </p>

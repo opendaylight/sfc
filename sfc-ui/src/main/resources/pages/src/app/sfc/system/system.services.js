@@ -121,7 +121,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.factory('SfcMdsalCheckSvc', function (ServiceFunctionSvc, ServiceFunctionTypeSvc, ServiceChainSvc,
                                                      ServicePathSvc, ServiceNodeSvc, ServiceForwarderSvc, SfcAclSvc,
-                                                     SfcContextMetadataSvc, SfcVariableMetadataSvc, SfcClassifierSvc, RenderedServicePathSvc) {
+                                                     SfcContextMetadataSvc, SfcVariableMetadataSvc, SfcClassifierSvc,
+                                                     SfcClassifierStateSvc, RenderedServicePathSvc) {
 
     var self = this;
 

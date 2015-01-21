@@ -97,7 +97,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         "service-node": null, "name": "SFF1", "rest-uri": "http://www.example.com/sffs/sff-bootstrap"
       },
       classifierDefault: {
-        "service-function-forwarder": [{}],
+        "scl-service-function-forwarder": [{}],
         "name": "Classifier1"
       },
       aclDefault: {

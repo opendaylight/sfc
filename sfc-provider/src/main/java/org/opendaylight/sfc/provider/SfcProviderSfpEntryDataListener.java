@@ -12,7 +12,7 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -73,7 +73,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
          * If any of these fail we delete the previous ones that succeeded.
          */
 
-        RenderedServicePath renderedServicePath;
+/*        RenderedServicePath renderedServicePath;
         RenderedServicePath revRenderedServicePath;
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
         {
@@ -110,7 +110,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                 }
 
             }
-        }
+        }*/
 
 /*        // SFP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =

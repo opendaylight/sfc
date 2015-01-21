@@ -1,10 +1,8 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ServicePathHelper, SfpToClassifierMappingSvc, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
+  sfc.register.controller('servicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, ServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ServicePathHelper, ServicePathModalSffSelect, ModalDeleteSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle 'hack'
-
-    SfpToClassifierMappingSvc.init();
 
     $scope.tableParams = new NgTableParams(
       {
@@ -149,7 +147,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.undoSFPchanges = function undoSFPchanges(sfp) {
       ServicePathSvc.getItem(sfp.name, function (oldSfp) {
-        SfpToClassifierMappingSvc.undoClassifierChange(sfp['name']);
         var index = _.indexOf($rootScope.sfps, sfp);
         $rootScope.sfps.splice(index, 1);
         ServicePathHelper.orderHopsInSFP(oldSfp);
@@ -251,8 +248,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
           //delete the row
           ServicePathSvc.deleteItem(sfp, function () {
             $rootScope.sfps.splice(_.indexOf($rootScope.sfps, sfp), 1);
-            SfpToClassifierMappingSvc.setClassifier(sfp['name'], undefined);
-            SfpToClassifierMappingSvc.persistClassifier(sfp['name']);
           });
         }
       });
@@ -277,7 +272,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.unsetSFPstate(sfp);
       ServicePathHelper.updateHopsOrderInSFP(sfp);
       ServicePathSvc.putItem(sfp, function () {
-        SfpToClassifierMappingSvc.persistClassifier(sfp.name);
+
       });
     };
 

@@ -1,11 +1,9 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('renderedServicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, RenderedServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, SfpToClassifierMappingSvc, ngTableParams, $filter) {
+  sfc.register.controller('renderedServicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc, RenderedServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     $scope.rsps = [];
-
-    SfpToClassifierMappingSvc.init();
 
     $scope.tableParams = new NgTableParams({
         page: 1,            // show first page

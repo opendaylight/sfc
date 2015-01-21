@@ -349,6 +349,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
         Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
         try {
+            LOG.info("createServiceFunctionTypeEntryExecutor, future: {}", future);
             ret = (boolean) future.get();
             LOG.debug("getCreateRenderedServicePathEntryAPI: {}", future.get());
         } catch (InterruptedException e) {

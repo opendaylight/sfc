@@ -21,6 +21,8 @@
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/0.7.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/1.2.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/1.2.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.ovsdb/features-ovsdb/${feature.ovsdb.version}/xml/features</repository>
     <feature name='odl-sfc-all' version='${project.version}' description='OpenDaylight :: sfc :: All'>
           <!--
             Necessary TODO:
@@ -36,6 +38,9 @@
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${project.version}'>odl-sfc-test-consumer</feature>
         <feature version='${project.version}'>odl-sfc-ui</feature>
+        <feature version='${project.version}'>odl-sfcofl2</feature>
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
+        <feature version='${feature.ovsdb.version}'>odl-ovsdb-all</feature>
     </feature>
     <!--
         Necessary TODO: Define your features.  It is useful to list then in order of dependency.  So if A depends on B, list A first.
@@ -132,6 +137,12 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-ui/${project.version}</bundle>
     </feature>
 
+    <feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfc :: OpenFlowL2 '>
+        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
+        <feature version='${feature.ovsdb.version}'>odl-ovsdb-all</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
+    </feature>
     <!-- Optional TODO: Remove TODO Comments -->
 
 </features>

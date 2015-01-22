@@ -20,17 +20,24 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessListsState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.ActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListStateKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifierKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 
 /**
@@ -52,6 +59,7 @@ import java.util.concurrent.ExecutionException;
 public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderAclAPI.class);
+    private static final String FAILED_TO_STR = "failed to ...";
 
     SfcProviderAclAPI(Object[] params, String m) {
         super(params, m);
@@ -69,6 +77,15 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
         return new SfcProviderAclAPI(params, paramsTypes, "readAcl");
     }
 
+    public static SfcProviderAclAPI getAddClassifierToAccessListStateExecutor(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderAclAPI(params, paramsTypes, "addClassifierToAccessListState");
+    }
+
+    public static SfcProviderAclAPI getDeleteClassifierFromAccessListStateExecutor(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderAclAPI(params, paramsTypes, "deleteClassifierFromAccessListState");
+    }
+
+    @Deprecated
     public static SfcProviderAclAPI getSetAclEntriesSfcAction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderAclAPI(params, paramsTypes, "setAclEntriesSfcAction");
     }
@@ -121,6 +138,129 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * Adds Classifier to Access List state
+     * <p>
+     * @param accessListName Access List name
+     * @param serviceClassifierName Service Classifier name
+     * @return true if success.
+     */
+    @SuppressWarnings("unused")
+    public static boolean addClassifierToAccessListState (String accessListName, String serviceClassifierName) {
+
+        printTraceStart(LOG);
+        InstanceIdentifier<AclServiceFunctionClassifier> aclIID;
+        boolean ret = false;
+
+        AclServiceFunctionClassifierBuilder aclServiceClassifierBuilder = new AclServiceFunctionClassifierBuilder();
+        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(serviceClassifierName);
+        aclServiceClassifierBuilder.setKey(aclServiceClassifierKey).setName(serviceClassifierName);
+
+        AccessListStateKey accessListStateKey = new AccessListStateKey(accessListName);
+
+        aclIID = InstanceIdentifier.builder(AccessListsState.class)
+                .child(AccessListState.class, accessListStateKey)
+                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey).toInstance();
+
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(aclIID, aclServiceClassifierBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL)) {
+            ret = true;
+        } else {
+            LOG.error("{}: Failed to create Access List {} state. Service Function CLassifier: {}",
+                    Thread.currentThread().getStackTrace()[1], accessListName, serviceClassifierName);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Wrapper API used to add Classifier to Access List state
+     * <p>
+     * @param accessListName Service Function Classifier name
+     * @param serviceClassifierName Rendered Path name
+     * @return true if success.
+     */
+    @SuppressWarnings("unused")
+    public static boolean addClassifierToAccessListStateExecutor (String accessListName, String serviceClassifierName) {
+
+        printTraceStart(LOG);
+        boolean ret = true;
+        Object[] functionParams = {accessListName, serviceClassifierName};
+        Class[] functionParamsTypes = {String.class, String.class};
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderAclAPI
+                .getAddClassifierToAccessListStateExecutor(functionParams, functionParamsTypes));
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getAddClassifierToAccessListStateExecutor returns: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Deletes Classifier from Access List state
+     * <p>
+     * @param accessListName Access List name
+     * @param serviceClassifierName Service Classifier name
+     * @return true if success.
+     */
+    @SuppressWarnings("unused")
+    public static boolean deleteClassifierFromAccessListState (String accessListName, String serviceClassifierName) {
+
+        printTraceStart(LOG);
+        InstanceIdentifier<AclServiceFunctionClassifier> aclIID;
+        boolean ret = false;
+
+        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(serviceClassifierName);
+
+        AccessListStateKey accessListStateKey = new AccessListStateKey(accessListName);
+
+        aclIID = InstanceIdentifier.builder(AccessListsState.class)
+                .child(AccessListState.class, accessListStateKey)
+                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey).toInstance();
+
+        if (SfcDataStoreAPI.deleteTransactionAPI(aclIID, LogicalDatastoreType.OPERATIONAL)) {
+            ret = true;
+        } else {
+            LOG.error("{}: Failed to delete Access List {} state. Service Function CLassifier: {}",
+                    Thread.currentThread().getStackTrace()[1], accessListName, serviceClassifierName);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Wrapper API used to delete Classifier from Access List state
+     * <p>
+     * @param accessListName Service Function Classifier name
+     * @param serviceClassifierName Rendered Path name
+     * @return true if success.
+     */
+    @SuppressWarnings("unused")
+    public static boolean deleteClassifierFromAccessListStateExecutor (String accessListName, String serviceClassifierName) {
+
+        printTraceStart(LOG);
+        boolean ret = true;
+        Object[] functionParams = {accessListName, serviceClassifierName};
+        Class[] functionParamsTypes = {String.class, String.class};
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderAclAPI
+                .getDeleteClassifierFromAccessListStateExecutor(functionParams, functionParamsTypes));
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getDeleteClassifierFromAccessListStateExecutor returns: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
      * This method updates the AclEntries sfcAction to
      * the target ServiceFunctionPath name.
      * <p/>
@@ -129,6 +269,7 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
      * @param sfpName Service Function Path name
      * @return Nothing.
      */
+    @Deprecated
     protected void setAclEntriesSfcAction(String aclName, String sfpName) {
         AccessList accessList = null;
         accessList = this.readAcl(aclName);

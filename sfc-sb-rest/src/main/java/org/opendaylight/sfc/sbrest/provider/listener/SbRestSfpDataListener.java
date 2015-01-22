@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
+@Deprecated
 public class SbRestSfpDataListener extends SbRestAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffDataListener.class);

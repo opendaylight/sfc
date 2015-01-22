@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-11-11
  */
+
 public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScfEntryDataListener.class);
@@ -45,15 +46,15 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
         printTraceStart(LOG);
 
+        ServiceFunctionClassifier originalServiceFunctionClassifier = null;
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionClassifier) {
-                ServiceFunctionClassifier originalServiceFunctionClassifier = (ServiceFunctionClassifier) entry.getValue();
+                originalServiceFunctionClassifier = (ServiceFunctionClassifier) entry.getValue();
                 LOG.debug("\n########## Original ServiceFunctionClassifier name: {}", originalServiceFunctionClassifier.getName());
                 LOG.debug("\n########## Original ServiceFunctionClassifier ACL: {}", originalServiceFunctionClassifier.getAccessList());
-                LOG.debug("\n########## Original ServiceFunctionClassifier SFP: {}", originalServiceFunctionClassifier.getRenderedServicePath());
             }
         }
 
@@ -65,16 +66,10 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                 ServiceFunctionClassifier createdServiceFunctionClassifier = (ServiceFunctionClassifier) entry.getValue();
                 LOG.debug("\n########## Created ServiceFunctionClassifier name: {}", createdServiceFunctionClassifier.getName());
 
-                String serviceFunctionPathName = null;
-                serviceFunctionPathName = createdServiceFunctionClassifier.getRenderedServicePath();
-                if (serviceFunctionPathName != null) {
-                    Object[] params = {createdServiceFunctionClassifier.getAccessList(),
-                            createdServiceFunctionClassifier.getRenderedServicePath()};
-                    Class[] paramsTypes = {String.class, String.class};
-
-                    odlSfc.getExecutor().submit(SfcProviderAclAPI
-                            .getSetAclEntriesSfcAction(params, paramsTypes));
-
+                if ((createdServiceFunctionClassifier.getAccessList() != null) && !createdServiceFunctionClassifier.getAccessList().isEmpty()) {
+                    //call executor to write <ACL, Classifier> entry into ACL operational store
+                    SfcProviderAclAPI.addClassifierToAccessListStateExecutor(createdServiceFunctionClassifier.getAccessList(),
+                            createdServiceFunctionClassifier.getName());
                 }
             }
         }
@@ -87,25 +82,22 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
                 LOG.debug("\n########## Modified ServiceFunctionClassifier Name {}",
                         updatedServiceFunctionClassifier.getName());
 
-                //if ACL was changed, unset AclEntries in old ACL
-                ServiceFunctionClassifier originalServiceFunctionClassifier =
-                        (ServiceFunctionClassifier) dataOriginalConfigurationObject.get(entry.getKey());
-                if (originalServiceFunctionClassifier != null &&
-                        (!originalServiceFunctionClassifier.getAccessList()
-                                .equalsIgnoreCase(updatedServiceFunctionClassifier.getAccessList()))) {
+                if ((originalServiceFunctionClassifier != null && originalServiceFunctionClassifier.getAccessList() != null &&
+                        updatedServiceFunctionClassifier.getAccessList() != null)
+                        && !originalServiceFunctionClassifier.getAccessList().equals(updatedServiceFunctionClassifier.getAccessList())) {
 
-                    Object[] params = {originalServiceFunctionClassifier.getAccessList(), ""};
-                    Class[] paramsTypes = {String.class, String.class};
-                    odlSfc.getExecutor().submit(SfcProviderAclAPI
-                            .getSetAclEntriesSfcAction(params, paramsTypes));
+                    if (!updatedServiceFunctionClassifier.getAccessList().isEmpty()) {
+                        //call executor to write <ACL, Classifier> entry into ACL operational store
+                        SfcProviderAclAPI.addClassifierToAccessListStateExecutor(updatedServiceFunctionClassifier.getAccessList(),
+                                updatedServiceFunctionClassifier.getName());
+                    }
+                    // if Access List is empty string, Classifier should be not more linked to the origin Access List
+                    else {
+                        //call executor to delete <ACL, Classifier> entry from ACL operational store
+                        SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(originalServiceFunctionClassifier.getAccessList(),
+                                originalServiceFunctionClassifier.getName());
+                    }
                 }
-
-                //set AclEntries in new ACL
-                Object[] params = {updatedServiceFunctionClassifier.getAccessList(),
-                        updatedServiceFunctionClassifier.getRenderedServicePath()};
-                Class[] paramsTypes = {String.class, String.class};
-                odlSfc.getExecutor().submit(SfcProviderAclAPI
-                        .getSetAclEntriesSfcAction(params, paramsTypes));
             }
         }
 
@@ -114,12 +106,13 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if (dataObject instanceof ServiceFunctionClassifier) {
-                ServiceFunctionClassifier originalServiceFunctionClassifier = (ServiceFunctionClassifier) dataObject;
+                ServiceFunctionClassifier deletedServiceFunctionClassifier = (ServiceFunctionClassifier) dataObject;
 
-                Object[] params = {originalServiceFunctionClassifier.getAccessList(), ""};
-                Class[] paramsTypes = {String.class, String.class};
-                odlSfc.getExecutor().submit(SfcProviderAclAPI
-                        .getSetAclEntriesSfcAction(params, paramsTypes));
+                if ((deletedServiceFunctionClassifier.getAccessList() != null) && !deletedServiceFunctionClassifier.getAccessList().isEmpty()) {
+                    //call executor to delete <ACL, Classifier> entry from ACL operational store
+                    SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(deletedServiceFunctionClassifier.getAccessList(),
+                            deletedServiceFunctionClassifier.getName());
+                }
             }
         }
 

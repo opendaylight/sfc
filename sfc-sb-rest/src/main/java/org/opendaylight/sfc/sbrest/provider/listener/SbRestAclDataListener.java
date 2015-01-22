@@ -17,6 +17,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class SbRestAclDataListener extends SbRestAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclDataListener.class);

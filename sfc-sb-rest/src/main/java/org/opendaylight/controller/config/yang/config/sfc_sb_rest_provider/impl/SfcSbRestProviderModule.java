@@ -42,7 +42,8 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
         final SbRestSfEntryDataListener sbRestSfEntryDataListener = new SbRestSfEntryDataListener(opendaylightSfc);
         final SbRestSffEntryDataListener sbRestSffEntryDataListener = new SbRestSffEntryDataListener(opendaylightSfc);
         final SbRestRspEntryDataListener sbRestRspEntryDataListener = new SbRestRspEntryDataListener(opendaylightSfc);
-        final SbRestAclDataListener sbRestAclDataListener = new SbRestAclDataListener(opendaylightSfc);
+        final SbRestAclEntryDataListener sbRestAclEntryDataListener = new SbRestAclEntryDataListener(opendaylightSfc);
+        //final SbRestAclDataListener sbRestAclDataListener = new SbRestAclDataListener(opendaylightSfc);
 
         // close()
         final class AutoCloseableSfcSbRest implements AutoCloseable {
@@ -55,7 +56,8 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
                 sbRestSfEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestSffEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestRspEntryDataListener.getDataChangeListenerRegistration().close();
-                sbRestAclDataListener.getDataChangeListenerRegistration().close();
+                sbRestAclEntryDataListener.getDataChangeListenerRegistration().close();
+                //sbRestAclDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

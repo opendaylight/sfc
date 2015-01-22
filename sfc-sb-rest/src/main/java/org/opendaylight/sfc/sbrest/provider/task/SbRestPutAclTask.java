@@ -16,6 +16,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import java.util.concurrent.Callable;
 
+@Deprecated
 public class SbRestPutAclTask implements Callable {
 
     private static final String ACCEPT = "application/json";

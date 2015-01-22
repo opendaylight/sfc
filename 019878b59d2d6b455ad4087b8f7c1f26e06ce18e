@@ -1,0 +1,208 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_a29d6b5b",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Two exceptions in one catch statement will cause a Sonar issue. Please fix in the next iteration",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_a2eb2baf",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Change print to LOG.debug",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_82e86fb5",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Change to LOG.debug",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_42d26701",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Service Function now has a rest-uri. User needs to be responsible for adding a value. No need to loop through all SFFs. Moreover I do not understand the logic here, it seems you are sending the creation message to all SFF uris independent if they can reach that SF or not.",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_c2de7711",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Remove hardcoded value",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_e2e133d1",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Change LOG.info to LOG.debug",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_62c6834b",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "It will cause Sonar issue",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_22c07b29",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Need a message to delete SF from agent",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_c261973a",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSffDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "This listener is attached to SFF entries but it is testing for ServiceFunctionForwarders (plural). But just like the regular SFF listener, it should be testing for ServiceFunctionForwarder. \n\nAlso, I do not see the code to process creation and deletion.",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_82ff0f67",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfpDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Do we still need top level listeners? I thought we were going to get rid of them and only have entry level listeners.",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_e2085393",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfpEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "As we discussed you can not change data store from sb rest listener since they are already deleted on the regular listener. This may cause race conditions due to multiple writer problem. SB REST should only concern itself with sending messages southbound.",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_a2024b6d",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/RestOperation.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:26:13Z",
+      "side": 1,
+      "message": "Add copyright",
+      "revId": "019878b59d2d6b455ad4087b8f7c1f26e06ce18e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

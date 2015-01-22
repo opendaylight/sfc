@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_c22c3705",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/ExporterFactory.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-22T03:27:02Z",
+      "side": 1,
+      "message": "Add copyright",
+      "revId": "bfdba46bc3f48c0fc0ff71eb21e34baa2af9112a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -22,6 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,10 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public static final InstanceIdentifier<AccessLists>  ACL_IID =
             InstanceIdentifier.builder(AccessLists.class).build();
+
+    public static final InstanceIdentifier<AccessList>  ACL_ENTRY_IID =
+            InstanceIdentifier.builder(AccessLists.class)
+                    .child(AccessList.class).build();
 
     public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
             InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();

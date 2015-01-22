@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
+@Deprecated
 public class SbRestSfpEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfpEntryDataListener.class);
 

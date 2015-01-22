@@ -131,7 +131,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
             public void close() {
                 sfEntryDataChangeListenerRegistration.close();
                 sfcEntryDataChangeListenerRegistration.close();
-                scfEntryDataChangeListenerRegistration.close();
+//                scfEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();
                 sffDataChangeListenerRegistration.close();
                 sfRpcRegistration.close();

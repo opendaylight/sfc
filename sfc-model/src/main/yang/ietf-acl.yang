@@ -127,4 +127,32 @@ module ietf-acl {
       }
     } // list access-list
   } // container access-lists
+
+  container access-list-state {
+    description
+      "This container hold operational state for all access lists";
+    config false;
+
+    list access-list-state {
+      description
+        "This list holds operational data for all access lists
+         in the domain";
+      key "acl-name";
+      leaf acl-name {
+        type string;
+        description
+          "The name of the acl";
+      }
+      list acl-classifier {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the classifier";
+        }
+        description
+        "A list of all classifiers that use rules from this access list";
+      }
+    }
+  }
 }

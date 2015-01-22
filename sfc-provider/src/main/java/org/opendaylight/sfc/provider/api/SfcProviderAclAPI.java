@@ -69,6 +69,7 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
         return new SfcProviderAclAPI(params, paramsTypes, "readAcl");
     }
 
+    @Deprecated
     public static SfcProviderAclAPI getSetAclEntriesSfcAction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderAclAPI(params, paramsTypes, "setAclEntriesSfcAction");
     }
@@ -129,6 +130,7 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
      * @param sfpName Service Function Path name
      * @return Nothing.
      */
+    @Deprecated
     protected void setAclEntriesSfcAction(String aclName, String sfpName) {
         AccessList accessList = null;
         accessList = this.readAcl(aclName);

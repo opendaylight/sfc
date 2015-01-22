@@ -75,7 +75,6 @@ public class SbRestSfpDataListener extends SbRestAbstractDataListener {
                 for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
                     Uri uri = serviceFunctionForwarder.getRestUri();
                     String urlMgmt = uri.getValue();
-                    System.out.println("*** PUT url:" + urlMgmt);
                     SbRestPutSfpTask putSfpTask = new SbRestPutSfpTask(updatedServiceFunctionPaths, urlMgmt);
                     opendaylightSfc.getExecutor().submit(putSfpTask);
                 }

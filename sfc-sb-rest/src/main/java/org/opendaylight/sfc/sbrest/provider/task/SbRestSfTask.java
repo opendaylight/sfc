@@ -25,7 +25,6 @@ public class SbRestSfTask extends SbRestAbstractTask {
             this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
         }
         setRestUriList(dataObject);
-        System.out.println("*** jsonObject=" + jsonObject);
     }
 
     @Override

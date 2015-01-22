@@ -38,7 +38,6 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
-        System.out.println("\n***SB REST RSP listener***\n");
         printTraceStart(LOG);
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -46,8 +45,6 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
                 RenderedServicePath originalRenderedServicePath = (RenderedServicePath) entry.getValue();
-                System.out.println("*** sb-Original RSP: " +
-                        originalRenderedServicePath.getName());
                 LOG.debug("\n########## Original RSP: {}",
                         originalRenderedServicePath.getName());
             }
@@ -56,18 +53,14 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
-        System.out.println("*** entrySet size:" + dataCreatedObject.entrySet().size());
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
                 RenderedServicePath createdRenderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("*** created RSP: {}", createdRenderedServicePath.getName());
-                System.out.println("*** sb-created RSP: " + createdRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.POST, createdRenderedServicePath, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.POST + " " + createdRenderedServicePath.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
             }
         }
 
@@ -79,12 +72,9 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 RenderedServicePath updatedRenderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\n########## Modified RSP Name {}",
                         updatedRenderedServicePath.getName());
-                System.out.println("*** sb-updated RSP: " + updatedRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.PUT + " " + updatedRenderedServicePath.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
             }
         }
 
@@ -98,12 +88,9 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 RenderedServicePath originalRenderedServicePath = (RenderedServicePath) dataObject;
                 LOG.error("XXXXXXX RSP Name is {}", originalRenderedServicePath.getName());
 
-                System.out.println("*** sb-deleted RSP: " + originalRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.DELETE, originalRenderedServicePath, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.DELETE + " " + originalRenderedServicePath.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
 
             }
         }

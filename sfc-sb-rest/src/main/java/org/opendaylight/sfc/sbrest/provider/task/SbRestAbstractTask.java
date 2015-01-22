@@ -35,7 +35,6 @@ abstract public class SbRestAbstractTask implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("***** jsonObject=" + jsonObject);
         if (jsonObject != null) {
             submitTasks(jsonObject);
         }
@@ -45,7 +44,6 @@ abstract public class SbRestAbstractTask implements Runnable {
     private void submitTasks(String json) {
         if (this.restUriList != null && this.restUriList.size() > 0) {
             for (String restUri : this.restUriList) {
-                System.out.println("***** new WsTask: uri=" + restUri + " operation=" + restOperation.toString() + " json=" + json);
                 taskExecutor.submit(new WsTask(restUri, restOperation, json));
             }
         }

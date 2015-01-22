@@ -38,7 +38,6 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
-        System.out.println("\n***SB REST sf listener***\n");
         printTraceStart(LOG);
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -46,8 +45,6 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunction) {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
-                System.out.println("*** sb-Original Service function: " +
-                        originalServiceFunction.getName());
                 LOG.debug("\n########## Original Service function: {}",
                         originalServiceFunction.getName());
             }
@@ -56,13 +53,11 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
-        System.out.println("*** entrySet size:"+dataCreatedObject.entrySet().size());
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("*** created Service Function: {}", createdServiceFunction.getName());
-                System.out.println("*** sb-created Service Function: " + createdServiceFunction.getName());
 
                 // Deprecated, this cycle goes to SbRest*Task
                 /*
@@ -86,9 +81,7 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 }
                 */
                 Runnable task = new SbRestSfTask(RestOperation.POST, createdServiceFunction, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.POST + " " + createdServiceFunction.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
             }
         }
 
@@ -100,12 +93,9 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("\n########## Modified Service Function Name {}",
                         updatedServiceFunction.getName());
-                System.out.println("*** sb-updated Service Function: " + updatedServiceFunction.getName());
 
                 Runnable task = new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.PUT + " " + updatedServiceFunction.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
             }
         }
 
@@ -119,12 +109,9 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
                 LOG.error("XXXXXXX Service Function Name is {}", originalServiceFunction.getName());
 
-                System.out.println("*** sb-deleted Service Function: " + originalServiceFunction.getName());
 
                 Runnable task = new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.DELETE + " " + originalServiceFunction.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
 
             }
         }

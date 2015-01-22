@@ -29,7 +29,8 @@ public class SbRestSffTask extends SbRestAbstractTask {
         ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
 
         this.restUriList = new ArrayList<>();
-        this.restUriList.add(obj.getRestUri().getValue());
+        this.restUriList.add(obj.getRestUri().getValue()
+                + "/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/" + obj.getName());
     }
 
 }

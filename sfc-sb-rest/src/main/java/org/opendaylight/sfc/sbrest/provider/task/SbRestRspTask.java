@@ -57,12 +57,13 @@ public class SbRestRspTask extends SbRestAbstractTask {
         }
         // Map for search by SFF name
         Map<String, ServiceFunctionForwarder> sffMap = new HashMap<>();
-        for(ServiceFunctionForwarder sff : sffList){
+        for (ServiceFunctionForwarder sff : sffList) {
             sffMap.put(sff.getName(), sff);
         }
-        for(String sffRef : sffRefList){
-            if(sffMap.containsKey(sffRef)){
-                this.restUriList.add(sffMap.get(sffRef).getRestUri().getValue());
+        for (String sffRef : sffRefList) {
+            if (sffMap.containsKey(sffRef)) {
+                this.restUriList.add(sffMap.get(sffRef).getRestUri().getValue()
+                        + "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/" + obj.getName());
             }
         }
 

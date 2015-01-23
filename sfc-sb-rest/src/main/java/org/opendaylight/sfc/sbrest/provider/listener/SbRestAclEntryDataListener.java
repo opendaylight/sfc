@@ -56,7 +56,7 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof AccessList) {
                 AccessList createdAccessList = (AccessList) entry.getValue();
-                LOG.debug("*** created Access List: {}", createdAccessList.getAclName());
+                LOG.debug("\n########## Created Access List Name: {}", createdAccessList.getAclName());
 
                 Runnable task = new SbRestAclTask(RestOperation.PUT, createdAccessList, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
@@ -69,7 +69,7 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
             if ((entry.getValue() instanceof AccessList)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 AccessList updatedAccessList = (AccessList) entry.getValue();
-                LOG.debug("\n########## Modified Access List Name {}",
+                LOG.debug("\n########## Modified Access List Name: {}",
                         updatedAccessList.getAclName());
 
                 Runnable task = new SbRestAclTask(RestOperation.PUT, updatedAccessList, opendaylightSfc.getExecutor());
@@ -84,7 +84,7 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof AccessList) {
 
                 AccessList originalAccessList = (AccessList) dataObject;
-                LOG.error("\n########## Deleted Access List Name {}", originalAccessList.getAclName());
+                LOG.debug("\n########## Deleted Access List Name: {}", originalAccessList.getAclName());
 
                 Runnable task = new SbRestAclTask(RestOperation.DELETE, originalAccessList, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);

@@ -17,16 +17,10 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcReflection;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessListsState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.ActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListStateKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifier;
@@ -70,12 +64,8 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
         super(params, paramsTypes, m);
     }
 
-    public static SfcProviderAclAPI getPut(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderAclAPI(params, paramsTypes, "putAcl");
-    }
-
-    public static SfcProviderAclAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderAclAPI(params, paramsTypes, "readAcl");
+    public static SfcProviderAclAPI getReadAccessList(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderAclAPI(params, paramsTypes, "readAccessList");
     }
 
     public static SfcProviderAclAPI getReadAccessListState(Object[] params, Class[] paramsTypes) {
@@ -90,56 +80,53 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
         return new SfcProviderAclAPI(params, paramsTypes, "deleteClassifierFromAccessListState");
     }
 
-    @Deprecated
-    public static SfcProviderAclAPI getSetAclEntriesSfcAction(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderAclAPI(params, paramsTypes, "setAclEntriesSfcAction");
+    /**
+     * This method reads a Access List from DataStore
+     * <p>
+     * @param accessListName Access List name
+     * @return ACL object or null if not found
+     */
+    @SuppressWarnings("unused")
+    @SfcReflection
+    protected AccessList readAccessList(String accessListName) {
+        printTraceStart(LOG);
+        AccessList acl;
+        InstanceIdentifier<AccessList> aclIID;
+        AccessListKey accessListKey = new AccessListKey(accessListName);
+        aclIID = InstanceIdentifier.builder(AccessLists.class)
+                .child(AccessList.class, accessListKey).build();
+
+        acl = SfcDataStoreAPI.readTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);
+
+        printTraceStop(LOG);
+        return acl;
     }
 
-    protected boolean putAcl(AccessList acl) {
-        boolean ret = false;
+
+    /**
+     * Wrapper API to read access list from Datastore
+     * <p>
+     * @param accessListName Access List name
+     * @return an AccessList object, null otherwise
+     */
+    public static AccessList readAccessListExecutor(String accessListName) {
+
         printTraceStart(LOG);
-        if (dataBroker != null) {
-
-            InstanceIdentifier<AccessList> aclEntryIID =
-                    InstanceIdentifier.builder(AccessLists.class)
-                            .child(AccessList.class, acl.getKey())
-                            .toInstance();
-
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    aclEntryIID, acl, true);
-            writeTx.commit();
-            ret = true;
+        AccessList ret = null;
+        Object[] functionParamsObj = {accessListName};
+        Class[] functionParamsClass = {String.class};
+        Future future  = ODL_SFC.getExecutor().submit(SfcProviderAclAPI
+                .getReadAccessList(functionParamsObj, functionParamsClass));
+        try {
+            ret = (AccessList) future.get();
+            LOG.debug("getReadAccessList: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
-    }
-
-    protected AccessList readAcl(String aclName) {
-        printTraceStart(LOG);
-        AccessList acl = null;
-        InstanceIdentifier<AccessList> aclIID;
-        AccessListKey aclKey =
-                new AccessListKey(aclName);
-        aclIID = InstanceIdentifier.builder(AccessLists.class)
-                .child(AccessList.class, aclKey).build();
-
-        if (dataBroker != null) {
-            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<AccessList> aclDataObject;
-            try {
-                aclDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, aclIID).get();
-                if (aclDataObject != null
-                        && aclDataObject.isPresent()) {
-                    acl = aclDataObject.get();
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read ACL " +
-                        "configuration {}", aclName);
-            }
-        }
-        printTraceStop(LOG);
-        return acl;
     }
 
     /**
@@ -313,52 +300,5 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return ret;
-    }
-
-    /**
-     * This method updates the AclEntries sfcAction to
-     * the target ServiceFunctionPath name.
-     * <p/>
-     *
-     * @param aclName Access List name
-     * @param sfpName Service Function Path name
-     * @return Nothing.
-     */
-    @Deprecated
-    protected void setAclEntriesSfcAction(String aclName, String sfpName) {
-        AccessList accessList = null;
-        accessList = this.readAcl(aclName);
-
-        if (accessList != null) {
-            ArrayList<AccessListEntries> aceArrayList = new ArrayList<>();
-            aceArrayList.addAll(accessList.getAccessListEntries());
-
-            for (AccessListEntries ace : aceArrayList) {
-                AclRenderedServicePathBuilder aclRenderedServicePathBuilder = new AclRenderedServicePathBuilder();
-                if (sfpName != null) {
-                    aclRenderedServicePathBuilder.setRenderedServicePath(sfpName);
-                } else {
-                    aclRenderedServicePathBuilder.setRenderedServicePath("");
-                }
-
-                Actions1Builder actions1Builder = new Actions1Builder();
-                actions1Builder.setSfcAction(aclRenderedServicePathBuilder.build());
-
-                ActionsBuilder actionsBuilder = new ActionsBuilder();
-                actionsBuilder.addAugmentation(Actions1.class, actions1Builder.build());
-
-                AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder(ace);
-                accessListEntriesBuilder.setActions(actionsBuilder.build());
-
-                InstanceIdentifier<AccessListEntries> aceIID = InstanceIdentifier.builder(AccessLists.class)
-                        .child(AccessList.class, accessList.getKey())
-                        .child(AccessListEntries.class, ace.getKey()).build();
-
-                WriteTransaction aceWriteTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
-                aceWriteTx.merge(LogicalDatastoreType.CONFIGURATION,
-                        aceIID, accessListEntriesBuilder.build(), true);
-                aceWriteTx.commit();
-            }
-        }
     }
 }

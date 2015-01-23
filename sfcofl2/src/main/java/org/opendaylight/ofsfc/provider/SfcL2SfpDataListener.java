@@ -34,15 +34,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
+public class SfcL2SfpDataListener extends SfcL2AbstractDataListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfpDataListener.class);
-    private static final OpenflowSfcRenderer ODL_SFC = OpenflowSfcRenderer.getOpendaylightSfcObj();
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2SfpDataListener.class);
+    private SfcL2FlowProgrammer sfcL2FlowProgrammer;
 
-    public OpenflowSfpDataListener(DataBroker dataBroker) {
+    public SfcL2SfpDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.SFP_ENTRY_IID);
         registerAsDataChangeListener();
+        this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
     }
 
     private void installDefaultNextHopEntry(long sfpId, ServicePathHop servicePathHop, boolean isAddFlow) {
@@ -52,7 +53,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
         LocatorType curSFLocatorType;
         MacAddressLocator curSFMacAddressLocator;
 
-        OpenflowSfcFlowProgrammer.getInstance().setNodeInfo(servicePathHop.getServiceFunctionForwarder());
+        this.sfcL2FlowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
 
         ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(servicePathHop.getServiceFunctionName());
         List<SfDataPlaneLocator> curSfDataPlaneLocatorList = sf.getSfDataPlaneLocator();
@@ -66,8 +67,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 curSFSrcVlan = curSFMacAddressLocator.getVlanId();
 
                 // install ingress flow for each of the dataplane locator
-                OpenflowSfcFlowProgrammer.getInstance().configureDefaultNextHopFlow(sfpId, curSFSrcMac, curSFSrcVlan,
-                        isAddFlow);
+                this.sfcL2FlowProgrammer.configureDefaultNextHopFlow(sfpId, curSFSrcMac, curSFSrcVlan, isAddFlow);
             }
             break;
         }
@@ -131,7 +131,6 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
 
     private void configureSffFlows(ServiceFunctionPaths createdServiceFunctionPaths, boolean isAddFlow) {
         Iterator<ServiceFunctionPath> sfpIter = createdServiceFunctionPaths.getServiceFunctionPath().iterator();
-        OpenflowSfcFlowProgrammer flowProgrammer = OpenflowSfcFlowProgrammer.getInstance();
         ServicePathHop servicePathHopPrev = null;
         Long sfpId = 0L;
         // Each Service Function Path configured
@@ -150,9 +149,9 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                 servicePathHopCur = servicePathHopIter.next();
 
                 curSFFName = servicePathHopCur.getServiceFunctionForwarder();
-                flowProgrammer.setNodeInfo(curSFFName);
-                flowProgrammer.configureIngressTransportFlow(isAddFlow);
-                flowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);
+                this.sfcL2FlowProgrammer.setNodeInfo(curSFFName);
+                this.sfcL2FlowProgrammer.configureIngressTransportFlow(isAddFlow);
+                this.sfcL2FlowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);
 
                 ServiceFunctionForwarder curSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(curSFFName);
 
@@ -162,7 +161,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                     if (curSFFLocatorType.getImplementedInterface().equals(Mac.class)) {
                         int curSFFVlan = ((MacAddressLocator) curSffDataPlanelocator.getDataPlaneLocator()
                                 .getLocatorType()).getVlanId();
-                        flowProgrammer.configureIngressFlow(curSFFVlan, isAddFlow);
+                        this.sfcL2FlowProgrammer.configureIngressFlow(curSFFVlan, isAddFlow);
                         // TODO add support for multiple data plane locators
                     }
                 }
@@ -175,7 +174,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                     if (curSFLocatorType.getImplementedInterface().equals(Mac.class)) {
                         int curSFVlan = ((MacAddressLocator) curSfDataPlanelocator.getLocatorType()).getVlanId();
                         // install ingress flow for dataplane locator of the SF
-                        flowProgrammer.configureIngressFlow(curSFVlan, isAddFlow);
+                        this.sfcL2FlowProgrammer.configureIngressFlow(curSFVlan, isAddFlow);
 
                         // TODO add support for multiple data plane locators
                     }
@@ -209,8 +208,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                     LocatorType prevSFLocatorType = prevSFDataPlanelocator.getLocatorType();
                                     if (prevSFLocatorType.getImplementedInterface().equals(Mac.class)) {
                                         prevSFSrcMac = ((MacAddressLocator) prevSFLocatorType).getMac().getValue();
-                                        flowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMac,
-                                                dstVlan, isAddFlow);
+                                        this.sfcL2FlowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMac, dstVlan, isAddFlow);
 
                                         // TODO add support for multiple data
                                         // plane
@@ -233,8 +231,7 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                 for (SffDataPlaneLocator curSffDataPlanelocator : curSffDataPlanelocatorList) {
                                     String srcMacSff = ((MacAddressLocator) curSffDataPlanelocator
                                             .getDataPlaneLocator().getLocatorType()).getMac().getValue();
-                                    flowProgrammer.configureNextHopFlow(sfp.getPathId(), srcMacSff, dstMac, dstVlan,
-                                            isAddFlow);
+                                    this.sfcL2FlowProgrammer.configureNextHopFlow(sfp.getPathId(), srcMacSff, dstMac, dstVlan, isAddFlow);
                                 }
 
                                 // TODO add support for multiple data plane
@@ -253,14 +250,13 @@ public class OpenflowSfpDataListener extends OpenflowAbstractDataListener {
                                 int dstVlanSff = ((MacAddressLocator) prevSFFDataPlanelocator.getDataPlaneLocator()
                                         .getLocatorType()).getVlanId();
                                 // Install one flow in the old Sff
-                                flowProgrammer.setNodeInfo(servicePathHopPrev.getServiceFunctionForwarder());
+                                this.sfcL2FlowProgrammer.setNodeInfo(servicePathHopPrev.getServiceFunctionForwarder());
 
                                 for (SfDataPlaneLocator prevSFDataPlanelocator : prevSFDataPlaneLocatorList) {
                                     LocatorType prevSFLocatorType = prevSFDataPlanelocator.getLocatorType();
                                     if (prevSFLocatorType.getImplementedInterface().equals(Mac.class)) {
                                         prevSFSrcMac = ((MacAddressLocator) prevSFLocatorType).getMac().getValue();
-                                        flowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMacSff,
-                                                dstVlanSff, isAddFlow);
+                                        this.sfcL2FlowProgrammer.configureNextHopFlow(sfp.getPathId(), prevSFSrcMac, dstMacSff, dstVlanSff, isAddFlow);
                                     }
                                 }
 

@@ -81,9 +81,6 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionTypes>  SFT_IID =
            InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-    public static final InstanceIdentifier<AccessLists>  ACL_IID =
-            InstanceIdentifier.builder(AccessLists.class).build();
-
     public static final InstanceIdentifier<AccessList>  ACL_ENTRY_IID =
             InstanceIdentifier.builder(AccessLists.class)
                     .child(AccessList.class).build();

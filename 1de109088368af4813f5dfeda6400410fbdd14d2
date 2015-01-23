@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_7e2ffbf6",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestRspTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-01-23T06:36:29Z",
+      "side": 1,
+      "message": "I do not understand this code with all its loops and such. There is an API to read a SFF from the data store using its name\n\npublic static ServiceFunctionForwarder readServiceFunctionForwarderExecutor(String sffName)",
+      "revId": "1de109088368af4813f5dfeda6400410fbdd14d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -10,6 +10,8 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -68,6 +70,10 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionPath>  SFP_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionPaths.class)
                     .child(ServiceFunctionPath.class).build();
+
+    public static final InstanceIdentifier<RenderedServicePath>  RSP_ENTRY_IID =
+            InstanceIdentifier.builder(RenderedServicePaths.class)
+                    .child(RenderedServicePath.class).build();
 
     public static final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
            InstanceIdentifier.builder(ServiceFunctionChains.class).build();

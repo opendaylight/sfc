@@ -29,7 +29,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
     public SbRestRspEntryDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
         setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SF_ENTRY_IID);
+        setInstanceIdentifier(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener();
     }
 

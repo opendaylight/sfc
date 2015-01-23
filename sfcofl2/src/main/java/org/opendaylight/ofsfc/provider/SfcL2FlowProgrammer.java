@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -81,11 +82,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @version 0.1
  * @since 2014-08-07
  */
-public class OpenflowSfcFlowProgrammer {
+public class SfcL2FlowProgrammer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowSfcFlowProgrammer.class);
-    private static OpenflowSfcFlowProgrammer instance = null;
-    private final AtomicInteger atomicInteger = new AtomicInteger();
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammer.class);
 
     // Which bits in the metadata field to set, used for the Bucket and allows
     // 4095 sfpid's
@@ -113,10 +112,6 @@ public class OpenflowSfcFlowProgrammer {
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
     private static final int FLOW_PRIORITY_DEFAULT_NEXT_HOP = 100;
 
-    private short tableBase = (short) 0;
-    private boolean isReady;
-    private String sffNodeName;
-
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
     private static final int QUEUE_SIZE = 50;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
@@ -129,22 +124,19 @@ public class OpenflowSfcFlowProgrammer {
     private static final String LOGSTR_NOT_READY_TO_WRITE = "{} NOT ready to write yet";
     private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
 
+    private short tableBase = (short) 0;
+    private boolean isReady;
+    private String sffNodeName;
+    private final AtomicInteger atomicInteger = new AtomicInteger();
+    private RpcProviderRegistry rpcProvider;
+
     private ExecutorService threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
             SCHEDULED_THREAD_POOL_SIZE, ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
 
-    public static void createFlowProgrammer() {
-        if (instance == null) {
-            instance = new OpenflowSfcFlowProgrammer();
-        }
-    }
-
-    public static OpenflowSfcFlowProgrammer getInstance() {
-        // TODO make it threadsafe
-        return instance;
-    }
-
-    public OpenflowSfcFlowProgrammer() {
+    // TODO The rpcProvider attribute is temporary until this class is refactored to use the SfcProvider.SfcDataStoreAPI
+    public SfcL2FlowProgrammer(RpcProviderRegistry rpcProvider) {
+        this.rpcProvider = rpcProvider;
         isReady = false;
     }
 
@@ -1015,8 +1007,7 @@ public class OpenflowSfcFlowProgrammer {
         builder.setFlowTable(new FlowTableRef(tableInstanceId));
         builder.setFlowRef(new FlowRef(flowPath));
         builder.setStrict(true);
-        OpenflowSfcRenderer.getOpendaylightSfcObj().getRpcProvider().getRpcService(SalFlowService.class)
-                .removeFlow(builder.build());
+        this.rpcProvider.getRpcService(SalFlowService.class).removeFlow(builder.build());
     }
 
     private void writeFlowToConfig(FlowBuilder flow) {
@@ -1044,8 +1035,7 @@ public class OpenflowSfcFlowProgrammer {
         builder.setFlowTable(new FlowTableRef(tableInstanceId));
         builder.setFlowRef(new FlowRef(flowPath));
 
-        OpenflowSfcRenderer.getOpendaylightSfcObj().getRpcProvider().getRpcService(SalFlowService.class)
-                .addFlow(builder.build());
+        this.rpcProvider.getRpcService(SalFlowService.class).addFlow(builder.build());
     }
 
     private String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,

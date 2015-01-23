@@ -32,15 +32,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
+public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
 
     private static final short DEFAULT_MASK = 32;
-    public static final String SUBNET_MASK = "/";
+    private static final String SUBNET_MASK = "/";
+    private SfcL2FlowProgrammer sfcL2FlowProgrammer;
 
-    public OpenflowAclDataListener(DataBroker dataBroker) {
+    public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.SFP_ENTRY_IID);
         registerAsDataChangeListener();
+        this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
     }
 
     @Override
@@ -99,8 +101,6 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
         String dstIpAddress = null;
         byte protocol = (byte) 0;
 
-        OpenflowSfcFlowProgrammer flowProgrammer = OpenflowSfcFlowProgrammer.getInstance();
-
         Iterator<AccessList> aclIter = createdAccessLists.getAccessList().iterator();
         while (aclIter.hasNext()) {
             AccessList acl = aclIter.next();
@@ -158,8 +158,8 @@ public class OpenflowAclDataListener extends OpenflowAbstractDataListener {
 
                 for (ServicePathHop servicePathHop : servicePathHopList) {
 
-                    flowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
-                    flowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort,
+                    this.sfcL2FlowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
+                    this.sfcL2FlowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort,
                             dstPort, protocol, pathId, isAddFlow);
                 }
             }

@@ -15,7 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class OpenflowAbstractDataListener implements DataChangeListener {
+public abstract class SfcL2AbstractDataListener implements DataChangeListener {
 
     private DataBroker dataBroker;
     private InstanceIdentifier<?> iID;

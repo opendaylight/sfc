@@ -28,6 +28,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${mdsal.version}">odl-flow-model</feature>
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
     </feature>
     

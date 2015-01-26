@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Konstantin Blagov <kblagov@cisco.com>
+Submitted-by: Konstantin Blagov <kblagov@cisco.com>
+Submitted-at: Mon, 26 Jan 2015 17:03:43 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/14506
+Project: sfc
+Branch: refs/heads/master

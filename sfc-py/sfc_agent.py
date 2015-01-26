@@ -107,7 +107,7 @@ def get_sffs():
     return jsonify(sff_topo)
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT', 'POST'])
 def create_paths():
     if not request.json:
         abort(400)
@@ -155,7 +155,7 @@ def build_data_plane_service_path(service_path):
     return
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>', methods=['PUT'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>', methods=['PUT', 'POST'])
 def create_path(sfpname):
     # global path
     local_path = get_path()
@@ -212,7 +212,7 @@ def delete_path(sfpname):
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
-           methods=['PUT'])
+           methods=['PUT', 'POST'])
 def create_sff(sffname):
     """
     This function creates a SFF on-the-fly when it receives a PUT request from ODL. The SFF runs on a
@@ -302,7 +302,7 @@ def delete_sff(sffname):
     return '', 204
 
 
-@app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['PUT'])
+@app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['PUT', 'POST'])
 def create_sffs():
     global sff_topo
     if not request.json:
@@ -331,7 +331,7 @@ def delete_sffs():
     local_data_plane_path = {}
     return jsonify({'sff': sff_topo}), 201
 
-@app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT'])
+@app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT', 'POST'])
 def apply_one_acl(aclname):
     if sys.platform.startswith('linux'):
         nfq_class_manager = get_nfq_class_manager_ref()

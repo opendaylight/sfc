@@ -1,11 +1,13 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+
+import java.util.List;
 
 public class RspExporterFactory implements ExporterFactory {
     @Override
@@ -16,6 +18,8 @@ public class RspExporterFactory implements ExporterFactory {
 
 class RspExporter implements Exporter {
 
+    ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public String exportJson(DataObject dataObject) {
 
@@ -23,29 +27,28 @@ class RspExporter implements Exporter {
         if (dataObject instanceof RenderedServicePath) {
             RenderedServicePath rsp = (RenderedServicePath) dataObject;
 
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode node = mapper.createObjectNode();
+            node.put("context-metadata", rsp.getContextMetadata());
+            node.put("name", rsp.getName());
+            node.put("path-id", rsp.getPathId());
+            node.put("parent-service-function-path", rsp.getParentServiceFunctionPath());
+            node.put("service-chain-name", rsp.getServiceChainName());
+            node.put("starting-index", rsp.getStartingIndex());
+            node.put("variable-metadata", rsp.getVariableMetadata());
 
-            ObjectNode node = mapper.getNodeFactory().objectNode();
-            node.put("context-metadata", rsp.getContextMetadata())
-                    .put("name", rsp.getName())
-                    .put("path-id", rsp.getPathId())
-                    .put("parent-service-function-path", rsp.getParentServiceFunctionPath())
-                    .put("service-chain-name", rsp.getServiceChainName())
-                    .put("starting-index", rsp.getStartingIndex())
-                    .put("variable-metadata", rsp.getVariableMetadata());
-
-            /*
-            ArrayNode hopArray = mapper.getNodeFactory().arrayNode();
-            for (RenderedServicePathHop e : rsp.getRenderedServicePathHop()) {
-                ObjectNode o = mapper.getNodeFactory().objectNode();
-                o.put("hop-number", e.getHopNumber())
-                        .put("service-function-forwarder", e.getServiceFunctionForwarder())
-                        .put("service-function-name", e.getServiceFunctionName())
-                        .put("service-index", e.getServiceIndex());
-                hopArray.add(o);
+            List<RenderedServicePathHop> hopList = rsp.getRenderedServicePathHop();
+            if (hopList != null) {
+                ArrayNode hopArray = mapper.createArrayNode();
+                for (RenderedServicePathHop e : hopList) {
+                    ObjectNode o = mapper.createObjectNode();
+                    o.put("hop-number", e.getHopNumber());
+                    o.put("service-function-forwarder", e.getServiceFunctionForwarder());
+                    o.put("service-function-name", e.getServiceFunctionName());
+                    o.put("service-index", e.getServiceIndex());
+                    hopArray.add(o);
+                }
+                node.putArray("rendered-service-path-hop").addAll(hopArray);
             }
-            node.putArray("rendered-service-path-hop").addAll(hopArray);
-            */
 
             ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
 
@@ -63,9 +66,7 @@ class RspExporter implements Exporter {
         if (dataObject instanceof RenderedServicePath) {
             RenderedServicePath obj = (RenderedServicePath) dataObject;
 
-            ObjectMapper mapper = new ObjectMapper();
-
-            ObjectNode node = mapper.getNodeFactory().objectNode();
+            ObjectNode node = mapper.createObjectNode();
             node.put("name", obj.getName());
             ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
         } else {

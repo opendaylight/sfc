@@ -23,9 +23,9 @@ public class SbRestRspTask extends SbRestAbstractTask {
     public SbRestRspTask(RestOperation restOperation, RenderedServicePath dataObject, ExecutorService odlExecutor) {
 
         super(restOperation, odlExecutor);
-
         this.exporterFactory = new RspExporterFactory();
         this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        //System.out.println("*** RSP JSON:" + this.jsonObject);
     }
 
     @Override

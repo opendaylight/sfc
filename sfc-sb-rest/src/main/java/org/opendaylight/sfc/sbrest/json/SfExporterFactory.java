@@ -1,9 +1,9 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -26,31 +26,24 @@ class SfExporter implements Exporter {
             ObjectMapper mapper = new ObjectMapper();
 
             ObjectNode node = mapper.createObjectNode();
-            if (node != null) {
-                node.put("name", sf.getName());
-//                node.put("ip-mgmt-address", Util.convertIpAddress(sf.getIpMgmtAddress()));
-//                node.put("rest-uri", sf.getRestUri().getValue());
-//                node.put("type", "service-function-type:" + sf.getType().getSimpleName().toLowerCase());
-//                node.put("nsh-aware", sf.isNshAware());
-//                node.put("request_reclassification", sf.isRequestReclassification());
+            node.put("name", sf.getName());
+            node.put("ip-mgmt-address", Util.convertIpAddress(sf.getIpMgmtAddress()));
+            if (sf.getRestUri() != null)
+                node.put("rest-uri", sf.getRestUri().getValue());
+            if (sf.getType() != null)
+                node.put("type", "service-function-type:" + sf.getType().getSimpleName().toLowerCase());
+            node.put("nsh-aware", sf.isNshAware());
+            node.put("request-reclassification", sf.isRequestReclassification());
 
-                /*
-                if (sf.getSfDataPlaneLocator() != null) {
-                    ArrayNode locatorArray = mapper.createArrayNode();
-                    for (SfDataPlaneLocator e : sf.getSfDataPlaneLocator()) {
-                        //ObjectNode o = Util.ObjectNodeFromSfDataPlaneLocator(e);
-                        ObjectNode o = mapper.getNodeFactory().objectNode();
-                        o.put("test-name", e.getName());
-                        locatorArray.add(o);
-                    }
-                    node.putArray("sf-data-plane-locator").addAll(locatorArray);
+            if (sf.getSfDataPlaneLocator() != null) {
+                ArrayNode locatorArray = mapper.createArrayNode();
+                for (SfDataPlaneLocator e : sf.getSfDataPlaneLocator()) {
+                    ObjectNode o = Util.ObjectNodeFromSfDataPlaneLocator(e);
+                    locatorArray.add(o);
                 }
-                */
-
-                ret = "{ \"service-function\" : " + node.toString() + " }";
-            }else{
-                throw new NullPointerException("*** node is null");
+                node.putArray("sf-data-plane-locator").addAll(locatorArray);
             }
+            ret = "{ \"service-function\" : " + node.toString() + " }";
 
         } else {
             throw new IllegalArgumentException("Argument is not an instance of ServiceFunction");

@@ -88,12 +88,8 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionForwarder originalServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
                 LOG.error("XXXXXXX Sff Name is {}", originalServiceFunctionForwarder.getName());
 
-                System.out.println("*** sb-deleted Sff: " + originalServiceFunctionForwarder.getName());
-
                 Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder, opendaylightSfc.getExecutor());
-                System.out.println("*** submitting task: " + RestOperation.DELETE + " " + originalServiceFunctionForwarder.getName());
                 opendaylightSfc.getExecutor().submit(task);
-                System.out.println("*** task submitted");
 
             }
         }

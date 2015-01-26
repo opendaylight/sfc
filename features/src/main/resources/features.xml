@@ -47,6 +47,7 @@
     <feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfc :: OpenFlowL2 '>
         <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
         <feature version='${project.version}'>odl-sfc-provider</feature>
+        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
     </feature>
     <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>

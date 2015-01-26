@@ -26,7 +26,23 @@
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
                         <name>binding-data-broker</name>
                     </data-broker>
+                </module>
 
+                <module>
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfcofl2-provider:impl">
+                        sfc:sfcofl2-provider-impl
+                    </type>
+                    <name>sfcofl2-provider-impl</name>
+
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
                 </module>
 
                 <module>

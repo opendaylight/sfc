@@ -58,7 +58,7 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
                 AccessList createdAccessList = (AccessList) entry.getValue();
                 LOG.debug("\n########## Created Access List Name: {}", createdAccessList.getAclName());
 
-                Runnable task = new SbRestAclTask(RestOperation.PUT, createdAccessList, opendaylightSfc.getExecutor());
+                Runnable task = new SbRestAclTask(RestOperation.POST, createdAccessList, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
             }
         }

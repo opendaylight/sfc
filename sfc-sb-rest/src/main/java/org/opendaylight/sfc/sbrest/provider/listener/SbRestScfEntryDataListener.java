@@ -63,7 +63,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()){
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
 
-                    Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
+                    Runnable task = new SbRestAclTask(RestOperation.POST, accessList,
                             createdServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
                     opendaylightSfc.getExecutor().submit(task);
                 }

@@ -35,6 +35,7 @@ abstract public class SbRestAbstractTask implements Runnable {
 
     @Override
     public void run() {
+        //System.out.println("***** Task JSON:" + jsonObject);
         if (jsonObject != null) {
             submitTasks(jsonObject);
         }

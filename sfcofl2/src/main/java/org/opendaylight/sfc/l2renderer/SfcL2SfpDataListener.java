@@ -7,7 +7,7 @@
  *
  */
 
-package org.opendaylight.ofsfc.provider;
+package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;

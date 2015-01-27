@@ -7,7 +7,7 @@
  *
  */
 
-package org.opendaylight.ofsfc.provider;
+package org.opendaylight.sfc.l2renderer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.math.BigInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils;
+import org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;

@@ -1,9 +1,9 @@
 // vi: set smarttab et sw=4 tabstop=4:
-module sfcofl2-provider-impl {
+module sfc-l2renderer-impl {
 
   yang-version 1;
-  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfcofl2-provider:impl";
-  prefix "sfcofl2-provider-impl";
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-l2renderer:impl";
+  prefix "sfc-l2renderer-impl";
 
   import config { prefix config; revision-date 2013-04-05; }
   import rpc-context { prefix rpcx; revision-date 2013-06-17; }
@@ -12,7 +12,7 @@ module sfcofl2-provider-impl {
 
   description
       "This module contains the base YANG definitions for
-      sfcofl2-provider impl implementation.";
+      sfc-l2renderer impl implementation.";
 
   revision "2014-09-01" {
       description
@@ -20,18 +20,18 @@ module sfcofl2-provider-impl {
   }
 
   // This is the definition of the service implementation as a module identity
-  identity sfcofl2-provider-impl {
+  identity sfc-l2renderer-impl {
       base config:module-type;
 
       // Specifies the prefix for generated java classes.
-      config:java-name-prefix SfcOFL2Provider;
+      config:java-name-prefix SfcL2Renderer;
   }
 
 
   // Augments the 'configuration' choice node under modules/module.
   augment "/config:modules/config:module/config:configuration" {
-    case sfcofl2-provider-impl {
-      when "/config:modules/config:module/config:type = 'sfcofl2-provider-impl'";
+    case sfc-l2renderer-impl {
+      when "/config:modules/config:module/config:type = 'sfc-l2renderer-impl'";
 
       //wires in the data-broker service
       container data-broker {

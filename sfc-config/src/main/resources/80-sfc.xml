@@ -29,10 +29,10 @@
                 </module>
 
                 <module>
-                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfcofl2-provider:impl">
-                        sfc:sfcofl2-provider-impl
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-l2renderer:impl">
+                        sfc:sfc-l2renderer-impl
                     </type>
-                    <name>sfcofl2-provider-impl</name>
+                    <name>sfc-l2renderer-impl</name>
 
                     <rpc-registry>
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>

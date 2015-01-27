@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
  */
-package org.opendaylight.ofsfc.provider;
+package org.opendaylight.sfc.l2renderer;
 
 import java.util.Iterator;
 import java.util.List;

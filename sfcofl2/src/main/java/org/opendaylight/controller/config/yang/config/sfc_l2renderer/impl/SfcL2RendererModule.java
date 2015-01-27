@@ -6,24 +6,24 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
  */
-package org.opendaylight.controller.config.yang.config.sfcofl2_provider.impl;
+package org.opendaylight.controller.config.yang.config.sfc_l2renderer.impl;
 
-import org.opendaylight.ofsfc.provider.SfcL2Renderer;
+import org.opendaylight.sfc.l2renderer.SfcL2Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOFL2ProviderModule extends org.opendaylight.controller.config.yang.config.sfcofl2_provider.impl.AbstractSfcOFL2ProviderModule {
+public class SfcL2RendererModule extends org.opendaylight.controller.config.yang.config.sfc_l2renderer.impl.AbstractSfcL2RendererModule {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcOFL2ProviderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2RendererModule.class);
 
-    public SfcOFL2ProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
+    public SfcL2RendererModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
                                  org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
 
-    public SfcOFL2ProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
+    public SfcL2RendererModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
                                  org.opendaylight.controller.config.api.DependencyResolver dependencyResolver,
-                                 org.opendaylight.controller.config.yang.config.sfcofl2_provider.impl.SfcOFL2ProviderModule oldModule,
+                                 org.opendaylight.controller.config.yang.config.sfc_l2renderer.impl.SfcL2RendererModule oldModule,
                                  java.lang.AutoCloseable oldInstance) {
         super(identifier, dependencyResolver, oldModule, oldInstance);
     }

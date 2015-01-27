@@ -7,7 +7,7 @@
  *
  */
 
-package org.opendaylight.ofsfc.provider;
+package org.opendaylight.sfc.l2renderer;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

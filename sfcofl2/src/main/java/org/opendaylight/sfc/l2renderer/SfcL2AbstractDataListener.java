@@ -7,7 +7,7 @@
  *
  */
 
-package org.opendaylight.ofsfc.provider;
+package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;

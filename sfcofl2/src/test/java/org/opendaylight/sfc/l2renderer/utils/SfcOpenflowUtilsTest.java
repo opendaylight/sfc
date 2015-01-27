@@ -1,8 +1,10 @@
-package org.opendaylight.ofsfc.provider.utils;
+package org.opendaylight.sfc.l2renderer.utils;
 
 import java.util.Random;
+
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,14 +18,14 @@ import static junitparams.JUnitParamsRunner.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createOutputAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createPopVlanAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createPushVlanAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createSetDlDstAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createSetDlSrcAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createSetDstVlanAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createSetGroupAction;
-import static org.opendaylight.ofsfc.provider.utils.SfcOpenflowUtils.createVlanMatch;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createOutputAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createPopVlanAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createPushVlanAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createSetDlDstAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createSetDlSrcAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createSetDstVlanAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createSetGroupAction;
+import static org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils.createVlanMatch;
 
 
 @RunWith(JUnitParamsRunner.class)

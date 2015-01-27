@@ -256,6 +256,9 @@
                         <Export-Package>
                             org.opendaylight.sfc.*;
                         </Export-Package>
+                        <Import-Package>
+                            org.opendaylight.controller.sal.utils;
+                        </Import-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>

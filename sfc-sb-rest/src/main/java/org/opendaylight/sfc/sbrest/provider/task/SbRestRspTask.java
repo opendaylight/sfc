@@ -24,8 +24,13 @@ public class SbRestRspTask extends SbRestAbstractTask {
 
         super(restOperation, odlExecutor);
         this.exporterFactory = new RspExporterFactory();
-        this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        if (restOperation.equals(RestOperation.DELETE)) {
+            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
+        } else {
+            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        }
         //System.out.println("*** RSP JSON:" + this.jsonObject);
+        setRestUriList(dataObject);
     }
 
     @Override

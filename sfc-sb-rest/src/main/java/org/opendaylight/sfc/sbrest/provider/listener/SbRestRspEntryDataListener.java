@@ -50,7 +50,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
             }
         }
 
-        // SF CREATION
+        // RSP CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
 
@@ -64,7 +64,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
             }
         }
 
-        // SF UPDATE
+        // RSP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
             if ((entry.getValue() instanceof RenderedServicePath)
@@ -79,7 +79,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         }
 
 
-        // SF DELETION
+        // RSP DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);

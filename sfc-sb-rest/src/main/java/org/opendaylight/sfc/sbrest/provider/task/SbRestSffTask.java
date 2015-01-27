@@ -22,6 +22,7 @@ public class SbRestSffTask extends SbRestAbstractTask {
 
         this.exporterFactory = new SffExporterFactory();
         this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        setRestUriList(dataObject);
     }
 
     @Override

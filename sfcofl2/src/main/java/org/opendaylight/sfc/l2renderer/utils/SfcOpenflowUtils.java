@@ -36,6 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class SfcOpenflowUtils {
 
     private static final int ETHERTYPE_VLAN = 0x8100;
+    private static final int DEFAULT_SB_CAPACITY = 16;
+    private static final int FLOWREF_CAPACITY = 256;
+    private static final String FLOWID_PREFIX = "SFC";
+    private static final String FLOWID_SEPARATOR = ".";
 
     public static Action createSetDlSrcAction(String mac, int order) {
         ActionBuilder ab = createActionBuilder(order);
@@ -121,6 +125,46 @@ public class SfcOpenflowUtils {
         vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
 
         return vlanMatchBuilder.build();
+    }
+
+    public static String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,
+            final short srcPort, final short dstPort, final byte protocol, final long sfpId) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+                .append(FLOWID_SEPARATOR).append(srcIp).append(FLOWID_SEPARATOR).append(srcMask)
+                .append(FLOWID_SEPARATOR).append(dstIp).append(FLOWID_SEPARATOR).append(dstMask)
+                .append(FLOWID_SEPARATOR).append(srcPort).append(FLOWID_SEPARATOR).append(dstPort)
+                .append(FLOWID_SEPARATOR).append(protocol).append(FLOWID_SEPARATOR).append(sfpId).toString();
+    }
+
+    public static String getFlowRef(final long sfpId, final String dstMac, final int dstVlan) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+                .append(FLOWID_SEPARATOR).append(dstMac).append(FLOWID_SEPARATOR).append(dstVlan).toString();
+    }
+
+    public static String getFlowRef(final String dstMac, final int dstVlan) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(dstMac)
+                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
+    }
+
+    public static String getFlowRef(final int vlan) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(vlan).toString();
+    }
+
+    public static String getFlowRef(final long sfpId, final String srcMac, final String dstMac, final int dstVlan) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
+                .append(FLOWID_SEPARATOR).append(srcMac).append(FLOWID_SEPARATOR).append(dstMac)
+                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
+    }
+
+    public static String getFlowRef(final short tableId) {
+        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append("default")
+                .append(FLOWID_SEPARATOR).append(tableId).toString();
+    }
+
+    public static String longToIp(String ip, short mask) {
+        StringBuilder sb = new StringBuilder(DEFAULT_SB_CAPACITY);
+        sb.append(ip).append("/").append(mask);
+        return sb.toString();
     }
 
 }

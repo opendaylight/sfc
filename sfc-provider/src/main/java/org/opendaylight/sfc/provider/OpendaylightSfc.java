@@ -10,6 +10,7 @@ package org.opendaylight.sfc.provider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.core.api.Broker;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
@@ -92,6 +93,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
     private final ExecutorService executor;
     protected DataBroker dataProvider;
+    protected Broker broker;
     private static OpendaylightSfc opendaylightSfcObj;
     private final Lock lock = new ReentrantLock();
 
@@ -121,6 +123,14 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public DataBroker getDataProvider() {
         return this.dataProvider;
+    }
+
+    public void setBroker(Broker broker) {
+        this.broker = broker;
+    }
+
+    public Broker getBroker() {
+        return this.broker;
     }
 
     public static OpendaylightSfc getOpendaylightSfcObj () {

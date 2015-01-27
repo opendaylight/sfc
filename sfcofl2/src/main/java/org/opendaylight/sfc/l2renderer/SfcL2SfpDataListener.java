@@ -34,6 +34,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+// TODO this class should be replaced with one that listens to RenderedServicePaths
+
 public class SfcL2SfpDataListener extends SfcL2AbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2SfpDataListener.class);
@@ -76,39 +78,19 @@ public class SfcL2SfpDataListener extends SfcL2AbstractDataListener {
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject;
-        dataOriginalConfigurationObject = change.getOriginalData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionPaths) {
-                ServiceFunctionPaths originalServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-                List<ServiceFunctionPath> sfcServiceFunctionPathList = originalServiceFunctionPaths
-                        .getServiceFunctionPath();
-                for (ServiceFunctionPath sfcServiceFunctionPath : sfcServiceFunctionPathList) {
-                    LOG.debug("\n########## Original ServiceFunction name: {}", sfcServiceFunctionPath.getName());
-
-                }
-            }
-        }
+        // Currently we dont need to do anything for the OriginalData
 
         // SFP create
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject;
-        dataCreatedConfigurationObject = change.getCreatedData();
-
+        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionPaths) {
                 ServiceFunctionPaths createdServiceFunctionPaths = (ServiceFunctionPaths) entry.getValue();
-
                 configureSffFlows(createdServiceFunctionPaths, true);
-
             }
         }
 
         // SFP update
-
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject;
-        dataUpdatedConfigurationObject = change.getUpdatedData();
-
+        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionPaths && (!(dataCreatedConfigurationObject
                     .containsKey(entry.getKey()))))) {
@@ -120,7 +102,7 @@ public class SfcL2SfpDataListener extends SfcL2AbstractDataListener {
         // SFP delete
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
+            DataObject dataObject = change.getOriginalData().get(instanceIdentifier);
             if (dataObject instanceof ServiceFunctionPaths) {
                 ServiceFunctionPaths originalServiceFunctionPaths = (ServiceFunctionPaths) dataObject;
                 configureSffFlows(originalServiceFunctionPaths, false);

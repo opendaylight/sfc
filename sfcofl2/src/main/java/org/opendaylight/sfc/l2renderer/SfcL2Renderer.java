@@ -10,12 +10,7 @@
 package org.opendaylight.sfc.l2renderer;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,17 +23,12 @@ import org.slf4j.LoggerFactory;
 public class SfcL2Renderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
-    protected ExecutorService executor;
+    private SfcL2FlowProgrammer sfcL2FlowProgrammer;
 
-    // TODO both dataBroker and rpcProvider are temporary. When the SfcL2FlowProgrammer is
-    //      refactored to use the SfcProvider.SfcDataStoreAPI, then both attributes will be removed
-
-    public SfcL2Renderer(DataBroker dataBroker, RpcProviderRegistry rpcProvider) {
+    public SfcL2Renderer(DataBroker dataBroker) {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
-        executor = Executors.newFixedThreadPool(1); // TODO this may no longer be needed
-
-        SfcL2FlowProgrammer sfcL2FlowProgrammer = new SfcL2FlowProgrammer(rpcProvider);
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammer();
         SfcL2SfpDataListener openflowSfpDataListener = new SfcL2SfpDataListener(dataBroker, sfcL2FlowProgrammer);
         SfcL2AclDataListener openflowAclDataListener = new SfcL2AclDataListener(dataBroker, sfcL2FlowProgrammer);
 
@@ -50,7 +40,7 @@ public class SfcL2Renderer implements AutoCloseable {
      */
     @Override
     public void close() throws ExecutionException, InterruptedException {
-        // TODO When we close this service we need to shutdown our executor!
         LOG.info("SfcL2Renderer auto-closed");
+        sfcL2FlowProgrammer.shutdown();
     }
 }

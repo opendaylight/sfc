@@ -35,7 +35,7 @@ public class SfcL2RendererModule extends org.opendaylight.controller.config.yang
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final SfcL2Renderer openflowSfcRenderer = new SfcL2Renderer(getDataBrokerDependency(), getRpcRegistryDependency());
+        final SfcL2Renderer openflowSfcRenderer = new SfcL2Renderer(getDataBrokerDependency());
 
         java.lang.AutoCloseable ret = new java.lang.AutoCloseable() {
             @Override

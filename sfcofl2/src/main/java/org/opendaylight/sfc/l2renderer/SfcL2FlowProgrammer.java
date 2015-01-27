@@ -21,7 +21,8 @@ import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -38,13 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -61,7 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -86,13 +81,11 @@ public class SfcL2FlowProgrammer {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammer.class);
 
-    // Which bits in the metadata field to set, used for the Bucket and allows
-    // 4095 sfpid's
-    // TODO check how many sfpid's there can be
-
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static final int COOKIE_BIGINT_HEX_RADIX = 16;
 
+    // Which bits in the metadata field to set, used for the Bucket and allows 4095 sfpid's
+    // TODO check how many sfpid's there can be
     public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
     public static final BigInteger METADATA_BASE_MASK = new BigInteger("FFFFFFFFFFFFFFFF", COOKIE_BIGINT_HEX_RADIX);
     public static final BigInteger COOKIE_SFC_BASE = new BigInteger("1000000", COOKIE_BIGINT_HEX_RADIX);
@@ -116,27 +109,28 @@ public class SfcL2FlowProgrammer {
     private static final int QUEUE_SIZE = 50;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
 
-    private static final int DEFAULT_SB_CAPACITY = 16;
-    private static final int FLOWREF_CAPACITY = 256;
-    public static final String FLOWID_PREFIX = "SFC";
-    public static final String FLOWID_SEPARATOR = ".";
-
     private static final String LOGSTR_NOT_READY_TO_WRITE = "{} NOT ready to write yet";
     private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
 
-    private short tableBase = (short) 0;
+    // Instance variables
+    private short tableBase;
     private boolean isReady;
     private String sffNodeName;
-    private final AtomicInteger atomicInteger = new AtomicInteger();
-    private RpcProviderRegistry rpcProvider;
+    private final AtomicInteger atomicInteger;
+    private ExecutorService threadPoolExecutorService;
 
-    private ExecutorService threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
-            SCHEDULED_THREAD_POOL_SIZE, ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
+    public SfcL2FlowProgrammer() {
+        this.tableBase = (short) 0;
+        this.isReady = false;
+        this.atomicInteger = new AtomicInteger();
+        this.threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
+                SCHEDULED_THREAD_POOL_SIZE, ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
+    }
 
-    // TODO The rpcProvider attribute is temporary until this class is refactored to use the SfcProvider.SfcDataStoreAPI
-    public SfcL2FlowProgrammer(RpcProviderRegistry rpcProvider) {
-        this.rpcProvider = rpcProvider;
+    // This method should only be called by SfcL2Renderer.close()
+    public void shutdown() {
+        threadPoolExecutorService.shutdown();
         isReady = false;
     }
 
@@ -252,11 +246,11 @@ public class SfcL2FlowProgrammer {
 
                 Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
                 if (srcIp != null) {
-                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(longToIp(srcIp, srcMask)));
+                    ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(SfcOpenflowUtils.longToIp(srcIp, srcMask)));
                     isIpMatch = true;
                 }
                 if (dstIp != null) {
-                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(longToIp(dstIp, dstMask)));
+                    ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(SfcOpenflowUtils.longToIp(dstIp, dstMask)));
                     isIpMatch = true;
                 }
                 if (isIpMatch) {
@@ -338,8 +332,8 @@ public class SfcL2FlowProgrammer {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder aclFlow = new FlowBuilder();
-                aclFlow.setId(new FlowId(getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId)));
-                aclFlow.setKey(new FlowKey(new FlowId(getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort,
+                aclFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId)));
+                aclFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort,
                         protocol, sfpId))));
                 aclFlow.setTableId(getTableId(TABLE_INDEX_CLASSIFICATION));
                 aclFlow.setFlowName("acl");
@@ -420,8 +414,8 @@ public class SfcL2FlowProgrammer {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder defNextHopFlow = new FlowBuilder();
-                defNextHopFlow.setId(new FlowId(getFlowRef(TABLE_INDEX_NEXT_HOP)));
-                defNextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(TABLE_INDEX_NEXT_HOP))));
+                defNextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_NEXT_HOP)));
+                defNextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_NEXT_HOP))));
                 defNextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
                 defNextHopFlow.setFlowName("next_Hop_Default_Flow");
                 BigInteger cookieValue = getCookieDefault(TABLE_INDEX_NEXT_HOP);
@@ -546,8 +540,8 @@ public class SfcL2FlowProgrammer {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder nextHopFlow = new FlowBuilder();
-                nextHopFlow.setId(new FlowId(getFlowRef(sfpId, srcMac, dstMac, dstVlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(sfpId, srcMac, dstMac, dstVlan))));
+                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, srcMac, dstMac, dstVlan)));
+                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, srcMac, dstMac, dstVlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
                 nextHopFlow.setFlowName("nextHop");
                 BigInteger cookieValue = getCookieSFP(sfpId);
@@ -638,8 +632,8 @@ public class SfcL2FlowProgrammer {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder nextHopFlow = new FlowBuilder();
-                nextHopFlow.setId(new FlowId(getFlowRef(vlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(vlan))));
+                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(vlan)));
+                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(vlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_INGRESS));
                     // should this name be unique??
                 nextHopFlow.setFlowName("ingress_flow");
@@ -762,8 +756,8 @@ public class SfcL2FlowProgrammer {
                 // Create and configure the FlowBuilder
                 FlowBuilder nextHopFlow = new FlowBuilder();
 
-                nextHopFlow.setId(new FlowId(getFlowRef(sfpId, dstMac, dstVlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(sfpId, dstMac, dstVlan))));
+                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, dstMac, dstVlan)));
+                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, dstMac, dstVlan))));
                 nextHopFlow.setTableId(getTableId(TABLE_INDEX_DEFAULT));
                 nextHopFlow.setFlowName("default_flow ");
                 // be
@@ -868,8 +862,8 @@ public class SfcL2FlowProgrammer {
 
                 FlowBuilder egressTransportFlow = new FlowBuilder();
 
-                egressTransportFlow.setId(new FlowId(getFlowRef(dstMac, dstVlan)));
-                egressTransportFlow.setKey(new FlowKey(new FlowId(getFlowRef(dstMac, dstVlan))));
+                egressTransportFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(dstMac, dstVlan)));
+                egressTransportFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(dstMac, dstVlan))));
                 egressTransportFlow.setTableId(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
                 egressTransportFlow.setFlowName("default_egress_flow ");
                 // be
@@ -952,8 +946,8 @@ public class SfcL2FlowProgrammer {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder defNextHopFlow = new FlowBuilder();
-                defNextHopFlow.setId(new FlowId(getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE)));
-                defNextHopFlow.setKey(new FlowKey(new FlowId(getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE))));
+                defNextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE)));
+                defNextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE))));
                 defNextHopFlow.setTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
                 defNextHopFlow.setFlowName("ingress_Transport_Default_Flow");
                 BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
@@ -990,24 +984,15 @@ public class SfcL2FlowProgrammer {
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path
-        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Flow> flowIID = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).toInstance();
-
-        InstanceIdentifier<Table> tableInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).build();
-
-        String sTransactionUri = generateTransactionUri();
-        RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(flow.build());
-        builder.setTransactionUri(new Uri(sTransactionUri));
-        builder.setNode(new NodeRef(nodePath));
-        builder.setFlowTable(new FlowTableRef(tableInstanceId));
-        builder.setFlowRef(new FlowRef(flowPath));
-        builder.setStrict(true);
-        this.rpcProvider.getRpcService(SalFlowService.class).removeFlow(builder.build());
+                .child(Table.class, new TableKey(flow.getTableId()))
+                .child(Flow.class, flow.getKey())
+                .build();
+        if (! SfcDataStoreAPI.deleteTransactionAPI(flowIID, LogicalDatastoreType.OPERATIONAL)) {
+            LOG.error("{}: Failed to remove Flow on node: {}",
+                    Thread.currentThread().getStackTrace()[1], sffNodeName);
+        }
     }
 
     private void writeFlowToConfig(FlowBuilder flow) {
@@ -1017,70 +1002,16 @@ public class SfcL2FlowProgrammer {
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path
-        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Flow> flowIID = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).toInstance();
+                .child(Table.class, new TableKey(flow.getTableId()))
+                .child(Flow.class, flow.getKey())
+                .build();
 
-        InstanceIdentifier<Table> tableInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).build();
-
-        String sTransactionUri = generateTransactionUri();
-        AddFlowInputBuilder builder = new AddFlowInputBuilder(flow.build());
-
-        builder.setTransactionUri(new Uri(sTransactionUri));
-        builder.setNode(new NodeRef(nodePath));
-        builder.setFlowTable(new FlowTableRef(tableInstanceId));
-        builder.setFlowRef(new FlowRef(flowPath));
-
-        this.rpcProvider.getRpcService(SalFlowService.class).addFlow(builder.build());
-    }
-
-    private String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,
-            final short srcPort, final short dstPort, final byte protocol, final long sfpId) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(srcIp).append(FLOWID_SEPARATOR).append(srcMask)
-                .append(FLOWID_SEPARATOR).append(dstIp).append(FLOWID_SEPARATOR).append(dstMask)
-                .append(FLOWID_SEPARATOR).append(srcPort).append(FLOWID_SEPARATOR).append(dstPort)
-                .append(FLOWID_SEPARATOR).append(protocol).append(FLOWID_SEPARATOR).append(sfpId).toString();
-    }
-
-    private String getFlowRef(final long sfpId, final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(dstMac).append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    private String getFlowRef(final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(dstMac)
-                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    private String getFlowRef(final int vlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(vlan).toString();
-    }
-
-    private String getFlowRef(final long sfpId, final String srcMac, final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(srcMac).append(FLOWID_SEPARATOR).append(dstMac)
-                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    private String getFlowRef(final short tableId) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append("default")
-                .append(FLOWID_SEPARATOR).append(tableId).toString();
-    }
-
-    private String generateTransactionUri() {
-        long lTransactionIdOut = atomicInteger.incrementAndGet();
-        return new StringBuilder(DEFAULT_SB_CAPACITY).append(lTransactionIdOut).toString();
-    }
-
-    public static String longToIp(String ip, short mask) {
-        StringBuilder sb = new StringBuilder(DEFAULT_SB_CAPACITY);
-        sb.append(ip).append("/").append(mask);
-        return sb.toString();
+        if (! SfcDataStoreAPI.writeMergeTransactionAPI(flowIID, flow.build(), LogicalDatastoreType.OPERATIONAL)) {
+            LOG.error("{}: Failed to create Flow on node: {}",
+                    Thread.currentThread().getStackTrace()[1], sffNodeName);
+        }
     }
 
 }

@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_8fc9617a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/GetNetconfDataProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "What does this class do?",
+      "range": {
+        "startLine": 16,
+        "startChar": 13,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_8ff2c1d0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Considering this class is an API to SfDescriptionMonitors, this class should be moved to org.opendaylight.sfc.provider.api and be renamed to SfcProviderSfDescriptionMonitorAPI, similar to the SfcProviderServiceFunctionAPI class.",
+      "range": {
+        "startLine": 37,
+        "startChar": 13,
+        "endLine": 37,
+        "endChar": 47
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_afed3df1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Should this method be public?",
+      "range": {
+        "startLine": 86,
+        "startChar": 38,
+        "endLine": 86,
+        "endChar": 42
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_4fbcb9dc",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Should this method be public? Its only used internally, right?",
+      "range": {
+        "startLine": 167,
+        "startChar": 38,
+        "endLine": 167,
+        "endChar": 60
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_0fb6b1fa",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "If this list of SUPPORTED_XX_QNAME\u0027s could grow in the future, (and considering all the actions block are the same) I think it would be cleaner and more efficient if you put the possible QNAME\u0027s in a Map, and just check if capSimpleNodeType is in the Map. If its in the map, then do capMap.put(), else LOG()",
+      "range": {
+        "startLine": 209,
+        "startChar": 24,
+        "endLine": 209,
+        "endChar": 51
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_6fbf35d1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Should this method be public?",
+      "range": {
+        "startLine": 267,
+        "startChar": 38,
+        "endLine": 267,
+        "endChar": 56
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_efca656d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderGetSfDescriptionMonotor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Same comment as above about using a Map for all the possible QNAME\u0027s.",
+      "range": {
+        "startLine": 315,
+        "startChar": 24,
+        "endLine": 315,
+        "endChar": 53
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_2fe28d03",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 842,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "This method should not be public. Instead it should be private and be called by a public putServiceFunctionDescriptionExecutor() method that will execute in a seperate thread, similar to: addPathToServiceFunctionStateExecutor().\nIf Im not mistaken, this is needed since you cant modify the datastore from within DataListener onDataChanged() invocations.\n\nBrady",
+      "range": {
+        "startLine": 842,
+        "startChar": 26,
+        "endLine": 842,
+        "endChar": 55
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_efe34503",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 916,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "I think you probably meant \"gotten\", or even \"obtained\". :)",
+      "range": {
+        "startLine": 916,
+        "startChar": 52,
+        "endLine": 916,
+        "endChar": 59
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_cfe8c9e4",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 923,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-01-28T09:01:12Z",
+      "side": 1,
+      "message": "Similar comment to putServiceFunctionDescription: you\u0027ll need to change this method to private and make a public putServiceFunctionMonitorExecutor method that calls this method from a thread.",
+      "range": {
+        "startLine": 923,
+        "startChar": 26,
+        "endLine": 923,
+        "endChar": 51
+      },
+      "revId": "e19f8ef0a42add1c0f44597738ec4bb4d821685b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

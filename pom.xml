@@ -105,7 +105,6 @@
         <module>sfc-ui</module>
         <module>sfc-sb-rest</module>
         <module>sfclisp</module>
-        <module>sfc-distribution</module>
         <module>sfcofl2</module>
         <module>features</module>
         <module>sfc-config</module>

@@ -1,6 +1,6 @@
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.3"
+__version__ = "0.4"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
 
@@ -11,7 +11,7 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-""" SFF REST Server. This Server should be co-located with the python SFF data
+""" SFC Agent Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
 import logging
@@ -27,8 +27,8 @@ import json
 import requests
 import sys
 
-#if sys.platform.startswith('linux'):
-#    from nfq_class_thread import *
+if sys.platform.startswith('linux'):
+    from nfq_class_thread import *
 import xe_cli
 import ovs_cli
 
@@ -171,7 +171,8 @@ def build_data_plane_service_path(service_path):
     return
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>', methods=['PUT', 'POST'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>',
+           methods=['PUT', 'POST'])
 def create_path(sfpname):
     # global path
     local_path = get_path()
@@ -233,11 +234,13 @@ def create_sf(sfname):
     logger.info("Received request for SF creation: %s", sfname)
     return '', 200
 
+
 @app.route('/config/service-function:service-functions/service-function/<sfname>',
            methods=['DELETE'])
 def delete_sf(sfname):
     logger.info("Received request for SF deletion: %s", sfname)
     return '', 200
+
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['PUT', 'POST'])
@@ -309,8 +312,6 @@ def delete_sff(sffname):
     """
 
     local_sff_topo = get_sff_topo()
-    local_path = get_path()
-    local_data_plane_path = get_data_plane_path()
     local_sff_threads = get_sff_threads()
 
     try:
@@ -318,8 +319,8 @@ def delete_sff(sffname):
             kill_sff_thread(sffname)
         local_sff_topo.pop(sffname, None)
         if sffname == my_sff_name:
-            local_path = {}
-            local_data_plane_path = {}
+            reset_path()
+            reset_data_plane_path()
     except KeyError:
         msg = "SFF name {} not found, message".format(sffname)
         logger.warning(msg)
@@ -345,19 +346,16 @@ def create_sffs():
 @app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['DELETE'])
 def delete_sffs():
     """
-    Delete all SFFs, SFPs
+    Delete all SFFs, SFPs, RSPs
     :return:
     """
 
     # We always use accessors
-    local_sff_topo = get_sff_topo()
-    local_path = get_path()
-    local_data_plane_path = get_data_plane_path()
-
-    local_sff_topo = {}
-    local_path = {}
-    local_data_plane_path = {}
+    reset_sff_topo()
+    reset_path()
+    reset_data_plane_path()
     return jsonify({'sff': sff_topo}), 201
+
 
 @app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT', 'POST'])
 def apply_one_acl(aclname):
@@ -448,29 +446,27 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
 
 def auto_sff_name():
-
     """
     This function will iterate over all interfaces on the system and compare their IP addresses
     with the IP data plane locators of all SFFs downloaded from ODL. If a match is found, we set the name of this
-    SFF as the SFF name configured in ODL. This allow the same script with the same paramters to the run on different
+    SFF as the SFF name configured in ODL. This allow the same script with the same parameters to the run on different
     machines
 
     """
-    local_sff_topo = get_sff_topo()
-    local_my_sff_name = get_my_sff_name()
     sff_name = ""
     intfs = netifaces.interfaces()
     for intf in intfs:
-        addrs = netifaces.ifaddresses(intf)
-        inet_addrs = addrs[netifaces.AF_INET]
-        for i, value in enumerate(inet_addrs):
+        addr_list_dict = netifaces.ifaddresses(intf)
+        inet_addr_list = addr_list_dict[netifaces.AF_INET]
+        for i, value in enumerate(inet_addr_list):
             sff_name = find_sff_locator_by_ip(value['addr'])
             if sff_name:
-                local_my_sff_name = sff_name
-                logger.info("SFF name is: %s \n", local_my_sff_name)
-                return
+                set_my_sff_name(sff_name)
+                logger.info("Auto SFF name is: %s \n", sff_name)
+                return 0
     if not sff_name:
         logger.error("Could not determine SFF name \n")
+        return -1
 
 
 def main(argv):
@@ -519,8 +515,7 @@ def main(argv):
             continue
 
         if opt == "--sff-name":
-            local_my_sff_name = get_my_sff_name()
-            local_my_sff_name = arg
+            set_my_sff_name(arg)
 
         if opt == "--ovs-sff-cp-ip":
             ovs_local_sff_cp_ip = arg

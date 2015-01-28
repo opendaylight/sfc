@@ -8,6 +8,7 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestRspTask;
@@ -30,6 +31,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         setOpendaylightSfc(opendaylightSfc);
         setDataBroker(opendaylightSfc.getDataProvider());
         setInstanceIdentifier(OpendaylightSfc.RSP_ENTRY_IID);
+        setDataStoreType(LogicalDatastoreType.OPERATIONAL);
         registerAsDataChangeListener();
     }
 

@@ -28,7 +28,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HttpMethod;
+//import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -266,8 +266,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             addPathToSfStateSuccessful = true;
 
             //Send to SB REST
-            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                    (renderedServicePath, HttpMethod.PUT);
+            //SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+            //        (renderedServicePath, HttpMethod.PUT);
         } else {
             SfcProviderServiceForwarderAPI
                     .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
@@ -331,8 +331,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
             addRevPathToSfStateSuccessul = true;
             //Send to SB REST
-            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                    (revRenderedServicePath,HttpMethod.PUT);
+/*            SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+                    (revRenderedServicePath,HttpMethod.PUT);*/
         } else {
             SfcProviderServiceForwarderAPI
                     .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());

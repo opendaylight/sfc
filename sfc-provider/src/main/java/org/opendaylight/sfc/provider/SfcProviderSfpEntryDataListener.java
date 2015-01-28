@@ -20,7 +20,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HttpMethod;
+//import javax.ws.rs.HttpMethod;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,8 +164,8 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
                         String rspName = sfpRenderedServicePath.getName();
                         SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(rspName);
                         //Send to SB REST
-                        SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-                               (originalServiceFunctionPath, HttpMethod.DELETE);
+                        //SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
+                        //       (originalServiceFunctionPath, HttpMethod.DELETE);
                     }
                 }
                 SfcProviderServicePathAPI.deleteServicePathStateExecutor(originalServiceFunctionPath.getName());

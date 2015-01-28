@@ -19,6 +19,11 @@ public abstract class SbRestAbstractDataListener implements DataChangeListener {
     protected DataBroker dataBroker;
     protected InstanceIdentifier<?> instanceIdentifier;
     protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    protected LogicalDatastoreType dataStoreType;
+
+    public SbRestAbstractDataListener() {
+        this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
+    }
 
     public OpendaylightSfc getOpendaylightSfc() {
         return opendaylightSfc;
@@ -36,6 +41,10 @@ public abstract class SbRestAbstractDataListener implements DataChangeListener {
         this.dataBroker = dataBroker;
     }
 
+    public void setDataStoreType(LogicalDatastoreType dataStoreType) {
+        this.dataStoreType = dataStoreType;
+    }
+
     public void setInstanceIdentifier(InstanceIdentifier<?> instanceIdentifier) {
         this.instanceIdentifier = instanceIdentifier;
     }
@@ -46,7 +55,7 @@ public abstract class SbRestAbstractDataListener implements DataChangeListener {
 
     public void registerAsDataChangeListener() {
         dataChangeListenerRegistration =
-                dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+                dataBroker.registerDataChangeListener(dataStoreType,
                         instanceIdentifier, this, DataBroker.DataChangeScope.SUBTREE);
     }
 

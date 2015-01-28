@@ -107,8 +107,6 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof ServiceFunction) {
 
                 ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
-                LOG.error("XXXXXXX Service Function Name is {}", originalServiceFunction.getName());
-
 
                 Runnable task = new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);

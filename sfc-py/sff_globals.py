@@ -38,13 +38,25 @@ sff_os = "ODL"
 # Global Accessors
 
 
-def get_sff_os():
-    return sff_os
-
-
 def set_sff_os(new_sff_os):
     global sff_os
     sff_os = new_sff_os
+
+
+def set_path(arg):
+    global path
+    path = arg
+
+
+def set_my_sff_name(sff_name):
+    global my_sff_name
+    my_sff_name = sff_name
+
+
+# GET APIs
+
+def get_sff_os():
+    return sff_os
 
 
 def get_my_sff_name():
@@ -54,11 +66,6 @@ def get_my_sff_name():
 def get_path():
     #global path
     return path
-
-
-def set_path(arg):
-    global path
-    path = arg
 
 
 def get_sff_topo():
@@ -75,9 +82,27 @@ def get_sff_threads():
     #global data_plane_path
     return sff_threads
 
+
 def get_of_table_id():
     #global table ID for OF rules
     return of_tableid
+
+#RESET APIs
+
+
+def reset_sff_topo():
+    global sff_topo
+    sff_topo = {}
+
+
+def reset_data_plane_path():
+    global data_plane_path
+    data_plane_path = {}
+
+
+def reset_path():
+    global path
+    path = {}
 
 
 # ODL IP:port

@@ -66,6 +66,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("\n########## getOriginalConfigurationData {}  {}",
                         originalServiceFunction.getType(), originalServiceFunction.getName());
+                String mountpoint = originalServiceFunction.getIpMgmtAddress().getIpv4Address().getValue();
+                SfcProviderServiceFunctionAPI.putServiceFunctionDescription(mountpoint, originalServiceFunction);
+                SfcProviderServiceFunctionAPI.putServiceFunctionMonitor(mountpoint, originalServiceFunction);
             }
         }
 
@@ -75,6 +78,10 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
+
+                String mountpoint = createdServiceFunction.getIpMgmtAddress().getIpv4Address().getValue();
+                SfcProviderServiceFunctionAPI.putServiceFunctionDescription(mountpoint, createdServiceFunction);
+                SfcProviderServiceFunctionAPI.putServiceFunctionMonitor(mountpoint, createdServiceFunction);
                 if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(createdServiceFunction)) {
                     LOG.error("Failed to create service function type: {}", createdServiceFunction.getType());
                 }
@@ -127,6 +134,10 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
 
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
+
+                String mountpoint = updatedServiceFunction.getIpMgmtAddress().getIpv4Address().getValue();
+                SfcProviderServiceFunctionAPI.putServiceFunctionDescription(mountpoint, updatedServiceFunction);
+                SfcProviderServiceFunctionAPI.putServiceFunctionMonitor(mountpoint, updatedServiceFunction);
 
                 // We only update SF type entry if type has changed
                 if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {

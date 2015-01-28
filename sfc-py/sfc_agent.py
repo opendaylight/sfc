@@ -16,6 +16,7 @@ __status__ = "alpha"
 
 import logging
 import socket
+import netifaces
 from sff_thread import start_sff
 from threading import Thread
 from sff_globals import *
@@ -26,8 +27,8 @@ import json
 import requests
 import sys
 
-if sys.platform.startswith('linux'):
-    from nfq_class_thread import *
+#if sys.platform.startswith('linux'):
+#    from nfq_class_thread import *
 import xe_cli
 import ovs_cli
 
@@ -70,6 +71,21 @@ def find_sf_locator(sf_name, sff_name):
             return sf_locator
     logger.error("Failed to find data plane locator for SF: %s", sf_name)
     return None
+
+
+def find_sff_locator_by_ip(addr):
+    """
+    For a given IP addr iterate over all SFFs looking for which one has a
+    the same data plane locator ip
+    :param addr:
+    :return: SFF name
+    """
+
+    local_sff_topo = get_sff_topo()
+    for sff_name, sff_value in local_sff_topo.items():
+        for i, locator_value in enumerate(sff_value['sff-data-plane-locator']):
+            if locator_value['data-plane-locator']['ip'] == addr:
+                return sff_name
 
 
 def find_sff_locator(sff_name):
@@ -210,6 +226,18 @@ def delete_path(sfpname):
         raise
     return '', 204
 
+
+@app.route('/config/service-function:service-functions/service-function/<sfname>',
+           methods=['PUT'])
+def create_sf(sfname):
+    logger.info("Received request for SF creation: %s", sfname)
+    return '', 200
+
+@app.route('/config/service-function:service-functions/service-function/<sfname>',
+           methods=['DELETE'])
+def delete_sf(sfname):
+    logger.info("Received request for SF deletion: %s", sfname)
+    return '', 200
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['PUT', 'POST'])
@@ -419,6 +447,32 @@ def get_sff_from_odl(odl_ip_port, sff_name):
         return -1
 
 
+def auto_sff_name():
+
+    """
+    This function will iterate over all interfaces on the system and compare their IP addresses
+    with the IP data plane locators of all SFFs downloaded from ODL. If a match is found, we set the name of this
+    SFF as the SFF name configured in ODL. This allow the same script with the same paramters to the run on different
+    machines
+
+    """
+    local_sff_topo = get_sff_topo()
+    local_my_sff_name = get_my_sff_name()
+    sff_name = ""
+    intfs = netifaces.interfaces()
+    for intf in intfs:
+        addrs = netifaces.ifaddresses(intf)
+        inet_addrs = addrs[netifaces.AF_INET]
+        for i, value in enumerate(inet_addrs):
+            sff_name = find_sff_locator_by_ip(value['addr'])
+            if sff_name:
+                local_my_sff_name = sff_name
+                logger.info("SFF name is: %s \n", local_my_sff_name)
+                return
+    if not sff_name:
+        logger.error("Could not determine SFF name \n")
+
+
 def main(argv):
     global ODLIP
 
@@ -428,14 +482,15 @@ def main(argv):
         logging.basicConfig(level=logging.DEBUG)
         logger.setLevel(level=logging.INFO)
         opt, args = getopt.getopt(argv, "hr",
-                                  ["help", "rest", "nfq-class", "odl-get-sff", "odl-ip-port=", "sff-name=",
-                                   "agent-port=", "ovs-sff-cp-ip=", "sff-os="])
+                                  ["help", "rest", "nfq-class", "auto-sff-name", "odl-get-sff", "odl-ip-port=",
+                                   "sff-name=", "agent-port=", "ovs-sff-cp-ip=", "sff-os="])
     except getopt.GetoptError:
         print("sfc_agent --help | --nfq-class | --rest | --ovs-sff-cp-ip | --odl-get-sff | --odl-ip-port | --sff-name" +
               " | --agent-port | --sff-os (XE | OVS)")
         sys.exit(2)
 
     odl_get_sff = False
+    odl_auto_sff = False
     agent_port = 5000
     rest = False
     nfq_class = False
@@ -457,6 +512,11 @@ def main(argv):
 
         if opt in ('-r', '--rest'):
             rest = True
+
+        if opt == "--auto-sff-name":
+            odl_get_sff = True
+            odl_auto_sff = True
+            continue
 
         if opt == "--sff-name":
             local_my_sff_name = get_my_sff_name()
@@ -483,6 +543,9 @@ def main(argv):
 
     if odl_get_sff:
         get_sffs_from_odl(ODLIP)
+
+    if odl_auto_sff:
+        auto_sff_name()
 
     if nfq_class:
         if sys.platform.startswith('linux'):

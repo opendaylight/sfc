@@ -91,11 +91,11 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 }
 
                 //REST
-                Object[] serviceForwarderObj = {serviceFunctionForwarder};
+/*                Object[] serviceForwarderObj = {serviceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
                         .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
-                ODL_SFC.getExecutor().submit(sfcProviderRestAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderRestAPI);*/
             }
         }
 
@@ -111,9 +111,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
 
                 //Send to SB REST
-                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
-                        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+                //SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                //        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
+                //ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
             }
         }
 
@@ -144,12 +144,12 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                     SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
 
-                //Send to SB REST
+ /*               //Send to SB REST
                 Object[] serviceForwarderObj = {serviceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
                 SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                         .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);*/
             }
         }
         ODL_SFC.releaseLock();

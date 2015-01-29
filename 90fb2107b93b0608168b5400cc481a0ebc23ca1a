@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_64a0b79f",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1987
+      },
+      "writtenOn": "2015-01-29T13:53:33Z",
+      "side": 1,
+      "message": "please fix tabs and trailing spaces",
+      "revId": "90fb2107b93b0608168b5400cc481a0ebc23ca1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

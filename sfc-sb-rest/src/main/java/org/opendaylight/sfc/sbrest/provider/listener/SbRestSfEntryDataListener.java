@@ -59,27 +59,6 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("*** created Service Function: {}", createdServiceFunction.getName());
 
-                // Deprecated, this cycle goes to SbRest*Task
-                /*
-                Object result = null;
-                try {
-                    result = opendaylightSfc.getExecutor().submit(SfcProviderServiceForwarderAPI
-                            .getReadAll(new Object[]{}, new Class[]{})).get();
-                    ServiceFunctionForwarders serviceFunctionForwarders = (ServiceFunctionForwarders) result;
-
-                    for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarders.getServiceFunctionForwarder()) {
-                        Uri uri = serviceFunctionForwarder.getRestUri();
-                        //String urlMgmt = uri.getValue();
-                        String urlMgmt = "127.0.0.100";
-                        LOG.info("PUT url:{}", urlMgmt);
-                        //SbRestPutSfTask putSfTask = new SbRestPutSfTask(createdServiceFunction, urlMgmt); // Deprecated
-                        SbRestSfTask task = new SbRestSfTask(RestOperation.POST, createdServiceFunction, opendaylightSfc.getExecutor());
-                        opendaylightSfc.getExecutor().submit(task);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-                */
                 Runnable task = new SbRestSfTask(RestOperation.POST, createdServiceFunction, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
             }

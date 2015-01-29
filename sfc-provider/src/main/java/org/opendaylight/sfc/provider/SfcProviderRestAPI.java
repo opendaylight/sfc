@@ -117,7 +117,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
             if (e.getCause() instanceof ConnectException) {
                 LOG.error("Failed to communicate with REST Server: {} ", sffURI);
             } else {
-                LOG.error("Failed to ... {}", e.getMessage());
+                LOG.error("ClientHandlerException on putSFF: {}", e.getMessage());
             }
         } finally {
             if (putClientRemoteResponse != null) {
@@ -163,7 +163,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
             if (e.getCause() instanceof ConnectException) {
                 LOG.error("Failed to communicate with REST Server: {} ", sffURI);
             } else {
-                LOG.error("Failed to ... {}", e.getMessage());
+                LOG.error("ClientHandlerException on deleteSFF: {}", e.getMessage());
             }
         } finally {
             if (deleteClientRemoteResponse != null) {
@@ -269,7 +269,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                         if (e.getCause() instanceof ConnectException) {
                             LOG.error("Failed to communicate with REST Server: {} ", sfpURI);
                         } else {
-                            LOG.error("Failed to ... {}", e.getMessage());
+                            LOG.error("ClientHandlerException on putRSP: {}", e.getMessage());
                         }
                     } finally {
                         if (putClientRemoteResponse != null) {
@@ -346,7 +346,7 @@ public class SfcProviderRestAPI extends SfcProviderAbstractRestAPI {
                         if (e.getCause() instanceof ConnectException) {
                             LOG.error("Failed to communicate with REST Server: {} ", sfpURI);
                         } else {
-                            LOG.error("Failed to ... {}", e.getMessage());
+                            LOG.error("ClientHandlerException on deleteRSP: {}", e.getMessage());
                         }
                     } finally {
                         if (deleteClientRemoteResponse != null) {

@@ -72,6 +72,8 @@
 
         <lispflowmapping.version>1.2.0-SNAPSHOT</lispflowmapping.version>
 
+        <openflowplugin.distribution.version>0.1.0-SNAPSHOT</openflowplugin.distribution.version>
+
         <!-- Supporting Libraries -->
         <junit.version>4.10</junit.version>
         <slf4j.version>1.7.5</slf4j.version>

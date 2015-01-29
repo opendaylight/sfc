@@ -1,6 +1,5 @@
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
@@ -29,8 +28,6 @@ class SffExporter implements Exporter {
         if (dataObject instanceof ServiceFunctionForwarder) {
             ServiceFunctionForwarder sff = (ServiceFunctionForwarder) dataObject;
 
-
-            ObjectMapper mapper = new ObjectMapper();
             ArrayNode sffArray = mapper.createArrayNode();
 
             ObjectNode node = mapper.createObjectNode();
@@ -120,8 +117,6 @@ class SffExporter implements Exporter {
             String ret = null;
             if (dataObject instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
-
-                ObjectMapper mapper = new ObjectMapper();
 
                 ObjectNode node = mapper.createObjectNode();
                 node.put("name", obj.getName());

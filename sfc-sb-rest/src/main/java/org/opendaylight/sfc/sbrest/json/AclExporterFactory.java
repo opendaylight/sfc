@@ -2,7 +2,6 @@ package org.opendaylight.sfc.sbrest.json;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
@@ -42,16 +41,14 @@ class AclExporter implements Exporter {
         if (dataObject instanceof AccessList) {
             AccessList acl = (AccessList) dataObject;
 
-            ObjectMapper mapper = new ObjectMapper();
-
-            ObjectNode aclNode = mapper.getNodeFactory().objectNode();
+            ObjectNode aclNode = mapper.createObjectNode();
             aclNode.put("acl-name", acl.getAclName());
 
-            ArrayNode aceArrayNode = mapper.getNodeFactory().arrayNode();
+            ArrayNode aceArrayNode = mapper.createArrayNode();
             List<AccessListEntries> aceList = acl.getAccessListEntries();
             if (aceList != null) {
                 for (AccessListEntries ace : aceList) {
-                    ObjectNode aceNode = mapper.getNodeFactory().objectNode();
+                    ObjectNode aceNode = mapper.createObjectNode();
                     aceNode.put("rule-name", ace.getRuleName());
                     aceNode.put("matches", this.getMatchesObjectNode(ace.getMatches()));
                     aceNode.put("actions", this.getActionsObjectNode(ace.getActions()));
@@ -81,8 +78,7 @@ class AclExporter implements Exporter {
         if (dataObject instanceof AccessList) {
             AccessList acl = (AccessList) dataObject;
 
-            ObjectMapper mapper = new ObjectMapper();
-            ObjectNode aclNode = mapper.getNodeFactory().objectNode();
+            ObjectNode aclNode = mapper.createObjectNode();
 
             aclNode.put("acl-name", acl.getAclName());
 
@@ -101,8 +97,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode matchesNode = mapper.getNodeFactory().objectNode();
+        ObjectNode matchesNode = mapper.createObjectNode();
 
         if (matches.getAceType() != null) {
             String aceType = matches.getAceType().getImplementedInterface().getSimpleName();
@@ -144,8 +139,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode sourcePortRangeNode = mapper.getNodeFactory().objectNode();
+        ObjectNode sourcePortRangeNode = mapper.createObjectNode();
 
         SourcePortRange sourcePortRange = aceIp.getSourcePortRange();
         if (sourcePortRange != null) {
@@ -165,8 +159,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode destinationPortRangeNode = mapper.getNodeFactory().objectNode();
+        ObjectNode destinationPortRangeNode = mapper.createObjectNode();
 
         DestinationPortRange destinationPortRange = aceIp.getDestinationPortRange();
         if (destinationPortRange != null) {
@@ -222,8 +215,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode actionsNode = mapper.getNodeFactory().objectNode();
+        ObjectNode actionsNode = mapper.createObjectNode();
 
         if (actions.getPacketHandling() != null) {
             String actionType = actions.getPacketHandling().getImplementedInterface().getSimpleName();
@@ -265,8 +257,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode aceOperDataNode = mapper.getNodeFactory().objectNode();
+        ObjectNode aceOperDataNode = mapper.createObjectNode();
 
         if (aceOperData.getMatchCounter() != null) {
             aceOperDataNode.put("match-counter", aceOperData.getMatchCounter().getValue().longValue());
@@ -280,8 +271,7 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode defaultActionsNode = mapper.getNodeFactory().objectNode();
+        ObjectNode defaultActionsNode = mapper.createObjectNode();
 
         defaultActionsNode.put("deny", defaultActions.isDeny());
 

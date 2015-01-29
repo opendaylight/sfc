@@ -29,7 +29,9 @@ class SffExporter implements Exporter {
         if (dataObject instanceof ServiceFunctionForwarder) {
             ServiceFunctionForwarder sff = (ServiceFunctionForwarder) dataObject;
 
+
             ObjectMapper mapper = new ObjectMapper();
+            ArrayNode sffArray = mapper.createArrayNode();
 
             ObjectNode node = mapper.createObjectNode();
             node.put("name", sff.getName());
@@ -99,7 +101,11 @@ class SffExporter implements Exporter {
                 node.putArray("service-function-dictionary").addAll(dictionaryArray);
             }
 
-            ret = "{ \"service-function-forwarder\" : " + node.toString() + " }";
+            sffArray.add(node);
+
+            ret = "{ \"service-function-forwarder\" : " + sffArray.toString() + "}";
+
+            //ret = "{ \"service-function-forwarder\" : [ {" + node.toString() + " } ] }";
 
         } else {
                 throw new IllegalArgumentException("Argument is not an instance of ServiceFunctionForwarder");

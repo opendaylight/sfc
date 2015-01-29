@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
@@ -23,6 +24,30 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunction1;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunction1Builder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.SfcSfDescMon;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.SfcSfDescMonBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.sfc.sf.desc.mon.DescriptionInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.sfc.sf.desc.mon.DescriptionInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.sfc.sf.desc.mon.MonitoringInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.service.function.sfc.sf.desc.mon.MonitoringInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.Capabilities;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.CapabilitiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidth;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidthBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidth;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthKey;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +56,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.HashMap;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -52,6 +79,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
+    private SfcProviderSfDescriptionMonotorAPI getSfDescMon = new SfcProviderSfDescriptionMonotorAPI();
 
     SfcProviderServiceFunctionAPI(Object[] params, String m) {
         super(params, m);
@@ -93,6 +121,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     }
     public static SfcProviderServiceFunctionAPI getAddPathToServiceFunctionState(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionAPI(params, paramsTypes, "addPathToServiceFunctionState");
+    }
+    public static SfcProviderServiceFunctionAPI getPutServiceFunctionDescriptionState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putServiceFunctionDescription");
+    }
+    public static SfcProviderServiceFunctionAPI getPutServiceFunctionMonitorState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putServiceFunctionMonitor");
     }
 
     /**
@@ -800,6 +834,225 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                     Thread.currentThread().getStackTrace()[1], rspName, sfName);
         }
 
+        return ret;
+    }
+
+    /**
+     * put the service function description information gotten through netconf mountpoint into the datastore.
+     *
+     * <p>
+     * @param ServiceFunction  SF object
+     * @return true if SF description information was put into datastore
+     * false otherwise
+     */
+    protected boolean putServiceFunctionDescription(ServiceFunction sf) {
+        boolean ret = false;
+        printTraceStart(LOG);
+        SfcSfDescMon sfDescMon = null;
+        Map<String, Object> sfDescInfoMap  = new HashMap<String, Object>();
+
+        try {
+            if (ODL_SFC.getDataProvider() != null) {
+                String mountpoint = sf.getIpMgmtAddress().getIpv4Address().getValue();
+                //get sf description information from netconf
+                sfDescInfoMap = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
+                //ports capability
+                Map<String, Object> capMap = (Map<String, Object>)sfDescInfoMap.get("capabilities");
+                List<Map<String, Object>> portsMap = (List<Map<String, Object>>)capMap.get("ports");
+                List<PortBandwidth> portBandwidthList = new ArrayList<PortBandwidth>();
+
+                for(Map<String, Object> portcap: portsMap) {
+                    Ipv4Address portIpv4Addr = (Ipv4Address)portcap.get("ipaddress");
+                    PortBandwidthKey portBandwidthKey = new PortBandwidthKey((long)portcap.get("port-id"));
+                    MacAddress macAddr = (MacAddress)portcap.get("macaddress");
+                    PortBandwidth portBandwidth= new PortBandwidthBuilder()
+                        .setIpaddress(portIpv4Addr)
+                        .setKey(portBandwidthKey)
+                        .setMacaddress(macAddr)
+                        .setPortId((long)portcap.get("port-id"))
+                        .setSupportedBandwidth((long)portcap.get("supported-bandwidth")).build();
+                    portBandwidthList.add(portBandwidth);
+                }
+
+                PortsBandwidth portsBandwidth = new PortsBandwidthBuilder()
+                        .setPortBandwidth(portBandwidthList).build();
+                //sf cap
+                Capabilities cap = new CapabilitiesBuilder()
+                    .setPortsBandwidth(portsBandwidth)
+                    .setFIBSize((long)capMap.get("FIB-size"))
+                    .setRIBSize((long)capMap.get("RIB-size"))
+                    .setSupportedACLNumber((long)capMap.get("supported-ACL-number"))
+                    .setSupportedBandwidth((long)capMap.get("supported-bandwidth"))
+                    .setSupportedPacketRate((long)capMap.get("supported-packet-rate")).build();
+
+                //sf description
+                long numPorts = (long)sfDescInfoMap.get("number-of-dataports");
+                DescriptionInfo descInfo = new DescriptionInfoBuilder()
+                    .setCapabilities(cap)
+                    .setNumberOfDataports(numPorts).build();
+
+                //build the service function capbility and utilization
+                if(sf.getAugmentation(ServiceFunction1.class)!=null) {
+                    ServiceFunction1 sf1Temp = sf.getAugmentation(ServiceFunction1.class);
+                    SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
+                    sfDescMon = new SfcSfDescMonBuilder()
+                        .setMonitoringInfo(sfDescMonTemp.getMonitoringInfo())
+                        .setDescriptionInfo(descInfo).build();
+                } else {
+                    sfDescMon = new SfcSfDescMonBuilder()
+                        .setDescriptionInfo(descInfo).build();
+                }
+
+                ServiceFunction1 sf1 = new ServiceFunction1Builder().setSfcSfDescMon(sfDescMon).build();
+                ServiceFunction serviceFunction = new ServiceFunctionBuilder()
+                    .setKey(sf.getKey())
+                    .setName(sf.getName())
+                    .addAugmentation(ServiceFunction1.class,sf1).build();
+                ret = mergeServiceFunction(serviceFunction);
+            } else {
+                LOG.error("Data Provider is null.");
+            }
+        } catch (Exception e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * put the service function monitor information gotten through netconf mountpoint into the datastore.
+     *
+     * <p>
+     * @param ServiceFunction  SF object
+     * @return true if SF's monitor information was put into datastore
+     * false otherwise
+     */
+    protected boolean putServiceFunctionMonitor(ServiceFunction sf) {
+        boolean ret = false;
+        printTraceStart(LOG);
+        SfcSfDescMon sfDescMon = null;
+        Map<String, Object> sfMonInfoMap  = new HashMap<String, Object>();
+
+        try {
+            if (ODL_SFC.getDataProvider() != null) {
+                String mountpoint = sf.getIpMgmtAddress().getIpv4Address().getValue();
+                //get sf monitor data from netconf
+                sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
+                //port utilization
+                Map<String, Object> utilMap = (Map<String, Object>)sfMonInfoMap.get("utilization");
+                List<Map<String, Object>> portsUtilMap = (List<Map<String, Object>>)utilMap.get("ports");
+                List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<PortBandwidthUtilization>();
+
+                for(Map<String, Object> portutil: portsUtilMap) {
+                    PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey((long)portutil.get("port-id"));
+                    PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
+                        .setBandwidthUtilization((long)portutil.get("bandwidth-utilization"))
+                        .setKey(portBandwidthUtilKey)
+                        .setPortId((long)portutil.get("port-id")).build();
+                    portBandwidthUtilList.add(portBandwidthUtil);
+                }
+
+                SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
+                    .setPortBandwidthUtilization(portBandwidthUtilList).build();
+
+                ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
+                    .setAvailableMemory((long)utilMap.get("available-memory"))
+                    .setBandwidthUtilization((long)utilMap.get("bandwidth-utilization"))
+                    .setCPUUtilization((long)utilMap.get("CPU-utilization"))
+                    .setFIBUtilization((long)utilMap.get("FIB-utilization"))
+                    .setRIBUtilization((long)utilMap.get("RIB-utilization"))
+                    .setMemoryUtilization((long)utilMap.get("memory-utilization"))
+                    .setPacketRateUtilization((long)utilMap.get("packet-rate-utilization"))
+                    .setPowerUtilization((long)utilMap.get("power-utilization"))
+                    .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
+
+                //sf monitor data
+                MonitoringInfo monInfo = new MonitoringInfoBuilder()
+                    .setResourceUtilization(resrcUtil)
+                    .setLiveness((boolean)sfMonInfoMap.get("liveness")).build();
+
+                //build the service function capbility and utilization
+                if(sf.getAugmentation(ServiceFunction1.class)!=null) {
+                    ServiceFunction1 sf1Temp = sf.getAugmentation(ServiceFunction1.class);
+                    SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
+                    sfDescMon = new SfcSfDescMonBuilder()
+                        .setMonitoringInfo(monInfo)
+                        .setDescriptionInfo(sfDescMonTemp.getDescriptionInfo()).build();
+                } else {
+                    sfDescMon = new SfcSfDescMonBuilder()
+                        .setMonitoringInfo(monInfo).build();
+                }
+
+                ServiceFunction1 sf1 = new ServiceFunction1Builder().setSfcSfDescMon(sfDescMon).build();
+                ServiceFunction serviceFunction = new ServiceFunctionBuilder()
+                    .setKey(sf.getKey())
+                    .setName(sf.getName())
+                    .addAugmentation(ServiceFunction1.class,sf1).build();
+
+                ret = mergeServiceFunction(serviceFunction);
+            } else {
+                LOG.error("Data Provider is null.");
+            }
+        } catch (Exception e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+     /**
+     * This method gets the Description information for a service function.
+     * <p>
+     * @param ServiceFunction SF object
+     * @true if SF description information was put into datastore
+     * false otherwise
+     */
+    public static boolean putServiceFunctionDescriptionExecutor(ServiceFunction sf) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {sf};
+        Class[] servicePathClass = {ServiceFunction.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getPutServiceFunctionDescriptionState(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean)future.get();
+            LOG.debug("getPutServiceFunctionDescriptionState: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * This method gets the monitor information for a service function.
+     * <p>
+     * @param ServiceFunction SF object
+     * @return true if SF's monitor information was put into datastore
+     * false otherwise
+     */
+    public static boolean putServiceFunctionMonitorExecutor(ServiceFunction sf) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {sf};
+        Class[] servicePathClass = {ServiceFunction.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getPutServiceFunctionMonitorState(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getPutServiceFunctionMonitorState: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
         return ret;
     }
 }

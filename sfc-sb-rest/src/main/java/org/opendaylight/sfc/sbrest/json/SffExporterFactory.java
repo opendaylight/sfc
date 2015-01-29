@@ -120,7 +120,9 @@ class SffExporter implements Exporter {
 
                 ObjectNode node = mapper.createObjectNode();
                 node.put("name", obj.getName());
-                ret = "{ \"service-function-forwarder\" : " + node.toString() + " }";
+                ArrayNode sffArray = mapper.createArrayNode();
+                sffArray.add(node);
+                ret = "{ \"service-function-forwarder\" : " + sffArray.toString() + "}";
             } else {
                 throw new IllegalArgumentException("Argument is not an instance of ServiceFunctionForwarder");
             }

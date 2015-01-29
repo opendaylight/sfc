@@ -4,7 +4,7 @@
       {
         "name": "SFF-bootstrap",
         "service-node": "OVSDB1",
-        "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+        "rest-uri": "http://localhost:5000",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
@@ -41,7 +41,7 @@
       {
         "name": "br-int-ovs-2",
         "service-node": "OVSDB2",
-        "rest-uri": "http://www.example.com/sffs/sff-bootstrap",
+        "rest-uri": "http://localhost:5000",
         "sff-data-plane-locator": [
           {
             "name": "eth0",

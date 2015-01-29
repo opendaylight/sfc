@@ -1,6 +1,5 @@
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -17,8 +16,6 @@ public class RspExporterFactory implements ExporterFactory {
 }
 
 class RspExporter implements Exporter {
-
-    ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String exportJson(DataObject dataObject) {

@@ -29,7 +29,7 @@ public class SfcL2Renderer implements AutoCloseable {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
         this.sfcL2FlowProgrammer = new SfcL2FlowProgrammer();
-        SfcL2SfpDataListener openflowSfpDataListener = new SfcL2SfpDataListener(dataBroker, sfcL2FlowProgrammer);
+        SfcL2RspDataListener openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer);
         SfcL2AclDataListener openflowAclDataListener = new SfcL2AclDataListener(dataBroker, sfcL2FlowProgrammer);
 
         LOG.info("SfcL2Renderer successfully started the SfcL2Renderer plugin");

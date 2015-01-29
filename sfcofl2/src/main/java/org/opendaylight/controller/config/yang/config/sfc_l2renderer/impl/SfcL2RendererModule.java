@@ -35,6 +35,8 @@ public class SfcL2RendererModule extends org.opendaylight.controller.config.yang
 
     @Override
     public java.lang.AutoCloseable createInstance() {
+        LOG.info("SFC OFL2 Renderer initializing");
+
         final SfcL2Renderer openflowSfcRenderer = new SfcL2Renderer(getDataBrokerDependency());
 
         java.lang.AutoCloseable ret = new java.lang.AutoCloseable() {
@@ -44,7 +46,7 @@ public class SfcL2RendererModule extends org.opendaylight.controller.config.yang
             }
         };
 
-        LOG.info("SFC OFL2 provider (instance {}) initialized.", ret);
+        LOG.info("SFC OFL2 Renderer initialized: (instance {})", ret);
 
         return ret;
     }

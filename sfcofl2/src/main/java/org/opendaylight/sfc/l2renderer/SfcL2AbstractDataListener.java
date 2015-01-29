@@ -33,9 +33,13 @@ public abstract class SfcL2AbstractDataListener implements DataChangeListener {
         return dataBroker;
     }
 
-    public void registerAsDataChangeListener() {
-        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, iID,
+    public void registerAsDataChangeListener(LogicalDatastoreType datastoreType) {
+        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(datastoreType, iID,
                 this, DataBroker.DataChangeScope.SUBTREE);
+    }
+
+    public void registerAsDataChangeListener() {
+        registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
     }
 
     public void closeDataChangeListener() {

@@ -13,7 +13,7 @@ module service-function-description-monitor {
         description "Initial revision.";
     }
 
-    augment "/sfc-sf:service-functions/sfc-sf:service-function" {
+    augment "/sfc-sf:service-functions-state/sfc-sf:service-function-state" {
         description "Service function description and monitoring information";
         container sfc-sf-desc-mon {
             container description-info {

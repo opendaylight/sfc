@@ -1,7 +1,9 @@
-__author__ = "Jim Guichard"
+import logging
+
+__author__ = "Jim Guichard, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "jguichar@cisco.com"
+__version__ = "0.2"
+__email__ = "jguichar@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
 
 #
@@ -11,9 +13,9 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""Network Service Header (NSH) Enabled Service Function"""
+"""Network Service Header (NSH) Enabled Service Function. This SF is spawned in a thread
+   by sfc_agent.py. """
 
-import argparse
 import asyncio
 import sys
 import socket
@@ -24,6 +26,8 @@ try:
     import signal
 except ImportError:
     signal = None
+
+logger = logging.getLogger(__name__)
 
 # Decode vxlan-gpe, base NSH header and NSH context headers
 server_vxlan_values = VXLANGPE()
@@ -94,6 +98,34 @@ class MyDpiService:
         loop = asyncio.get_event_loop()
         loop.stop()
 
+class ControlUdpServer:
+    """
+    This control server class listen on a socket for commands from the main process.
+    For example, if a SFF is deleted the main program can send a command to
+    this data plane thread to exit.
+    """
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        logger.info('Control Server Received packet from:', addr)
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        #data = data.decode('utf-8')
+        #print(data_plane_path)
+        #sfp_topo = json.loads(data)
+        #print(sfp_topo)
+        #print(sfp_topo['3']['3'])
+
+
+    def connection_refused(self, exc):
+        logger.error('Connection refused:', exc)
+
+    def connection_lost(self, exc):
+        logger.error('stop', exc)
+
+    def __init__(self, loop):
+        self.transport = None
+        self.loop = loop
 
 def process_incoming_packet(data):
     print('Processing received packet')
@@ -124,7 +156,6 @@ def start_server(loop, addr, udpserver, message):
     print(message, addr)
     return transport
 
-
 def find_service(service):
     if service == 'fw':
         return MyFwService
@@ -134,40 +165,25 @@ def find_service(service):
         return MyDpiService
 
 
-ARGS = argparse.ArgumentParser(description="NSH Service Function")
-ARGS.add_argument(
-    '--type', action="store", dest='type',
-    default=False, help='Run service function. Options: fw, nat, dpi')
-ARGS.add_argument(
-    '--host', action="store", dest='host',
-    default='0.0.0.0', help='SFF host name')
-ARGS.add_argument(
-    '--port', action="store", dest='port',
-    default=4789, type=int, help='SFF port number')
+# The python agent uses this function as the thread start whenever it wants
+# to create a SFF
+def start_sf(sf_name, sf_ip, sf_port, sf_type, sf_control_port, sf_thread):
+    logger.info("Starting Service Function thread \n")
+    global udpserver_socket
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    logging.basicConfig(level=logging.INFO)
+
+    service = find_service(sf_type)
+    print('Starting', service, 'service...')
+    udpserver = service(loop)
+    udpserver_transport = start_server(loop, (sf_ip, sf_port), udpserver, "Starting new server...")
+    udpserver_socket = udpserver_transport.get_extra_info('socket')
+    sf_thread[sf_name]['socket'] = udpserver_socket
+    control_udp_server = ControlUdpServer(loop)
+    start_server(loop, (sf_ip, sf_control_port), control_udp_server, "Listening for Control messages on port: ")
 
 
-if __name__ == '__main__':
-    args = ARGS.parse_args()
-    if ':' in args.host:
-        args.host, port = args.host.split(':', 1)
-        args.port = int(port)
-
-    if not args.type:
-        print('Please specify --type\n')
-        ARGS.print_help()
-    else:
-        loop = asyncio.get_event_loop()
-        if signal is not None:
-            loop.add_signal_handler(signal.SIGINT, loop.stop)
-
-        if '--type' in sys.argv:
-            # local_ip = get_service_ip()
-            local_ip = '0.0.0.0'
-            service = find_service(args.type)
-            print('Starting', args.type, 'service...')
-            udpserver = service(loop)
-            start_server(loop, (args.host, args.port), udpserver, "Starting new server...")
-        else:
-            print('something went wrong')
-
-        loop.run_forever()
+    loop.run_forever()
+    udpserver_socket.close()
+    loop.close()

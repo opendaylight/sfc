@@ -155,17 +155,17 @@ def build_data_plane_service_path(service_path):
 
     for service_hop in service_path['rendered-service-path-hop']:
 
-        if service_hop['service-function-forwarder'] == my_sff_name:
+        if service_hop['service-function-forwarder'] == get_agent_globals().get_my_sff_name():
             if service_path['path-id'] not in data_plane_path.keys():
                 local_data_plane_path[service_path['path-id']] = {}
-            local_data_plane_path[service_path['path-id']][service_hop['service_index']] = \
+            local_data_plane_path[service_path['path-id']][service_hop['service-index']] = \
                 find_sf_locator(service_hop['service-function-name'], service_hop['service-function-forwarder'])
         else:
             # If SF resides in another SFF, the locator is just the data plane
             # locator of that SFF.
             if service_path['path-id'] not in local_data_plane_path.keys():
                 local_data_plane_path[service_path['path-id']] = {}
-            local_data_plane_path[service_path['path-id']][service_hop['service_index']] = \
+            local_data_plane_path[service_path['path-id']][service_hop['service-index']] = \
                 find_sff_locator(service_hop['service-function-forwarder'])
 
     return
@@ -176,10 +176,14 @@ def build_data_plane_service_path(service_path):
 def create_path(sfpname):
     # global path
     local_path = get_path()
-    local_sff_os = get_sff_os()
+    local_sff_os = get_agent_globals().get_sff_os()
     if not request.json:
         abort(400)
     else:
+
+        if (not get_agent_globals().get_my_sff_name()) and (auto_sff_name()):
+            logger.fatal("Could not determine my SFF name \n")
+            sys.exit(1)
         # print json.dumps(sfpjson)
         # sfpj_name = sfpjson["service-function-path"][0]['name']
         local_path[sfpname] = request.get_json()["rendered-service-path"][0]
@@ -229,7 +233,7 @@ def delete_path(sfpname):
 
 
 @app.route('/config/service-function:service-functions/service-function/<sfname>',
-           methods=['PUT'])
+           methods=['PUT', 'POST'])
 def create_sf(sfname):
     logger.info("Received request for SF creation: %s", sfname)
     return '', 200
@@ -318,7 +322,7 @@ def delete_sff(sffname):
         if sffname in local_sff_threads.keys():
             kill_sff_thread(sffname)
         local_sff_topo.pop(sffname, None)
-        if sffname == my_sff_name:
+        if sffname == get_agent_globals().get_my_sff_name():
             reset_path()
             reset_data_plane_path()
     except KeyError:
@@ -461,8 +465,8 @@ def auto_sff_name():
         for i, value in enumerate(inet_addr_list):
             sff_name = find_sff_locator_by_ip(value['addr'])
             if sff_name:
-                set_my_sff_name(sff_name)
-                logger.info("Auto SFF name is: %s \n", sff_name)
+                get_agent_globals().set_my_sff_name(sff_name)
+                logger.info("Auto SFF name is: %s \n", get_agent_globals().get_my_sff_name())
                 return 0
     if not sff_name:
         logger.error("Could not determine SFF name \n")
@@ -515,7 +519,7 @@ def main(argv):
             continue
 
         if opt == "--sff-name":
-            set_my_sff_name(arg)
+            get_agent_globals().set_my_sff_name(arg)
 
         if opt == "--ovs-sff-cp-ip":
             ovs_local_sff_cp_ip = arg
@@ -528,8 +532,8 @@ def main(argv):
 
         if opt == "--sff-os":
             local_sff_os = arg.upper()
-            set_sff_os(local_sff_os)
-            if local_sff_os not in sff_os_set:
+            get_agent_globals().set_sff_os(local_sff_os)
+            if local_sff_os not in get_agent_globals().sff_os_set:
                 logger.error(local_sff_os + ' is an unsupported SFF switch OS')
                 sys.exit()
 

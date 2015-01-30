@@ -23,6 +23,7 @@ class RspExporter implements Exporter {
         String ret;
         if (dataObject instanceof RenderedServicePath) {
             RenderedServicePath rsp = (RenderedServicePath) dataObject;
+            ArrayNode rspArray = mapper.createArrayNode();
 
             ObjectNode node = mapper.createObjectNode();
             node.put("context-metadata", rsp.getContextMetadata());
@@ -47,7 +48,8 @@ class RspExporter implements Exporter {
                 node.putArray("rendered-service-path-hop").addAll(hopArray);
             }
 
-            ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
+            rspArray.add(node);
+            ret = "{ \"rendered-service-path\" : " + rspArray.toString() + " }";
 
         } else {
             throw new IllegalArgumentException("Argument is not an instance of RenderedServicePath");

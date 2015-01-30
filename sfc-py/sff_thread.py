@@ -16,8 +16,8 @@ __status__ = "alpha"
 
 import asyncio
 import logging
-from nsh_decode import *
 import socket
+from nsh_decode import *
 from sff_globals import *
 
 udpserver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

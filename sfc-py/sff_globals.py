@@ -16,6 +16,28 @@ __status__ = "alpha"
 # processing NSH packets. data_plane_path[sfp-id][sfp-index] will return the
 # locator of the SF/SFF.
 
+class SFC_Agent_Globals:
+    my_sff_name = None
+    sff_os_set = {"OVS", "XE"}
+    sff_os = "ODL"
+
+    def set_my_sff_name(self, sff_name):
+        self.my_sff_name = sff_name
+
+    def get_my_sff_name(self):
+        return self.my_sff_name
+
+    def set_sff_os(self, new_sff_os):
+        self.sff_os = new_sff_os
+
+    def get_sff_os(self):
+        return self.sff_os
+
+agent_globals = SFC_Agent_Globals()
+
+def get_agent_globals():
+    return agent_globals
+
 data_plane_path = {}
 
 # Contains all SFFs known by the agent
@@ -29,18 +51,12 @@ sff_threads = {}
 
 of_tableid = 0
 
-my_sff_name = ""
 
-sff_os_set = {"OVS", "XE"}
-
-sff_os = "ODL"
 
 # Global Accessors
 
 
-def set_sff_os(new_sff_os):
-    global sff_os
-    sff_os = new_sff_os
+
 
 
 def set_path(arg):
@@ -48,19 +64,10 @@ def set_path(arg):
     path = arg
 
 
-def set_my_sff_name(sff_name):
-    global my_sff_name
-    my_sff_name = sff_name
-
 
 # GET APIs
 
-def get_sff_os():
-    return sff_os
 
-
-def get_my_sff_name():
-    return my_sff_name
 
 
 def get_path():

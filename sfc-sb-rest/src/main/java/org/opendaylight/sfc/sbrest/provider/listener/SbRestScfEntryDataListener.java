@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcAbstractDataListener;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
@@ -25,7 +26,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
+public class SbRestScfEntryDataListener extends SfcAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
 
     public SbRestScfEntryDataListener(OpendaylightSfc opendaylightSfc) {

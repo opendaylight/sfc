@@ -10,6 +10,7 @@
 package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcAbstractDataListener;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -42,15 +43,16 @@ import java.util.Set;
  * <p/>
  * @since 2015-01-27
  */
-public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
+public class SfcL2RspDataListener extends SfcAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
     private SfcL2FlowProgrammer sfcL2FlowProgrammer;
 
     public SfcL2RspDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.RSP_ENTRY_IID);
-        registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
+        setInstanceIdentifier(OpendaylightSfc.RSP_ENTRY_IID);
+        setDataStoreType(LogicalDatastoreType.OPERATIONAL);
+        registerAsDataChangeListener();
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
     }
 

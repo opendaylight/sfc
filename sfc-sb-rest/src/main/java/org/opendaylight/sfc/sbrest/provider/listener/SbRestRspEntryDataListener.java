@@ -10,6 +10,7 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcAbstractDataListener;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestRspTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -24,7 +25,7 @@ import java.util.Set;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
+public class SbRestRspEntryDataListener extends SfcAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
 
     public SbRestRspEntryDataListener(OpendaylightSfc opendaylightSfc) {

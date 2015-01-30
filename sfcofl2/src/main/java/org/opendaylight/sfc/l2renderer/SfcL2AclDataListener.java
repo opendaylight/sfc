@@ -16,6 +16,7 @@ import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcAbstractDataListener;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
@@ -32,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
+public class SfcL2AclDataListener extends SfcAbstractDataListener {
 
     private static final short DEFAULT_MASK = 32;
     private static final String SUBNET_MASK = "/";
@@ -40,7 +41,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
 
     public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.SFP_ENTRY_IID);
+        setInstanceIdentifier(OpendaylightSfc.SFP_ENTRY_IID);
         registerAsDataChangeListener();
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
     }

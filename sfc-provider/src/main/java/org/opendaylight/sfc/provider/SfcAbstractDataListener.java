@@ -1,27 +1,26 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Ericsson, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.sbrest.provider.listener;
+package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SbRestAbstractDataListener implements DataChangeListener {
+public abstract class SfcAbstractDataListener implements DataChangeListener {
     protected OpendaylightSfc opendaylightSfc;
     protected DataBroker dataBroker;
     protected InstanceIdentifier<?> instanceIdentifier;
     protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
     protected LogicalDatastoreType dataStoreType;
 
-    public SbRestAbstractDataListener() {
+    public SfcAbstractDataListener() {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
     }
 
@@ -62,6 +61,4 @@ public abstract class SbRestAbstractDataListener implements DataChangeListener {
     public void closeDataChangeListener() {
         dataChangeListenerRegistration.close();
     }
-
-
 }

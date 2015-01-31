@@ -37,12 +37,6 @@ PACKET_CONSUMED = 0b00000001  # Packet was sent to another SFF or service functi
 PACKET_ERROR = 0b00000010  # Packet will be dropped
 SERVICE_HOP_INVALID = 0xDEADBEEF  # Referenced service function is invalid
 
-# Client side code: Choose values for VXLAN, base NSH and context headers as part of packet generation
-
-vxlan_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
-base_values = BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, 0x000002, 0x3)
-
 # Server side code: Store received values for VXLAN, base NSH and context headers data structures
 
 server_vxlan_values = VXLANGPE()
@@ -141,7 +135,7 @@ class ControlUdpServer:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        logger.info('Control Server Received packet from:', addr)
+        logger.info('Control Server Received packet from: %s', addr)
         self.loop.call_soon_threadsafe(self.loop.stop)
         #data = data.decode('utf-8')
         #print(data_plane_path)
@@ -151,10 +145,10 @@ class ControlUdpServer:
 
 
     def connection_refused(self, exc):
-        logger.error('Connection refused:', exc)
+        logger.error('Connection refused: %s', exc)
 
     def connection_lost(self, exc):
-        logger.error('stop', exc)
+        logger.error('stop: %s', exc)
 
     def __init__(self, loop):
         self.transport = None
@@ -169,12 +163,6 @@ def start_server(loop, addr, udpserver, message):
     logger.info("Starting Service Function Forwarder (SFF)")
     print(message, addr)
     return transport
-
-
-def start_client(loop, addr, myip, udpclient):
-    t = asyncio.Task(loop.create_datagram_endpoint(
-        lambda: udpclient, remote_addr=addr))
-    loop.run_until_complete(t)
 
 
 # The python agent uses this function as the thread start whenever it wants

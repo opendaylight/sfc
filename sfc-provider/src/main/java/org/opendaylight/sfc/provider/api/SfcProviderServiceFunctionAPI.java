@@ -941,7 +941,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * @return true if SF description information was put into OPERATIONAL datastore
      * false otherwise
      */
-    protected boolean putServiceFunctionDescription(ServiceFunction sf) {
+    protected boolean putServiceFunctionDescription(ServiceFunction serviceFunction) {
         boolean ret = false;
         printTraceStart(LOG);
         SfcSfDescMon sfDescMon = null;
@@ -951,10 +951,10 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         try {
             if (ODL_SFC.getDataProvider() != null) {
                 //get mount point
-                String mountpoint = sf.getIpMgmtAddress().getIpv4Address().getValue();
+                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
-                    new ServiceFunctionStateKey(sf.getName());
+                    new ServiceFunctionStateKey(serviceFunction.getName());
                 InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
                         .builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
@@ -1040,11 +1040,11 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * mountpoint into the OPERATIONALdatastore.
      *
      * <p>
-     * @param serviceFunctionName  SF name
+     * @param serviceFunction  SF name
      * @return true if SF's monitor information was put into OPERATIONAL datastore
      * false otherwise
      */
-    protected boolean putServiceFunctionMonitor(ServiceFunction sf) {
+    protected boolean putServiceFunctionMonitor(ServiceFunction serviceFunction) {
         boolean ret = false;
         printTraceStart(LOG);
         SfcSfDescMon sfDescMon = null;
@@ -1054,10 +1054,10 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         try {
             if (ODL_SFC.getDataProvider() != null) {
                 //get mount point
-                String mountpoint = sf.getIpMgmtAddress().getIpv4Address().getValue();
+                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
-                    new ServiceFunctionStateKey(sf.getName());
+                    new ServiceFunctionStateKey(serviceFunction.getName());
                 InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
                         .builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
@@ -1139,15 +1139,15 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      /**
      * This method reads the Description information for a service function.
      * <p>
-     * @param ServiceFunction SF object
+     * @param serviceFunction SF object
      * @true if SF description information was put into datastore
      * false otherwise
      */
-    public static boolean putServiceFunctionDescriptionExecutor(ServiceFunction sf) {
+    public static boolean putServiceFunctionDescriptionExecutor(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
         boolean ret = false;
-        Object[] servicePathObj = {sf};
+        Object[] servicePathObj = {serviceFunction};
         Class[] servicePathClass = {ServiceFunction.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getPutServiceFunctionDescriptionState(servicePathObj, servicePathClass);
@@ -1167,15 +1167,15 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     /**
      * This method reads the monitor information for a service function.
      * <p>
-     * @param ServiceFunction SF object
+     * @param serviceFunction SF object
      * @return true if SF's monitor information was put into datastore
      * false otherwise
      */
-    public static boolean putServiceFunctionMonitorExecutor(ServiceFunction sf) {
+    public static boolean putServiceFunctionMonitorExecutor(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
         boolean ret = false;
-        Object[] servicePathObj = {sf};
+        Object[] servicePathObj = {serviceFunction};
         Class[] servicePathClass = {ServiceFunction.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getPutServiceFunctionMonitorState(servicePathObj, servicePathClass);

@@ -87,7 +87,7 @@ public class WsTask implements Runnable {
                 break;
             case DELETE:
                 try {
-                    clientRemoteResponse = wrb.delete(ClientResponse.class, json);
+                    clientRemoteResponse = wrb.delete(ClientResponse.class);
                 } catch (UniformInterfaceException e) {
                     LOG.error("REST Server error. Message: {}", e.getMessage());
                 } catch (ClientHandlerException e) {

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -77,8 +78,6 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
             }
         }
 
-
-        /* I'm not sure this should be possible
         // SFF DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
@@ -86,14 +85,12 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof ServiceFunctionForwarder) {
 
                 ServiceFunctionForwarder originalServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
-                LOG.error("XXXXXXX Sff Name is {}", originalServiceFunctionForwarder.getName());
 
-                Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder, opendaylightSfc.getExecutor());
+                Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
+                        opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
-
             }
         }
-        */
         printTraceStop(LOG);
     }
 

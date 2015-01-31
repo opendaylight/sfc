@@ -122,6 +122,10 @@ def get_data_plane_paths():
 def get_sffs():
     return jsonify(sff_topo)
 
+@app.route('/operational/service-function-forwarder:service-function-forwarders-state/threads', methods=['GET'])
+def get_sffs_thread_state():
+    return jsonify(sff_threads)
+
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT', 'POST'])
 def create_paths():

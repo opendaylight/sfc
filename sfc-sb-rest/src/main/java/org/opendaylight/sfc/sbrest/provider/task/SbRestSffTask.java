@@ -21,7 +21,11 @@ public class SbRestSffTask extends SbRestAbstractTask {
         super(restOperation, odlExecutor);
 
         this.exporterFactory = new SffExporterFactory();
-        this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        if (restOperation.equals(RestOperation.DELETE)) {
+            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
+        } else {
+            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        }
         setRestUriList(dataObject);
     }
 

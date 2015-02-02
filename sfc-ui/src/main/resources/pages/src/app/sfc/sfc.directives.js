@@ -137,7 +137,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ctrl) {
-        ctrl.$parsers.unshift(SfcValidatorSvc.macAddress);
+        ctrl.$parsers.unshift(SfcValidatorSvc.macAddress(ctrl));
       }
     };
   });

@@ -699,7 +699,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     // @override
     ServiceFunctionSvc.prototype.stripNamespacePrefixes = function (sfsArray) {
 
-      var matcher = new RegExp("^service-function:");
+      var locatorMatcher = new RegExp("^service-locator:");
       var sfTypeMatcher = new RegExp("^service-function-type:");
 
       _.each(sfsArray, function (sf) {
@@ -710,7 +710,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         _.each(sf['sf-data-plane-locator'], function (locator) {
           if (!_.isEmpty(locator.transport)) {
-            locator.transport = locator.transport.replace(matcher, "");
+            locator.transport = locator.transport.replace(locatorMatcher, "");
           }
         });
       });
@@ -722,11 +722,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceFunctionSvc.prototype.addNamespacePrefixes = function (sf) {
       var sfTypeMatcher = new RegExp("^service-function-type:");
       var sfTypePrefix = "service-function-type:";
+      var locatorMatcher = new RegExp("^service-locator:");
+      var locatorPrefix = "service-locator:";
 
       if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
         // add prefix
         sf.type = sfTypePrefix + sf.type;
       }
+
+      _.each(sf['sf-data-plane-locator'], function (locator) {
+        if (angular.isDefined(locator['transport']) && locator['transport'].search(locatorMatcher) < 0) {
+          locator['transport'] = locatorPrefix + locator['transport'];
+        }
+      });
 
       return sf;
     };
@@ -980,7 +988,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
             // strip namespace in 'transport' property value
             if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'])) {
-              dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(matcher, "");
+              dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 
             // strip namespace in 'ovs-bridge' property name
@@ -999,6 +1007,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceForwarderSvc.prototype.addNamespacePrefixes = function (sff) {
       var sfTypeMatcher = new RegExp("^service-function-type:");
       var sfTypePrefix = "service-function-type:";
+      var locatorMatcher = new RegExp("^service-locator:");
+      var locatorPrefix = "service-locator:";
+
+      if (!_.isEmpty(sff['sff-data-plane-locator'])) {
+        _.each(sff['sff-data-plane-locator'], function (locator) {
+
+          if (angular.isDefined(locator['data-plane-locator']['transport'] &&
+            locator['data-plane-locator']['transport'].search(locatorMatcher) < 0)) {
+            locator['data-plane-locator']['transport'] = locatorPrefix + locator['data-plane-locator']['transport'];
+          }
+        });
+      }
 
       if (!_.isEmpty(sff['service-function-dictionary'])) {
         _.each(sff['service-function-dictionary'], function (sf) {
@@ -1006,7 +1026,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
             // add prefix
             sf['type'] = sfTypePrefix + sf['type'];
           }
+
+          if (angular.isDefined(sf['sff-sf-data-plane-locator']['transport'] &&
+            sf['sff-sf-data-plane-locator']['transport'].search(locatorMatcher) < 0)) {
+            sf['sff-sf-data-plane-locator']['transport'] = locatorPrefix + sf['sff-sf-data-plane-locator']['transport'];
+          }
         });
+
       }
 
       return sff;

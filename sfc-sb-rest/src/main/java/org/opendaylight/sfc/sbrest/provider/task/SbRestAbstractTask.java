@@ -35,7 +35,9 @@ abstract public class SbRestAbstractTask implements Runnable {
 
     @Override
     public void run() {
-        //System.out.println("***** Task JSON:" + jsonObject);
+        /* TODO: This check is not proper. A DELETE or HEAD operation has no JSON payload. Today code puts payload but
+              that is not proper either.
+        */
         if (jsonObject != null) {
             submitTasks(jsonObject);
         }

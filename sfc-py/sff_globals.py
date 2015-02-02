@@ -20,6 +20,7 @@ class SFC_Agent_Globals:
     my_sff_name = None
     sff_os_set = {"OVS", "XE"}
     sff_os = "ODL"
+    sf_topo = {}
 
     def set_my_sff_name(self, sff_name):
         self.my_sff_name = sff_name
@@ -32,6 +33,12 @@ class SFC_Agent_Globals:
 
     def get_sff_os(self):
         return self.sff_os
+
+    def get_sf_topo(self):
+        return self.sf_topo
+
+    def reset_sf_topo(self):
+        self.sf_topo = {}
 
 agent_globals = SFC_Agent_Globals()
 

@@ -122,11 +122,6 @@ def get_data_plane_paths():
 def get_sffs():
     return jsonify(sff_topo)
 
-@app.route('/operational/service-function-forwarder:service-function-forwarders-state/threads', methods=['GET'])
-def get_sffs_thread_state():
-    return jsonify(sff_threads)
-
-
 @app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT', 'POST'])
 def create_paths():
     if not request.json:
@@ -240,7 +235,18 @@ def delete_path(sfpname):
            methods=['PUT', 'POST'])
 def create_sf(sfname):
     logger.info("Received request for SF creation: %s", sfname)
-    return '', 200
+    local_sf_topo = get_agent_globals().get_sf_topo()
+
+    if not request.json:
+        abort(400)
+    else:
+        local_sf_topo[sfname] = request.get_json()['service-function'][0]
+        sf_port = local_sf_topo[sfname]['sf-data-plane-locator'][0]['data-plane-locator']['port']
+        # sf_thread = Thread(target=start_sff, args=(sfname, "0.0.0.0", sf_port, sf_control_port, local_sf_threads))
+
+        # sf_thread.start()
+
+    return jsonify({'sf': local_sf_topo[sfname]}), 201
 
 
 @app.route('/config/service-function:service-functions/service-function/<sfname>',

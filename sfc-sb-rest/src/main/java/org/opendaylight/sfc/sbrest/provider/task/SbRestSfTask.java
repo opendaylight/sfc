@@ -31,8 +31,12 @@ public class SbRestSfTask extends SbRestAbstractTask {
     protected void setRestUriList(DataObject dataObject) {
         ServiceFunction obj = (ServiceFunction) dataObject;
 
-        this.restUriList = new ArrayList<>();
-        this.restUriList.add(obj.getRestUri().getValue()
-                + "/config/service-function:service-functions/service-function/" + obj.getName());
+        if (obj.getRestUri() != null) {
+            this.restUriList = new ArrayList<>();
+            this.restUriList.add(obj.getRestUri().getValue()
+                    + "/config/service-function:service-functions/service-function/" + obj.getName());
+        } else {
+            this.restUriList = null;
+        }
     }
 }

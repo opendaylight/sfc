@@ -41,6 +41,8 @@ class AclExporter implements Exporter {
         if (dataObject instanceof AccessList) {
             AccessList acl = (AccessList) dataObject;
 
+            ArrayNode aclArray = mapper.createArrayNode();
+
             ObjectNode aclNode = mapper.createObjectNode();
             aclNode.put("acl-name", acl.getAclName());
 
@@ -61,7 +63,8 @@ class AclExporter implements Exporter {
 
             aclNode.put("default-actions", this.getDefaultActionsObjectNode(acl.getDefaultActions()));
 
-            ret = "{ \"access-list\" : " + aclNode.toString() + " }";
+            aclArray.add(aclNode);
+            ret = "{ \"access-list\" : " + aclArray.toString() + " }";
             LOG.debug("Created Access List JSON: {}", ret);
 
         } else {

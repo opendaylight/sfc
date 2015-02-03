@@ -12,7 +12,7 @@
   <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.0.3-Helium-SR2</version>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <!--
     Necessary TODO: Hookup your parent pom here, else you will not get necessary versions,
@@ -28,7 +28,7 @@
   <groupId>org.opendaylight.sfc</groupId>
   <description>Configuration files for md-sal</description>
   <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
-   <version>0.0.3-Helium-SR2</version>
+   <version>0.0.4-SNAPSHOT</version>
    -->
   <packaging>jar</packaging>
   <properties>

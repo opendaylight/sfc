@@ -43,9 +43,11 @@ public class SbRestRspTask extends SbRestAbstractTask {
             ServiceFunctionForwarder sff =
                     SfcProviderServiceForwarderAPI
                             .readServiceFunctionForwarderExecutor(hop.getServiceFunctionForwarder());
-            this.restUriList.add(sff.getRestUri().getValue()
-                    + "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/"
-                    + obj.getName());
+            if(sff.getRestUri() != null) {
+                this.restUriList.add(sff.getRestUri().getValue()
+                        + "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/"
+                        + obj.getName());
+            }
         }
     }
 

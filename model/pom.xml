@@ -3,15 +3,15 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.opendaylight.sfc</groupId>
    <artifactId>model</artifactId>
-   <version>0.0.3-SNAPSHOT</version>
+   <version>0.0.3-Helium-SR2</version>
    <packaging>bundle</packaging>
 
    <properties>
-       <yangtools.generator.version>0.6.4-SNAPSHOT</yangtools.generator.version>
-       <yangtools.version>0.6.4-SNAPSHOT</yangtools.version>
+       <yangtools.generator.version>0.6.4-Helium-SR2</yangtools.generator.version>
+       <yangtools.version>0.6.4-Helium-SR2</yangtools.version>
        <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-       <ietf.model.version>2010.09.24.4.2-SNAPSHOT</ietf.model.version>
-       <yang.ext.version>2013.09.07.4.2-SNAPSHOT</yang.ext.version>
+       <ietf.model.version>2010.09.24.4.2-Helium-SR2</ietf.model.version>
+       <yang.ext.version>2013.09.07.4.2-Helium-SR2</yang.ext.version>
        <compiler.version>2.3.2</compiler.version>
        <checkstyle.version>2.10</checkstyle.version>
        <osgi.core.version>5.0.0</osgi.core.version>

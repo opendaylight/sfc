@@ -57,7 +57,7 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder createdServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("*** created Sff: {}", createdServiceFunctionForwarder.getName());
+                LOG.debug("Created Service Function Forwarder Name: {}", createdServiceFunctionForwarder.getName());
 
                 Runnable task = new SbRestSffTask(RestOperation.POST, createdServiceFunctionForwarder, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
@@ -70,8 +70,7 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
             if ((entry.getValue() instanceof ServiceFunctionForwarder)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\n########## Modified Sff Name {}",
-                        updatedServiceFunctionForwarder.getName());
+                LOG.debug("\nModified Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
 
                 Runnable task = new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
@@ -85,6 +84,7 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof ServiceFunctionForwarder) {
 
                 ServiceFunctionForwarder originalServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
+                LOG.debug("\nDeleted Service Function Forwarder Name: {}", originalServiceFunctionForwarder.getName());
 
                 Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
                         opendaylightSfc.getExecutor());

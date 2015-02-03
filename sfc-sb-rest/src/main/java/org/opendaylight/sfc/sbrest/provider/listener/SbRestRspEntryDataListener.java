@@ -25,7 +25,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
-    private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
 
     public SbRestRspEntryDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
@@ -47,19 +47,17 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
                 RenderedServicePath originalRenderedServicePath = (RenderedServicePath) entry.getValue();
-                LOG.debug("\n########## Original RSP: {}",
-                        originalRenderedServicePath.getName());
+                LOG.debug("\nOriginal Rendered Service Path: {}", originalRenderedServicePath.getName());
             }
         }
 
         // RSP CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
-
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
                 RenderedServicePath createdRenderedServicePath = (RenderedServicePath) entry.getValue();
-                LOG.debug("*** created RSP: {}", createdRenderedServicePath.getName());
+                LOG.debug("\nCreated Rendered Service Path: {}", createdRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.POST, createdRenderedServicePath, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
@@ -72,8 +70,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
             if ((entry.getValue() instanceof RenderedServicePath)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 RenderedServicePath updatedRenderedServicePath = (RenderedServicePath) entry.getValue();
-                LOG.debug("\n########## Modified RSP Name {}",
-                        updatedRenderedServicePath.getName());
+                LOG.debug("\nModified Rendered Service Path Name: {}", updatedRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
@@ -88,12 +85,10 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof RenderedServicePath) {
 
                 RenderedServicePath originalRenderedServicePath = (RenderedServicePath) dataObject;
-                LOG.error("XXXXXXX RSP Name is {}", originalRenderedServicePath.getName());
-
+                LOG.debug("\nDeleted Rendered Service Path Name: {}", originalRenderedServicePath.getName());
 
                 Runnable task = new SbRestRspTask(RestOperation.DELETE, originalRenderedServicePath, opendaylightSfc.getExecutor());
                 opendaylightSfc.getExecutor().submit(task);
-
             }
         }
         printTraceStop(LOG);

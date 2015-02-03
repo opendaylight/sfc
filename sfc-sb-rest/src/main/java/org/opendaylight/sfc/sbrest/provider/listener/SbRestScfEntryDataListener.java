@@ -47,8 +47,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionClassifier) {
                 ServiceFunctionClassifier originalServiceClassifier = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("\n########## Original Service Classifier: {}",
-                        originalServiceClassifier.getName());
+                LOG.debug("\nOriginal Service Classifier Name: {}", originalServiceClassifier.getName());
             }
         }
 
@@ -58,7 +57,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionClassifier) {
                 ServiceFunctionClassifier createdServiceClassifier = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("\n########## Created Service Classifier Name: {}", createdServiceClassifier.getName());
+                LOG.debug("\nCreated Service Classifier Name: {}", createdServiceClassifier.getName());
 
                 if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()){
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
@@ -76,7 +75,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
             if ((entry.getValue() instanceof ServiceFunctionClassifier)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 ServiceFunctionClassifier updatedServiceClassifier = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("\n########## Modified Service Classifier Name: {}", updatedServiceClassifier.getName());
+                LOG.debug("\nModified Service Classifier Name: {}", updatedServiceClassifier.getName());
 
                 if (updatedServiceClassifier.getAccessList() != null && !updatedServiceClassifier.getAccessList().isEmpty()){
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(updatedServiceClassifier.getAccessList());
@@ -95,12 +94,12 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
             if (dataObject instanceof ServiceFunctionClassifier) {
 
                 ServiceFunctionClassifier deletedServiceClassifier = (ServiceFunctionClassifier) dataObject;
-                LOG.debug("\n########## Deleted Service Classifier Name: {}", deletedServiceClassifier.getName());
+                LOG.debug("\nDeleted Service Classifier Name: {}", deletedServiceClassifier.getName());
 
                 if (deletedServiceClassifier.getAccessList() != null && !deletedServiceClassifier.getAccessList().isEmpty()){
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(deletedServiceClassifier.getAccessList());
 
-                    Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
+                    Runnable task = new SbRestAclTask(RestOperation.DELETE, accessList,
                             deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
                     opendaylightSfc.getExecutor().submit(task);
                 }

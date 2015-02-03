@@ -22,6 +22,8 @@ class SfExporter implements Exporter {
         if (dataObject instanceof ServiceFunction) {
             ServiceFunction sf = (ServiceFunction) dataObject;
 
+            ArrayNode sfArray = mapper.createArrayNode();
+
             ObjectNode node = mapper.createObjectNode();
             node.put("name", sf.getName());
             node.put("ip-mgmt-address", Util.convertIpAddress(sf.getIpMgmtAddress()));
@@ -40,7 +42,9 @@ class SfExporter implements Exporter {
                 }
                 node.putArray("sf-data-plane-locator").addAll(locatorArray);
             }
-            ret = "{ \"service-function\" : " + node.toString() + " }";
+
+            sfArray.add(node);
+            ret = "{ \"service-function\" : " + sfArray.toString() + " }";
 
         } else {
             throw new IllegalArgumentException("Argument is not an instance of ServiceFunction");

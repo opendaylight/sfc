@@ -13,12 +13,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class SbRestRspTask extends SbRestAbstractTask {
+
+    private static final String RSP_REST_URI = "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/";
+    private static final Logger LOG = LoggerFactory.getLogger(SbRestRspTask.class);
 
     public SbRestRspTask(RestOperation restOperation, RenderedServicePath dataObject, ExecutorService odlExecutor) {
 
@@ -44,9 +49,9 @@ public class SbRestRspTask extends SbRestAbstractTask {
                     SfcProviderServiceForwarderAPI
                             .readServiceFunctionForwarderExecutor(hop.getServiceFunctionForwarder());
             if(sff.getRestUri() != null) {
-                this.restUriList.add(sff.getRestUri().getValue()
-                        + "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/"
-                        + obj.getName());
+                String restUri = sff.getRestUri().getValue() + RSP_REST_URI + obj.getName();
+                this.restUriList.add(restUri);
+                LOG.info("RSP will be send to REST URI {}", restUri);
             }
         }
     }

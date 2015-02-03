@@ -10,11 +10,16 @@ package org.opendaylight.sfc.sbrest.provider.task;
 import org.opendaylight.sfc.sbrest.json.SffExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 public class SbRestSffTask extends SbRestAbstractTask {
+
+    private static final String SFF_REST_URI = "/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/";
+    private static final Logger LOG = LoggerFactory.getLogger(SbRestSffTask.class);
 
     public SbRestSffTask(RestOperation restOperation, ServiceFunctionForwarder dataObject, ExecutorService odlExecutor) {
 
@@ -34,9 +39,10 @@ public class SbRestSffTask extends SbRestAbstractTask {
         ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
 
         if (obj.getRestUri() != null) {
+            String restUri = obj.getRestUri().getValue() + SFF_REST_URI + obj.getName();
             this.restUriList = new ArrayList<>();
-            this.restUriList.add(obj.getRestUri().getValue()
-                    + "/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/" + obj.getName());
+            this.restUriList.add(restUri);
+            LOG.info("SFF will be send to REST URI {}", restUri);
         } else {
             this.restUriList = null;
         }

@@ -18,6 +18,7 @@ import logging
 import socket
 import netifaces
 from sff_thread import start_sff
+from service_function_thread import start_sf
 from threading import Thread
 from sff_globals import *
 import collections
@@ -33,9 +34,6 @@ import xe_cli
 import ovs_cli
 
 app = Flask(__name__)
-
-# SFF data plane listens to commands on this port.
-sff_control_port = 6000
 
 # IP address of associated SFF thread. WE assume agent and thread and co-located
 SFF_UDP_IP = "127.0.0.1"
@@ -236,15 +234,35 @@ def delete_path(sfpname):
 def create_sf(sfname):
     logger.info("Received request for SF creation: %s", sfname)
     local_sf_topo = get_agent_globals().get_sf_topo()
+    local_sf_threads = get_agent_globals().get_sf_threads()
+    control_port = get_agent_globals().get_data_plane_control_port()
 
     if not request.json:
         abort(400)
     else:
         local_sf_topo[sfname] = request.get_json()['service-function'][0]
-        sf_port = local_sf_topo[sfname]['sf-data-plane-locator'][0]['port']
-        # sf_thread = Thread(target=start_sff, args=(sfname, "0.0.0.0", sf_port, sf_control_port, local_sf_threads))
+        data_plane_locator_list = local_sf_topo[sfname]['sf-data-plane-locator']
+        for i, data_plane_locator in enumerate(data_plane_locator_list):
+            if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
+                sf_port = data_plane_locator['port']
+                sf_prefix, sf_type = (local_sf_topo[sfname]['type']).split(':')
+                local_sf_threads[sfname] = {}
 
-        # sf_thread.start()
+                # TODO: We need more checks to make sure IP in locator actually corresponds to one
+                # TODO: of the existing interfaces in the system
+                sf_thread = Thread(target=start_sf, args=(sfname, "0.0.0.0", sf_port, sf_type, control_port, local_sf_threads))
+                sf_thread.start()
+
+                if sf_thread.is_alive():
+
+                    local_sf_threads[sfname]['thread'] = sf_thread
+                    local_sf_threads[sfname]['data_plane_control_port'] = control_port
+                    control_port += 1
+                    get_agent_globals().set_data_plane_control_port(control_port)
+                    logger.info("SF thread %s start successfully", sfname)
+                else:
+                    local_sf_threads.pop(sfname, None)
+                    logger.error("Failed to start SF thread %s", sfname)
 
     return jsonify({'sf': local_sf_topo[sfname]}), 201
 
@@ -253,7 +271,24 @@ def create_sf(sfname):
            methods=['DELETE'])
 def delete_sf(sfname):
     logger.info("Received request for SF deletion: %s", sfname)
-    return '', 200
+    local_sf_topo = get_agent_globals().get_sf_threads()
+    local_sf_threads = get_agent_globals().get_sf_threads()
+
+    try:
+        if sfname in local_sf_threads.keys():
+            kill_sf_thread(sfname)
+        local_sf_topo.pop(sfname, None)
+        if sfname == get_agent_globals().get_my_sff_name():
+            reset_path()
+            reset_data_plane_path()
+    except KeyError:
+        msg = "SF name {} not found, message".format(sfname)
+        logger.warning(msg)
+        return msg, 404
+    except:
+        logger.warning("Unexpected exception, re-raising it")
+        raise
+    return '', 204
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
@@ -266,9 +301,8 @@ def create_sff(sffname):
     :param sffname: SFF name
     :return:
     """
-    # global sff_topo
     local_sff_topo = get_sff_topo()
-    global sff_control_port
+    control_port = get_agent_globals().get_data_plane_control_port()
     local_sff_threads = get_sff_threads()
 
     if not request.json:
@@ -278,15 +312,21 @@ def create_sff(sffname):
             kill_sff_thread(sffname)
         local_sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
         sff_port = local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
-        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, sff_control_port, local_sff_threads))
+        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, control_port, local_sff_threads))
 
         local_sff_threads[sffname] = {}
         local_sff_threads[sffname]['thread'] = sff_thread
-        local_sff_threads[sffname]['sff_control_port'] = sff_control_port
+        local_sff_threads[sffname]['data_plane_control_port'] = control_port
 
         sff_thread.start()
+        if sff_thread.is_alive():
+            logger.info("SFF thread %s start successfully", sffname)
+        else:
+            logger.error("Failed to start SFF thread %s", sffname)
 
-        sff_control_port += 1
+
+        control_port += 1
+        get_agent_globals().set_data_plane_control_port(control_port)
 
     return jsonify({'sff': sff_topo}), 201
 
@@ -304,7 +344,7 @@ def kill_sff_thread(sffname):
     message = "Kill thread".encode(encoding="UTF-8")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP, local_sff_threads[sffname]['sff_control_port']))
+    sock.sendto(message, (SFF_UDP_IP, local_sff_threads[sffname]['data_plane_control_port']))
     if local_sff_threads[sffname]['thread'].is_alive():
         local_sff_threads[sffname]['thread'].join()
     if not local_sff_threads[sffname]['thread'].is_alive():
@@ -315,6 +355,30 @@ def kill_sff_thread(sffname):
         local_sff_threads.pop(sffname, None)
         # udpserver_socket.close()
 
+
+def kill_sf_thread(sfname):
+    """
+    This function kills a SF thread
+    :param sffname:
+    :return:
+    """
+
+    local_sf_threads = get_agent_globals().get_sf_threads()
+    logger.info("Killing thread for SF: %s", sfname)
+    # Yes, we will come up with a better protocol in the future....
+    message = "Kill thread".encode(encoding="UTF-8")
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(message, (SFF_UDP_IP, local_sf_threads[sfname]['data_plane_control_port']))
+    if local_sf_threads[sfname]['thread'].is_alive():
+        local_sf_threads[sfname]['thread'].join()
+    if not local_sf_threads[sfname]['thread'].is_alive():
+        logger.info("Thread for SF %s is dead", sfname)
+        # We need to close the socket used by thread here as well or we get an address reuse error. This is probably
+        # some bug in asyncio since it should be enough for the SFF thread to close the socket.
+        local_sf_threads[sfname]['socket'].close()
+        local_sf_threads.pop(sfname, None)
+        # udpserver_socket.close()
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
            methods=['DELETE'])

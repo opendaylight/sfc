@@ -78,6 +78,10 @@ class MyNatService:
         loop = asyncio.get_event_loop()
         loop.stop()
 
+    def __init__(self, loop):
+        self.transport = None
+        self.loop = loop
+
 
 class MyDpiService:
     def connection_made(self, transport):
@@ -97,6 +101,10 @@ class MyDpiService:
         print('closing transport', exc)
         loop = asyncio.get_event_loop()
         loop.stop()
+
+    def __init__(self, loop):
+        self.transport = None
+        self.loop = loop
 
 class ControlUdpServer:
     """
@@ -177,7 +185,7 @@ def start_sf(sf_name, sf_ip, sf_port, sf_type, sf_control_port, sf_thread):
     service = find_service(sf_type)
     print('Starting', service, 'service...')
     udpserver = service(loop)
-    udpserver_transport = start_server(loop, (sf_ip, sf_port), udpserver, "Starting new server...")
+    udpserver_transport = start_server(loop, (sf_ip, sf_port), udpserver, "Starting Service Function...")
     udpserver_socket = udpserver_transport.get_extra_info('socket')
     sf_thread[sf_name]['socket'] = udpserver_socket
     control_udp_server = ControlUdpServer(loop)

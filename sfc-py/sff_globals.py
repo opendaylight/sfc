@@ -21,6 +21,8 @@ class SFC_Agent_Globals:
     sff_os_set = {"OVS", "XE"}
     sff_os = "ODL"
     sf_topo = {}
+    sf_threads = {}
+    data_plane_control_port = 6000
 
     def set_my_sff_name(self, sff_name):
         self.my_sff_name = sff_name
@@ -39,6 +41,15 @@ class SFC_Agent_Globals:
 
     def reset_sf_topo(self):
         self.sf_topo = {}
+
+    def get_sf_threads(self):
+        return self.sf_threads
+
+    def get_data_plane_control_port(self):
+        return self.data_plane_control_port
+
+    def set_data_plane_control_port(self, control_port):
+        self.data_plane_control_port = control_port
 
 agent_globals = SFC_Agent_Globals()
 

@@ -98,6 +98,7 @@ class MyUdpServer:
     This is the main UDP server. It receives VXLAN GPE packets, calls
     packet processing function and finally sends them on their way
     """
+
     def connection_made(self, transport):
         self.transport = transport
 
@@ -131,6 +132,7 @@ class ControlUdpServer:
     For example, if a SFF is deleted the main program can send a command to
     this data plane thread to exit.
     """
+
     def connection_made(self, transport):
         self.transport = transport
 

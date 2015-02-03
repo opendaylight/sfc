@@ -44,6 +44,7 @@ class SfExporter implements Exporter {
             }
 
             sfArray.add(node);
+
             ret = "{ \"service-function\" : " + sfArray.toString() + " }";
 
         } else {

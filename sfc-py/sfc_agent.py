@@ -241,7 +241,7 @@ def create_sf(sfname):
         abort(400)
     else:
         local_sf_topo[sfname] = request.get_json()['service-function'][0]
-        sf_port = local_sf_topo[sfname]['sf-data-plane-locator'][0]['data-plane-locator']['port']
+        sf_port = local_sf_topo[sfname]['sf-data-plane-locator'][0]['port']
         # sf_thread = Thread(target=start_sff, args=(sfname, "0.0.0.0", sf_port, sf_control_port, local_sf_threads))
 
         # sf_thread.start()

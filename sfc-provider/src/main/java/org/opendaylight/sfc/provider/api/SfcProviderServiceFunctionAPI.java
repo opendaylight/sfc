@@ -155,7 +155,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         if (dataSfcStateObject != null) {
             ret = dataSfcStateObject.getSfServicePath();
         } else {
-            LOG.warn("Service Function {} has no operational state", serviceFunctionName);
+            LOG.warn("readServiceFunctionState() Service Function {} has no operational state", serviceFunctionName);
         }
 
 
@@ -221,7 +221,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 rspList.add(rspName);
             }
         } else {
-            LOG.warn("Service Function {} has no operational state", serviceFunctionName);
+            LOG.warn("readServiceFunctionStateAsStringList() Service Function {} has no operational state", serviceFunctionName);
         }
 
         printTraceStop(LOG);
@@ -281,7 +281,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         if (dataSfcStateObject != null) {
             ret = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class).getSfcSfDescMon();
         } else {
-            LOG.warn("Service Function {} has no operational state", serviceFunctionName);
+            LOG.warn("readServiceFunctionDescriptionMonitor() Service Function {} has no operational state", serviceFunctionName);
         }
 
 
@@ -963,6 +963,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
                 //get sf description information from netconf
                 sfDescInfoMap = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
+                if(sfDescInfoMap == null) {
+                    return false;
+                }
                 //ports capability
                 Map<String, Object> capMap = (Map<String, Object>)sfDescInfoMap.get("capabilities");
                 List<Map<String, Object>> portsMap = (List<Map<String, Object>>)capMap.get("ports");
@@ -1066,6 +1069,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
                 //get sf monitor data from netconf
                 sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
+                if(sfMonInfoMap == null) {
+                    return false;
+                }
                 //port utilization
                 Map<String, Object> utilMap = (Map<String, Object>)sfMonInfoMap.get("utilization");
                 List<Map<String, Object>> portsUtilMap = (List<Map<String, Object>>)utilMap.get("ports");

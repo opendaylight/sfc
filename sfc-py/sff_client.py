@@ -16,7 +16,7 @@ __status__ = "alpha"
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 """Service Function Forwarder (SFF) Client. This module
-   is a classifier node. It builds the NSH packet and sends to the first SFF
+   will initiate the path by building a NSH/VXLAN-GPE packet and sending to the first SFF
    in the path"""
 
 import asyncio

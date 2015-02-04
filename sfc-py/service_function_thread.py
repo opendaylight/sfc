@@ -17,8 +17,6 @@ __status__ = "alpha"
    by sfc_agent.py. """
 
 import asyncio
-import sys
-import socket
 from nsh_decode import *
 from nsh_service_index import *
 
@@ -44,7 +42,6 @@ class MyFwService:
         rw_data = process_incoming_packet(data)
         print("Sending packets to", addr)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -64,11 +61,10 @@ class MyNatService:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        print('\nnat service received packet from SFF:\n', addr, binascii.hexlify(data))
+        print('\nNat service received packet from SFF:\n', addr, binascii.hexlify(data))
         print('\n')
         rw_data = process_incoming_packet(data)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -92,7 +88,6 @@ class MyDpiService:
         print('\n')
         rw_data = process_incoming_packet(data)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -105,6 +100,30 @@ class MyDpiService:
     def __init__(self, loop):
         self.transport = None
         self.loop = loop
+
+
+class MyService:
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        print('\nService received packet from SFF:\n', addr, binascii.hexlify(data))
+        print('\n')
+        rw_data = process_incoming_packet(data)
+        self.transport.sendto(rw_data, addr)
+
+    def connection_refused(self, exc):
+        print('Connection refused:', exc)
+
+    def connection_lost(self, exc):
+        print('closing transport', exc)
+        loop = asyncio.get_event_loop()
+        loop.stop()
+
+    def __init__(self, loop):
+        self.transport = None
+        self.loop = loop
+
 
 class ControlUdpServer:
     """
@@ -164,13 +183,21 @@ def start_server(loop, addr, udpserver, message):
     print(message, addr)
     return transport
 
+
 def find_service(service):
-    if service == 'fw':
+
+    if service == 'firewall':
         return MyFwService
-    elif service == 'nat':
+    elif service == 'napt44':
         return MyNatService
     elif service == 'dpi':
         return MyDpiService
+    elif service == 'qos':
+        return MyService
+    elif service == 'ids':
+        return MyService
+    else:
+        return MyService
 
 
 # The python agent uses this function as the thread start whenever it wants
@@ -185,7 +212,7 @@ def start_sf(sf_name, sf_ip, sf_port, sf_type, sf_control_port, sf_thread):
     service = find_service(sf_type)
     print('Starting', service, 'service...')
     udpserver = service(loop)
-    udpserver_transport = start_server(loop, (sf_ip, sf_port), udpserver, "Starting Service Function...")
+    udpserver_transport = start_server(loop, (sf_ip, sf_port), udpserver, "Starting new Service Function...")
     udpserver_socket = udpserver_transport.get_extra_info('socket')
     sf_thread[sf_name]['socket'] = udpserver_socket
     control_udp_server = ControlUdpServer(loop)

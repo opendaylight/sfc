@@ -49,7 +49,8 @@ def lookup_next_sf(service_path, service_index):
     # First we determine the list of SFs in the received packet based on SPI value extracted from packet
 
     try:
-        next_hop = data_plane_path[service_path][service_index]
+        local_data_plane_path = get_agent_globals().get_data_plane_path()
+        next_hop = local_data_plane_path[service_path][service_index]
     except KeyError:
         logger.error("Could not determine next service hop. SP: %d, SI: %d", service_path, service_index)
     return next_hop

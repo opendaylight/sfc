@@ -1,7 +1,7 @@
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __license__ = "New-style BSD"
-__version__ = "0.1"
+__version__ = "0.2"
 __email__ = "rapenno@gmail.com"
 __status__ = ""
 
@@ -129,7 +129,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "ip-mgmt-address": "10.0.1.44",
-        "service-node": "OVSDB2"
+        "service-node": "Ubuntu4"
       },
       {
         "name": "SFF1",
@@ -163,7 +163,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "ip-mgmt-address": "10.0.1.41",
-        "service-node": "OVSDB1"
+        "service-node": "Ubuntu1"
       },
       {
         "name": "SFF5",
@@ -182,8 +182,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "rest-uri": "http://10.0.1.45:5000",
-        "ip-mgmt-address": "10.0.1.44",
-        "service-node": "OVSDB2"
+        "ip-mgmt-address": "10.0.1.45",
+        "service-node": "Ubuntu5"
       },
       {
         "name": "SFF2",
@@ -217,7 +217,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "ip-mgmt-address": "10.0.1.42",
-        "service-node": "OVSDB2"
+        "service-node": "Ubuntu2"
       },
       {
         "name": "SFF3",
@@ -251,7 +251,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "ip-mgmt-address": "10.0.1.43",
-        "service-node": "OVSDB2"
+        "service-node": "Ubuntu3"
       }
     ]
   }
@@ -321,7 +321,8 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
     "rendered-service-path": [
       {
         "name": "Path-2-SFC2",
-        "path-id": 1,
+        "parent-service-function-path": "Path-2-SFC2",
+        "path-id": 9,
         "service-chain-name": "SFC2",
         "starting-index": 255,
         "rendered-service-path-hop": [
@@ -341,7 +342,8 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
       },
       {
         "name": "Path-1-SFC1-Reverse",
-        "path-id": 3,
+        "parent-service-function-path": "Path-1-SFC1",
+        "path-id": 8,
         "service-chain-name": "SFC1",
         "starting-index": 255,
         "rendered-service-path-hop": [
@@ -367,7 +369,8 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
       },
       {
         "name": "Path-1-SFC1",
-        "path-id": 2,
+        "parent-service-function-path": "Path-1-SFC1",
+        "path-id": 7,
         "service-chain-name": "SFC1",
         "starting-index": 255,
         "rendered-service-path-hop": [

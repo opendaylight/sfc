@@ -21,8 +21,11 @@ class SFC_Agent_Globals:
     sff_os_set = {"OVS", "XE"}
     sff_os = "ODL"
     sf_topo = {}
+    sff_topo = {}
     sf_threads = {}
     data_plane_control_port = 6000
+    data_plane_path = {}
+    path = {}
 
     def set_my_sff_name(self, sff_name):
         self.my_sff_name = sff_name
@@ -51,17 +54,34 @@ class SFC_Agent_Globals:
     def set_data_plane_control_port(self, control_port):
         self.data_plane_control_port = control_port
 
+    def get_sff_topo(self):
+        return self.sff_topo
+
+    def reset_sff_topo(self):
+        self.sff_topo = {}
+
+    def get_data_plane_path(self):
+        return self.data_plane_path
+
+    def reset_data_plane_path(self):
+        self.data_plane_path = {}
+
+    def get_path(self):
+        return self.path
+
+    def reset_path(self):
+        self.path = {}
+
 agent_globals = SFC_Agent_Globals()
+
 
 def get_agent_globals():
     return agent_globals
 
-data_plane_path = {}
 
-# Contains all SFFs known by the agent
-sff_topo = {}
 
 # Contains all Paths as dictionary of path items by path_name as key
+
 path = {}
 
 # A dictionary of all SFF threads and its associated data this agent is aware.
@@ -75,54 +95,19 @@ of_tableid = 0
 
 
 
-
-
-def set_path(arg):
-    global path
-    path = arg
-
-
-
 # GET APIs
 
 
-
-
-def get_path():
-    #global path
-    return path
-
-
-def get_sff_topo():
-    #global sff_topo
-    return sff_topo
-
-
-def get_data_plane_path():
-    #global data_plane_path
-    return data_plane_path
-
-
 def get_sff_threads():
-    #global data_plane_path
+    # global data_plane_path
     return sff_threads
 
 
 def get_of_table_id():
-    #global table ID for OF rules
+    # global table ID for OF rules
     return of_tableid
 
 #RESET APIs
-
-
-def reset_sff_topo():
-    global sff_topo
-    sff_topo = {}
-
-
-def reset_data_plane_path():
-    global data_plane_path
-    data_plane_path = {}
 
 
 def reset_path():

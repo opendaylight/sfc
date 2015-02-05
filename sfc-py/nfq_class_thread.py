@@ -49,12 +49,12 @@ class NfqPathInfoSupplier:
 
     # private  - returns True if path_item was found in global path data
     def __add_path_info(self, path_name):
-        if not get_path():
+        if not get_agent_globals().get_path():
             logger.warn('__add_path_info: No path data')
             return False
 
-        if path_name in get_path():
-            path_item = get_path()[path_name]
+        if path_name in get_agent_globals().get_path():
+            path_item = get_agent_globals().get_path()[path_name]
             path_id = path_item['path-id']
             self.path_name_2_id_map[path_name] = path_id
             self.path_id_2_info_map[path_id] = path_item
@@ -112,7 +112,7 @@ class NfqClassifierManager:
         collected_results = {} # add error info to this dictionary
 
         first_ace = acl_item['access-list-entries'][0]
-        path_name = first_ace['actions']['service-function-acl:service-function-path']
+        path_name = first_ace['actions']['service-function-acl:rendered-service-path']
         path_id = self.path_info_supp.get_path_id(path_name)
 
         if not path_id:

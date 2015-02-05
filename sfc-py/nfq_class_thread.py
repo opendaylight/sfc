@@ -112,7 +112,7 @@ class NfqClassifierManager:
         collected_results = {} # add error info to this dictionary
 
         first_ace = acl_item['access-list-entries'][0]
-        path_name = first_ace['actions']['service-function-acl:service-function-path']
+        path_name = first_ace['actions']['service-function-acl:rendered-service-path']
         path_id = self.path_info_supp.get_path_id(path_name)
 
         if not path_id:

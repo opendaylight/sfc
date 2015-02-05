@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.directive('serviceNodesTopology', function (ServiceNodeTopologyBackend) {
+  sfc.register.directive('serviceNodesTopology', function (ServiceNodeTopologyBackend, $timeout) {
 
     return {
       restrict: 'E',
@@ -24,37 +24,39 @@ define(['app/sfc/sfc.module'], function (sfc) {
             root, width, height, tree, svg, diagonal;
 
         $scope.$watch('treeViewData', function (newVal) {
-          width = $(iElm[0].parentNode).width();
-          height = 500 - margin.top;
+          $timeout(function () {
+            width = $(iElm[0].parentNode).width();
+            height = 500 - margin.top;
 
-          svg = d3.select(iElm[0]).append('svg')
-            .attr("width", width)
-            .attr("height", height)
-            .attr("class", "overlay")
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            svg = d3.select(iElm[0]).append('svg')
+              .attr("width", width)
+              .attr("height", height)
+              .attr("class", "overlay")
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          tree = d3.layout.tree()
-            .size([width, height])
-            .separation(function separation(a, b) {
-              return (a.parent == b.parent ? 1 : 2);
-            });
+            tree = d3.layout.tree()
+              .size([width, height])
+              .separation(function separation(a, b) {
+                return (a.parent == b.parent ? 1 : 2);
+              });
 
-          diagonal = d3.svg.diagonal()
-            .projection(function (d) {
-              return [d.x, d.y];
-            });
+            diagonal = d3.svg.diagonal()
+              .projection(function (d) {
+                return [d.x, d.y];
+              });
 
-          if (angular.isUndefined(newVal)) {
-            return;
-          }
+            if (angular.isUndefined(newVal)) {
+              return;
+            }
 
-          root = newVal;
-          root.x0 = width / 2;
-          root.y0 = 0;
+            root = newVal;
+            root.x0 = width / 2;
+            root.y0 = 0;
 
-          //root.children.forEach(ServiceNodeTopologyBackend._collapse);
-          update(root);
+            //root.children.forEach(ServiceNodeTopologyBackend._collapse);
+            update(root);
+          });
         });
 
         function update(source) {

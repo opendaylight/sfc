@@ -366,8 +366,8 @@ public class SfcL2FlowProgrammer {
 
     public void configureSffNextHopDefaultFlow(final boolean isAddFlow) {
 
-        ConfigureSffNextHopDefaultFlowThread configureSffNextHopDefaultFlowThread = new ConfigureSffNextHopDefaultFlowThread(
-                isAddFlow);
+        ConfigureSffNextHopDefaultFlowThread configureSffNextHopDefaultFlowThread =
+                new ConfigureSffNextHopDefaultFlowThread(isAddFlow);
         try {
             threadPoolExecutorService.execute(configureSffNextHopDefaultFlowThread);
         } catch (Exception ex) {
@@ -390,7 +390,7 @@ public class SfcL2FlowProgrammer {
                     LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop default entry dstMac{}, dstVlan{}");
+                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.configureSffNextHopDefaultFlow");
 
                 //
                 // Create the matching criteria
@@ -482,6 +482,9 @@ public class SfcL2FlowProgrammer {
                     LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
+
+                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureNextHopFlow sfpId {} srcMac {} dstMac {} dstVlan {}",
+                        sfpId, srcMac, dstMac, dstVlan);
 
                 //
                 // Create the matching criteria
@@ -599,6 +602,8 @@ public class SfcL2FlowProgrammer {
                     return;
                 }
 
+                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureIngressFlow vlan {}", vlan);
+
                 MatchBuilder matchBuilder = new MatchBuilder();
                 matchBuilder.setVlanMatch(SfcOpenflowUtils.createVlanMatch(vlan));
 
@@ -698,7 +703,7 @@ public class SfcL2FlowProgrammer {
                     return;
                 }
 
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop sfpId{}, dstMac{}, dstVlan{}",
+                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureDefaultNextHopFlow sfpId {}, dstMac {}, dstVlan {}",
                         sfpId, dstMac, dstVlan);
 
                 //
@@ -824,6 +829,9 @@ public class SfcL2FlowProgrammer {
                     LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
+
+                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureEgressTransportFlow");
+
                 MatchBuilder matchBuilder = new MatchBuilder();
                 matchBuilder.setVlanMatch(SfcOpenflowUtils.createVlanMatch(dstVlan));
 
@@ -922,7 +930,7 @@ public class SfcL2FlowProgrammer {
                     LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
                     return;
                 }
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffNextHop default entry dstMac{}, dstVlan{}");
+                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureIngressTransportFlow");
 
                 //
                 // Create the matching criteria
@@ -984,12 +992,12 @@ public class SfcL2FlowProgrammer {
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path
-        InstanceIdentifier<Flow> flowIID = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId()))
                 .child(Flow.class, flow.getKey())
                 .build();
-        if (! SfcDataStoreAPI.deleteTransactionAPI(flowIID, LogicalDatastoreType.OPERATIONAL)) {
+        if (! SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.OPERATIONAL)) {
             LOG.error("{}: Failed to remove Flow on node: {}",
                     Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
@@ -1001,17 +1009,19 @@ public class SfcL2FlowProgrammer {
         nodeBuilder.setId(new NodeId(sffNodeName));
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
-        // Create the flow path
-        InstanceIdentifier<Flow> flowIID = InstanceIdentifier.builder(Nodes.class)
+        // Create the flow path, which will include the Node, Table, and Flow
+        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId()))
                 .child(Flow.class, flow.getKey())
                 .build();
 
-        if (! SfcDataStoreAPI.writeMergeTransactionAPI(flowIID, flow.build(), LogicalDatastoreType.OPERATIONAL)) {
+        LOG.info("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
+        LOG.debug("writeFlowToConfig flowIID {}", flowInstanceId);
+
+        if (! SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(), LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("{}: Failed to create Flow on node: {}",
                     Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
     }
-
 }

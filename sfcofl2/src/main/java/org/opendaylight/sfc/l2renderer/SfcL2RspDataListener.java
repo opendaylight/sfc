@@ -63,10 +63,15 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
+                LOG.info("SfcL2RspDataListener.onDataChanged RSP {}", ((RenderedServicePath) entry.getValue()).getName());
                 RenderedServicePath createdRenderedServicePath = (RenderedServicePath) entry.getValue();
                 configureSffFlows(createdRenderedServicePath, true);
             }
         }
+
+        // TODO for each SFF, check if its Openflow Enabled, and if not, skip it
+        // TODO I think its not pushing the flows down because the Node ID/Name may not be correct
+        //      so, create an OF switch listener in a map, and only send config to those in the map
 
         // RSP update
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
@@ -130,6 +135,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             servicePathHopCur = servicePathHopIter.next();
 
             curSFFName = servicePathHopCur.getServiceFunctionForwarder();
+            LOG.info("SfcL2RspDataListener.configureSffFlows servicePathHopCur {} curSFName {} curSFFName {}",
+                    servicePathHopCur.getHopNumber(), servicePathHopCur.getServiceFunctionName(), curSFFName);
             this.sfcL2FlowProgrammer.setNodeInfo(curSFFName);
             this.sfcL2FlowProgrammer.configureIngressTransportFlow(isAddFlow);
             this.sfcL2FlowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);

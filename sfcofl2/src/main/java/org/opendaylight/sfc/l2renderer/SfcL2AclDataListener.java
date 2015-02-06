@@ -40,7 +40,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
 
     public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.SFP_ENTRY_IID);
+        setIID(OpendaylightSfc.ACL_ENTRY_IID);
         registerAsDataChangeListener();
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
     }

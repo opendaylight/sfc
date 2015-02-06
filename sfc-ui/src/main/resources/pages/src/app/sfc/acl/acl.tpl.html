@@ -19,8 +19,8 @@
                 {{entry['rule-name']}}
             </td>
             <td data-title="'SFC_ACL_ACTIONS_RSP' | translate"
-                sortable="'valueOf()[\'actions\'][\'service-function-path\']'" filter="{ 'actions': 'text' }">
-                {{entry['actions']['service-function-path']}}
+                sortable="'valueOf()[\'actions\'][\'service-function-acl:rendered-service-path\']'" filter="{ 'actions': 'text' }">
+                {{entry['actions']['service-function-acl:rendered-service-path']}}
             </td>
             <td data-title="'SFC_ACL_SHORT_SRC_IP_MAC_ADDRESS' | translate"
                 sortable="'valueOf()[\'source-ip-mac-mask-string\']'" filter="{ 'source-ip-mac-mask-string': 'text' }">
@@ -102,10 +102,12 @@
                     filter="{ 'access-list': 'text' }">
                     {{entry['access-list']}}
                 </td>
+
                 <!--<td data-title="'SFC_RENDERED_PATH' | translate" sortable="'valueOf()[\'rendered-service-path\']'"-->
                     <!--filter="{ 'rendered-service-path': 'text' }">-->
                     <!--{{entry['rendered-service-path']}}-->
                 <!--</td>-->
+
                 <td data-title="'SFC_SERVICE_FORWARDERS' | translate"
                     sortable="'valueOf()[\'scl-service-function-forwarder\'][\'name\']'"
                     filter="{ 'scl-service-function-forwarder': 'text' }">

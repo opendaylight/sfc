@@ -246,7 +246,8 @@ class AclExporter implements Exporter {
                 switch (sfcActionType) {
                     case "AclRenderedServicePath":
                         AclRenderedServicePath aclRenderedServicePath = (AclRenderedServicePath) sfcAction;
-                        actionsNode.put("rendered-service-path", aclRenderedServicePath.getRenderedServicePath());
+                        actionsNode.put("service-function-acl:rendered-service-path",
+                                aclRenderedServicePath.getRenderedServicePath());
                         break;
                 }
             }

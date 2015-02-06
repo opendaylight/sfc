@@ -125,7 +125,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * This method is used to retrieve a Service Function Type from the DataStore
      * <p>
      * @param serviceFunctionType Service Function Type abstract class
-     * @return Service Function Type Object
+     * @return Service Function Type Object which contains a list of SF of this type
      */
     protected ServiceFunctionType readServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
@@ -158,8 +158,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * This method reads the operational state for a service function.
      * <p>
      * @param serviceFunctionTypeIdentity SF name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     * @return A ServiceFunctionType object
      */
     public static ServiceFunctionType readServiceFunctionTypeExecutor(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionTypeIdentity) {
 
@@ -202,8 +201,8 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
 
     /**
-     * This method is used to delete a Service Function Type from the Data Store
-     * that was instantiated from a Service Function passed as a parameter
+     * This method is used to delete a Service Function entry from the
+     * Service Function Type list
      * <p>
      * @param serviceFunction Service Function object
      * @return Service Function Type Object
@@ -244,8 +243,8 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
 
     /**
-     * This method is used to delete all Service Function names indexed by a
-     * Service Function Type. It basically removes the list of all service
+     * This method is used to delete all Service Function names under a
+     * Service Function Type list. It basically removes the list of all service
      * functions of a given type. The Service Functions themselves are not touched
      * by this function.
      * <p>
@@ -255,6 +254,8 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
     public boolean deleteServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
         boolean ret = false;
+
+
         ServiceFunctionTypeKey serviceFunctionTypeKey = new
                 ServiceFunctionTypeKey(serviceFunctionType);
         InstanceIdentifier<ServiceFunctionType> sftEntryIID =

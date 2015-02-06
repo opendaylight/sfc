@@ -411,13 +411,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
              */
 
             ServiceFunctionType serviceFunctionType;
-/*            try {
-                serviceFunctionType = (ServiceFunctionType) ODL_SFC.getExecutor().submit(SfcProviderServiceTypeAPI.getRead(
-                        new Object[]{sfcServiceFunction.getType()}, new Class[]{Class.class})).get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error(" Could not get list of Service Functions of type: {}", sfcServiceFunction.getType());
-                return ret;
-            }*/
+
             serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();

@@ -64,6 +64,11 @@ def delete_configuration():
         print("=>Deleted all Access Lists \n")
     else:
         print("=>Failure to delete ACLs, response code = {} \n".format(r.status_code))
+    r = s.delete(SCF_URL, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("=>Deleted all Service Classifiers \n")
+    else:
+        print("=>Failure to delete Classifiers, response code = {} \n".format(r.status_code))
 
 
 def put_and_check(url, json_req, json_resp):

@@ -7,6 +7,9 @@
  */
 package org.opendaylight.sfc.l2renderer.utils;
 
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -26,6 +29,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
@@ -125,6 +133,23 @@ public class SfcOpenflowUtils {
         vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
 
         return vlanMatchBuilder.build();
+    }
+
+    // Only configure OpenFlow Capable SFFs
+    public static boolean isSffOpenFlowCapable(final String sffName) {
+        InstanceIdentifier<FlowCapableNode> nodeInstancIdentifier =
+                InstanceIdentifier.builder(Nodes.class)
+                    .child(Node.class, new NodeKey(new NodeId(sffName)))
+                    .augmentation(FlowCapableNode.class)
+                    .build();
+
+        // If its not a Flow Capable Node, this should return NULL
+        // TODO need to verify this, once SFC can connect to simple OVS nodes that arent flow capable
+        FlowCapableNode node = SfcDataStoreAPI.readTransactionAPI(nodeInstancIdentifier, LogicalDatastoreType.CONFIGURATION);
+        if(node != null) {
+            return true;
+        }
+        return false;
     }
 
     public static String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,

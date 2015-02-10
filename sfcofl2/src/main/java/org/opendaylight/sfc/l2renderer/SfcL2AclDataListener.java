@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -37,6 +39,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
     private static final short DEFAULT_MASK = 32;
     private static final String SUBNET_MASK = "/";
     private SfcL2FlowProgrammer sfcL2FlowProgrammer;
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
 
     public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
@@ -55,9 +58,11 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         dataCreatedConfigurationObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof AccessLists) {
-                AccessLists createdAccessLists = (AccessLists) entry.getValue();
-                configureAclFlows(createdAccessLists, true);
+            if (entry.getValue() instanceof AccessList) {
+                LOG.info("SfcL2AclDataListener.onDataChanged ACL {}", ((AccessList) entry.getValue()).getAclName());
+
+                AccessList createdAccessListEntry = (AccessList) entry.getValue();
+                configureAclFlows(createdAccessListEntry, true);
             }
         }
 
@@ -67,8 +72,8 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if (dataObject instanceof AccessLists) {
-                AccessLists removedAccessLists = (AccessLists) dataObject;
-                configureAclFlows(removedAccessLists, false);
+                AccessList removedAccessListEntry = (AccessList) dataObject;
+                configureAclFlows(removedAccessListEntry, false);
             }
         }
 
@@ -80,16 +85,16 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof AccessLists && (!(dataCreatedConfigurationObject.containsKey(entry
                     .getKey()))))) {
-                AccessLists updatedAccessLists = (AccessLists) entry.getValue();
+                AccessList updatedAccessListEntry = (AccessList) entry.getValue();
 
-                configureAclFlows(updatedAccessLists, true);
+                configureAclFlows(updatedAccessListEntry, true);
 
             }
         }
 
     }
 
-    private void configureAclFlows(AccessLists createdAccessLists, boolean isAddFlow) {
+    private void configureAclFlows(AccessList acl, boolean isAddFlow) {
         Matches matches;
         AceIp aceIp;
         AceIpv4 aceIpv4;
@@ -101,67 +106,63 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         String dstIpAddress = null;
         byte protocol = (byte) 0;
 
-        Iterator<AccessList> aclIter = createdAccessLists.getAccessList().iterator();
-        while (aclIter.hasNext()) {
-            AccessList acl = aclIter.next();
 
-            Iterator<AccessListEntries> aclEntryIter = acl.getAccessListEntries().iterator();
+        Iterator<AccessListEntries> aclEntryIter = acl.getAccessListEntries().iterator();
 
-            while (aclEntryIter.hasNext()) {
+        while (aclEntryIter.hasNext()) {
 
-                AccessListEntries createdAccessListEntries = aclEntryIter.next();
-                SfcAction sfcAction = createdAccessListEntries.getActions().getAugmentation(Actions1.class)
-                        .getSfcAction();
-                String aclServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
+            AccessListEntries createdAccessListEntries = aclEntryIter.next();
+            SfcAction sfcAction = createdAccessListEntries.getActions().getAugmentation(Actions1.class)
+                    .getSfcAction();
+            String aclServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
 
-                ServiceFunctionPath servicefunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(aclServicePathName);
+            ServiceFunctionPath servicefunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(aclServicePathName);
 
-                Long pathId = servicefunctionPath.getPathId();
+            Long pathId = servicefunctionPath.getPathId();
 
-                matches = createdAccessListEntries.getMatches();
-                aceIp = (AceIp) matches.getAceType();
-                aceIpv4 = (AceIpv4) aceIp.getAceIpVersion();
+            matches = createdAccessListEntries.getMatches();
+            aceIp = (AceIp) matches.getAceType();
+            aceIpv4 = (AceIpv4) aceIp.getAceIpVersion();
 
-                if (aceIpv4.getSourceIpv4Address() != null) {
-                    srcIpAddress = aceIpv4.getSourceIpv4Address().getValue();
-                    if (srcIpAddress.contains(SUBNET_MASK)) {
-                        String[] parts = srcIpAddress.split(SUBNET_MASK);
-                        srcIpAddress = parts[0];
-                        srcMask = Short.parseShort(parts[1]);
-                    } else {
-                        srcMask = DEFAULT_MASK;
-                    }
+            if (aceIpv4.getSourceIpv4Address() != null) {
+                srcIpAddress = aceIpv4.getSourceIpv4Address().getValue();
+                if (srcIpAddress.contains(SUBNET_MASK)) {
+                    String[] parts = srcIpAddress.split(SUBNET_MASK);
+                    srcIpAddress = parts[0];
+                    srcMask = Short.parseShort(parts[1]);
+                } else {
+                    srcMask = DEFAULT_MASK;
                 }
-                if (aceIpv4.getDestinationIpv4Address() != null) {
-                    dstIpAddress = aceIpv4.getDestinationIpv4Address().getValue();
-                    if (dstIpAddress.contains(SUBNET_MASK)) {
-                        String[] parts = dstIpAddress.split(SUBNET_MASK);
-                        dstIpAddress = parts[0];
-                        dstMask = Short.parseShort(parts[1]);
-                    } else {
-                        dstMask = DEFAULT_MASK;
-                    }
+            }
+            if (aceIpv4.getDestinationIpv4Address() != null) {
+                dstIpAddress = aceIpv4.getDestinationIpv4Address().getValue();
+                if (dstIpAddress.contains(SUBNET_MASK)) {
+                    String[] parts = dstIpAddress.split(SUBNET_MASK);
+                    dstIpAddress = parts[0];
+                    dstMask = Short.parseShort(parts[1]);
+                } else {
+                    dstMask = DEFAULT_MASK;
                 }
+            }
 
-                if (aceIp != null) {
-                    if (aceIp.getSourcePortRange() != null) {
-                        srcPort = aceIp.getSourcePortRange().getLowerPort().getValue().shortValue();
-                    }
-                    if (aceIp.getDestinationPortRange() != null) {
-                        dstPort = aceIp.getDestinationPortRange().getLowerPort().getValue().shortValue();
-                    }
-                    if (aceIp.getIpProtocol() != null) {
-                        protocol = aceIp.getIpProtocol().byteValue();
-                    }
+            if (aceIp != null) {
+                if (aceIp.getSourcePortRange() != null) {
+                    srcPort = aceIp.getSourcePortRange().getLowerPort().getValue().shortValue();
                 }
-                List<ServicePathHop> servicePathHopList = servicefunctionPath.getServicePathHop();
-
-                for (ServicePathHop servicePathHop : servicePathHopList) {
-
-                    this.sfcL2FlowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
-                    this.sfcL2FlowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort,
-                            dstPort, protocol, pathId, isAddFlow);
+                if (aceIp.getDestinationPortRange() != null) {
+                    dstPort = aceIp.getDestinationPortRange().getLowerPort().getValue().shortValue();
                 }
+                if (aceIp.getIpProtocol() != null) {
+                    protocol = aceIp.getIpProtocol().byteValue();
+                }
+            }
+            List<ServicePathHop> servicePathHopList = servicefunctionPath.getServicePathHop();
+
+            for (ServicePathHop servicePathHop : servicePathHopList) {
+
+                this.sfcL2FlowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
+                this.sfcL2FlowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort,
+                        dstPort, protocol, pathId, isAddFlow);
             }
         }
     }

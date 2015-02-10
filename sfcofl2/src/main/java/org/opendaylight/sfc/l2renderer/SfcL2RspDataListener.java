@@ -12,6 +12,7 @@ package org.opendaylight.sfc.l2renderer;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -70,8 +71,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         }
 
         // TODO for each SFF, check if its Openflow Enabled, and if not, skip it
-        // TODO I think its not pushing the flows down because the Node ID/Name may not be correct
-        //      so, create an OF switch listener in a map, and only send config to those in the map
+        //      create an OF switch listener in a map, and only send config to those in the map
 
         // RSP update
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
@@ -137,6 +137,13 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             curSFFName = servicePathHopCur.getServiceFunctionForwarder();
             LOG.info("SfcL2RspDataListener.configureSffFlows servicePathHopCur {} curSFName {} curSFFName {}",
                     servicePathHopCur.getHopNumber(), servicePathHopCur.getServiceFunctionName(), curSFFName);
+
+            // Only configure OpenFlow Capable SFFs
+            if(!SfcOpenflowUtils.isSffOpenFlowCapable(curSFFName)) {
+                LOG.info("SFF {} is NOT flow capable, skipping it", curSFFName);
+                continue;
+            }
+
             this.sfcL2FlowProgrammer.setNodeInfo(curSFFName);
             this.sfcL2FlowProgrammer.configureIngressTransportFlow(isAddFlow);
             this.sfcL2FlowProgrammer.configureSffNextHopDefaultFlow(isAddFlow);

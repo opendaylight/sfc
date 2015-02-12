@@ -1,10 +1,13 @@
 package org.opendaylight.sfc.sbrest.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfExporterFactory implements ExporterFactory {
     @Override
@@ -13,12 +16,14 @@ public class SfExporterFactory implements ExporterFactory {
     }
 }
 
-class SfExporter implements Exporter {
+class SfExporter extends AbstractExporter implements Exporter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfExporter.class);
 
     @Override
     public String exportJson(DataObject dataObject) {
 
-        String ret;
+        String ret = null;
         if (dataObject instanceof ServiceFunction) {
             ServiceFunction sf = (ServiceFunction) dataObject;
 
@@ -44,8 +49,14 @@ class SfExporter implements Exporter {
             }
 
             sfArray.add(node);
-
-            ret = "{ \"service-function\" : " + sfArray.toString() + " }";
+            try {
+                Object sfObject = mapper.treeToValue(sfArray, Object.class);
+                ret = mapper.writeValueAsString(sfObject);
+                ret = "{ \"service-function\" : " + ret + " }";
+                LOG.debug("Created Service Function JSON: {}", ret);
+            } catch (JsonProcessingException e) {
+                LOG.error("Error during creation of JSON for Service Function {}", sf.getName());
+            }
 
         } else {
             throw new IllegalArgumentException("Argument is not an instance of ServiceFunction");
@@ -63,7 +74,9 @@ class SfExporter implements Exporter {
 
             ObjectNode node = mapper.createObjectNode();
             node.put("name", obj.getName());
-            ret = "{ \"service-function\" : " + node.toString() + " }";
+            ArrayNode sfArray = mapper.createArrayNode();
+            sfArray.add(node);
+            ret = "{ \"service-function\" : " + sfArray.toString() + " }";
         } else {
             throw new IllegalArgumentException("Argument is not an instance of ServiceFunction");
         }

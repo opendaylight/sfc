@@ -1,10 +1,13 @@
 package org.opendaylight.sfc.sbrest.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,12 +18,14 @@ public class RspExporterFactory implements ExporterFactory {
     }
 }
 
-class RspExporter implements Exporter {
+class RspExporter extends AbstractExporter implements Exporter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RspExporter.class);
 
     @Override
     public String exportJson(DataObject dataObject) {
 
-        String ret;
+        String ret = null;
         if (dataObject instanceof RenderedServicePath) {
             RenderedServicePath rsp = (RenderedServicePath) dataObject;
             ArrayNode rspArray = mapper.createArrayNode();
@@ -49,7 +54,14 @@ class RspExporter implements Exporter {
             }
 
             rspArray.add(node);
-            ret = "{ \"rendered-service-path\" : " + rspArray.toString() + " }";
+            try {
+                Object rspObject = mapper.treeToValue(rspArray, Object.class);
+                ret = mapper.writeValueAsString(rspObject);
+                ret = "{ \"rendered-service-path\" : " + ret + " }";
+                LOG.debug("Created Rendered Service Path JSON: {}", ret);
+            } catch (JsonProcessingException e) {
+                LOG.error("Error during creation of JSON for Rendered Service Path {}", rsp.getName());
+            }
 
         } else {
             throw new IllegalArgumentException("Argument is not an instance of RenderedServicePath");
@@ -67,7 +79,9 @@ class RspExporter implements Exporter {
 
             ObjectNode node = mapper.createObjectNode();
             node.put("name", obj.getName());
-            ret = "{ \"rendered-service-path\" : " + node.toString() + " }";
+            ArrayNode rspArray = mapper.createArrayNode();
+            rspArray.add(node);
+            ret = "{ \"rendered-service-path\" : " + rspArray.toString() + " }";
         } else {
             throw new IllegalArgumentException("Argument is not an instance of RenderedServicePath");
         }

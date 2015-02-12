@@ -15,7 +15,7 @@ public class RspExporterFactory implements ExporterFactory {
     }
 }
 
-class RspExporter implements Exporter {
+class RspExporter extends AbstractExporter implements Exporter {
 
     @Override
     public String exportJson(DataObject dataObject) {

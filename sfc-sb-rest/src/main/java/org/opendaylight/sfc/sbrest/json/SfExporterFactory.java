@@ -13,7 +13,7 @@ public class SfExporterFactory implements ExporterFactory {
     }
 }
 
-class SfExporter implements Exporter {
+class SfExporter extends AbstractExporter implements Exporter {
 
     @Override
     public String exportJson(DataObject dataObject) {

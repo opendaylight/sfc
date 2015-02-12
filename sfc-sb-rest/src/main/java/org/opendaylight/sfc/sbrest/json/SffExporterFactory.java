@@ -19,7 +19,7 @@ public class SffExporterFactory implements ExporterFactory {
     }
 }
 
-class SffExporter implements Exporter {
+class SffExporter extends AbstractExporter implements Exporter {
 
     @Override
     public String exportJson(DataObject dataObject) {

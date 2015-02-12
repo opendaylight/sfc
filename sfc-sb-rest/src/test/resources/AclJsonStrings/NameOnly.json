@@ -1,0 +1,7 @@
+{
+  "access-list": [
+    {
+      "acl-name": "ACL_NAME"
+    }
+  ]
+}

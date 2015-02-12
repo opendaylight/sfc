@@ -1,7 +1,16 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.sfc.sbrest.json;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
@@ -30,14 +39,13 @@ public class AclExporterFactory implements ExporterFactory {
     }
 }
 
-class AclExporter implements Exporter {
+class AclExporter extends AbstractExporter implements Exporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AclExporter.class);
 
     @Override
     public String exportJson(DataObject dataObject) {
-
-        String ret;
+        String ret = null;
         if (dataObject instanceof AccessList) {
             AccessList acl = (AccessList) dataObject;
 
@@ -64,9 +72,14 @@ class AclExporter implements Exporter {
             aclNode.put("default-actions", this.getDefaultActionsObjectNode(acl.getDefaultActions()));
 
             aclArray.add(aclNode);
-            ret = "{ \"access-list\" : " + aclArray.toString() + " }";
-            LOG.debug("Created Access List JSON: {}", ret);
-
+            try {
+                Object aclObject = mapper.treeToValue(aclArray, Object.class);
+                ret = mapper.writeValueAsString(aclObject);
+                ret = "{ \"access-list\" : " + ret + " }";
+                LOG.debug("Created Access List JSON: {}", ret);
+            } catch (JsonProcessingException e) {
+                LOG.error("Error during creation of JSON for Access List {}", acl.getAclName());
+            }
         } else {
             throw new IllegalArgumentException("Argument is not an instance of Access List");
         }
@@ -82,10 +95,11 @@ class AclExporter implements Exporter {
             AccessList acl = (AccessList) dataObject;
 
             ObjectNode aclNode = mapper.createObjectNode();
-
             aclNode.put("acl-name", acl.getAclName());
+            ArrayNode aclArray = mapper.createArrayNode();
+            aclArray.add(aclNode);
 
-            ret = "{ \"access-list\" : " + aclNode.toString() + " }";
+            ret = "{ \"access-list\" : " + aclArray.toString() + " }";
             LOG.debug("Created Access List JSON: {}", ret);
 
         } else {
@@ -142,10 +156,11 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectNode sourcePortRangeNode = mapper.createObjectNode();
+        ObjectNode sourcePortRangeNode = null;
 
         SourcePortRange sourcePortRange = aceIp.getSourcePortRange();
         if (sourcePortRange != null) {
+            sourcePortRangeNode = mapper.createObjectNode();
             if (sourcePortRange.getLowerPort() != null) {
                 sourcePortRangeNode.put("lower-port", sourcePortRange.getLowerPort().getValue());
             }
@@ -162,10 +177,11 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectNode destinationPortRangeNode = mapper.createObjectNode();
+        ObjectNode destinationPortRangeNode = null;
 
         DestinationPortRange destinationPortRange = aceIp.getDestinationPortRange();
         if (destinationPortRange != null) {
+            destinationPortRangeNode = mapper.createObjectNode();
             if (destinationPortRange.getLowerPort() != null) {
                 destinationPortRangeNode.put("lower-port", destinationPortRange.getLowerPort().getValue());
             }
@@ -253,6 +269,10 @@ class AclExporter implements Exporter {
             }
         }
 
+        if (actionsNode.size() == 0) {
+            return null;
+        }
+
         return actionsNode;
     }
 
@@ -261,9 +281,10 @@ class AclExporter implements Exporter {
             return null;
         }
 
-        ObjectNode aceOperDataNode = mapper.createObjectNode();
+        ObjectNode aceOperDataNode = null;
 
         if (aceOperData.getMatchCounter() != null) {
+            aceOperDataNode = mapper.createObjectNode();
             aceOperDataNode.put("match-counter", aceOperData.getMatchCounter().getValue().longValue());
         }
 

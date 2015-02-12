@@ -166,7 +166,7 @@ def build_data_plane_service_path(service_path):
             sf_locator = find_sf_locator(service_hop['service-function-name'],
                                          service_hop['service-function-forwarder'])
             if sf_locator:
-                local_data_plane_path[service_path['path-id']][service_hop['service-index']] = sf_locator
+                local_data_plane_path[service_path['path-id']][service_hop['service_index']] = sf_locator
             else:
                 logger.error("Failed to build rendered service path: %s", service_path['name'])
                 return -1
@@ -177,7 +177,7 @@ def build_data_plane_service_path(service_path):
                 local_data_plane_path[service_path['path-id']] = {}
             sff_locator = find_sff_locator(service_hop['service-function-forwarder'])
             if sff_locator:
-                local_data_plane_path[service_path['path-id']][service_hop['service-index']] = sff_locator
+                local_data_plane_path[service_path['path-id']][service_hop['service_index']] = sff_locator
             else:
                 logger.error("Failed to build rendered service path: %s", service_path['name'])
                 return -1

@@ -78,7 +78,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
-    private SfcProviderSfDescriptionMonotorAPI getSfDescMon = new SfcProviderSfDescriptionMonotorAPI();
+    private SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
 
     SfcProviderServiceFunctionAPI(Object[] params, String m) {
         super(params, m);

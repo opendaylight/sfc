@@ -1,20 +1,42 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Function;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Lisp;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Util {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
+    public static final String _TRANSPORT = "transport";
+    public static final String _EID = "eid";
+    public static final String _IP = "ip";
+    public static final String _PORT = "port";
+    public static final String _MAC = "mac";
+    public static final String _VLAN_ID = "vlan-id";
+    public static final String _FUNCTION_NAME = "function-name";
+    public static final String _VXLAN_GPE = "vxlan-gpe";
+    public static final String _GRE = "gre";
+    public static final String _OTHER = "other";
+
+    public static final String FUNCTION = "function";
+    public static final String IP = "ip";
+    public static final String LISP = "lisp";
+    public static final String MAC = "mac";
+
+    public static final String VXLAN_GPE = "vxlangpe";
+    public static final String GRE = "gre";
 
     public static String convertIpAddress(IpAddress ip) {
         String ret = null;
@@ -28,67 +50,65 @@ public class Util {
         return ret;
     }
 
-    protected static ObjectNode ObjectNodeFromSfDataPlaneLocator(SfDataPlaneLocator locator) {
+    protected static ObjectNode getDataPlaneLocatorObjectNode(DataPlaneLocator dataPlaneLocator) {
+        if (dataPlaneLocator == null) {
+            return null;
+        }
 
         ObjectMapper mapper = new ObjectMapper();
+        ObjectNode locatorNode = mapper.createObjectNode();
 
-        ObjectNode node = mapper.createObjectNode();
-
-        node.put("name", locator.getName());
-        node.put("service-function-forwarder", locator.getServiceFunctionForwarder());
-        node.put("transport", getTransportFromDataPlaneLocator(locator));
-
-        addVaryingLeafs(node, locator);
-
-        return node;
-    }
-
-    protected static void addVaryingLeafs(final ObjectNode node, DataPlaneLocator dpLocator) {
-
-        if (dpLocator.getLocatorType() != null) {
-            String type = dpLocator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
+        if (dataPlaneLocator.getLocatorType() != null) {
+            String type = dataPlaneLocator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
             switch (type) {
-                case "function":
-                    Function functionLocator = (Function) dpLocator.getLocatorType();
-                    node.put("function-name", functionLocator.getFunctionName());
+                case FUNCTION:
+                    Function functionLocator = (Function) dataPlaneLocator.getLocatorType();
+                    locatorNode.put(_FUNCTION_NAME, functionLocator.getFunctionName());
                     break;
-                case "ip":
-                    Ip ipLocator = (Ip) dpLocator.getLocatorType();
+                case IP:
+                    Ip ipLocator = (Ip) dataPlaneLocator.getLocatorType();
                     if (ipLocator.getIp() != null) {
-                        node.put("ip", convertIpAddress(ipLocator.getIp()));
+                        locatorNode.put(_IP, convertIpAddress(ipLocator.getIp()));
                         if (ipLocator.getPort() != null) {
-                            node.put("port", ipLocator.getPort().getValue());
+                            locatorNode.put(_PORT, ipLocator.getPort().getValue());
                         }
                     }
                     break;
-                case "lisp":
-                    Lisp lispLocator = (Lisp) dpLocator.getLocatorType();
+                case LISP:
+                    Lisp lispLocator = (Lisp) dataPlaneLocator.getLocatorType();
                     if (lispLocator.getEid() != null)
-                        node.put("eid", convertIpAddress(lispLocator.getEid()));
+                        locatorNode.put(_EID, convertIpAddress(lispLocator.getEid()));
                     break;
-                case "mac":
-                    Mac macLocator = (Mac) dpLocator.getLocatorType();
+                case MAC:
+                    Mac macLocator = (Mac) dataPlaneLocator.getLocatorType();
                     if (macLocator.getMac() != null)
-                        node.put("mac", macLocator.getMac().getValue());
-                    node.put("vlan-id", macLocator.getVlanId());
+                        locatorNode.put(_MAC, macLocator.getMac().getValue());
+                    locatorNode.put(_VLAN_ID, macLocator.getVlanId());
             }
         }
+
+        locatorNode.put(_TRANSPORT, getDataPlaneLocatorTransport(dataPlaneLocator));
+
+        return locatorNode;
     }
 
-    protected static String getTransportFromDataPlaneLocator(DataPlaneLocator locator) {
-        String transport = "";
-        if (locator.getTransport() != null) {
-            switch (locator.getTransport().getSimpleName().toLowerCase()) {
-                case "vxlangpe":
-                    transport = "vxlan-gpe";
-                    break;
-                case "gre":
-                    transport = "gre";
-                    break;
-                default:
-                    transport = "other";
-            }
+    protected static String getDataPlaneLocatorTransport(DataPlaneLocator dataPlaneLocator) {
+        if (dataPlaneLocator == null || dataPlaneLocator.getTransport() == null) {
+            return null;
         }
+
+        String transport = null;
+        switch (dataPlaneLocator.getTransport().getSimpleName().toLowerCase()) {
+            case VXLAN_GPE:
+                transport = _VXLAN_GPE;
+                break;
+            case GRE:
+                transport = _GRE;
+                break;
+            default:
+                transport = _OTHER;
+        }
+
         return transport;
     }
 }

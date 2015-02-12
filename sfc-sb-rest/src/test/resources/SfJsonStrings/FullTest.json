@@ -1,0 +1,21 @@
+{
+  "service-function": [
+    {
+      "name": "NAME",
+      "type": "TYPE",
+      "rest-uri": "REST_URI",
+      "ip-mgmt-address": "IP_MGMT_ADDRESS",
+      "request_reclassification": "REQUEST_RECLASSIFICATION",
+      "nsh-aware": NSH_AWARE,
+      "sf-data-plane-locator": [
+        {
+          "name": "SF_LOCATOR_NAME",
+          "ip": "SF_LOCATOR_IP",
+          "port": SF_LOCATOR_PORT,
+          "transport": "SF_LOCATOR_TRANSPORT",
+          "service-function-forwarder": "SF_LOCATOR_SERVICE_FUNCTION_FORWARDER"
+        }
+      ]
+    }
+  ]
+}

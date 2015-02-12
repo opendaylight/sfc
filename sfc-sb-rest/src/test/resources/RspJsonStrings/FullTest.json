@@ -1,0 +1,19 @@
+{
+  "rendered-service-path": [
+    {
+      "name": "NAME",
+      "parent-service-function-path": "PARENT_SERVICE_FUNCTION_PATH",
+      "path-id": PATH_ID,
+      "service-chain-name": "SERVICE_CHAIN_NAME",
+      "starting-index": STARTING_INDEX,
+      "rendered-service-path-hop": [
+        {
+          "hop-number": HOP_NUMBER,
+          "service-function-name": "SERVICE_FUNCTION_NAME",
+          "service-function-forwarder": "SERVICE_FUNCTION_FORWARDER",
+          "service_index": SERVICE_INDEX
+        }
+      ]
+    }
+  ]
+}

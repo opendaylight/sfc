@@ -1,5 +1,14 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.sfc.sbrest.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
@@ -11,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SffExporterFactory implements ExporterFactory {
     @Override
@@ -19,12 +30,14 @@ public class SffExporterFactory implements ExporterFactory {
     }
 }
 
-class SffExporter implements Exporter {
+class SffExporter extends AbstractExporter implements Exporter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SffExporter.class);
 
     @Override
     public String exportJson(DataObject dataObject) {
 
-        String ret;
+        String ret = null;
         if (dataObject instanceof ServiceFunctionForwarder) {
             ServiceFunctionForwarder sff = (ServiceFunctionForwarder) dataObject;
 
@@ -44,11 +57,9 @@ class SffExporter implements Exporter {
                     ObjectNode o = mapper.createObjectNode();
                     o.put("name", e.getName());
 
-                    ObjectNode dplNode = mapper.createObjectNode();
                     DataPlaneLocator dpl = e.getDataPlaneLocator();
                     if (dpl != null) {
-                        dplNode.put("transport", Util.getTransportFromDataPlaneLocator(dpl));
-                        Util.addVaryingLeafs(dplNode, dpl);
+                        ObjectNode dplNode = Util.getDataPlaneLocatorObjectNode(dpl);
                         o.put("data-plane-locator", dplNode);
                     }
 
@@ -89,8 +100,7 @@ class SffExporter implements Exporter {
                         o.put("type", "service-function-type:" + e.getType().getSimpleName().toLowerCase());
                     SffSfDataPlaneLocator sffSfDpl = e.getSffSfDataPlaneLocator();
                     if (sffSfDpl != null) {
-                        ObjectNode sffSfDplNode = mapper.createObjectNode();
-                        Util.addVaryingLeafs(sffSfDplNode, sffSfDpl);
+                        ObjectNode sffSfDplNode = Util.getDataPlaneLocatorObjectNode(sffSfDpl);
                         o.put("sff-sf-data-plane-locator", sffSfDplNode);
                     }
                     dictionaryArray.add(o);
@@ -99,11 +109,14 @@ class SffExporter implements Exporter {
             }
 
             sffArray.add(node);
-
-            ret = "{ \"service-function-forwarder\" : " + sffArray.toString() + "}";
-
-            //ret = "{ \"service-function-forwarder\" : [ {" + node.toString() + " } ] }";
-
+            try {
+                Object sffObject = mapper.treeToValue(sffArray, Object.class);
+                ret = mapper.writeValueAsString(sffObject);
+                ret = "{ \"service-function-forwarder\" : " + ret + " }";
+                LOG.debug("Created Service Function Forwarder JSON: {}", ret);
+            } catch (JsonProcessingException e) {
+                LOG.error("Error during creation of JSON for Service Function Forwarder {}", sff.getName());
+            }
         } else {
                 throw new IllegalArgumentException("Argument is not an instance of ServiceFunctionForwarder");
             }

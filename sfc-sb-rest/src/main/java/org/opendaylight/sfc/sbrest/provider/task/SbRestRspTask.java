@@ -48,7 +48,7 @@ public class SbRestRspTask extends SbRestAbstractTask {
             ServiceFunctionForwarder sff =
                     SfcProviderServiceForwarderAPI
                             .readServiceFunctionForwarderExecutor(hop.getServiceFunctionForwarder());
-            if(sff.getRestUri() != null) {
+            if (sff != null && sff.getRestUri() != null) {
                 String restUri = sff.getRestUri().getValue() + RSP_REST_URI + obj.getName();
                 this.restUriList.add(restUri);
                 LOG.info("RSP will be send to REST URI {}", restUri);

@@ -26,6 +26,7 @@
             It is useful to list them in the same order they occur in the file.
           -->
         <feature version='${project.version}'>odl-sfcofl2</feature>
+        <feature version='${project.version}'>odl-sfc-ovs</feature>
         <feature version='${project.version}'>odl-sfc-ui</feature>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature version='${project.version}'>odl-sfc-test-consumer</feature>
@@ -49,6 +50,12 @@
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
+    </feature>
+    <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: sfc :: OpenvSwitch '>
+        <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-api></feature>
+        <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-impl></feature>
+        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
     </feature>
     <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>
         <feature version='${project.version}'>odl-sfc-provider</feature>

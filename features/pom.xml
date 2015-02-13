@@ -41,6 +41,13 @@
       but be cautious lest they be at a different scope in a parent pom.
     -->
     <dependency>
+       <groupId>org.opendaylight.ovsdb</groupId>
+       <artifactId>southbound-impl</artifactId>
+       <version>${ovsdb.southbound.version}</version>
+       <classifier>config</classifier>
+       <type>xml</type>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>features-yangtools</artifactId>
       <version>0.7.0-SNAPSHOT</version>

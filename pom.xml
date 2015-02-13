@@ -72,6 +72,7 @@
         <yangtools.binding.version>0.7.0-SNAPSHOT</yangtools.binding.version>
 
         <lispflowmapping.version>1.2.0-SNAPSHOT</lispflowmapping.version>
+        <ovsdb.southbound.version>1.1.0-SNAPSHOT</ovsdb.southbound.version>
 
         <!-- Supporting Libraries -->
         <slf4j.version>1.7.5</slf4j.version>
@@ -104,9 +105,11 @@
         <module>sfc-sb-rest</module>
         <module>sfclisp</module>
         <module>sfcofl2</module>
+        <module>sfc-ovs</module>
         <module>features</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
+        <module>features-sfc-ovs</module>
         <module>features-sfc-sb-rest</module>
         <module>features-sfclisp</module>
         <module>features-sfcofl2</module>

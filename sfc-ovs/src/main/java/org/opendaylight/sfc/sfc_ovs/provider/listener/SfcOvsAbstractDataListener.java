@@ -1,10 +1,20 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
+/**
+ * DataChangeListener attached to the OVSDB southbound operational datastore
+ *
+ * <p>
+ * @author Reinaldo Penno (rapenno@gmail.com)
+ * @version 0.1
+ * @since       2015-02-13
+ */
+
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;

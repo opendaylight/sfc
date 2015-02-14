@@ -1,10 +1,20 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
+/**
+ * DataChangeListener attached to the OVSDB southbound operational datastore
+ *
+ * <p>
+ * @author Reinaldo Penno (rapenno@gmail.com)
+ * @version 0.1
+ * @since       2015-02-13
+ */
+
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -22,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Set;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -30,12 +39,18 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
 
-    public static final InstanceIdentifier<OvsdbNodeAugmentation>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
+/*    public static final InstanceIdentifier<OvsdbNodeAugmentation>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
             InstanceIdentifier
                     .create(NetworkTopology.class)
                     .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                     .child(Node.class)
-                    .augmentation(OvsdbNodeAugmentation.class);
+                    .augmentation(OvsdbNodeAugmentation.class);*/
+
+    public static final InstanceIdentifier<Node>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
+            InstanceIdentifier
+                    .create(NetworkTopology.class)
+                    .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                    .child(Node.class);
 
     public SfcOvsNodeDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
@@ -65,23 +80,21 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof OvsdbNodeAugmentation) {
-                OvsdbNodeAugmentation createdOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
-                LOG.debug("\nCreated Rendered Service Path: {}", createdOvsdbNodeAugmentation.toString());
+            if (entry.getValue() instanceof Node) {
+                Node node = (Node) entry.getValue();
+                LOG.debug("\nCreated OvsdbNodeAugmentation: {}", node.toString());
 
             }
         }
 
-        // NODE UPDATE
+/*        // NODE UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
             if ((entry.getValue() instanceof OvsdbNodeAugmentation)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 OvsdbNodeAugmentation updatedOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
-                LOG.debug("\nModified Rendered Service Path Name: {}", updatedOvsdbNodeAugmentation.toString());
+                LOG.debug("\nModified OvsdbNodeAugmentation : {}", updatedOvsdbNodeAugmentation.toString());
 
-/*                Runnable task = new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);*/
             }
         }
 
@@ -93,10 +106,10 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
             if (dataObject instanceof OvsdbNodeAugmentation) {
 
                 OvsdbNodeAugmentation deletedOvsdbNodeAugmentation = (OvsdbNodeAugmentation) dataObject;
-                LOG.debug("\nDeleted Rendered Service Path Name: {}", deletedOvsdbNodeAugmentation.toString());
+                LOG.debug("\nDeleted OvsdbNodeAugmentation: {}", deletedOvsdbNodeAugmentation.toString());
 
             }
-        }
+        }*/
         printTraceStop(LOG);
     }
 

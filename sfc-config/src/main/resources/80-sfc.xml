@@ -71,6 +71,19 @@
 
                 </module>
 
+                <module>
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl">
+                        sfc:sfc-ovs-impl
+                    </type>
+                    <name>sfc-ovs-impl</name>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+
+                </module>
+
             </modules>
 
 
@@ -95,6 +108,7 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-test-consumer:impl?module=sfc-test-consumer-impl&amp;revision=2014-07-01</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl?module=sfc-sb-rest-provider-impl&amp;revision=2014-10-20</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl?module=sfc-ovs-impl&amp;revision=2014-10-20</capability>
     </required-capabilities>
 
 </snapshot>

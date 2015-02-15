@@ -253,7 +253,7 @@
                     <instructions>
                         <Embed-Dependency>jersey</Embed-Dependency>
                         <Export-Package>
-                            org.opendaylight.sfc.*;
+                            org.opendaylight.sfc.provider.*;
                         </Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>

@@ -25,8 +25,7 @@
     the proper config subsystem contents for your module
   -->
   <artifactId>sfc-config</artifactId>
-  <groupId>org.opendaylight.sfc</groupId>
-  <description>Configuration files for md-sal</description>
+  <description>Configuration files for SFC</description>
   <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
    <version>0.1.0-SNAPSHOT</version>
    -->

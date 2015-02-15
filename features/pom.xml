@@ -15,7 +15,6 @@
   </parent>
 
    <artifactId>features-sfc</artifactId>
-   <groupId>org.opendaylight.sfc</groupId>
    <!-- Only  uncomment version if you are not using a parent pom.xml
    <version>1.1.0-SNAPSHOT</version>
    -->
@@ -23,12 +22,6 @@
    <properties>
       <features.file>features.xml</features.file>
       <!-- Move these properties to your parent pom and possibly DependencyManagement section of your parent pom -->
-      <branding.version>1.1.0-SNAPSHOT</branding.version>
-      <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-      <karaf.version>3.0.1</karaf.version>
-      <feature.test.version>0.7.0-SNAPSHOT</feature.test.version>
-      <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
-      <surefire.version>2.16</surefire.version>
    </properties>
    <dependencies>
     <!--
@@ -40,13 +33,13 @@
       <scope>compile</compile>, which they should be by default,
       but be cautious lest they be at a different scope in a parent pom.
     -->
-    <dependency>
+<!--    <dependency>
        <groupId>org.opendaylight.ovsdb</groupId>
        <artifactId>southbound-impl</artifactId>
        <version>${ovsdb.southbound.version}</version>
        <classifier>config</classifier>
        <type>xml</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>features-yangtools</artifactId>
@@ -68,13 +61,13 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.opendaylight.ovsdb</groupId>
       <artifactId>southbound-features</artifactId>
       <version>1.1.0-SNAPSHOT</version>
       <classifier>features</classifier>
       <type>xml</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>features-openflowplugin</artifactId>
@@ -312,7 +305,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>${surefire.version}</version>
+            <version>${maven.surefire.version}</version>
             <configuration>
               <systemPropertyVariables>
                 <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>

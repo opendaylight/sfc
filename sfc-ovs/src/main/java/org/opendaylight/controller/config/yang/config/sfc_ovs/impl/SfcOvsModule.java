@@ -47,6 +47,8 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
 
         final SfcOvsNodeDataListener sfcOvsNodeDataListener = new SfcOvsNodeDataListener(opendaylightSfc);
 
+        LOG.info("SFC OVS module initialized");
+
         // close()
         final class AutoCloseableSfcOvs implements AutoCloseable {
 
@@ -57,7 +59,7 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
                 try {
                     opendaylightSfc.close();
                 } catch (ExecutionException | InterruptedException e) {
-                    LOG.error("\nFailed to close SfcSbRestProvider instance {} cleanly", this);
+                    LOG.error("\nFailed to close SfcOvsModule instance {} cleanly", this);
                 }
                 LOG.info("SfcOvsModule (instance {}) torn down", this);
             }

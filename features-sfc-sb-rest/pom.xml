@@ -18,12 +18,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <packaging>jar</packaging>
     <properties>
         <features.file>features.xml</features.file>
-        <branding.version>1.1.0-SNAPSHOT</branding.version>
-        <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-        <karaf.version>3.0.1</karaf.version>
-        <feature.test.version>0.7.0-SNAPSHOT</feature.test.version>
-        <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
-        <surefire.version>2.16</surefire.version>
    </properties>
    <dependencies>
     <dependency>
@@ -103,7 +97,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>${surefire.version}</version>
+            <version>${maven.surefire.version}</version>
             <configuration>
               <systemPropertyVariables>
                 <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>

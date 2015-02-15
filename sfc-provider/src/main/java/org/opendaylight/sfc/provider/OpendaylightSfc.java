@@ -8,9 +8,9 @@
 package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.core.api.Broker;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
@@ -98,10 +98,12 @@ public class OpendaylightSfc implements AutoCloseable {
     private static OpendaylightSfc opendaylightSfcObj;
     private final Lock lock = new ReentrantLock();
 
+    /* Constructors */
     public OpendaylightSfc() {
 
-       executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE);
-       opendaylightSfcObj = this;
+        executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE);
+        opendaylightSfcObj = this;
+        LOG.info("Opendaylight Service Function Chaining Initialized");
     }
 
     public void getLock() {
@@ -113,6 +115,8 @@ public class OpendaylightSfc implements AutoCloseable {
         lock.unlock();
         return;
     }
+
+    /* Accessors */
 
     public ExecutorService getExecutor() {
         return executor;
@@ -147,13 +151,35 @@ public class OpendaylightSfc implements AutoCloseable {
         executor.shutdown();
 
         if (dataProvider != null) {
-            final AsyncReadWriteTransaction t = dataProvider.newReadWriteTransaction();
-            t.delete(LogicalDatastoreType.CONFIGURATION, SF_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFF_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SCF_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFC_ENTRY_IID);
-            t.delete(LogicalDatastoreType.CONFIGURATION, SFT_IID);
-            t.commit().get();
+            final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
+                    InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+
+            final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID =
+                    InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
+
+            final InstanceIdentifier<ServiceFunctions>  SF_IID =
+                    InstanceIdentifier.builder(ServiceFunctions.class).build();
+
+            final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
+                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
+
+            final InstanceIdentifier<ServiceFunctionPaths>  SFP_IID =
+                    InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+
+            final InstanceIdentifier<RenderedServicePaths>  RSP_IID =
+                    InstanceIdentifier.builder(RenderedServicePaths.class).build();
+
+            final InstanceIdentifier<AccessLists>  ACL_IID =
+                    InstanceIdentifier.builder(AccessLists.class).build();
+
+            SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SCF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SFF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SFP_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(RSP_IID, LogicalDatastoreType.OPERATIONAL);
+            SfcDataStoreAPI.deleteTransactionAPI(ACL_IID, LogicalDatastoreType.CONFIGURATION);
+
         }
     }
 }

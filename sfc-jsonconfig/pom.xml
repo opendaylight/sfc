@@ -25,7 +25,6 @@
     the proper config subsystem contents for your module
   -->
   <artifactId>sfc-jsonconfig</artifactId>
-  <groupId>org.opendaylight.sfc</groupId>
   <description>Configuration files for md-sal</description>
   <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
    <version>0.1.0-SNAPSHOT</version>

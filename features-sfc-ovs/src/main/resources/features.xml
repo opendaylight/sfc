@@ -27,8 +27,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
+<!--        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>-->
         <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
     </feature>
     

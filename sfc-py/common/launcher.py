@@ -45,7 +45,8 @@ def start_server(loop, addr, udpserver, message):
     #    lambda: udpserver, local_addr=addr))
     listen = loop.create_datagram_endpoint(lambda: udpserver, local_addr=addr)
     transport = loop.run_until_complete(listen)[0]
-    logger.info(message, addr)
+
+    logger.info(message + ' ' + str(addr[1]))
 
     return transport
 
@@ -97,7 +98,7 @@ def start_service(service_name, service_ip, service_port, service_type,
     start_server(loop,
                  (service_ip, service_control_port),
                  control_udp_server,
-                 'Listening for Control messages on port: ')
+                 'Listening for Control messages on port:')
 
     loop.run_forever()
     udpserver_socket.close()
@@ -119,7 +120,7 @@ def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
     """
     logger.info('Starting Service Function Forwarder')
     start_service(sff_name, sff_ip, sff_port, UDP, sff_control_port,
-                  sff_thread, "Listening for NSH packets on port: ")
+                  sff_thread, 'Listening for NSH packets on port:')
 
 # This does not work in MacOS when SFF/SF are different python
 # applications on the same machine

@@ -99,9 +99,11 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 if (deletedServiceClassifier.getAccessList() != null && !deletedServiceClassifier.getAccessList().isEmpty()){
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(deletedServiceClassifier.getAccessList());
 
-                    Runnable task = new SbRestAclTask(RestOperation.DELETE, accessList,
-                            deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
-                    opendaylightSfc.getExecutor().submit(task);
+                    if (accessList != null) {
+                        Runnable task = new SbRestAclTask(RestOperation.DELETE, accessList,
+                                deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
+                        opendaylightSfc.getExecutor().submit(task);
+                    }
                 }
             }
         }

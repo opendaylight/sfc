@@ -11,7 +11,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.controller/features-mdsal/1.2.0-SNAPSHOT/xml/features</repository>
-    <!--<repository>mvn:org.opendaylight.ovsdb/southbound-features/1.1.0-SNAPSHOT/xml/features</repository>-->
+    <repository>mvn:org.opendaylight.ovsdb/southbound-features/1.1.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.sfc/features-sfc/0.1.0-SNAPSHOT/xml/features</repository>
     <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: OpenvSwitch '>
           <!--
@@ -24,11 +24,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <feature version='${project.version}'>odl-sfc-provider</feature>
             <feature version='${project.version}'>odl-sfc-model</feature>
         -->
-        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version='${project.version}'>odl-sfc-provider-internal</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-<!--        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>-->
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
     </feature>
     

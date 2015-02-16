@@ -255,7 +255,23 @@
       <artifactId>slf4j-simple</artifactId>
       <version>1.7.2</version>
     </dependency>
-
+       <dependency>
+           <groupId>org.opendaylight.ovsdb</groupId>
+           <artifactId>southbound-impl</artifactId>
+           <version>${ovsdb.southbound.version}</version>
+           <classifier>config</classifier>
+           <type>xml</type>
+       </dependency>
+       <dependency>
+           <groupId>org.opendaylight.ovsdb</groupId>
+           <artifactId>southbound-api</artifactId>
+           <version>${ovsdb.southbound.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.opendaylight.ovsdb</groupId>
+           <artifactId>southbound-impl</artifactId>
+           <version>${ovsdb.southbound.version}</version>
+       </dependency>
    </dependencies>
    <build>
       <resources>

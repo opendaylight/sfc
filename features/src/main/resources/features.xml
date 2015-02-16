@@ -27,7 +27,6 @@
             It is useful to list them in the same order they occur in the file.
           -->
         <feature version='${project.version}'>odl-sfcofl2</feature>
-        <feature version='${project.version}'>odl-sfc-ovs</feature>
         <feature version='${project.version}'>odl-sfc-ui</feature>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature version='${project.version}'>odl-sfc-test-consumer</feature>
@@ -52,24 +51,25 @@
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
     </feature>
-   <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: sfc :: OpenvSwitch '>
-<!--        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>-->
-        <feature version='${project.version}'>odl-sfc-provider</feature>
+<!--    <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: sfc :: OpenvSwitch '>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
+        <feature version='${project.version}'>odl-sfc-provider-internal</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
-    </feature>
+    </feature>-->
     <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature>odl-restconf</feature>
         <feature>http</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-ui/${project.version}</bundle>
     </feature>
-    <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>
+
+    <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider :: Internal'>
         <feature version='1.2.0-SNAPSHOT'>odl-mdsal-broker</feature>
         <feature version='1.2.0-SNAPSHOT'>odl-mdsal-apidocs</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
-        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>    
+        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
@@ -93,6 +93,11 @@
         <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
         <bundle>mvn:org.opendaylight.controller/sal/${sal.version}</bundle>
     </feature>
+<!--    <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>
+        <feature version='${project.version}'>odl-sfc-provider-internal</feature>
+        &lt;!&ndash;<feature version='${project.version}'>odl-sfc-ovs</feature>&ndash;&gt;
+        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
+    </feature>-->
     <feature name='odl-sfc-test-consumer' version='${project.version}' description='OpenDaylight :: sfc :: Test :: Consumer '>
         <feature version='1.2.0-SNAPSHOT'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
@@ -109,5 +114,33 @@
         <feature version='0.7.0-SNAPSHOT'>odl-yangtools-models</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-model/${project.version}</bundle>
     </feature>
+
+<!--    <feature name='odl-sfc-provider-internal' version='${project.version}' description='OpenDaylight :: sfc :: Provider :: Internal'>
+        <feature version='1.2.0-SNAPSHOT'>odl-mdsal-broker</feature>
+        <feature version='1.2.0-SNAPSHOT'>odl-mdsal-apidocs</feature>
+        <feature version='${project.version}'>odl-sfc-model</feature>
+        <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
+        <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
+        <bundle>mvn:ch.qos.logback/logback-core/${logback.version}</bundle>
+        <bundle>mvn:ch.qos.logback/logback-classic/${logback.version}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/1.17</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/1.17</bundle>
+        <bundle>wrap:mvn:org.json/json/20131018</bundle>
+        <bundle>mvn:org.codehaus.jettison/jettison/1.1</bundle>
+        <bundle>mvn:com.google.code.gson/gson/2.2.4</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
+        <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
+        <bundle>mvn:org.opendaylight.controller/sal/${sal.version}</bundle>
+    </feature>-->
 
 </features>

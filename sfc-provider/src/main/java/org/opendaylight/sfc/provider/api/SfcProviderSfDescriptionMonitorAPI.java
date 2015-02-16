@@ -1,10 +1,19 @@
+/*
+* Copyright (c) 2014 Intel Corp. and others.  All rights reserved.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 which accompanies this distribution,
+* and is available at http://www.eclipse.org/legal/epl-v10.html
+*/
 package org.opendaylight.sfc.provider.api;
 
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.dom.api.DOMMountPoint;
+import org.opendaylight.controller.md.sal.dom.api.DOMMountPointService;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.GetNetconfDataProvider;
+import org.opendaylight.sfc.provider.SfcNetconfDataProvider;
 import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
-import org.opendaylight.controller.sal.core.api.mount.MountProvisionService;
-import org.opendaylight.controller.sal.core.api.mount.MountProvisionInstance;
+import org.opendaylight.controller.sal.core.api.RpcProvisionRegistry;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -29,11 +38,10 @@ import com.google.common.base.Preconditions;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-public class SfcProviderSfDescriptionMonotorAPI{
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonotorAPI.class);
+public class SfcProviderSfDescriptionMonitorAPI{
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static ProviderSession sessionData;
-    private static MountProvisionService mountService;
     private static URI NETCONF_URI = URI.create("urn:ietf:params:xml:ns:netconf:base:1.0");
     private static QName NETCONF_QNAME = QName.create(NETCONF_URI, null, "netconf");
     private static QName NETCONF_TYPE_QNAME = QName.create(NETCONF_QNAME, "type");
@@ -66,7 +74,7 @@ public class SfcProviderSfDescriptionMonotorAPI{
     private static final QName POWER_UTILIZATION_QNAME = QName.create("(urn.intel.params:xml:ns:sf-desc-mon-rpt)power-utilization");
     private Map<QName, String> sfDescMonInfoMap = new HashMap<QName, String>();
 
-    public SfcProviderSfDescriptionMonotorAPI() {
+    public SfcProviderSfDescriptionMonitorAPI() {
         sfDescMonInfoMap.put(PORT_BANDWIDTH_QNAME,"port-bandwidth");
         sfDescMonInfoMap.put(NUM_OF_PORTS_QNAME,"number-of-dataports");
         sfDescMonInfoMap.put(SUPPORTED_PACKET_RATE_QNAME,"supported-packet-rate");
@@ -85,13 +93,17 @@ public class SfcProviderSfDescriptionMonotorAPI{
         sfDescMonInfoMap.put(RIB_UTILIZATION_QNAME,"RIB-utilization");
         sfDescMonInfoMap.put(FIB_UTILIZATION_QNAME,"FIB-utilization");
         sfDescMonInfoMap.put(POWER_UTILIZATION_QNAME,"power-utilization");
+
+        setSession();
     }
 
     protected void setSession()  {
         printTraceStart(LOG);
         try {
-            sessionData = odlSfc.getBroker().registerProvider(new GetNetconfDataProvider());
-            Preconditions.checkState(sessionData != null,"GetNetconfDataProvider register is not available.");
+            if(sessionData==null) {
+                sessionData = odlSfc.getBroker().registerProvider(SfcNetconfDataProvider.GetNetconfDataProvider());
+                Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
+            }
         } catch (Exception e) {
             LOG.warn("failed to ...." , e);
         }
@@ -120,7 +132,7 @@ public class SfcProviderSfDescriptionMonotorAPI{
     public Map<String, Object> getSFDescriptionInfoFromNetconf(String mountpoint)  {
         printTraceStart(LOG);
 
-        MountProvisionInstance mountInstance;
+        Optional<DOMMountPoint> mountPoint;
         Map<String, Object> sfDescInfo  = new HashMap<String, Object>();
         final QName nodes = QName.create("urn:opendaylight:inventory","2013-08-19","nodes");
         final QName node = QName.create(nodes,"node");
@@ -129,21 +141,23 @@ public class SfcProviderSfDescriptionMonotorAPI{
             // data path
             final YangInstanceIdentifier path = YangInstanceIdentifier.builder().
                     node(nodes).nodeWithKey(node,idName,mountpoint).build();
-            setSession();
-            mountService = sessionData.getService(MountProvisionService.class);
+
+            DOMMountPointService mountService = SfcNetconfDataProvider.GetNetconfDataProvider().getMountService();
             if (mountService != null)  {
-                mountInstance = mountService.getMountPoint(path);
-                if (mountInstance != null) {
-                    RpcResult<CompositeNode> future = mountInstance.invokeRpc(SF_DESCRIPTION_QNAME, wrap(SF_DESCRIPTION_QNAME, null)).get();
+                mountPoint = mountService.getMountPoint(path);
+                if (mountPoint.isPresent()) {
+                    final Optional<RpcProvisionRegistry> service = mountPoint.get().getService(RpcProvisionRegistry.class);
+                    Preconditions.checkState(service.isPresent());
+                    RpcResult<CompositeNode> future = service.get().invokeRpc(SF_DESCRIPTION_QNAME, wrap(SF_DESCRIPTION_QNAME, null)).get();
                     CompositeNode data = future.getResult().getFirstCompositeByName(NETCONF_DATA_QNAME);
                     sfDescInfo = parseSFDescriptionInfo(data);
                 } else {
-                    LOG.error("In getSFDescriptionInfoFromNetconf(), MountProvisionInstance is null");
+                    LOG.error("In getSFDescriptionInfoFromNetconf(), DOMMountPoint is null");
                     return null;
                 }
             }
             else {
-                LOG.error("In getSFDescriptionInfoFromNetconf(), MountProvisionService is null");
+                LOG.error("In getSFDescriptionInfoFromNetconf(), DOMMountPointService is null");
                 return null;
             }
         } catch (Exception e) {
@@ -156,7 +170,7 @@ public class SfcProviderSfDescriptionMonotorAPI{
     public Map<String, Object> getSFMonitorInfoFromNetconf(String mountpoint)  {
         printTraceStart(LOG);
 
-        MountProvisionInstance mountInstance;
+        Optional<DOMMountPoint> mountPoint;
         Map<String, Object> sfMonInfoMap  = new HashMap<String, Object>();
         final QName nodes = QName.create("urn:opendaylight:inventory","2013-08-19","nodes");
         final QName node = QName.create(nodes,"node");
@@ -165,22 +179,23 @@ public class SfcProviderSfDescriptionMonotorAPI{
             // data path
             final YangInstanceIdentifier path = YangInstanceIdentifier.builder().
                     node(nodes).nodeWithKey(node,idName, mountpoint).build();
-            setSession();
-            mountService = sessionData.getService(MountProvisionService.class);
-            if (mountService != null)  {
-                mountInstance = mountService.getMountPoint(path);
 
-                if (mountInstance != null) {
-                    RpcResult<CompositeNode> future = mountInstance.invokeRpc(SF_MONITOR_INFO_QNAME, wrap(SF_MONITOR_INFO_QNAME, null)).get();
+            DOMMountPointService mountService = SfcNetconfDataProvider.GetNetconfDataProvider().getMountService();
+            if (mountService != null)  {
+                mountPoint = mountService.getMountPoint(path);
+                if (mountPoint.isPresent()) {
+                    final Optional<RpcProvisionRegistry> service = mountPoint.get().getService(RpcProvisionRegistry.class);
+                    Preconditions.checkState(service.isPresent());
+                    RpcResult<CompositeNode> future = service.get().invokeRpc(SF_MONITOR_INFO_QNAME, wrap(SF_MONITOR_INFO_QNAME, null)).get();
                     CompositeNode data = future.getResult().getFirstCompositeByName(NETCONF_DATA_QNAME);
                     sfMonInfoMap = parseSFMonitorInfo(data);
                 } else {
-                    LOG.error("In getSFMonitorInfoFromNetconf(), MountProvisionInstance is null");
+                    LOG.error("In getSFMonitorInfoFromNetconf(), DOMMountPoint is null");
                     return null;
                 }
             }
             else {
-                LOG.error("In getSFMonitorInfoFromNetconf(), MountProvisionService is null");
+                LOG.error("In getSFMonitorInfoFromNetconf(), DOMMountPointService is null");
                 return null;
             }
         } catch (Exception e) {

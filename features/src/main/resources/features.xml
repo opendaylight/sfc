@@ -91,7 +91,6 @@
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
         <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
-        <bundle>mvn:org.opendaylight.controller/sal/${sal.version}</bundle>
     </feature>
     <feature name='odl-sfc-test-consumer' version='${project.version}' description='OpenDaylight :: sfc :: Test :: Consumer '>
         <feature version='1.2.0-SNAPSHOT'>odl-mdsal-broker</feature>

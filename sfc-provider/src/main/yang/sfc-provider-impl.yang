@@ -8,7 +8,7 @@ module sfc-provider-impl {
   import config { prefix config; revision-date 2013-04-05; }
   import rpc-context { prefix rpcx; revision-date 2013-06-17; }
   import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
-
+  import opendaylight-md-sal-dom {prefix dom;}
 
   description
       "This module contains the base YANG definitions for
@@ -41,6 +41,15 @@ module sfc-provider-impl {
               config:required-identity mdsal:binding-async-data-broker;
           }
         }
+      }
+
+      container dom-registry {
+          uses config:service-ref {
+              refine type {
+                  mandatory true;
+                  config:required-identity dom:dom-broker-osgi-registry;
+              }
+          }
       }
 
       container rpc-registry {

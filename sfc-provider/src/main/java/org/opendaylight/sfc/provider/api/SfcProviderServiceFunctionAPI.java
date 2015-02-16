@@ -78,7 +78,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
-    private SfcProviderSfDescriptionMonotorAPI getSfDescMon = new SfcProviderSfDescriptionMonotorAPI();
+    private SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
 
     SfcProviderServiceFunctionAPI(Object[] params, String m) {
         super(params, m);
@@ -130,7 +130,9 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServiceFunctionAPI getReadServiceFunctionDescriptionMonitor(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionAPI(params, paramsTypes, "readServiceFunctionDescriptionMonitor");
     }
-
+    public static SfcProviderServiceFunctionAPI getReadAllServiceFunctionsState(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "readAllServiceFunctionStates");
+    }
     /**
      * This method reads the operational state for a service function.
      * <p>
@@ -316,6 +318,20 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+    protected ServiceFunctionsState readAllServiceFunctionStates() {
+        ServiceFunctionsState sfsState = null;
+        printTraceStart(LOG);
+
+        InstanceIdentifier<ServiceFunctionsState> sfStateIID = InstanceIdentifier
+                .builder(ServiceFunctionsState.class)
+                .build();
+
+        sfsState = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
+
+        printTraceStop(LOG);
+        return sfsState;
     }
 
     /**

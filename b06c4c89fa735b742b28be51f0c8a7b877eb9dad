@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_b16c9436",
+        "filename": "sfc-py/common/sff_globals.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-02-16T22:54:53Z",
+      "side": 1,
+      "message": "Can you change the nsame of this file to sfc_agent_globals.py or something of the sort. It contains things not only related to SFF but entire agent, sf, sff, etc",
+      "revId": "b06c4c89fa735b742b28be51f0c8a7b877eb9dad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

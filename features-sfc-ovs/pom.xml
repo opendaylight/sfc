@@ -19,8 +19,19 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    <properties>
       <features.file>features.xml</features.file>
    </properties>
-   <dependencies>
-<!--   <dependency>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.ovsdb</groupId>
+                <artifactId>southbound-artifacts</artifactId>
+                <version>1.1.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+   <dependency>
        <groupId>org.opendaylight.ovsdb</groupId>
        <artifactId>southbound-impl</artifactId>
        <version>${ovsdb.southbound.version}</version>
@@ -37,13 +48,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
        <artifactId>southbound-impl</artifactId>
        <version>${ovsdb.southbound.version}</version>
    </dependency>
-   <dependency>
-       <groupId>org.opendaylight.ovsdb</groupId>
-       <artifactId>southbound-features</artifactId>
-       <version>${ovsdb.southbound.version}</version>
-       <classifier>features</classifier>
-       <type>xml</type>
-   </dependency>-->
+
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
       <artifactId>features-sfc</artifactId>
@@ -84,7 +89,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>slf4j-simple</artifactId>
       <version>1.7.2</version>
     </dependency>
-   </dependencies>
+
+    </dependencies>
+</dependencyManagement>
+
+
+
    <build>
       <resources>
          <resource>

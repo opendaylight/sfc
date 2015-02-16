@@ -14,30 +14,40 @@ __status__ = "alpha"
 """ SFC Agent Server. This Server should be co-located with the python SFF data
     plane implementation (sff_thread.py)"""
 
-import logging
-import socket
-from sff_globals import *
-import netifaces
-from sff_thread import start_sff
-from service_function_thread import start_sf
-from threading import Thread
-import collections
-from flask import *
-import getopt
-import json
-import requests
-import sys
 
-if sys.platform.startswith('linux'):
-    from nfq_class_thread import *
+import sys
+import json
+import socket
+import getopt
+import logging
+import argparse
+import requests
+import netifaces
+import collections
+import multiprocessing
+
+#TODO: fix this kind of imports
+from flask import *
+from pprint import pprint
+from threading import Thread
+
+
 import xe_cli
 import ovs_cli
 
-app = Flask(__name__)
+#TODO: fix this kind of imports
+from sff_globals import *
+from common.launcher import start_sff, start_sf
 
-# IP address of associated SFF thread. WE assume agent and thread and co-located
+if sys.platform.startswith('linux'):
+    #TODO: fix this kind of imports
+    from nfq_class_thread import *
+
+
+# IP address of associated SFF thread.
+# WE assume agent and thread and co-located
 SFF_UDP_IP = "127.0.0.1"
-
+app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -47,13 +57,14 @@ def tree():
 
 def find_sf_locator(sf_name, sff_name):
     """
-    Looks for the SF name  within the service function
-    dictionary of sff_name. If found, return the
-    corresponding data plane locator
+    Looks for the SF name within the service function dictionary of sff_name.
+    If found, return the corresponding data plane locator.
 
     :param sf_name: SF name
     :param  sff_name: SFF name
-    :return: SF data plane locator
+
+    :return SF data plane locator
+
     """
 
     local_sff_topo = get_agent_globals().get_sff_topo()
@@ -76,16 +87,20 @@ def find_sf_locator(sf_name, sff_name):
 
 def find_sff_locator_by_ip(addr):
     """
-    For a given IP addr iterate over all SFFs looking for which one has a
-    the same data plane locator ip
-    :param addr:
-    :return: SFF name
-    """
+    For a given IP addr iterate over all SFFs looking for which one has a the
+    same data plane locator IP
 
+    :param addr: IP address
+    :type addr: str
+
+    :return SFF name or None
+
+    """
     sff_name = None
-    local_sff_topo = get_agent_globals().get_sff_topo()
+
+    local_sff_topo = agent_globals.get_sff_topo()
     for sff_name, sff_value in local_sff_topo.items():
-        for i, locator_value in enumerate(sff_value['sff-data-plane-locator']):
+        for locator_value in sff_value['sff-data-plane-locator']:
             if locator_value['data-plane-locator']['ip'] == addr:
                 return sff_name
 
@@ -321,43 +336,54 @@ def delete_sf(sfname):
     return '', 204
 
 
-@app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
-           methods=['PUT', 'POST'])
+@app.route('/config/service-function-forwarder:service-function-forwarders/'
+           'service-function-forwarder/<sffname>', methods=['PUT', 'POST'])
 def create_sff(sffname):
     """
-    This function creates a SFF on-the-fly when it receives a PUT request from ODL. The SFF runs on a
-    separate thread. If a SFF thread with same name already exist it is killed before a new one is created.
-    This happens when a SFF is modified or recreated
-    :param sffname: SFF name
-    :return:
-    """
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    control_port = get_agent_globals().get_data_plane_control_port()
-    local_sff_threads = get_sff_threads()
+    This function creates a SFF on-the-fly when it receives a PUT request from
+    ODL. The SFF runs on a separate thread. If a SFF thread with same name
+    already exist it is killed before a new one is created. This happens when a
+    SFF is modified or recreated
 
+    :param sffname: SFF name
+    :type sffname: str
+
+    """
     if not request.json:
         abort(400)
+
+    local_sff_threads = get_sff_threads()
+    if sffname in local_sff_threads.keys():
+        kill_sff_thread(sffname)
+
+    r_json = request.get_json()
+    local_sff_topo = agent_globals.get_sff_topo()
+
+    local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
+    sff_port = (local_sff_topo[sffname]['sff-data-plane-locator']
+                                       [0]
+                                       ['data-plane-locator']
+                                       ['port'])
+
+    control_port = agent_globals.get_data_plane_control_port()
+    sff_thread = Thread(target=start_sff,
+                        args=(sffname, "0.0.0.0",
+                              sff_port, control_port, local_sff_threads))
+
+    local_sff_threads[sffname] = {}
+    local_sff_threads[sffname]['thread'] = sff_thread
+    local_sff_threads[sffname]['data_plane_control_port'] = control_port
+
+    sff_thread.start()
+    if sff_thread.is_alive():
+        logger.info("SFF thread %s start successfully", sffname)
     else:
-        if sffname in local_sff_threads.keys():
-            kill_sff_thread(sffname)
-        local_sff_topo[sffname] = request.get_json()['service-function-forwarder'][0]
-        sff_port = local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port']
-        sff_thread = Thread(target=start_sff, args=(sffname, "0.0.0.0", sff_port, control_port, local_sff_threads))
+        logger.error("Failed to start SFF thread %s", sffname)
 
-        local_sff_threads[sffname] = {}
-        local_sff_threads[sffname]['thread'] = sff_thread
-        local_sff_threads[sffname]['data_plane_control_port'] = control_port
+    control_port += 1
+    agent_globals.set_data_plane_control_port(control_port)
 
-        sff_thread.start()
-        if sff_thread.is_alive():
-            logger.info("SFF thread %s start successfully", sffname)
-        else:
-            logger.error("Failed to start SFF thread %s", sffname)
-
-        control_port += 1
-        get_agent_globals().set_data_plane_control_port(control_port)
-
-    return jsonify({'sff': get_agent_globals().get_sff_topo()}), 201
+    return jsonify({'sff': agent_globals.get_sff_topo()}), 201
 
 
 def kill_sff_thread(sffname):
@@ -501,15 +527,29 @@ def page_not_found(e):
 
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
+    """
+    #TODO: add description
+    #TODO: add arguments description and type
 
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    s = requests.Session()
-    print("Getting SFF information from ODL... \n")
-    r = s.get(SFF_SF_DATA_PLANE_LOCATOR_URL.format(odl_ip_port, sff_name, sf_name), stream=False,
-              auth=(USERNAME, PASSWORD))
-    if r.status_code == 200:
-        sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
-        for sff in sff_json:
+    """
+    try:
+        print("Getting SFF information from ODL... \n")
+        odl_dataplane_url = SFF_SF_DATA_PLANE_LOCATOR_URL.format(odl_ip_port,
+                                                                 sff_name,
+                                                                 sf_name)
+
+        s = requests.Session()
+        r = s.get(odl_dataplane_url, auth=(USERNAME, PASSWORD), stream=False)
+    except:
+        print('Can\'t get SFF information from ODL')
+        return
+
+    if r.ok:
+        r_json = r.json()
+        sff_json = r_json['service-function-forwarders']
+
+        local_sff_topo = agent_globals.get_sff_topo()
+        for sff in sff_json['service-function-forwarder']:
             local_sff_topo[sff['name']] = sff
     else:
         print("=>Failed to GET SFF from ODL \n")
@@ -517,148 +557,198 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
 
 def get_sffs_from_odl(odl_ip_port):
     """
-    Retrieves the list of configured SFFs from ODL and update global dictionary of SFFs
-    :return: Nothing
-    """
+    Retrieves the list of configured SFFs from ODL and update global
+    dictionary of SFFs
 
-    get_agent_globals().reset_sff_topo()
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    s = requests.Session()
-    print("Getting SFFs configure in ODL... \n")
-    r = s.get(SFF_PARAMETER_URL.format(odl_ip_port), stream=False, auth=(USERNAME, PASSWORD))
-    if r.status_code == 200:
-        sff_json = json.loads(r.text)['service-function-forwarders']['service-function-forwarder']
-        for sff in sff_json:
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+
+    :return Nothing
+
+    """
+    try:
+        print("Getting SFFs configured in ODL... \n")
+        odl_sff_url = SFF_PARAMETER_URL.format(odl_ip_port)
+
+        s = requests.Session()
+        r = s.get(odl_sff_url, auth=(USERNAME, PASSWORD), stream=False)
+    except:
+        print('Can\'t get SFFs from ODL; HINT: is ODL up and running?')
+        return
+
+    if r.ok:
+        r_json = r.json()
+        sff_json = r_json['service-function-forwarders']
+
+        agent_globals.reset_sff_topo()
+        local_sff_topo = agent_globals.get_sff_topo()
+        for sff in sff_json['service-function-forwarder']:
             local_sff_topo[sff['name']] = sff
     else:
-        print("=>Failed to GET SFF from ODL \n")
+        print("=>Failed to GET SFFs from ODL \n")
 
-    l_topo = get_agent_globals().get_sff_topo()
-    print(l_topo)
+    l_topo = agent_globals.get_sff_topo()
+    if l_topo:
+        pprint(l_topo)
 
 
 def get_sff_from_odl(odl_ip_port, sff_name):
     """
-    Retrieves a single configured SFF from ODL and update global dictionary of SFFs
-    :return: Nothing
-    """
+    Retrieves a single configured SFF from ODL and update global dictionary of
+    SFFs
 
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    s = requests.Session()
-    logger.info("Contacting ODL to get information for SFF: %s \n", sff_name)
-    r = s.get(SFF_NAME_PARAMETER_URL.format(odl_ip_port, sff_name), stream=False, auth=(USERNAME, PASSWORD))
-    if r.status_code == 200:
-        local_sff_topo[sff_name] = json.loads(r.text)['service-function-forwarder'][0]
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+    :param sff_name: SFF name
+    :type sff_name: str
+
+    :return int or None
+
+    """
+    try:
+        print('Contacting ODL about information for SFF: %s' % sff_name)
+        odl_sff_url = SFF_NAME_PARAMETER_URL.format(odl_ip_port, sff_name)
+
+        s = requests.Session()
+        r = s.get(odl_sff_url, auth=(USERNAME, PASSWORD), stream=False)
+    except:
+        print('Can\'t get SFF "{sff}" from ODL'.format(sff=sff_name))
+        return
+
+    if r.ok:
+        r_json = r.json()
+
+        local_sff_topo = agent_globals.get_sff_topo()
+        local_sff_topo[sff_name] = r_json['service-function-forwarder'][0]
         return 0
     else:
-        print("=>Failed to GET SFF from ODL \n")
+        print("=>Failed to GET SFF {sff} from ODL \n".format(sff=sff_name))
         return -1
 
 
 def auto_sff_name():
     """
-    This function will iterate over all interfaces on the system and compare their IP addresses
-    with the IP data plane locators of all SFFs downloaded from ODL. If a match is found, we set the name of this
-    SFF as the SFF name configured in ODL. This allow the same script with the same parameters to the run on different
-    machines
+    This function will iterate over all interfaces on the system and compare
+    their IP addresses with the IP data plane locators of all SFFs downloaded
+    from ODL. If a match is found, we set the name of this SFF as the SFF name
+    configured in ODL. This allow the same script with the same parameters to
+    the run on different machines.
+
+    :return int
 
     """
-    sff_name = ""
-    intfs = netifaces.interfaces()
-    for intf in intfs:
+    for intf in netifaces.interfaces():
         addr_list_dict = netifaces.ifaddresses(intf)
         inet_addr_list = addr_list_dict[netifaces.AF_INET]
-        for i, value in enumerate(inet_addr_list):
+
+        for value in inet_addr_list:
             sff_name = find_sff_locator_by_ip(value['addr'])
             if sff_name:
-                get_agent_globals().set_my_sff_name(sff_name)
-                logger.info("Auto SFF name is: %s \n", get_agent_globals().get_my_sff_name())
+                agent_globals.set_my_sff_name(sff_name)
+                sff_name = agent_globals.get_my_sff_name()
+
+                logger.info("Auto SFF name is: %s \n", sff_name)
                 return 0
-    if not sff_name:
+    else:
         logger.error("Could not determine SFF name \n")
         return -1
 
 
-def main(argv):
+def main():
+    """Create a CLI parser for the SFC Agent and execute appropriate actions"""
+    #: default values
     global ODLIP
-
+    agent_port = 5000
+    odl_auto_sff = False
     ovs_local_sff_cp_ip = '0.0.0.0'
 
-    try:
-        logging.basicConfig(level=logging.DEBUG)
-        logger.setLevel(level=logging.INFO)
-        opt, args = getopt.getopt(argv, "hr",
-                                  ["help", "rest", "nfq-class", "auto-sff-name", "odl-get-sff", "odl-ip-port=",
-                                   "sff-name=", "agent-port=", "ovs-sff-cp-ip=", "sff-os="])
-    except getopt.GetoptError:
-        print("sfc_agent --help | --nfq-class | --rest | --ovs-sff-cp-ip | --odl-get-sff | --odl-ip-port | --sff-name" +
-              " | --agent-port | --sff-os (XE | OVS)")
-        sys.exit(2)
+    #: setup parser -----------------------------------------------------------
+    parser = argparse.ArgumentParser(description='SFC Agent',
+             usage=("\npython3.4 sfc_agent "
+                    "--rest "
+                    "--nfq-class "
+                    "--odl-get-sff "
+                    "--ovs-sff-cp-ip <local SFF IP dataplane address> "
+                    "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
+                    " --agent-port=<agent listening port>"
+                    "\n\nnote:\nroot privileges are required "
+                    "if `--nfq-class` flag is used"))
 
-    odl_get_sff = False
-    odl_auto_sff = False
-    agent_port = 5000
-    rest = False
-    nfq_class = False
-    for opt, arg in opt:
-        logger.debug(opt)
-        if opt == "--odl-get-sff":
-            odl_get_sff = True
-            continue
+    parser.add_argument('--odl-get-sff', action='store_true',
+                        help='Get SFF from ODL')
 
-        if opt == "--odl-ip-port":
-            ODLIP = arg
-            continue
+    parser.add_argument('--auto-sff-name', action='store_true',
+                        help='Automatically get SFF name')
 
-        if opt in ('-h', '--help'):
-            print(
-                "sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-cp-ip=<local SFF IP dataplane address>" +
-                "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>" "--agent-port=<agent listening port>")
+    parser.add_argument('--nfq-class', action='store_true',
+                        help='Flag to use NFQ Classifier')
+
+    parser.add_argument('-r', '--rest', action='store_true',
+                        help='Flag to use REST')
+
+    parser.add_argument('--sff-name',
+                        help='Set SFF name')
+
+    parser.add_argument('--odl-ip-port',
+                        help='Set ODL IP and port in form <IP>:<PORT>. '
+                             'Default is %s' % ODLIP)
+
+    parser.add_argument('--ovs-sff-cp-ip',
+                        help='Set local SFF Open vSwitch IP. '
+                             'Default is %s' % ovs_local_sff_cp_ip)
+
+    parser.add_argument('--sff-os', choices=['XE', 'OVS'],
+                        help='Set SFF switch OS')
+
+    parser.add_argument('--agent-port', type=int,
+                        help='Set SFC Agent port. Default is %s' % agent_port)
+
+    #: parse CMD arguments ----------------------------------------------------
+    args = parser.parse_args()
+
+    if args.odl_ip_port is not None:
+        ODLIP = args.odl_ip_port
+
+    if args.agent_port is not None:
+        agent_port = args.agent_port
+
+    if args.ovs_sff_cp_ip is not None:
+        ovs_local_sff_cp_ip = args.ovs_sff_cp_ip
+
+    if args.auto_sff_name:
+        odl_auto_sff = True
+        args.odl_get_sff = True
+
+    if args.sff_name is not None:
+        agent_globals.set_my_sff_name(args.sff_name)
+
+    if args.sff_os is not None:
+        sff_os = args.sff_os
+
+        agent_globals.set_sff_os(sff_os)
+        if sff_os not in agent_globals.sff_os_set:
+            logger.error(sff_os + ' is an unsupported SFF switch OS')
             sys.exit()
 
-        if opt in ('-r', '--rest'):
-            rest = True
+        if sff_os == "OVS":
+            ovs_cli.init_ovs()
 
-        if opt == "--auto-sff-name":
-            odl_get_sff = True
-            odl_auto_sff = True
-            continue
-
-        if opt == "--sff-name":
-            get_agent_globals().set_my_sff_name(arg)
-
-        if opt == "--ovs-sff-cp-ip":
-            ovs_local_sff_cp_ip = arg
-
-        if opt == "--nfq-class":
-            nfq_class = True
-
-        if opt == "--agent-port":
-            agent_port = int(arg)
-
-        if opt == "--sff-os":
-            local_sff_os = arg.upper()
-            get_agent_globals().set_sff_os(local_sff_os)
-            if local_sff_os not in get_agent_globals().sff_os_set:
-                logger.error(local_sff_os + ' is an unsupported SFF switch OS')
-                sys.exit()
-
-            if local_sff_os == "OVS":
-                ovs_cli.init_ovs()
-
-    if odl_get_sff:
+    #: execute actions --------------------------------------------------------
+    if args.odl_get_sff:
         get_sffs_from_odl(ODLIP)
 
     if odl_auto_sff:
         auto_sff_name()
 
-    if nfq_class:
+    if args.nfq_class:
         if sys.platform.startswith('linux'):
             start_nfq_classifier(True)
 
-    if rest:
-        app.run(host=ovs_local_sff_cp_ip, debug=False, port=agent_port, use_reloader=False)
-
+    if args.rest:
+        app.run(port=agent_port,
+                host=ovs_local_sff_cp_ip,
+                debug=False,
+                use_reloader=False)
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

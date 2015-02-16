@@ -189,7 +189,7 @@
             <artifactId>sfc-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>org.opendaylight.ovsdb</groupId>
             <artifactId>southbound-impl</artifactId>
             <version>${ovsdb.southbound.version}</version>
@@ -205,7 +205,7 @@
            <groupId>org.opendaylight.ovsdb</groupId>
            <artifactId>southbound-impl</artifactId>
            <version>${ovsdb.southbound.version}</version>
-        </dependency>-->
+        </dependency>
     </dependencies>
 
 </project>

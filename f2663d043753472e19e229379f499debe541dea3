@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_66340d93",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-02-17T14:03:52Z",
+      "side": 1,
+      "message": "this value should be one of the configured algorithm types",
+      "revId": "f2663d043753472e19e229379f499debe541dea3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_262a852c",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-02-17T14:03:52Z",
+      "side": 1,
+      "message": "should point to the service-function configuration",
+      "revId": "f2663d043753472e19e229379f499debe541dea3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_e6f81dc5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-02-17T14:03:52Z",
+      "side": 1,
+      "message": "who will call this method? you can implement here the addition  of the SF to the list inside the SFG",
+      "revId": "f2663d043753472e19e229379f499debe541dea3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_a6fe95ac",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-02-17T14:03:52Z",
+      "side": 1,
+      "message": "same as above",
+      "revId": "f2663d043753472e19e229379f499debe541dea3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_4608f1d9",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SimpleTestEntityBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-02-17T14:03:52Z",
+      "side": 1,
+      "message": "why did you removed the buildServiceFunctionForwarder function?",
+      "revId": "f2663d043753472e19e229379f499debe541dea3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

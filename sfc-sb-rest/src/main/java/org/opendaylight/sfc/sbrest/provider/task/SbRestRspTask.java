@@ -44,16 +44,21 @@ public class SbRestRspTask extends SbRestAbstractTask {
 
         this.restUriList = new ArrayList<>();
 
-        for (RenderedServicePathHop hop : hopList) {
-            ServiceFunctionForwarder sff =
-                    SfcProviderServiceForwarderAPI
-                            .readServiceFunctionForwarderExecutor(hop.getServiceFunctionForwarder());
-            if (sff != null && sff.getRestUri() != null) {
-                String restUri = sff.getRestUri().getValue() + RSP_REST_URI + obj.getName();
-                this.restUriList.add(restUri);
-                LOG.info("RSP will be send to REST URI {}", restUri);
+        if (hopList != null) {
+            for (RenderedServicePathHop hop : hopList) {
+                ServiceFunctionForwarder sff =
+                        SfcProviderServiceForwarderAPI
+                                .readServiceFunctionForwarderExecutor(hop.getServiceFunctionForwarder());
+                if (sff != null && sff.getRestUri() != null) {
+                    String restUri = sff.getRestUri().getValue() + RSP_REST_URI + obj.getName();
+                    this.restUriList.add(restUri);
+                    LOG.info("RSP will be send to REST URI {}", restUri);
+                }
             }
         }
-    }
 
+        if (this.restUriList != null && this.restUriList.isEmpty()) {
+            this.restUriList = null;
+        }
+    }
 }

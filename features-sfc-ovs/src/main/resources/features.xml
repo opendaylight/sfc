@@ -11,7 +11,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.controller/features-mdsal/1.2.0-SNAPSHOT/xml/features</repository>
-    <repository>mvn:org.opendaylight.ovsdb/southbound-features/1.1.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.sfc/features-sfc/0.1.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
     <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: OpenvSwitch '>

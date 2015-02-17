@@ -21,13 +21,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    </properties>
 
     <dependencies>
-<!--   <dependency>
+   <dependency>
        <groupId>org.opendaylight.ovsdb</groupId>
        <artifactId>southbound-impl</artifactId>
        <version>${ovsdb.southbound.version}</version>
        <classifier>config</classifier>
        <type>xml</type>
-   </dependency>-->
+   </dependency>
    <dependency>
        <groupId>org.opendaylight.ovsdb</groupId>
        <artifactId>southbound-api</artifactId>

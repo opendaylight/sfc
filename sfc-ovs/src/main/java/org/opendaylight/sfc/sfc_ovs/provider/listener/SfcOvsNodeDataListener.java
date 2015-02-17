@@ -19,11 +19,18 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -38,16 +45,16 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                     .child(Node.class)
                     .augmentation(OvsdbNodeAugmentation.class);*/
 
-/*    public static final InstanceIdentifier<Node>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
+    public static final InstanceIdentifier<Node>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
             InstanceIdentifier
                     .create(NetworkTopology.class)
                     .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                    .child(Node.class);*/
+                    .child(Node.class);
 
     public SfcOvsNodeDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
         setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SFP_ENTRY_IID);
+        setInstanceIdentifier(OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
         registerAsDataChangeListener();
     }
@@ -59,14 +66,14 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
         printTraceStart(LOG);
 
-/*        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
+       Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
+/*        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof OvsdbNodeAugmentation) {
                 OvsdbNodeAugmentation originalOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
                 LOG.debug("\nOriginal Rendered Service Path: {}", originalOvsdbNodeAugmentation.toString());
             }
-        }
+        }*/
 
         // Node CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
@@ -74,12 +81,13 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof Node) {
                 Node node = (Node) entry.getValue();
+                String nodeName = node.getNodeId().getValue();
                 LOG.debug("\nCreated OvsdbNodeAugmentation: {}", node.toString());
 
             }
         }
 
-       // NODE UPDATE
+/*       // NODE UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
             if ((entry.getValue() instanceof OvsdbNodeAugmentation)

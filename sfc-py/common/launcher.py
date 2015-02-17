@@ -12,7 +12,7 @@ __status__ = "alpha"
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 """
-TODO: edit this
+Manage service [and its' associated thread] starting and stopping
 """
 
 
@@ -20,9 +20,16 @@ import socket
 import logging
 import asyncio
 
+from threading import Thread
+from common.sfc_globals import sfc_globals
 from common.services import UDP, CUDP, find_service
 
 logger = logging.getLogger(__name__)
+
+#: constants
+# WE assume agent and thread and co-located
+SFF_UDP_IP = "127.0.0.1"
+DPCP = 'data_plane_control_port'
 
 
 def start_server(loop, addr, udpserver, message):
@@ -46,57 +53,59 @@ def start_server(loop, addr, udpserver, message):
     listen = loop.create_datagram_endpoint(lambda: udpserver, local_addr=addr)
     transport = loop.run_until_complete(listen)[0]
 
-    logger.info(message + ' ' + str(addr[1]))
+    if not message.endswith('...'):
+        message += ' ' + str(addr[1])
+
+    logger.info(message)
 
     return transport
 
 
 def start_service(service_name, service_ip, service_port, service_type,
-                  service_control_port, service_thread, service_start_message):
+                  service_threads, service_message):
     """
     Start a service.
 
-    The Python agent uses this function as the thread start whenever it wants
-    to create a service.
-
-    :param service_name: SF name
+    :param service_name: service name
     :type service_name: str
-    :param service_ip: SF IP address
+    :param service_ip: service IP address
     :type service_ip: str
-    :param service_port: SF port
+    :param service_port: service port
     :type service_port: int
-    :param service_type: SF type
+    :param service_type: service type
     :type service_type: str
-    :param service_control_port: SF control port
-    :type service_control_port: int
-    :param service_thread:
-    :type service_thread: `:class:threading.Thread`
-    :param service_start_message: what will be logged upon a service start
-    :type service_start_message: str
+    :param service_threads: locally running service threads
+    :type service_threads: dict
+    :param service_message: what will be logged upon a service start
+    :type service_message: str
 
     """
-    # TODO: is this even necessary?
-    udpserver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    logger.info('Starting %s service ...', service_type.upper())
+    service_threads[service_name] = {}
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     logging.basicConfig(level=logging.INFO)
 
     service_class = find_service(service_type)
-    logger.info('Starting %s service ...', service_type.upper())
-
     service = service_class(loop)
+
     udpserver_transport = start_server(loop,
                                        (service_ip, service_port),
                                        service,
-                                       service_start_message)
+                                       service_message)
+
+    control_port = sfc_globals.get_data_plane_control_port()
+    sfc_globals.set_data_plane_control_port(control_port + 1)
 
     udpserver_socket = udpserver_transport.get_extra_info('socket')
-    service_thread[service_name]['socket'] = udpserver_socket
+
+    service_threads[service_name]['socket'] = udpserver_socket
+    service_threads[service_name][DPCP] = control_port
 
     control_udp_server = find_service(CUDP)(loop)
     start_server(loop,
-                 (service_ip, service_control_port),
+                 (service_ip, control_port),
                  control_udp_server,
                  'Listening for Control messages on port:')
 
@@ -105,22 +114,118 @@ def start_service(service_name, service_ip, service_port, service_type,
     loop.close()
 
 
-def start_sf(sf_name, sf_ip, sf_port, sf_type, sf_control_port, sf_thread):
+def stop_service(service_name, service_threads):
     """
-    Start a Service Function
+    Stop service thread.
+
+    :param service_name: what should be stopped - SF or SFF name
+    :type service_name: str
+    :param service_threads: locally running threads
+    :type service_threads: dict
+
+    """
+    # Yes, we will come up with a better protocol in the future ...
+    message = "Kill thread".encode(encoding="UTF-8")
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(message,
+                (SFF_UDP_IP,
+                 service_threads[service_name][DPCP]))
+
+    thread = service_threads[service_name]['thread']
+    if thread.is_alive():
+        thread.join()
+
+    if not thread.is_alive():
+        logger.info('Service %s stopped', service_name)
+        # We need to close the socket used by thread here as well or we get an
+        # address reuse error. This is probably some bug in asyncio since it
+        # should be enough for the SFF thread to close the socket.
+        service_threads[service_name]['socket'].close()
+        service_threads.pop(service_name, None)
+
+
+def _check_thread_state(thread, service_name, local_threads):
+    """
+    Check thread state and conduct appropriate action and log
+
+    :param thread: service thread
+    :type thread: `class:threading.Thread`
+    :param service_name: service name
+    :type service_name: str
+    :param local_threads: locally running service threads
+    :type local_threads: dict
+
+    """
+    if thread.is_alive():
+        logger.info("Thread %s started successfully", service_name)
+        local_threads[service_name]['thread'] = thread
+    else:
+        logger.error("Failed to start thread %s", service_name)
+        local_threads.pop(service_name, None)
+
+
+def start_sf(sf_name, sf_ip, sf_port, sf_type):
+    """
+    Start a Service Function thread
+
+    :return `class:threading.Thread`
+
     """
     logger.info('Starting Service Function')
-    start_service(sf_name, sf_ip, sf_port, sf_type, sf_control_port,
-                  sf_thread, 'Starting new Service Function ...')
+
+    local_sf_threads = sfc_globals.get_sf_threads()
+    sf_thread = Thread(target=start_service,
+                       args=(sf_name, sf_ip, sf_port, sf_type,
+                             local_sf_threads,
+                             'Starting new Service Function ...'))
+
+    sf_thread.start()
+    _check_thread_state(sf_thread, sf_name, local_sf_threads)
+
+    return sf_thread
 
 
-def start_sff(sff_name, sff_ip, sff_port, sff_control_port, sff_thread):
+def stop_sf(sf_name):
     """
-    Start a Service Function Forwarder
+    Stop a Service Function thread
     """
-    logger.info('Starting Service Function Forwarder')
-    start_service(sff_name, sff_ip, sff_port, UDP, sff_control_port,
-                  sff_thread, 'Listening for NSH packets on port:')
+    logger.info("Stopping Service Function: %s", sf_name)
+
+    local_sf_threads = sfc_globals.get_sf_threads()
+    stop_service(sf_name, local_sf_threads)
+
+
+def start_sff(sff_name, sff_ip, sff_port):
+    """
+    Start a Service Function Forwarder thread
+
+    :return `class:threading.Thread`
+
+    """
+    logger.info('Starting Service Function Forwarder: %s"', sff_name)
+
+    local_sff_threads = sfc_globals.get_sff_threads()
+    sff_thread = Thread(target=start_service,
+                        args=(sff_name, sff_ip, sff_port, UDP,
+                              local_sff_threads,
+                              'Listening for NSH packets on port:'))
+
+    sff_thread.start()
+    _check_thread_state(sff_thread, sff_name, local_sff_threads)
+
+    return sff_thread
+
+
+def stop_sff(sff_name):
+    """
+    Stop a Service Function Forwarder thread
+    """
+    logger.info("Stopping Service Function Forwarder: %s", sff_name)
+
+    local_sff_threads = sfc_globals.get_sff_threads()
+    stop_service(sff_name, local_sff_threads)
+
 
 # This does not work in MacOS when SFF/SF are different python
 # applications on the same machine

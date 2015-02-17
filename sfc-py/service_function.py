@@ -17,8 +17,8 @@ import argparse
 import asyncio
 import sys
 import socket
-from nsh_decode import *
-from nsh_service_index import *
+from nsh.decode import *
+from nsh.service_index import *
 
 try:
     import signal

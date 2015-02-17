@@ -15,7 +15,7 @@ __status__ = "alpha"
 
 import os
 import paramiko
-from sff_globals import *
+from common.sfc_globals import sfc_globals
 
 
 def process_received_service_path(spi, rsp):
@@ -89,8 +89,8 @@ def ssh_execute_cli(cli, sff_locator):
 
 def process_xe_cli(data_plane_path):
     print('\nXE module received data plane path: \n', data_plane_path)
-    local_sff_topo = get_sff_topo()
-    local_my_sff_name = get_my_sff_name()
+    local_sff_topo = sfc_globals.get_sff_topo()
+    local_my_sff_name = sfc_globals.get_my_sff_name()
     sff_locator = local_sff_topo[local_my_sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
 
     for key in data_plane_path:

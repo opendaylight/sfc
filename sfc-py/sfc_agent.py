@@ -11,48 +11,62 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-""" SFC Agent Server. This Server should be co-located with the python SFF data
-    plane implementation (sff_thread.py)"""
+
+"""
+SFC Agent Server. This Server should be co-located with the python SFF data
+plane implementation (sff_thread.py)
+"""
 
 
 import sys
 import json
-import socket
-import getopt
+import flask
 import logging
 import argparse
 import requests
 import netifaces
-import collections
-import multiprocessing
 
-#TODO: fix this kind of imports
-from flask import *
 from pprint import pprint
-from threading import Thread
 
 
 import xe_cli
 import ovs_cli
 
-#TODO: fix this kind of imports
-from sff_globals import *
-from common.launcher import start_sff, start_sf
+import common.sfc_globals
+from common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 if sys.platform.startswith('linux'):
     #TODO: fix this kind of imports
     from nfq_class_thread import *
 
 
-# IP address of associated SFF thread.
-# WE assume agent and thread and co-located
-SFF_UDP_IP = "127.0.0.1"
-app = Flask(__name__)
+app = flask.Flask(__name__)
 logger = logging.getLogger(__name__)
+sfc_globals = common.sfc_globals.sfc_globals
 
 
-def tree():
-    return collections.defaultdict(tree)
+def _sff_present(sff_name, local_sff_topo):
+    """
+    Check if SFF data plain locator is present in the local SFF topology
+
+    :param sff_name: SFF name
+    :type sff_name: str
+    :param local_sff_topo: local SFF topology
+    :type local_sff_topo: dict
+
+    :return bool
+
+    """
+    sff_present = True
+
+    if sff_name not in local_sff_topo.keys():
+        if get_sff_from_odl(common.sfc_globals.ODLIP, sff_name) != 0:
+            logger.error("Failed to find data plane locator for SFF: %s",
+                         sff_name)
+
+            sff_present = False
+
+    return sff_present
 
 
 def find_sf_locator(sf_name, sff_name):
@@ -61,199 +75,217 @@ def find_sf_locator(sf_name, sff_name):
     If found, return the corresponding data plane locator.
 
     :param sf_name: SF name
-    :param  sff_name: SFF name
+    :type sf_name: str
+    :param sff_name: SFF name
+    :type sff_name: str
 
-    :return SF data plane locator
+    :return dict
 
     """
-
-    local_sff_topo = get_agent_globals().get_sff_topo()
     sf_locator = {}
-    if sff_name not in local_sff_topo.keys():
-        if get_sff_from_odl(ODLIP, sff_name) != 0:
-            logger.error("Failed to find data plane locator for SF: %s", sf_name)
-            return sf_locator
-    service_dictionary = local_sff_topo[sff_name]['service-function-dictionary']
-    for service_function in service_dictionary:
+    local_sff_topo = sfc_globals.get_sff_topo()
+
+    if not _sff_present(sff_name, local_sff_topo):
+        return sf_locator
+
+    service_dict = local_sff_topo[sff_name]['service-function-dictionary']
+    for service_function in service_dict:
         if sf_name == service_function['name']:
-            sf_locator['ip'] = service_function['sff-sf-data-plane-locator']['ip']
-            sf_locator['port'] = service_function['sff-sf-data-plane-locator']['port']
+            _sf_locator = service_function['sff-sf-data-plane-locator']
+
+            sf_locator['ip'] = _sf_locator['ip']
+            sf_locator['port'] = _sf_locator['port']
+
             return sf_locator
 
     if not sf_locator:
         logger.error("Failed to find data plane locator for SF: %s", sf_name)
+
     return sf_locator
-
-
-def find_sff_locator_by_ip(addr):
-    """
-    For a given IP addr iterate over all SFFs looking for which one has a the
-    same data plane locator IP
-
-    :param addr: IP address
-    :type addr: str
-
-    :return SFF name or None
-
-    """
-    sff_name = None
-
-    local_sff_topo = agent_globals.get_sff_topo()
-    for sff_name, sff_value in local_sff_topo.items():
-        for locator_value in sff_value['sff-data-plane-locator']:
-            if locator_value['data-plane-locator']['ip'] == addr:
-                return sff_name
-
-    return None
 
 
 def find_sff_locator(sff_name):
     """
-    For a given SFF name, look into local SFF topology for a match
-    and returns the corresponding data plane locator. If SFF is not known
-    tries to retrieve it from ODL
-    :param sff_name:
-    :return: SFF data plane locator
+    For a given SFF name, look into local SFF topology for a match and returns
+    the corresponding data plane locator. If SFF is not known tries to retrieve
+    it from ODL.
+
+    :param sff_name: SFF name
+    :type sff_name: str
+
+    :return dict
+
     """
-
-    local_sff_topo = get_agent_globals().get_sff_topo()
     sff_locator = {}
-    if sff_name not in local_sff_topo.keys():
-        if get_sff_from_odl(ODLIP, sff_name) != 0:
-            logger.error("Failed to find SFF data plane locator for SFF: %s", sff_name)
-            return sff_locator
+    local_sff_topo = sfc_globals.get_sff_topo()
 
-    sff_locator['ip'] = local_sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
-    sff_locator['port'] = local_sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['port']
+    if not _sff_present(sff_name, local_sff_topo):
+        return sff_locator
+
+    _sff_locator = local_sff_topo[sff_name]['sff-data-plane-locator'][0]
+    sff_locator['ip'] = _sff_locator['data-plane-locator']['ip']
+    sff_locator['port'] = _sff_locator['data-plane-locator']['port']
+
     return sff_locator
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['GET'])
-def get_paths():
-    return jsonify(get_agent_globals().get_path())
+def find_sff_locator_by_ip(addr):
+    """
+    For a given IP address iterate over all SFFs looking for which one has a
+    the same data plane locator IP
 
+    :param addr: IP address
+    :type addr: str
 
-@app.route('/operational/data-plane-path:data-plane-paths/', methods=['GET'])
-def get_data_plane_paths():
-    return jsonify(get_agent_globals().get_data_plane_path())
+    :return str or None
 
+    """
+    local_sff_topo = sfc_globals.get_sff_topo()
 
-@app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['GET'])
-def get_sffs():
-    return jsonify(get_agent_globals().get_sff_topo())
+    for sff_name, sff_value in local_sff_topo.items():
+        for locator_value in sff_value['sff-data-plane-locator']:
+            if locator_value['data-plane-locator']['ip'] != addr:
+                continue
 
-
-@app.route('/operational/rendered-service-path:rendered-service-paths/', methods=['PUT', 'POST'])
-def create_paths():
-    if not request.json:
-        abort(400)
+            return sff_name
     else:
-        path_json = {
-            'rendered-service-paths': request.json['rendered-service-paths']
-        }
-
-        # reset path data
-        get_agent_globals().reset_data_plane_path()
-        local_path = get_agent_globals().get_path()
-
-        for path_item in path_json['rendered-service-paths']['rendered-service-path']:
-            local_path[path_item['name']] = path_item
-            # rebuild path data
-            build_data_plane_service_path(path_item)
-
-    return jsonify({'path': path}), 201
+        return None
 
 
 def build_data_plane_service_path(service_path):
     """
     Builds a dictionary of the local attached Service Functions
-    :param service_path: A single Service Function Path
-    :return:
-    """
 
-    local_data_plane_path = get_agent_globals().get_data_plane_path()
+    :param service_path: a single Service Function Path
+    :type service_path:
+
+    :return int
+
+    """
+    sp_id = service_path['path-id']
+    local_data_plane_path = sfc_globals.get_data_plane_path()
 
     for service_hop in service_path['rendered-service-path-hop']:
+        sh_index = service_hop['service-index']
+        sh_sff = service_hop['service-function-forwarder']
 
-        if service_hop['service-function-forwarder'] == get_agent_globals().get_my_sff_name():
-            if service_path['path-id'] not in local_data_plane_path.keys():
-                local_data_plane_path[service_path['path-id']] = {}
+        if sh_sff == sfc_globals.get_my_sff_name():
+            if sp_id not in local_data_plane_path.keys():
+                local_data_plane_path[sp_id] = {}
+
             sf_locator = find_sf_locator(service_hop['service-function-name'],
-                                         service_hop['service-function-forwarder'])
+                                         sh_sff)
+
             if sf_locator:
-                local_data_plane_path[service_path['path-id']][service_hop['service_index']] = sf_locator
+                local_data_plane_path[sp_id][sh_index] = sf_locator
             else:
-                logger.error("Failed to build rendered service path: %s", service_path['name'])
+                logger.error("Failed to build rendered service path: %s",
+                             service_path['name'])
                 return -1
         else:
             # If SF resides in another SFF, the locator is just the data plane
             # locator of that SFF.
-            if service_path['path-id'] not in local_data_plane_path.keys():
-                local_data_plane_path[service_path['path-id']] = {}
-            sff_locator = find_sff_locator(service_hop['service-function-forwarder'])
+            if sp_id not in local_data_plane_path.keys():
+                local_data_plane_path[sp_id] = {}
+
+            sff_locator = find_sff_locator(sh_sff)
             if sff_locator:
-                local_data_plane_path[service_path['path-id']][service_hop['service_index']] = sff_locator
+                local_data_plane_path[sp_id][sh_index] = sff_locator
             else:
-                logger.error("Failed to build rendered service path: %s", service_path['name'])
+                logger.error("Failed to build rendered service path: %s",
+                             service_path['name'])
                 return -1
 
     return 0
 
 
-@app.route('/operational/service-function-forwarder:service-function-forwarders-state/threads', methods=['GET'])
-def get_sffs_threads():
-    local_sff_threads = get_sff_threads()
-    serialized_threads = {}
-    for key, value in local_sff_threads.items():
-        if value['thread'].is_alive():
-            serialized_threads[key] = {}
-            serialized_threads[key]['socket'] = str(value['socket'])
-            serialized_threads[key]['thread'] = str(value['thread'])
-    return jsonify(serialized_threads)
+@app.errorhandler(404)
+def page_not_found(e):
+    return 'Not found', 404
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>',
+@app.route('/config/ietf-acl:access-lists/access-list/<aclname>',
            methods=['PUT', 'POST'])
-def create_path(sfpname):
-    # global path
-    local_path = get_agent_globals().get_path()
-    local_sff_os = get_agent_globals().get_sff_os()
-    if not request.json:
-        abort(400)
-    else:
+def apply_one_acl(aclname):
+    if sys.platform.startswith('linux'):
+        nfq_class_manager = get_nfq_class_manager_ref()
+        try:
+            logger.debug("apply_one_acl: nfq_class_manager=%s",
+                         nfq_class_manager)
 
-        if (not get_agent_globals().get_my_sff_name()) and (auto_sff_name()):
-            logger.fatal("Could not determine my SFF name \n")
-            sys.exit(1)
-        # print json.dumps(sfpjson)
-        # sfpj_name = sfpjson["service-function-path"][0]['name']
-        local_path[sfpname] = request.get_json()["rendered-service-path"][0]
-        logger.info("Building Service Path for path: %s", sfpname)
-        if not build_data_plane_service_path(local_path[sfpname]):
-            # Testing XE cli processing module
-            if local_sff_os == 'XE':
-                logger.info("Provisioning %s SFF", local_sff_os)
-                xe_cli.process_xe_cli(get_agent_globals().get_data_plane_path())
-            elif local_sff_os == 'OVS':
-                logger.info("Provisioning %s SFF", local_sff_os)
-                # process_ovs_cli(data_plane_path)
-                ovs_cli.process_ovs_sff__cli(get_agent_globals().get_data_plane_path())
-            elif local_sff_os == "ODL":
-                logger.info("Provisioning %s SFF", local_sff_os)
+            # check nfq
+            if not nfq_class_manager:
+                msg = "NFQ not running. Received acl data has been ignored"
+                return msg, 500
+
+            if not flask.request.json:
+                flask.abort(400)
+
+            acl_item = flask.request.get_json()["access-list"][0]
+            result = nfq_class_manager.compile_one_acl(acl_item)
+
+            if len(result) > 0:
+                return "ACL compiled with errors. " + str(result), 201
             else:
-                logger.error("Unknown SFF OS: %s", local_sff_os)  # should never get here
-                # json_string = json.dumps(data_plane_path)
-            return jsonify(local_path), 201
+                return "ACL compiled", 201
+
+        except:
+            logger.exception('apply_one_acl: exception')
+            raise
+    else:
+        return "ACLs only supported on Linux Platforms", 403
+
+
+@app.route('/operational/rendered-service-path:rendered-service-paths/'
+           'rendered-service-path/<sfpname>', methods=['PUT', 'POST'])
+def create_path(sfpname):
+    if not flask.request.json:
+        flask.abort(400)
+
+    local_path = sfc_globals.get_path()
+    local_sff_os = sfc_globals.get_sff_os()
+
+    if (not sfc_globals.get_my_sff_name()) and auto_sff_name():
+        logger.fatal("Could not determine my SFF name \n")
+        sys.exit(1)
+
+    # print json.dumps(sfpjson)
+    # sfpj_name = sfpjson["service-function-path"][0]['name']
+
+    local_path[sfpname] = flask.request.get_json()["rendered-service-path"][0]
+    logger.info("Building Service Path for path: %s", sfpname)
+
+    if not build_data_plane_service_path(local_path[sfpname]):
+        # Testing XE cli processing module
+        if local_sff_os == 'XE':
+            logger.info("Provisioning %s SFF", local_sff_os)
+            xe_cli.process_xe_cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == 'OVS':
+            logger.info("Provisioning %s SFF", local_sff_os)
+            # process_ovs_cli(data_plane_path)
+            ovs_cli.process_ovs_sff__cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == "ODL":
+            logger.info("Provisioning %s SFF", local_sff_os)
+
+        # should never get here
         else:
-            msg = "Could not build service path: {}".format(sfpname)
-            return msg, 400
+            logger.error("Unknown SFF OS: %s", local_sff_os)
+            # json_string = json.dumps(data_plane_path)
+
+        return flask.jsonify(local_path), 201
+    else:
+        msg = "Could not build service path: {}".format(sfpname)
+        return msg, 400
 
 
-@app.route('/operational/rendered-service-path:rendered-service-paths/rendered-service-path/<sfpname>',
-           methods=['DELETE'])
+@app.route('/operational/rendered-service-path:rendered-service-paths/'
+           'rendered-service-path/<sfpname>', methods=['DELETE'])
 def delete_path(sfpname):
-    local_data_plane_path = get_agent_globals().get_data_plane_path()
-    local_path = get_agent_globals().get_path()
+    local_path = sfc_globals.get_path()
+    local_data_plane_path = sfc_globals.get_data_plane_path()
+
     try:
         sfp_id = local_path[sfpname]['path-id']
         local_data_plane_path.pop(sfp_id, None)
@@ -262,77 +294,102 @@ def delete_path(sfpname):
         # remove nfq classifier for this path
         if sys.platform.startswith('linux'):
             nfq_class_manager = get_nfq_class_manager_ref()
+
             if nfq_class_manager:
                 nfq_class_manager.destroy_packet_forwarder(sfp_id)
 
-        json_string = json.dumps(local_data_plane_path)
+        # TODO: is this really necessary?
+        json.dumps(local_data_plane_path)
+
     except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
         logger.warning(msg)
         return msg, 404
+
     except:
         logger.warning("Unexpected exception, re-raising it")
         raise
+
     return '', 204
 
 
-@app.route('/config/service-function:service-functions/service-function/<sfname>',
+@app.route('/operational/rendered-service-path:rendered-service-paths/',
+           methods=['GET'])
+def get_paths():
+    return flask.jsonify(sfc_globals.get_path())
+
+
+@app.route('/operational/rendered-service-path:rendered-service-paths/',
            methods=['PUT', 'POST'])
+def create_paths():
+    if not flask.request.json:
+        flask.abort(400)
+
+    # reset path data
+    sfc_globals.reset_data_plane_path()
+    local_path = sfc_globals.get_path()
+
+    rsps = flask.request.json['rendered-service-paths']
+    for path_item in rsps:
+        local_path[path_item['name']] = path_item
+        # rebuild path data
+        build_data_plane_service_path(path_item)
+
+    return flask.jsonify({'path': sfc_globals.path}), 201
+
+
+@app.route('/operational/data-plane-path:data-plane-paths/',
+           methods=['GET'])
+def get_data_plane_paths():
+    return flask.jsonify(sfc_globals.get_data_plane_path())
+
+
+@app.route('/config/service-function:service-functions/service-function/'
+           '<sfname>', methods=['PUT', 'POST'])
 def create_sf(sfname):
     logger.info("Received request for SF creation: %s", sfname)
-    local_sf_topo = get_agent_globals().get_sf_topo()
-    local_sf_threads = get_agent_globals().get_sf_threads()
-    control_port = get_agent_globals().get_data_plane_control_port()
 
-    if not request.json:
-        abort(400)
-    else:
-        local_sf_topo[sfname] = request.get_json()['service-function'][0]
-        data_plane_locator_list = local_sf_topo[sfname]['sf-data-plane-locator']
-        for i, data_plane_locator in enumerate(data_plane_locator_list):
-            if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
-                sf_port = data_plane_locator['port']
-                sf_prefix, sf_type = (local_sf_topo[sfname]['type']).split(':')
-                local_sf_threads[sfname] = {}
+    if not flask.request.json:
+        flask.abort(400)
 
-                # TODO: We need more checks to make sure IP in locator actually corresponds to one
-                # TODO: of the existing interfaces in the system
-                sf_thread = Thread(target=start_sf,
-                                   args=(sfname, "0.0.0.0", sf_port, sf_type, control_port, local_sf_threads))
-                sf_thread.start()
+    local_sf_topo = sfc_globals.get_sf_topo()
+    local_sf_topo[sfname] = flask.request.get_json()['service-function'][0]
+    data_plane_locator_list = local_sf_topo[sfname]['sf-data-plane-locator']
 
-                if sf_thread.is_alive():
+    for data_plane_locator in data_plane_locator_list:
+        if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
+            sf_port = data_plane_locator['port']
+            _, sf_type = (local_sf_topo[sfname]['type']).split(':')
 
-                    local_sf_threads[sfname]['thread'] = sf_thread
-                    local_sf_threads[sfname]['data_plane_control_port'] = control_port
-                    control_port += 1
-                    get_agent_globals().set_data_plane_control_port(control_port)
-                    logger.info("SF thread %s start successfully", sfname)
-                else:
-                    local_sf_threads.pop(sfname, None)
-                    logger.error("Failed to start SF thread %s", sfname)
+            # TODO: We need more checks to make sure IP in locator actually
+            # corresponds to one of the existing interfaces in the system
+            start_sf(sfname, "0.0.0.0", sf_port, sf_type)
 
-    return jsonify({'sf': local_sf_topo[sfname]}), 201
+    return flask.jsonify({'sf': local_sf_topo[sfname]}), 201
 
 
-@app.route('/config/service-function:service-functions/service-function/<sfname>',
-           methods=['DELETE'])
+@app.route('/config/service-function:service-functions/service-function/'
+           '<sfname>', methods=['DELETE'])
 def delete_sf(sfname):
     logger.info("Received request for SF deletion: %s", sfname)
-    local_sf_topo = get_agent_globals().get_sf_threads()
-    local_sf_threads = get_agent_globals().get_sf_threads()
+    local_sf_topo = sfc_globals.get_sf_threads()
+    local_sf_threads = sfc_globals.get_sf_threads()
 
     try:
         if sfname in local_sf_threads.keys():
-            kill_sf_thread(sfname)
+            stop_sf(sfname)
+
         local_sf_topo.pop(sfname, None)
+
     except KeyError:
         msg = "SF name {} not found, message".format(sfname)
         logger.warning(msg)
         return msg, 404
+
     except:
         logger.warning("Unexpected exception, re-raising it")
         raise
+
     return '', 204
 
 
@@ -349,15 +406,15 @@ def create_sff(sffname):
     :type sffname: str
 
     """
-    if not request.json:
-        abort(400)
+    if not flask.request.json:
+        flask.abort(400)
 
-    local_sff_threads = get_sff_threads()
+    local_sff_threads = sfc_globals.get_sff_threads()
     if sffname in local_sff_threads.keys():
-        kill_sff_thread(sffname)
+        stop_sff(sffname)
 
-    r_json = request.get_json()
-    local_sff_topo = agent_globals.get_sff_topo()
+    r_json = flask.request.get_json()
+    local_sff_topo = sfc_globals.get_sff_topo()
 
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
     sff_port = (local_sff_topo[sffname]['sff-data-plane-locator']
@@ -365,165 +422,93 @@ def create_sff(sffname):
                                        ['data-plane-locator']
                                        ['port'])
 
-    control_port = agent_globals.get_data_plane_control_port()
-    sff_thread = Thread(target=start_sff,
-                        args=(sffname, "0.0.0.0",
-                              sff_port, control_port, local_sff_threads))
+    start_sff(sffname, "0.0.0.0", sff_port)
 
-    local_sff_threads[sffname] = {}
-    local_sff_threads[sffname]['thread'] = sff_thread
-    local_sff_threads[sffname]['data_plane_control_port'] = control_port
-
-    sff_thread.start()
-    if sff_thread.is_alive():
-        logger.info("SFF thread %s start successfully", sffname)
-    else:
-        logger.error("Failed to start SFF thread %s", sffname)
-
-    control_port += 1
-    agent_globals.set_data_plane_control_port(control_port)
-
-    return jsonify({'sff': agent_globals.get_sff_topo()}), 201
+    return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201
 
 
-def kill_sff_thread(sffname):
-    """
-    This function kills a SFF thread
-    :param sffname:
-    :return:
-    """
-
-    local_sff_threads = get_sff_threads()
-    logger.info("Killing thread for SFF: %s", sffname)
-    # Yes, we will come up with a better protocol in the future....
-    message = "Kill thread".encode(encoding="UTF-8")
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP, local_sff_threads[sffname]['data_plane_control_port']))
-    if local_sff_threads[sffname]['thread'].is_alive():
-        local_sff_threads[sffname]['thread'].join()
-    if not local_sff_threads[sffname]['thread'].is_alive():
-        logger.info("Thread for SFF %s is dead", sffname)
-        # We need to close the socket used by thread here as well or we get an address reuse error. This is probably
-        # some bug in asyncio since it should be enough for the SFF thread to close the socket.
-        local_sff_threads[sffname]['socket'].close()
-        local_sff_threads.pop(sffname, None)
-        # udpserver_socket.close()
-
-
-def kill_sf_thread(sfname):
-    """
-    This function kills a SF thread
-    :param sffname:
-    :return:
-    """
-
-    local_sf_threads = get_agent_globals().get_sf_threads()
-    logger.info("Killing thread for SF: %s", sfname)
-    # Yes, we will come up with a better protocol in the future....
-    message = "Kill thread".encode(encoding="UTF-8")
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message, (SFF_UDP_IP, local_sf_threads[sfname]['data_plane_control_port']))
-    if local_sf_threads[sfname]['thread'].is_alive():
-        local_sf_threads[sfname]['thread'].join()
-    if not local_sf_threads[sfname]['thread'].is_alive():
-        logger.info("Thread for SF %s is dead", sfname)
-        # We need to close the socket used by thread here as well or we get an address reuse error. This is probably
-        # some bug in asyncio since it should be enough for the SFF thread to close the socket.
-        local_sf_threads[sfname]['socket'].close()
-        local_sf_threads.pop(sfname, None)
-        # udpserver_socket.close()
-
-
-@app.route('/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/<sffname>',
-           methods=['DELETE'])
+@app.route('/config/service-function-forwarder:service-function-forwarders/'
+           'service-function-forwarder/<sffname>', methods=['DELETE'])
 def delete_sff(sffname):
     """
-    Deletes SFF from topology, kills associated thread  and if necessary remove all SFPs that depend on it
-    :param sffname: SFF name
-    :return:
-    """
+    Deletes SFF from topology, kills associated thread  and if necessary remove
+    all SFPs that depend on it
 
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    local_sff_threads = get_sff_threads()
+    :param sffname: SFF name
+    :type sffname: str
+
+    """
+    local_sff_topo = sfc_globals.get_sff_topo()
+    local_sff_threads = sfc_globals.get_sff_threads()
 
     try:
         if sffname in local_sff_threads.keys():
-            kill_sff_thread(sffname)
+            stop_sff(sffname)
+
         local_sff_topo.pop(sffname, None)
-        if sffname == get_agent_globals().get_my_sff_name():
-            reset_path()
-            get_agent_globals().reset_data_plane_path()
+        if sffname == sfc_globals.get_my_sff_name():
+            sfc_globals.reset_path()
+            sfc_globals.reset_data_plane_path()
+
     except KeyError:
         msg = "SFF name {} not found, message".format(sffname)
         logger.warning(msg)
         return msg, 404
+
     except:
         logger.warning("Unexpected exception, re-raising it")
         raise
+
     return '', 204
 
 
-@app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['PUT', 'POST'])
+@app.route('/config/service-function-forwarder:service-function-forwarders/',
+           methods=['GET'])
+def get_sffs():
+    return flask.jsonify(sfc_globals.get_sff_topo())
+
+
+@app.route('/operational/service-function-forwarder:'
+           'service-function-forwarders-state/threads', methods=['GET'])
+def get_sffs_threads():
+    serialized_threads = {}
+    local_sff_threads = sfc_globals.get_sff_threads()
+
+    for key, value in local_sff_threads.items():
+        if value['thread'].is_alive():
+            serialized_threads[key] = {}
+            serialized_threads[key]['socket'] = str(value['socket'])
+            serialized_threads[key]['thread'] = str(value['thread'])
+
+    return flask.jsonify(serialized_threads)
+
+
+@app.route('/config/service-function-forwarder:service-function-forwarders/',
+           methods=['PUT', 'POST'])
 def create_sffs():
-    local_sff_topo = get_agent_globals().get_sff_topo()
-    if not request.json:
-        abort(400)
-    else:
-        local_sff_topo = {
-            'service-function-forwarders': request.json['service-function-forwarders']
-        }
-    return jsonify({'sff': local_sff_topo}), 201
+    if not flask.request.json:
+        flask.abort(400)
+
+    sffs = 'service-function-forwarders'
+    local_sff_topo = {
+        sffs: flask.request.json[sffs]
+    }
+
+    return flask.jsonify({'sff': local_sff_topo}), 201
 
 
-@app.route('/config/service-function-forwarder:service-function-forwarders/', methods=['DELETE'])
+@app.route('/config/service-function-forwarder:service-function-forwarders/',
+           methods=['DELETE'])
 def delete_sffs():
     """
     Delete all SFFs, SFPs, RSPs
-    :return:
     """
-
     # We always use accessors
-    get_agent_globals().reset_sff_topo()
-    reset_path()
-    get_agent_globals().reset_data_plane_path()
-    return jsonify({'sff': get_agent_globals().get_sff_topo()}), 201
+    sfc_globals.reset_sff_topo()
+    sfc_globals.reset_path()
+    sfc_globals.reset_data_plane_path()
 
-
-@app.route('/config/ietf-acl:access-lists/access-list/<aclname>', methods=['PUT', 'POST'])
-def apply_one_acl(aclname):
-    if sys.platform.startswith('linux'):
-        nfq_class_manager = get_nfq_class_manager_ref()
-        try:
-            logger.debug("apply_one_acl: nfq_class_manager=%s", nfq_class_manager)
-
-            # check nfq
-            if not nfq_class_manager:
-                return "NFQ not running. Received acl data has been ignored", 500
-
-            if not request.json:
-                abort(400)
-            else:
-                acl_item = request.get_json()["access-list"][0]
-
-                result = nfq_class_manager.compile_one_acl(acl_item)
-
-                if len(result) > 0:
-                    return "Acl compiled with errors. " + str(result), 201
-                else:
-                    return "Acl compiled", 201
-
-        except:
-            logger.exception('apply_one_acl: exception')
-            raise
-    else:
-        return "ACLs only supported on Linux Platforms", 403
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
+    return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201
 
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
@@ -533,26 +518,27 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
 
     """
     try:
-        print("Getting SFF information from ODL... \n")
-        odl_dataplane_url = SFF_SF_DATA_PLANE_LOCATOR_URL.format(odl_ip_port,
-                                                                 sff_name,
-                                                                 sf_name)
+        logger.info("Getting SFF information from ODL ...")
+        url = common.sfc_globals.SFF_SF_DATA_PLANE_LOCATOR_URL
+        odl_dataplane_url = url.format(odl_ip_port, sff_name, sf_name)
 
         s = requests.Session()
-        r = s.get(odl_dataplane_url, auth=(USERNAME, PASSWORD), stream=False)
+        r = s.get(odl_dataplane_url, auth=(common.sfc_globals.USERNAME,
+                                           common.sfc_globals.PASSWORD),
+                  stream=False)
     except:
-        print('Can\'t get SFF information from ODL')
+        logger.exception('Can\'t get SFF information from ODL')
         return
 
     if r.ok:
         r_json = r.json()
         sff_json = r_json['service-function-forwarders']
 
-        local_sff_topo = agent_globals.get_sff_topo()
+        local_sff_topo = sfc_globals.get_sff_topo()
         for sff in sff_json['service-function-forwarder']:
             local_sff_topo[sff['name']] = sff
     else:
-        print("=>Failed to GET SFF from ODL \n")
+        logger.warning("=>Failed to GET SFF from ODL \n")
 
 
 def get_sffs_from_odl(odl_ip_port):
@@ -567,27 +553,30 @@ def get_sffs_from_odl(odl_ip_port):
 
     """
     try:
-        print("Getting SFFs configured in ODL... \n")
-        odl_sff_url = SFF_PARAMETER_URL.format(odl_ip_port)
+        logger.info("Getting SFFs configured in ODL ...")
+        url = common.sfc_globals.SFF_PARAMETER_URL
+        odl_sff_url = url.format(odl_ip_port)
 
         s = requests.Session()
-        r = s.get(odl_sff_url, auth=(USERNAME, PASSWORD), stream=False)
+        r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
+                                     common.sfc_globals.PASSWORD),
+                  stream=False)
     except:
-        print('Can\'t get SFFs from ODL; HINT: is ODL up and running?')
+        logger.exception('Can\'t get SFFs from ODL')
         return
 
     if r.ok:
         r_json = r.json()
         sff_json = r_json['service-function-forwarders']
 
-        agent_globals.reset_sff_topo()
-        local_sff_topo = agent_globals.get_sff_topo()
+        sfc_globals.reset_sff_topo()
+        local_sff_topo = sfc_globals.get_sff_topo()
         for sff in sff_json['service-function-forwarder']:
             local_sff_topo[sff['name']] = sff
     else:
-        print("=>Failed to GET SFFs from ODL \n")
+        logger.warning("=>Failed to GET SFFs from ODL \n")
 
-    l_topo = agent_globals.get_sff_topo()
+    l_topo = sfc_globals.get_sff_topo()
     if l_topo:
         pprint(l_topo)
 
@@ -606,23 +595,26 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
     """
     try:
-        print('Contacting ODL about information for SFF: %s' % sff_name)
-        odl_sff_url = SFF_NAME_PARAMETER_URL.format(odl_ip_port, sff_name)
+        logger.info('Contacting ODL about information for SFF: %s' % sff_name)
+        url = common.sfc_globals.SFF_NAME_PARAMETER_URL
+        odl_sff_url = url.format(odl_ip_port, sff_name)
 
         s = requests.Session()
-        r = s.get(odl_sff_url, auth=(USERNAME, PASSWORD), stream=False)
+        r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
+                                     common.sfc_globals.PASSWORD),
+                  stream=False)
     except:
-        print('Can\'t get SFF "{sff}" from ODL'.format(sff=sff_name))
+        logger.exception('Can\'t get SFF "{}" from ODL'.format(sff_name))
         return
 
     if r.ok:
         r_json = r.json()
 
-        local_sff_topo = agent_globals.get_sff_topo()
+        local_sff_topo = sfc_globals.get_sff_topo()
         local_sff_topo[sff_name] = r_json['service-function-forwarder'][0]
         return 0
     else:
-        print("=>Failed to GET SFF {sff} from ODL \n".format(sff=sff_name))
+        logger.warning("=>Failed to GET SFF {} from ODL \n".format(sff_name))
         return -1
 
 
@@ -644,8 +636,8 @@ def auto_sff_name():
         for value in inet_addr_list:
             sff_name = find_sff_locator_by_ip(value['addr'])
             if sff_name:
-                agent_globals.set_my_sff_name(sff_name)
-                sff_name = agent_globals.get_my_sff_name()
+                sfc_globals.set_my_sff_name(sff_name)
+                sff_name = sfc_globals.get_my_sff_name()
 
                 logger.info("Auto SFF name is: %s \n", sff_name)
                 return 0
@@ -657,7 +649,6 @@ def auto_sff_name():
 def main():
     """Create a CLI parser for the SFC Agent and execute appropriate actions"""
     #: default values
-    global ODLIP
     agent_port = 5000
     odl_auto_sff = False
     ovs_local_sff_cp_ip = '0.0.0.0'
@@ -691,7 +682,7 @@ def main():
 
     parser.add_argument('--odl-ip-port',
                         help='Set ODL IP and port in form <IP>:<PORT>. '
-                             'Default is %s' % ODLIP)
+                             'Default is %s' % common.sfc_globals.ODLIP)
 
     parser.add_argument('--ovs-sff-cp-ip',
                         help='Set local SFF Open vSwitch IP. '
@@ -707,7 +698,7 @@ def main():
     args = parser.parse_args()
 
     if args.odl_ip_port is not None:
-        ODLIP = args.odl_ip_port
+        common.sfc_globals.ODLIP = args.odl_ip_port
 
     if args.agent_port is not None:
         agent_port = args.agent_port
@@ -720,13 +711,13 @@ def main():
         args.odl_get_sff = True
 
     if args.sff_name is not None:
-        agent_globals.set_my_sff_name(args.sff_name)
+        sfc_globals.set_my_sff_name(args.sff_name)
 
     if args.sff_os is not None:
         sff_os = args.sff_os
 
-        agent_globals.set_sff_os(sff_os)
-        if sff_os not in agent_globals.sff_os_set:
+        sfc_globals.set_sff_os(sff_os)
+        if sff_os not in sfc_globals.sff_os_set:
             logger.error(sff_os + ' is an unsupported SFF switch OS')
             sys.exit()
 
@@ -735,7 +726,7 @@ def main():
 
     #: execute actions --------------------------------------------------------
     if args.odl_get_sff:
-        get_sffs_from_odl(ODLIP)
+        get_sffs_from_odl(common.sfc_globals.ODLIP)
 
     if odl_auto_sff:
         auto_sff_name()

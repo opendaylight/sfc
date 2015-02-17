@@ -11,14 +11,17 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""All supported services, spawned in a thread by sfc_agent.py"""
+"""
+All supported services
+"""
+
 
 import logging
 import asyncio
 import binascii
 
 import nsh.decode as nsh_decode
-from common.sff_globals import agent_globals
+from common.sfc_globals import sfc_globals
 from nsh.service_index import process_service_index
 
 logger = logging.getLogger(__name__)
@@ -216,7 +219,7 @@ class MyUdpServer(BasicService):
         # First we determine the list of SFs in the received packet based on
         # SPI value extracted from packet
         try:
-            local_data_plane_path = agent_globals.get_data_plane_path()
+            local_data_plane_path = sfc_globals.get_data_plane_path()
             next_hop = local_data_plane_path[service_path][service_index]
         except KeyError:
             msg = ('Could not determine next service hop. SP: %d, SI: %d' %

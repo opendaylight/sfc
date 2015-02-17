@@ -20,8 +20,8 @@ __status__ = "alpha"
    in the path"""
 
 import asyncio
-from nsh_decode import *
-from nsh_encode import *
+from nsh.decode import *
+from nsh.encode import *
 
 logger = logging.getLogger(__name__)
 

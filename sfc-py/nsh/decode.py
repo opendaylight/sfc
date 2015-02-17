@@ -1,8 +1,8 @@
-__author__ = "Reinaldo Penno"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.2"
-__email__ = "rapenno@gmail.com"
-__status__ = "alpha"
+__author__ = 'Reinaldo Penno'
+__copyright__ = 'Copyright(c) 2014, Cisco Systems, Inc.'
+__version__ = '0.2'
+__email__ = 'rapenno@gmail.com'
+__status__ = 'alpha'
 
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
@@ -51,7 +51,9 @@ values in the passed variable.
 
 
 import struct
+import logging
 import binascii
+
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
 
 
@@ -59,29 +61,32 @@ from ctypes import Structure, c_ubyte, c_ushort, c_uint
 PAYLOAD_START_INDEX = 16
 
 
+logger = logging.getLogger(__name__)
+
+
 class VXLANGPE(Structure):
-    _fields_ = [("flags", c_ubyte),
-                ("reserved", c_ubyte),
-                ("protocol_type", c_ushort),
-                ("vni", c_uint, 24),
-                ("reserved2", c_uint, 8)]
+    _fields_ = [('flags', c_ubyte),
+                ('reserved', c_ubyte),
+                ('protocol_type', c_ushort),
+                ('vni', c_uint, 24),
+                ('reserved2', c_uint, 8)]
 
 
 class BASEHEADER(Structure):
-    _fields_ = [("version", c_ushort, 2),
-                ("flags", c_ushort, 8),
-                ("length", c_ushort, 6),
-                ("md_type", c_ubyte),
-                ("next_protocol", c_ubyte),
-                ("service_path", c_uint, 24),
-                ("service_index", c_uint, 8)]
+    _fields_ = [('version', c_ushort, 2),
+                ('flags', c_ushort, 8),
+                ('length', c_ushort, 6),
+                ('md_type', c_ubyte),
+                ('next_protocol', c_ubyte),
+                ('service_path', c_uint, 24),
+                ('service_index', c_uint, 8)]
 
 
 class CONTEXTHEADER(Structure):
-    _fields_ = [("network_platform", c_uint),
-                ("network_shared", c_uint),
-                ("service_platform", c_uint),
-                ("service_shared", c_uint)]
+    _fields_ = [('network_platform', c_uint),
+                ('network_shared', c_uint),
+                ('service_platform', c_uint),
+                ('service_shared', c_uint)]
 
 
 def decode_vxlan(payload, vxlan_header_values):
@@ -99,22 +104,26 @@ def decode_vxlan(payload, vxlan_header_values):
 
     # Yes, it is weird but the comparison is against False.
     # Display debug if started with -O option.
-    if __debug__ is False:
-        print("\nVXLAN Header Decode:")
-        print(binascii.hexlify(vxlan_header))
-        print('Flags:', vxlan_header_values.flags)
-        print('Reserved:', vxlan_header_values.reserved)
-        print('Protocol Type:', hex(int(vxlan_header_values.protocol_type)))
-        print('VNI:', vxlan_header_values.vni)
-        print('Reserved:', vxlan_header_values.reserved2)
+    if not __debug__:
+        logger.info('VXLAN Header Decode ...')
+        logger.info(binascii.hexlify(vxlan_header))
+        logger.info('Flags: %s', vxlan_header_values.flags)
+        logger.info('Reserved: %s', vxlan_header_values.reserved)
+        logger.info('Protocol Type: %s',
+                    hex(int(vxlan_header_values.protocol_type)))
+        logger.info('VNI: %s', vxlan_header_values.vni)
+        logger.info('Reserved: %s', vxlan_header_values.reserved2)
 
 
 def decode_baseheader(payload, base_header_values):
-    # Base Service header
-    base_header = payload[8:16]  # starts at offset 8 of payload
+    """Decode the NSH base headers for a received packets"""
+    base_header = payload[8:16]
 
-    start_idx, base_header_values.md_type, base_header_values.next_protocol, \
-        path_idx = struct.unpack('!H B B I', base_header)
+    _header_values = struct.unpack('!H B B I', base_header)
+    start_idx = _header_values[0]
+    base_header_values.md_type = _header_values[1]
+    base_header_values.next_protocol = _header_values[2]
+    path_idx = _header_values[3]
 
     base_header_values.version = start_idx >> 14
     base_header_values.flags = start_idx >> 6
@@ -122,21 +131,22 @@ def decode_baseheader(payload, base_header_values):
     base_header_values.service_path = path_idx >> 8
     base_header_values.service_index = path_idx & 0x000000FF
 
-    if __debug__ is False:
-        print("\nBase NSH Header Decode:")
-        print(binascii.hexlify(base_header))
-        print('NSH Version:', base_header_values.version)
-        print('NSH base header flags:', base_header_values.flags)
-        print('NSH base header length:', base_header_values.length)
-        print('NSH MD-type:', base_header_values.md_type)
-        print('NSH base header next protocol:', base_header_values.next_protocol)
-        print('Service Path Identifier:', base_header_values.service_path)
-        print('Service Index:', base_header_values.service_index)
+    if not __debug__:
+        logger.info('Base NSH Header Decode ...')
+        logger.info(binascii.hexlify(base_header))
+        logger.info('NSH Version: %s', base_header_values.version)
+        logger.info('NSH base header flags: %s', base_header_values.flags)
+        logger.info('NSH base header length: %s', base_header_values.length)
+        logger.info('NSH MD-type: %s', base_header_values.md_type)
+        logger.info('NSH base header next protocol: %s',
+                    base_header_values.next_protocol)
+        logger.info('Service Path Identifier: %s',
+                    base_header_values.service_path)
+        logger.info('Service Index: %s', base_header_values.service_index)
 
 
 def decode_contextheader(payload, context_header_values):
     """Decode the NSH context headers for a received packet"""
-    # Context header
     context_header = payload[16:32]
 
     _header_values = struct.unpack('!I I I I', context_header)
@@ -145,10 +155,14 @@ def decode_contextheader(payload, context_header_values):
     context_header_values.service_platform = _header_values[2]
     context_header_values.service_shared = _header_values[3]
 
-    if __debug__ is False:
-        print("\nNSH Context Header Decode:")
-        print(binascii.hexlify(context_header))
-        print('First context header:', context_header_values.network_platform)
-        print('Second context header:', context_header_values.network_shared)
-        print('Third context header:', context_header_values.service_platform)
-        print('Fourth context header:', context_header_values.service_shared)
+    if not __debug__:
+        logger.info('NSH Context Header Decode ...')
+        logger.info(binascii.hexlify(context_header))
+        logger.info('First context header: %s',
+                    context_header_values.network_platform)
+        logger.info('Second context header: %s',
+                    context_header_values.network_shared)
+        logger.info('Third context header: %s',
+                    context_header_values.service_platform)
+        logger.info('Fourth context header: %s',
+                    context_header_values.service_shared)

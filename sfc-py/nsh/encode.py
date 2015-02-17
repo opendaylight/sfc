@@ -51,14 +51,31 @@ import struct
 
 
 def build_packet(vxlan_header_values, base_header_values, ctx_header_values):
+    """
+    TODO: add docstring, params description
+    """
     # Build VXLAN header
-    vxlan_header = struct.pack('!B B H I', vxlan_header_values.flags, vxlan_header_values.reserved, vxlan_header_values.protocol_type,
-                               (vxlan_header_values.vni << 8) + vxlan_header_values.reserved2)
+    vxlan_header = struct.pack('!B B H I',
+                               vxlan_header_values.flags,
+                               vxlan_header_values.reserved,
+                               vxlan_header_values.protocol_type,
+                               (vxlan_header_values.vni << 8) +
+                               vxlan_header_values.reserved2)
     # Build base NSH header
-    base_header = struct.pack('!H B B I', (base_header_values.version << 14) + (base_header_values.flags << 6) + base_header_values.length,
+    base_header = struct.pack('!H B B I',
+                              (base_header_values.version << 14) +
+                              (base_header_values.flags << 6) +
+                              base_header_values.length,
                               base_header_values.md_type,
-                              base_header_values.next_protocol, (base_header_values.service_path << 8) + base_header_values.service_index)
+                              base_header_values.next_protocol,
+                              (base_header_values.service_path << 8) +
+                              base_header_values.service_index)
+
     # Build NSH context headers
-    context_header = struct.pack('!I I I I', ctx_header_values.network_platform, ctx_header_values.network_shared,
-                                 ctx_header_values.service_platform, ctx_header_values.service_shared)
+    context_header = struct.pack('!I I I I',
+                                 ctx_header_values.network_platform,
+                                 ctx_header_values.network_shared,
+                                 ctx_header_values.service_platform,
+                                 ctx_header_values.service_shared)
+
     return vxlan_header + base_header + context_header

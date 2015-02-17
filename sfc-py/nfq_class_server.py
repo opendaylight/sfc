@@ -1,8 +1,8 @@
 # hint: to see the rules execute: 'sudo iptables -S -t raw'
 
 from netfilterqueue import NetfilterQueue
-from nsh_decode import *
-from nsh_encode import *
+from nsh.decode import *
+from nsh.encode import *
 import subprocess
 import logging
 import socket

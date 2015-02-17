@@ -20,6 +20,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class RspExporterFactory implements ExporterFactory {
+
+    public static final String _RENDERED_SERVICE_PATH = RspExporter._RENDERED_SERVICE_PATH;
+    public static final String _NAME = RspExporter._NAME;
+    public static final String _SERVICE_FUNCTION_FORWARDER = RspExporter._SERVICE_FUNCTION_FORWARDER;
+    public static final String _RENDERED_SERVICE_PATH_HOP = RspExporter._RENDERED_SERVICE_PATH_HOP;
+
     @Override
     public Exporter getExporter() {
         return new RspExporter();

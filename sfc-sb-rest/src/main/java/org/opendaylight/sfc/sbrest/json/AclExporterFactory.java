@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AclExporterFactory implements ExporterFactory {
+    public static final String _ACCESS_LIST = AclExporter._ACCESS_LIST;
+    public static final String _ACL_NAME = AclExporter._ACL_NAME;
+
     @Override
     public Exporter getExporter() {
         return new AclExporter();

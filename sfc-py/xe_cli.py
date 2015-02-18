@@ -11,41 +11,59 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""XE CLI processing module"""
 
-import os
+"""
+XE CLI processing module
+"""
+
+
 import paramiko
 from common.sfc_globals import sfc_globals
 
 
 def process_received_service_path(spi, rsp):
-
-    service_hops = []  # create list to hold service_hop entries extracted from SFP
+    """ """
+    # create list to hold service_hop entries extracted from SFP
+    service_hops = []
     for key in rsp:
-        ip_address = rsp[key]['ip']  # extract and store each IP address in the RSP
-        service_hops.append('sff ' + ip_address)  # append each IP address in the RSP to the service hop list
+        # extract and store each IP address in the RSP
+        ip_address = rsp[key]['ip']
+        # append each IP address in the RSP to the service hop list
+        service_hops.append('sff ' + ip_address)
 
-    service_hops[::-1]  # reverse the order of the service_hops to get right XE syntax
+    # reverse the order of the service_hops to get right XE syntax
+    service_hops[::-1]
 
-    number_service_hops = len(service_hops)  # determine how many service hops in the service path
-    if number_service_hops <= 4:  # currently a limitation in IOS XE
-        number_of_nulls = 4 - number_service_hops  # determine how many 'nulls' to put into the XE cli syntax
-        xe_cli = 'service-insertion service-path ' + str(spi)  # start the cli syntax adding service path id
+    # determine how many service hops in the service path
+    number_service_hops = len(service_hops)
+    # currently a limitation in IOS XE
+    if number_service_hops <= 4:
+        # determine how many 'nulls' to put into the XE cli syntax
+        number_of_nulls = 4 - number_service_hops
+        # start the cli syntax adding service path id
+        xe_cli = 'service-insertion service-path ' + str(spi)
 
-        for i in range(number_of_nulls):
-            xe_cli += ' null'  # enter the necessary number of 'nulls' into the xe_cli variable
+        # enter the necessary number of 'nulls' into the xe_cli variable
+        for _ in range(number_of_nulls):
+            xe_cli += ' null'
 
-        for i in range(number_service_hops):
-            xe_cli += ' ' + service_hops[number_service_hops-1]  # enter service hop address into xe_cli variable
-            number_service_hops -= 1  # decrement the counter
+        for _ in range(number_service_hops):
+            # enter service hop address into xe_cli variable
+            xe_cli += ' ' + service_hops[number_service_hops - 1]
+            # decrement the counter
+            number_service_hops -= 1
         print('\nCLI to be entered is: \n', xe_cli)
     else:
-        print('number of service hops ', number_service_hops, 'unsupported in IOS XE')
+        print('number of service hops ', number_service_hops,
+              'unsupported in IOS XE')
         xe_cli = ''
+
     return xe_cli
 
 
-def send_command_and_wait_for_execution(channel, command, wait_string, should_print):
+def send_command_and_wait_for_execution(channel, command, wait_string,
+                                        should_print):
+    """ """
     # Send the su command
     channel.send(command)
 
@@ -64,17 +82,24 @@ def send_command_and_wait_for_execution(channel, command, wait_string, should_pr
 
 
 def enable_router(sshChannel):
+    """ """
     # make sure in enable mode so we can configure the router
-    send_command_and_wait_for_execution(sshChannel, "enable\n", "Password:", False)
+    send_command_and_wait_for_execution(sshChannel, "enable\n", "Password:",
+                                        False)
     send_command_and_wait_for_execution(sshChannel, "cisco\n", "#", False)
-    send_command_and_wait_for_execution(sshChannel, "terminal length 0\n", "#", False)
+    send_command_and_wait_for_execution(sshChannel, "terminal length 0\n", "#",
+                                        False)
 
 
 def ssh_execute_cli(cli, sff_locator):
+    """ """
     remoteConnectionSetup = paramiko.SSHClient()
     remoteConnectionSetup.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    remoteConnectionSetup.connect(sff_locator, username='cisco', password='cisco', allow_agent=False, look_for_keys=False)
-    sshChannel = remoteConnectionSetup.invoke_shell()  # invoke the shell so can send multiple commands
+    remoteConnectionSetup.connect(sff_locator,
+                                  username='cisco', password='cisco',
+                                  allow_agent=False, look_for_keys=False)
+    # invoke the shell so can send multiple commands
+    sshChannel = remoteConnectionSetup.invoke_shell()
 
     # make sure in enable mode so we can configure the router
     is_enabled = sshChannel.recv(1000)
@@ -88,16 +113,24 @@ def ssh_execute_cli(cli, sff_locator):
 
 
 def process_xe_cli(data_plane_path):
+    """ """
     print('\nXE module received data plane path: \n', data_plane_path)
     local_sff_topo = sfc_globals.get_sff_topo()
     local_my_sff_name = sfc_globals.get_my_sff_name()
-    sff_locator = local_sff_topo[local_my_sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
+    sff_locator = (local_sff_topo[local_my_sff_name]['sff-data-plane-locator']
+                                                    [0]
+                                                    ['data-plane-locator']
+                                                    ['ip'])
 
     for key in data_plane_path:
-        spi = key  # store the SPI value
-        rsp = data_plane_path[key]  # store the rendered service path
-        cli_to_push = process_received_service_path(spi, rsp)  # process the cli
-        ssh_execute_cli(cli_to_push, sff_locator)  # send cli to configure XE router
+        # store the SPI value
+        spi = key
+        # store the rendered service path
+        rsp = data_plane_path[key]
+        # process the cli
+        cli_to_push = process_received_service_path(spi, rsp)
+        # send cli to configure XE router
+        ssh_execute_cli(cli_to_push, sff_locator)
 
     return
 

@@ -22,8 +22,11 @@ logger = logging.getLogger(__name__)
 
 
 def init_ovs():
-    init_cli = 'sudo ovs-vsctl add-port br-s vxlan-s -- set interface vxlan-s type=vxlan options:key=flow options:remote_ip=flow options:dst_port=' + str(vxlannshport) \
-               + ' options:nsp=flow options:nsi=flow'
+    """"""
+    init_cli = ('sudo ovs-vsctl add-port br-s vxlan-s -- set interface vxlan-s'
+                ' type=vxlan options:key=flow options:remote_ip=flow '
+                'options:dst_port=' + str(vxlannshport) +
+                ' options:nsp=flow options:nsi=flow')
     logger.info("Initializing OVS: %s \n", init_cli)
     #subprocess.call([init_cli], shell=True)
 
@@ -40,7 +43,10 @@ def process_ovs_sff__cli(data_plane_path):
 
 
 def create_of_sff_cli(spi, rsp):
-    of_cli = 'sudo ovs-ofctl add-flow br-s table=0, priority=200, tun_id=' + str(tenant) + ' nsp=0x' + str(spi) + ',actions=resubmit(,' +str(OF_TABLEID) + ')'
+    of_cli = ('sudo ovs-ofctl add-flow br-s table=0, priority=200, '
+              'tun_id=' + str(tenant) + ' nsp=0x' + str(spi) +
+              ',actions=resubmit(,' + str(OF_TABLEID) + ')')
+
     logger.info(of_cli)
     #subprocess.call([of_cli], shell=True)
     of_cli = 'sudo ovs-ofctl add-flow br-s table=0,priority=100,actions=drop'
@@ -48,7 +54,9 @@ def create_of_sff_cli(spi, rsp):
     #subprocess.call([of_cli], shell=True)
 
     for index in rsp:
-        of_cli = 'sudo ovs-ofctl add-flow br-s table='+str(OF_TABLEID)+', priority=100, nsp=0x' + str(index) + ',actions=set_field:' + rsp[index]['ip'] + '->tun_dst,in_port'
+        of_cli = ('sudo ovs-ofctl add-flow br-s table=' + str(OF_TABLEID) +
+                  ', priority=100, nsp=0x' + str(index) + ',actions=set_field:'
+                  + rsp[index]['ip'] + '->tun_dst,in_port')
         logger.info(of_cli)
         #subprocess.call([of_cli], shell=True)
 

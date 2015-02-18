@@ -28,7 +28,6 @@ import netifaces
 
 from pprint import pprint
 
-
 import xe_cli
 import ovs_cli
 
@@ -37,7 +36,7 @@ from common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 if sys.platform.startswith('linux'):
     #TODO: fix this kind of imports
-    from nfq_class_thread import *
+    from classifier.nfq_class_thread import *
 
 
 app = flask.Flask(__name__)

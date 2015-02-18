@@ -24,6 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SffExporterFactory implements ExporterFactory {
+
+    public static final String _SERVICE_FUNCTION_FORWARDER = SffExporter._SERVICE_FUNCTION_FORWARDER;
+    public static final String _NAME = SffExporter._NAME;
+    public static final String _REST_URI = SffExporter._REST_URI;
+
     @Override
     public Exporter getExporter() {
         return new SffExporter();

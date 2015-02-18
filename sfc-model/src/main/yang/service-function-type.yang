@@ -79,6 +79,11 @@ module service-function-type {
     description "Intrusion Detection System";
   }
 
+  identity http-header-enrichment {
+    base "service-function-type-identity";
+    description "HTTP services that add HTTP headers for charging and adding subscriber metadata";
+  }
+
   typedef service-function-type {
     type identityref {
       base "service-function-type-identity";

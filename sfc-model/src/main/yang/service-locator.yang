@@ -63,6 +63,11 @@ module service-locator {
     description "GRE transport type";
   }
 
+  identity mpls {
+    base "sl-transport-type";
+    description "Multi Protocol Label Switching transport type";
+  }
+
   identity other {
     base "sl-transport-type";
     description "unspecified transport type";
@@ -113,6 +118,17 @@ module service-locator {
     }
   }
 
+  grouping mpls-locator {
+    description
+      "Data plane-locator: MPLS";
+    leaf mpls-label {
+      type uint32 {
+        range "1..1048575";
+      }
+      description "MPLS Label, 20 bits";
+    }
+  }
+
   grouping function-locator {
     description
       "When SF is co-located with SFF, this could be the name of a
@@ -140,6 +156,9 @@ module service-locator {
       }
       case function {
         uses function-locator;
+      }
+      case mpls {
+        uses mpls-locator;
       }
       description "The collection of all possible data-plane
         locators. Only one can be chosen";

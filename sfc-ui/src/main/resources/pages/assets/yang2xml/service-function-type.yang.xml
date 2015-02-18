@@ -79,6 +79,12 @@ types are derived.</text>
       <text>Intrusion Detection System</text>
     </description>
   </identity>
+  <identity name="http-header-enrichment">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>HTTP services that add HTTP headers for charging and adding subscriber metadata</text>
+    </description>
+  </identity>
   <typedef name="service-function-type">
     <type name="identityref">
       <base name="service-function-type-identity"/>

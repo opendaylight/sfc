@@ -24,7 +24,7 @@
       <text>Initial revision.</text>
     </description>
   </revision>
-  <augment target-node="/sfc-sf:service-functions/sfc-sf:service-function">
+  <augment target-node="/sfc-sf:service-functions-state/sfc-sf:service-function-state">
     <description>
       <text>Service function description and monitoring information</text>
     </description>

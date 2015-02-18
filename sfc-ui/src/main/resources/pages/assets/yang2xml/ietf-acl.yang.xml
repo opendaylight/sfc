@@ -146,4 +146,35 @@ for each kind and for each vendor.
       </container>
     </list>
   </container>
+  <container name="access-lists-state">
+    <description>
+      <text>This container hold operational state for all access lists</text>
+    </description>
+    <config value="false"/>
+    <list name="access-list-state">
+      <description>
+        <text>This list holds operational data for all access lists
+in the domain</text>
+      </description>
+      <key value="acl-name"/>
+      <leaf name="acl-name">
+        <type name="string"/>
+        <description>
+          <text>The name of the acl</text>
+        </description>
+      </leaf>
+      <list name="acl-service-function-classifier">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>The name of the classifier</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A list of all classifiers that use rules from this access list</text>
+        </description>
+      </list>
+    </list>
+  </container>
 </module>

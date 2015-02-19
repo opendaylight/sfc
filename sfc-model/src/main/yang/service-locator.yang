@@ -139,7 +139,8 @@ module service-locator {
     }
   }
 
-  grouping data-plane-locator {
+
+  grouping data-plane-locator-choice {
     description
       "This group presents data-plane locator
        information for service function elements in the domain";
@@ -168,5 +169,10 @@ module service-locator {
         base sfc-sl:sl-transport-type;
       }
     }
+  }
+
+  grouping data-plane-locator {
+    description "Data plane container";
+    uses sfc-sl:data-plane-locator-choice;
   }
 }

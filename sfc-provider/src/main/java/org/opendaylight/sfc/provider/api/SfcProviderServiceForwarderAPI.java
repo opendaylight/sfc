@@ -10,6 +10,7 @@
 package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
+
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateKey;
@@ -36,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +70,10 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceForwarderAPI.class);
     private static final String FAILED_TO_STR = "failed to ...";
+    public static final String FUNCTION = "function";
+    public static final String IP = "ip";
+    public static final String LISP = "lisp";
+    public static final String MAC = "mac";
 
     SfcProviderServiceForwarderAPI(Object[] params, String m) {
         super(params, m);
@@ -124,11 +132,45 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteServiceFunctionForwarderState");
     }
 
+
+    /**
+     * This method reads the first DataPlanelocator of a SFF that is NOT of type function
+     * <p>
+     * @param serviceFunctionForwarderName SFF name
+     * @return org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocator;
+     */
+    public static DataPlaneLocator readServiceFunctionForwarderDataPlaneLocator(String serviceFunctionForwarderName) {
+        printTraceStart(LOG);
+        DataPlaneLocator dataPlaneLocator = null;
+
+        InstanceIdentifier<ServiceFunctionForwarder> sffIID;
+        ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
+        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
+                .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).build();
+
+        ServiceFunctionForwarder sff = SfcDataStoreAPI.readTransactionAPI(sffIID, LogicalDatastoreType.CONFIGURATION);
+        if (sff != null) {
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList = sff.getSffDataPlaneLocator();
+            for (SffDataPlaneLocator sffDataPlaneLocator : sffDataPlaneLocatorList) {
+                String type = sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface()
+                        .getSimpleName().toLowerCase();
+                if(!type.equals(FUNCTION)) {
+                    dataPlaneLocator = sffDataPlaneLocator.getDataPlaneLocator();
+                    break;
+                }
+            }
+        }
+        printTraceStop(LOG);
+
+        return dataPlaneLocator;
+    }
+
+
     protected boolean putServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
-                child(ServiceFunctionForwarder.class, sff.getKey()).toInstance();
+                child(ServiceFunctionForwarder.class, sff.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
 

@@ -100,7 +100,7 @@ module service-function {
           "A unique string that represents this
            data-plane-locator";
       }
-      uses sfc-sl:data-plane-locator;
+      uses sfc-sl:data-plane-locator-choice;
       leaf service-function-forwarder {
         type string;
         description

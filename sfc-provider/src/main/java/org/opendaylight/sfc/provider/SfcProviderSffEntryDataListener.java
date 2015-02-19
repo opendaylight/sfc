@@ -110,6 +110,8 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                 Object[] serviceForwarderObj = {createdServiceFunctionForwarder};
                 Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
 
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderDataPlaneLocator(createdServiceFunctionForwarder.getName());
+
                 //Send to SB REST
                 //SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
                 //        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);

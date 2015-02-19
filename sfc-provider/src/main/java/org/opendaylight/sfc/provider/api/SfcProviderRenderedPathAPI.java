@@ -11,7 +11,10 @@ package org.opendaylight.sfc.provider.api;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
@@ -24,24 +27,27 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocatorChoice;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.LocatorType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.Lisp;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.LispBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.Mac;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.choice.locator.type.MacBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import javax.ws.rs.HttpMethod;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Random;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
+//import javax.ws.rs.HttpMethod;
 
 
 /**
@@ -107,7 +113,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
 
     public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readServiceClassifier");
+        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
     }
     public static  SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");
@@ -701,6 +707,71 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+
+    /**
+     * This method provides all necessary information for a system to construct
+     * a NSH header and associated overlay packet to target the first
+     * service hop of a Rendered Service Path
+     * <p>
+     * @param rspName RSP name
+     * @return Nothing.
+     */
+    public static RenderedServicePathFirstHop readRenderedServicePathFirstHop (String rspName) {
+        RenderedServicePath renderedServicePath = readRenderedServicePath(rspName);
+        if (renderedServicePath == null) {
+            return null;
+        }
+
+        RenderedServicePathFirstHopBuilder renderedServicePathFirstHopBuilder = new RenderedServicePathFirstHopBuilder();
+        renderedServicePathFirstHopBuilder.setPathId(renderedServicePath.getPathId())
+                .setStartingIndex(renderedServicePath.getStartingIndex());
+
+        // Get the SFF name in the first RSP hop
+        List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+        if(renderedServicePathHopList == null) {
+            return null;
+        }
+
+        RenderedServicePathHop renderedServicePathHop = renderedServicePathHopList.get(0);
+        String sffname = renderedServicePathHop.getServiceFunctionForwarder();
+
+        // Get the first DataPlaneLocator from the SFF
+        DataPlaneLocatorChoice sffDataPlaneLocator =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderDataPlaneLocator(sffname);
+        if(sffDataPlaneLocator == null) {
+            return null;
+        }
+
+        // Build the RenderedServicePathFirstHopBuilder LocatorType from the SFF DataPlaneLocator
+        LocatorType locator = null;
+        DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
+        String type = sffDataPlaneLocator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
+        switch (type) {
+            case SfcProviderServiceForwarderAPI.IP:
+                IpBuilder ipBuilder = new IpBuilder((Ip) sffDataPlaneLocator.getLocatorType());
+                locator = ipBuilder.build();
+                break;
+            case SfcProviderServiceForwarderAPI.LISP:
+                LispBuilder lispBuilder = new LispBuilder((Lisp) sffDataPlaneLocator.getLocatorType());
+                locator = lispBuilder.build();
+                break;
+            case SfcProviderServiceForwarderAPI.MAC:
+                MacBuilder macBuilder = new MacBuilder((Mac) sffDataPlaneLocator.getLocatorType());
+                locator = macBuilder.build();
+                break;
+            // TODO add MPLS
+        }
+        if(locator != null) {
+            dataPlaneLocatorBuilder.setLocatorType(locator);
+        }
+
+        // Get the RenderedServicePathFirstHopBuilder Transport from the SFF Transport
+        dataPlaneLocatorBuilder.setTransport(sffDataPlaneLocator.getTransport());
+
+        renderedServicePathFirstHopBuilder.setDataPlaneLocator(dataPlaneLocatorBuilder.build());
+        return renderedServicePathFirstHopBuilder.build();
     }
 
 

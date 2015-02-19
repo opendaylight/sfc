@@ -63,6 +63,12 @@ derived.</text>
       <text>GRE transport type</text>
     </description>
   </identity>
+  <identity name="mpls">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>Multi Protocol Label Switching transport type</text>
+    </description>
+  </identity>
   <identity name="other">
     <base name="sl-transport-type"/>
     <description>
@@ -123,6 +129,19 @@ types</text>
       </description>
     </leaf>
   </grouping>
+  <grouping name="mpls-locator">
+    <description>
+      <text>Data plane-locator: MPLS</text>
+    </description>
+    <leaf name="mpls-label">
+      <type name="uint32">
+        <range value="1..1048575"/>
+      </type>
+      <description>
+        <text>MPLS Label, 20 bits</text>
+      </description>
+    </leaf>
+  </grouping>
   <grouping name="function-locator">
     <description>
       <text>When SF is co-located with SFF, this could be the name of a
@@ -153,6 +172,9 @@ information for service function elements in the domain</text>
       </case>
       <case name="function">
         <uses name="function-locator"/>
+      </case>
+      <case name="mpls">
+        <uses name="mpls-locator"/>
       </case>
       <description>
         <text>The collection of all possible data-plane

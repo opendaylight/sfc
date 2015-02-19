@@ -633,6 +633,7 @@
   "SFC_PLACEHOLDER_yang:mac-address": "Example: 00:0A:95:9D:68:16",
   "SFC_PLACEHOLDER_inet:ip-address": "Example: 10.0.0.1",
   "SFC_PLACEHOLDER_inet:port-number": "Number in range 0-65535",
+  "SFC_PLACEHOLDER_uint32": "Type in a number",
 
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

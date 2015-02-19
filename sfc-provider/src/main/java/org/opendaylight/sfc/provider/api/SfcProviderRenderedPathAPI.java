@@ -28,6 +28,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 //import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,6 +109,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "readServiceClassifier");
+    }
+    public static SfcProviderRenderedPathAPI getReadRenderedServicePath(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
     }
     public static  SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");
@@ -566,6 +570,30 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     }
 
+    @SuppressWarnings("unused")
+    public static RenderedServicePath readRenderedServicePathExecutor(String rspName) {
+
+        printTraceStart(LOG);
+        RenderedServicePath ret = null;
+
+        Object[] rspNameObj = {rspName};
+        Class[] rspNameClass = {String.class};
+
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = SfcProviderRenderedPathAPI
+                .getReadRenderedServicePath(rspNameObj, rspNameClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
+        try {
+            ret = (RenderedServicePath) future.get();
+            LOG.info("readRenderedServicePath: {}", ret);
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+
+        return ret;
+    }
+
     /**
      * This function reads a RSP from the datastore
      * <p>
@@ -574,15 +602,17 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      */
     public static RenderedServicePath readRenderedServicePath(String rspName) {
         printTraceStart(LOG);
-        RenderedServicePath rsp;
-        InstanceIdentifier<RenderedServicePath> rspIID;
-        RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(rspName);
-        rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePathKey).build();
 
-        rsp = SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
+        RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(rspName);
+        InstanceIdentifier<RenderedServicePath> rspIID =
+                InstanceIdentifier.builder(RenderedServicePaths.class)
+                    .child(RenderedServicePath.class, renderedServicePathKey)
+                    .build();
+
+        RenderedServicePath rsp = SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
 
         printTraceStop(LOG);
+
         return rsp;
     }
 

@@ -12,25 +12,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Matches;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -38,10 +37,10 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
 
     private static final short DEFAULT_MASK = 32;
     private static final String SUBNET_MASK = "/";
-    private SfcL2FlowProgrammer sfcL2FlowProgrammer;
+    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
 
-    public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammer sfcL2FlowProgrammer) {
+    public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.ACL_ENTRY_IID);
         registerAsDataChangeListener();
@@ -69,7 +68,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         // ACL delete
 
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+        for (InstanceIdentifier<?> instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
             if (dataObject instanceof AccessLists) {
                 AccessList removedAccessListEntry = (AccessList) dataObject;
@@ -114,11 +113,16 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
             AccessListEntries createdAccessListEntries = aclEntryIter.next();
             SfcAction sfcAction = createdAccessListEntries.getActions().getAugmentation(Actions1.class)
                     .getSfcAction();
-            String aclServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
+            String aclRenderedServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
 
-            ServiceFunctionPath servicefunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(aclServicePathName);
+            RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePathExecutor(aclRenderedServicePathName);
 
-            Long pathId = servicefunctionPath.getPathId();
+            if(renderedServicePath == null) {
+                LOG.info("ACL renderedServicePath {} does not exist", aclRenderedServicePathName);
+                continue;
+            }
+
+            Long pathId = renderedServicePath.getPathId();
 
             matches = createdAccessListEntries.getMatches();
             aceIp = (AceIp) matches.getAceType();
@@ -156,13 +160,26 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                     protocol = aceIp.getIpProtocol().byteValue();
                 }
             }
-            List<ServicePathHop> servicePathHopList = servicefunctionPath.getServicePathHop();
+            List<RenderedServicePathHop> servicePathHopList = renderedServicePath.getRenderedServicePathHop();
 
-            for (ServicePathHop servicePathHop : servicePathHopList) {
+            if(servicePathHopList == null) {
+                LOG.info("ACL no servicePathHop available for {}", aclRenderedServicePathName);
+                continue;
+            }
 
-                this.sfcL2FlowProgrammer.setNodeInfo(servicePathHop.getServiceFunctionForwarder());
-                this.sfcL2FlowProgrammer.configureClassificationFlow(srcIpAddress, srcMask, dstIpAddress, dstMask, srcPort,
-                        dstPort, protocol, pathId, isAddFlow);
+            for (RenderedServicePathHop servicePathHop : servicePathHopList) {
+
+                this.sfcL2FlowProgrammer.configureClassificationFlow(
+                        servicePathHop.getServiceFunctionForwarder(),
+                        srcIpAddress,
+                        srcMask,
+                        dstIpAddress,
+                        dstMask,
+                        srcPort,
+                        dstPort,
+                        protocol,
+                        pathId,
+                        isAddFlow);
             }
         }
     }

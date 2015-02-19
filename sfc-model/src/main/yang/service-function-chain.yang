@@ -119,8 +119,13 @@ module service-function-chain {
         description
           "the name of the service function chain";
       }
-      leaf-list sfc-service-function-path {
-        type string;
+      list sfc-service-path {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the Service Path";
+        }
         description
         "A list of all service function paths instantiated from
          this chain";

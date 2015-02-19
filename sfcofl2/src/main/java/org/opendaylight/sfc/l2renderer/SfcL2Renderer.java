@@ -9,6 +9,7 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
@@ -23,12 +24,12 @@ import org.slf4j.LoggerFactory;
 public class SfcL2Renderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
-    private SfcL2FlowProgrammer sfcL2FlowProgrammer;
+    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
 
     public SfcL2Renderer(DataBroker dataBroker) {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
-        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammer();
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl();
         SfcL2RspDataListener openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer);
         SfcL2AclDataListener openflowAclDataListener = new SfcL2AclDataListener(dataBroker, sfcL2FlowProgrammer);
 

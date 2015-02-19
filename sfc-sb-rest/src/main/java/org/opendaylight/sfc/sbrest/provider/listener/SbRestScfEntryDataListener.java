@@ -59,7 +59,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionClassifier createdServiceClassifier = (ServiceFunctionClassifier) entry.getValue();
                 LOG.debug("\nCreated Service Classifier Name: {}", createdServiceClassifier.getName());
 
-                if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()){
+                if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()) {
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.POST, accessList,
@@ -77,7 +77,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionClassifier updatedServiceClassifier = (ServiceFunctionClassifier) entry.getValue();
                 LOG.debug("\nModified Service Classifier Name: {}", updatedServiceClassifier.getName());
 
-                if (updatedServiceClassifier.getAccessList() != null && !updatedServiceClassifier.getAccessList().isEmpty()){
+                if (updatedServiceClassifier.getAccessList() != null && !updatedServiceClassifier.getAccessList().isEmpty()) {
                     AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(updatedServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
@@ -96,14 +96,10 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionClassifier deletedServiceClassifier = (ServiceFunctionClassifier) dataObject;
                 LOG.debug("\nDeleted Service Classifier Name: {}", deletedServiceClassifier.getName());
 
-                if (deletedServiceClassifier.getAccessList() != null && !deletedServiceClassifier.getAccessList().isEmpty()){
-                    AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(deletedServiceClassifier.getAccessList());
-
-                    if (accessList != null) {
-                        Runnable task = new SbRestAclTask(RestOperation.DELETE, accessList,
-                                deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
-                        opendaylightSfc.getExecutor().submit(task);
-                    }
+                if (deletedServiceClassifier.getAccessList() != null && !deletedServiceClassifier.getAccessList().isEmpty()) {
+                    Runnable task = new SbRestAclTask(RestOperation.DELETE, deletedServiceClassifier.getAccessList(),
+                            deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
+                    opendaylightSfc.getExecutor().submit(task);
                 }
             }
         }

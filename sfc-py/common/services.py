@@ -47,7 +47,7 @@ NAT = 'nat'  # TODO: should this be `napt44` or just `nat`?
 DPI = 'dpi'
 QOS = 'qos'
 IDS = 'ids'
-UDP = 'udp'
+SFF = 'sff'
 CUDP = 'cudp'
 
 
@@ -66,8 +66,8 @@ def find_service(service_type):
         return MyNatService
     elif service_type == DPI:
         return MyDpiService
-    elif service_type == UDP:
-        return MyUdpServer
+    elif service_type == SFF:
+        return MySffServer
     elif service_type == CUDP:
         return ControlUdpServer
     elif service_type == QOS or service_type == IDS:
@@ -200,15 +200,15 @@ class ControlUdpServer(BasicService):
         logger.error('stop: %s', exc)
 
 
-class MyUdpServer(BasicService):
+class MySffServer(BasicService):
     def __init__(self, loop):
         """
-        This is the main UDP server. It receives VXLAN GPE packets, calls
+        This is the main SFF server. It receives VXLAN GPE packets, calls
         packet processing function and finally sends them on their way
         """
-        super(MyUdpServer, self).__init__(loop)
+        super(MySffServer, self).__init__(loop)
 
-        self.service_type = 'UDP Server'
+        self.service_type = 'SFF Server'
 
     def _lookup_next_sf(self, service_path, service_index):
         """

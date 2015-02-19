@@ -22,7 +22,7 @@ import asyncio
 
 from threading import Thread
 from common.sfc_globals import sfc_globals
-from common.services import UDP, CUDP, find_service
+from common.services import SFF, CUDP, find_service
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +207,7 @@ def start_sff(sff_name, sff_ip, sff_port):
 
     local_sff_threads = sfc_globals.get_sff_threads()
     sff_thread = Thread(target=start_service,
-                        args=(sff_name, sff_ip, sff_port, UDP,
+                        args=(sff_name, sff_ip, sff_port, SFF,
                               local_sff_threads,
                               'Listening for NSH packets on port:'))
 

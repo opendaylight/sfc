@@ -106,7 +106,16 @@ public class SbRestAclTaskTest {
     }
 
     @Test
-    public void testSbRestAclTaskForwarderList() throws IOException {
+    public void testSbRestAclTaskAclNameForwarderList() throws IOException {
+        SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, ACL_NAME,
+                this.buildServiceFunctionClassifier().getSclServiceFunctionForwarder(), executorService);
+
+        assertNull(sbRestAclTask.jsonObject);
+        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
+    public void testSbRestAclTaskAclObjectForwarderList() throws IOException {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(),
                 this.buildServiceFunctionClassifier().getSclServiceFunctionForwarder(), executorService);
 

@@ -7,6 +7,10 @@
  */
 package org.opendaylight.sfc.l2renderer.utils;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -34,8 +38,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -48,8 +64,115 @@ public class SfcOpenflowUtils {
     private static final int FLOWREF_CAPACITY = 256;
     private static final String FLOWID_PREFIX = "SFC";
     private static final String FLOWID_SEPARATOR = ".";
+    private static final int COOKIE_BIGINT_INT_RADIX = 10;
 
-    public static Action createSetDlSrcAction(String mac, int order) {
+    public static FlowBuilder createFlowBuilder(final short table, final int priority, final String flowName, MatchBuilder match, InstructionsBuilder isb) {
+        FlowBuilder flow = new FlowBuilder();
+        flow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(table)));
+        flow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(table))));
+        flow.setTableId(table);
+        flow.setFlowName(flowName);
+        BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
+        flow.setCookie(new FlowCookie(cookieValue));
+        flow.setCookieMask(new FlowCookie(cookieValue));
+        flow.setContainerName(null);
+        flow.setStrict(false);
+        flow.setMatch(match.build());
+        flow.setInstructions(isb.build());
+        flow.setPriority(priority);
+        flow.setHardTimeout(0);
+        flow.setIdleTimeout(0);
+        flow.setFlags(new FlowModFlags(false, false, false, false, false));
+        if (null == flow.isBarrier()) {
+            flow.setBarrier(Boolean.FALSE);
+        }
+
+        return flow;
+    }
+
+    public static InstructionsBuilder createInstructionsBuilder(InstructionBuilder ib) {
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+
+        return isb;
+    }
+
+    /**
+     * Add an etherType match to an existing MatchBuilder
+     * @param match
+     * @param etherType
+     */
+    public static void addMatchEtherType(MatchBuilder match, final long etherType) {
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(etherType));
+        eth.setEthernetType(ethTypeBuilder.build());
+
+        match.setEthernetMatch(eth.build());
+    }
+
+    public static void addMatchVlan(MatchBuilder match, int vlan) {
+        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
+        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+        VlanId vlanId = new VlanId(vlan);
+        vlanIdBuilder.setVlanId(vlanId);
+        vlanIdBuilder.setVlanIdPresent(true);
+        vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
+
+        match.setVlanMatch(vlanMatchBuilder.build());
+    }
+
+    public static void addMatchDstMac(MatchBuilder match, final String dstMac) {
+        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+        EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+        ethDestinationBuilder.setAddress(new MacAddress(dstMac));
+        ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+
+        match.setEthernetMatch(ethernetMatch.build());
+    }
+
+    public static GoToTableBuilder createActionGotoTable(final short toTable) {
+        GoToTableBuilder gotoTb = new GoToTableBuilder();
+        gotoTb.setTableId(toTable);
+
+        return gotoTb;
+    }
+
+    public static ActionBuilder createActionOutPort(final String portUri, final int order) {
+        OutputActionBuilder output = new OutputActionBuilder();
+        Uri value = new Uri(portUri);
+        output.setOutputNodeConnector(value);
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+
+        return ab;
+    }
+
+    public static ActionBuilder createActionPushVlan(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(
+                new PushVlanActionBuilder().setEthernetType(Integer.valueOf(ETHERTYPE_VLAN)).build()).build());
+        return ab;
+    }
+
+    public static ActionBuilder createActionSetVlanId(int vlan, int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new SetFieldCaseBuilder().setSetField(
+                new SetFieldBuilder().setVlanMatch(
+                        new VlanMatchBuilder().setVlanId(
+                                new VlanIdBuilder().setVlanId(new VlanId(vlan)).setVlanIdPresent(true)
+                                .build()).build()).build()).build());
+
+        return ab;
+    }
+
+    
+    
+    
+    
+    public static Action createSetDlSrcAction(final String mac, int order) {
         ActionBuilder ab = createActionBuilder(order);
 
         MacAddress addr = new MacAddress(mac);
@@ -81,26 +204,6 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
-    public static Action createPushVlanAction(int order) {
-        return new ActionBuilder()
-                .setAction(
-                        new PushVlanActionCaseBuilder().setPushVlanAction(
-                                new PushVlanActionBuilder().setEthernetType(Integer.valueOf(ETHERTYPE_VLAN)).build()).build())
-                .setOrder(order).setKey(new ActionKey(order)).build();
-    }
-
-    public static Action createSetDstVlanAction(int vlan, int order) {
-        return new ActionBuilder()
-                .setAction(
-                        new SetFieldCaseBuilder().setSetField(
-                                new SetFieldBuilder().setVlanMatch(
-                                        new VlanMatchBuilder().setVlanId(
-                                                new VlanIdBuilder().setVlanId(new VlanId(vlan)).setVlanIdPresent(true)
-                                                        .build()).build()).build()).build()).setOrder(order)
-                .setKey(new ActionKey(order)).build();
-
-    }
-
     public static Action createPopVlanAction(int order) {
         return new ActionBuilder()
                 .setAction(new PopVlanActionCaseBuilder().setPopVlanAction(new PopVlanActionBuilder().build()).build())
@@ -124,16 +227,6 @@ public class SfcOpenflowUtils {
         return ab;
     }
 
-    public static VlanMatch createVlanMatch(int vlan) {
-        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
-        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        VlanId vlanId = new VlanId(vlan);
-        vlanIdBuilder.setVlanId(vlanId);
-        vlanIdBuilder.setVlanIdPresent(true);
-        vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-
-        return vlanMatchBuilder.build();
-    }
 
     // Only configure OpenFlow Capable SFFs
     public static boolean isSffOpenFlowCapable(final String sffName) {
@@ -145,7 +238,7 @@ public class SfcOpenflowUtils {
 
         // If its not a Flow Capable Node, this should return NULL
         // TODO need to verify this, once SFC can connect to simple OVS nodes that arent flow capable
-        FlowCapableNode node = SfcDataStoreAPI.readTransactionAPI(nodeInstancIdentifier, LogicalDatastoreType.CONFIGURATION);
+        FlowCapableNode node = SfcDataStoreAPI.readTransactionAPI(nodeInstancIdentifier, LogicalDatastoreType.OPERATIONAL);
         if(node != null) {
             return true;
         }

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_a8cc1e6b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-02-19T16:03:46Z",
+      "side": 1,
+      "message": "Just to sanity-check -- can any of these calls return null?",
+      "range": {
+        "startLine": 723,
+        "startChar": 12,
+        "endLine": 723,
+        "endChar": 16
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_08ebd2b0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-02-19T16:03:46Z",
+      "side": 1,
+      "message": "Can getSffDataPlaneLocator() return null?",
+      "range": {
+        "startLine": 154,
+        "startChar": 17,
+        "endLine": 154,
+        "endChar": 36
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.math.BigInteger;
 
 import org.slf4j.Logger;
@@ -23,24 +22,15 @@ import org.slf4j.LoggerFactory;
 import org.opendaylight.sfc.l2renderer.utils.SfcOpenflowUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -53,20 +43,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -81,7 +64,6 @@ public class SfcL2FlowProgrammer {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammer.class);
 
-    private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static final int COOKIE_BIGINT_HEX_RADIX = 16;
 
     // Which bits in the metadata field to set, used for the Bucket and allows 4095 sfpid's
@@ -92,13 +74,11 @@ public class SfcL2FlowProgrammer {
 
     private static final int L4_PORT_MASK = 0x0000FFFF;
     private static final int L4_PROTOCOL_TCP = 6;
-    private static final long ETHERTYPE_IPV4 = 0x0800l;
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
     private static final short TABLE_INDEX_INGRESS = 1;
     private static final short TABLE_INDEX_CLASSIFICATION = 2;
     private static final short TABLE_INDEX_NEXT_HOP = 3;
-    private static final short TABLE_INDEX_DEFAULT = 4;
     private static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
 
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
@@ -109,20 +89,14 @@ public class SfcL2FlowProgrammer {
     private static final int QUEUE_SIZE = 50;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
 
-    private static final String LOGSTR_NOT_READY_TO_WRITE = "{} NOT ready to write yet";
     private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
 
     // Instance variables
     private short tableBase;
-    private boolean isReady;
-    private String sffNodeName;
-    private final AtomicInteger atomicInteger;
     private ExecutorService threadPoolExecutorService;
 
     public SfcL2FlowProgrammer() {
         this.tableBase = (short) 0;
-        this.isReady = false;
-        this.atomicInteger = new AtomicInteger();
         this.threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE,
                 SCHEDULED_THREAD_POOL_SIZE, ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
@@ -131,16 +105,6 @@ public class SfcL2FlowProgrammer {
     // This method should only be called by SfcL2Renderer.close()
     public void shutdown() {
         threadPoolExecutorService.shutdown();
-        isReady = false;
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public void setNodeInfo(String sffNodeName) {
-        this.sffNodeName = sffNodeName;
-        isReady = true;
     }
 
     public short getTableBase() {
@@ -179,14 +143,230 @@ public class SfcL2FlowProgrammer {
         return (short) (tableBase + tableIndex);
     }
 
+
+    //
+    // Congfigure Table 0, Transport Ingress
+    //
+    public void configureIpv4TransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
+        ConfigureTransportIngressThread configureIngressTransportThread =
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    public void configureVlanTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
+        ConfigureTransportIngressThread configureIngressTransportThread =
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
+
+        ConfigureTransportIngressThread configureIngressTransportThread =
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureTransportIngressThread implements Runnable {
+        String sffNodeName;
+        boolean isAddFlow;
+        long etherType;
+
+        public ConfigureTransportIngressThread(final String sffNodeName, long etherType, final boolean isAddFlow) {
+            this.sffNodeName = sffNodeName;
+            this.etherType = etherType;
+            this.isAddFlow = isAddFlow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureIngressTransportFlow, etherType {}", this.etherType);
+
+                //
+                // Create the matching criteria
+                MatchBuilder match = new MatchBuilder();
+                SfcOpenflowUtils.addMatchEtherType(match, this.etherType);
+
+                //
+                // Action, goto Ingress table
+                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_INGRESS));
+
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
+                ib.setKey(new InstructionKey(1));
+                ib.setOrder(0);
+
+                // Put our Instruction in a list of Instructions
+                InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder transportIngressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
+                                FLOW_PRIORITY_DEFAULT_NEXT_HOP,
+                                "ingress_Transport_Default_Flow",
+                                match,
+                                isb);
+
+                if (isAddFlow) {
+                    writeFlowToConfig(sffNodeName, transportIngressFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, transportIngressFlow);
+                }
+            } catch (Exception e) {
+                LOG.trace("+++++++++++++++++  ConfigureIngressTransport writer caught an Exception: ");
+                LOG.error(e.getMessage(), e);
+            }
+        }
+    }
+
+
+    //
+    // Configure Table 1, Ingress
+    //
+
+    public void configureMacIngressFlow(final String sffNodeName, final String mac, long pathId, final boolean isAddFlow) {
+        ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(sffNodeName, pathId, isAddFlow);
+        configureIngressFlowThread.setMacAddress(mac);
+        try {
+            threadPoolExecutorService.execute(configureIngressFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    public void configureMplsIngressFlow(final String sffNodeName, final long label, long pathId, final boolean isAddFlow) {
+        ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(sffNodeName, pathId, isAddFlow);
+        configureIngressFlowThread.setMplsLabel(label);
+        try {
+            threadPoolExecutorService.execute(configureIngressFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    public void configureVlanIngressFlow(final String sffNodeName, final int vlan, long pathId, final boolean isAddFlow) {
+        ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(sffNodeName, pathId, isAddFlow);
+        configureIngressFlowThread.setVlanId(vlan);
+        try {
+            threadPoolExecutorService.execute(configureIngressFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureIngressFlowThread implements Runnable {
+        String sffNodeName;
+        long pathId;
+        int vlan;
+        long mplsLabel;
+        String macAddress;
+        boolean isAddFlow;
+
+        public void setVlanId(final int vlan) { this.vlan = vlan; }
+        public void setMplsLabel(final long label) { this.mplsLabel = label; }
+        public void setMacAddress(final String macAddress) { this.macAddress = macAddress; }
+
+        public ConfigureIngressFlowThread(final String sffNodeName, final long pathId, final boolean isAddFlow) {
+            this.sffNodeName = sffNodeName;
+            this.pathId = pathId;
+            this.isAddFlow = isAddFlow;
+            this.vlan = -1; // not set
+            this.mplsLabel = -1; // not set
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureIngressFlow vlan {} mpls {} mac {}",
+                        vlan, mplsLabel, macAddress);
+
+                MatchBuilder match = new MatchBuilder();
+                List<Action> actionList = new ArrayList<Action>();
+                int order = 0;
+
+                if(this.vlan >= 0) {
+                    SfcOpenflowUtils.addMatchVlan(match, this.vlan);
+                    actionList.add(SfcOpenflowUtils.createActionPopVlan(order++));
+                } else if(this.mplsLabel >= 0) {
+                    SfcOpenflowUtils.addMatchMplsLabel(match, this.mplsLabel);
+                    actionList.add(SfcOpenflowUtils.createActionPopMpls(order++));
+                } else if(this.macAddress.length() > 0) {
+                    // TODO, should this be addMatchSrcMac() or addMatchDstMac() ???
+                    SfcOpenflowUtils.addMatchSrcMac(match, this.macAddress);
+                }
+
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                aab.setAction(actionList);
+
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setInstruction(SfcOpenflowUtils.createInstructionMetadata(order++, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH));
+
+                InstructionBuilder instructionBuilder = new InstructionBuilder();
+                instructionBuilder.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                instructionBuilder.setKey(new InstructionKey(0));
+                instructionBuilder.setOrder(0);
+
+                GoToTableBuilder gotoNextHop = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_CLASSIFICATION));
+                InstructionBuilder gotoTbIb = new InstructionBuilder();
+                gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoNextHop.build()).build());
+                gotoTbIb.setKey(new InstructionKey(1));
+                gotoTbIb.setOrder(0);
+
+                // Put our Instruction in a list of Instructions
+                InstructionsBuilder isb = new InstructionsBuilder();
+                List<Instruction> instructions = new ArrayList<Instruction>();
+                instructions.add(instructionBuilder.build());
+                instructions.add(gotoTbIb.build());
+                isb.setInstruction(instructions);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder ingressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_NEXT_HOP,
+                                FLOW_PRIORITY_NEXT_HOP,
+                                "nextHop",
+                                match,
+                                isb);
+                // TODO are these two necessary?
+                //ingressFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(vlan)));
+                //ingressFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(vlan))));
+
+                if (isAddFlow) {
+                    writeFlowToConfig(sffNodeName, ingressFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, ingressFlow);
+                }
+            } catch (Exception e) {
+                LOG.trace("+++++++++++++++++  ConfigureIngressFlow writer caught an Exception: ");
+                LOG.error(e.getMessage(), e);
+            }
+        }
+    }
+
     // TODO some of the 5tuple entries may be optional, need to add logic to
     // writeSffAcl() to not write them if not specified
-    public void configureClassificationFlow(final String srcIp, final short srcMask, final String dstIp,
+    public void configureClassificationFlow(final String sffNodeName, final String srcIp, final short srcMask, final String dstIp,
             final short dstMask, final short srcPort, final short dstPort, final byte protocol, final long sfpId,
             final boolean isAddFlow) {
 
-        ConfigureClassificationFlowThread configureClassificationFlowThread = new ConfigureClassificationFlowThread(
-                srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId, isAddFlow);
+        ConfigureClassificationFlowThread configureClassificationFlowThread =
+                new ConfigureClassificationFlowThread(
+                        sffNodeName, srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureClassificationFlowThread);
         } catch (Exception ex) {
@@ -195,6 +375,7 @@ public class SfcL2FlowProgrammer {
     }
 
     private class ConfigureClassificationFlowThread implements Runnable {
+        String sffNodeName;
         String srcIp;
         short srcMask;
         String dstIp;
@@ -205,10 +386,11 @@ public class SfcL2FlowProgrammer {
         long sfpId;
         boolean isAddFlow;
 
-        public ConfigureClassificationFlowThread(final String srcIp, final short srcMask, final String dstIp,
+        public ConfigureClassificationFlowThread(final String sffNodeName, final String srcIp, final short srcMask, final String dstIp,
                 final short dstMask, final short srcPort, final short dstPort, final byte protocol, final long sfpId,
                 final boolean isAddFlow) {
             super();
+            this.sffNodeName = sffNodeName;
             this.srcIp = srcIp;
             this.srcMask = srcMask;
             this.dstIp = dstIp;
@@ -223,10 +405,6 @@ public class SfcL2FlowProgrammer {
         @Override
         public void run() {
             try {
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
 
                 LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
 
@@ -237,12 +415,8 @@ public class SfcL2FlowProgrammer {
 
                 // To do an IP match, the EtherType needs to be set to
                 // 0x0800 which indicates IP
-                EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-                ethTypeBuilder.setType(new EtherType(ETHERTYPE_IPV4));
-                EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
-                ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
                 MatchBuilder match = new MatchBuilder();
-                match.setEthernetMatch(ethMatchBuilder.build());
+                SfcOpenflowUtils.addMatchEtherType(match, Long.valueOf(SfcOpenflowUtils.ETHERTYPE_IPV4));
 
                 Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
                 if (srcIp != null) {
@@ -331,31 +505,18 @@ public class SfcL2FlowProgrammer {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder aclFlow = new FlowBuilder();
-                aclFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort, protocol, sfpId)));
-                aclFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(srcIp, srcMask, dstIp, dstMask, srcPort, dstPort,
-                        protocol, sfpId))));
-                aclFlow.setTableId(getTableId(TABLE_INDEX_CLASSIFICATION));
-                aclFlow.setFlowName("acl");
-                BigInteger cookieValue = getCookieSFP(sfpId);
-                aclFlow.setCookie(new FlowCookie(cookieValue));
-                aclFlow.setCookieMask(new FlowCookie(cookieValue));
-                aclFlow.setContainerName(null);
-                aclFlow.setStrict(false);
-                aclFlow.setMatch(match.build());
-                aclFlow.setInstructions(isb.build());
-                aclFlow.setPriority(FLOW_PRIORITY_CLASSIFICATION);
-                aclFlow.setHardTimeout(0);
-                aclFlow.setIdleTimeout(0);
-                aclFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == aclFlow.isBarrier()) {
-                    aclFlow.setBarrier(Boolean.FALSE);
-                }
+                FlowBuilder aclFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_CLASSIFICATION,
+                                FLOW_PRIORITY_CLASSIFICATION,
+                                "acl",
+                                match,
+                                isb);
 
                 if (isAddFlow) {
-                    writeFlowToConfig(aclFlow);
+                    writeFlowToConfig(sffNodeName, aclFlow);
                 } else {
-                    removeFlowFromConfig(aclFlow);
+                    removeFlowFromConfig(sffNodeName, aclFlow);
                 }
             } catch (Exception e) {
                 LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
@@ -364,92 +525,13 @@ public class SfcL2FlowProgrammer {
         }
     }
 
-    public void configureSffNextHopDefaultFlow(final boolean isAddFlow) {
+    //
+    // Table 3, NextHop
+    //
+    public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow) {
 
-        ConfigureSffNextHopDefaultFlowThread configureSffNextHopDefaultFlowThread =
-                new ConfigureSffNextHopDefaultFlowThread(isAddFlow);
-        try {
-            threadPoolExecutorService.execute(configureSffNextHopDefaultFlowThread);
-        } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
-        }
-    }
-
-    private class ConfigureSffNextHopDefaultFlowThread implements Runnable {
-        boolean isAddFlow;
-
-        public ConfigureSffNextHopDefaultFlowThread(final boolean isAddFlow) {
-            this.isAddFlow = isAddFlow;
-        }
-
-        @Override
-        public void run() {
-            try {
-
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.configureSffNextHopDefaultFlow");
-
-                //
-                // Create the matching criteria
-                MatchBuilder match = new MatchBuilder();
-                // Set the DL (Data Link) Dest Mac Address
-
-                GoToTableBuilder gotoTb = new GoToTableBuilder();
-                gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_DEFAULT)));
-
-                InstructionBuilder gotoTbIb = new InstructionBuilder();
-                gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-                gotoTbIb.setKey(new InstructionKey(1));
-                gotoTbIb.setOrder(0);
-
-                // Put our Instruction in a list of Instructions
-                InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(gotoTbIb.build());
-                isb.setInstruction(instructions);
-
-                //
-                // Create and configure the FlowBuilder
-                FlowBuilder defNextHopFlow = new FlowBuilder();
-                defNextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_NEXT_HOP)));
-                defNextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_NEXT_HOP))));
-                defNextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
-                defNextHopFlow.setFlowName("next_Hop_Default_Flow");
-                BigInteger cookieValue = getCookieDefault(TABLE_INDEX_NEXT_HOP);
-                defNextHopFlow.setCookie(new FlowCookie(cookieValue));
-                defNextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-                defNextHopFlow.setContainerName(null);
-                defNextHopFlow.setStrict(false);
-                defNextHopFlow.setMatch(match.build());
-                defNextHopFlow.setInstructions(isb.build());
-                defNextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
-                defNextHopFlow.setHardTimeout(0);
-                defNextHopFlow.setIdleTimeout(0);
-                defNextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == defNextHopFlow.isBarrier()) {
-                    defNextHopFlow.setBarrier(Boolean.FALSE);
-                }
-                if (isAddFlow) {
-                    writeFlowToConfig(defNextHopFlow);
-                } else {
-                    removeFlowFromConfig(defNextHopFlow);
-                }
-            } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  SffNextHopDefaultFlow writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
-            }
-
-        }
-    }
-
-    public void configureNextHopFlow(final long sfpId, final String srcMac, final String dstMac, final int dstVlan,
-            final boolean isAddFlow) {
-
-        ConfigureNextHopFlowThread configureNextHopFlowThread = new ConfigureNextHopFlowThread(sfpId, srcMac, dstMac,
-                dstVlan, isAddFlow);
+        ConfigureNextHopFlowThread configureNextHopFlowThread =
+                new ConfigureNextHopFlowThread(sffNodeName, sfpId, srcMac, dstMac, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureNextHopFlowThread);
         } catch (Exception ex) {
@@ -458,69 +540,52 @@ public class SfcL2FlowProgrammer {
     }
 
     private class ConfigureNextHopFlowThread implements Runnable {
+        String sffNodeName;
         long sfpId;
         String srcMac;
         String dstMac;
-        int dstVlan;
         boolean isAddFlow;
 
-        public ConfigureNextHopFlowThread(final long sfpId, final String srcMac, final String dstMac,
-                final int dstVlan, final boolean isAddFlow) {
+        public ConfigureNextHopFlowThread(
+                final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow) {
             super();
+            this.sffNodeName = sffNodeName;
             this.sfpId = sfpId;
             this.srcMac = srcMac;
             this.dstMac = dstMac;
-            this.dstVlan = dstVlan;
             this.isAddFlow = isAddFlow;
-
         }
 
         @Override
         public void run() {
             try {
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
-
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureNextHopFlow sfpId {} srcMac {} dstMac {} dstVlan {}",
-                        sfpId, srcMac, dstMac, dstVlan);
+                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureNextHopFlow sfpId {} srcMac {} dstMac {}",
+                        sfpId, srcMac, dstMac);
 
                 //
                 // Create the matching criteria
                 MatchBuilder match = new MatchBuilder();
 
                 // Match on the metadata sfpId
-                MetadataBuilder metadata = new MetadataBuilder();
-                metadata.setMetadata(getMetadataSFP(sfpId));
-                metadata.setMetadataMask(METADATA_MASK_SFP_MATCH);
-                match.setMetadata(metadata.build());
+                SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(sfpId), METADATA_MASK_SFP_MATCH);
 
-                // match the src mac
-                EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-                EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-                ethSourceBuilder.setAddress(new MacAddress(srcMac));
-                ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-                match.setEthernetMatch(ethernetMatch.build());
+                // match on the src mac
+                SfcOpenflowUtils.addMatchSrcMac(match, srcMac);
 
+                //
                 // Create the Actions
 
                 // Set the DL (Data Link) Dest Mac Address
-                Action actionDstMac = SfcOpenflowUtils.createSetDlDstAction(dstMac, 0);
-                Action actionPushVlan = SfcOpenflowUtils.createPushVlanAction(1);
-                Action actionDstVlan = SfcOpenflowUtils.createSetDstVlanAction(dstVlan, 2);
+                Action actionDstMac = SfcOpenflowUtils.createActionSetDlDst(dstMac, 0);
 
                 List<Action> actionList = new ArrayList<Action>();
-
                 actionList.add(actionDstMac);
-                actionList.add(actionPushVlan);
-                actionList.add(actionDstVlan);
+
                 // Create an Apply Action
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
                 aab.setAction(actionList);
 
-                GoToTableBuilder gotoTb = new GoToTableBuilder();
-                gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_TRANSPORT_EGRESS)));
+                GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(TABLE_INDEX_TRANSPORT_EGRESS);
 
                 InstructionBuilder gotoTbIb = new InstructionBuilder();
                 gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
@@ -542,31 +607,18 @@ public class SfcL2FlowProgrammer {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder nextHopFlow = new FlowBuilder();
-                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, srcMac, dstMac, dstVlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, srcMac, dstMac, dstVlan))));
-                nextHopFlow.setTableId(getTableId(TABLE_INDEX_NEXT_HOP));
-                nextHopFlow.setFlowName("nextHop");
-                BigInteger cookieValue = getCookieSFP(sfpId);
-                nextHopFlow.setCookie(new FlowCookie(cookieValue));
-                nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-                nextHopFlow.setContainerName(null);
-                nextHopFlow.setStrict(false);
-                nextHopFlow.setMatch(match.build());
-                nextHopFlow.setInstructions(isb.build());
-                nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
-                nextHopFlow.setHardTimeout(0);
-                nextHopFlow.setIdleTimeout(0);
-                nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                nextHopFlow.setInstallHw(true);
-                if (null == nextHopFlow.isBarrier()) {
-                    nextHopFlow.setBarrier(Boolean.FALSE);
-                }
+                FlowBuilder nextHopFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_NEXT_HOP,
+                                FLOW_PRIORITY_NEXT_HOP,
+                                "nextHop",
+                                match,
+                                isb);
 
                 if (isAddFlow) {
-                    writeFlowToConfig(nextHopFlow);
+                    writeFlowToConfig(sffNodeName, nextHopFlow);
                 } else {
-                    removeFlowFromConfig(nextHopFlow);
+                    removeFlowFromConfig(sffNodeName, nextHopFlow);
                 }
             } catch (Exception e) {
                 LOG.trace("+++++++++++++++++  ConfigureNextHopFlow writer caught an Exception: ");
@@ -575,283 +627,92 @@ public class SfcL2FlowProgrammer {
         }
     }
 
-    public void configureIngressFlow(final int vlan, final boolean isAddFlow) {
 
-        ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(vlan, isAddFlow);
-        try {
-            threadPoolExecutorService.execute(configureIngressFlowThread);
-        } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
-        }
-    }
-
-    private class ConfigureIngressFlowThread implements Runnable {
-        int vlan;
-        boolean isAddFlow;
-
-        public ConfigureIngressFlowThread(final int vlan, final boolean isAddFlow) {
-            this.vlan = vlan;
-            this.isAddFlow = isAddFlow;
-        }
-
-        @Override
-        public void run() {
-            try {
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
-
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureIngressFlow vlan {}", vlan);
-
-                MatchBuilder matchBuilder = new MatchBuilder();
-                matchBuilder.setVlanMatch(SfcOpenflowUtils.createVlanMatch(vlan));
-
-                Action actionPopVlan = SfcOpenflowUtils.createPopVlanAction(0);
-                List<Action> actionList = new ArrayList<Action>();
-                actionList.add(actionPopVlan);
-                // Create an Apply Action
-                ApplyActionsBuilder aab = new ApplyActionsBuilder();
-                aab.setAction(actionList);
-
-                InstructionBuilder instructionBuilder = new InstructionBuilder();
-                instructionBuilder.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-                instructionBuilder.setKey(new InstructionKey(0));
-                instructionBuilder.setOrder(0);
-
-                GoToTableBuilder gotoTb = new GoToTableBuilder();
-                gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_CLASSIFICATION)));
-
-                InstructionBuilder gotoTbIb = new InstructionBuilder();
-                gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-                gotoTbIb.setKey(new InstructionKey(1));
-                gotoTbIb.setOrder(0);
-
-                // Put our Instruction in a list of Instructions
-                InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(instructionBuilder.build());
-                instructions.add(gotoTbIb.build());
-                isb.setInstruction(instructions);
-
-                //
-                // Create and configure the FlowBuilder
-                FlowBuilder nextHopFlow = new FlowBuilder();
-                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(vlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(vlan))));
-                nextHopFlow.setTableId(getTableId(TABLE_INDEX_INGRESS));
-                    // should this name be unique??
-                nextHopFlow.setFlowName("ingress_flow");
-                BigInteger cookieValue = getCookieIngress(vlan);
-                nextHopFlow.setCookie(new FlowCookie(cookieValue));
-                nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-                nextHopFlow.setContainerName(null);
-                nextHopFlow.setStrict(false);
-                nextHopFlow.setMatch(matchBuilder.build());
-                nextHopFlow.setInstructions(isb.build());
-                nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
-                nextHopFlow.setHardTimeout(0);
-                nextHopFlow.setIdleTimeout(0);
-                nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == nextHopFlow.isBarrier()) {
-                    nextHopFlow.setBarrier(Boolean.FALSE);
-                }
-
-                if (isAddFlow) {
-                    writeFlowToConfig(nextHopFlow);
-                } else {
-                    removeFlowFromConfig(nextHopFlow);
-                }
-            } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  ConfigureIngressFlow writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    public void configureDefaultNextHopFlow(final long sfpId, final String dstMac, final int dstVlan,
-            final boolean isAddFlow) {
-
-        ConfigureDefaultNextHopFlowThread configureDefaultNextHopFlowThread = new ConfigureDefaultNextHopFlowThread(
-                sfpId, dstMac, dstVlan, isAddFlow);
-        try {
-            threadPoolExecutorService.execute(configureDefaultNextHopFlowThread);
-        } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
-        }
-    }
-
-    private class ConfigureDefaultNextHopFlowThread implements Runnable {
-        long sfpId;
-        String dstMac;
-        int dstVlan;
-        boolean isAddFlow;
-
-        public ConfigureDefaultNextHopFlowThread(final long sfpId, final String dstMac, final int dstVlan,
-                final boolean isAddFlow) {
-            this.sfpId = sfpId;
-            this.dstMac = dstMac;
-            this.dstVlan = dstVlan;
-            this.isAddFlow = isAddFlow;
-        }
-
-        @Override
-        public void run() {
-            try {
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
-
-                LOG.trace("+++++++++++++++++  SfcProviderSffFlowWriter.configureDefaultNextHopFlow sfpId {}, dstMac {}, dstVlan {}",
-                        sfpId, dstMac, dstVlan);
-
-                //
-                // Create the matching criteria
-                MatchBuilder match = new MatchBuilder();
-
-                // Match on the metadata sfpId
-                MetadataBuilder metadata = new MetadataBuilder();
-                metadata.setMetadata(getMetadataSFP(sfpId));
-                metadata.setMetadataMask(METADATA_MASK_SFP_MATCH);
-                match.setMetadata(metadata.build());
-
-                EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
-                match.setEthernetMatch(ethmatch.build());
-
-                // Create the Actions
-
-                // Set the DL (Data Link) Dest Mac Address
-                Action actionDstMac = SfcOpenflowUtils.createSetDlDstAction(dstMac, 0);
-                Action actionPushVlan = SfcOpenflowUtils.createPushVlanAction(1);
-                Action actionDstVlan = SfcOpenflowUtils.createSetDstVlanAction(dstVlan, 2);
-
-                List<Action> actionList = new ArrayList<Action>();
-
-                actionList.add(actionDstMac);
-                actionList.add(actionPushVlan);
-                actionList.add(actionDstVlan);
-
-                // Create an Apply Action
-                ApplyActionsBuilder aab = new ApplyActionsBuilder();
-                aab.setAction(actionList);
-
-                // Wrap our Apply Action in an Instruction
-                InstructionBuilder ib = new InstructionBuilder();
-                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-                ib.setKey(new InstructionKey(0));
-                ib.setOrder(0);
-
-                GoToTableBuilder gotoTb = new GoToTableBuilder();
-                gotoTb.setTableId(getTableId(getTableId(TABLE_INDEX_TRANSPORT_EGRESS)));
-
-                InstructionBuilder gotoTbIb = new InstructionBuilder();
-                gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-                gotoTbIb.setKey(new InstructionKey(1));
-                gotoTbIb.setOrder(1);
-
-                // Put our Instruction in a list of Instructions
-                InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(ib.build());
-                instructions.add(gotoTbIb.build());
-                isb.setInstruction(instructions);
-
-                //
-                // Create and configure the FlowBuilder
-                FlowBuilder nextHopFlow = new FlowBuilder();
-
-                nextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, dstMac, dstVlan)));
-                nextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(sfpId, dstMac, dstVlan))));
-                nextHopFlow.setTableId(getTableId(TABLE_INDEX_DEFAULT));
-                nextHopFlow.setFlowName("default_flow ");
-                // be
-                // unique??
-                BigInteger cookieValue = getCookieSFP(sfpId);
-                nextHopFlow.setCookie(new FlowCookie(cookieValue));
-                nextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-                nextHopFlow.setContainerName(null);
-                nextHopFlow.setStrict(false);
-                nextHopFlow.setMatch(match.build());
-                nextHopFlow.setInstructions(isb.build());
-                nextHopFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
-                nextHopFlow.setHardTimeout(0);
-                nextHopFlow.setIdleTimeout(0);
-                nextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == nextHopFlow.isBarrier()) {
-                    nextHopFlow.setBarrier(Boolean.FALSE);
-                }
-
-                //
-                // Now write the Flow Entry
-                if (isAddFlow) {
-                    writeFlowToConfig(nextHopFlow);
-                } else {
-                    removeFlowFromConfig(nextHopFlow);
-                }
-            } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  ConfigureDefaultNextHopFlow writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    public void configureEgressTransportFlow(final String dstMac, final int dstVlan, final boolean isAddFlow) {
-
-        ConfigureEgressTransportThread configureEgressTransportThread = new ConfigureEgressTransportThread(dstMac,
-                dstVlan, isAddFlow);
+    //
+    // Table 10, Transport Egress
+    // TODO we need to parameterize the out port "1"
+    //
+    public void configureMacTransportEgressFlow(final String sffNodeName, final String dstMac, final boolean isAddFlow) {
+        ConfigureTransportEgressThread configureEgressTransportThread =
+                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
-
     }
 
-    private class ConfigureEgressTransportThread implements Runnable {
+    public void configureVlanTransportEgressFlow(final String sffNodeName, final String dstMac, final int dstVlan, final boolean isAddFlow) {
+        ConfigureTransportEgressThread configureEgressTransportThread =
+                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
+        configureEgressTransportThread.setDstVlan(dstVlan);
+        try {
+            threadPoolExecutorService.execute(configureEgressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
 
+    public void configureMplsTransportEgressFlow(final String sffNodeName, final String dstMac, final long mplsLabel, final boolean isAddFlow) {
+
+        ConfigureTransportEgressThread configureEgressTransportThread =
+                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
+        configureEgressTransportThread.setMplsLabel(mplsLabel);
+        try {
+            threadPoolExecutorService.execute(configureEgressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureTransportEgressThread implements Runnable {
+        String sffNodeName;
         String dstMac;
         int dstVlan;
+        long mplsLabel;
         boolean isAddFlow;
 
-        public ConfigureEgressTransportThread(String dstMac, int dstVlan, boolean isAddFlow) {
+        public ConfigureTransportEgressThread(final String sffNodeName, String dstMac, boolean isAddFlow) {
             super();
+            this.sffNodeName = sffNodeName;
             this.dstMac = dstMac;
-            this.dstVlan = dstVlan;
+            this.dstVlan = -1;   // unused
+            this.mplsLabel = -1; // unused
             this.isAddFlow = isAddFlow;
         }
+        public void setDstVlan(final int dstVlan) { this.dstVlan = dstVlan; }
+        public void setMplsLabel(final long mplsLabel) { this.mplsLabel = mplsLabel; }
 
         @Override
         public void run() {
             try {
+                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
+                MatchBuilder match = new MatchBuilder();
+                SfcOpenflowUtils.addMatchDstMac(match, dstMac);
+
+                int order = 0;
+                List<Action> actionList = new ArrayList<Action>();
+
+                // Optionally set either the VLAN or MPLS info
+                if(dstVlan > 0) {
+                    Action vlanPush = SfcOpenflowUtils.createActionPushVlan(order++);
+                    actionList.add(vlanPush);
+
+                    Action vlanDst = SfcOpenflowUtils.createActionSetVlanId(this.dstVlan, order++);
+                    actionList.add(vlanDst);
+                } else if(mplsLabel > 0) {
+                    Action mplsPush = SfcOpenflowUtils.createActionPushMpls(order++);
+                    actionList.add(mplsPush);
+
+                    Action setMpls = SfcOpenflowUtils.createActionSetMplsLabel(this.mplsLabel, order++);
+                    actionList.add(setMpls);
                 }
 
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureEgressTransportFlow");
+                // TODO we need to parameterize the out port "1"
+                Action outPortBuilder = SfcOpenflowUtils.createActionOutPort("1", order);
+                actionList.add(outPortBuilder);
 
-                MatchBuilder matchBuilder = new MatchBuilder();
-                matchBuilder.setVlanMatch(SfcOpenflowUtils.createVlanMatch(dstVlan));
-
-                // match the dst mac
-                EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-                EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-                ethDestinationBuilder.setAddress(new MacAddress(dstMac));
-                ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
-                matchBuilder.setEthernetMatch(ethernetMatch.build());
-
-                List<Action> actionList = new ArrayList<Action>();
-                ActionBuilder ab = new ActionBuilder();
-                OutputActionBuilder output = new OutputActionBuilder();
-
-                Uri value = new Uri("1");
-                output.setOutputNodeConnector(value);
-                ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-                ab.setOrder(0);
-                ab.setKey(new ActionKey(0));
-                actionList.add(ab.build());
                 // Create an Apply Action
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
                 aab.setAction(actionList);
@@ -863,40 +724,22 @@ public class SfcL2FlowProgrammer {
                 ib.setKey(new InstructionKey(0));
 
                 // Put our Instruction in a list of Instructions
-                InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(ib.build());
-                isb.setInstruction(instructions);
+                InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
 
-                FlowBuilder egressTransportFlow = new FlowBuilder();
-
-                egressTransportFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(dstMac, dstVlan)));
-                egressTransportFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(dstMac, dstVlan))));
-                egressTransportFlow.setTableId(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
-                egressTransportFlow.setFlowName("default_egress_flow ");
-                // be
-                // unique??
-                BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
-                egressTransportFlow.setCookie(new FlowCookie(cookieValue));
-                egressTransportFlow.setCookieMask(new FlowCookie(cookieValue));
-                egressTransportFlow.setContainerName(null);
-                egressTransportFlow.setStrict(false);
-                egressTransportFlow.setMatch(matchBuilder.build());
-                egressTransportFlow.setInstructions(isb.build());
-                egressTransportFlow.setPriority(FLOW_PRIORITY_NEXT_HOP);
-                egressTransportFlow.setHardTimeout(0);
-                egressTransportFlow.setIdleTimeout(0);
-                egressTransportFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == egressTransportFlow.isBarrier()) {
-                    egressTransportFlow.setBarrier(Boolean.FALSE);
-                }
+                FlowBuilder egressTransportFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_TRANSPORT_EGRESS,
+                                FLOW_PRIORITY_NEXT_HOP,
+                                "default_egress_flow",
+                                match,
+                                isb);
 
                 //
                 // Now write the Flow Entry
                 if (isAddFlow) {
-                    writeFlowToConfig(egressTransportFlow);
+                    writeFlowToConfig(sffNodeName, egressTransportFlow);
                 } else {
-                    removeFlowFromConfig(egressTransportFlow);
+                    removeFlowFromConfig(sffNodeName, egressTransportFlow);
                 }
 
             } catch (Exception ex) {
@@ -905,88 +748,14 @@ public class SfcL2FlowProgrammer {
         }
     }
 
-    public void configureIngressTransportFlow(final boolean isAddFlow) {
 
-        ConfigureIngressTransportThread configureIngressTransportThread = new ConfigureIngressTransportThread(isAddFlow);
-        try {
-            threadPoolExecutorService.execute(configureIngressTransportThread);
-        } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
-        }
-    }
-
-    private class ConfigureIngressTransportThread implements Runnable {
-        boolean isAddFlow;
-
-        public ConfigureIngressTransportThread(final boolean isAddFlow) {
-            this.isAddFlow = isAddFlow;
-        }
-
-        @Override
-        public void run() {
-            try {
-
-                if (!isReady) {
-                    LOG.error(LOGSTR_NOT_READY_TO_WRITE, Thread.currentThread().getStackTrace()[0]);
-                    return;
-                }
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureIngressTransportFlow");
-
-                //
-                // Create the matching criteria
-                MatchBuilder match = new MatchBuilder();
-                // Set the DL (Data Link) Dest Mac Address
-
-                GoToTableBuilder gotoTb = new GoToTableBuilder();
-                gotoTb.setTableId(TABLE_INDEX_INGRESS);
-
-                InstructionBuilder gotoTbIb = new InstructionBuilder();
-                gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-                gotoTbIb.setKey(new InstructionKey(1));
-                gotoTbIb.setOrder(0);
-
-                // Put our Instruction in a list of Instructions
-                InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(gotoTbIb.build());
-                isb.setInstruction(instructions);
-
-                //
-                // Create and configure the FlowBuilder
-                FlowBuilder defNextHopFlow = new FlowBuilder();
-                defNextHopFlow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE)));
-                defNextHopFlow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(TABLE_INDEX_INGRESS_TRANSPORT_TABLE))));
-                defNextHopFlow.setTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
-                defNextHopFlow.setFlowName("ingress_Transport_Default_Flow");
-                BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
-                defNextHopFlow.setCookie(new FlowCookie(cookieValue));
-                defNextHopFlow.setCookieMask(new FlowCookie(cookieValue));
-                defNextHopFlow.setContainerName(null);
-                defNextHopFlow.setStrict(false);
-                defNextHopFlow.setMatch(match.build());
-                defNextHopFlow.setInstructions(isb.build());
-                defNextHopFlow.setPriority(FLOW_PRIORITY_DEFAULT_NEXT_HOP);
-                defNextHopFlow.setHardTimeout(0);
-                defNextHopFlow.setIdleTimeout(0);
-                defNextHopFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-                if (null == defNextHopFlow.isBarrier()) {
-                    defNextHopFlow.setBarrier(Boolean.FALSE);
-                }
-                if (isAddFlow) {
-
-                    writeFlowToConfig(defNextHopFlow);
-                } else {
-                    removeFlowFromConfig(defNextHopFlow);
-                }
-            } catch (Exception e) {
-                LOG.trace("+++++++++++++++++  ConfigureIngressTransport writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
-            }
-
-        }
-    }
-
-    private void removeFlowFromConfig(FlowBuilder flow) {
+    /**
+     * Remove a Flow from the DataStore
+     *
+     * @param sffNodeName - which SFF the flow is in
+     * @param flow - details of the flow to be removed
+     */
+    private void removeFlowFromConfig(final String sffNodeName, FlowBuilder flow) {
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(sffNodeName));
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
@@ -997,13 +766,20 @@ public class SfcL2FlowProgrammer {
                 .child(Table.class, new TableKey(flow.getTableId()))
                 .child(Flow.class, flow.getKey())
                 .build();
-        if (! SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.OPERATIONAL)) {
+
+        if (! SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("{}: Failed to remove Flow on node: {}",
                     Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
     }
 
-    private void writeFlowToConfig(FlowBuilder flow) {
+    /**
+     * Write a flow to the DataStore
+     *
+     * @param sffNodeName - which SFF to write the flow to
+     * @param flow - details of the flow to be written
+     */
+    private void writeFlowToConfig(final String sffNodeName, FlowBuilder flow) {
         // Create the NodeBuilder
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(sffNodeName));
@@ -1017,7 +793,6 @@ public class SfcL2FlowProgrammer {
                 .build();
 
         LOG.info("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
-        LOG.debug("writeFlowToConfig flowIID {}", flowInstanceId);
 
         if (! SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(), LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("{}: Failed to create Flow on node: {}",

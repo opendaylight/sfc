@@ -8,6 +8,7 @@ module rendered-service-path {
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
   import service-function-metadata {prefix sfc-md; }
+  import service-locator  { prefix sfc-sl; }
 
 
   organization "Cisco Systems, Inc.";
@@ -152,6 +153,32 @@ module rendered-service-path {
       }
     }
   }
+
+  container rendered-service-path-first-hop {
+    description
+      "Provides all necessary information for a system to construct
+      a NSH header and associated overlay packet to target the first
+      service hop of a Rendered Service Path";
+    leaf starting-index {
+      type uint8;
+      description
+          "Starting service index";
+    }
+    leaf path-id {
+      type uint32 {
+      range "0..16777216";
+    }
+    description
+      "Identifies a service path.
+       Participating nodes MUST use this identifier for path
+       selection.  An administrator can use the service path
+       value for reporting and troubleshooting packets along
+       a specific path.";
+    }
+    uses sfc-sl:ip-port-locator;
+  }
+
+
 
   rpc delete-rendered-path {
     description

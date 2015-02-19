@@ -41,8 +41,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * datastore.
  * <p/>
  * It is normally called from onDataChanged() through a executor
- * service. We need to use an executor service because we can not
- * operate on a datastore while on onDataChanged() context.
+ * service.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)

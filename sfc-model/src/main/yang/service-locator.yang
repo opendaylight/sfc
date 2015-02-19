@@ -123,7 +123,8 @@ module service-locator {
     }
   }
 
-  grouping data-plane-locator {
+
+  grouping data-plane-locator-choice {
     description
       "This group presents data-plane locator
        information for service function elements in the domain";
@@ -150,4 +151,15 @@ module service-locator {
       }
     }
   }
+
+  //container data-plane-locator {
+  //  description "Data plane container";
+  //  uses sfc-sl:data-plane-locator-choice;
+  //}
+
+  container ip-data-plane-locator {
+    description "IP Data Plane Locator";
+    uses ip-port-locator;
+  }
+
 }

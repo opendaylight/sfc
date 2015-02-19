@@ -44,6 +44,12 @@ public class SbRestAclTask extends SbRestAbstractTask {
         setRestUriList(dataObject, sclServiceForwarderList);
     }
 
+    public SbRestAclTask(RestOperation restOperation, String accessListName,
+                         List<SclServiceFunctionForwarder> sclServiceForwarderList, ExecutorService odlExecutor) {
+        super(restOperation, odlExecutor);
+        setRestUriList(accessListName, sclServiceForwarderList);
+    }
+
     private void setJsonObject (RestOperation restOperation, AccessList dataObject) {
         this.exporterFactory = new AclExporterFactory();
         if (restOperation.equals(RestOperation.DELETE)) {
@@ -55,11 +61,16 @@ public class SbRestAclTask extends SbRestAbstractTask {
 
     @Override
     protected void setRestUriList(DataObject dataObject) {
-        AccessList obj = (AccessList) dataObject;
+        AccessList accessList = (AccessList) dataObject;
+        String accessListName = null;
+
+        if (accessList != null){
+            accessListName = accessList.getAclName();
+        }
 
         //rest uri list should be created from Classifier SFFs. Classifier will be taken from ACL operational data store <ACL, Classifier>
         //this prevents from looping through all classifiers and looking from ACL.
-        AccessListState accessListState = SfcProviderAclAPI.readAccessListStateExecutor(obj.getAclName());
+        AccessListState accessListState = SfcProviderAclAPI.readAccessListStateExecutor(accessListName);
         if (accessListState != null) {
             List<AclServiceFunctionClassifier> serviceClassifierList = accessListState.getAclServiceFunctionClassifier();
 
@@ -71,7 +82,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
 
                     if (serviceClassifier != null) {
                         List<SclServiceFunctionForwarder> sclServiceForwarderList = serviceClassifier.getSclServiceFunctionForwarder();
-                        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, obj);
+                        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, accessListName);
                     }
                 }
             }
@@ -79,24 +90,29 @@ public class SbRestAclTask extends SbRestAbstractTask {
     }
 
     protected void setRestUriList(DataObject dataObject, List<SclServiceFunctionForwarder> sclServiceForwarderList) {
-        AccessList obj = (AccessList) dataObject;
+        AccessList accessList = (AccessList) dataObject;
 
-        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, obj);
+        if (accessList != null) {
+            this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, accessList.getAclName());
+        }
+    }
+
+    protected void setRestUriList(String accessListName, List<SclServiceFunctionForwarder> sclServiceForwarderList) {
+        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, accessListName);
     }
 
     private ArrayList<String> getRestUriListFromSclServiceForwarderList(List<SclServiceFunctionForwarder> sclServiceForwarderList,
-                                                                        AccessList accessList) {
+                                                                        String accessListName) {
         ArrayList<String> sffRestUriList = new ArrayList<>();
 
-        if (sclServiceForwarderList != null &&
-                accessList != null && accessList.getAclName() != null && !accessList.getAclName().isEmpty()) {
+        if (sclServiceForwarderList != null && accessListName != null && !accessListName.isEmpty()) {
             for (SclServiceFunctionForwarder sclServiceForwarder : sclServiceForwarderList) {
                 ServiceFunctionForwarder serviceForwarder =
                         SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sclServiceForwarder.getName());
 
                 if (serviceForwarder != null && serviceForwarder.getRestUri() != null &&
                         !serviceForwarder.getRestUri().getValue().isEmpty()) {
-                    String restUri = serviceForwarder.getRestUri().getValue() + ACL_REST_URI + accessList.getAclName();
+                    String restUri = serviceForwarder.getRestUri().getValue() + ACL_REST_URI + accessListName;
                     sffRestUriList.add(restUri);
                     LOG.info("ACL will be send to REST URI {}", restUri);
                 }

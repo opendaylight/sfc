@@ -145,7 +145,7 @@ public class SfcOpenflowUtils {
 
         // If its not a Flow Capable Node, this should return NULL
         // TODO need to verify this, once SFC can connect to simple OVS nodes that arent flow capable
-        FlowCapableNode node = SfcDataStoreAPI.readTransactionAPI(nodeInstancIdentifier, LogicalDatastoreType.CONFIGURATION);
+        FlowCapableNode node = SfcDataStoreAPI.readTransactionAPI(nodeInstancIdentifier, LogicalDatastoreType.OPERATIONAL);
         if(node != null) {
             return true;
         }

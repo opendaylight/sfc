@@ -167,7 +167,7 @@ def build_data_plane_service_path(service_path):
     local_data_plane_path = sfc_globals.get_data_plane_path()
 
     for service_hop in service_path['rendered-service-path-hop']:
-        sh_index = service_hop['service_index']
+        sh_index = service_hop['service-index']
         sh_sff = service_hop['service-function-forwarder']
 
         if sh_sff == sfc_globals.get_my_sff_name():

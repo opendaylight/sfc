@@ -111,7 +111,7 @@ if __name__ == "__main__":
     check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
-    # put_and_check(IETF_ACL_URL, IETF_ACL_JSON, IETF_ACL_JSON)
+    put_and_check(IETF_ACL_URL, IETF_ACL_JSON, IETF_ACL_JSON)
 
     # put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
     # check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")

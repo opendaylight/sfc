@@ -346,13 +346,13 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
             "hop-number": 0,
             "service-function-name": "SF4",
             "service-function-forwarder": "SFF3",
-            "service_index": 255
+            "service-index": 255
           },
           {
             "hop-number": 1,
             "service-function-name": "SF5",
             "service-function-forwarder": "SFF4",
-            "service_index": 254
+            "service-index": 254
           }
         ]
       },
@@ -366,19 +366,19 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
             "hop-number": 0,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF3",
-            "service_index": 255
+            "service-index": 255
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF2",
-            "service_index": 254
+            "service-index": 254
           },
           {
             "hop-number": 2,
             "service-function-name": "SF1",
             "service-function-forwarder": "SFF1",
-            "service_index": 253
+            "service-index": 253
           }
         ]
       },
@@ -392,19 +392,19 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
             "hop-number": 0,
             "service-function-name": "SF1",
             "service-function-forwarder": "SFF1",
-            "service_index": 255
+            "service-index": 255
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF2",
-            "service_index": 254
+            "service-index": 254
           },
           {
             "hop-number": 2,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF3",
-            "service_index": 253
+            "service-index": 253
           }
         ]
       }
@@ -634,13 +634,13 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
             "hop-number": 0,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF2",
-            "service_index": 2
+            "service-index": 2
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF1",
-            "service_index": 1
+            "service-index": 1
           }
         ]
       },
@@ -654,19 +654,19 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
             "hop-number": 0,
             "service-function-name": "SF1",
             "service-function-forwarder": "SFF1",
-            "service_index": 3
+            "service-index": 3
           },
           {
             "hop-number": 1,
             "service-function-name": "SF5",
             "service-function-forwarder": "SFF4",
-            "service_index": 2
+            "service-index": 2
           },
           {
             "hop-number": 2,
             "service-function-name": "SF4",
             "service-function-forwarder": "SFF3",
-            "service_index": 1
+            "service-index": 1
           }
         ]
       },
@@ -680,13 +680,13 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
             "hop-number": 0,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF2",
-            "service_index": 2
+            "service-index": 2
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF1",
-            "service_index": 1
+            "service-index": 1
           }
         ]
       }
@@ -743,13 +743,13 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
             "hop-number": 0,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF2",
-            "service_index": 2
+            "service-index": 2
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF1",
-            "service_index": 1
+            "service-index": 1
           }
         ]
       },
@@ -763,13 +763,13 @@ RENDERED_SERVICE_PATH_DEL_ONE_JSON = """
             "hop-number": 0,
             "service-function-name": "SF3",
             "service-function-forwarder": "SFF2",
-            "service_index": 2
+            "service-index": 2
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF1",
-            "service_index": 1
+            "service-index": 1
           }
         ]
       }

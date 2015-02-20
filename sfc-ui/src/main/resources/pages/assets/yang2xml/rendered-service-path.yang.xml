@@ -119,7 +119,7 @@ name as the associated SFP</text>
             <text>Service Function Forwarder name</text>
           </description>
         </leaf>
-        <leaf name="service_index">
+        <leaf name="service-index">
           <type name="uint8"/>
           <description>
             <text>Provides location within the service path.

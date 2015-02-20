@@ -25,7 +25,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       _.each(sfp['service-path-hop'], function (hop, index) {
         //first hop should have the biggest index = total number of SFs
-        hop['service_index'] = serviceIndex;
+        hop['service-index'] = serviceIndex;
         hop['hop-number'] = index;
 
         //if hop is SF it consumes service_index thus decrement it

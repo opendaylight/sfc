@@ -11,7 +11,7 @@
           "hop-number": HOP_NUMBER,
           "service-function-name": "SERVICE_FUNCTION_NAME",
           "service-function-forwarder": "SERVICE_FUNCTION_FORWARDER",
-          "service_index": SERVICE_INDEX
+          "service-index": SERVICE_INDEX
         }
       ]
     }

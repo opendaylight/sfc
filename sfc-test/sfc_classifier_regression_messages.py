@@ -116,7 +116,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
             "hop-number": 0,
             "service-function-name": "SF1",
             "service-function-forwarder": "SFF1",
-            "service_index": 255
+            "service-index": 255
           }
         ]
       }

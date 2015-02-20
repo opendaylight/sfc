@@ -219,19 +219,19 @@ SERVICE_PATH_RESP_JSON = """
           {
             "hop-number": 0,
             "service-function-name": "SF1",
-            "service_index": 3,
+            "service-index": 3,
             "service-function-forwarder": "SFF1"
           },
           {
             "hop-number": 1,
             "service-function-name": "SF2",
-            "service_index": 2,
+            "service-index": 2,
             "service-function-forwarder": "SFF1"
           },
           {
             "hop-number": 2,
             "service-function-name": "SF3",
-            "service_index": 1,
+            "service-index": 1,
             "service-function-forwarder": "SFF2"
           }
         ]

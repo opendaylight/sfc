@@ -121,7 +121,7 @@ module service-function-path {
           description
             "Service Function Forwarder name";
         }
-        leaf service_index {
+        leaf service-index {
           type uint8;
           description
             "Provides location within the service path.

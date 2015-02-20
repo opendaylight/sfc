@@ -160,6 +160,7 @@ def _check_thread_state(thread, service_name, local_threads):
     """
     if thread.is_alive():
         logger.info("Thread %s started successfully", service_name)
+        local_threads[service_name] = {}
         local_threads[service_name]['thread'] = thread
     else:
         logger.error("Failed to start thread %s", service_name)
@@ -204,6 +205,7 @@ def start_sff(sff_name, sff_ip, sff_port):
     :return `class:threading.Thread`
 
     """
+    logging.basicConfig(level=logging.INFO)
     logger.info('Starting Service Function Forwarder: %s"', sff_name)
 
     local_sff_threads = sfc_globals.get_sff_threads()

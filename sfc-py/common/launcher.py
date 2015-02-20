@@ -80,12 +80,13 @@ def start_service(service_name, service_ip, service_port, service_type,
     :type service_message: str
 
     """
+    logging.basicConfig(level=logging.INFO)
     logger.info('Starting %s service ...', service_type.upper())
     service_threads[service_name] = {}
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    logging.basicConfig(level=logging.INFO)
+
 
     service_class = find_service(service_type)
     service = service_class(loop)

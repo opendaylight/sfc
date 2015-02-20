@@ -570,8 +570,11 @@ def get_sffs_from_odl(odl_ip_port):
 
         sfc_globals.reset_sff_topo()
         local_sff_topo = sfc_globals.get_sff_topo()
-        for sff in sff_json['service-function-forwarder']:
-            local_sff_topo[sff['name']] = sff
+        try:
+            for sff in sff_json['service-function-forwarder']:
+                local_sff_topo[sff['name']] = sff
+        except KeyError:
+            logger.info("=>No configured SFFs in ODL \n")
     else:
         logger.warning("=>Failed to GET SFFs from ODL \n")
 
@@ -630,16 +633,20 @@ def auto_sff_name():
     """
     for intf in netifaces.interfaces():
         addr_list_dict = netifaces.ifaddresses(intf)
-        inet_addr_list = addr_list_dict[netifaces.AF_INET]
+        # Some interfaces have no address
+        if addr_list_dict:
+            # Some interfaces have no IPv4 address.
+            if netifaces.AF_INET in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET]
 
-        for value in inet_addr_list:
-            sff_name = find_sff_locator_by_ip(value['addr'])
-            if sff_name:
-                sfc_globals.set_my_sff_name(sff_name)
-                sff_name = sfc_globals.get_my_sff_name()
+                for value in inet_addr_list:
+                    sff_name = find_sff_locator_by_ip(value['addr'])
+                    if sff_name:
+                        sfc_globals.set_my_sff_name(sff_name)
+                        sff_name = sfc_globals.get_my_sff_name()
 
-                logger.info("Auto SFF name is: %s \n", sff_name)
-                return 0
+                        logger.info("Auto SFF name is: %s \n", sff_name)
+                        return 0
     else:
         logger.error("Could not determine SFF name \n")
         return -1

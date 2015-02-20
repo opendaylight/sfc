@@ -47,6 +47,7 @@ NAT = 'nat'  # TODO: should this be `napt44` or just `nat`?
 DPI = 'dpi'
 QOS = 'qos'
 IDS = 'ids'
+SF = 'sf'
 SFF = 'sff'
 CUDP = 'cudp'
 

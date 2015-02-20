@@ -15,38 +15,38 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
     beforeEach(function (){
       exampleData = {};
       exampleData.unOrderedSfp = {'starting-index': 3, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 3, 'service-function-name': "sf1"},
-        {"hop-number": 2, 'service_index': 1, 'service-function-name': "sf3"},
-        {"hop-number": 1, 'service_index': 2, 'service-function-name': "sf2"}
+        {"hop-number": 0, 'service-index': 3, 'service-function-name': "sf1"},
+        {"hop-number": 2, 'service-index': 1, 'service-function-name': "sf3"},
+        {"hop-number": 1, 'service-index': 2, 'service-function-name': "sf2"}
       ]};
       exampleData.orderedSfp = {'starting-index': 3, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 3, 'service-function-name': "sf1"},
-        {"hop-number": 1, 'service_index': 2, 'service-function-name': "sf2"},
-        {"hop-number": 2, 'service_index': 1, 'service-function-name': "sf3"}
+        {"hop-number": 0, 'service-index': 3, 'service-function-name': "sf1"},
+        {"hop-number": 1, 'service-index': 2, 'service-function-name': "sf2"},
+        {"hop-number": 2, 'service-index': 1, 'service-function-name': "sf3"}
       ]};
       exampleData.updatedSfp = {'starting-index': 3, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 3, 'service-function-name': "sf1"},
-        {"hop-number": 1, 'service_index': 2, 'service-function-name': "sf3"},
-        {"hop-number": 2, 'service_index': 1, 'service-function-name': "sf2"}
+        {"hop-number": 0, 'service-index': 3, 'service-function-name': "sf1"},
+        {"hop-number": 1, 'service-index': 2, 'service-function-name': "sf3"},
+        {"hop-number": 2, 'service-index': 1, 'service-function-name': "sf2"}
       ]};
       exampleData.badStartingIndexSfp = {'starting-index': 1, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 3, 'service-function-name': "sf1"},
-        {"hop-number": 1, 'service_index': 2, 'service-function-name': "sf2"},
-        {"hop-number": 2, 'service_index': 1, 'service-function-name': "sf3"}
+        {"hop-number": 0, 'service-index': 3, 'service-function-name': "sf1"},
+        {"hop-number": 1, 'service-index': 2, 'service-function-name': "sf2"},
+        {"hop-number": 2, 'service-index': 1, 'service-function-name': "sf3"}
       ]};
       exampleData.augmentedSfp = {'starting-index': 3, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 3, 'service-function-name': "sf1"},
+        {"hop-number": 0, 'service-index': 3, 'service-function-name': "sf1"},
         {'service-function-name': "sf5"},
-        {"hop-number": 1, 'service_index': 2, 'service-function-name': "sf2"},
-        {"hop-number": 2, 'service_index': 1, 'service-function-name': "sf3"},
+        {"hop-number": 1, 'service-index': 2, 'service-function-name': "sf2"},
+        {"hop-number": 2, 'service-index': 1, 'service-function-name': "sf3"},
         {'service-function-name': "sf4"}
       ]};
       exampleData.correctedSfp = {'starting-index': 5, 'service-path-hop': [
-        {"hop-number": 0, 'service_index': 5, 'service-function-name': "sf1"},
-        {"hop-number": 1, 'service_index': 4, 'service-function-name': "sf5"},
-        {"hop-number": 2, 'service_index': 3, 'service-function-name': "sf2"},
-        {"hop-number": 3, 'service_index': 2, 'service-function-name': "sf3"},
-        {"hop-number": 4, 'service_index': 1, 'service-function-name': "sf4"}
+        {"hop-number": 0, 'service-index': 5, 'service-function-name': "sf1"},
+        {"hop-number": 1, 'service-index': 4, 'service-function-name': "sf5"},
+        {"hop-number": 2, 'service-index': 3, 'service-function-name': "sf2"},
+        {"hop-number": 3, 'service-index': 2, 'service-function-name': "sf3"},
+        {"hop-number": 4, 'service-index': 1, 'service-function-name': "sf4"}
       ]};
     });
 

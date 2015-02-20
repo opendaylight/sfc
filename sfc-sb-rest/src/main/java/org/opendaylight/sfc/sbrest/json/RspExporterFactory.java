@@ -47,7 +47,7 @@ class RspExporter extends AbstractExporter implements Exporter {
     public static final String _HOP_NUMBER = "hop-number";
     public static final String _SERVICE_FUNCTION_FORWARDER = "service-function-forwarder";
     public static final String _SERVICE_FUNCTION_NAME = "service-function-name";
-    public static final String _SERVICE_INDEX = "service_index";
+    public static final String _SERVICE_INDEX = "service-index";
     public static final String _RENDERED_SERVICE_PATH_HOP = "rendered-service-path-hop";
 
     @Override

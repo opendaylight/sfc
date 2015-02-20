@@ -92,8 +92,10 @@ def find_sf_locator(sf_name, sff_name):
         if sf_name == service_function['name']:
             _sf_locator = service_function['sff-sf-data-plane-locator']
 
-            sf_locator['ip'] = _sf_locator['ip']
-            sf_locator['port'] = _sf_locator['port']
+            # A locator might use something other than IP
+            if 'ip' in _sf_locator:
+                sf_locator['ip'] = _sf_locator['ip']
+                sf_locator['port'] = _sf_locator['port']
 
             return sf_locator
 

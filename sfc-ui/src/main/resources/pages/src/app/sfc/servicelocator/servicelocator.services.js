@@ -49,8 +49,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
         matchingObject[key] = locator[key];
       });
 
-      locatorModel = _.findWhere(locatorObjectArray, matchingObject);
+      if (_.isEmpty(Object.keys(matchingObject))) {
+        return undefined;
+      }
 
+      locatorModel = _.findWhere(locatorObjectArray, matchingObject);
       return angular.isDefined(locatorModel) ? locatorModel['name'] : undefined;
     };
 

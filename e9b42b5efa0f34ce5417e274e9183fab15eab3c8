@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a96c907_2124a4c3",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-02-23T07:17:31Z",
+      "side": 1,
+      "message": "This should instead be a sfc-sl:data-plane-locator, which will allow for a more generic use with other encapsulations like MPLS.",
+      "range": {
+        "startLine": 192,
+        "startChar": 9,
+        "endLine": 192,
+        "endChar": 32
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_4110d058",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-02-23T07:17:31Z",
+      "side": 1,
+      "message": "Why isnt this definition inside the data-plan-locator-choice?",
+      "range": {
+        "startLine": 160,
+        "startChar": 2,
+        "endLine": 160,
+        "endChar": 11
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_811a587b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSffEntryDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-02-23T07:17:31Z",
+      "side": 1,
+      "message": "What\u0027s the point of this line of code, if its return value is not ever used?",
+      "range": {
+        "startLine": 113,
+        "startChar": 16,
+        "endLine": 113,
+        "endChar": 46
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_a8cc1e6b",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 3
@@ -18,6 +87,29 @@
         "startChar": 12,
         "endLine": 723,
         "endChar": 16
+      },
+      "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_c12ce0ae",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 726,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-02-23T07:17:31Z",
+      "side": 1,
+      "message": "We need to allow for a more generic use for other encapsulations like MPLS. So this should allow for the more generic DataPlaneLocator, instead of the more specific IpDataPlaneLocator.",
+      "range": {
+        "startLine": 726,
+        "startChar": 12,
+        "endLine": 726,
+        "endChar": 30
       },
       "revId": "e9b42b5efa0f34ce5417e274e9183fab15eab3c8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

@@ -1,8 +1,8 @@
 __author__ = "Jim Guichard, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.2"
+__version__ = "0.3"
 __email__ = "jguichar@cisco.com, rapenno@gmail.com"
-__status__ = "alpha"
+__status__ = "beta"
 
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
@@ -15,21 +15,19 @@ __status__ = "alpha"
 All supported services
 """
 
-
 import logging
 import asyncio
 import binascii
+import ipaddress
+import socket
 
 import nsh.decode as nsh_decode
 from common.sfc_globals import sfc_globals
 from nsh.service_index import process_service_index
+from nsh.encode import add_sf_to_trace_pkt
+from nsh.common import VXLANGPE, CONTEXTHEADER, BASEHEADER, TRACEREQHEADER
 
 logger = logging.getLogger(__name__)
-
-#: Decode vxlan-gpe, base NSH header and NSH context headers
-server_vxlan_values = nsh_decode.VXLANGPE()
-server_ctx_values = nsh_decode.CONTEXTHEADER()
-server_base_values = nsh_decode.BASEHEADER()
 
 #: Global flags used for indication of current packet processing status
 # Packet needs more processing within this SFF
@@ -86,6 +84,10 @@ class BasicService(object):
         """
         self.loop = loop
         self.transport = None
+        self.server_vxlan_values = VXLANGPE()
+        self.server_base_values = BASEHEADER()
+        self.server_ctx_values = CONTEXTHEADER()
+        self.server_trace_values = TRACEREQHEADER()
 
         # MUST be set by EACH descendant class
         self.service_type = None
@@ -99,24 +101,34 @@ class BasicService(object):
 
         """
         # decode vxlan-gpe header
-        nsh_decode.decode_vxlan(data, server_vxlan_values)
+        nsh_decode.decode_vxlan(data, self.server_vxlan_values)
         # decode NSH base header
-        nsh_decode.decode_baseheader(data, server_base_values)
+        nsh_decode.decode_baseheader(data, self.server_base_values)
         # decode NSH context headers
-        nsh_decode.decode_contextheader(data, server_ctx_values)
+        if self.server_base_values.md_type == 1:
+            nsh_decode.decode_contextheader(data, self.server_ctx_values)
+        elif self.server_base_values.md_type == 3:
+            # Trace packet
+            nsh_decode.decode_trace_req(data, self.server_trace_values)
 
-    def _process_incoming_packet(self, data):
+    def _process_incoming_packet(self, data, addr):
         """
-        TODO: add docstring, params descirptions
+        TODO: add docstring
+        :param self: MySFFServer
+        :type  self: MySFFServer
+        :param data: UDP payload
+        :type data: bytes
+        :param addr: IP address and port to which data are passed
+        :type addr: tuple (str, int)
         """
-        logger.info('Processing received packet')
+        logger.info('%s: Processing received packet', self.service_type)
 
         self._decode_headers(data)
 
         # TODO: should't this be converted before applying _decode_headers()
         # like in MyUdpServer?
         rw_data = bytearray(data)
-        rw_data = process_service_index(rw_data, server_base_values)[0]
+        rw_data = process_service_index(rw_data, self.server_base_values)[0]
 
         return rw_data
 
@@ -126,21 +138,42 @@ class BasicService(object):
     def datagram_received(self, data, addr):
         """
         TODO: add docstring
-
-        :param data:
+        :param self: MySFFServer
+        :type  self: MySFFServer
+        :param data: UDP payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
         :type addr: tuple (str, int)
 
         """
-        logger.info('%s service received packet from SFF:', self.service_type)
-        logger.info(addr, binascii.hexlify(data))
-        logger.info('Sending packets to %s', addr)
+        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.debug('%s %s', addr, binascii.hexlify(data))
+        rw_data = self._process_incoming_packet(data, addr)
 
-        rw_data = self._process_incoming_packet(data)
-        self.transport.sendto(rw_data, addr)
+        if self.server_base_values.md_type == 1:
+            logger.info('%s: Sending packets to %s', self.service_type, addr)
+            self.transport.sendto(rw_data, addr)
+        elif self.server_base_values.md_type == 3:
+            # Add SF information to packet
+            trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type)
+            self.transport.sendto(trace_pkt, addr)
 
-    def connection_refused(self, exc):
+    def process_trace_pkt(self, rw_data, data):
+        logger.info('%s: Sending trace report packet', self.service_type)
+        ipv6_addr = ipaddress.IPv6Address(data[20:36])
+        if ipv6_addr.ipv4_mapped:
+            ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
+            trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)
+            logger.info("IPv4 destination:port address for trace reply: %s", trace_dest_addr)
+            self.transport.sendto(rw_data, trace_dest_addr)
+        else:
+            ipv6_str_trace_dest_addr = str(ipaddress.IPv6Address(ipv6_addr))
+            trace_dest_addr = (ipv6_str_trace_dest_addr, self.server_trace_values.port)
+            logger.info("IPv6 destination address for trace reply: %s", trace_dest_addr)
+            self.transport.sendto(rw_data, trace_dest_addr)
+
+    @staticmethod
+    def connection_refused(exc):
         logger.error('Connection refused: %s', exc)
 
     def connection_lost(self, exc):
@@ -191,11 +224,11 @@ class ControlUdpServer(BasicService):
     def datagram_received(self, data, addr):
         logger.info('%s received a packet from: %s', self.service_type, addr)
         self.loop.call_soon_threadsafe(self.loop.stop)
-        #data = data.decode('utf-8')
-        #print(data_plane_path)
-        #sfp_topo = json.loads(data)
-        #print(sfp_topo)
-        #print(sfp_topo['3']['3'])
+        # data = data.decode('utf-8')
+        # print(data_plane_path)
+        # sfp_topo = json.loads(data)
+        # print(sfp_topo)
+        # print(sfp_topo['3']['3'])
 
     def connection_lost(self, exc):
         logger.error('stop: %s', exc)
@@ -211,7 +244,8 @@ class MySffServer(BasicService):
 
         self.service_type = 'SFF Server'
 
-    def _lookup_next_sf(self, service_path, service_index):
+    @staticmethod
+    def _lookup_next_sf(service_path, service_index):
         """
         TODO:
         """
@@ -232,9 +266,15 @@ class MySffServer(BasicService):
 
     def _process_incoming_packet(self, data, addr):
         """
-        TODO:
+        TODO: SFF main processing packet function
+        :param self: MySFFServer
+        :type  self: MySFFServer
+        :param data: UDP payload
+        :type data: bytes
+        :param addr: IP address and port to which data are passed
+        :type addr: tuple (str, int)
         """
-        logger.info("Processing packet from: %s", addr)
+        logger.info("%s: Processing packet from: %s", self.service_type, addr)
 
         address = ()
 
@@ -245,47 +285,70 @@ class MySffServer(BasicService):
         # Lookup what to do with the packet based on Service Path Identifier
         # (SPI)
 
-        if server_base_values.service_index:
-            logger.info('Looking up next service hop ...')
+        next_hop = self._lookup_next_sf(self.server_base_values.service_path,
+                                        self.server_base_values.service_index)
 
-            next_hop = self._lookup_next_sf(server_base_values.service_path,
-                                            server_base_values.service_index)
+        if self.server_base_values.md_type == 1:
+
             if next_hop != SERVICE_HOP_INVALID:
                 address = next_hop['ip'], next_hop['port']
-            else:
+                logger.info("%s: Sending packets to: %s", self.service_type, address)
+                # send the packet to the next SFF based on address
+                self.transport.sendto(rw_data, address)
+                logger.info("%s: Listening for NSH packets ...", self.service_type)
+            elif self.server_base_values.service_index:
                 # bye, bye packet
-                logger.info("End of path")
-                logger.info("Packet dump: %s", binascii.hexlify(rw_data))
-                logger.info('service index end up as: %d',
-                            server_base_values.service_index)
+                logger.info("%s: End of path", self.service_type)
+                logger.debug("%s: Packet dump: %s", self.service_type, binascii.hexlify(rw_data))
+                logger.info('%s: service index end up as: %d', self.service_type,
+                            self.server_base_values.service_index)
 
                 # Remove all SFC headers, leave only original packet
                 rw_data = nsh_decode.PAYLOAD_START_INDEX
-        else:
-            logger.error("Loop Detected")
-            logger.error("Packet dump: %s", binascii.hexlify(rw_data))
+            else:
+                # SI = 0, loop detected
+                logger.error("%s: Loop Detected", self.service_type)
+                logger.error("%s: Packet dump: %s", self.service_type, binascii.hexlify(rw_data))
 
-            rw_data.__init__()
-            data = ""
+                rw_data.__init__()
+                data = ""
 
-        logger.info('Finished processing packet from: %s', addr)
+        elif self.server_base_values.md_type == 3:
+
+            if (self.server_trace_values.sil == self.server_base_values.service_index) or (
+                    next_hop == SERVICE_HOP_INVALID):
+                # End of trace
+                super(MySffServer, self).process_trace_pkt(rw_data, data)
+
+            else:
+                # Trace will continue
+                address = next_hop['ip'], next_hop['port']
+                logger.info("%s: Sending trace packet to: %s", self.service_type, address)
+                # send the packet to the next SFF based on address
+                self.transport.sendto(rw_data, address)
+                logger.info("%s: Listening for NSH packets ...", self.service_type)
+
+        logger.info('%s: Finished processing packet from: %s', self.service_type, addr)
         return rw_data, address
 
     def datagram_received(self, data, addr):
         """
         TODO:
+        :param self: MySFFServer
+        :type  self: MySFFServer
+        :param data: UDP payload
+        :type data: bytes
+        :param addr: IP address and port to which data are passed
+        :type addr: tuple (str, int)
         """
-        logger.info('Received a packet from: %s', addr)
+        logger.info('%s: Received a packet from: %s', self.service_type, addr)
 
         rw_data, address = self._process_incoming_packet(data, addr)
-        if address:
-            logger.info("Sending packets to: %s", address)
-            # send the packet to the next SFF based on address
-            self.transport.sendto(rw_data, address)
-            logger.info("listening for NSH packets ...")
+
 
     def connection_lost(self, exc):
         logger.error('stop', exc)
 
-    def error_received(self, exc):
+    @staticmethod
+    def error_received(exc):
         logger.error('Error received:', exc)

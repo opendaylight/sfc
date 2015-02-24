@@ -17,7 +17,6 @@ SFC Agent Server. This Server should be co-located with the python SFF data
 plane implementation (sff_thread.py)
 """
 
-
 import sys
 import json
 import flask
@@ -35,9 +34,8 @@ import common.sfc_globals
 from common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 if sys.platform.startswith('linux'):
-    #TODO: fix this kind of imports
+    # TODO: fix this kind of imports
     from classifier.nfq_class_thread import *
-
 
 app = flask.Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -419,9 +417,9 @@ def create_sff(sffname):
 
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
     sff_port = (local_sff_topo[sffname]['sff-data-plane-locator']
-                                       [0]
-                                       ['data-plane-locator']
-                                       ['port'])
+                [0]
+                ['data-plane-locator']
+                ['port'])
 
     start_sff(sffname, "0.0.0.0", sff_port)
 
@@ -663,15 +661,15 @@ def main():
 
     #: setup parser -----------------------------------------------------------
     parser = argparse.ArgumentParser(description='SFC Agent',
-             usage=("\npython3.4 sfc_agent "
-                    "--rest "
-                    "--nfq-class "
-                    "--odl-get-sff "
-                    "--ovs-sff-cp-ip <local SFF IP dataplane address> "
-                    "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
-                    " --agent-port=<agent listening port>"
-                    "\n\nnote:\nroot privileges are required "
-                    "if `--nfq-class` flag is used"))
+                                     usage=("\npython3.4 sfc_agent "
+                                            "--rest "
+                                            "--nfq-class "
+                                            "--odl-get-sff "
+                                            "--ovs-sff-cp-ip <local SFF IP dataplane address> "
+                                            "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
+                                            " --agent-port=<agent listening port>"
+                                            "\n\nnote:\nroot privileges are required "
+                                            "if `--nfq-class` flag is used"))
 
     parser.add_argument('--odl-get-sff', action='store_true',
                         help='Get SFF from ODL')
@@ -748,6 +746,7 @@ def main():
                 host=ovs_local_sff_cp_ip,
                 debug=False,
                 use_reloader=False)
+
 
 if __name__ == "__main__":
     main()

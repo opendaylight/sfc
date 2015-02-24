@@ -17,7 +17,7 @@ import subprocess
 from netfilterqueue import NetfilterQueue
 
 from nsh.encode import build_packet
-from nsh.decode import VXLANGPE, BASEHEADER, CONTEXTHEADER
+from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
 
 
 if __name__ == '__main__':

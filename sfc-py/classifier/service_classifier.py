@@ -23,7 +23,7 @@ import binascii
 from netfilterqueue import NetfilterQueue
 
 from nsh.encode import build_packet
-from nsh.decode import VXLANGPE, BASEHEADER, CONTEXTHEADER
+from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
 
 
 logger = logging.getLogger(__name__)

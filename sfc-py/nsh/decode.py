@@ -49,44 +49,15 @@ values in the passed variable.
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 """
 
-
 import struct
 import logging
 import binascii
-
-from ctypes import Structure, c_ubyte, c_ushort, c_uint
-
+import ipaddress
 
 #: constants
 PAYLOAD_START_INDEX = 16
 
-
 logger = logging.getLogger(__name__)
-
-
-class VXLANGPE(Structure):
-    _fields_ = [('flags', c_ubyte),
-                ('reserved', c_ubyte),
-                ('protocol_type', c_ushort),
-                ('vni', c_uint, 24),
-                ('reserved2', c_uint, 8)]
-
-
-class BASEHEADER(Structure):
-    _fields_ = [('version', c_ushort, 2),
-                ('flags', c_ushort, 8),
-                ('length', c_ushort, 6),
-                ('md_type', c_ubyte),
-                ('next_protocol', c_ubyte),
-                ('service_path', c_uint, 24),
-                ('service_index', c_uint, 8)]
-
-
-class CONTEXTHEADER(Structure):
-    _fields_ = [('network_platform', c_uint),
-                ('network_shared', c_uint),
-                ('service_platform', c_uint),
-                ('service_shared', c_uint)]
 
 
 def decode_vxlan(payload, vxlan_header_values):
@@ -166,3 +137,42 @@ def decode_contextheader(payload, context_header_values):
                     context_header_values.service_platform)
         logger.info('Fourth context header: %s',
                     context_header_values.service_shared)
+
+
+# 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |Ver|1|C|R|R|R|R|R|R|   Length  |  MD-type=0x3/4 | Next Protocol|
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |          Service Path ID                      | Service Index |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |     SIL       |B|     Rsvd    |          Source Port          |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                     Source IP Address                         |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                     Source IP Address                         |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                     Source IP Address                         |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                     Source IP Address                         |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                     List of SFF/SF...                         |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+def decode_trace_req(payload, trace_req_header_values):
+    """Decode headers for a packet Type MD 0x3"""
+    trace_header = payload[16:36]
+
+    _header_values = struct.unpack('!B B H I I I I', trace_header)
+    trace_req_header_values.sil = _header_values[0]
+    trace_req_header_values.flags = _header_values[1]
+    trace_req_header_values.port = _header_values[2]
+    trace_req_header_values.ip_1 = _header_values[3]
+    trace_req_header_values.ip_2 = _header_values[4]
+    trace_req_header_values.ip_3 = _header_values[5]
+    trace_req_header_values.ip_4 = _header_values[6]
+
+    if not __debug__:
+        logger.info('NSH Trace Req Header Decode ...')
+        logger.info(binascii.hexlify(trace_header))
+        logger.info('Session Index Limit: %d',
+                    trace_req_header_values.sil)

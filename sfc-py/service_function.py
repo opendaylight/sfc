@@ -19,6 +19,7 @@ import sys
 import socket
 from nsh.decode import *
 from nsh.service_index import *
+from nsh.common import *
 
 try:
     import signal

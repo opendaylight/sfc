@@ -227,6 +227,7 @@ def main(argv):
         trace_req_header_values = build_trace_req_header(254, 0x00, remote_sff_ip, 5000)
         traceclient = MyTraceClient(loop, vxlan_header_values, base_header_values,
                                     trace_req_header_values, remote_sff_ip, int(remote_sff_port))
+
         start_client(loop, (str(ipaddress.IPv4Address(trace_req_header_values.ip_4)), 5000),
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
@@ -234,7 +235,7 @@ def main(argv):
         base_values = BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, int(sfp_id), int(sfp_index))
         ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
         udpclient = MyUdpClient(loop, vxlan_header_values, base_values, ctx_values, remote_sff_ip, int(remote_sff_port))
-        start_client(loop, local_ip, (remote_sff_ip, remote_sff_port), udpclient)
+        start_client(loop, (local_ip, 5000), (remote_sff_ip, remote_sff_port), udpclient)
 
     loop.run_forever()
 

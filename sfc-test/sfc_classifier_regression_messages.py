@@ -95,7 +95,8 @@ SERVICE_PATH_JSON = """
     "service-function-path": [
       {
         "name": "SFC1-SFP1",
-        "service-chain-name": "SFC1"
+        "service-chain-name": "SFC1",
+        "path-id": 1
       }
     ]
   }
@@ -108,7 +109,6 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
       {
         "name": "SFC1-SFP1",
         "parent-service-function-path": "SFC1-SFP1",
-        "path-id": 1,
         "service-chain-name": "SFC1",
         "starting-index": 255,
         "rendered-service-path-hop": [

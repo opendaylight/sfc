@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_5cc99624",
+        "filename": "sfc-py/nsh/common.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3434
+      },
+      "writtenOn": "2015-02-24T10:08:47Z",
+      "side": 1,
+      "message": "Please update all imports regarding moving VXLANGPE, BASEHEADER, CONTEXTHEADER, TRACEREQHEADER to nsh.common.py.\n\npython3.4 sfc_agent.py --rest --odl-ip-port localhost:8181 --auto-sff-name\nTraceback (most recent call last):\n  File \"sfc_agent.py\", line 38, in \u003cmodule\u003e\n    from classifier.nfq_class_thread import *\n  File \"/home/dm/workspace/sfc/sfc-py/classifier/nfq_class_thread.py\", line 15, in \u003cmodule\u003e\n    from classifier.nfq_class_server import nfq_class_server_start\n  File \"/home/dm/workspace/sfc/sfc-py/classifier/nfq_class_server.py\", line 20, in \u003cmodule\u003e\n    from nsh.decode import VXLANGPE, BASEHEADER, CONTEXTHEADER\nImportError: cannot import name \u0027VXLANGPE\u0027",
+      "revId": "7b0ef011916fb793cbf9dbc2103a310d29d122af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

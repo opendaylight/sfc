@@ -10,6 +10,7 @@ __status__ = "Tested with SFC-Karaf distribution as of 02/06/2015"
 import requests
 import json
 import time
+import argparse
 from sfc_classifier_regression_messages import *
 
 putheaders = {'content-type': 'application/json'}
@@ -110,6 +111,21 @@ def delete_and_check(url, message):
         print("=>Check not successful, error code: {} \n".format(r.status_code))
 
 if __name__ == "__main__":
+
+    acl_type_dict = {"IPV4": IETF_ACL_JSON_IPV4, "IPV6": IETF_ACL_JSON_IPV6, "MAC": IETF_ACL_JSON_MAC}
+
+    parser = argparse.ArgumentParser(description='SFC Agent',
+                                     usage=("\npython3.4 sfc_classifier_regression "
+                                            "--acl-type "))
+
+    parser.add_argument('--acl-type', choices=acl_type_dict.keys(),
+                    help='Set ACL matches type [' + ' '.join(acl_type_dict.keys()) + ']',
+                    required=True)
+
+    args = parser.parse_args()
+
+
+
     delete_configuration()
     put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
     check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type...")
@@ -119,13 +135,6 @@ if __name__ == "__main__":
     check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
-    put_and_check(IETF_ACL_URL, IETF_ACL_JSON, IETF_ACL_JSON)
+    put_and_check(IETF_ACL_URL, acl_type_dict[args.acl_type], acl_type_dict[args.acl_type])
     put_and_check(SCF_URL, SERVICE_CLASSIFIER_JSON, SERVICE_CLASSIFIER_JSON)
-
-    # put_and_check(SFP_ONE_URL.format("Path-3-SFC2"), SERVICE_PATH_ADD_ONE_JSON, SERVICE_PATH_ADD_ONE_JSON)
-    # check(RSP_URL, RENDERED_SERVICE_PATH_ADD_ONE_JSON, "Checking RSP after adding another SFP...")
-    # delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
-    # check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
-    # check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
-    # delete_configuration()
 

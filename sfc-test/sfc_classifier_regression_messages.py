@@ -173,7 +173,7 @@ SERVICE_FUNCTION_TYPE_JSON = """
   }
 }"""
 
-IETF_ACL_JSON = """
+IETF_ACL_JSON_IPV4 = """
 {
   "access-lists": {
     "access-list": [
@@ -183,12 +183,60 @@ IETF_ACL_JSON = """
           {
             "rule-name": "ACE1",
             "matches": {
-              "destination-ipv4-address": "127.0.0.1/0",
-              "source-ipv4-address": "127.0.0.1/0",
+              "destination-ipv4-address": "0.0.0.0/0",
+              "source-ipv4-address": "0.0.0.0/0",
               "source-port-range": {
-                "upper-port": 80,
-                "lower-port": 80
-              }
+                "upper-port": 15000,
+                "lower-port": 15000
+              },
+              "ip-protocol": 17
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SFC1-SFP1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}"""
+
+IETF_ACL_JSON_IPV6 = """
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "ACL1",
+        "access-list-entries": [
+          {
+            "rule-name": "ACE1",
+            "matches": {
+              "destination-ipv6-address": "::0/0",
+              "source-ipv6-address": "::0",
+              "flow-label": "1234"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SFC1-SFP1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}"""
+
+IETF_ACL_JSON_MAC = """
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "ACL1",
+        "access-list-entries": [
+          {
+            "rule-name": "ACE1",
+            "matches": {
+              "source-mac-address": "00:00:00:00:00:00",
+              "destination-mac-address": "00:11:22:33:44:55"
             },
             "actions": {
               "service-function-acl:rendered-service-path": "SFC1-SFP1"

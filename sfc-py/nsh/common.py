@@ -33,8 +33,8 @@ class CONTEXTHEADER(Structure):
 
 
 class TRACEREQHEADER(Structure):
-    _fields_ = [('sil', c_ubyte),
-                ('flags', c_ubyte),
+    _fields_ = [('oam_type', c_ubyte),
+                ('sil', c_ubyte),
                 ('port', c_ushort),
                 ('ip_1', c_uint),
                 ('ip_2', c_uint),

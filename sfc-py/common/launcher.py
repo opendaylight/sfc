@@ -113,8 +113,7 @@ def start_server(loop, addr, udpserver, message):
     :return `:class:asyncio.selector_events._SelectorDatagramTransport`
 
     """
-    #t = asyncio.Task(loop.create_datagram_endpoint(
-    #    lambda: udpserver, local_addr=addr))
+
     listen = loop.create_datagram_endpoint(lambda: udpserver, local_addr=addr)
     transport = loop.run_until_complete(listen)[0]
 
@@ -153,6 +152,7 @@ def start_service(service_name, service_ip, service_port, service_type,
 
     service_class = find_service(service_type)
     service = service_class(loop)
+    service.set_name(service_name)
 
     udpserver_transport = start_server(loop,
                                        (service_ip, service_port),

@@ -91,6 +91,10 @@ class BasicService(object):
 
         # MUST be set by EACH descendant class
         self.service_type = None
+        self.service_name = None
+
+    def set_name(self, name):
+        self.service_name = name
 
     def _decode_headers(self, data):
         """
@@ -105,11 +109,10 @@ class BasicService(object):
         # decode NSH base header
         nsh_decode.decode_baseheader(data, self.server_base_values)
         # decode NSH context headers
-        if self.server_base_values.md_type == 1:
+        if nsh_decode.is_trace_message(data):
+                nsh_decode.decode_trace_req(data, self.server_trace_values)
+        elif nsh_decode.is_data_message(self.server_base_values):
             nsh_decode.decode_contextheader(data, self.server_ctx_values)
-        elif self.server_base_values.md_type == 3:
-            # Trace packet
-            nsh_decode.decode_trace_req(data, self.server_trace_values)
 
     def _process_incoming_packet(self, data, addr):
         """
@@ -150,12 +153,13 @@ class BasicService(object):
         logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
 
-        if self.server_base_values.md_type == 1:
+        if nsh_decode.is_data_message(data):
             logger.info('%s: Sending packets to %s', self.service_type, addr)
             self.transport.sendto(rw_data, addr)
-        elif self.server_base_values.md_type == 3:
+        elif nsh_decode.is_trace_message(data):
             # Add SF information to packet
-            trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type)
+            trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
+            # Send packet back to SFF
             self.transport.sendto(trace_pkt, addr)
 
     def process_trace_pkt(self, rw_data, data):
@@ -288,7 +292,7 @@ class MySffServer(BasicService):
         next_hop = self._lookup_next_sf(self.server_base_values.service_path,
                                         self.server_base_values.service_index)
 
-        if self.server_base_values.md_type == 1:
+        if nsh_decode.is_data_message(data):
 
             if next_hop != SERVICE_HOP_INVALID:
                 address = next_hop['ip'], next_hop['port']
@@ -313,7 +317,7 @@ class MySffServer(BasicService):
                 rw_data.__init__()
                 data = ""
 
-        elif self.server_base_values.md_type == 3:
+        elif nsh_decode.is_trace_message(data):
 
             if (self.server_trace_values.sil == self.server_base_values.service_index) or (
                     next_hop == SERVICE_HOP_INVALID):

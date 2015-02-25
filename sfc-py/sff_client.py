@@ -98,12 +98,30 @@ class MyUdpClient:
 
 
 class MyTraceClient:
+
+    def __init__(self, loop, vxlan_header_values, base_header_values, trace_req_header_values,
+                 dest_addr, dest_port, num_trace_hops):
+        self.transport = None
+        self.loop = loop
+        self.base_header_values = base_header_values
+        self.vxlan_header_values = vxlan_header_values
+        self.trace_req_header_values = trace_req_header_values
+        self.server_trace_values = TRACEREQHEADER()
+        self.server_vxlan_values = VXLANGPE()
+        self.server_base_values = BASEHEADER()
+        self.dest_addr = dest_addr
+        self.dest_port = dest_port
+        self.hop_count = 0
+        self.num_trace_hops = num_trace_hops
+
     def connection_made(self, transport):
         self.transport = transport
         packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.trace_req_header_values)
         # udp_socket = self.transport.get_extra_info('socket')
-        logger.info("Sending Trace packet to: %s:%s", self.dest_addr, self.dest_port)
+        print("Sending Trace packet to Service Path and Service Index: ({0}, {1})".format(
+            self.base_header_values.service_path, self.base_header_values.service_index))
         logger.debug("Trace packet: %s", binascii.hexlify(packet))
+        print("Trace response...")
         # udp_socket.sendto(packet, (self.dest_addr, self.dest_port))
         # Building client packet to send to SFF
         # logger.info("Sending trace packet to SFF: %s", binascii.hexlify(packet))
@@ -111,11 +129,16 @@ class MyTraceClient:
         self.transport.sendto(packet, (self.dest_addr, self.dest_port))
 
     def datagram_received(self, data, addr):
-        logger.info("Received trace response pkt from: %s", addr)
+        logger.debug("Received trace response pkt from: %s", addr)
         # Decode all the headers
         decode_vxlan(data, self.server_vxlan_values)
         decode_baseheader(data, self.server_base_values)
-        decode_trace_req(data, self.server_trace_values)
+        service_type, service_name = decode_trace_resp(data, self.server_trace_values)
+        print(
+            "Service-hop: {0}. Service Type: {1}, Service Name: {2}, Address of Reporting SFF: {3}".format(
+                self.hop_count, service_type, service_name, addr))
+        self.hop_count += 1
+
         # self.loop.stop()
 
     @staticmethod
@@ -130,19 +153,6 @@ class MyTraceClient:
     @staticmethod
     def error_received(exc):
         logger.error('Error received: %s', exc)
-
-    def __init__(self, loop, vxlan_header_values, base_header_values, trace_req_header_values,
-                 dest_addr, dest_port):
-        self.transport = None
-        self.loop = loop
-        self.trace_req_header_values = trace_req_header_values
-        self.base_header_values = base_header_values
-        self.vxlan_header_values = vxlan_header_values
-        self.server_trace_values = TRACEREQHEADER()
-        self.server_vxlan_values = VXLANGPE()
-        self.server_base_values = BASEHEADER()
-        self.dest_addr = dest_addr
-        self.dest_port = dest_port
 
     def send_packet(self, dest_addr):
         packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.trace_req_header_values)
@@ -183,13 +193,17 @@ def main(argv):
     sfp_id = 0x000001
     sfp_index = 3
     trace_req = False
+    num_trace_hops = 254
 
     try:
         logging.basicConfig(level=logging.INFO)
         opt, args = getopt.getopt(argv, "h",
-                                  ["help", "remote-sff-ip=", "remote-sff-port=", "sfp-id=", "sfp-index=", "trace-req"])
+                                  ["help", "remote-sff-ip=", "remote-sff-port=", "sfp-id=", "sfp-index=",
+                                   "trace-req", "num-trace-hops="])
     except getopt.GetoptError:
-        print("sff_client --help | --remote-sff-ip | --remote-sff-port | --sfp-id | --sfp-index | --trace-req")
+        print(
+            "sff_client --help | --remote-sff-ip | --remote-sff-port | --sfp-id | --sfp-index | "
+            "--trace-req | --num-trace-hops")
         sys.exit(2)
 
     for opt, arg in opt:
@@ -218,26 +232,30 @@ def main(argv):
             trace_req = True
             continue
 
+        if opt == "--num-trace-hops":
+            num_trace_hops = arg
+            continue
+
     loop = asyncio.get_event_loop()
 
     if trace_req:
-        # MD-type 0x3
+        # MD-type 0x1, OAM set
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-        base_header_values = BASEHEADER(0x1, int('01000000', 2), 0x7, 0x3, 0x1, int(sfp_id), int(sfp_index))
-        trace_req_header_values = build_trace_req_header(254, 0x00, remote_sff_ip, 5000)
+        base_header_values = BASEHEADER(int('01', 2), int('10000000', 2), 0x7, 0x1, 0x1, int(sfp_id), int(sfp_index))
+        trace_req_header_values = build_trace_req_header(int('00000001', 2), 254, remote_sff_ip, 5000)
         traceclient = MyTraceClient(loop, vxlan_header_values, base_header_values,
-                                    trace_req_header_values, remote_sff_ip, int(remote_sff_port))
+                                    trace_req_header_values, remote_sff_ip, int(remote_sff_port), num_trace_hops)
 
         start_client(loop, (str(ipaddress.IPv4Address(trace_req_header_values.ip_4)), 5000),
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-        base_values = BASEHEADER(0x1, int('01000000', 2), 0x6, 0x1, 0x1, int(sfp_id), int(sfp_index))
+        base_values = BASEHEADER(int('01', 2), int('00000000', 2), 0x6, 0x1, 0x1, int(sfp_id), int(sfp_index))
         ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
         udpclient = MyUdpClient(loop, vxlan_header_values, base_values, ctx_values, remote_sff_ip, int(remote_sff_port))
         start_client(loop, (local_ip, 5000), (remote_sff_ip, remote_sff_port), udpclient)
 
-    loop.run_forever()
+        # loop.run_forever()
 
 
 if __name__ == "__main__":

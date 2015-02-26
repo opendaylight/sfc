@@ -121,6 +121,21 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readServicePathState");
     }
 
+    /**
+     * This function checks if the Service Path has any constraints
+     *
+     * <p>
+     * @param serviceFunctionPath Service Path object
+     * @return List of RSP name objects
+     */
+    public static boolean isDefaultServicePath (ServiceFunctionPath serviceFunctionPath) {
+        boolean ret = true;
+        if ((serviceFunctionPath.getServicePathHop() != null) || (serviceFunctionPath.getTransportType() != null)
+            || (serviceFunctionPath.getStartingIndex() != null) || (serviceFunctionPath.getPathId() != null)) {
+            ret = false;
+        }
+        return ret;
+    }
 
     /**
      * API to read the Service Function Path operational state

@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.*;
 //import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -73,7 +74,7 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
          * If any of these fail we delete the previous ones that succeeded.
          */
 
-/*        RenderedServicePath renderedServicePath;
+        RenderedServicePath renderedServicePath;
         RenderedServicePath revRenderedServicePath;
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
         {
@@ -81,36 +82,42 @@ public class SfcProviderSfpEntryDataListener implements DataChangeListener {
 
                 ServiceFunctionPath createdServiceFunctionPath = (ServiceFunctionPath) entry.getValue();
 
-                renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(createdServiceFunctionPath);
-                if (renderedServicePath != null) {
+                // If SFP has no constraints, we create RSP automatically
+                if (SfcProviderServicePathAPI.isDefaultServicePath(createdServiceFunctionPath)) {
+                    LOG.info("Default Service Function Path, creating RSP automatically \n");
 
-                    if ((createdServiceFunctionPath.getClassifier() != null) &&
-                            SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(createdServiceFunctionPath.getClassifier()) != null) {
-                        SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
-                                (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
-                    }
+                    renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(createdServiceFunctionPath);
+                    if (renderedServicePath != null) {
 
-                    if (createdServiceFunctionPath.isSymmetric() != null && createdServiceFunctionPath.isSymmetric()) {
-
-                        revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
-                        if (revRenderedServicePath == null) {
-                            LOG.error("Failed to create symmetric service path: {}");
-                        } else if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
-                                SfcProviderServiceClassifierAPI
-                                        .readServiceClassifierExecutor(createdServiceFunctionPath.getSymmetricClassifier()) != null) {
+                        if ((createdServiceFunctionPath.getClassifier() != null) &&
+                                SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(createdServiceFunctionPath.getClassifier()) != null) {
                             SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
-                                    (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
-
-                        } else {
-                            LOG.warn("Symmetric Classifier not provided or does not exist");
+                                    (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
                         }
+
+                        if (createdServiceFunctionPath.isSymmetric() != null && createdServiceFunctionPath.isSymmetric()) {
+
+                            revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+                            if (revRenderedServicePath == null) {
+                                LOG.error("Failed to create symmetric service path: {}");
+                            } else if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
+                                    SfcProviderServiceClassifierAPI
+                                            .readServiceClassifierExecutor(createdServiceFunctionPath.getSymmetricClassifier()) != null) {
+                                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
+                                        (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
+
+                            } else {
+                                LOG.warn("Symmetric Classifier not provided or does not exist");
+                            }
+                        }
+
+                    } else {
+                        LOG.error("Failed to create RSP");
                     }
-                } else {
-                    LOG.error("Failed to create RSP");
                 }
 
             }
-        }*/
+        }
 
 /*        // SFP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject =

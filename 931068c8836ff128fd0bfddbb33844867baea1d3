@@ -22,6 +22,30 @@
       "revId": "931068c8836ff128fd0bfddbb33844867baea1d3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_5e60a6a4",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-02-26T08:30:29Z",
+      "side": 1,
+      "message": "Just added in latest patch...",
+      "parentUuid": "7a96c907_3ea83ada",
+      "range": {
+        "startLine": 250,
+        "startChar": 4,
+        "endLine": 253,
+        "endChar": 8
+      },
+      "revId": "931068c8836ff128fd0bfddbb33844867baea1d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

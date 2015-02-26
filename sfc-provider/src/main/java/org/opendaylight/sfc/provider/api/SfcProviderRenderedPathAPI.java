@@ -11,6 +11,8 @@ package org.opendaylight.sfc.provider.api;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -21,9 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +112,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
 
     public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readServiceClassifier");
+        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
     }
     public static  SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");
@@ -703,5 +708,70 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method provides all necessary information for a system to construct
+     * a NSH header and associated overlay packet to target the first
+     * service hop of a Rendered Service Path
+     * <p>
+     * @param rspName RSP name
+     * @return Nothing.
+     */
+    public static RenderedServicePathFirstHop readRenderedServicePathFirstHop (String rspName) {
+        final String FUNCTION = "function";
+        final String IP = "ip";
+        final String LISP = "lisp";
+        final String MAC = "mac";
+        final String MPLS = "mpls";
 
+        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+
+        RenderedServicePath renderedServicePath = readRenderedServicePath(rspName);
+        if (renderedServicePath != null) {
+            RenderedServicePathFirstHopBuilder renderedServicePathFirstHopBuilder = new RenderedServicePathFirstHopBuilder();
+            renderedServicePathFirstHopBuilder.setPathId(renderedServicePath.getPathId())
+                    .setStartingIndex(renderedServicePath.getStartingIndex());
+
+            List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+            RenderedServicePathHop renderedServicePathHop = renderedServicePathHopList.get(0);
+
+            String sffName = renderedServicePathHop.getServiceFunctionForwarder();
+            String sffLocatorName  = renderedServicePathHop.getServiceFunctionForwarderLocator();
+            SffDataPlaneLocator sffDataPlaneLocator = SfcProviderServiceForwarderAPI
+                    .readServiceFunctionForwarderDataPlaneLocator(sffName, sffLocatorName);
+
+            if (sffDataPlaneLocator != null) {
+                String type = sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface()
+                        .getSimpleName().toLowerCase();
+
+                switch (type) {
+                    case FUNCTION:
+                        break;
+                    case IP:
+                        Ip ipLocator = (Ip) sffDataPlaneLocator.getDataPlaneLocator().getLocatorType();
+                        if (ipLocator.getIp() != null) {
+                            renderedServicePathFirstHopBuilder.setIp(ipLocator.getIp());
+                            if (ipLocator.getPort() != null) {
+                                renderedServicePathFirstHopBuilder.setPort(ipLocator.getPort());
+                            }
+                        }
+                        // IP means VXLAN-GPE, later we might have other options...
+                        renderedServicePathFirstHopBuilder.setTransportType(VxlanGpe.class);
+                        break;
+                    case LISP:
+                        break;
+                    case MAC:
+                        break;
+                    case MPLS:
+                        // TODO: Brady
+                        break;
+                }
+            } else {
+                LOG.error("{}: Failed to read data plane locator {} for SFF {}",
+                        Thread.currentThread().getStackTrace()[1], sffLocatorName, sffName);
+            }
+            renderedServicePathFirstHop = renderedServicePathFirstHopBuilder.build();
+        }
+
+        return renderedServicePathFirstHop;
+    }
 }

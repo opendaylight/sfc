@@ -10,21 +10,20 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -228,48 +227,84 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     }
 
     protected boolean deleteAllServiceFunctionChains() {
-        boolean ret = false;
+
         printTraceStart(LOG);
-        if (dataBroker != null) {
+        boolean ret = false;
 
-            InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                    InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class).toInstance();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sfcsIID);
-            writeTx.commit();
-
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         }
         printTraceStop(LOG);
         return ret;
     }
 
+    /**
+     * This method deletes a single service path name from the Service Function
+     * Chain operational data store
+     * <p>
+     * @param serviceFunctionChainName sfc name
+     * @param servicePathName service path name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
     @SuppressWarnings("unused")
-    public static void addPathToServiceFunctionChainState (ServiceFunctionChain serviceFunctionChain,
-                                                     ServiceFunctionPath serviceFunctionPath) {
+    public static boolean deletePathFromServiceFunctionChainState (String serviceFunctionChainName,
+                                                                   String servicePathName) {
 
         printTraceStart(LOG);
+        boolean ret = false;
         ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
-                ServiceFunctionChainStateKey(serviceFunctionChain.getName());
-        InstanceIdentifier<ServiceFunctionChainState> sfcoIID = InstanceIdentifier
+                ServiceFunctionChainStateKey(serviceFunctionChainName);
+        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier
                 .builder(ServiceFunctionChainsState.class)
-                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey).build();
+                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
+                .child(SfcServicePath.class, new SfcServicePathKey(servicePathName)).build();
 
-        ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new
-                ServiceFunctionChainStateBuilder();
-        ArrayList<String> sfcServiceFunctionPathArrayList = new ArrayList<>();
-        sfcServiceFunctionPathArrayList.add(serviceFunctionPath.getName());
-        serviceFunctionChainStateBuilder.setSfcServiceFunctionPath(sfcServiceFunctionPathArrayList);
-        serviceFunctionChainStateBuilder.setName(serviceFunctionChain.getName());
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfcoIID, LogicalDatastoreType.OPERATIONAL)) {
+            ret = true;
+        }
 
-        WriteTransaction writeTx = ODL_SFC.getDataProvider().newWriteOnlyTransaction();
-        writeTx.merge(LogicalDatastoreType.OPERATIONAL,
-                sfcoIID, serviceFunctionChainStateBuilder.build(), true);
-        writeTx.commit();
         printTraceStop(LOG);
+        return ret;
+    }
 
 
+    /**
+     * This method adds a single service path name to the Service Function
+     * Chain operational data store
+     * <p>
+     * @param serviceFunctionChainName sfc name
+     * @param servicePathName service path name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
+    @SuppressWarnings("unused")
+    public static boolean addPathToServiceFunctionChainState (String serviceFunctionChainName,
+                                                              String servicePathName) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
+                ServiceFunctionChainStateKey(serviceFunctionChainName);
+        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier
+                .builder(ServiceFunctionChainsState.class)
+                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
+                .child(SfcServicePath.class, new SfcServicePathKey(servicePathName)).build();
+
+        SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
+        sfcServicePathBuilder.setKey(new SfcServicePathKey(servicePathName));
+        sfcServicePathBuilder.setName(servicePathName);
+
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcoIID, sfcServicePathBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL)) {
+            ret = true;
+        }
+
+        printTraceStop(LOG);
+        return ret;
     }
 
     public static ServiceFunctionChains getServiceFunctionChainsRef () {

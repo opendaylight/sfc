@@ -8,6 +8,7 @@ module rendered-service-path {
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
   import service-function-metadata {prefix sfc-md; }
+  import service-function-forwarder {prefix sfc-sff; }
 
 
   organization "Cisco Systems, Inc.";
@@ -109,6 +110,11 @@ module rendered-service-path {
           type string;
           description
             "Service Function Forwarder name";
+        }
+        leaf service-function-forwarder-locator {
+          type sfc-sff:service-function-forwarder-locator-ref;
+          description
+            "The name of the SFF data plane locator";
         }
         leaf service-index {
           type uint8;

@@ -74,6 +74,16 @@ module service-function-forwarder {
        function, packets will be forwarded";
   }
 
+  typedef service-function-forwarder-locator-ref {
+    type leafref {
+      path "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/"
+          + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       the SFF data plane locator.";
+  }
+
 
   container service-function-forwarders {
     description

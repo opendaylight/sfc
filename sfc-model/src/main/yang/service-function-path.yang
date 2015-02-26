@@ -8,6 +8,7 @@ module service-function-path {
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
   import service-function-metadata {prefix sfc-md; }
+  import service-locator {prefix sfc-sl; }
 
 
   organization "Cisco Systems, Inc.";
@@ -75,6 +76,14 @@ module service-function-path {
         description
           "The name of this service function path";
       }
+
+      leaf transport-type {
+        type sfc-sl:sl-transport-type-def;
+        default "service-locator:vxlan-gpe";
+        description
+          "Transport type from service-locator.yang.";
+      }
+
       leaf symmetric {
         type boolean;
         default false;

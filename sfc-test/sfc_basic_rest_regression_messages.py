@@ -315,6 +315,20 @@ SERVICE_PATH_JSON = """
   }
 }"""
 
+RENDERED_SERVICE_PATH_RPC_PATH_1_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "Path-1-SFC1"
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RPC_PATH_2_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "Path-2-SFC2"
+  }
+}"""
+
 RENDERED_SERVICE_PATH_RESP_JSON = """
 {
   "rendered-service-paths": {

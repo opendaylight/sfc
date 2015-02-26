@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_3ea83ada",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-02-26T07:51:47Z",
+      "side": 1,
+      "message": "Without this, e.g. the python classifier will still need to access SFF to get it\u0027s data plane locator. Do you plan to include this container in future?",
+      "range": {
+        "startLine": 250,
+        "startChar": 4,
+        "endLine": 253,
+        "endChar": 8
+      },
+      "revId": "931068c8836ff128fd0bfddbb33844867baea1d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

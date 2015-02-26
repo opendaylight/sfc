@@ -56,6 +56,8 @@ import ipaddress
 
 #: constants
 PAYLOAD_START_INDEX = 16
+OAM_VERSION_AND_FLAG = int('00100000', 2)
+OAM_TRACE_TYPE = int('00000001', 2)
 
 logger = logging.getLogger(__name__)
 
@@ -139,23 +141,21 @@ def decode_contextheader(payload, context_header_values):
                     context_header_values.service_shared)
 
 
-# 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+#  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |Ver|1|C|R|R|R|R|R|R|   Length  |  MD-type=0x3/4 | Next Protocol|
+# |Ver|1|C|R|R|R|R|R|R|   Length  |  MD-type=1    | Next Protocol |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # |          Service Path ID                      | Service Index |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |     SIL       |B|     Rsvd    |          Source Port          |
+# |    OAM Type   |     SIL       |          Dest Port            |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |                     Source IP Address                         |
+# |                       Dest IP Address                         |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |                     Source IP Address                         |
+# |                       Dest IP Address                         |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |                     Source IP Address                         |
+# |                       Dest IP Address                         |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |                     Source IP Address                         |
-# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# |                     List of SFF/SF...                         |
+# |                       Dest IP Address                         |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 def decode_trace_req(payload, trace_req_header_values):
@@ -163,8 +163,8 @@ def decode_trace_req(payload, trace_req_header_values):
     trace_header = payload[16:36]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
-    trace_req_header_values.sil = _header_values[0]
-    trace_req_header_values.flags = _header_values[1]
+    trace_req_header_values.oam_type = _header_values[0]
+    trace_req_header_values.sil = _header_values[1]
     trace_req_header_values.port = _header_values[2]
     trace_req_header_values.ip_1 = _header_values[3]
     trace_req_header_values.ip_2 = _header_values[4]
@@ -176,3 +176,53 @@ def decode_trace_req(payload, trace_req_header_values):
         logger.info(binascii.hexlify(trace_header))
         logger.info('Session Index Limit: %d',
                     trace_req_header_values.sil)
+
+
+def decode_trace_resp(payload, trace_req_header_values):
+    """Decode headers for a packet Type MD 0x3"""
+    trace_header = payload[16:36]
+
+    _header_values = struct.unpack('!B B H I I I I', trace_header)
+    trace_req_header_values.oam_type = _header_values[0]
+    trace_req_header_values.sil = _header_values[1]
+    trace_req_header_values.port = _header_values[2]
+    trace_req_header_values.ip_1 = _header_values[3]
+    trace_req_header_values.ip_2 = _header_values[4]
+    trace_req_header_values.ip_3 = _header_values[5]
+    trace_req_header_values.ip_4 = _header_values[6]
+
+    sf_type_len = payload[36]
+    sf_type_end = 37 + (sf_type_len << 2)
+    sf_type = payload[37:sf_type_end].decode('utf-8')
+    sf_name_len = payload[sf_type_end]
+    sf_name_end = sf_type_end + 1 + (sf_name_len << 2)
+    sf_name = payload[sf_type_end + 1:sf_name_end].decode('utf-8')
+
+    if not __debug__:
+        logger.info('NSH Trace Req Header Decode ...')
+        logger.info(binascii.hexlify(trace_header))
+        logger.info('Session Index Limit: %d',
+                    trace_req_header_values.sil)
+
+    return sf_type, sf_name
+
+
+def is_trace_message(data):
+    if (data[8] & OAM_VERSION_AND_FLAG) and (data[16] == OAM_TRACE_TYPE):
+        return True
+    else:
+        return False
+
+
+def is_oam_message(data):
+    if data[8] & OAM_VERSION_AND_FLAG:
+        return True
+    else:
+        return False
+
+
+def is_data_message(data):
+    if not is_oam_message(data):
+        return True
+    else:
+        return False

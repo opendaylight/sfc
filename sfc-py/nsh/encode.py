@@ -108,8 +108,8 @@ def build_trace_req_packet(vxlan_header_values, base_header_values, trace_req_he
 
     # Build trace context headers
     trace_header = struct.pack('!B B H I I I I',
+                               trace_req_header_values.oam_type,
                                trace_req_header_values.sil,
-                               trace_req_header_values.flags,
                                trace_req_header_values.port,
                                trace_req_header_values.ip_1,
                                trace_req_header_values.ip_2,
@@ -119,25 +119,23 @@ def build_trace_req_packet(vxlan_header_values, base_header_values, trace_req_he
     return vxlan_header + base_header + trace_header
 
 
-def build_trace_req_header(sil, flags, remote_ip, remote_port):
+def build_trace_req_header(oam_type, sil, remote_ip, remote_port):
 
         trace_req_header_values = TRACEREQHEADER()
+        trace_req_header_values.oam_type = oam_type
         trace_req_header_values.sil = sil
-        trace_req_header_values.flags = flags
         trace_req_header_values.port = int(remote_port)
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((remote_ip, trace_req_header_values.port))
-        print(s.getsockname()[0])
+        # print(s.getsockname()[0])
         src_addr = ipaddress.ip_address(s.getsockname()[0])
         if src_addr.version == 4:
-            print("Building IPv4 mapped IPv6 Address")
             trace_req_header_values.ip_1 = 0x00000000
             trace_req_header_values.ip_2 = 0x00000000
             trace_req_header_values.ip_3 = 0x0000FFFF
             trace_req_header_values.ip_4 = int(ipaddress.IPv4Address(src_addr))
         elif src_addr.version == 6:
-            print("Building IPv6 Address")
             int_addr6 = int(ipaddress.IPv6Address(src_addr))
             trace_req_header_values.ip_1 = int_addr6 >> 96
             trace_req_header_values.ip_2 = (int_addr6 >> 64) & 0x0FFFFFFFF
@@ -147,8 +145,20 @@ def build_trace_req_header(sil, flags, remote_ip, remote_port):
         return trace_req_header_values
 
 
-def add_sf_to_trace_pkt(rw_data, sf_type):
-    sf_data = bytearray(sf_type.encode('ascii'))
-    rw_data[9] += (len(sf_data) >> 2)
-    trace_pkt = rw_data + sf_data
+def roundup(x):
+    return x if x % 4 == 0 else x + 4 - x % 4
+
+
+def add_sf_to_trace_pkt(rw_data, sf_type, sf_name):
+    sf_type_len = roundup(len(sf_type))
+    sf_type_len >>= 2
+    sf_type_pad = sf_type.ljust(sf_type_len, '\0')
+    sf_type_pad = bytearray(sf_type_pad.encode('utf-8'))
+    sf_name_len = roundup(len(sf_name))
+    sf_name_len >>= 2
+    sf_name_pad = sf_name.ljust(sf_name_len, '\0')
+    sf_name_pad = bytearray(sf_name_pad.encode('utf-8'))
+    trace_pkt = rw_data + struct.pack('!B', sf_type_len) + sf_type_pad + struct.pack('!B', sf_name_len) + sf_name_pad
+    # rw_data[9] += (len(sf_data) >> 2)
+    # trace_pkt = rw_data + sf_data
     return trace_pkt

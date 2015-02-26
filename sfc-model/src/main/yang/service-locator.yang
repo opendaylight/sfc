@@ -81,6 +81,14 @@ module service-locator {
 
   }
 
+  typedef sl-transport-type-def {
+    type identityref {
+      base "sl-transport-type";
+    }
+    description "This type is used to reference all
+      registered transport types";
+  }
+
   grouping lisp-locator {
     description
       "Data plane-locator: Lisp Eid(IP)";

@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateKey;
@@ -137,12 +138,37 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * This method searches for a data plane locator of a given name within a SFF
+     * <p>
+     * @param sffName SFF name
+     * @param sffLocatorName SFF data plane locator name
+     * @return SffDataPlaneLocator object or null if not found
+     */
+    public static SffDataPlaneLocator readServiceFunctionForwarderDataPlaneLocator (String sffName, String sffLocatorName) {
+        ServiceFunctionForwarder serviceFunctionForwarder = readServiceFunctionForwarder(sffName);
+        if (serviceFunctionForwarder != null) {
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList = serviceFunctionForwarder.getSffDataPlaneLocator();
+            for (SffDataPlaneLocator sffDataPlaneLocator : sffDataPlaneLocatorList) {
+                if (sffDataPlaneLocator.getName().equals(sffLocatorName)) {
+                    return sffDataPlaneLocator;
+                } else {
+                    continue;
+                }
+            }
+        } else {
+            LOG.error("{}: Failed to read SFF: {}",
+                    Thread.currentThread().getStackTrace()[1], sffName);
+        }
+        return null;
+    }
+
+    /**
      * This method reads a SFF from the datastore
      * <p>
      * @param serviceFunctionForwarderName SFF name
      * @return SF object or null if not found
      */
-    protected ServiceFunctionForwarder readServiceFunctionForwarder(String serviceFunctionForwarderName) {
+    public static  ServiceFunctionForwarder readServiceFunctionForwarder(String serviceFunctionForwarderName) {
         printTraceStart(LOG);
         ServiceFunctionForwarder sff;
         InstanceIdentifier<ServiceFunctionForwarder> sffIID;

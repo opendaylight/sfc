@@ -107,7 +107,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
 
     public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readServiceClassifier");
+        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
     }
     public static  SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");

@@ -41,7 +41,7 @@ SERVICE_HOP_INVALID = 0xDEADBEEF
 
 #: Services names
 FWL = 'firewall'
-NAT = 'nat'  # TODO: should this be `napt44` or just `nat`?
+NAT = 'napt44'  # TODO: should this be `napt44` or just `nat`?
 DPI = 'dpi'
 QOS = 'qos'
 IDS = 'ids'

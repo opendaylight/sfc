@@ -172,8 +172,13 @@ class SffExporter extends AbstractExporter implements Exporter {
         ObjectNode ovsBridgeNode = mapper.createObjectNode();
         ovsBridgeNode.put(_BRIDGE_NAME, ovsBridge.getBridgeName());
 
-        if (ovsBridge.getUuid() != null) {
-            ovsBridgeNode.put(_UUID, ovsBridge.getUuid().getValue());
+
+        try {
+            if (ovsBridge.getUuid() != null) {
+                ovsBridgeNode.put(_UUID, ovsBridge.getUuid().getValue());
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.error("Supplied value does not match any of the permitted UUID patterns");
         }
 
         if (ovsBridge.getExternalIds() != null) {

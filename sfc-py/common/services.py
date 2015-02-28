@@ -111,7 +111,7 @@ class BasicService(object):
         # decode NSH context headers
         if nsh_decode.is_trace_message(data):
                 nsh_decode.decode_trace_req(data, self.server_trace_values)
-        elif nsh_decode.is_data_message(self.server_base_values):
+        elif nsh_decode.is_data_message(data):
             nsh_decode.decode_contextheader(data, self.server_ctx_values)
 
     def _process_incoming_packet(self, data, addr):

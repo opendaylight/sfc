@@ -226,6 +226,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
 
     private void initializeSff(final String sffName) {
         if(!getSffInitialized(sffName)) {
+            LOG.info("Initializing SFF [{}]", sffName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffName, false, true);
             this.sfcL2FlowProgrammer.configureIngressTableMatchAny(sffName, false, true);
             this.sfcL2FlowProgrammer.configureAclTableMatchAny(sffName, false, true);
@@ -243,6 +244,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
      * @param dpl - details about the transport to write
      */
     private void configureSffTransportIngressFlow(final String sffName, DataPlaneLocator dpl) {
+        LOG.info("configureSffTransportIngressFlow sff [{}]", sffName);
+
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
 
@@ -259,8 +262,9 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         // TODO add VxLAN
     }
 
-    // TODO if pathId is null/negative, Goto table 2 (ACL)
     private void configureSffIngressFlow(final String sffName, DataPlaneLocator dpl, final long pathId) {
+        LOG.info("configureSffIngressFlow sff [{}] pathId [{}]", sffName, pathId);
+
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
 
@@ -282,6 +286,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     }
 
     private void configureSffNextHopFlow(final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, final long pathId) {
+        LOG.info("configureSffNextHopFlow sff [{}] pathId [{}]", sffName, pathId);
+
         MacAddress srcMac = null;
         MacAddress dstMac = null;
 
@@ -306,6 +312,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     }
 
     private void configureSffTransportEgressFlow(final String sffName, DataPlaneLocator dpl) {
+        LOG.info("configureSffTransportEgressFlow sff [{}]", sffName);
+
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
 
@@ -334,35 +342,37 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         LOG.info("configureSffIngress srcSff [{}] dstSff [{}] sf [{}] pathId [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId());
 
-        if(entry.getDstSff().equals(SffGraph.EGRESS)) {
+        final String sffDstName = entry.getDstSff();
+
+        if(sffDstName.equals(SffGraph.EGRESS)) {
             // Nothing to be done for the ingress tables, skip it
             return;
         }
 
-        ServiceFunctionForwarder sffDst = getServiceFunctionForwarder(entry.getDstSff());
+        ServiceFunctionForwarder sffDst = getServiceFunctionForwarder(sffDstName);
         SffDataPlaneLocator sffDstIngressDpl = getSffDataPlaneLocator(sffDst, SffGraph.INGRESS);
         if(sffDstIngressDpl == null) {
-            LOG.warn("SFF [{}] does not have a DataPlaneLocator named ingress", entry.getDstSff());
+            LOG.warn("SFF [{}] does not have a DataPlaneLocator named ingress", sffDstName);
             return;
         }
 
         // Configure the SF related flows
         SffSfDataPlaneLocator sfDpl = getSffSfDataPlaneLocator(sffDst, entry.getSf());
         if(sfDpl == null) {
-            LOG.warn("Cant find SFF [{}] to SF [{}] DataPlaneLocator", entry.getDstSff(), entry.getSf());
+            LOG.warn("Cant find SFF [{}] to SF [{}] DataPlaneLocator", sffDstName, entry.getSf());
             return;
         }
         // configure the Ingress-SFF-SF ingress Flow
-        configureSffIngressFlow(entry.getDstSff(), sffDstIngressDpl.getDataPlaneLocator(), entry.getPathId());
+        configureSffIngressFlow(sffDstName, sffDstIngressDpl.getDataPlaneLocator(), entry.getPathId());
         // configure the SF Transport Ingress Flow
-        configureSffTransportIngressFlow(entry.getDstSff(), sfDpl);
+        configureSffTransportIngressFlow(sffDstName, sfDpl);
         // configure the SF Ingress Flow
-        configureSffIngressFlow(entry.getDstSff(), sfDpl, -1);
+        configureSffIngressFlow(sffDstName, sfDpl, entry.getPathId());
 
-        // Configure the switch Ingress flow(s)
+        // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
             // configure the Transport Ingress Flow using the sffDstIngressDpl
-            configureSffTransportIngressFlow(entry.getDstSff(), sffDstIngressDpl.getDataPlaneLocator());
+            configureSffTransportIngressFlow(sffDstName, sffDstIngressDpl.getDataPlaneLocator());
             return;
         }
 
@@ -373,7 +383,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             return;
         }
         // configure SFF-SFF-SF ingress flow using sffSrcEgressDpl and entry.toSf
-        configureSffIngressFlow(entry.getDstSff(), sffSrcEgressDpl.getDataPlaneLocator(), entry.getPathId());
+        configureSffIngressFlow(sffDstName, sffSrcEgressDpl.getDataPlaneLocator(), entry.getPathId());
     }
 
     /**
@@ -430,8 +440,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             String curSffName = rspHop.getServiceFunctionForwarder();
             String sfName = rspHop.getServiceFunctionName();
 
-            LOG.info("SfcL2RspDataListener.configureSffFlows renderedServicePathHop [{}] prevSffName [{}] curSffName [{}] sfName [{}]",
-                    rspHop.getHopNumber(), prevSffName, curSffName, sfName);
+            LOG.info("processRenderedServicePath pathId [{}] renderedServicePathHop [{}]",
+                    rsp.getPathId(), rspHop.getHopNumber());
 
             sffGraph.addEntry(prevSffName, curSffName, sfName, rsp.getPathId());
             prevSffName = curSffName;
@@ -445,10 +455,11 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.iterator();
         while (sffGraphIter.hasNext()) {
             SffGraph.SffGraphEntry entry = sffGraphIter.next();
-            initializeSff(entry.getSrcSff());
+            if(!entry.getDstSff().equals(SffGraph.EGRESS)) {
+                initializeSff(entry.getDstSff());
+            }
             configureSffIngress(entry);
             configureSffEgress(entry);
         }
     }
-
 }

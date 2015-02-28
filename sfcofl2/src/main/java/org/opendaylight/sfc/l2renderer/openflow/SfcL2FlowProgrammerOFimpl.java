@@ -66,10 +66,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     private static final int COOKIE_BIGINT_HEX_RADIX = 16;
 
-    // Which bits in the metadata field to set, used for the Bucket and allows 4095 sfpid's
+    // Which bits in the metadata field to set, used for the PathId and allows 4095 sfpid's
     // TODO check how many sfpid's there can be
     private static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
-    private static final BigInteger METADATA_BASE_MASK = new BigInteger("FFFFFFFFFFFFFFFF", COOKIE_BIGINT_HEX_RADIX);
 
     private static final int L4_PORT_MASK = 0x0000FFFF;
     private static final int L4_PROTOCOL_TCP = 6;
@@ -224,8 +223,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, tableId {} nextTableId {} doDrop {}",
-                        this.tableId, this.nextTableId, this.doDrop);
+                LOG.info("SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}] doDrop {}",
+                        this.sffNodeName, this.tableId, this.nextTableId, this.doDrop);
 
                 InstructionBuilder ib = null;
                 if(this.doDrop) {
@@ -272,7 +271,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, transportIngressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("+++++++++++++++++  ConfigureTableMatchAnyThread writer caught an Exception: ");
+                LOG.info("ConfigureTableMatchAnyThread writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -326,7 +325,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureTransportIngressFlow, etherType {}", this.etherType);
+                LOG.info("SfcProviderSffFlowWriter.ConfigureTransportIngressFlow, sff [{}] etherType [{}]",
+                        this.sffNodeName, this.etherType);
 
                 //
                 // Create the matching criteria
@@ -361,7 +361,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, transportIngressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("+++++++++++++++++  ConfigureTransportIngress writer caught an Exception: ");
+                LOG.info("ConfigureTransportIngress writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -425,8 +425,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.configureIngressFlow vlan {} mpls {} mac {}",
-                        vlan, mplsLabel, macAddress);
+                LOG.info("SfcProviderSffFlowWriter.configureIngressFlow sff [{}] pathId [{}] vlan [{}] mpls [{}] mac [{}]",
+                        this.sffNodeName, this.pathId, this.vlan, this.mplsLabel, this.macAddress);
 
                 MatchBuilder match = new MatchBuilder();
                 List<Action> actionList = new ArrayList<Action>();
@@ -448,7 +448,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 int ibOrder = 0;
                 InstructionBuilder metadataIb = new InstructionBuilder();
-                metadataIb.setInstruction(SfcOpenflowUtils.createInstructionMetadata(actionOrder++, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH));
+                metadataIb.setInstruction(SfcOpenflowUtils.createInstructionMetadata(
+                        actionOrder++, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH));
                 metadataIb.setKey(new InstructionKey(ibOrder));
                 metadataIb.setOrder(ibOrder++);
 
@@ -487,7 +488,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, ingressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("+++++++++++++++++  ConfigureIngressFlow writer caught an Exception: ");
+                LOG.info("ConfigureIngressFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -541,7 +542,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         public void run() {
             try {
 
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
+                LOG.info("SfcProviderSffFlowWriter.writeSffAcl() SFPid {}", sfpId);
 
                 boolean isIpMatch = false;
                 boolean isPortMatch = false;
@@ -612,7 +613,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 // value
                 WriteMetadataBuilder wmb = new WriteMetadataBuilder();
                 wmb.setMetadata(getMetadataSFP(sfpId));
-                wmb.setMetadataMask(METADATA_BASE_MASK);
+                wmb.setMetadataMask(METADATA_MASK_SFP_MATCH);
 
                 InstructionBuilder wmbIb = new InstructionBuilder();
                 wmbIb.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(wmb.build()).build());
@@ -654,7 +655,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, aclFlow);
                 }
             } catch (Exception e) {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
+                LOG.info("SfcProviderSffFlowWriter.writeSffAcl() caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -694,8 +695,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.configureNextHopFlow sfpId {} srcMac {} dstMac {}",
-                        sfpId, srcMac, dstMac);
+                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sfpId [{}] srcMac [{}] dstMac [{}]",
+                        this.sffNodeName, this.sfpId, this.srcMac, this.dstMac);
 
                 //
                 // Create the matching criteria
@@ -756,7 +757,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, nextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.info("+++++++++++++++++  ConfigureNextHopFlow writer caught an Exception: ");
+                LOG.info("ConfigureNextHopFlow writer caught an Exception: ");
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -821,7 +822,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("+++++++++++++++++  SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
+                LOG.info("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow sff [{}] mac [{}] vlan [{}] mpls [{}]",
+                        this.sffNodeName, this.dstMac, this.dstVlan, this.mplsLabel);
 
                 MatchBuilder match = new MatchBuilder();
                 SfcOpenflowUtils.addMatchDstMac(match, dstMac);

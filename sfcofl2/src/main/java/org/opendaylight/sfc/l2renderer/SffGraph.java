@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class stores a simple Connection Graph of how the
  * SFFs (Service Function Forwarders) are interconnected.
@@ -14,6 +17,7 @@ import java.util.List;
 public class SffGraph {
     public static final String INGRESS = "ingress";
     public static final String EGRESS  = "egress";
+    private static final Logger LOG = LoggerFactory.getLogger(SffGraph.class);
 
     /**
      * Internal class to hold each SffGraph entry
@@ -48,6 +52,9 @@ public class SffGraph {
     public void addEntry(final String srcSff, final String dstSff, final String sf, long pathId) {
         SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, pathId);
         graphEntries.add(entry);
+
+        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] pathId [{}]",
+                srcSff, dstSff, sf, pathId);
     }
 
     public Iterator<SffGraphEntry> iterator() {

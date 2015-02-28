@@ -53,6 +53,11 @@ module service-locator {
        derived.";
   }
 
+  identity mac {
+    base "sl-transport-type";
+    description "Simple MAC with optional VLAN transport type";
+  }
+
   identity vxlan-gpe {
     base "sl-transport-type";
     description "Programmable vxlan transport type";

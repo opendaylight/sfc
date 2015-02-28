@@ -38,7 +38,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
     private static final short DEFAULT_MASK = 32;
     private static final String SUBNET_MASK = "/";
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2AclDataListener.class);
 
     public SfcL2AclDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
@@ -94,27 +94,16 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
     }
 
     private void configureAclFlows(AccessList acl, boolean isAddFlow) {
-        Matches matches;
-        AceIp aceIp;
-        AceIpv4 aceIpv4;
-        Short srcPort = 0;
-        Short dstPort = 0;
-        Short srcMask = 0;
-        Short dstMask = 0;
-        String srcIpAddress = null;
-        String dstIpAddress = null;
-        byte protocol = (byte) 0;
-
 
         Iterator<AccessListEntries> aclEntryIter = acl.getAccessListEntries().iterator();
 
         while (aclEntryIter.hasNext()) {
 
             AccessListEntries createdAccessListEntries = aclEntryIter.next();
-            SfcAction sfcAction = createdAccessListEntries.getActions().getAugmentation(Actions1.class)
-                    .getSfcAction();
-            String aclRenderedServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
+            SfcAction sfcAction =
+                    createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction();
 
+            String aclRenderedServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
             RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePathExecutor(aclRenderedServicePathName);
 
             if(renderedServicePath == null) {
@@ -122,12 +111,13 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                 continue;
             }
 
-            Long pathId = renderedServicePath.getPathId();
+            Matches matches = createdAccessListEntries.getMatches();
+            AceIp aceIp = (AceIp) matches.getAceType();
+            AceIpv4 aceIpv4 = (AceIpv4) aceIp.getAceIpVersion();
 
-            matches = createdAccessListEntries.getMatches();
-            aceIp = (AceIp) matches.getAceType();
-            aceIpv4 = (AceIpv4) aceIp.getAceIpVersion();
-
+            // IP Addresses
+            Short srcMask = 0;
+            String srcIpAddress = null;
             if (aceIpv4.getSourceIpv4Address() != null) {
                 srcIpAddress = aceIpv4.getSourceIpv4Address().getValue();
                 if (srcIpAddress.contains(SUBNET_MASK)) {
@@ -138,6 +128,9 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                     srcMask = DEFAULT_MASK;
                 }
             }
+
+            Short dstMask = 0;
+            String dstIpAddress = null;
             if (aceIpv4.getDestinationIpv4Address() != null) {
                 dstIpAddress = aceIpv4.getDestinationIpv4Address().getValue();
                 if (dstIpAddress.contains(SUBNET_MASK)) {
@@ -149,6 +142,10 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                 }
             }
 
+            // Ports and Protocol
+            Short srcPort = 0;
+            Short dstPort = 0;
+            byte protocol = (byte) 0;
             if (aceIp != null) {
                 if (aceIp.getSourcePortRange() != null) {
                     srcPort = aceIp.getSourcePortRange().getLowerPort().getValue().shortValue();
@@ -160,8 +157,9 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                     protocol = aceIp.getIpProtocol().byteValue();
                 }
             }
-            List<RenderedServicePathHop> servicePathHopList = renderedServicePath.getRenderedServicePathHop();
 
+            // Write the ACL for each SFF in the service chain
+            List<RenderedServicePathHop> servicePathHopList = renderedServicePath.getRenderedServicePathHop();
             if(servicePathHopList == null) {
                 LOG.info("ACL no servicePathHop available for {}", aclRenderedServicePathName);
                 continue;
@@ -178,7 +176,7 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
                         srcPort,
                         dstPort,
                         protocol,
-                        pathId,
+                        renderedServicePath.getPathId(),
                         isAddFlow);
             }
         }

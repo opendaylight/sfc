@@ -17,6 +17,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithm.grouping.ServiceFunctionGroupAlgorithm;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithm.grouping.ServiceFunctionGroupAlgorithmBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithm.grouping.ServiceFunctionGroupAlgorithmKey;
@@ -68,6 +73,15 @@ public class SimpleTestEntityBuilder {
                 .setServiceFunctionForwarder(serviseFunctionForwarder).setTransport(transport);
 
         return locatorBuilder.build();
+    }
+
+    static ServiceFunctionForwarder buildServiceFunctionForwarder(String name, List<SffDataPlaneLocator> sffDataplaneLocatorList,
+            List<ServiceFunctionDictionary> dictionaryList, String classifier) {
+        ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
+        sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name)).setSffDataPlaneLocator(sffDataplaneLocatorList)
+                .setServiceFunctionDictionary(dictionaryList).setServiceNode(null);
+
+        return sffBuilder.build();
     }
 
     static ServiceFunctionGroupAlgorithm buildServiceFunctionGroupAlgorithm(String name) {

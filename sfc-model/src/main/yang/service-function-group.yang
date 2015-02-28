@@ -59,7 +59,7 @@ module service-function-group {
 //        type string;
 //        mandatory true;
 //        description
-//          "Service function group Type from service-function-group-type.yang";
+//          "Service function group Type from service-function-group-type";
 //     }
       list sfg-service-function {
         key "name";

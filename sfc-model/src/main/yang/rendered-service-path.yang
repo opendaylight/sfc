@@ -224,11 +224,7 @@ module rendered-service-path {
     }
   }
 
-  container rendered-service-path-first-hop {
-    description
-      "Provides all necessary information for a system to construct
-      a NSH header and associated overlay packet to target the first
-      service hop of a Rendered Service Path";
+  grouping first-hop-info {
     leaf starting-index {
       type uint8;
       description
@@ -261,5 +257,32 @@ module rendered-service-path {
     uses sfc-sl:mpls-locator;
   }
 
+  container rendered-service-path-first-hop {
+    description
+      "Provides all necessary information for a system to construct
+      a NSH header and associated overlay packet to target the first
+      service hop of a Rendered Service Path";
+    container first-hop {
+      uses first-hop-info;
+    }
+  }
+
+  rpc read-rendered-service-path-first-hop {
+    description
+      "Read all the necessary information for the first hop of a
+      Rendered Service Path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered service path";
+      }
+    }
+    output {
+      container first-hop {
+        uses first-hop-info;
+      }
+    }
+  }
 
 }

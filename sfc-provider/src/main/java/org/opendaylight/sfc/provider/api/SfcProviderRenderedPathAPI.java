@@ -13,6 +13,7 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathFirstHopBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.FirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -760,9 +761,10 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
         RenderedServicePath renderedServicePath = readRenderedServicePath(rspName);
         if (renderedServicePath != null) {
+            FirstHopBuilder hopBuilder = new FirstHopBuilder();
+            hopBuilder.setStartingIndex(renderedServicePath.getStartingIndex())
+                      .setPathId(renderedServicePath.getPathId());
             RenderedServicePathFirstHopBuilder renderedServicePathFirstHopBuilder = new RenderedServicePathFirstHopBuilder();
-            renderedServicePathFirstHopBuilder.setPathId(renderedServicePath.getPathId())
-                    .setStartingIndex(renderedServicePath.getStartingIndex());
 
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
             RenderedServicePathHop renderedServicePathHop = renderedServicePathHopList.get(0);
@@ -782,13 +784,13 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                     case IP:
                         Ip ipLocator = (Ip) sffDataPlaneLocator.getDataPlaneLocator().getLocatorType();
                         if (ipLocator.getIp() != null) {
-                            renderedServicePathFirstHopBuilder.setIp(ipLocator.getIp());
+                            hopBuilder.setIp(ipLocator.getIp());
                             if (ipLocator.getPort() != null) {
-                                renderedServicePathFirstHopBuilder.setPort(ipLocator.getPort());
+                                hopBuilder.setPort(ipLocator.getPort());
                             }
                         }
                         // IP means VXLAN-GPE, later we might have other options...
-                        renderedServicePathFirstHopBuilder.setTransportType(VxlanGpe.class);
+                        hopBuilder.setTransportType(VxlanGpe.class);
                         break;
                     case LISP:
                         break;
@@ -802,6 +804,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 LOG.error("{}: Failed to read data plane locator {} for SFF {}",
                         Thread.currentThread().getStackTrace()[1], sffLocatorName, sffName);
             }
+            renderedServicePathFirstHopBuilder.setFirstHop(hopBuilder.build());
             renderedServicePathFirstHop = renderedServicePathFirstHopBuilder.build();
         }
 

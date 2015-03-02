@@ -21,6 +21,8 @@ import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.util.SfcSftMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.FirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.read.rendered.service.path.first.hop.output.FirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -35,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -305,4 +308,34 @@ public class SfcProviderRpc implements ServiceFunctionService,
         return Futures.immediateFuture(rpcResultBuilder.build());
 
     }
+
+
+    @Override
+    public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(ReadRenderedServicePathFirstHopInput input) {
+
+        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+
+        renderedServicePathFirstHop =
+                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+
+        ReadRenderedServicePathFirstHopOutput output = null;
+        if (renderedServicePathFirstHop != null) {
+            FirstHop firstHop = renderedServicePathFirstHop.getFirstHop();
+            FirstHopBuilder hopBuilder = new FirstHopBuilder();
+            hopBuilder.setStartingIndex(firstHop.getStartingIndex())
+                      .setSymmetricPathId(firstHop.getSymmetricPathId())
+                      .setPathId(firstHop.getPathId())
+                      .setTransportType(firstHop.getTransportType());
+            ReadRenderedServicePathFirstHopOutputBuilder outputBuilder = new ReadRenderedServicePathFirstHopOutputBuilder();
+            if (firstHop.getTransportType() == VxlanGpe.class) {
+                hopBuilder.setIp(firstHop.getIp());
+                hopBuilder.setPort(firstHop.getPort());
+            }
+            outputBuilder.setFirstHop(hopBuilder.build());
+            output = outputBuilder.build();
+        }
+        return Futures.immediateFuture(Rpcs.<ReadRenderedServicePathFirstHopOutput>
+                        getRpcResult(true, output, Collections.<RpcError>emptySet()));
+    }
+
 }

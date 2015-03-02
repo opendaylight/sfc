@@ -158,9 +158,13 @@ class BasicService(object):
             self.transport.sendto(rw_data, addr)
         elif nsh_decode.is_trace_message(data):
             # Add SF information to packet
-            trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
+            if self.server_base_values.service_index == self.server_trace_values.sil:
+                trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
+                self.transport.sendto(trace_pkt, addr)
+            else:
+                self.transport.sendto(rw_data, addr)
             # Send packet back to SFF
-            self.transport.sendto(trace_pkt, addr)
+
 
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
@@ -319,6 +323,7 @@ class MySffServer(BasicService):
 
         elif nsh_decode.is_trace_message(data):
 
+            # Have to differentiate between no SPID and End of path
             if (self.server_trace_values.sil == self.server_base_values.service_index) or (
                     next_hop == SERVICE_HOP_INVALID):
                 # End of trace

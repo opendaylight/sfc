@@ -178,18 +178,18 @@ def decode_trace_req(payload, trace_req_header_values):
                     trace_req_header_values.sil)
 
 
-def decode_trace_resp(payload, trace_req_header_values):
+def decode_trace_resp(payload, trace_resp_header_values):
     """Decode headers for a packet Type MD 0x3"""
     trace_header = payload[16:36]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
-    trace_req_header_values.oam_type = _header_values[0]
-    trace_req_header_values.sil = _header_values[1]
-    trace_req_header_values.port = _header_values[2]
-    trace_req_header_values.ip_1 = _header_values[3]
-    trace_req_header_values.ip_2 = _header_values[4]
-    trace_req_header_values.ip_3 = _header_values[5]
-    trace_req_header_values.ip_4 = _header_values[6]
+    trace_resp_header_values.oam_type = _header_values[0]
+    trace_resp_header_values.sil = _header_values[1]
+    trace_resp_header_values.port = _header_values[2]
+    trace_resp_header_values.ip_1 = _header_values[3]
+    trace_resp_header_values.ip_2 = _header_values[4]
+    trace_resp_header_values.ip_3 = _header_values[5]
+    trace_resp_header_values.ip_4 = _header_values[6]
 
     sf_type_len = payload[36]
     sf_type_end = 37 + (sf_type_len << 2)
@@ -202,7 +202,7 @@ def decode_trace_resp(payload, trace_req_header_values):
         logger.info('NSH Trace Req Header Decode ...')
         logger.info(binascii.hexlify(trace_header))
         logger.info('Session Index Limit: %d',
-                    trace_req_header_values.sil)
+                    trace_resp_header_values.sil)
 
     return sf_type, sf_name
 

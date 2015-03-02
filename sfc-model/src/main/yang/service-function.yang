@@ -8,6 +8,7 @@ module service-function {
   import ietf-yang-types { prefix yang; }
   import service-function-type {prefix sfc-sft;}
   import service-locator {prefix sfc-sl;}
+  import service-statistics {prefix sfc-ss; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -158,6 +159,9 @@ module service-function {
         description
           "the name of the service function";
       }
+      uses sfc-ss:service-statistics-group {
+        description "Global Service Function statistics";
+      }
       list sf-service-path {
         key "name";
         leaf name {
@@ -165,6 +169,7 @@ module service-function {
           description
             "The name of the Service Path";
         }
+        uses sfc-ss:service-statistics-group;
         description
         "A list of all service function paths that contain this
          service function";

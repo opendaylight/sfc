@@ -9,8 +9,9 @@ module service-function-forwarder {
     prefix "yang";
     revision-date 2013-07-15;
   }
-  import service-locator        { prefix sfc-sl; }
-  import service-function-type {prefix sfc-sft;}
+  import service-locator        { prefix sfc-sl;  }
+  import service-function-type  { prefix sfc-sft; }
+  import service-statistics     { prefix sfc-ss;  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -196,6 +197,10 @@ module service-function-forwarder {
         description
           "the name of the service function forwarder";
       }
+      uses sfc-ss:service-statistics-group {
+        description "Global Service Function Forwarder statistics";
+      }
+
       list sff-service-path {
         key "name";
         leaf name {
@@ -203,8 +208,9 @@ module service-function-forwarder {
           description
             "The name of the Service Path";
         }
+        uses sfc-ss:service-statistics-group;
         description
-        "A list of all service function paths that contain this
+        "A list of all service function paths that use this
          service function forwarder";
       }
     }

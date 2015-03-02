@@ -10,6 +10,7 @@ module rendered-service-path {
   import service-function-metadata {prefix sfc-md; }
   import service-function-forwarder {prefix sfc-sff; }
   import service-locator {prefix sfc-sl;}
+  import service-statistics {prefix sfc-ss; }
 
 
   organization "Cisco Systems, Inc.";
@@ -94,6 +95,9 @@ module rendered-service-path {
         type sfc-md:variable-metadata-ref;
         description
           "The name of the associated variable metadata";
+      }
+      uses sfc-ss:service-statistics-group {
+        description "Global Rendered Service Path statistics";
       }
       list rendered-service-path-hop {
         key "hop-number";

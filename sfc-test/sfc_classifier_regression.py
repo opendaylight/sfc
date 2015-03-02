@@ -26,6 +26,7 @@ SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-fu
 SFF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function-forwarder:service-function-forwarders-state/"
 SF_OPER_URL = "http://" + ODLIP + "/restconf/operational/service-function:service-functions-state/"
 RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rendered-service-paths/"
+RSP_RPC_URL = "http://" + ODLIP + "/restconf/operations/rendered-service-path:create-rendered-path"
 SFP_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/" \
                                   "service-function-path/{}/"
 SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/{}/"
@@ -89,7 +90,6 @@ def put_and_check(url, json_req, json_resp):
     else:
         print("=>Failure, status code: {} \n".format(r.status_code))
 
-
 def check(url, json_resp, message):
     s = requests.Session()
     print(message, "\n")
@@ -100,6 +100,19 @@ def check(url, json_resp, message):
         print("=>Check not successful, error code: {}. If error code was 2XX it is "
               "probably a false negative due to string compare \n".format(r.status_code))
 
+def post_rpc(url, json_input, ison_resp):
+    s = requests.Session()
+    print("POSTing RPC {} \n".format(url))
+    r = s.post(url, data=json_input, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("Checking... \n")
+        if (r.status_code == 200) and (json.loads(r.text) == json.loads(ison_resp)):
+            print("=>RCP posted successfully \n")
+        else:
+            print("=>RPC unsuccessful, error code: {}. If error code was 2XX it is "
+                  "probably a false negative due to string compare \n".format(r.status_code))
+    else:
+        print("=>Failure, status code: {} \n".format(r.status_code))
 
 def delete_and_check(url, message):
     s = requests.Session()
@@ -132,6 +145,7 @@ if __name__ == "__main__":
     put_and_check(SFF_URL, SERVICE_FUNCTION_FORWARDERS_JSON, SERVICE_FUNCTION_FORWARDERS_JSON)
     put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
     put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_JSON)
+    post_rpc(RSP_RPC_URL, RENDERED_SERVICE_PATH_RPC_REQ, RENDERED_SERVICE_PATH_RPC_RESP)
     check(RSP_URL, RENDERED_SERVICE_PATH_RESP_JSON, "Checking RSP...")
     check(SFF_OPER_URL, SERVICE_FUNCTION_FORWARDERS_OPER_JSON, "Checking SFF Operational State...")
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")

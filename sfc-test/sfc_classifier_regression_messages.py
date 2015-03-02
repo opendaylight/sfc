@@ -96,11 +96,27 @@ SERVICE_PATH_JSON = """
       {
         "name": "SFC1-SFP1",
         "service-chain-name": "SFC1",
-        "path-id": 1
+        "path-id": 1,
+        "symmetric": false
       }
     ]
   }
 }"""
+
+RENDERED_SERVICE_PATH_RPC_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "SFC1-SFP1"
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RPC_RESP = """
+{
+  "output": {
+    "result": true
+  }
+}"""
+
 
 RENDERED_SERVICE_PATH_RESP_JSON = """
 {
@@ -111,6 +127,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
         "parent-service-function-path": "SFC1-SFP1",
         "service-chain-name": "SFC1",
         "starting-index": 255,
+        "path-id": 1,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,

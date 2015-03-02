@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_c7e4dfe2",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-02T15:54:13Z",
+      "side": 1,
+      "message": "This change will create regression issues. If you want to reuse a container you can put in inside a group. \n\ngrouping renndered-service-path-group {\n\ncontainer rendered-service-path-first-hop\n...\n}\n\nThen use the group inside the RPC",
+      "revId": "7e66b9b0b2f38091a34089067794b4e53d2e3877",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

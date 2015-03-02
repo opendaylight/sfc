@@ -89,13 +89,6 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                     }
                     SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
-
-                //REST
-/*                Object[] serviceForwarderObj = {serviceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                SfcProviderRestAPI sfcProviderRestAPI = SfcProviderRestAPI
-                        .getDeleteServiceFunctionForwarder(serviceForwarderObj, serviceForwarderClass);
-                ODL_SFC.getExecutor().submit(sfcProviderRestAPI);*/
             }
         }
 

@@ -11,9 +11,7 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -36,7 +34,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HttpMethod;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -126,6 +123,12 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "deleteServiceFunctionForwarderState");
     }
 
+    /**
+     * This method creates a SFF in the data store
+     * <p>
+     * @param sff SFF object
+     * @return true if SFF was created, false otherwise
+     */
     protected boolean putServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         boolean ret;
         printTraceStart(LOG);
@@ -152,8 +155,6 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             for (SffDataPlaneLocator sffDataPlaneLocator : sffDataPlaneLocatorList) {
                 if (sffDataPlaneLocator.getName().equals(sffLocatorName)) {
                     return sffDataPlaneLocator;
-                } else {
-                    continue;
                 }
             }
         } else {
@@ -204,24 +205,31 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * Put all Service Function Forwarders in the data store
+     * devices
+     * <p>
+     * @return true is all SFFs were created, false otherwise
+     */
     protected boolean putAllServiceFunctionForwarders(ServiceFunctionForwarders sffs) {
         boolean ret = false;
         printTraceStart(LOG);
         if (dataBroker != null) {
-
             InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
+                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffsIID, sffs);
-            writeTx.commit();
-
-            ret = true;
+            ret = SfcDataStoreAPI.writePutTransactionAPI(sffsIID, sffs, LogicalDatastoreType.CONFIGURATION);
         }
         printTraceStop(LOG);
         return ret;
     }
 
+    /**
+     * Read all Service Function Forwarders
+     * devices
+     * <p>
+     * @return ServiceFunctionForwarders object
+     */
     protected ServiceFunctionForwarders readAllServiceFunctionForwarders() {
         ServiceFunctionForwarders sffs = null;
         printTraceStart(LOG);
@@ -248,73 +256,26 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return sffs;
     }
 
+    /**
+     * Delete All Service Function Forwarders in the data store
+     * devices
+     * <p>
+     * @return true is all SFFs were deleted, false otherwise
+     */
     protected boolean deleteAllServiceFunctionForwarders() {
         boolean ret = false;
         printTraceStart(LOG);
         if (ODL_SFC.getDataProvider() != null) {
 
             InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
+                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.delete(LogicalDatastoreType.CONFIGURATION, sffsIID);
-            writeTx.commit();
-
-            ret = true;
+            if (SfcDataStoreAPI.deleteTransactionAPI(sffsIID, LogicalDatastoreType.CONFIGURATION)) {
+                ret = true;
+            }
         }
         printTraceStop(LOG);
         return ret;
-    }
-
-    /**
-     * Check a SFF for consistency after datastore creation
-     * <p>
-     * @param serviceFunctionForwarder SFF object
-     * @return Nothing
-     */
-    public void checkServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
-
-        printTraceStart(LOG);
-
-        invokeServiceForwarderRest(serviceFunctionForwarder, HttpMethod.PUT);
-
-        printTraceStop(LOG);
-    }
-
-    /**
-     * This method decouples the SFP API from the SouthBound REST client.
-     * SFP APIs call this method to convey SFP information to REST southbound
-     * devices
-     * <p>
-     * @param serviceFunctionForwarder SFF object
-     * @param httpMethod  HTTP method such as GET, PUT, POST..
-     */
-    private void invokeServiceForwarderRest(ServiceFunctionForwarder serviceFunctionForwarder,
-                                            String httpMethod) {
-
-     /* Invoke SB REST API */
-
-        if (serviceFunctionForwarder != null)
-        {
-            if (httpMethod.equals(HttpMethod.PUT))
-            {
-                Object[] servicePathObj = {serviceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.getPutServiceFunctionForwarder
-                        (servicePathObj,
-                                serviceForwarderClass));
-            } else if (httpMethod.equals(HttpMethod.DELETE))
-            {
-                Object[] servicePathObj = {serviceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.getDeleteServiceFunctionForwarder
-                        (servicePathObj,
-                                serviceForwarderClass));
-            }
-        } else {
-            LOG.error("SFF object is null");
-        }
-
     }
 
     /**

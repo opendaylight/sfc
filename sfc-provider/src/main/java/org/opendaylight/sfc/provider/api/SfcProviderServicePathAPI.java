@@ -10,13 +10,12 @@ package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.SfcProviderRestAPI;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathState;
@@ -28,7 +27,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HttpMethod;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -459,63 +457,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return ret;
-    }
-
-
-    /**
-     * Check a SFF for consistency after datastore creation
-     * <p>
-     * @param renderedServicePath RSP object
-     * @param httpMethod HttpMethod
-     * @return Nothing
-     */
-    public boolean checkServiceFunctionPath(RenderedServicePath renderedServicePath, String httpMethod) {
-
-        printTraceStart(LOG);
-        boolean ret;
-
-        ret = invokeServicePathRest(renderedServicePath, httpMethod);
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method decouples the SFP API from the SouthBound REST client.
-     * SFP APIs call this method to convey SFP information to REST southbound
-     * devices
-     * <p>
-     * @param renderedServicePath Rendered Service Paths
-     * @param httpMethod  HTTP method such as GET, PUT, POST..
-     * @return Nothing.
-     */
-    private boolean invokeServicePathRest(RenderedServicePath renderedServicePath, String httpMethod) {
-
-     /* Invoke SB REST API */
-        boolean ret = true;
-
-        if (renderedServicePath != null)
-        {
-            if (httpMethod.equals(HttpMethod.PUT))
-            {
-                Object[] servicePathObj = {renderedServicePath};
-                Class[] servicePathClass = {RenderedServicePath.class};
-                 ODL_SFC.getExecutor().execute(SfcProviderRestAPI.
-                        getPutRenderedServicePath(servicePathObj,
-                                servicePathClass));
-            } else if (httpMethod.equals(HttpMethod.DELETE))
-            {
-                Object[] servicePathObj = {renderedServicePath};
-                Class[] servicePathClass = {RenderedServicePath.class};
-                ODL_SFC.getExecutor().execute(SfcProviderRestAPI.
-                        getDeleteRenderedServicePath(servicePathObj,
-                                servicePathClass));
-            }
-        } else {
-            LOG.error("Data object is null");
-        }
-        return ret;
-
     }
 
     /**

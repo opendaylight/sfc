@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -83,7 +84,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 }
             };
 
-    private static Map<java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin = new HashMap<>();
+    private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin = new HashMap<>();
     private enum SfcSelectSfAlgorithmType{
         ROUND_ROBIN, RANDOM;
     }
@@ -147,13 +148,14 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         this.sfcSelectSfAlgorithmType = sfcSelectSfAlgorithmType;
     }
 
-    public static String getRoundRobinServicePathHop(List<SftServiceFunctionName> sftServiceFunctionNameList, ServiceFunctionType serviceFunctionType)
+    public static String getRoundRobinServicePathHop(List<SftServiceFunctionName> sftServiceFunctionNameList,
+                                                     ServiceFunctionType serviceFunctionType)
     {
         int countRoundRobin = 0;
 
-        if(mapCountRoundRobin.size() != 0){
-            for(java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){
-                if(sfType.equals(serviceFunctionType.getType())){
+        if (mapCountRoundRobin.size() != 0){
+            for (java.lang.Class<? extends ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){
+                if (sfType.equals(serviceFunctionType.getType())) {
                     countRoundRobin = mapCountRoundRobin.get(sfType);
                     LOG.debug("countRoundRobin: {}", countRoundRobin);
                     break;
@@ -173,15 +175,17 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
     }
 
-    public static String sfcSelectServicePathHop(ServiceFunctionType serviceFunctionType, SfcSelectSfAlgorithmType sfcSelectSfAlgorithmType)
+    public static String sfcSelectServicePathHop(ServiceFunctionType serviceFunctionType,
+                                                 SfcSelectSfAlgorithmType sfcSelectSfAlgorithmType)
     {
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         LOG.debug("ServiceFunction Name List : {}", sftServiceFunctionNameList);
-        String sfcSelectServicePathHopName = "";
+        String sfcSelectServicePathHopName;
 
-        switch(sfcSelectSfAlgorithmType){
+        switch(sfcSelectSfAlgorithmType) {
         case ROUND_ROBIN:
-            sfcSelectServicePathHopName = getRoundRobinServicePathHop(sftServiceFunctionNameList, serviceFunctionType);
+            sfcSelectServicePathHopName = getRoundRobinServicePathHop(sftServiceFunctionNameList,
+                    serviceFunctionType);
             break;
         case RANDOM:
         default:

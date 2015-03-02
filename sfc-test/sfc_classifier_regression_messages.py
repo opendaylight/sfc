@@ -96,11 +96,27 @@ SERVICE_PATH_JSON = """
       {
         "name": "SFC1-SFP1",
         "service-chain-name": "SFC1",
-        "path-id": 1
+        "path-id": 1,
+        "symmetric": false
       }
     ]
   }
 }"""
+
+RENDERED_SERVICE_PATH_RPC_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "SFC1-SFP1"
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RPC_RESP = """
+{
+  "output": {
+    "result": true
+  }
+}"""
+
 
 RENDERED_SERVICE_PATH_RESP_JSON = """
 {
@@ -111,6 +127,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
         "parent-service-function-path": "SFC1-SFP1",
         "service-chain-name": "SFC1",
         "starting-index": 255,
+        "path-id": 1,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
@@ -186,7 +203,7 @@ IETF_ACL_JSON_IPV4 = """
               "destination-ipv4-address": "0.0.0.0/0",
               "source-ipv4-address": "0.0.0.0/0",
               "source-port-range": {
-                "upper-port": 15000,
+                "upper-port": 20000,
                 "lower-port": 15000
               },
               "ip-protocol": 17

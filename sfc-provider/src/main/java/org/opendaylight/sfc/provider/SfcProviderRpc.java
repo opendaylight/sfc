@@ -305,4 +305,27 @@ public class SfcProviderRpc implements ServiceFunctionService,
         return Futures.immediateFuture(rpcResultBuilder.build());
 
     }
+
+
+    @Override
+    public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(ReadRenderedServicePathFirstHopInput input) {
+
+        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+
+        renderedServicePathFirstHop =
+                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+
+        ReadRenderedServicePathFirstHopOutput output = null;
+        if (renderedServicePathFirstHop != null) {
+            ReadRenderedServicePathFirstHopOutputBuilder outputBuilder = new ReadRenderedServicePathFirstHopOutputBuilder();
+            outputBuilder.setStartingIndex(renderedServicePathFirstHop.getStartingIndex())
+                         .setSymmetricPathId(renderedServicePathFirstHop.getSymmetricPathId())
+                         .setPathId(renderedServicePathFirstHop.getPathId())
+                         .setTransportType(renderedServicePathFirstHop.getTransportType());
+            output = outputBuilder.build();
+        }
+        return Futures.immediateFuture(Rpcs.<ReadRenderedServicePathFirstHopOutput>
+                        getRpcResult(true, output, Collections.<RpcError>emptySet()));
+    }
+
 }

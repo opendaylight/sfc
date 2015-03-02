@@ -257,5 +257,46 @@ module rendered-service-path {
     uses sfc-sl:mpls-locator;
   }
 
+  rpc read-rendered-service-path-first-hop {
+    description
+      "Read all the necessary information for the first hop of a
+      Rendered Service Path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered service path";
+      }
+    }
+    output {
+      leaf starting-index {
+        type uint8;
+        description
+            "Starting service index";
+      }
+      leaf symmetric-path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies the associated symmetric path, if any.";
+      }
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
+      }
+
+      leaf transport-type {
+        type sfc-sl:sl-transport-type-def;
+      }
+    }
+  }
 
 }

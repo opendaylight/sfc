@@ -151,12 +151,13 @@ def roundup(x):
 
 def add_sf_to_trace_pkt(rw_data, sf_type, sf_name):
     sf_type_len = roundup(len(sf_type))
-    sf_type_len >>= 2
     sf_type_pad = sf_type.ljust(sf_type_len, '\0')
+    # len is 4 byte words
+    sf_type_len >>= 2
     sf_type_pad = bytearray(sf_type_pad.encode('utf-8'))
     sf_name_len = roundup(len(sf_name))
-    sf_name_len >>= 2
     sf_name_pad = sf_name.ljust(sf_name_len, '\0')
+    sf_name_len >>= 2
     sf_name_pad = bytearray(sf_name_pad.encode('utf-8'))
     trace_pkt = rw_data + struct.pack('!B', sf_type_len) + sf_type_pad + struct.pack('!B', sf_name_len) + sf_name_pad
     # rw_data[9] += (len(sf_data) >> 2)

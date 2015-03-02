@@ -21,6 +21,8 @@ import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.util.SfcSftMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.read.rendered.service.path.first.hop.output.FirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -305,4 +307,26 @@ public class SfcProviderRpc implements ServiceFunctionService,
         return Futures.immediateFuture(rpcResultBuilder.build());
 
     }
+
+
+    @Override
+    public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(ReadRenderedServicePathFirstHopInput input) {
+
+        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+
+        renderedServicePathFirstHop =
+                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+
+        ReadRenderedServicePathFirstHopOutput output = null;
+        if (renderedServicePathFirstHop != null) {
+            FirstHopBuilder hopBuilder = new FirstHopBuilder();
+            hopBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
+            ReadRenderedServicePathFirstHopOutputBuilder outputBuilder = new ReadRenderedServicePathFirstHopOutputBuilder();
+            outputBuilder.setFirstHop(hopBuilder.build());
+            output = outputBuilder.build();
+        }
+        return Futures.immediateFuture(Rpcs.<ReadRenderedServicePathFirstHopOutput>
+                        getRpcResult(true, output, Collections.<RpcError>emptySet()));
+    }
+
 }

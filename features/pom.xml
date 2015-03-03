@@ -230,7 +230,7 @@
     </dependency>
     <!-- test to validate features.xml -->
     <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
+      <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
       <version>${feature.test.version}</version>
       <scope>test</scope>
@@ -314,7 +314,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>${maven.surefire.version}</version>
             <configuration>
               <systemPropertyVariables>
                 <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
@@ -322,7 +321,7 @@
                 <karaf.distro.version>${karaf.empty.version}</karaf.distro.version>
               </systemPropertyVariables>
               <dependenciesToScan>
-               <dependency>org.opendaylight.yangtools:features-test</dependency>
+               <dependency>org.opendaylight.odlparent:features-test</dependency>
               </dependenciesToScan>
             </configuration>
           </plugin>

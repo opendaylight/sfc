@@ -37,7 +37,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
+      <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
       <version>${feature.test.version}</version>
       <scope>test</scope>
@@ -137,7 +137,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>${maven.surefire.version}</version>
             <configuration>
               <systemPropertyVariables>
                 <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
@@ -145,7 +144,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                 <karaf.distro.version>${karaf.empty.version}</karaf.distro.version>
               </systemPropertyVariables>
               <dependenciesToScan>
-               <dependency>org.opendaylight.yangtools:features-test</dependency>
+               <dependency>org.opendaylight.odlparent:features-test</dependency>
               </dependenciesToScan>
             </configuration>
           </plugin>

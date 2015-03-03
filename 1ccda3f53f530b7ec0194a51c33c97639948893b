@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_a09739eb",
+        "filename": "sfc-py/classifier/classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-03T19:32:58Z",
+      "side": 1,
+      "message": "Just for clarification:\nIn the near future, we will support different RSPs in different ACEs. Thus we will not take the [0] action only.",
+      "range": {
+        "startLine": 251,
+        "startChar": 26,
+        "endLine": 251,
+        "endChar": 30
+      },
+      "revId": "1ccda3f53f530b7ec0194a51c33c97639948893b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_c09cc511",
+        "filename": "sfc-py/classifier/classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-03T19:32:58Z",
+      "side": 1,
+      "message": "After RSP container rendered-service-path-first-hop will be filled with proper data, getting of fwd_params will be much easier :)",
+      "range": {
+        "startLine": 256,
+        "startChar": 12,
+        "endLine": 265,
+        "endChar": 57
+      },
+      "revId": "1ccda3f53f530b7ec0194a51c33c97639948893b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

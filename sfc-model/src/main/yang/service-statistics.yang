@@ -46,6 +46,7 @@ module service-statistics {
 
   grouping service-statistics-group {
     container service-statistics {
+      config false;
       leaf bytes-in {
         type yang:zero-based-counter64;
       }

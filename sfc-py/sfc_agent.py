@@ -579,8 +579,8 @@ def get_sffs_from_odl(odl_ip_port):
         logger.warning("=>Failed to GET SFFs from ODL \n")
 
     l_topo = sfc_globals.get_sff_topo()
-    if l_topo:
-        pprint(l_topo)
+    # if l_topo:
+    #    pprint(l_topo)
 
 
 def get_sff_from_odl(odl_ip_port, sff_name):
@@ -648,7 +648,7 @@ def auto_sff_name():
                         logger.info("Auto SFF name is: %s \n", sff_name)
                         return 0
     else:
-        logger.error("Could not determine SFF name \n")
+        logger.warn("Could not determine SFF name \n")
         return -1
 
 

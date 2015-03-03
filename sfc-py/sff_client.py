@@ -128,9 +128,7 @@ class MyTraceClient:
             self.send_packet((self.dest_addr, self.dest_port))
         else:
             print("Trace end \n")
-
-
-            # self.loop.stop()
+            self.loop.stop()
 
     @staticmethod
     def connection_refused(exc):

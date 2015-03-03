@@ -81,7 +81,7 @@ SERVICE_FUNCTIONS_JSON = """
             "ip": "10.0.1.42",
             "port": 40001,
             "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF3"
+            "service-function-forwarder": "SFF2"
           }
         ],
         "nsh-aware": true,

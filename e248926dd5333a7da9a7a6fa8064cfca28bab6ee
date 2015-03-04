@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_fb4896b4",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:42:58Z",
+      "side": 1,
+      "message": "Please figure it out why tests fail. Without those two tests your coverage is minimal.",
+      "revId": "e248926dd5333a7da9a7a6fa8064cfca28bab6ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

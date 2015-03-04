@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_5bcf4a29",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:46:44Z",
+      "side": 1,
+      "message": "This is not okay. You have a container inside another container since the uses statement already pulls the container under it. remove the \"container first-hop.",
+      "revId": "ba6747b63af723645e7e8c4c031752886d0b29f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_dbe27a9f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:46:44Z",
+      "side": 1,
+      "message": "Create javadoc",
+      "revId": "ba6747b63af723645e7e8c4c031752886d0b29f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_5be66ab1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:46:44Z",
+      "side": 1,
+      "message": "This file will change will you fix the Yang",
+      "revId": "ba6747b63af723645e7e8c4c031752886d0b29f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

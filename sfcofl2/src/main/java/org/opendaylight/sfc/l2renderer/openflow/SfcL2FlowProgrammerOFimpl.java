@@ -695,7 +695,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sfpId [{}] srcMac [{}] dstMac [{}]",
+                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sff [{}] sfpId [{}] srcMac [{}] dstMac [{}]",
                         this.sffNodeName, this.sfpId, this.srcMac, this.dstMac);
 
                 //

@@ -100,6 +100,12 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         while (aclEntryIter.hasNext()) {
 
             AccessListEntries createdAccessListEntries = aclEntryIter.next();
+            LOG.info("configureAclFlows createdAccessListEntries {}", createdAccessListEntries);
+            LOG.info("configureAclFlows createdAccessListEntries.getActions() {}", createdAccessListEntries.getActions());
+            LOG.info("configureAclFlows createdAccessListEntries.getActions().getAugmentation(Actions1.class) {}",
+                    createdAccessListEntries.getActions().getAugmentation(Actions1.class));
+            LOG.info("configureAclFlows createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction() {}",
+                    createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction());
             SfcAction sfcAction =
                     createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction();
 

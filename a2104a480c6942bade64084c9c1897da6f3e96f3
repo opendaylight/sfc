@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_fb71760c",
+        "filename": "sfc-model/src/main/yang/service-function-group-algorithm.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "Unless you plan to reuse this group, just inline into the container.",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_5b33ca61",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "Please run this file through pyang",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_1b41c2a8",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "Unless you plan to reuse this group just inline fields in the container.",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_bb320e5d",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "Why not type?",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_fb43b6ac",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "why are you printing a LOG error message here and not in the two APIs above",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_1b6f822c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "when a user add a SF to the group, do you check if it is of the appropriate type? the question is generic and not necessarily associated with this API.",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_5b818ac1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "What happens if a SF is deleted? Do you have a listener that calls this API?",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_db1d9abf",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAlgAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T01:39:04Z",
+      "side": 1,
+      "message": "Why delete has an error message and not the other APIs?",
+      "revId": "a2104a480c6942bade64084c9c1897da6f3e96f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

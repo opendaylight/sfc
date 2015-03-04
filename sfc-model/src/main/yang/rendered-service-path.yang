@@ -164,6 +164,37 @@ module rendered-service-path {
     }
   }
 
+  container sff-rsp-ingress-dpls {
+    config false;
+    description
+      "A list of the subsequent, adjacent SFFs in this RSP.
+       Each list entry is a list itself, which contains the
+       DataPlaneLocators for this RSP as indicated in the SFP";
+
+    list service-function-forwarders {
+      description
+        "The adjacent, SFFs in this RSP listed in order";
+      key "name";
+      leaf name {
+        type string;
+        description
+          "The unique name of this service function forwarder, such as SFF1";
+      }
+      list sff-rsp-data-plane-locator {
+        description
+          "A list of all data-plane-locators of this SFF
+           of the same transport type used for this RSP.";
+        // TODO is a dpl ref good enough??
+        key "data-plane-locator";
+        leaf data-plane-locator {
+          type sfc-sff:service-function-forwarder-locator-ref;
+          description
+            "The SFF data-plane-locator reference";
+        }
+      }
+    }
+  }
+
   rpc delete-rendered-path {
     description
       "Delete a Rendered Service Path";

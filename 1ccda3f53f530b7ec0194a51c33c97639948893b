@@ -25,6 +25,23 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_1615173f",
+        "filename": "sfc-py/classifier/classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-04T03:48:20Z",
+      "side": 1,
+      "message": "It seems to me (but CMIIW) that there is a built-in assumption that the classifier runs on the same host as the first SFF. This is probably not the case.",
+      "revId": "1ccda3f53f530b7ec0194a51c33c97639948893b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_c09cc511",
         "filename": "sfc-py/classifier/classifier.py",
         "patchSetId": 1

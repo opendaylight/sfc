@@ -30,10 +30,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Lisp;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 //import javax.ws.rs.HttpMethod;
@@ -67,10 +73,17 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
+    private static final String FUNCTION = "function";
+    private static final String IP = "ip";
+    private static final String LISP = "lisp";
+    private static final String MAC = "mac";
+    private static final String MPLS = "mpls";
     private static final String FAILED_TO_STR = "failed to ...";
     private static final int MAX_STARTING_INDEX = 255;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static Map<String, Map<String, List<SffDataPlaneLocator>>> rspNameToRspHopSffDplList = new HashMap<>();
+
     static final Comparator<SfcServiceFunction> SF_ORDER =
             new Comparator<SfcServiceFunction>() {
                 public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
@@ -394,8 +407,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
-        List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
-        RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
+        List<RenderedServicePathHopBuilder> renderedServicePathHopBuilderList = new ArrayList<>();
+        Map<String, List<SffDataPlaneLocator>> rspHopSffDplMap = new HashMap<String, List<SffDataPlaneLocator>>();
 
         /*
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific
@@ -405,6 +418,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         sfcServiceFunctionList.addAll(serviceFunctionChain.getSfcServiceFunction());
 
         //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER));
+
+        LOG.info("BRADY createRenderedServicePathEntry Starting");
 
         // Descending order
         //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER_REV));
@@ -430,26 +445,26 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                     LOG.debug("SelectSfAlgorithmType: {}, Selected ServiceFunction name: {}", sfcSelectSfAlgorithmType, serviceFunctionName);
                     ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
                             .readServiceFunctionExecutor(serviceFunctionName);
+
                     if (serviceFunction != null) {
                         String serviceFunctionForwarderName =
                                 serviceFunction.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
 
+                        LOG.info("BRADY createRenderedServicePathEntry serviceFunction [{}] SFF [{}]", serviceFunction.getName(), serviceFunctionForwarderName);
+
+                        RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
                         renderedServicePathHopBuilder.setHopNumber(posIndex)
                                 .setServiceFunctionName(serviceFunctionName)
                                 .setServiceIndex((short) serviceIndex)
                                 .setServiceFunctionForwarder(serviceFunctionForwarderName);
 
-                        ServiceFunctionForwarder serviceFunctionForwarder =
-                                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(serviceFunctionForwarderName);
+                        // The SFF DPLs will be processed below, and are used to populate the RSP Hop Ingress DPL
+                        rspHopSffDplMap.put(
+                                serviceFunctionForwarderName,
+                                getSffDataPlaneLocators(serviceFunctionForwarderName));
 
-                        if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null &&
-                                serviceFunctionForwarder.getSffDataPlaneLocator().get(0) != null) {
-
-                            renderedServicePathHopBuilder.
-                                    setServiceFunctionForwarderLocator(serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getName());
-                        }
-
-                        renderedServicePathHopArrayList.add(posIndex, renderedServicePathHopBuilder.build());
+                        // Only storing builders for now. Later we'll add the sffIngressDpl and build the RSP Hop
+                        renderedServicePathHopBuilderList.add(posIndex, renderedServicePathHopBuilder);
                         serviceIndex--;
                         posIndex++;
                     } else {
@@ -467,11 +482,52 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                         sfcServiceFunction.getType());
                 return ret;
             }
-
         }
 
-        //Build the service function path so it can be committed to datastore
+        LOG.info("BRADY renderedServicePathHopBuilderList size [{}]", renderedServicePathHopBuilderList.size());
 
+        // Iterate the sffRspHopDplList and populate the renderedServicePathHopBuilder, then build it
+        int index = 0;
+        String prevSffName = null;
+        List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
+        ListIterator<RenderedServicePathHopBuilder> rspHopBuilderIter = renderedServicePathHopBuilderList.listIterator();
+        while(rspHopBuilderIter.hasNext()) {
+            RenderedServicePathHopBuilder renderedServicePathHopBuilder = rspHopBuilderIter.next();
+            final String curSffName = renderedServicePathHopBuilder.getServiceFunctionForwarder();
+
+            String sffIngressDpl = null;
+            if(index == 0) {
+                // Configure the RSP First Hop Ingress DPL
+                if(renderedServicePathHopBuilderList.size() > 1) {
+                    RenderedServicePathHopBuilder nextRspHopBuilder = renderedServicePathHopBuilderList.get(1);
+                    if(nextRspHopBuilder != null && nextRspHopBuilder.getServiceFunctionForwarder() != null) {
+                        LOG.info("BRADY getting first RspHop Ingress DPL index [{}] for curSff [{}] to nextSff[{}]",
+                                index, curSffName, nextRspHopBuilder.getServiceFunctionForwarder());
+                        sffIngressDpl = getFirstSffRspHopIngressDataPlaneLocator(
+                            serviceFunctionPath.getTransportType().getName(),
+                            curSffName,
+                            nextRspHopBuilder.getServiceFunctionForwarder(),
+                            rspHopSffDplMap);
+                    }
+                }
+                // TODO what to do if there is only one Hop in the Service Chain
+            } else {
+                LOG.info("BRADY getting RspHop Ingress DPL index [{}] for Sff [{}]", index, curSffName);
+                sffIngressDpl = getSffRspHopIngressDataPlaneLocator(prevSffName, curSffName, rspHopSffDplMap);
+            }
+            if(sffIngressDpl != null) {
+                LOG.info("BRADY setting renderedServicePathHopBuilder.setServiceFunctionForwarderLocator [{}]", sffIngressDpl);
+                renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(sffIngressDpl);
+            }
+            LOG.info("BRADY Building RspHop entry [{}] for Sff [{}]", index, curSffName);
+            renderedServicePathHopArrayList.add(index++, renderedServicePathHopBuilder.build());
+
+            prevSffName = renderedServicePathHopBuilder.getServiceFunctionForwarder();
+        }
+
+        LOG.info("BRADY renderedServicePathHopArrayList size [{}], index [{}]", renderedServicePathHopArrayList.size(), index);
+
+        // Build the service function path so it can be committed to datastore
 
         pathId = (serviceFunctionPath.getPathId() != null)  ?  serviceFunctionPath.getPathId()
                 : numCreatedPathIncrementGet();
@@ -480,7 +536,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             renderedServicePathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
         } else {
             renderedServicePathBuilder.setName(serviceFunctionPath.getName());
-
         }
 
         renderedServicePathBuilder.setPathId(pathId);
@@ -489,6 +544,14 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
         renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
+
+        renderedServicePathBuilder.setTransportType(serviceFunctionPath.getTransportType());
+
+        // Store the rspHopSffDplList for use in the symmetric RSP creation
+        // It will be removed when the symmetric RSP is created
+        if(serviceFunctionPath.isSymmetric()) {
+            SfcProviderRenderedPathAPI.rspNameToRspHopSffDplList.put(renderedServicePathBuilder.getName(), rspHopSffDplMap);
+        }
 
         RenderedServicePathKey renderedServicePathKey = new
                 RenderedServicePathKey(renderedServicePathBuilder.getName());
@@ -508,6 +571,103 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
         return ret;
 
+    }
+
+    // Correctly and deterministically select the correct FIRST SFF DPL based
+    // on the SFP.transport-type and the adjacent SFF transport details.
+    private String getFirstSffRspHopIngressDataPlaneLocator(final String rspTransport, final String curSffName, final String nextSffName, final Map<String, List<SffDataPlaneLocator>> sffToDpls) {
+        String adjacentSffDplName = getSffRspHopIngressDataPlaneLocator(curSffName, nextSffName, sffToDpls);
+        if(adjacentSffDplName == null) {
+            return null;
+        }
+
+        List<SffDataPlaneLocator> curSffDplList = sffToDpls.get(curSffName);
+        for(SffDataPlaneLocator curSffDpl : curSffDplList) {
+            if(curSffDpl.getName().equals(adjacentSffDplName)) {
+                // We want to skip the SFF to SFF DPL
+                continue;
+            }
+            if(curSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
+                // TODO need to check that its NOT an SffSf DPL
+                return curSffDpl.getName();
+            }
+        }
+
+        return null;
+    }
+
+    // Correctly and deterministically select the correct
+    // SFF DPL based on the adjacent SFF transport details.
+    private String getSffRspHopIngressDataPlaneLocator(final String prevSffName, final String curSffName, final Map<String, List<SffDataPlaneLocator>> sffToDpls) {
+        List<SffDataPlaneLocator> prevSffDplList = sffToDpls.get(prevSffName);
+        List<SffDataPlaneLocator> curSffDplList = sffToDpls.get(curSffName);
+
+        // TODO this is an O(n squared) search, can be improved using a hash table
+        //      considering there should only be 3-4 DPLs, its probably not worth the
+        //      extra code to improve it.
+        LOG.info("BRADY prevSffDplList size [{}] curSffDplList size [{}]", prevSffDplList.size(), curSffDplList.size());
+
+        for(SffDataPlaneLocator prevSffDpl : prevSffDplList) {
+            for(SffDataPlaneLocator curSffDpl : curSffDplList) {
+                LocatorType prevLocatorType = prevSffDpl.getDataPlaneLocator().getLocatorType();
+                LocatorType curLocatorType = curSffDpl.getDataPlaneLocator().getLocatorType();
+
+                LOG.info("BRADY Comparing prevSff [{}] locator type [{}] to curSff [{}] locator type [{}]",
+                        prevSffName, prevLocatorType.getImplementedInterface().getSimpleName(),
+                        curSffName, curLocatorType.getImplementedInterface().getSimpleName());
+
+                if(prevLocatorType.getImplementedInterface() == curLocatorType.getImplementedInterface()) {
+                    String type = prevLocatorType.getImplementedInterface().getSimpleName().toLowerCase();
+
+                    switch (type) {
+                    case FUNCTION:
+                        break;
+                    case IP:
+                        // TODO what makes 2 IP DPLs equal? Assuming its the Port, as each IP will be different
+                        if(((Ip) prevLocatorType).getPort().getValue().intValue() == ((Ip) curLocatorType).getPort().getValue().intValue()) {
+                            LOG.info("BRADY Found RspHopIngress IP DPL [{}] prevSff [{}] curSff [{}]", curSffDpl.getName(), prevSffName, curSffName);
+                            return curSffDpl.getName();
+                        }
+                        break;
+                    case LISP:
+                        // TODO does == work on IpAddress???
+                        if(((Lisp) prevLocatorType).getEid() == ((Lisp) curLocatorType).getEid()) {
+                            LOG.info("BRADY Found RspHopIngress LISP DPL [{}] prevSff [{}] curSff [{}]", curSffDpl.getName(), prevSffName, curSffName);
+                            return curSffDpl.getName();
+                        }
+                        break;
+                    case MAC:
+                        // TODO for now only checking VLAN Id if present
+                        LOG.info("BRADY prevVlan [{}] curVlan [{}]", ((Mac) prevLocatorType).getVlanId(), ((Mac) curLocatorType).getVlanId());
+                        if(((Mac) prevLocatorType).getVlanId() != null && ((Mac) curLocatorType).getVlanId() != null) {
+                            if(((Mac) prevLocatorType).getVlanId().intValue() == ((Mac) curLocatorType).getVlanId().intValue()) {
+                                LOG.info("BRADY Found RspHopIngress VLAN DPL [{}] prevSff [{}] curSff [{}]", curSffDpl.getName(), prevSffName, curSffName);
+                                return curSffDpl.getName();
+                            }
+                        }
+                        break;
+                    case MPLS:
+                        if(((Mpls) prevLocatorType).getMplsLabel().longValue() == ((Mpls) curLocatorType).getMplsLabel().longValue()) {
+                            LOG.info("BRADY Found RspHopIngress MPLD DPL [{}] prevSff [{}] curSff [{}]", curSffDpl.getName(), prevSffName, curSffName);
+                            return curSffDpl.getName();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private List<SffDataPlaneLocator> getSffDataPlaneLocators(final String sffName) {
+        ServiceFunctionForwarder serviceFunctionForwarder =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
+
+        List<SffDataPlaneLocator> sffDpls = new ArrayList<SffDataPlaneLocator>();
+        sffDpls.addAll(serviceFunctionForwarder.getSffDataPlaneLocator());
+
+        return sffDpls;
     }
 
     /**
@@ -540,8 +700,13 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         revRenderedServicePathHopArrayList.addAll(renderedServicePathHopList);
         //int serviceIndex = MAX_STARTING_INDEX - numServiceHops + 1;
 
+        Map<String, List<SffDataPlaneLocator>> rspHopSffDplMap =
+                SfcProviderRenderedPathAPI.rspNameToRspHopSffDplList.get(renderedServicePath.getName());
+        SfcProviderRenderedPathAPI.rspNameToRspHopSffDplList.remove(renderedServicePath.getName());
+
         ListIterator<RenderedServicePathHop> iter = renderedServicePathHopList.listIterator(renderedServicePathHopList.size());
         revServiceHop = 0;
+        String prevSffName = null;
         while(iter.hasPrevious()) {
 
             RenderedServicePathHop renderedServicePathHop = iter.previous();
@@ -550,7 +715,35 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             revRenderedServicePathHopBuilder.setHopNumber(revServiceHop);
             revRenderedServicePathHopBuilder.setServiceIndex((short) (MAX_STARTING_INDEX - revServiceHop));
             revRenderedServicePathHopBuilder.setKey(revRenderedServicePathHopKey);
+
+            // calculate the RSP Hop Ingress Locator, using the info calculated in the mirrored renderedServicePath
+            String sffIngressDpl = null;
+            if(revServiceHop == 0) {
+                if(renderedServicePathHopList.size() > 1) {
+                    // Get the penultimate SFF name to calculate the First SFF Hop DPL in the reverse direction
+                    RenderedServicePathHop nextRspHop = renderedServicePathHopList.get(renderedServicePathHopList.size()-2);
+                    if(nextRspHop != null && nextRspHop.getServiceFunctionForwarder() != null) {
+                        LOG.info("BRADY getting first Reverse renderedServicePathHopBuilder");
+                        sffIngressDpl = getFirstSffRspHopIngressDataPlaneLocator(
+                                    renderedServicePath.getTransportType().getName(),
+                                    revRenderedServicePathHopBuilder.getServiceFunctionForwarder(),
+                                    nextRspHop.getServiceFunctionForwarder(),
+                                    rspHopSffDplMap);
+                    }
+                }
+
+            } else {
+                sffIngressDpl = getSffRspHopIngressDataPlaneLocator(
+                                          prevSffName,
+                                          revRenderedServicePathHopBuilder.getServiceFunctionForwarder(),
+                                          rspHopSffDplMap);
+            }
+            if(sffIngressDpl != null) {
+                LOG.info("BRADY setting Reverse renderedServicePathHopBuilder.setServiceFunctionForwarderLocator [{}]", sffIngressDpl);
+                revRenderedServicePathHopBuilder.setServiceFunctionForwarderLocator(sffIngressDpl);
+            }
             revRenderedServicePathHopArrayList.set(revServiceHop, revRenderedServicePathHopBuilder.build());
+            prevSffName = revRenderedServicePathHopBuilder.getServiceFunctionForwarder();
             revServiceHop++;
         }
 
@@ -568,6 +761,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 */
 
         revRenderedServicePathBuilder.setRenderedServicePathHop(revRenderedServicePathHopArrayList);
+        revRenderedServicePathBuilder.setTransportType(renderedServicePath.getTransportType());
 
         InstanceIdentifier<RenderedServicePath> rspIID;
 
@@ -759,12 +953,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @return Nothing.
      */
     public static RenderedServicePathFirstHop readRenderedServicePathFirstHop (String rspName) {
-        final String FUNCTION = "function";
-        final String IP = "ip";
-        final String LISP = "lisp";
-        final String MAC = "mac";
-        final String MPLS = "mpls";
-
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
 
         RenderedServicePath renderedServicePath = readRenderedServicePath(rspName);

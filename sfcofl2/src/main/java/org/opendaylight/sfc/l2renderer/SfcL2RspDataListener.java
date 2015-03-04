@@ -440,8 +440,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             String curSffName = rspHop.getServiceFunctionForwarder();
             String sfName = rspHop.getServiceFunctionName();
 
-            LOG.info("processRenderedServicePath pathId [{}] renderedServicePathHop [{}]",
-                    rsp.getPathId(), rspHop.getHopNumber());
+            LOG.info("processRenderedServicePath pathId [{}] renderedServicePathHop [{}] Sff [{}] SF [{}] Sff Ingress Locator [{}]",
+                    rsp.getPathId(), rspHop.getHopNumber(), curSffName, sfName, rspHop.getServiceFunctionForwarderLocator());
 
             sffGraph.addEntry(prevSffName, curSffName, sfName, rsp.getPathId());
             prevSffName = curSffName;

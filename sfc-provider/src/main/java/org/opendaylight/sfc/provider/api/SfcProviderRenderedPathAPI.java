@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
@@ -434,12 +435,24 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                     ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
                             .readServiceFunctionExecutor(serviceFunctionName);
                     if (serviceFunction != null) {
+                        String serviceFunctionForwarderName =
+                                serviceFunction.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
+
                         renderedServicePathHopBuilder.setHopNumber(posIndex)
                                 .setServiceFunctionName(serviceFunctionName)
                                 .setServiceIndex((short) serviceIndex)
-                                .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
-                                        .get(0)
-                                        .getServiceFunctionForwarder());
+                                .setServiceFunctionForwarder(serviceFunctionForwarderName);
+
+                        ServiceFunctionForwarder serviceFunctionForwarder =
+                                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(serviceFunctionForwarderName);
+
+                        if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null &&
+                                serviceFunctionForwarder.getSffDataPlaneLocator().get(0) != null) {
+
+                            renderedServicePathHopBuilder.
+                                    setServiceFunctionForwarderLocator(serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getName());
+                        }
+
                         renderedServicePathHopArrayList.add(posIndex, renderedServicePathHopBuilder.build());
                         serviceIndex--;
                         posIndex++;

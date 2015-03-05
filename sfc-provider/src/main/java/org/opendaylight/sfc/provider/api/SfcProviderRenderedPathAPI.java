@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -33,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 //import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
@@ -43,12 +41,10 @@ import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Random;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+import org.opendaylight.sfc.provider.api.SfcServiceFunctionSchedulerAPI.SfcServiceFunctionSchedulerType;
 
 
 /**
@@ -84,12 +80,32 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 }
             };
 
-    private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin = new HashMap<>();
-    private enum SfcSelectSfAlgorithmType{
-        ROUND_ROBIN, RANDOM;
+    private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType = SfcServiceFunctionSchedulerType.ROUND_ROBIN;
+    private SfcServiceFunctionSchedulerAPI scheduler;
+
+    private void initServiceFuntionScheduler()
+    {
+        //TODO: read schedule type from datastore and init scheduler.
+        switch(sfcServiceFunctionSchedulerType) {
+        case ROUND_ROBIN:
+            scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
+            break;
+        case RANDOM:
+        default:
+            scheduler = new SfcServiceFunctionRamdomSchedulerAPI();
+            break;
+        }
     }
 
-    SfcSelectSfAlgorithmType sfcSelectSfAlgorithmType = SfcSelectSfAlgorithmType.ROUND_ROBIN;
+    public void setSfcServiceFunctionSchedulerType(SfcServiceFunctionSchedulerType type)
+    {
+        this.sfcServiceFunctionSchedulerType = type;
+    }
+
+    public SfcServiceFunctionSchedulerType getSfcServiceFunctionSchedulerType()
+    {
+        return this.sfcServiceFunctionSchedulerType;
+    }
 
     @SuppressWarnings("unused")
     public static int numCreatedPathGetValue() {
@@ -106,10 +122,12 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     SfcProviderRenderedPathAPI(Object[] params, String m) {
         super(params, m);
+        initServiceFuntionScheduler();
     }
 
     SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
+        initServiceFuntionScheduler();
     }
 
 
@@ -136,64 +154,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     @SuppressWarnings("unused")
     public static  SfcProviderRenderedPathAPI getUpdateRenderedServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderRenderedPathAPI(params, paramsTypes, "updateRenderedServicePathEntry");
-    }
-
-    public SfcSelectSfAlgorithmType getSfcSelectSfAlgorithmType()
-    {
-        return sfcSelectSfAlgorithmType;
-    }
-
-    public void setSfcSelectSfAlgorithmType(SfcSelectSfAlgorithmType sfcSelectSfAlgorithmType)
-    {
-        this.sfcSelectSfAlgorithmType = sfcSelectSfAlgorithmType;
-    }
-
-    public static String getRoundRobinServicePathHop(List<SftServiceFunctionName> sftServiceFunctionNameList,
-                                                     ServiceFunctionType serviceFunctionType)
-    {
-        int countRoundRobin = 0;
-
-        if (mapCountRoundRobin.size() != 0){
-            for (java.lang.Class<? extends ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){
-                if (sfType.equals(serviceFunctionType.getType())) {
-                    countRoundRobin = mapCountRoundRobin.get(sfType);
-                    LOG.debug("countRoundRobin: {}", countRoundRobin);
-                    break;
-                }
-            }
-        }
-
-        SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameList.get(countRoundRobin);
-        countRoundRobin = (countRoundRobin + 1) % sftServiceFunctionNameList.size();
-        mapCountRoundRobin.put(serviceFunctionType.getType(), countRoundRobin);
-        return sftServiceFunctionName.getName();
-    }
-
-    public static String getRandomServicePathHop(List<SftServiceFunctionName> sftServiceFunctionNameList)
-    {
-        Random rad = new Random();
-        return sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
-    }
-
-    public static String sfcSelectServicePathHop(ServiceFunctionType serviceFunctionType,
-                                                 SfcSelectSfAlgorithmType sfcSelectSfAlgorithmType)
-    {
-        List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-        LOG.debug("ServiceFunction Name List : {}", sftServiceFunctionNameList);
-        String sfcSelectServicePathHopName;
-
-        switch(sfcSelectSfAlgorithmType) {
-        case ROUND_ROBIN:
-            sfcSelectServicePathHopName = getRoundRobinServicePathHop(sftServiceFunctionNameList,
-                    serviceFunctionType);
-            break;
-        case RANDOM:
-        default:
-            sfcSelectServicePathHopName = getRandomServicePathHop(sftServiceFunctionNameList);
-            break;
-        }
-
-        return sfcSelectServicePathHopName;
     }
 
     @SuppressWarnings("unused")
@@ -382,7 +342,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
 
         long pathId;
-        short posIndex = 0;
         int serviceIndex;
         RenderedServicePath ret = null;
         ServiceFunctionChain serviceFunctionChain;
@@ -397,15 +356,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
-        List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
-        RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
-
-        /*
-         * For each ServiceFunction type in the list of ServiceFunctions we select a specific
-         * service function from the list of service functions by type.
-         */
-        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-        sfcServiceFunctionList.addAll(serviceFunctionChain.getSfcServiceFunction());
+        List<RenderedServicePathHop> renderedServicePathHopArrayList;
 
         //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER));
 
@@ -413,38 +364,50 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER_REV));
         //serviceIndex = sfcServiceFunctionList.size();
         serviceIndex = MAX_STARTING_INDEX;
-        for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
-            LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
 
+        renderedServicePathHopArrayList = scheduler.scheduleServiceFuntions(serviceFunctionChain, serviceIndex);
+        if (renderedServicePathHopArrayList == null) {
+            renderedServicePathHopArrayList = new ArrayList<>();
+            RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
+            List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+            sfcServiceFunctionList.addAll(serviceFunctionChain.getSfcServiceFunction());
 
-            /*
-             * We iterate thorough the list of service function types and for each one we try to get
-             * get a suitable Service Function. WE need to perform lots of checking to make sure
-             * we do not hit NULL Pointer exceptions
-             */
+            short posIndex = 0;
+            serviceIndex = MAX_STARTING_INDEX;
 
-            ServiceFunctionType serviceFunctionType;
+            for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
+                ServiceFunctionType serviceFunctionType;
 
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
-            if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-                if (!sftServiceFunctionNameList.isEmpty()) {
-                    String serviceFunctionName = sfcSelectServicePathHop(serviceFunctionType, sfcSelectSfAlgorithmType);
-                    LOG.debug("SelectSfAlgorithmType: {}, Selected ServiceFunction name: {}", sfcSelectSfAlgorithmType, serviceFunctionName);
-                    ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
-                            .readServiceFunctionExecutor(serviceFunctionName);
-                    if (serviceFunction != null) {
-                        renderedServicePathHopBuilder.setHopNumber(posIndex)
-                                .setServiceFunctionName(serviceFunctionName)
-                                .setServiceIndex((short) serviceIndex)
-                                .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
-                                        .get(0)
-                                        .getServiceFunctionForwarder());
-                        renderedServicePathHopArrayList.add(posIndex, renderedServicePathHopBuilder.build());
-                        serviceIndex--;
-                        posIndex++;
+                LOG.info("ServiceFunction name: {}", sfcServiceFunction.getName());
+
+                serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+                if (serviceFunctionType != null) {
+                    List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                    if (!sftServiceFunctionNameList.isEmpty()) {
+                        /* Get first available service functon from the list */
+                        for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
+                            String serviceFunctionName = sftServiceFunctionName.getName();
+                            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
+                                    .readServiceFunctionExecutor(serviceFunctionName);
+                            if (serviceFunction != null) {
+                                renderedServicePathHopBuilder.setHopNumber(posIndex)
+                                        .setServiceFunctionName(serviceFunctionName)
+                                        .setServiceIndex((short) serviceIndex)
+                                        .setServiceFunctionForwarder(serviceFunction.getSfDataPlaneLocator()
+                                                .get(0)
+                                                .getServiceFunctionForwarder());
+                                renderedServicePathHopArrayList.add(posIndex, renderedServicePathHopBuilder.build());
+                                serviceIndex--;
+                                posIndex++;
+                                break;
+                            } else {
+                                LOG.error("Could not find suitable SF of type in data store: {}",
+                                        sfcServiceFunction.getType());
+                                return ret;
+                            }
+                        }
                     } else {
-                        LOG.error("Could not find suitable SF of type in data store: {}",
+                        LOG.error("Could not create path because there are no configured SFs of type: {}",
                                 sfcServiceFunction.getType());
                         return ret;
                     }
@@ -453,17 +416,10 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                             sfcServiceFunction.getType());
                     return ret;
                 }
-            } else {
-                LOG.error("Could not create path because there are no configured SFs of type: {}",
-                        sfcServiceFunction.getType());
-                return ret;
             }
-
         }
 
         //Build the service function path so it can be committed to datastore
-
-
         pathId = (serviceFunctionPath.getPathId() != null)  ?  serviceFunctionPath.getPathId()
                 : numCreatedPathIncrementGet();
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopArrayList);

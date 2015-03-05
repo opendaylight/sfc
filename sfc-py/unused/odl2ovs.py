@@ -1,29 +1,28 @@
+#
+# Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+import logging
+import socket
+
+from flask import *  # noqa
+from random import randint
+import sys
+import getopt
+import json
+import requests
+from odl2ovs_cli import *  # noqa
+
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.2"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
 
-#
-# Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
-#
-# This program and the accompanying materials are made available under the
-# terms of the Eclipse Public License v1.0 which accompanies this distribution,
-# and is available at http://www.eclipse.org/legal/epl-v10.html
-
 """ SFF REST Server. This Server should be co-located with a OVS switch """
-
-
-import logging
-import socket
-
-from flask import *
-from random import randint
-import sys
-import getopt
-import json
-import requests
-from odl2ovs_cli import *
 
 app = Flask(__name__)
 my_topo = {}
@@ -42,7 +41,7 @@ SFP_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-fu
 
 SFF_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/"
 
-SFF_NAME_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/{}"
+SFF_NAME_PARAMETER_URL = "http://{}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/{}"  # noqa
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -271,7 +270,7 @@ def get_my_ip():
 
 
 def parse_bridges(bridge_list):
-    #num_of_bridges = len(bridge_list)
+    # num_of_bridges = len(bridge_list)
     all_bridges = []
     br_dict = {}
 
@@ -408,7 +407,7 @@ def find_sff_locator(sff_name):
     """
     try:
         return sff_topo[sff_name]['sff-data-plane-locator'][0]['data-plane-locator']['ip']
-    except KeyError, e:
+    except KeyError:
         msg = "SFF {} locator not found".format(sff_name)
         logger.warning(msg)
         return None
@@ -428,8 +427,7 @@ def find_sff_loc(sff):
 def find_sf_loc(sfdict):
     count = 0
     while count < len(sff_topo['service-function-forwarders']['service-function-forwarder']):
-        if sff_topo['service-function-forwarders']['service-function-forwarder'] \
-                [count]['name'] == sfdict['sff']:
+        if sff_topo['service-function-forwarders']['service-function-forwarder'][count]['name'] == sfdict['sff']:
             for sfi in (sff_topo['service-function-forwarders']
                         ['service-function-forwarder']
                         [count]['service-function-dictionary']):
@@ -551,7 +549,7 @@ def delete_path(sfpname):
     global path
     try:
         del path[sfpname]
-    except KeyError, e:
+    except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
         logger.warning(msg)
         return msg, 404
@@ -580,7 +578,7 @@ def delete_sff(sffname):
     global sff_topo
     try:
         del sff_topo[sffname]
-    except KeyError, e:
+    except KeyError:
         msg = "SFF name {} not found, message".format(sffname)
         logger.warning(msg)
         return msg, 404
@@ -596,7 +594,6 @@ def create_sffs():
     if not request.json:
         abort(400)
     else:
-        me = ""
         sff_topo = {
             'service-function-forwarders': request.json['service-function-forwarders']
         }

@@ -164,6 +164,27 @@ module rendered-service-path {
     }
   }
 
+  rpc trace-rendered-service-path {
+    description
+      "Requests a NSH Traceroute through the specified
+       rendered service path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of the rendered function path.";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "Whether NSH traceroute for the requested path was successful";
+      }
+    }
+  }
+
+
   rpc delete-rendered-path {
     description
       "Delete a Rendered Service Path";
@@ -171,8 +192,7 @@ module rendered-service-path {
       leaf name {
         type string;
         description
-          "The name of this rendered function path. This is the same
-           name as the associated SFP";
+          "The name of this rendered function path.";
       }
     }
     output {
@@ -189,8 +209,7 @@ module rendered-service-path {
       leaf name {
         type string;
         description
-          "The name of this rendered function path. This is the same
-           name as the associated SFP";
+          "The name of this rendered function path.";
       }
       leaf parent-service-function-path {
         type string;

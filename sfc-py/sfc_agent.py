@@ -69,14 +69,16 @@ def _sff_present(sff_name, local_sff_topo):
 def find_sf_locator(sf_name, sff_name):
     """
     Looks for the SF name within the service function dictionary of sff_name.
-    If found, return the corresponding data plane locator.
+    If SFF is not present in local SFF topology it is requested from ODL.
+
+    Return the corresponding SF data plane locator or None if not found.
 
     :param sf_name: SF name
     :type sf_name: str
     :param sff_name: SFF name
     :type sff_name: str
 
-    :return dict
+    :return sf_locator: A dictionary with keys 'ip' and 'port'
 
     """
     sf_locator = {}
@@ -112,7 +114,7 @@ def find_sff_locator(sff_name):
     :param sff_name: SFF name
     :type sff_name: str
 
-    :return dict
+    :return sff_locator: A dictionary with keys 'ip' and 'port'
 
     """
     sff_locator = {}

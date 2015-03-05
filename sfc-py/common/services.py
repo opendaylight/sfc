@@ -25,7 +25,7 @@ import nsh.decode as nsh_decode
 from common.sfc_globals import sfc_globals
 from nsh.service_index import process_service_index
 from nsh.encode import add_sf_to_trace_pkt
-from nsh.common import VXLANGPE, CONTEXTHEADER, BASEHEADER, TRACEREQHEADER
+from nsh.common import *
 
 logger = logging.getLogger(__name__)
 
@@ -109,10 +109,10 @@ class BasicService(object):
         # decode NSH base header
         nsh_decode.decode_baseheader(data, self.server_base_values)
         # decode NSH context headers
+        nsh_decode.decode_contextheader(data, self.server_ctx_values)
+        # decode common trace header
         if nsh_decode.is_trace_message(data):
                 nsh_decode.decode_trace_req(data, self.server_trace_values)
-        elif nsh_decode.is_data_message(data):
-            nsh_decode.decode_contextheader(data, self.server_ctx_values)
 
     def _process_incoming_packet(self, data, addr):
         """
@@ -165,10 +165,9 @@ class BasicService(object):
                 self.transport.sendto(rw_data, addr)
             # Send packet back to SFF
 
-
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
-        ipv6_addr = ipaddress.IPv6Address(data[20:36])
+        ipv6_addr = ipaddress.IPv6Address(data[NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])
         if ipv6_addr.ipv4_mapped:
             ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
             trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)
@@ -353,7 +352,6 @@ class MySffServer(BasicService):
         logger.info('%s: Received a packet from: %s', self.service_type, addr)
 
         rw_data, address = self._process_incoming_packet(data, addr)
-
 
     def connection_lost(self, exc):
         logger.error('stop', exc)

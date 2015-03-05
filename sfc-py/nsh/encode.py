@@ -85,7 +85,7 @@ def build_packet(vxlan_header_values, base_header_values, ctx_header_values):
     return vxlan_header + base_header + context_header
 
 
-def build_trace_req_packet(vxlan_header_values, base_header_values, trace_req_header_values):
+def build_trace_req_packet(vxlan_header_values, base_header_values, ctx_header_values, trace_req_header_values):
     """
     TODO: add docstring, params description
     """
@@ -106,6 +106,13 @@ def build_trace_req_packet(vxlan_header_values, base_header_values, trace_req_he
                               (base_header_values.service_path << 8) +
                               base_header_values.service_index)
 
+    # Build NSH context headers
+    context_header = struct.pack('!I I I I',
+                                 ctx_header_values.network_platform,
+                                 ctx_header_values.network_shared,
+                                 ctx_header_values.service_platform,
+                                 ctx_header_values.service_shared)
+
     # Build trace context headers
     trace_header = struct.pack('!B B H I I I I',
                                trace_req_header_values.oam_type,
@@ -116,7 +123,7 @@ def build_trace_req_packet(vxlan_header_values, base_header_values, trace_req_he
                                trace_req_header_values.ip_3,
                                trace_req_header_values.ip_4)
 
-    return vxlan_header + base_header + trace_header
+    return vxlan_header + base_header + context_header + trace_header
 
 
 def build_trace_req_header(oam_type, sil, remote_ip, remote_port):

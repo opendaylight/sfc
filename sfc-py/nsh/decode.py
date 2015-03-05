@@ -53,11 +53,7 @@ import struct
 import logging
 import binascii
 import ipaddress
-
-#: constants
-PAYLOAD_START_INDEX = 16
-OAM_VERSION_AND_FLAG = int('00100000', 2)
-OAM_TRACE_TYPE = int('00000001', 2)
+from nsh.common import *
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +137,7 @@ def decode_contextheader(payload, context_header_values):
                     context_header_values.service_shared)
 
 
-#  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+# 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # |Ver|1|C|R|R|R|R|R|R|   Length  |  MD-type=1    | Next Protocol |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -159,8 +155,8 @@ def decode_contextheader(payload, context_header_values):
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 def decode_trace_req(payload, trace_req_header_values):
-    """Decode headers for a packet Type MD 0x3"""
-    trace_header = payload[16:36]
+    """Decode headers for a OAM Trace Req packet"""
+    trace_header = payload[NSH_OAM_PKT_START_OFFSET: NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
     trace_req_header_values.oam_type = _header_values[0]
@@ -179,8 +175,8 @@ def decode_trace_req(payload, trace_req_header_values):
 
 
 def decode_trace_resp(payload, trace_resp_header_values):
-    """Decode headers for a packet Type MD 0x3"""
-    trace_header = payload[16:36]
+    """Decode headers for a OAM Trace Response"""
+    trace_header = payload[NSH_OAM_PKT_START_OFFSET: NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
     trace_resp_header_values.oam_type = _header_values[0]
@@ -191,9 +187,9 @@ def decode_trace_resp(payload, trace_resp_header_values):
     trace_resp_header_values.ip_3 = _header_values[5]
     trace_resp_header_values.ip_4 = _header_values[6]
 
-    sf_type_len = payload[36]
-    sf_type_end = 37 + (sf_type_len << 2)
-    sf_type = payload[37:sf_type_end].decode('utf-8')
+    sf_type_len = payload[NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET]
+    sf_type_end = NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET + (sf_type_len << 2)
+    sf_type = payload[NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET:sf_type_end].decode('utf-8')
     sf_name_len = payload[sf_type_end]
     sf_name_end = sf_type_end + 1 + (sf_name_len << 2)
     sf_name = payload[sf_type_end + 1:sf_name_end].decode('utf-8')
@@ -208,21 +204,26 @@ def decode_trace_resp(payload, trace_resp_header_values):
 
 
 def is_trace_message(data):
-    if (data[8] & OAM_VERSION_AND_FLAG) and (data[16] == OAM_TRACE_TYPE):
+    base_header_first_word_int = int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:12], byteorder='big', signed='false')
+    # nsh_oam_pkt_type = int.from_bytes(data[NSH_OAM_PKT_START_OFFSET], byteorder='big', signed='false')
+    nsh_oam_pkt_type = data[NSH_OAM_PKT_START_OFFSET]
+    if (base_header_first_word_int == NSH_TYPE1_OAM_PACKET) and (
+            (nsh_oam_pkt_type == OAM_TRACE_REQ_TYPE) or (
+                data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_RESP_TYPE)):
         return True
     else:
         return False
 
 
 def is_oam_message(data):
-    if data[8] & OAM_VERSION_AND_FLAG:
+    if data[NSH_BASE_HEADER_START_OFFSET] == OAM_VERSION_AND_FLAG:
         return True
     else:
         return False
 
 
 def is_data_message(data):
-    if not is_oam_message(data):
+    if data[NSH_BASE_HEADER_START_OFFSET:11] == NSH_TYPE1_DATA_PACKET:
         return True
     else:
         return False

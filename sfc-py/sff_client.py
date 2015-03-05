@@ -38,6 +38,8 @@ PACKET_ERROR = 0b00000010  # Packet will be dropped
 SERVICEFUNCTION_INVALID = 0xDEADBEEF  # Referenced service function is invalid
 RSP_STARTING_INDEX = 255
 
+
+
 # Client side code: Build NSH packet encapsulated in VXLAN & NSH.
 
 
@@ -87,14 +89,16 @@ class MyUdpClient:
 
 
 class MyTraceClient:
-    def __init__(self, loop, vxlan_header_values, base_header_values, trace_req_header_values,
+    def __init__(self, loop, vxlan_header_values, base_header_values, ctx_header_values, trace_req_header_values,
                  dest_addr, dest_port, num_trace_hops):
         self.transport = None
         self.loop = loop
-        self.base_header_values = base_header_values
         self.vxlan_header_values = vxlan_header_values
+        self.base_header_values = base_header_values
+        self.ctx_header_values = ctx_header_values
         self.trace_req_header_values = trace_req_header_values
         self.server_trace_values = TRACEREQHEADER()
+        self.server_ctx_values = CONTEXTHEADER()
         self.server_vxlan_values = VXLANGPE()
         self.server_base_values = BASEHEADER()
         self.dest_addr = dest_addr
@@ -104,7 +108,8 @@ class MyTraceClient:
 
     def connection_made(self, transport):
         self.transport = transport
-        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.trace_req_header_values)
+        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.ctx_header_values,
+                                        self.trace_req_header_values)
         # udp_socket = self.transport.get_extra_info('socket')
         print("Sending Trace packet to Service Path and Service Index: ({0}, {1})".format(
             self.base_header_values.service_path, self.base_header_values.service_index))
@@ -117,6 +122,7 @@ class MyTraceClient:
         # Decode all the headers
         decode_vxlan(data, self.server_vxlan_values)
         decode_baseheader(data, self.server_base_values)
+        decode_contextheader(data, self.server_ctx_values)
         service_type, service_name = decode_trace_resp(data, self.server_trace_values)
         print(
             "Service-hop: {0}. Service Type: {1}, Service Name: {2}, Address of Reporting SFF: {3}".format(
@@ -144,7 +150,8 @@ class MyTraceClient:
         logger.error('Error received: %s', exc)
 
     def send_packet(self, dest_addr):
-        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.trace_req_header_values)
+        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.ctx_header_values,
+                                        self.trace_req_header_values)
         # logger.info("Sending Trace packet to: %s", dest_addr)
         self.transport.sendto(packet, dest_addr)
 
@@ -169,6 +176,9 @@ def main(argv):
     Example:
     python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
     python3.4 sff_client.py --remote-sff-ip 10.0.1.43 --remote-sff-port 4789 --sfp-id 2 --sfp-index 255
+
+    Trace Example:
+    python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255 --trace-req --num-trace-hops 1
     :param argv:
     :return:
     """
@@ -229,17 +239,21 @@ def main(argv):
     if trace_req:
         # MD-type 0x1, OAM set
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-        base_header_values = BASEHEADER(int('01', 2), int('10000000', 2), 0x7, 0x1, 0x1, int(sfp_id), int(sfp_index))
-        trace_req_header_values = build_trace_req_header(int('00000001', 2), 254,
+        base_header_values = BASEHEADER(NSH_VERSION1, OAM_FLAG_AND_RESERVED, NSH_TYPE1_LEN, NSH_MD_TYPE1,
+                                        NSH_NEXT_PROTO_OAM, int(sfp_id), int(sfp_index))
+        ctx_header_values = CONTEXTHEADER(0, 0, 0, 0)
+        trace_req_header_values = build_trace_req_header(OAM_TRACE_REQ_TYPE, 254,
                                                          remote_sff_ip, 5000)
         traceclient = MyTraceClient(loop, vxlan_header_values, base_header_values,
-                                    trace_req_header_values, remote_sff_ip, int(remote_sff_port), int(num_trace_hops))
+                                    ctx_header_values, trace_req_header_values, remote_sff_ip, int(remote_sff_port),
+                                    int(num_trace_hops))
 
         start_client(loop, (str(ipaddress.IPv4Address(trace_req_header_values.ip_4)), 5000),
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-        base_values = BASEHEADER(int('01', 2), int('00000000', 2), 0x6, 0x1, 0x1, int(sfp_id), int(sfp_index))
+        base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_IPV4, int(sfp_id),
+                                 int(sfp_index))
         ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
         udpclient = MyUdpClient(loop, vxlan_header_values, base_values, ctx_values, remote_sff_ip, int(remote_sff_port))
         start_client(loop, (local_ip, 5000), (remote_sff_ip, remote_sff_port), udpclient)

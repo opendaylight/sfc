@@ -333,4 +333,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         getRpcResult(true, output, Collections.<RpcError>emptySet()));
     }
 
+    @Override
+    public Future<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(TraceRenderedServicePathInput input) {
+        return null;
+    }
+
 }

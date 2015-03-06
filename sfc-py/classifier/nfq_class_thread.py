@@ -8,8 +8,6 @@ import logging
 import threading
 import subprocess
 
-from netfilterqueue import NetfilterQueue
-
 from sfc_agent import find_sff_locator
 from common.sfc_globals import sfc_globals
 from classifier.nfq_class_server import nfq_class_server_start

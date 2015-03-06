@@ -1,9 +1,3 @@
-__author__ = "Jim Guichard, Reinaldo Penno"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.3"
-__email__ = "jguichar@cisco.com, rapenno@gmail.com"
-__status__ = "beta"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
@@ -11,21 +5,28 @@ __status__ = "beta"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""
-All supported services
-"""
-
 import logging
 import asyncio
 import binascii
 import ipaddress
-import socket
 
 import nsh.decode as nsh_decode
 from common.sfc_globals import sfc_globals
 from nsh.service_index import process_service_index
 from nsh.encode import add_sf_to_trace_pkt
-from nsh.common import *
+from nsh.common import *  # noqa
+
+
+__author__ = "Jim Guichard, Reinaldo Penno"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.3"
+__email__ = "jguichar@cisco.com, rapenno@gmail.com"
+__status__ = "beta"
+
+
+"""
+All supported services
+"""
 
 logger = logging.getLogger(__name__)
 
@@ -167,7 +168,7 @@ class BasicService(object):
 
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
-        ipv6_addr = ipaddress.IPv6Address(data[NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])
+        ipv6_addr = ipaddress.IPv6Address(data[NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
         if ipv6_addr.ipv4_mapped:
             ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
             trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)

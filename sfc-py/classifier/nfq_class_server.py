@@ -1,3 +1,4 @@
+# flake8: noqa
 # hint: to see the rules execute: 'sudo iptables -S -t raw'
 
 import os

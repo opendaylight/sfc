@@ -18,7 +18,6 @@ ODL_PORT = 8181
 ODL_IP = 'localhost'
 ODLIP = "{ip}:{port}".format(ip=ODL_IP, port=ODL_PORT)
 
-
 USERNAME = "admin"
 PASSWORD = "admin"
 
@@ -37,6 +36,11 @@ SFF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
                           "service-function-forwarder:"
                           "service-function-forwarders/"
                           "service-function-forwarder/{}")
+
+SF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
+                         "service-function:"
+                         "service-functions/"
+                         "service-function/{}")
 
 SFF_SF_DATA_PLANE_LOCATOR_URL = ("http://{}/restconf/config/"
                                  "service-function-forwarder:"

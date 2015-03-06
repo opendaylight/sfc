@@ -1,9 +1,4 @@
-__author__ = "Reinaldo Penno"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "rapenno@gmail.com"
-__status__ = "alpha"
-
+# flake8: noqa
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
@@ -11,6 +6,12 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+
+__author__ = "Reinaldo Penno"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "rapenno@gmail.com"
+__status__ = "alpha"
 
 #: constants
 OF_TABLEID = 0

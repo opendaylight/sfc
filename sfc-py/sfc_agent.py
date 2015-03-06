@@ -1,21 +1,9 @@
-__author__ = "Paul Quinn, Reinaldo Penno"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.4"
-__email__ = "paulq@cisco.com, rapenno@gmail.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
-
-
-"""
-SFC Agent Server. This Server should be co-located with the python SFF data
-plane implementation (sff_thread.py)
-"""
 
 import sys
 import json
@@ -25,17 +13,28 @@ import argparse
 import requests
 import netifaces
 
-from pprint import pprint
-
 import xe_cli
 import ovs_cli
 
 import common.sfc_globals
 from common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
+
+__author__ = "Paul Quinn, Reinaldo Penno"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.4"
+__email__ = "paulq@cisco.com, rapenno@gmail.com"
+__status__ = "alpha"
+
+
+"""
+SFC Agent Server. This Server should be co-located with the python SFF data
+plane implementation (sff_thread.py)
+"""
+
 if sys.platform.startswith('linux'):
     # TODO: fix this kind of imports
-    from classifier.nfq_class_thread import *
+    from classifier.nfq_class_thread import *  # noqa
 
 app = flask.Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -580,7 +579,7 @@ def get_sffs_from_odl(odl_ip_port):
     else:
         logger.warning("=>Failed to GET SFFs from ODL \n")
 
-    l_topo = sfc_globals.get_sff_topo()
+    # l_topo = sfc_globals.get_sff_topo()
     # if l_topo:
     #    pprint(l_topo)
 

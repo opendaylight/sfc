@@ -1,20 +1,9 @@
-__author__ = "Jim Guichard, Reinaldo Penno"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.2"
-__email__ = "jguichar@cisco.com, rapenno@gmail.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
-
-"""
-Manage service [and its' associated thread] starting and stopping
-"""
-
 
 import socket
 import logging
@@ -24,6 +13,18 @@ from time import sleep
 from threading import Thread
 from common.sfc_globals import sfc_globals
 from common.services import SF, SFF, CUDP, find_service
+
+
+__author__ = "Jim Guichard, Reinaldo Penno"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.2"
+__email__ = "jguichar@cisco.com, rapenno@gmail.com"
+__status__ = "alpha"
+
+
+"""
+Manage service [and its' associated thread] starting and stopping
+"""
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -80,7 +81,7 @@ def _check_thread_state(service_type, service_name, thread):
 
             msg = "Failed to start thread %s" % service_name
             logger.error(msg)
-            raise TimeoutError(msg)
+            raise TimeoutError(msg)  # noqa
 
     global_threads = _get_global_threads(service_type)
     while service_name not in global_threads:

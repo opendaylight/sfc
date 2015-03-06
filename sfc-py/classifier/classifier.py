@@ -1,15 +1,29 @@
-__author__ = 'Martin Lauko, Dusan Madar'
-__copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "martin.lauko@pantheon.sk, madar.dusan@gmail.com"
-__status__ = "alpha"
-
+# flake8: noqa
 #
 # Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
+
+import socket
+import logging
+import threading
+import subprocess
+
+from queue import Queue
+from netfilterqueue import NetfilterQueue
+
+from nsh.encode import build_packet
+from common.sfc_globals import sfc_globals
+from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
+
+
+__author__ = 'Martin Lauko, Dusan Madar'
+__copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "martin.lauko@pantheon.sk, madar.dusan@gmail.com"
+__status__ = "alpha"
 
 
 """
@@ -27,20 +41,6 @@ received packets accordingly.
 # spi -> Service Path Id
 # acl -> access list
 # ace -> access list entry
-
-
-import socket
-import logging
-import threading
-import subprocess
-
-from queue import Queue
-from netfilterqueue import NetfilterQueue
-
-from nsh.encode import build_packet
-from common.sfc_globals import sfc_globals
-from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
-
 
 logger = logging.getLogger('classifier')
 logger.setLevel(logging.DEBUG)
@@ -254,9 +254,9 @@ class NfqClassifier(metaclass=Singleton):
 
             all_rsps = sfc_globals.get_path()
             sff = (all_rsps[rsp]
-                            ['rendered-service-path-hop']
-                            [0]
-                            ['service-function-forwarder'])
+                           ['rendered-service-path-hop']
+                           [0]
+                           ['service-function-forwarder'])
 
             all_sffs = sfc_globals.get_sff_topo()
             fwd_params = (all_sffs[sff]

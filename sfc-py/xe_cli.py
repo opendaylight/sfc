@@ -1,9 +1,3 @@
-__author__ = "Jim Guichard"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "jguichar@cisco.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
@@ -11,14 +5,20 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+import paramiko
+from common.sfc_globals import sfc_globals
+
+
+__author__ = "Jim Guichard"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "jguichar@cisco.com"
+__status__ = "alpha"
+
 
 """
 XE CLI processing module
 """
-
-
-import paramiko
-from common.sfc_globals import sfc_globals
 
 
 def process_received_service_path(spi, rsp):
@@ -134,5 +134,5 @@ def process_xe_cli(data_plane_path):
 
     return
 
-#{254: {'port': 6633, 'ip': '2.2.2.2'}, 255: {'port': 6633, 'ip': '10.1.1.1'}}
+# {254: {'port': 6633, 'ip': '2.2.2.2'}, 255: {'port': 6633, 'ip': '10.1.1.1'}}
 # service-insertion service-path 3 null null null sf 21.0.0.24

@@ -1,6 +1,7 @@
 *.pyo
 *.class
 *.pyc
+.tox/
 **/target
 bin/
 dist

@@ -1,9 +1,3 @@
-__author__ = "Jim Guichard"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "jguichar@cisco.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
@@ -11,20 +5,28 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""Network Service Header (NSH) Enabled Service Function"""
-
 import argparse
 import asyncio
 import sys
-import socket
-from nsh.decode import *
-from nsh.service_index import *
-from nsh.common import *
+
+from nsh.decode import *  # noqa
+from nsh.service_index import *  # noqa
+from nsh.common import *  # noqa
 
 try:
     import signal
 except ImportError:
     signal = None
+
+
+__author__ = "Jim Guichard"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "jguichar@cisco.com"
+__status__ = "alpha"
+
+
+"""Network Service Header (NSH) Enabled Service Function"""
 
 # Decode vxlan-gpe, base NSH header and NSH context headers
 server_vxlan_values = VXLANGPE()
@@ -41,7 +43,7 @@ class MyFwService:
         rw_data = process_incoming_packet(data)
         print("Sending packets to", addr)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
+        # loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -65,7 +67,7 @@ class MyNatService:
         print('\n')
         rw_data = process_incoming_packet(data)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
+        # loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -85,7 +87,7 @@ class MyDpiService:
         print('\n')
         rw_data = process_incoming_packet(data)
         self.transport.sendto(rw_data, addr)
-        #loop.stop()
+        # loop.stop()
 
     def connection_refused(self, exc):
         print('Connection refused:', exc)
@@ -99,9 +101,9 @@ class MyDpiService:
 def process_incoming_packet(data):
     print('Processing received packet')
     rw_data = bytearray(data)
-    decode_vxlan(data, server_vxlan_values) # decode vxlan-gpe header
-    decode_baseheader(data, server_base_values) # decode NSH base header
-    decode_contextheader(data, server_ctx_values) # decode NSH context headers
+    decode_vxlan(data, server_vxlan_values)  # decode vxlan-gpe header
+    decode_baseheader(data, server_base_values)  # decode NSH base header
+    decode_contextheader(data, server_ctx_values)  # decode NSH context headers
     rw_data, si_result = process_service_index(rw_data, server_base_values)
     return rw_data
 

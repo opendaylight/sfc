@@ -22,12 +22,21 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Ids;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -44,6 +53,7 @@ import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutorService;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
@@ -819,5 +829,124 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         return renderedServicePathFirstHop;
+    }
+
+    /**
+     * This method gets all necessary information for a system to construct
+     * a NSH header and associated overlay packet to target the first
+     * service hop of a Rendered Service Path by ServiceFunctionTypeIdentity
+     * list
+     * <p>
+     * @param serviceFunctionTypeList ServiceFunctionTypeIdentity list
+     * @return RenderedServicePathFirstHop.
+     */
+    public static RenderedServicePathFirstHop readRspFirstHopBySftList(List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
+        int i;
+        String serviceTypeName;
+        String sfcName = "chain-sfc-gbp";
+        String pathName = "path-sfc-gbp";
+        RenderedServicePathFirstHop firstHop = null;
+
+        printTraceStart(LOG);
+
+        /* Create ServiceFunction list according to serviceFunctionTypeList */
+        List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
+        for (i = 0; i < serviceFunctionTypeList.size(); i++) {
+            Class serviceFunctionType = serviceFunctionTypeList.get(i);
+            if (serviceFunctionType == Dpi.class) {
+                serviceTypeName = "dpi";
+            } else if (serviceFunctionType == Firewall.class) {
+                serviceTypeName = "firewall";
+            } else if (serviceFunctionType == HttpHeaderEnrichment.class) {
+                serviceTypeName = "http-header-enrichment";
+            } else if (serviceFunctionType == Ids.class) {
+                serviceTypeName = "ids";
+            } else if (serviceFunctionType == Napt44.class) {
+                serviceTypeName = "napt44";
+            } else if (serviceFunctionType == Qos.class) {
+                serviceTypeName = "qos";
+            } else {
+                LOG.error("Unknowed ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
+                return null;
+            }
+
+            SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
+            sfcServiceFunctionArrayList.add(sfcServiceFunctionBuilder.setName(serviceTypeName + "-gbp-sfc").setType(serviceFunctionType).build());
+        }
+
+        /* Create ServiceFunctionChain */
+        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
+        sfcBuilder.setName(sfcName).setSfcServiceFunction(sfcServiceFunctionArrayList);
+        Object[] sfcParameters = {sfcBuilder.build()};
+        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
+
+        ExecutorService executor = ODL_SFC.getExecutor();
+
+        try {
+            Object result1 = executor.submit(SfcProviderServiceChainAPI.getPut(sfcParameters, sfcParameterTypes)).get();
+            boolean ret1 = (boolean)result1;
+            if (ret1 == false) {
+                LOG.error("Failed to create ServiceFunctionChain: {}", sfcName);
+                return null;
+            }
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+
+        /* Create ServiceFunctionPath */
+        ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
+        pathBuilder.setName(pathName)
+                   .setServiceChainName(sfcName);
+
+        ServiceFunctionPath path = pathBuilder.build();
+        Object[] sfcParameters2 = {path};
+        Class[] sfcParameterTypes2 = {ServiceFunctionPath.class};
+
+        try {
+            Object result2 = executor.submit(SfcProviderServicePathAPI.getPut(sfcParameters2, sfcParameterTypes2)).get();
+            boolean ret2 = (boolean)result2;
+            if (ret2 == false) {
+                LOG.error("Failed to create ServiceFunctionPath: {}", pathName);
+                return null;
+            }
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+
+        /* Create RenderedServicePath */
+        RenderedServicePath renderedServicePath;
+        RenderedServicePath revRenderedServicePath;
+        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(path);
+        if (renderedServicePath == null) {
+            LOG.error("Failed to create RenderedServicePath for ServiceFunctionPath: {}", pathName);
+            return null;
+        }
+
+        if ((path.getClassifier() != null) &&
+             SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(path.getClassifier()) != null) {
+            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(path.getClassifier(), renderedServicePath.getName());
+        } else {
+            LOG.warn("Classifier not provided or does not exist");
+        }
+
+        if ((path.isSymmetric() != null) && path.isSymmetric()) {
+            revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+            if (revRenderedServicePath == null) {
+                LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
+            } else if ((path.getSymmetricClassifier() != null) &&
+                        SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(path.getSymmetricClassifier()) != null) {
+                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(path.getSymmetricClassifier(), revRenderedServicePath.getName());
+            } else {
+                LOG.warn("Symmetric Classifier not provided or does not exist");
+            }
+        }
+
+        printTraceStop(LOG);
+        firstHop = readRenderedServicePathFirstHop(renderedServicePath.getName());
+        return firstHop;
     }
 }

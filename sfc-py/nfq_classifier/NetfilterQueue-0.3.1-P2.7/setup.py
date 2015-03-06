@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-VERSION = "0.3" # Remember to change README.rst when version changes.
+VERSION = "0.3"  # Remember to change README.rst when version changes.
 
 try:
     # Use Cython
@@ -8,7 +8,7 @@ try:
     cmd = {"build_ext": build_ext}
     ext = Extension(
             "netfilterqueue",
-            sources=["netfilterqueue.pyx",],
+            sources=["netfilterqueue.pyx"],
             libraries=["netfilter_queue"],
         )
 except ImportError:
@@ -16,13 +16,13 @@ except ImportError:
     cmd = {}
     ext = Extension(
             "netfilterqueue",
-            sources = ["netfilterqueue.c"],
+            sources=["netfilterqueue.c"],
             libraries=["netfilter_queue"],
         )
 
 setup(
-    cmdclass = cmd,
-    ext_modules = [ext],
+    cmdclass=cmd,
+    ext_modules=[ext],
     name="NetfilterQueue",
     version=VERSION,
     license="BSD",
@@ -32,7 +32,7 @@ setup(
     description="Python bindings for libnetfilter_queue",
     long_description=open("README.rst").read(),
     download_url="http://pypi.python.org/packages/source/N/NetfilterQueue/NetfilterQueue-%s.tar.gz" % VERSION,
-    classifiers = [
+    classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",

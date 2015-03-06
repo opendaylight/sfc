@@ -1,15 +1,22 @@
-__author__ = 'Reinaldo Penno'
-__copyright__ = 'Copyright(c) 2014, Cisco Systems, Inc.'
-__version__ = '0.2'
-__email__ = 'rapenno@gmail.com'
-__status__ = 'alpha'
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
+
+import struct
+import logging
+import binascii
+from nsh.common import *  # noqa
+
+
+__author__ = 'Reinaldo Penno'
+__copyright__ = 'Copyright(c) 2014, Cisco Systems, Inc.'
+__version__ = '0.2'
+__email__ = 'rapenno@gmail.com'
+__status__ = 'alpha'
+
 
 """
 This module provides function to decode VXLAN GPE packets. Given a reference to
@@ -48,12 +55,6 @@ values in the passed variable.
    |                  Service Shared Context                       |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 """
-
-import struct
-import logging
-import binascii
-import ipaddress
-from nsh.common import *
 
 logger = logging.getLogger(__name__)
 

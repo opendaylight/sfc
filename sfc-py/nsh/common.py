@@ -1,10 +1,12 @@
+from ctypes import Structure, c_ubyte, c_ushort, c_uint
+
+
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __version__ = "0.1"
 __email__ = "rapenno@gmail.com"
 __status__ = "alpha"
 
-from ctypes import Structure, c_ubyte, c_ushort, c_uint
 
 #: constants
 PAYLOAD_START_INDEX = 16
@@ -30,6 +32,7 @@ NSH_OAM_TRACE_HDR_LEN = 20
 NSH_OAM_TRACE_RESP_START_OFFSET = NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN
 NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET = NSH_OAM_TRACE_RESP_START_OFFSET
 NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET = NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET + 1
+
 
 class VXLANGPE(Structure):
     _fields_ = [('flags', c_ubyte),

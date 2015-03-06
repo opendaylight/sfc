@@ -1,19 +1,9 @@
-__author__ = "Jim Guichard"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.1"
-__email__ = "jguichar@cisco.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
-
-"""
-Service Classifier
-"""
 
 import struct
 import socket
@@ -25,6 +15,17 @@ from netfilterqueue import NetfilterQueue
 from nsh.encode import build_packet
 from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
 
+
+__author__ = "Jim Guichard"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.1"
+__email__ = "jguichar@cisco.com"
+__status__ = "alpha"
+
+
+"""
+Service Classifier
+"""
 
 logger = logging.getLogger(__name__)
 

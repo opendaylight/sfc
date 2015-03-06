@@ -12,6 +12,8 @@ import logging
 import argparse
 import requests
 import netifaces
+from requests import exceptions
+from urllib.parse import urlparse
 
 import xe_cli
 import ovs_cli
@@ -63,6 +65,74 @@ def _sff_present(sff_name, local_sff_topo):
             sff_present = False
 
     return sff_present
+
+
+def _sf_present(sf_name):
+    """
+    Check if SF is present in the local SFF topology
+
+    :param sf_name: SF name
+    :type sf_name: str
+
+    :return bool
+
+    """
+    sf_present = True
+    local_sf_topo = sfc_globals.get_sf_topo()
+    if sf_name not in local_sf_topo.keys():
+        if get_sf_from_odl(common.sfc_globals.ODLIP, sf_name) != 0:
+            logger.error("Failed to find data plane locator for SF: %s",
+                         sf_name)
+
+            sf_present = False
+
+    return sf_present
+
+
+def _sf_local_host(sf_name):
+    """
+    Check if SFC agent controls this SF. The check is done based on the rest-uri hostname
+    against the local IP addresses
+
+    :param sf_name: SF name
+    :type sf_name: str
+
+    :return bool
+
+    """
+    sf_hosted = False
+    local_sf_topo = sfc_globals.get_sf_topo()
+    if (sf_name in local_sf_topo.keys()) or (get_sf_from_odl(common.sfc_globals.ODLIP, sf_name) == 0):
+        ip_addr, port = urlparse(local_sf_topo[sf_name]['rest-uri']).netloc.split(':')
+        if _ip_local_host(ip_addr):
+            sf_hosted = True
+
+    return sf_hosted
+
+
+def _ip_local_host(ip_addr):
+    """
+    This function will iterate over all interfaces on the system and compare
+    their IP addresses with the one given as a parameter
+
+    :param ip_addr: IP addr
+    :type ip_addr: str
+
+    :return int
+
+    """
+    for intf in netifaces.interfaces():
+        addr_list_dict = netifaces.ifaddresses(intf)
+        # Some interfaces have no address
+        if addr_list_dict:
+            # Some interfaces have no IPv4 address.
+            if netifaces.AF_INET in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET]
+                for value in inet_addr_list:
+                    if value['addr'] == ip_addr:
+                        return True
+
+    return False
 
 
 def find_sf_locator(sf_name, sff_name):
@@ -170,6 +240,7 @@ def build_data_plane_service_path(service_path):
         sh_sff = service_hop['service-function-forwarder']
 
         if sh_sff == sfc_globals.get_my_sff_name():
+            # SF is reachable by my SFF
             if sp_id not in local_data_plane_path.keys():
                 local_data_plane_path[sp_id] = {}
 
@@ -178,6 +249,9 @@ def build_data_plane_service_path(service_path):
 
             if sf_locator:
                 local_data_plane_path[sp_id][sh_index] = sf_locator
+                sf_name = service_hop['service-function-name']
+                check_and_start_sf_thread(sf_name)
+
             else:
                 logger.error("Failed to build rendered service path: %s",
                              service_path['name'])
@@ -197,6 +271,28 @@ def build_data_plane_service_path(service_path):
                 return -1
 
     return 0
+
+
+def check_and_start_sf_thread(sf_name):
+    """
+    Checks whether a SF is local and its thread has been started. If
+    thread is not running we start it.
+
+    :param sf_name: Service Function Name
+    :type sf_name: str
+    :return int
+
+    """
+    if _sf_local_host(sf_name):
+        local_sf_threads = sfc_globals.get_sf_threads()
+        if sf_name not in local_sf_threads.keys():
+            local_sf_topo = sfc_globals.get_sf_topo()
+            _, sf_type = (local_sf_topo[sf_name]['type']).split(':')
+            data_plane_locator_list = local_sf_topo[sf_name]['sf-data-plane-locator']
+            for data_plane_locator in data_plane_locator_list:
+                if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
+                    sf_port = data_plane_locator['port']
+                    start_sf(sf_name, "0.0.0.0", sf_port, sf_type)
 
 
 @app.errorhandler(404)
@@ -298,9 +394,6 @@ def delete_path(sfpname):
             if nfq_class_manager:
                 nfq_class_manager.destroy_packet_forwarder(sfp_id)
 
-        # TODO: is this really necessary?
-        json.dumps(local_data_plane_path)
-
     except KeyError:
         msg = "SFP name {} not found, message".format(sfpname)
         logger.warning(msg)
@@ -397,15 +490,15 @@ def delete_sf(sfname):
            'service-function-forwarder/<sffname>', methods=['PUT', 'POST'])
 def create_sff(sffname):
     """
-    This function creates a SFF on-the-fly when it receives a PUT request from
-    ODL. The SFF runs on a separate thread. If a SFF thread with same name
-    already exist it is killed before a new one is created. This happens when a
-    SFF is modified or recreated
+This function creates a SFF on-the-fly when it receives a PUT request from
+ODL. The SFF runs on a separate thread. If a SFF thread with same name
+already exist it is killed before a new one is created. This happens when a
+SFF is modified or recreated
 
-    :param sffname: SFF name
-    :type sffname: str
+:param sffname: SFF name
+:type sffname: str
 
-    """
+"""
     if not flask.request.json:
         flask.abort(400)
 
@@ -431,13 +524,13 @@ def create_sff(sffname):
            'service-function-forwarder/<sffname>', methods=['DELETE'])
 def delete_sff(sffname):
     """
-    Deletes SFF from topology, kills associated thread  and if necessary remove
-    all SFPs that depend on it
+Deletes SFF from topology, kills associated thread  and if necessary remove
+all SFPs that depend on it
 
-    :param sffname: SFF name
-    :type sffname: str
+:param sffname: SFF name
+:type sffname: str
 
-    """
+"""
     local_sff_topo = sfc_globals.get_sff_topo()
     local_sff_threads = sfc_globals.get_sff_threads()
 
@@ -501,8 +594,8 @@ def create_sffs():
            methods=['DELETE'])
 def delete_sffs():
     """
-    Delete all SFFs, SFPs, RSPs
-    """
+Delete all SFFs, SFPs, RSPs
+"""
     # We always use accessors
     sfc_globals.reset_sff_topo()
     sfc_globals.reset_path()
@@ -513,10 +606,10 @@ def delete_sffs():
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
     """
-    #TODO: add description
-    #TODO: add arguments description and type
+#TODO: add description
+#TODO: add arguments description and type
 
-    """
+"""
     try:
         logger.info("Getting SFF information from ODL ...")
         url = common.sfc_globals.SFF_SF_DATA_PLANE_LOCATOR_URL
@@ -526,8 +619,11 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
         r = s.get(odl_dataplane_url, auth=(common.sfc_globals.USERNAME,
                                            common.sfc_globals.PASSWORD),
                   stream=False)
-    except:
-        logger.exception('Can\'t get SFF information from ODL')
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFF {} data plane locator from ODL. Error: {}'.format(e))
+        return
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFF {} data plane from ODL. Error: {}'.format(e))
         return
 
     if r.ok:
@@ -543,15 +639,15 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
 
 def get_sffs_from_odl(odl_ip_port):
     """
-    Retrieves the list of configured SFFs from ODL and update global
-    dictionary of SFFs
+Retrieves the list of configured SFFs from ODL and update global
+dictionary of SFFs
 
-    :param odl_ip_port: ODL IP and port
-    :type odl_ip_port: str
+:param odl_ip_port: ODL IP and port
+:type odl_ip_port: str
 
-    :return Nothing
+:return Nothing
 
-    """
+"""
     try:
         logger.info("Getting SFFs configured in ODL ...")
         url = common.sfc_globals.SFF_PARAMETER_URL
@@ -561,8 +657,11 @@ def get_sffs_from_odl(odl_ip_port):
         r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
                                      common.sfc_globals.PASSWORD),
                   stream=False)
-    except:
-        logger.exception('Can\'t get SFFs from ODL')
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
+        return
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
         return
 
     if r.ok:
@@ -579,24 +678,60 @@ def get_sffs_from_odl(odl_ip_port):
     else:
         logger.warning("=>Failed to GET SFFs from ODL \n")
 
-    # l_topo = sfc_globals.get_sff_topo()
-    # if l_topo:
-    #    pprint(l_topo)
+
+def get_sf_from_odl(odl_ip_port, sf_name):
+    """
+Retrieves a single configured SF from ODL and update global dictionary of
+SFs
+
+:param odl_ip_port: ODL IP and port
+:type odl_ip_port: str
+:param sf_name: SF name
+:type sf_name: str
+
+:return int or None
+
+"""
+    try:
+        logger.info('Contacting ODL about information for SF: %s' % sf_name)
+        url = common.sfc_globals.SF_NAME_PARAMETER_URL
+        odl_sf_url = url.format(odl_ip_port, sf_name)
+
+        s = requests.Session()
+        r = s.get(odl_sf_url, auth=(common.sfc_globals.USERNAME,
+                                    common.sfc_globals.PASSWORD),
+                  stream=False)
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SF "{}" from ODL. Error: {}'.format(sf_name, e))
+        return -1
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SF "{}" from ODL. Error: {}'.format(sf_name, e))
+        return -1
+
+    if r.ok:
+        r_json = r.json()
+
+        local_sf_topo = sfc_globals.get_sf_topo()
+        local_sf_topo[sf_name] = r_json['service-function'][0]
+        return 0
+    else:
+        logger.warning("=>Failed to GET SF {} from ODL \n".format(sf_name))
+        return -1
 
 
 def get_sff_from_odl(odl_ip_port, sff_name):
     """
-    Retrieves a single configured SFF from ODL and update global dictionary of
-    SFFs
+Retrieves a single configured SFF from ODL and update global dictionary of
+SFFs
 
-    :param odl_ip_port: ODL IP and port
-    :type odl_ip_port: str
-    :param sff_name: SFF name
-    :type sff_name: str
+:param odl_ip_port: ODL IP and port
+:type odl_ip_port: str
+:param sff_name: SFF name
+:type sff_name: str
 
-    :return int or None
+:return int or None
 
-    """
+"""
     try:
         logger.info('Contacting ODL about information for SFF: %s' % sff_name)
         url = common.sfc_globals.SFF_NAME_PARAMETER_URL
@@ -606,9 +741,12 @@ def get_sff_from_odl(odl_ip_port, sff_name):
         r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
                                      common.sfc_globals.PASSWORD),
                   stream=False)
-    except:
-        logger.exception('Can\'t get SFF "{}" from ODL'.format(sff_name))
-        return
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}'.format(sff_name, e))
+        return -1
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}'.format(sff_name, e))
+        return -1
 
     if r.ok:
         r_json = r.json()
@@ -623,15 +761,15 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
 def auto_sff_name():
     """
-    This function will iterate over all interfaces on the system and compare
-    their IP addresses with the IP data plane locators of all SFFs downloaded
-    from ODL. If a match is found, we set the name of this SFF as the SFF name
-    configured in ODL. This allow the same script with the same parameters to
-    the run on different machines.
+This function will iterate over all interfaces on the system and compare
+their IP addresses with the IP data plane locators of all SFFs downloaded
+from ODL. If a match is found, we set the name of this SFF as the SFF name
+configured in ODL. This allow the same script with the same parameters to
+the run on different machines.
 
-    :return int
+:return int
 
-    """
+"""
     for intf in netifaces.interfaces():
         addr_list_dict = netifaces.ifaddresses(intf)
         # Some interfaces have no address

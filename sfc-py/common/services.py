@@ -15,6 +15,7 @@ from common.sfc_globals import sfc_globals
 from nsh.service_index import process_service_index
 from nsh.encode import add_sf_to_trace_pkt
 from nsh.common import *  # noqa
+import socket
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"
@@ -22,7 +23,6 @@ __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.3"
 __email__ = "jguichar@cisco.com, rapenno@gmail.com"
 __status__ = "beta"
-
 
 """
 All supported services
@@ -113,7 +113,7 @@ class BasicService(object):
         nsh_decode.decode_contextheader(data, self.server_ctx_values)
         # decode common trace header
         if nsh_decode.is_trace_message(data):
-                nsh_decode.decode_trace_req(data, self.server_trace_values)
+            nsh_decode.decode_trace_req(data, self.server_trace_values)
 
     def _process_incoming_packet(self, data, addr):
         """
@@ -164,11 +164,12 @@ class BasicService(object):
                 self.transport.sendto(trace_pkt, addr)
             else:
                 self.transport.sendto(rw_data, addr)
-            # Send packet back to SFF
+                # Send packet back to SFF
 
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
-        ipv6_addr = ipaddress.IPv6Address(data[NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
+        ipv6_addr = ipaddress.IPv6Address(data[
+                                          NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
         if ipv6_addr.ipv4_mapped:
             ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
             trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)
@@ -308,11 +309,17 @@ class MySffServer(BasicService):
                 # bye, bye packet
                 logger.info("%s: End of path", self.service_type)
                 logger.debug("%s: Packet dump: %s", self.service_type, binascii.hexlify(rw_data))
-                logger.info('%s: service index end up as: %d', self.service_type,
-                            self.server_base_values.service_index)
+                logger.debug('%s: service index end up as: %d', self.service_type,
+                             self.server_base_values.service_index)
 
                 # Remove all SFC headers, leave only original packet
-                rw_data = nsh_decode.PAYLOAD_START_INDEX
+                inner_packet = rw_data[PAYLOAD_START_INDEX:]
+                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+                host = socket.gethostbyname(socket.gethostname())
+                sock_raw.bind((host, 0))
+                sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+                sock_raw.sendto(inner_packet)
+
             else:
                 # SI = 0, loop detected
                 logger.error("%s: Loop Detected", self.service_type)
@@ -325,7 +332,7 @@ class MySffServer(BasicService):
 
             # Have to differentiate between no SPID and End of path
             if (self.server_trace_values.sil == self.server_base_values.service_index) or (
-                    next_hop == SERVICE_HOP_INVALID):
+                        next_hop == SERVICE_HOP_INVALID):
                 # End of trace
                 super(MySffServer, self).process_trace_pkt(rw_data, data)
 

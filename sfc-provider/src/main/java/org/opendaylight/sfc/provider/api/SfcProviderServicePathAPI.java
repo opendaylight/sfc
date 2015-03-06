@@ -345,6 +345,33 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * This method creates a ServiceFunctionPath by Executor, it includes
+     * Executor creation and response management
+     *
+     * <p>
+     * @param sfp a ServiceFunctionPath object
+     * @return true if sfp is created, false otherwise
+     */
+    @SuppressWarnings("unused")
+    public static boolean putServiceFunctionPathExecutor(ServiceFunctionPath sfp) {
+        boolean ret = false;
+        Object[] sfcParameters = {sfp};
+        Class[] sfcParameterTypes = {ServiceFunctionPath.class};
+
+        printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getPut(sfcParameters, sfcParameterTypes)).get();
+            ret = (boolean)result;
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
      * This function reads a SFP from the datastore
      * <p>
      * @param serviceFunctionPathName RSP name

@@ -7,6 +7,7 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 
 import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -50,6 +51,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPI.class);
+    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final String FAILED_TO_STR = "failed to ...";
 
     SfcProviderServiceChainAPI(Object[] params, String m) {
         super(params, m);
@@ -104,6 +107,33 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
             LOG.error("Failed to create Service Function Chain: {}", serviceFunctionChain);
         }
 
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * This method creates a service chain by Executor, it includes
+     * Executor creation and response management.
+     *
+     * <p>
+     * @param serviceFunctionChain a ServiceFunctionChain object
+     * @return true if serviceFunctionChain was created, false otherwise
+     */
+    @SuppressWarnings("unused")
+    public static boolean putServiceFunctionChainExecutor(ServiceFunctionChain serviceFunctionChain) {
+        boolean ret = false;
+        Object[] sfcParameters = {serviceFunctionChain};
+        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
+
+        printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServiceChainAPI.getPut(sfcParameters, sfcParameterTypes)).get();
+            ret = (boolean)result;
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
         printTraceStop(LOG);
         return ret;
     }

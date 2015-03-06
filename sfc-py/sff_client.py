@@ -1,9 +1,3 @@
-__author__ = "Reinaldo Penno, Jim Guichard, Paul Quinn"
-__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
-__version__ = "0.3"
-__email__ = "repenno@cisco.com, jguichar@cisco.com, paulq@cisco.com"
-__status__ = "alpha"
-
 #
 # Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 #
@@ -11,16 +5,24 @@ __status__ = "alpha"
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""Service Function Forwarder (SFF) Client. This module
-   will initiate the path by building a NSH/VXLAN-GPE packet and sending to the first SFF
-   in the path"""
-
 import getopt
 import logging
 import sys
 import asyncio
-from nsh.decode import *
-from nsh.encode import *
+from nsh.decode import *  # noqa
+from nsh.encode import *  # noqa
+
+
+__author__ = "Reinaldo Penno, Jim Guichard, Paul Quinn"
+__copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
+__version__ = "0.3"
+__email__ = "repenno@cisco.com, jguichar@cisco.com, paulq@cisco.com"
+__status__ = "alpha"
+
+
+"""Service Function Forwarder (SFF) Client. This module
+   will initiate the path by building a NSH/VXLAN-GPE packet and sending to the first SFF
+   in the path"""
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +41,7 @@ SERVICEFUNCTION_INVALID = 0xDEADBEEF  # Referenced service function is invalid
 RSP_STARTING_INDEX = 255
 
 
-
 # Client side code: Build NSH packet encapsulated in VXLAN & NSH.
-
 
 class MyUdpClient:
     def __init__(self, loop, vxlan_header_values, base_header_values, ctx_header_values, dest_addr, dest_port):
@@ -178,7 +178,8 @@ def main(argv):
     python3.4 sff_client.py --remote-sff-ip 10.0.1.43 --remote-sff-port 4789 --sfp-id 2 --sfp-index 255
 
     Trace Example:
-    python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255 --trace-req --num-trace-hops 1
+    python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255 \
+                            --trace-req --num-trace-hops 1
     :param argv:
     :return:
     """
@@ -252,8 +253,8 @@ def main(argv):
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
-        base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_IPV4, int(sfp_id),
-                                 int(sfp_index))
+        base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_IPV4,
+                                 int(sfp_id), int(sfp_index))
         ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
         udpclient = MyUdpClient(loop, vxlan_header_values, base_values, ctx_values, remote_sff_ip, int(remote_sff_port))
         start_client(loop, (local_ip, 5000), (remote_sff_ip, remote_sff_port), udpclient)
@@ -263,4 +264,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-

@@ -1,3 +1,16 @@
+#
+# Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+import struct
+import socket
+import ipaddress
+
+from nsh.common import *  # noqa
+
 
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
@@ -5,12 +18,6 @@ __version__ = "0.3"
 __email__ = "rapenno@gmail.com"
 __status__ = "alpha"
 
-#
-# Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
-#
-# This program and the accompanying materials are made available under the
-# terms of the Eclipse Public License v1.0 which accompanies this distribution,
-# and is available at http://www.eclipse.org/legal/epl-v10.html
 
 """
 Provides a Function to fully encode VXLAN-GPE + NSH Base + Context Headers
@@ -47,11 +54,6 @@ Provides a Function to fully encode VXLAN-GPE + NSH Base + Context Headers
    |                  Service Shared Context                       |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 """
-
-import struct
-from nsh.common import *
-import socket
-import ipaddress
 
 
 def build_packet(vxlan_header_values, base_header_values, ctx_header_values):

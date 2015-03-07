@@ -6,13 +6,11 @@
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 import sys
-import json
 import flask
 import logging
 import argparse
 import requests
 import netifaces
-from requests import exceptions
 from urllib.parse import urlparse
 
 import xe_cli

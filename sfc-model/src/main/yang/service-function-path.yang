@@ -125,6 +125,11 @@ module service-function-path {
           description
             "Service Function name";
         }
+        leaf service-function-group-name {
+          type string;
+          description
+            "Service Function group name";
+        }
         leaf service-function-forwarder {
           type string;
           description

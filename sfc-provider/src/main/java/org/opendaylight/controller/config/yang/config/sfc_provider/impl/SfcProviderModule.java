@@ -8,12 +8,24 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_provider.impl;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.core.api.Broker;
-import org.opendaylight.sfc.provider.*;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderRpc;
+import org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener;
+import org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener;
+import org.opendaylight.sfc.provider.SfcProviderSfcEntryDataListener;
+import org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener;
+import org.opendaylight.sfc.provider.SfcProviderSfgEntryDataListener;
+import org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener;
 import org.opendaylight.sfc.provider.bootstrap.SfcProviderBootstrapRestAPI;
 import org.opendaylight.sfc.provider.logback.SfcProviderLogbackLoader;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService;
@@ -22,11 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class is called from the MD-SAL infra in order to bootstrap
@@ -89,6 +96,12 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.SF_ENTRY_IID, sfcProviderSfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
 
+        // ServiceFunctionGroup Entry
+        SfcProviderSfgEntryDataListener sfcProviderSfgEntryDataListener = new SfcProviderSfgEntryDataListener();
+        final ListenerRegistration<DataChangeListener> sfgEntryDataChangeListenerRegistration =
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.SFG_ENTRY_IID, sfcProviderSfgEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
+
         // ServiceFunctionChainEntry
         SfcProviderSfcEntryDataListener sfcProviderSfcEntryDataListener = new SfcProviderSfcEntryDataListener();
          final ListenerRegistration<DataChangeListener> sfcEntryDataChangeListenerRegistration =
@@ -133,6 +146,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
             @Override
             public void close() {
                 sfEntryDataChangeListenerRegistration.close();
+                sfgEntryDataChangeListenerRegistration.close();
                 sfcEntryDataChangeListenerRegistration.close();
                 scfEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();

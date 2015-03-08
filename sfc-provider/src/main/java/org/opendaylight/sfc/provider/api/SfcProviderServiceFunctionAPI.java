@@ -866,7 +866,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * This method removes the given Service Path from the all SF operational
      * states that use it.
      *
-     * It assumes that the associated Rendered Service Path has not been deletes
+     * It assumes that the associated Rendered Service Path has not been deleted
      * yet since it reads it in order to have access to all SFs that are used
      * by this RSP.
      *

@@ -206,13 +206,15 @@ def decode_trace_resp(payload, trace_resp_header_values):
 
 def is_trace_message(data):
     base_header_first_word_int = int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:12], byteorder='big', signed='false')
-    # nsh_oam_pkt_type = int.from_bytes(data[NSH_OAM_PKT_START_OFFSET], byteorder='big', signed='false')
-    nsh_oam_pkt_type = data[NSH_OAM_PKT_START_OFFSET]
-    if (base_header_first_word_int == NSH_TYPE1_OAM_PACKET) and (
-            (nsh_oam_pkt_type == OAM_TRACE_REQ_TYPE) or (
-                data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_RESP_TYPE)):
-        return True
-    else:
+    try:
+        if (base_header_first_word_int == NSH_TYPE1_OAM_PACKET) and (
+                (data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_REQ_TYPE) or (
+                    data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_RESP_TYPE)):
+            return True
+        else:
+            return False
+    except IndexError as e:
+        logger.warn("OAM Protocol but no trace message. Error: {}".format(e))
         return False
 
 
@@ -224,7 +226,7 @@ def is_oam_message(data):
 
 
 def is_data_message(data):
-    if data[NSH_BASE_HEADER_START_OFFSET:11] == NSH_TYPE1_DATA_PACKET:
+    if int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:11], byteorder='big', signed='false') == NSH_TYPE1_DATA_PACKET:
         return True
     else:
         return False

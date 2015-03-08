@@ -9,6 +9,8 @@ import logging
 import asyncio
 import binascii
 import ipaddress
+import os
+import sys
 
 import nsh.decode as nsh_decode
 from common.sfc_globals import sfc_globals
@@ -314,11 +316,18 @@ class MySffServer(BasicService):
 
                 # Remove all SFC headers, leave only original packet
                 inner_packet = rw_data[PAYLOAD_START_INDEX:]
-                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
-                host = socket.gethostbyname(socket.gethostname())
-                sock_raw.bind((host, 0))
-                sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-                sock_raw.sendto(inner_packet)
+                if inner_packet:
+                    euid = os.geteuid()
+                    if euid != 0:
+                        print("Script not started as root. Running sudo...")
+                        args = ['sudo', sys.executable] + sys.argv + [os.environ]
+                        # the next line replaces the currently-running process with the sudo
+                        os.execlpe('sudo', *args)
+                    sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+                    host = socket.gethostbyname(socket.gethostname())
+                    sock_raw.bind((host, 0))
+                    sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+                    sock_raw.sendto(inner_packet)
 
             else:
                 # SI = 0, loop detected

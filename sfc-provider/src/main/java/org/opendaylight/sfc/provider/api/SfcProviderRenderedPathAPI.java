@@ -278,10 +278,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                         .addPathToServiceFunctionStateExecutor(renderedServicePath)) {
 
             addPathToSfStateSuccessful = true;
-
-            //Send to SB REST
-            //SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
-            //        (renderedServicePath, HttpMethod.PUT);
         } else {
             SfcProviderServiceForwarderAPI
                     .deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);

@@ -175,7 +175,7 @@ def main(argv):
     """
     Example:
     python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
-    python3.4 sff_client.py --remote-sff-ip 10.0.1.43 --remote-sff-port 4789 --sfp-id 2 --sfp-index 255
+    python3.4 sff_client.py --remote-sff-ip 10.0.1.4 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
 
     Trace Example:
     python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255 \

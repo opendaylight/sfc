@@ -15,13 +15,11 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
-import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.sfc.provider.api.*;
 import org.opendaylight.sfc.provider.util.SfcSftMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -38,9 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -296,11 +294,17 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
 
         boolean ret;
+        // If a RSP is deleted we  both SF and SFF operational states.
+        SfcProviderServiceForwarderAPI
+                .deletePathFromServiceForwarderStateExecutor(input.getName());
+        SfcProviderServiceFunctionAPI
+                .deleteServicePathFromServiceFunctionStateExecutor(input.getName());
 
         ret = SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(input.getName());
         DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
         deleteRenderedPathOutputBuilder.setResult(ret);
-        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder = RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
+        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder =
+                RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
 
 
         return Futures.immediateFuture(rpcResultBuilder.build());
@@ -323,14 +327,18 @@ public class SfcProviderRpc implements ServiceFunctionService,
         renderedServicePathFirstHop =
                             SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
 
-        ReadRenderedServicePathFirstHopOutput output = null;
+        ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
         if (renderedServicePathFirstHop != null) {
-            ReadRenderedServicePathFirstHopOutputBuilder outputBuilder = new ReadRenderedServicePathFirstHopOutputBuilder();
-            outputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
-            output = outputBuilder.build();
+            ReadRenderedServicePathFirstHopOutputBuilder renderedServicePathFirstHopOutputBuilder =
+                    new ReadRenderedServicePathFirstHopOutputBuilder();
+            renderedServicePathFirstHopOutputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
+            renderedServicePathFirstHopOutput = renderedServicePathFirstHopOutputBuilder.build();
         }
-        return Futures.immediateFuture(Rpcs.<ReadRenderedServicePathFirstHopOutput>
-                        getRpcResult(true, output, Collections.<RpcError>emptySet()));
+
+        RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder =
+                RpcResultBuilder.success(renderedServicePathFirstHopOutput);
+
+        return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     @Override

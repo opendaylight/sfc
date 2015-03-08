@@ -7,18 +7,18 @@ try:
     from Cython.Distutils import build_ext
     cmd = {"build_ext": build_ext}
     ext = Extension(
-            "netfilterqueue",
-            sources=["netfilterqueue.pyx"],
-            libraries=["netfilter_queue"],
-        )
+        "netfilterqueue",
+        sources=["netfilterqueue.pyx"],
+        libraries=["netfilter_queue"],
+    )
 except ImportError:
     # No Cython
     cmd = {}
     ext = Extension(
-            "netfilterqueue",
-            sources=["netfilterqueue.c"],
-            libraries=["netfilter_queue"],
-        )
+        "netfilterqueue",
+        sources=["netfilterqueue.c"],
+        libraries=["netfilter_queue"],
+    )
 
 setup(
     cmdclass=cmd,

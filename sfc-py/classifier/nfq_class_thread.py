@@ -192,7 +192,7 @@ def start_nfq_classifier(start_server_as_separate_script):
         thread = threading.Thread(target=nfq_class_server_start, args=())
     else:
         thread = threading.Thread(
-                 target=__start_nfq_classifier_separate_script, args=())
+            target=__start_nfq_classifier_separate_script, args=())
 
     thread.daemon = True
     thread.start()

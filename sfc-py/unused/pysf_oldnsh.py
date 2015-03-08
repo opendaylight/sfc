@@ -198,14 +198,11 @@ def get_service_ip():
     return client
 
 ARGS = argparse.ArgumentParser(description="NSH Service Function")
-ARGS.add_argument(
-                  '--type', action="store", dest='type',
+ARGS.add_argument('--type', action="store", dest='type',
                   default=False, help='Run service function. Options: fw, nat, dpi')
-ARGS.add_argument(
-                  '--host', action="store", dest='host',
+ARGS.add_argument('--host', action="store", dest='host',
                   default='127.0.0.1', help='SFF host name')
-ARGS.add_argument(
-                  '--port', action="store", dest='port',
+ARGS.add_argument('--port', action="store", dest='port',
                   default=4789, type=int, help='SFF port number')
 
 if __name__ == '__main__':
@@ -214,7 +211,7 @@ if __name__ == '__main__':
         args.host, port = args.host.split(':', 1)
         args.port = int(port)
 
-    if (not (args.type)):
+    if not args.type:
         print('Please specify --type\n')
         ARGS.print_help()
     else:

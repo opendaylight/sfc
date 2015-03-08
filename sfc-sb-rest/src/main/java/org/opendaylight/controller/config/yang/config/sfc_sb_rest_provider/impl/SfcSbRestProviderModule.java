@@ -7,12 +7,17 @@
  */
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.sbrest.provider.listener.*;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener;
+import org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
 
 public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
 
@@ -37,6 +42,7 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
         final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
         final SbRestSfEntryDataListener sbRestSfEntryDataListener = new SbRestSfEntryDataListener(opendaylightSfc);
+        final SbRestSfgEntryDataListener sbRestSfgEntryDataListener = new SbRestSfgEntryDataListener(opendaylightSfc);
         final SbRestSffEntryDataListener sbRestSffEntryDataListener = new SbRestSffEntryDataListener(opendaylightSfc);
         final SbRestRspEntryDataListener sbRestRspEntryDataListener = new SbRestRspEntryDataListener(opendaylightSfc);
         final SbRestAclEntryDataListener sbRestAclEntryDataListener = new SbRestAclEntryDataListener(opendaylightSfc);
@@ -48,6 +54,7 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
             @Override
             public void close() {
                 sbRestSfEntryDataListener.getDataChangeListenerRegistration().close();
+                sbRestSfgEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestSffEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestRspEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestAclEntryDataListener.getDataChangeListenerRegistration().close();

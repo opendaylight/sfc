@@ -1,0 +1,68 @@
+module service-function-group-algorithm {
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-sfg-alg";
+
+  prefix sfc-sfg-alg;
+
+  import ietf-inet-types { prefix inet; }
+  import ietf-yang-types { prefix yang; }
+
+  organization "Contextream, Inc.";
+  contact "Kfir Yeshayahu <kfir.yeshayahu@contextream.com>";
+
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing service function group algorithms.
+
+     Copyright (c) 2013 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.";
+
+     // RFC Ed.: replace XXXX with actual RFC number and remove this
+     // note.
+
+     // RFC Ed.: update the date below with the date of RFC publication
+     // and remove this note.
+
+  revision 2015-14-02 {
+    description
+    "Revised based on SFF Load Balance Feature Proposal";
+  }
+
+  grouping service-function-group-algorithm-entry {
+      description
+        "A list that holds all service function group algorithms in the domain";
+      leaf name {
+        type string;
+        description
+          "The name of the service function group algorithm";
+      }
+  }
+
+  // Service Function Group Algorithms
+
+  container service-function-group-algorithms {
+    description
+      "All service function group algorithms";
+
+    list service-function-group-algorithm {
+      description
+        "This list holds configuration data for all service function group algorithms
+         in the domain";
+      key "name";
+      uses service-function-group-algorithm-entry;
+    }
+  }
+
+// Remote procedure calls
+}

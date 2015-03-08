@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_0696fb94",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "This is not really needed. We can test if SFG exists has data",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a6870761",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "Remove commented out lines. They create Sonar issues",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e6b50f32",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "I am not the author of this file.",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_467c0373",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "Instead of toInstance use build() and there will be no warning",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_6681ff49",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "In a sea of logs this type of log does not help. Look at other logs and make use of the thread stack trace to include the method and line name",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e68c2f82",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "I have seen this before and it was about calls being non-blocking.",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c68fb374",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "Will the export JSON and all the other  SB REST pieces comes in subsequent commits before Lithium? \n\nThe SFC agent also needs changing in other to process SFGs both control and data planes",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_86e9ab1c",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfgTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-08T22:11:20Z",
+      "side": 1,
+      "message": "You can not use SF export Factory. You need to create a SfgExpoorterFactory()",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -99,6 +99,11 @@ module rendered-service-path {
       uses sfc-ss:service-statistics-group {
         description "Global Rendered Service Path statistics";
       }
+      leaf group-based {
+         type boolean;
+         description
+            "Set to true when SPH is using SFG";
+      }
       list rendered-service-path-hop {
         key "hop-number";
         leaf hop-number {
@@ -110,6 +115,11 @@ module rendered-service-path {
           type string;
           description
             "Service Function name";
+        }
+        leaf service-function-group-name {
+          type string;
+          description
+            "Service Function group name";
         }
         leaf service-function-forwarder {
           type string;

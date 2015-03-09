@@ -97,12 +97,11 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      *            the ServiceFunctionGroup to put
      * @return boolean success or failure
      */
-    @SuppressWarnings("deprecation")
     protected boolean putServiceFunctionGroup(ServiceFunctionGroup sfg) {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
-                .child(ServiceFunctionGroup.class, sfg.getKey()).toInstance();
+                .child(ServiceFunctionGroup.class, sfg.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfgEntryIID, sfg, LogicalDatastoreType.CONFIGURATION);
 
@@ -118,13 +117,12 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      *            SFG name
      * @return boolean success of failure
      */
-    @SuppressWarnings("deprecation")
     protected boolean deleteServiceFunctionGroup(String serviceFunctionGroupName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionGroupKey serviceFunctionGroupKey = new ServiceFunctionGroupKey(serviceFunctionGroupName);
         InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
-                .child(ServiceFunctionGroup.class, serviceFunctionGroupKey).toInstance();
+                .child(ServiceFunctionGroup.class, serviceFunctionGroupKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfgEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;

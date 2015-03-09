@@ -14,7 +14,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroup;
@@ -30,9 +29,9 @@ import org.slf4j.LoggerFactory;
  * added/deleted/modified.
  *
  * <p
- * @author Reinaldo Penno (rapenno@gmail.com)
+ * @author Shlomi Alfasi (shlomi.alfasi@contextream.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since       2015-03-08
  */
 public class SfcProviderSfgEntryDataListener implements DataChangeListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfgEntryDataListener.class);

@@ -139,11 +139,11 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         Class[] paramsTypes = { String.class, String.class };
         executor.submit(SfcProviderServiceFunctionGroupAPI.getAddSF(params, paramsTypes)).get();
 
-        assertNotNull("Must be not null", sfg.getSfgServiceFunction().get(0));
-        assertEquals("Must be equal", sfg.getSfgServiceFunction().get(0), sf.getName());
+        assertNotNull("Must be not null", sfg.getSfcServiceFunction().get(0));
+        assertEquals("Must be equal", sfg.getSfcServiceFunction().get(0), sf.getName());
 
         // Delete Service Function:
         executor.submit(SfcProviderServiceFunctionGroupAPI.getDelete(params, paramsTypes));
-        assertNull("Must be null", sfg.getSfgServiceFunction().get(0));
+        assertNull("Must be null", sfg.getSfcServiceFunction().get(0));
     }
 }

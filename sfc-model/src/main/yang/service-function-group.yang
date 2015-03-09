@@ -62,13 +62,13 @@ module service-function-group {
         description
           "The IP and port used to configure this service-function";
       }
-//      leaf type {
-//        type string;
-//        mandatory true;
-//        description
-//          "Service function group Type from service-function-group-type";
-//     }
-      list sfg-service-function {
+      leaf type {
+        type string;
+        mandatory true;
+        description
+          "Service function group Type from service-function-group-type";
+     }
+      list sfc-service-function {
         key "name";
         leaf name {
           type string;

@@ -54,6 +54,7 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
             @Override
             public void close() {
                 sbRestSfEntryDataListener.getDataChangeListenerRegistration().close();
+                sbRestSfgEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestSffEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestRspEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestAclEntryDataListener.getDataChangeListenerRegistration().close();

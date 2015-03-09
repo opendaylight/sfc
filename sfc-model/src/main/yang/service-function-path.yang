@@ -113,11 +113,6 @@ module service-function-path {
         description
           "The name of the associated variable metadata";
       }
-      leaf group-based {
-         type boolean;
-         description
-            "Set to true when SPH is using SFG";
-      }
       list service-path-hop {
         key "hop-number";
         leaf hop-number {

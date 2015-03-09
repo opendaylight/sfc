@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_a694e737",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 886,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-09T05:20:38Z",
+      "side": 1,
+      "message": "Create a new API called putServiceFunctionChain Executor() and use it instead of having this code here.",
+      "revId": "36ac3cd5bdee0fe67d47b2a5dee0cb27edbbed18",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c6757333",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 898,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-09T05:20:38Z",
+      "side": 1,
+      "message": "The path should be symmetric",
+      "revId": "36ac3cd5bdee0fe67d47b2a5dee0cb27edbbed18",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_868f6b23",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 903,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-09T05:20:38Z",
+      "side": 1,
+      "message": "Create a new API called putServiceFunctionPathExecutor() and use it instead of having this code here.",
+      "revId": "36ac3cd5bdee0fe67d47b2a5dee0cb27edbbed18",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

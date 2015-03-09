@@ -112,7 +112,7 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
         if (SfcDataStoreAPI.deleteTransactionAPI(sfgAlgEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
-            LOG.error("Could not delete SFG Algorithm: {}", serviceFunctionGroupAlgorithmName);
+            LOG.error("{}: Could not delete SFG Algorithm: {}", Thread.currentThread().getStackTrace()[1], serviceFunctionGroupAlgorithmName);
         }
         printTraceStop(LOG);
         return ret;

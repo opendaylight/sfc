@@ -10,7 +10,7 @@ package org.opendaylight.sfc.sbrest.provider.task;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
-import org.opendaylight.sfc.sbrest.json.SfExporterFactory;
+import org.opendaylight.sfc.sbrest.json.SfgExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class SbRestSfgTask extends SbRestAbstractTask {
 
     public SbRestSfgTask(RestOperation restOperation, ServiceFunctionGroup dataObject, ExecutorService odlExecutor) {
         super(restOperation, odlExecutor);
-        this.exporterFactory = new SfExporterFactory();
+        this.exporterFactory = new SfgExporterFactory();
         if (restOperation.equals(RestOperation.DELETE)) {
             this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
         } else {

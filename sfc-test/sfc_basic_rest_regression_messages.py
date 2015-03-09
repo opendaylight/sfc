@@ -322,10 +322,24 @@ RENDERED_SERVICE_PATH_RPC_PATH_1_REQ = """
   }
 }"""
 
+RENDERED_SERVICE_PATH_RPC_PATH_1_RESP = """
+{
+  "output": {
+    "result": true
+  }
+}"""
+
 RENDERED_SERVICE_PATH_RPC_PATH_2_REQ = """
 {
   "input": {
     "parent-service-function-path": "Path-2-SFC2"
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RPC_PATH_2_RESP = """
+{
+  "output": {
+    "result": true
   }
 }"""
 
@@ -334,77 +348,62 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
   "rendered-service-paths": {
     "rendered-service-path": [
       {
-        "name": "Path-2-SFC2",
-        "parent-service-function-path": "Path-2-SFC2",
-        "path-id": 9,
-        "service-chain-name": "SFC2",
-        "starting-index": 255,
-        "rendered-service-path-hop": [
-          {
-            "hop-number": 0,
-            "service-function-name": "SF4",
-            "service-function-forwarder": "SFF3",
-            "service-index": 255
-          },
-          {
-            "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
-            "service-index": 254
-          }
-        ]
-      },
-      {
         "name": "Path-1-SFC1-Reverse",
         "parent-service-function-path": "Path-1-SFC1",
-        "path-id": 8,
+        "path-id": 2,
         "service-chain-name": "SFC1",
         "starting-index": 255,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
+            "service-index": 255,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3",
-            "service-index": 255
+            "service-function-forwarder": "SFF3"
           },
           {
             "hop-number": 1,
+            "service-index": 254,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF2",
-            "service-function-forwarder": "SFF2",
-            "service-index": 254
+            "service-function-forwarder": "SFF2"
           },
           {
             "hop-number": 2,
+            "service-index": 253,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1",
-            "service-index": 253
+            "service-function-forwarder": "SFF1"
           }
         ]
       },
       {
         "name": "Path-1-SFC1",
         "parent-service-function-path": "Path-1-SFC1",
-        "path-id": 7,
+        "path-id": 1,
         "service-chain-name": "SFC1",
         "starting-index": 255,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
+            "service-index": 255,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1",
-            "service-index": 255
+            "service-function-forwarder": "SFF1"
           },
           {
             "hop-number": 1,
+            "service-index": 254,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF2",
-            "service-function-forwarder": "SFF2",
-            "service-index": 254
+            "service-function-forwarder": "SFF2"
           },
           {
             "hop-number": 2,
+            "service-index": 253,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3",
-            "service-index": 253
+            "service-function-forwarder": "SFF3"
           }
         ]
       }
@@ -443,21 +442,10 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF3",
         "sff-service-path": [
           {
-            "name": "Path-2-SFC2"
-          },
-          {
             "name": "Path-1-SFC1"
           },
           {
             "name": "Path-1-SFC1-Reverse"
-          }
-        ]
-      },
-      {
-        "name": "SFF4",
-        "sff-service-path": [
-          {
-            "name": "Path-2-SFC2"
           }
         ]
       }
@@ -469,14 +457,6 @@ SERVICE_FUNCTION_OPER_JSON = """
 {
   "service-functions-state": {
     "service-function-state": [
-      {
-        "name": "SF4",
-        "sf-service-path": [
-          {
-            "name": "Path-2-SFC2"
-          }
-        ]
-      },
       {
         "name": "SF3",
         "sf-service-path": [
@@ -507,14 +487,6 @@ SERVICE_FUNCTION_OPER_JSON = """
           },
           {
             "name": "Path-1-SFC1"
-          }
-        ]
-      },
-      {
-        "name": "SF5",
-        "sf-service-path": [
-          {
-            "name": "Path-2-SFC2"
           }
         ]
       }

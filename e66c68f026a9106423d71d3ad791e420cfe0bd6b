@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_e98f20cb",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-09T15:21:11Z",
+      "side": 1,
+      "message": "Minor detail, fix this comment.",
+      "range": {
+        "startLine": 99,
+        "startChar": 11,
+        "endLine": 99,
+        "endChar": 26
+      },
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_a6870761",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
         "patchSetId": 1
@@ -47,6 +70,29 @@
       "writtenOn": "2015-03-08T22:11:20Z",
       "side": 1,
       "message": "I am not the author of this file.",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_89953ce6",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-09T15:21:11Z",
+      "side": 1,
+      "message": "This method doesnt actually do anything. Since this is the only method in this class, consider removing this entire class.",
+      "range": {
+        "startLine": 48,
+        "startChar": 16,
+        "endLine": 48,
+        "endChar": 29
+      },
       "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

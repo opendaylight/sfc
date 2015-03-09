@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_1c372ce5",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_0696fb94",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_e98f20cb",
         "filename": "sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java",
         "patchSetId": 1
@@ -30,6 +48,30 @@
       "writtenOn": "2015-03-09T15:21:11Z",
       "side": 1,
       "message": "Minor detail, fix this comment.",
+      "range": {
+        "startLine": 99,
+        "startChar": 11,
+        "endLine": 99,
+        "endChar": 26
+      },
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_bc3398f5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/controller/config/yang/config/sfc_provider/impl/SfcProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_e98f20cb",
       "range": {
         "startLine": 99,
         "startChar": 11,
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_9c2b3c82",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_a6870761",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_e6b50f32",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
         "patchSetId": 1
@@ -70,6 +130,24 @@
       "writtenOn": "2015-03-08T22:11:20Z",
       "side": 1,
       "message": "I am not the author of this file.",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_bc1cf86b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_e6b50f32",
       "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -99,6 +177,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_dc19c47a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "this is a placeholder that will be used in later commits",
+      "parentUuid": "5a93c517_89953ce6",
+      "range": {
+        "startLine": 48,
+        "startChar": 16,
+        "endLine": 48,
+        "endChar": 29
+      },
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_467c0373",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
         "patchSetId": 1
@@ -110,6 +212,24 @@
       "writtenOn": "2015-03-08T22:11:20Z",
       "side": 1,
       "message": "Instead of toInstance use build() and there will be no warning",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3c20e89a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_467c0373",
       "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -133,6 +253,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_fc3920d9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_6681ff49",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_e68c2f82",
         "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPITest.java",
         "patchSetId": 1
@@ -144,6 +282,24 @@
       "writtenOn": "2015-03-08T22:11:20Z",
       "side": 1,
       "message": "I have seen this before and it was about calls being non-blocking.",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_dc30e4ea",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "as far as i see this is the same code as in any other API.",
+      "parentUuid": "5a93c517_e68c2f82",
       "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -178,6 +334,24 @@
       "writtenOn": "2015-03-08T22:11:20Z",
       "side": 1,
       "message": "You can not use SF export Factory. You need to create a SfgExpoorterFactory()",
+      "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_7c4d1072",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfgTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-09T16:11:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_86e9ab1c",
       "revId": "e66c68f026a9106423d71d3ad791e420cfe0bd6b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

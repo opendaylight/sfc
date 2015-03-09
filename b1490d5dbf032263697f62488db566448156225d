@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_2922e8b9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-09T15:47:14Z",
+      "side": 1,
+      "message": "Currently this class doesnt do anything, consider removing it.",
+      "range": {
+        "startLine": 36,
+        "startChar": 13,
+        "endLine": 36,
+        "endChar": 44
+      },
+      "revId": "b1490d5dbf032263697f62488db566448156225d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

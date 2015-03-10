@@ -962,7 +962,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
           _.each(sff['sff-data-plane-locator'], function (locator) {
 
-            if (angular.isDefined(locator['data-plane-locator']['transport'])) {
+            if (angular.isDefined(locator['data-plane-locator'] && locator['data-plane-locator']['transport'])) {
               locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 
@@ -987,7 +987,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             }
 
             // strip namespace in 'transport' property value
-            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'])) {
+            if (angular.isDefined(dictionary['sff-sf-data-plane-locator'] && dictionary['sff-sf-data-plane-locator']['transport'])) {
               dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 
@@ -1013,7 +1013,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       if (!_.isEmpty(sff['sff-data-plane-locator'])) {
         _.each(sff['sff-data-plane-locator'], function (locator) {
 
-          if (angular.isDefined(locator['data-plane-locator']['transport'] &&
+          if (angular.isDefined(locator['data-plane-locator'] &&
+            angular.isDefined(locator['data-plane-locator']['transport']) &&
             locator['data-plane-locator']['transport'].search(locatorMatcher) < 0)) {
             locator['data-plane-locator']['transport'] = locatorPrefix + locator['data-plane-locator']['transport'];
           }
@@ -1027,7 +1028,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
             sf['type'] = sfTypePrefix + sf['type'];
           }
 
-          if (angular.isDefined(sf['sff-sf-data-plane-locator']['transport'] &&
+          if (angular.isDefined(sf['sff-sf-data-plane-locator']) &&
+            angular.isDefined(sf['sff-sf-data-plane-locator']['transport'] &&
             sf['sff-sf-data-plane-locator']['transport'].search(locatorMatcher) < 0)) {
             sf['sff-sf-data-plane-locator']['transport'] = locatorPrefix + sf['sff-sf-data-plane-locator']['transport'];
           }

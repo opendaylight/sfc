@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_705d31e9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 863,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T16:17:59Z",
+      "side": 1,
+      "message": "thanks for the new APIs but they should be on the appropriate files and not here. Service Chain API should be on the Service Chain API file, same for path, etc.",
+      "revId": "8f23bdafb093bd2cc8e3020dd7f592d40e74d2fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

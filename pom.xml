@@ -52,7 +52,6 @@
         <ietf.yang.types.version>2013.07.15.7-SNAPSHOT</ietf.yang.types.version>
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <compiler.version>2.3.2</compiler.version>
-        <checkstyle.version>2.10</checkstyle.version>
         <bundle.plugin.version>2.4.0</bundle.plugin.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
@@ -63,7 +62,6 @@
         <logback.version>1.0.9</logback.version>
         <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
         <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-        <checkstyle.version>2.10</checkstyle.version>
         <jackson.version>2.3.2</jackson.version>
 
         <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>

@@ -18,6 +18,7 @@
 package org.opendaylight.controller.config.yang.config.sfc_ovs.impl;
 
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsBridgeAugmentationDataListener;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,8 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
         final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
         final SfcOvsNodeDataListener sfcOvsNodeDataListener = new SfcOvsNodeDataListener(opendaylightSfc);
+        final SfcOvsBridgeAugmentationDataListener sfcOvsBridgeAugmentationDataListener =
+                new SfcOvsBridgeAugmentationDataListener(opendaylightSfc);
 
         LOG.info("SFC OVS module initialized");
 
@@ -55,6 +58,7 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
             @Override
             public void close() {
                 sfcOvsNodeDataListener.getDataChangeListenerRegistration().close();
+                sfcOvsBridgeAugmentationDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

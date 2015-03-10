@@ -8,6 +8,7 @@
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket;
 import org.opendaylight.sfc.sbrest.provider.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,9 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
         final SbRestRspEntryDataListener sbRestRspEntryDataListener = new SbRestRspEntryDataListener(opendaylightSfc);
         final SbRestAclEntryDataListener sbRestAclEntryDataListener = new SbRestAclEntryDataListener(opendaylightSfc);
         final SbRestScfEntryDataListener sbRestScfEntryDataListener = new SbRestScfEntryDataListener(opendaylightSfc);
+        final SbRestKeepAliveSocket sbRestKeepAliveSocket = new SbRestKeepAliveSocket();
+        opendaylightSfc.getExecutor().execute(sbRestKeepAliveSocket);
+
 
         // close()
         final class AutoCloseableSfcSbRest implements AutoCloseable {

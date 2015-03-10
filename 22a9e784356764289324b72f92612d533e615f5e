@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_508355cc",
+        "filename": "sfc-py/classifier/classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T19:17:30Z",
+      "side": 1,
+      "message": "I think the name is misleading. Just call what it is, something like _fetch_rsp_first_hop_from_odl.",
+      "revId": "22a9e784356764289324b72f92612d533e615f5e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_306a491b",
+        "filename": "sfc-py/classifier/classifier.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T19:17:30Z",
+      "side": 1,
+      "message": "This is hardcoded to IPv4. What if the packet matches an IPv6 Iptable?",
+      "revId": "22a9e784356764289324b72f92612d533e615f5e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

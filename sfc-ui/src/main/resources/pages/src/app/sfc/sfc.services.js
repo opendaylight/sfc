@@ -962,7 +962,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
           _.each(sff['sff-data-plane-locator'], function (locator) {
 
-            if (angular.isDefined(locator['data-plane-locator']['transport'])) {
+            if (angular.isDefined(locator['data-plane-locator'] && locator['data-plane-locator']['transport'])) {
               locator['data-plane-locator']['transport'] = locator['data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 
@@ -987,7 +987,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             }
 
             // strip namespace in 'transport' property value
-            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'])) {
+            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['transport'] && locator['data-plane-locator']['transport'])) {
               dictionary['sff-sf-data-plane-locator']['transport'] = dictionary['sff-sf-data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
             }
 

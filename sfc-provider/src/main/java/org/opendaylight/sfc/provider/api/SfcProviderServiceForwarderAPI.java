@@ -142,6 +142,36 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * Creates a executor and calls appropriate function
+     * to put SFF into DataStore
+     *
+     * <p>
+     * @param serviceFunctionForwarder Service Function Forwarder Object
+     * @return Nothing.
+     */
+    public static boolean putServiceFunctionForwarderExecutor(ServiceFunctionForwarder serviceFunctionForwarder) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctionForwarder};
+        Class[] servicePathClass = {ServiceFunctionForwarder.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getPut(servicePathObj, servicePathClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getPut: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+
+    /**
      * This method searches for a data plane locator of a given name within a SFF
      * <p>
      * @param sffName SFF name
@@ -194,12 +224,41 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(serviceFunctionForwarderName);
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
-                child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).toInstance();
+                child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sffEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
             LOG.error("Could not delete SFF: {}", serviceFunctionForwarderName);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Creates a executor and calls appropriate function
+     * to delete SFF from DataStore
+     *
+     * <p>
+     * @param serviceFunctionForwarderName Service Function Forwarder Name
+     * @return Nothing.
+     */
+    public static boolean deleteServiceFunctionForwarderExecutor(String serviceFunctionForwarderName) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctionForwarderName};
+        Class[] servicePathClass = {String.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getDelete(servicePathObj, servicePathClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getDelete: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;

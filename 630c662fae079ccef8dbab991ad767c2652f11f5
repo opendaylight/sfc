@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_8b4d2c75",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T21:19:11Z",
+      "side": 1,
+      "message": "Please fix existing and add Javadoc",
+      "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_eb47104a",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T21:19:11Z",
+      "side": 1,
+      "message": "Will this uuid retrieval break the code? Until now ovsdb uuids break yangtools and cause an exception",
+      "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_6b7300b2",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-10T21:19:11Z",
+      "side": 1,
+      "message": "Can the same interface be used by two different ports on the same bridge?  If yes, then basing this on interface name is not good.",
+      "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

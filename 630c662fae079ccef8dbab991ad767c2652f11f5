@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_6b121f64",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-11T09:16:19Z",
+      "side": 1,
+      "message": "When I tested it yesterday there was no such exception. But I\u0027ll double check.",
+      "parentUuid": "5a93c517_eb47104a",
+      "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_6b7300b2",
         "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
         "patchSetId": 1
@@ -47,6 +65,24 @@
       "writtenOn": "2015-03-10T21:19:11Z",
       "side": 1,
       "message": "Can the same interface be used by two different ports on the same bridge?  If yes, then basing this on interface name is not good.",
+      "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_0b559b1c",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-11T09:16:19Z",
+      "side": 1,
+      "message": "I\u0027ve not found any way to add multiple interfaces per port. From what I understand it\u0027s more like tuple (port, interface) with the same name. \n\nThe data plane locator name could be also build as \"portName-interfaceName\"",
+      "parentUuid": "5a93c517_6b7300b2",
       "revId": "630c662fae079ccef8dbab991ad767c2652f11f5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

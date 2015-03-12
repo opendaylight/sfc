@@ -134,6 +134,11 @@
             <artifactId>ietf-yang-types-20130715</artifactId>
             <version>${ietf.yang.types.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.ovsdb</groupId>
+            <artifactId>southbound-api</artifactId>
+            <version>${ovsdb.southbound.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

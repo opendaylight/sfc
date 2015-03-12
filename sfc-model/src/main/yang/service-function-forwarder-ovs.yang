@@ -18,11 +18,25 @@ module service-function-forwarder-ovs {
     revision-date 2013-07-15;
   }
 
+  import ovsdb {
+    prefix "ovsdb";
+    revision-date 2015-01-05;
+  }
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
   revision 2014-07-01 {
     description "Augmentation of SFF for OVS";
+  }
+
+  grouping node {
+    container ovs-node {
+      leaf node-id {
+        description "Open vSwitch node id.";
+        type ovsdb:ovsdb-node-ref;
+      }
+    }
   }
 
   grouping bridge {
@@ -56,6 +70,12 @@ module service-function-forwarder-ovs {
         }
       }
     }
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/" {
+
+    uses node;
   }
 
   augment "/sfc-sff:service-function-forwarders/"

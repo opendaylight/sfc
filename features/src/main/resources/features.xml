@@ -107,6 +107,7 @@
     <feature name='odl-sfc-model' version='${project.version}' description='OpenDaylight :: sfc :: Model'>
         <feature version='0.7.0-SNAPSHOT'>odl-yangtools-binding</feature>
         <feature version='0.7.0-SNAPSHOT'>odl-yangtools-models</feature>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-model/${project.version}</bundle>
     </feature>
 

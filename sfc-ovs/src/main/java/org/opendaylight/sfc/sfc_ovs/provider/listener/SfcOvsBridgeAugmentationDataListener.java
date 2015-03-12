@@ -83,7 +83,7 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
                 OvsdbBridgeAugmentation ovsdbBridgeAugmentation = (OvsdbBridgeAugmentation) entry.getValue();
                 LOG.debug("\nCreated OvsdbManagedNodeAugmentation: {}", ovsdbBridgeAugmentation.toString());
                 SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                        SfcOvsServiceForwarderAPI.buildServiceForwarderFromOvsdbBridge(ovsdbBridgeAugmentation));
+                        SfcOvsServiceForwarderAPI.getServiceForwarderFromOvsdbBridge(ovsdbBridgeAugmentation));
 
             }
         }
@@ -96,7 +96,7 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
                 OvsdbBridgeAugmentation updatedOvsdbBridgeAugmentation = (OvsdbBridgeAugmentation) entry.getValue();
                 LOG.debug("\nModified OvsdbManagedNodeAugmentation : {}", updatedOvsdbBridgeAugmentation.toString());
                 SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                        SfcOvsServiceForwarderAPI.buildServiceForwarderFromOvsdbBridge(updatedOvsdbBridgeAugmentation));
+                        SfcOvsServiceForwarderAPI.getServiceForwarderFromOvsdbBridge(updatedOvsdbBridgeAugmentation));
             }
         }
 

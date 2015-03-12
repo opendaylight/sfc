@@ -10,6 +10,7 @@
 package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcReflection;
@@ -106,8 +107,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServiceForwarderAPI getCheckServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "checkServiceFunctionForwarder");
     }
-    @SuppressWarnings("unused")
-    public static SfcProviderServiceForwarderAPI getUpdateServiceForwarderAPI(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServiceForwarderAPI getUpdate(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceForwarderAPI(params, paramsTypes, "updateServiceFunctionForwarder");
     }
     public static SfcProviderServiceForwarderAPI getAddPathToServiceForwarderState(Object[] params, Class[] paramsTypes) {
@@ -370,12 +370,60 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     }
 
-    @SuppressWarnings("unused")
-    public void updateServiceFunctionForwarder(ServiceFunction serviceFunction) {
+    /**
+     * This method updates configuration of
+     * a SFF in the data store.
+     * <p>
+     * @param serviceFunctionForwarder ServiceFunctionForwarder object
+     * @return true if SFF was updated, false otherwise
+     */
+    public boolean updateServiceFunctionForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
+        printTraceStart(LOG);
+
+        Preconditions.checkNotNull(serviceFunctionForwarder);
+        boolean ret = false;
+
+        InstanceIdentifier<ServiceFunctionForwarder> sffIID = InstanceIdentifier
+                .builder(ServiceFunctionForwarders.class)
+                .child(ServiceFunctionForwarder.class, serviceFunctionForwarder.getKey()).build();
+
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(sffIID, serviceFunctionForwarder, LogicalDatastoreType.CONFIGURATION)){
+            ret = true;
+        } else {
+            LOG.error("Could not update SFF {}", serviceFunctionForwarder.getName());
+        }
+
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Creates a executor and calls appropriate function to update
+     * SFF configuration
+     *
+     * <p>
+     * @param serviceFunctionForwarder Service Function Forwarder Object
+     * @return true if SFF was updated, false otherwise.
+     */
+    public static boolean updateServiceFunctionForwarderExecutor(ServiceFunctionForwarder serviceFunctionForwarder) {
 
         printTraceStart(LOG);
+        boolean ret = false;
+        Object[] serviceForwarderObject = {serviceFunctionForwarder};
+        Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getUpdate(serviceForwarderObject, serviceForwarderClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getUpdate: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
         printTraceStop(LOG);
-
+        return ret;
     }
 
     /**

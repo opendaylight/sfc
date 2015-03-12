@@ -25,6 +25,15 @@ module service-function-forwarder-ovs {
     description "Augmentation of SFF for OVS";
   }
 
+  grouping node {
+    container ovs-node {
+      leaf node-id {
+        description "Open vSwitch node id.";
+        type string;
+      }
+    }
+  }
+
   grouping bridge {
     container ovs-bridge {
       leaf bridge-name {
@@ -56,6 +65,12 @@ module service-function-forwarder-ovs {
         }
       }
     }
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/" {
+
+    uses node;
   }
 
   augment "/sfc-sff:service-function-forwarders/"

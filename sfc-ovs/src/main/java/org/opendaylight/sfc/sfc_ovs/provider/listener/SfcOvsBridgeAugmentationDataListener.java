@@ -23,7 +23,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsServiceForwarderAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsToSffMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -67,13 +67,6 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
-/*        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if (entry.getValue() instanceof OvsdbNodeAugmentation) {
-                OvsdbNodeAugmentation originalOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
-                LOG.debug("\nOriginal Rendered Service Path: {}", originalOvsdbNodeAugmentation.toString());
-            }
-        }*/
-
         // OVSDB BRIDGE CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
@@ -82,8 +75,8 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
             if (entry.getValue() instanceof OvsdbBridgeAugmentation) {
                 OvsdbBridgeAugmentation ovsdbBridgeAugmentation = (OvsdbBridgeAugmentation) entry.getValue();
                 LOG.debug("\nCreated OvsdbManagedNodeAugmentation: {}", ovsdbBridgeAugmentation.toString());
-                SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                        SfcOvsServiceForwarderAPI.buildServiceForwarderFromOvsdbBridge(ovsdbBridgeAugmentation));
+//                SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
+//                        SfcOvsToSffMappingAPI.getServiceForwarderFromOvsdbBridge(ovsdbBridgeAugmentation));
 
             }
         }
@@ -95,11 +88,10 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 OvsdbBridgeAugmentation updatedOvsdbBridgeAugmentation = (OvsdbBridgeAugmentation) entry.getValue();
                 LOG.debug("\nModified OvsdbManagedNodeAugmentation : {}", updatedOvsdbBridgeAugmentation.toString());
-                SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                        SfcOvsServiceForwarderAPI.buildServiceForwarderFromOvsdbBridge(updatedOvsdbBridgeAugmentation));
+//                SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
+//                        SfcOvsToSffMappingAPI.getServiceForwarderFromOvsdbBridge(updatedOvsdbBridgeAugmentation));
             }
         }
-
 
         // OVSDB BRIDGE DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
@@ -109,9 +101,10 @@ public class SfcOvsBridgeAugmentationDataListener extends SfcOvsAbstractDataList
                 OvsdbBridgeAugmentation deletedOvsdbBridgeAugmentation = (OvsdbBridgeAugmentation) dataObject;
                 LOG.debug("\nDeleted OvsdbManagedNodeAugmentation: {}", deletedOvsdbBridgeAugmentation.toString());
                 SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(
-                        SfcOvsServiceForwarderAPI.getServiceForwarderNameFromOvsdbBridge(deletedOvsdbBridgeAugmentation));
+                        SfcOvsToSffMappingAPI.getServiceForwarderNameFromOvsdbBridge(deletedOvsdbBridgeAugmentation));
             }
         }
+
         printTraceStop(LOG);
     }
 

@@ -21,7 +21,7 @@
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${feature.openflowplugin.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
     <!--<repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>-->
-    <!--<repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>-->
+    <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
 
     <feature name='odl-sfc-core' version='${project.version}' description='OpenDaylight :: sfc :: Core'>
         <feature version='${project.version}'>odl-sfc-provider</feature>
@@ -107,6 +107,7 @@
     <feature name='odl-sfc-model' version='${project.version}' description='OpenDaylight :: sfc :: Model'>
         <feature version='0.7.0-SNAPSHOT'>odl-yangtools-binding</feature>
         <feature version='0.7.0-SNAPSHOT'>odl-yangtools-models</feature>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-model/${project.version}</bundle>
     </feature>
 

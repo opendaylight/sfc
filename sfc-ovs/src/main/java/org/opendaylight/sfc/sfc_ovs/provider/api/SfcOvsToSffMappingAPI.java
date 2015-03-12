@@ -20,8 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +29,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- * @see org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsServiceForwarderAPI
+ * @see SfcOvsToSffMappingAPI
  * <p/>
  * <p/>
  * <p/>
  * @since 2015-03-10
  */
-public class SfcOvsServiceForwarderAPI {
+public class SfcOvsToSffMappingAPI {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsServiceForwarderAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsToSffMappingAPI.class);
 
 
     /**
@@ -50,7 +49,7 @@ public class SfcOvsServiceForwarderAPI {
      * @param ovsdbBridgeAugmentation ovsdbBridgeAugmentation Object
      * @return ServiceFunctionForwarder Object
      */
-    public static ServiceFunctionForwarder buildServiceForwarderFromOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
+    public static ServiceFunctionForwarder getServiceForwarderFromOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
         Preconditions.checkNotNull(ovsdbBridgeAugmentation);
 
         OvsdbBridgeName bridgeName = ovsdbBridgeAugmentation.getBridgeName();
@@ -72,7 +71,7 @@ public class SfcOvsServiceForwarderAPI {
         sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(uuid.getValue());
+        serviceFunctionForwarderBuilder.setName(bridgeName.getValue() + " (" + uuid.getValue() + ")");
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(sffDataPlaneLocatorList);
 
         return serviceFunctionForwarderBuilder.build();
@@ -80,7 +79,7 @@ public class SfcOvsServiceForwarderAPI {
 
     /**
      * Returns an Service Function Forwarder name. The name is based
-     * on OVS Bridge Uuid.
+     * on OVS Bridge Name and Uuid.
      * The ovsdbBridgeAugmentation argument must be not null otherwise
      * NullPointerException will be raised.
      *
@@ -90,8 +89,9 @@ public class SfcOvsServiceForwarderAPI {
     public static String getServiceForwarderNameFromOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
         Preconditions.checkNotNull(ovsdbBridgeAugmentation);
 
+        OvsdbBridgeName bridgeName = ovsdbBridgeAugmentation.getBridgeName();
         Uuid uuid = ovsdbBridgeAugmentation.getBridgeUuid();
-        return uuid.getValue();
-    }
 
+        return bridgeName.getValue() + " (" + uuid.getValue() + ")";
+    }
 }

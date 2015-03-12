@@ -20,6 +20,8 @@ package org.opendaylight.controller.config.yang.config.sfc_ovs.impl;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsBridgeAugmentationDataListener;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener;
+import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener;
+import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsTerminationPointAugmentationDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,9 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
         final SfcOvsNodeDataListener sfcOvsNodeDataListener = new SfcOvsNodeDataListener(opendaylightSfc);
         final SfcOvsBridgeAugmentationDataListener sfcOvsBridgeAugmentationDataListener =
                 new SfcOvsBridgeAugmentationDataListener(opendaylightSfc);
+        final SfcOvsTerminationPointAugmentationDataListener sfcOvsTerminationPointAugmentationDataListener =
+                new SfcOvsTerminationPointAugmentationDataListener(opendaylightSfc);
+        final SfcOvsSffEntryDataListener sfcOvsSffEntryDataListener = new SfcOvsSffEntryDataListener(opendaylightSfc);
 
         LOG.info("SFC OVS module initialized");
 
@@ -59,6 +64,8 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
             public void close() {
                 sfcOvsNodeDataListener.getDataChangeListenerRegistration().close();
                 sfcOvsBridgeAugmentationDataListener.getDataChangeListenerRegistration().close();
+                sfcOvsTerminationPointAugmentationDataListener.getDataChangeListenerRegistration().close();
+                sfcOvsSffEntryDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

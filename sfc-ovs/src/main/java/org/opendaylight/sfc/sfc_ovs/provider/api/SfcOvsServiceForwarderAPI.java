@@ -19,9 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,5 +94,42 @@ public class SfcOvsServiceForwarderAPI {
         Uuid uuid = ovsdbBridgeAugmentation.getBridgeUuid();
         return uuid.getValue();
     }
+
+    public static OvsdbBridgeAugmentation getOvsdbBridgeFromServiceForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
+        Preconditions.checkNotNull(serviceFunctionForwarder);
+
+        OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
+        //We can use name provided by user - it does not have to be UUID. UUID will be created by OVSDB itself
+        ovsdbBridgeAugmentationBuilder.setBridgeName(new OvsdbBridgeName(serviceFunctionForwarder.getName()));
+
+
+        return ovsdbBridgeAugmentationBuilder.build();
+    }
+
+    public static OvsdbTerminationPointAugmentation getTerminationPointFromSffDatePlaneLocator(SffDataPlaneLocator sffDataPlaneLocator) {
+        Preconditions.checkNotNull(sffDataPlaneLocator);
+
+        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder
+                = new OvsdbTerminationPointAugmentationBuilder();
+        ovsdbTerminationPointAugmentationBuilder.setName(sffDataPlaneLocator.getName());
+
+        ovsdbTerminationPointAugmentationBuilder = getTerminationPointBuilderFromDataPlaneLocator(
+                sffDataPlaneLocator.getDataPlaneLocator(), ovsdbTerminationPointAugmentationBuilder);
+
+        return ovsdbTerminationPointAugmentationBuilder.build();
+    }
+
+    private static OvsdbTerminationPointAugmentationBuilder getTerminationPointBuilderFromDataPlaneLocator(
+            DataPlaneLocator dataPlaneLocator, OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder) {
+        Preconditions.checkNotNull(dataPlaneLocator);
+        Preconditions.checkNotNull(ovsdbTerminationPointAugmentationBuilder);
+
+        if (dataPlaneLocator.getTransport() == VxlanGpe.class) {
+            ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
+        }
+
+        return ovsdbTerminationPointAugmentationBuilder;
+    }
+
 
 }

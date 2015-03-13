@@ -75,10 +75,10 @@ public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
     @Test
     public void testCreatePathWithNamesOnly() throws ExecutionException, InterruptedException {
 
-        String sfcName = "unittest-chain-1";
+        String sfcName = "unittest-sfp-chain-1";
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(sfcName);
 
-        String pathName = "unittest-path-1";
+        String pathName = "unittest-sfp-path-1";
         ServiceFunctionPathKey pathKey = new ServiceFunctionPathKey(pathName);
 
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();

@@ -10,7 +10,7 @@
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
         <version>1.5.0-SNAPSHOT</version>
-        <relativePath></relativePath>
+        <relativePath>../odlparent/odlparent</relativePath>
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>

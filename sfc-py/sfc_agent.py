@@ -5,8 +5,10 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+import os
 import sys
 import flask
+import signal
 import logging
 import argparse
 import requests
@@ -17,6 +19,7 @@ import xe_cli
 import ovs_cli
 
 import common.sfc_globals
+from common import classifier
 from common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 
@@ -32,12 +35,10 @@ SFC Agent Server. This Server should be co-located with the python SFF data
 plane implementation (sff_thread.py)
 """
 
-if sys.platform.startswith('linux'):
-    # TODO: fix this kind of imports
-    from classifier.nfq_class_thread import *  # noqa
 
 app = flask.Flask(__name__)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
+nfq_classifier = classifier.NfqClassifier()
 sfc_globals = common.sfc_globals.sfc_globals
 
 
@@ -65,32 +66,10 @@ def _sff_present(sff_name, local_sff_topo):
     return sff_present
 
 
-def _sf_present(sf_name):
-    """
-    Check if SF is present in the local SFF topology
-
-    :param sf_name: SF name
-    :type sf_name: str
-
-    :return bool
-
-    """
-    sf_present = True
-    local_sf_topo = sfc_globals.get_sf_topo()
-    if sf_name not in local_sf_topo.keys():
-        if get_sf_from_odl(common.sfc_globals.ODLIP, sf_name) != 0:
-            logger.error("Failed to find data plane locator for SF: %s",
-                         sf_name)
-
-            sf_present = False
-
-    return sf_present
-
-
 def _sf_local_host(sf_name):
     """
-    Check if SFC agent controls this SF. The check is done based on the rest-uri hostname
-    against the local IP addresses
+    Check if SFC agent controls this SF. The check is done based on the
+    rest-uri hostname against the local IP addresses
 
     :param sf_name: SF name
     :type sf_name: str
@@ -101,7 +80,7 @@ def _sf_local_host(sf_name):
     sf_hosted = False
     local_sf_topo = sfc_globals.get_sf_topo()
     if (sf_name in local_sf_topo.keys()) or (get_sf_from_odl(common.sfc_globals.ODLIP, sf_name) == 0):
-        ip_addr, port = urlparse(local_sf_topo[sf_name]['rest-uri']).netloc.split(':')
+        ip_addr, _ = urlparse(local_sf_topo[sf_name]['rest-uri']).netloc.split(':')
         if _ip_local_host(ip_addr):
             sf_hosted = True
 
@@ -273,8 +252,8 @@ def build_data_plane_service_path(service_path):
 
 def check_and_start_sf_thread(sf_name):
     """
-    Checks whether a SF is local and its thread has been started. If
-    thread is not running we start it.
+    Checks whether a SF is local and its thread has been started. If thread is
+    not running we start it.
 
     :param sf_name: Service Function Name
     :type sf_name: str
@@ -293,46 +272,48 @@ def check_and_start_sf_thread(sf_name):
                     start_sf(sf_name, "0.0.0.0", sf_port, sf_type)
 
 
+def check_nfq_classifier_state():
+    """
+    Check if the NFQ classifier is running, log an error and abort otherwise
+    """
+    if not nfq_classifier.nfq_running():
+        logger.error('Classifier is not running: ignoring ACL')
+        flask.abort(500)
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return 'Not found', 404
 
 
-@app.route('/config/ietf-acl:access-lists/access-list/<aclname>',
+@app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
            methods=['PUT', 'POST'])
-def apply_one_acl(aclname):
-    if sys.platform.startswith('linux'):
-        nfq_class_manager = get_nfq_class_manager_ref()
-        try:
-            logger.debug("apply_one_acl: nfq_class_manager=%s",
-                         nfq_class_manager)
+def apply_acl(acl_name):
+    check_nfq_classifier_state()
 
-            # check nfq
-            if not nfq_class_manager:
-                msg = "NFQ not running. Received acl data has been ignored"
-                return msg, 500
+    if not flask.request.json:
+        logger.error('Received ACL is empty, aborting ...')
+        flask.abort(400)
 
-            if not flask.request.json:
-                flask.abort(400)
+    nfq_classifier.process_acl(flask.request.get_json())
+    return '', 201
 
-            acl_item = flask.request.get_json()["access-list"][0]
-            result = nfq_class_manager.compile_one_acl(acl_item)
 
-            if len(result) > 0:
-                return "ACL compiled with errors. " + str(result), 201
-            else:
-                return "ACL compiled", 201
+@app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
+           methods=['DELETE'])
+def remove_acl(acl_name):
+    check_nfq_classifier_state()
 
-        except:
-            logger.exception('apply_one_acl: exception')
-            raise
-    else:
-        return "ACLs only supported on Linux Platforms", 403
+    acl_data = {'access-list': [{'access-list-entries': [{'delete': True}],
+                                 'acl-name': acl_name}]}
+
+    nfq_classifier.process_acl(acl_data)
+    return '', 200
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
-           'rendered-service-path/<sfpname>', methods=['PUT', 'POST'])
-def create_path(sfpname):
+           'rendered-service-path/<rsp_name>', methods=['PUT', 'POST'])
+def create_path(rsp_name):
     if not flask.request.json:
         flask.abort(400)
 
@@ -346,10 +327,10 @@ def create_path(sfpname):
     # print json.dumps(sfpjson)
     # sfpj_name = sfpjson["service-function-path"][0]['name']
 
-    local_path[sfpname] = flask.request.get_json()["rendered-service-path"][0]
-    logger.info("Building Service Path for path: %s", sfpname)
+    local_path[rsp_name] = flask.request.get_json()["rendered-service-path"][0]
+    logger.info("Building Service Path for path: %s", rsp_name)
 
-    if not build_data_plane_service_path(local_path[sfpname]):
+    if not build_data_plane_service_path(local_path[rsp_name]):
         # Testing XE cli processing module
         if local_sff_os == 'XE':
             logger.info("Provisioning %s SFF", local_sff_os)
@@ -370,38 +351,26 @@ def create_path(sfpname):
 
         return flask.jsonify(local_path), 201
     else:
-        msg = "Could not build service path: {}".format(sfpname)
+        msg = "Could not build service path: {}".format(rsp_name)
         return msg, 400
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
-           'rendered-service-path/<sfpname>', methods=['DELETE'])
-def delete_path(sfpname):
-    local_path = sfc_globals.get_path()
-    local_data_plane_path = sfc_globals.get_data_plane_path()
+           'rendered-service-path/<rsp_name>', methods=['DELETE'])
+def delete_path(rsp_name):
+    rsp_removed = nfq_classifier.remove_rsp(rsp_name)
+    if rsp_removed:
+        return '', 204
+    else:
+        logger.error('RSP "%s" not found', rsp_name)
+        return '', 404
 
-    try:
-        sfp_id = local_path[sfpname]['path-id']
-        local_data_plane_path.pop(sfp_id, None)
-        local_path.pop(sfpname, None)
-
-        # remove nfq classifier for this path
-        if sys.platform.startswith('linux'):
-            nfq_class_manager = get_nfq_class_manager_ref()
-
-            if nfq_class_manager:
-                nfq_class_manager.destroy_packet_forwarder(sfp_id)
-
-    except KeyError:
-        msg = "SFP name {} not found, message".format(sfpname)
-        logger.warning(msg)
-        return msg, 404
-
-    except:
-        logger.warning("Unexpected exception, re-raising it")
-        raise
-
-    return '', 204
+    # TODO: do we still need to keep and update these agent local variables?
+#    local_path = sfc_globals.get_path()
+#    local_data_plane_path = sfc_globals.get_data_plane_path()
+#    rsp_id = local_path[rsp_name]['path-id']
+#    local_data_plane_path.pop(rsp_id, None)
+#    local_path.pop(rsp_name, None)
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/',
@@ -488,15 +457,15 @@ def delete_sf(sfname):
            'service-function-forwarder/<sffname>', methods=['PUT', 'POST'])
 def create_sff(sffname):
     """
-This function creates a SFF on-the-fly when it receives a PUT request from
-ODL. The SFF runs on a separate thread. If a SFF thread with same name
-already exist it is killed before a new one is created. This happens when a
-SFF is modified or recreated
+    This function creates a SFF on-the-fly when it receives a PUT request from
+    ODL. The SFF runs on a separate thread. If a SFF thread with same name
+    already exist it is killed before a new one is created. This happens when a
+    SFF is modified or recreated
 
-:param sffname: SFF name
-:type sffname: str
+    :param sffname: SFF name
+    :type sffname: str
 
-"""
+    """
     if not flask.request.json:
         flask.abort(400)
 
@@ -522,13 +491,13 @@ SFF is modified or recreated
            'service-function-forwarder/<sffname>', methods=['DELETE'])
 def delete_sff(sffname):
     """
-Deletes SFF from topology, kills associated thread  and if necessary remove
-all SFPs that depend on it
+    Deletes SFF from topology, kills associated thread  and if necessary remove
+    all SFPs that depend on it
 
-:param sffname: SFF name
-:type sffname: str
+    :param sffname: SFF name
+    :type sffname: str
 
-"""
+    """
     local_sff_topo = sfc_globals.get_sff_topo()
     local_sff_threads = sfc_globals.get_sff_threads()
 
@@ -592,8 +561,8 @@ def create_sffs():
            methods=['DELETE'])
 def delete_sffs():
     """
-Delete all SFFs, SFPs, RSPs
-"""
+    Delete all SFFs, SFPs, RSPs
+    """
     # We always use accessors
     sfc_globals.reset_sff_topo()
     sfc_globals.reset_path()
@@ -604,10 +573,10 @@ Delete all SFFs, SFPs, RSPs
 
 def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
     """
-#TODO: add description
-#TODO: add arguments description and type
+    #TODO: add description
+    #TODO: add arguments description and type
 
-"""
+    """
     try:
         logger.info("Getting SFF information from ODL ...")
         url = common.sfc_globals.SFF_SF_DATA_PLANE_LOCATOR_URL
@@ -617,11 +586,10 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
         r = s.get(odl_dataplane_url, auth=(common.sfc_globals.USERNAME,
                                            common.sfc_globals.PASSWORD),
                   stream=False)
-    except requests.exceptions.ConnectionError as e:
-        logger.exception('Can\'t get SFF {} data plane locator from ODL. Error: {}'.format(e))
-        return
-    except requests.exceptions.RequestException as e:
-        logger.exception('Can\'t get SFF {} data plane from ODL. Error: {}'.format(e))
+    except (requests.exceptions.ConnectionError,
+            requests.exceptions.RequestException) as exc:
+        logger.exception('Can\'t get SFF {} data plane from ODL. Error: {}',
+                         exc)
         return
 
     if r.ok:
@@ -637,15 +605,15 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
 
 def get_sffs_from_odl(odl_ip_port):
     """
-Retrieves the list of configured SFFs from ODL and update global
-dictionary of SFFs
+    Retrieves the list of configured SFFs from ODL and update global
+    dictionary of SFFs
 
-:param odl_ip_port: ODL IP and port
-:type odl_ip_port: str
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
 
-:return Nothing
+    :return Nothing
 
-"""
+    """
     try:
         logger.info("Getting SFFs configured in ODL ...")
         url = common.sfc_globals.SFF_PARAMETER_URL
@@ -679,17 +647,17 @@ dictionary of SFFs
 
 def get_sf_from_odl(odl_ip_port, sf_name):
     """
-Retrieves a single configured SF from ODL and update global dictionary of
-SFs
+    Retrieves a single configured SF from ODL and update global dictionary of
+    SFs
 
-:param odl_ip_port: ODL IP and port
-:type odl_ip_port: str
-:param sf_name: SF name
-:type sf_name: str
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+    :param sf_name: SF name
+    :type sf_name: str
 
-:return int or None
+    :return int or None
 
-"""
+    """
     try:
         logger.info('Contacting ODL about information for SF: %s' % sf_name)
         url = common.sfc_globals.SF_NAME_PARAMETER_URL
@@ -699,11 +667,10 @@ SFs
         r = s.get(odl_sf_url, auth=(common.sfc_globals.USERNAME,
                                     common.sfc_globals.PASSWORD),
                   stream=False)
-    except requests.exceptions.ConnectionError as e:
-        logger.exception('Can\'t get SF "{}" from ODL. Error: {}'.format(sf_name, e))
-        return -1
-    except requests.exceptions.RequestException as e:
-        logger.exception('Can\'t get SF "{}" from ODL. Error: {}'.format(sf_name, e))
+    except (requests.exceptions.ConnectionError,
+            requests.exceptions.RequestException) as exc:
+        logger.exception('Can\'t get SF "{}" from ODL. Error: {}',
+                         sf_name, exc)
         return -1
 
     if r.ok:
@@ -719,17 +686,17 @@ SFs
 
 def get_sff_from_odl(odl_ip_port, sff_name):
     """
-Retrieves a single configured SFF from ODL and update global dictionary of
-SFFs
+    Retrieves a single configured SFF from ODL and update global dictionary of
+    SFFs
 
-:param odl_ip_port: ODL IP and port
-:type odl_ip_port: str
-:param sff_name: SFF name
-:type sff_name: str
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+    :param sff_name: SFF name
+    :type sff_name: str
 
-:return int or None
+    :return int or None
 
-"""
+    """
     try:
         logger.info('Contacting ODL about information for SFF: %s' % sff_name)
         url = common.sfc_globals.SFF_NAME_PARAMETER_URL
@@ -739,11 +706,10 @@ SFFs
         r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
                                      common.sfc_globals.PASSWORD),
                   stream=False)
-    except requests.exceptions.ConnectionError as e:
-        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}'.format(sff_name, e))
-        return -1
-    except requests.exceptions.RequestException as e:
-        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}'.format(sff_name, e))
+    except (requests.exceptions.ConnectionError,
+            requests.exceptions.RequestException) as exc:
+        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}',
+                         sff_name, exc)
         return -1
 
     if r.ok:
@@ -759,15 +725,15 @@ SFFs
 
 def auto_sff_name():
     """
-This function will iterate over all interfaces on the system and compare
-their IP addresses with the IP data plane locators of all SFFs downloaded
-from ODL. If a match is found, we set the name of this SFF as the SFF name
-configured in ODL. This allow the same script with the same parameters to
-the run on different machines.
+    This function will iterate over all interfaces on the system and compare
+    their IP addresses with the IP data plane locators of all SFFs downloaded
+    from ODL. If a match is found, we set the name of this SFF as the SFF name
+    configured in ODL. This allow the same script with the same parameters to
+    the run on different machines.
 
-:return int
+    :return int
 
-"""
+    """
     for intf in netifaces.interfaces():
         addr_list_dict = netifaces.ifaddresses(intf)
         # Some interfaces have no address
@@ -805,7 +771,8 @@ def main():
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
                                             " --agent-port=<agent listening port>"
-                                            "\n\nnote:\nroot privileges are required "
+                                            "\n\nnote:\n"
+                                            "root privileges are required "
                                             "if `--nfq-class` flag is used"))
 
     parser.add_argument('--odl-get-sff', action='store_true',
@@ -868,21 +835,29 @@ def main():
             ovs_cli.init_ovs()
 
     #: execute actions --------------------------------------------------------
-    if args.odl_get_sff:
-        get_sffs_from_odl(common.sfc_globals.ODLIP)
+    try:
+        if args.odl_get_sff:
+            get_sffs_from_odl(common.sfc_globals.ODLIP)
 
-    if odl_auto_sff:
-        auto_sff_name()
+        if odl_auto_sff:
+            auto_sff_name()
 
-    if args.nfq_class:
-        if sys.platform.startswith('linux'):
-            start_nfq_classifier(True)
+        if args.nfq_class:
+            classifier.start_classifier()
 
-    if args.rest:
-        app.run(port=agent_port,
-                host=ovs_local_sff_cp_ip,
-                debug=False,
-                use_reloader=False)
+        if args.rest:
+            app.run(port=agent_port,
+                    host=ovs_local_sff_cp_ip,
+                    debug=False,
+                    use_reloader=False)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        classifier.clear_classifier()
+
+    # not a great way how to exit, but it works and prevents the
+    # `Exception ignored in: ...` message from beeing displayed
+    os.kill(os.getpid(), signal.SIGTERM)
 
 
 if __name__ == "__main__":

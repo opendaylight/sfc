@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
@@ -59,7 +58,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         return sftServiceFunctionName.getName();
     }
 
-    public List<RenderedServicePathHop> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
@@ -95,6 +94,6 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
             }
         }
 
-        return super.createRenderedServicePathHopList(sfNameList, serviceIndex);
+        return sfNameList;
     }
 }

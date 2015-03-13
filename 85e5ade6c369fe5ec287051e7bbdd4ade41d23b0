@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_0ba35c9f",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-13T02:29:48Z",
+      "side": 1,
+      "message": "This should probably be named sfg-service-function",
+      "revId": "85e5ade6c369fe5ec287051e7bbdd4ade41d23b0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

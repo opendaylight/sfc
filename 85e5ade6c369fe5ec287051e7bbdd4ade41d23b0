@@ -16,6 +16,24 @@
       "revId": "85e5ade6c369fe5ec287051e7bbdd4ade41d23b0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3400f3a9",
+        "filename": "sfc-model/src/main/yang/service-function-group.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-03-13T09:51:29Z",
+      "side": 1,
+      "message": "this is a list of SF\u0027s. is there a convention to names of list of types (E.g. \u003ccontainer-type\u003e-\u003celement-type\u003e)?",
+      "parentUuid": "5a93c517_0ba35c9f",
+      "revId": "85e5ade6c369fe5ec287051e7bbdd4ade41d23b0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -44,7 +44,7 @@ received packets accordingly.
 # `rule(s)` and `chain(s)` can be used interchangeably in ip(6)tables context
 
 
-logger = logging.getLogger('classifier')
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # silence `requests` module logging

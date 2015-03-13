@@ -125,6 +125,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
     @After
     public void after() {
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     @Test

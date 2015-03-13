@@ -59,7 +59,7 @@ public class SfcServiceFuntionSchedulerAPITest extends AbstractDataBrokerTest {
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
-        String sfcName = "unittest-chain-1";
+        String sfcName = "unittest-sched-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
                                            .setName("firewall")
@@ -120,6 +120,7 @@ public class SfcServiceFuntionSchedulerAPITest extends AbstractDataBrokerTest {
     public void after() {
         executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 

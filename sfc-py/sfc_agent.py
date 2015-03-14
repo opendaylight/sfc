@@ -190,13 +190,16 @@ def find_sff_locator_by_ip(addr):
     local_sff_topo = sfc_globals.get_sff_topo()
 
     for sff_name, sff_value in local_sff_topo.items():
-        for locator_value in sff_value['sff-data-plane-locator']:
-            if locator_value['data-plane-locator']['ip'] != addr:
-                continue
+        try:
+            for locator_value in sff_value['sff-data-plane-locator']:
+                if locator_value['data-plane-locator']['ip'] == addr:
+                    return sff_name
+                else:
+                    continue
+        except KeyError:
+            continue
 
-            return sff_name
-    else:
-        return None
+    return None
 
 
 def build_data_plane_service_path(service_path):

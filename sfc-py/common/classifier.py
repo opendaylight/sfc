@@ -14,7 +14,10 @@ import ipaddress
 import threading
 import subprocess
 
-from netfilterqueue import NetfilterQueue
+try:
+    from netfilterqueue import NetfilterQueue
+except ImportError:
+    print("Netfilter not supported or installed")
 
 from nsh.encode import build_packet
 from common.sfc_globals import ODLIP, USERNAME, PASSWORD

@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
@@ -199,23 +198,23 @@ public class SfcServiceFuntionSchedulerAPITest extends AbstractDataBrokerTest {
 
         int serviceIndex = 255;
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRandomSchedulerAPI();
-        List<RenderedServicePathHop> renderedServicePathHopArrayList =
+        List<String> serviceFunctionNameArrayList =
                 scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
 
-        assertNotNull("Must be not null", renderedServicePathHopArrayList);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
-                                    .readServiceFunctionExecutor(renderedServicePathHopArrayList.get(0).getServiceFunctionName());
+                                    .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(0));
         assertEquals("Must be equal", serviceFunction.getType(), Firewall.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Dpi.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                                .readServiceFunctionExecutor(renderedServicePathHopArrayList.get(1).getServiceFunctionName());
+                                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(1));
         assertEquals("Must be equal", serviceFunction.getType(), Dpi.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Napt44.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                                .readServiceFunctionExecutor(renderedServicePathHopArrayList.get(2).getServiceFunctionName());
+                                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(2));
         assertEquals("Must be equal", serviceFunction.getType(), Napt44.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Firewall.class);
     }
@@ -239,7 +238,7 @@ public class SfcServiceFuntionSchedulerAPITest extends AbstractDataBrokerTest {
 
         int serviceIndex = 255;
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
-        List<RenderedServicePathHop> renderedServicePathHopArrayList;
+        List<String> serviceFunctionNameArrayList;
 
         ServiceFunctionType serviceFunctionType;
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
@@ -250,29 +249,29 @@ public class SfcServiceFuntionSchedulerAPITest extends AbstractDataBrokerTest {
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         /* First round */
-        renderedServicePathHopArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
-        assertNotNull("Must be not null", renderedServicePathHopArrayList);
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(0).getServiceFunctionName(), sftFirewallList.get(0).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(1).getServiceFunctionName(), sftDpiList.get(0).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(2).getServiceFunctionName(), sftNapt44List.get(0).getName());
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(0).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(0).getName());
 
-        renderedServicePathHopArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
-        assertNotNull("Must be not null", renderedServicePathHopArrayList);
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(0).getServiceFunctionName(), sftFirewallList.get(1).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(1).getServiceFunctionName(), sftDpiList.get(1).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(2).getServiceFunctionName(), sftNapt44List.get(1).getName());
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(1).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(1).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(1).getName());
 
-        renderedServicePathHopArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
-        assertNotNull("Must be not null", renderedServicePathHopArrayList);
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(0).getServiceFunctionName(), sftFirewallList.get(2).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(1).getServiceFunctionName(), sftDpiList.get(2).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(2).getServiceFunctionName(), sftNapt44List.get(2).getName());
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(2).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(2).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(2).getName());
 
         /* Second round */
-        renderedServicePathHopArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
-        assertNotNull("Must be not null", renderedServicePathHopArrayList);
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(0).getServiceFunctionName(), sftFirewallList.get(0).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(1).getServiceFunctionName(), sftDpiList.get(0).getName());
-        assertEquals("Must be equal", renderedServicePathHopArrayList.get(2).getServiceFunctionName(), sftNapt44List.get(0).getName());
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(0).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(0).getName());
     }
 }

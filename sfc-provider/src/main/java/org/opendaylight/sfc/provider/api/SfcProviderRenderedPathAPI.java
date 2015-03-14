@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,6 +109,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
         } else if (serviceFunctionSchedulerType == Random.class) {
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();
+        } else if (serviceFunctionSchedulerType == ShortestPath.class) {
+            scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
         } else {
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         }

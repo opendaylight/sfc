@@ -282,15 +282,18 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract1",
-            "type": "service-function-type:dpi"
+            "type": "service-function-type:dpi",
+            "order": 0
           },
           {
             "name": "ids-abstract1",
-            "type": "service-function-type:ids"
+            "type": "service-function-type:ids",
+            "order": 1
           },
           {
             "name": "qos-abstract1",
-            "type": "service-function-type:qos"
+            "type": "service-function-type:qos",
+            "order": 2
           }
         ]
       }

@@ -9,7 +9,9 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,8 +24,22 @@ import java.util.List;
  * @since 2015-03-04
  */
 public abstract class SfcServiceFunctionSchedulerAPI {
+    static final Comparator<SfcServiceFunction> SF_ORDER =
+            new Comparator<SfcServiceFunction>() {
+                public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
+                    return e2.getOrder().compareTo(e1.getOrder());
+                }
+            };
+
+    static final Comparator<SfcServiceFunction> SF_ORDER_REV =
+            new Comparator<SfcServiceFunction>() {
+                public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
+                    return e1.getOrder().compareTo(e2.getOrder());
+                }
+            };
+
     public enum SfcServiceFunctionSchedulerType {
-        ROUND_ROBIN, RANDOM;
+        ROUND_ROBIN, RANDOM
     }
     private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType;
 

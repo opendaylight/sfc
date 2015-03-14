@@ -13,13 +13,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+
+import java.util.*;
 
 
 /**
@@ -62,6 +59,12 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
+
+
+        Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER));
+        // Descending order
+        //Collections.sort(sfcServiceFunctionList, Collections.reverseOrder(SF_ORDER_REV));
+        //serviceIndex = sfcServiceFunctionList.size();
 
         /*
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific

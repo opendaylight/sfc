@@ -179,6 +179,24 @@ module service-function-forwarder {
         description
           "A list of all Service Functions attached to this SFF.";
       }
+
+      list service-function-forwarders-dictionary {
+        key "name";
+        leaf name {
+          type string;
+          description
+              "The name of the SFF attached to this service function forwarder.";
+        }
+       leaf failmode {
+          type failmode-type;
+          description
+            "This leaf defines what should the SFF do if it can not
+             send packets to the SF";
+
+        }
+        description
+          "A list of all Service Functions Forwarders attached to this SFF.";
+      }
     }
   }
 

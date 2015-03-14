@@ -31,7 +31,7 @@ import java.util.List;
 public abstract class SfcServiceFunctionSchedulerAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionSchedulerAPI.class);
     public enum SfcServiceFunctionSchedulerType {
-        ROUND_ROBIN, RANDOM;
+        ROUND_ROBIN, RANDOM, LOAD_BALANCE, SHORTEST_PATH;
     }
     private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType;
 

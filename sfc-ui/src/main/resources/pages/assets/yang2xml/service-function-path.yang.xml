@@ -18,6 +18,9 @@
   <import module="service-function-metadata">
     <prefix value="sfc-md"/>
   </import>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+  </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
   </organization>
@@ -79,6 +82,13 @@ domain</text>
           <text>The name of this service function path</text>
         </description>
       </leaf>
+      <leaf name="transport-type">
+        <type name="sfc-sl:sl-transport-type-def"/>
+        <default value="service-locator:vxlan-gpe"/>
+        <description>
+          <text>Transport type from service-locator.yang.</text>
+        </description>
+      </leaf>
       <leaf name="symmetric">
         <type name="boolean"/>
         <default value="false"/>
@@ -125,6 +135,12 @@ ingress path</text>
           <type name="string"/>
           <description>
             <text>Service Function name</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-group-name">
+          <type name="string"/>
+          <description>
+            <text>Service Function group name</text>
           </description>
         </leaf>
         <leaf name="service-function-forwarder">

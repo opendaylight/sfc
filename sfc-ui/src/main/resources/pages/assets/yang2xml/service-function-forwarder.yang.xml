@@ -19,6 +19,9 @@
   <import module="service-function-type">
     <prefix value="sfc-sft"/>
   </import>
+  <import module="service-statistics">
+    <prefix value="sfc-ss"/>
+  </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
   </organization>
@@ -78,6 +81,15 @@ function, packets will be dropped</text>
 function, packets will be forwarded</text>
     </description>
   </identity>
+  <typedef name="service-function-forwarder-locator-ref">
+    <type name="leafref">
+      <path value="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:sff-data-plane-locator/sfc-sff:name"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference
+the SFF data plane locator.</text>
+    </description>
+  </typedef>
   <container name="service-function-forwarders">
     <description>
       <text>A service function forwarder is
@@ -199,6 +211,11 @@ forwarders in the domain</text>
           <text>the name of the service function forwarder</text>
         </description>
       </leaf>
+      <uses name="sfc-ss:service-statistics-group">
+        <description>
+          <text>Global Service Function Forwarder statistics</text>
+        </description>
+      </uses>
       <list name="sff-service-path">
         <key value="name"/>
         <leaf name="name">
@@ -207,8 +224,9 @@ forwarders in the domain</text>
             <text>The name of the Service Path</text>
           </description>
         </leaf>
+        <uses name="sfc-ss:service-statistics-group"/>
         <description>
-          <text>A list of all service function paths that contain this
+          <text>A list of all service function paths that use this
 service function forwarder</text>
         </description>
       </list>

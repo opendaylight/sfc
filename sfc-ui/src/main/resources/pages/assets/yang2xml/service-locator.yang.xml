@@ -51,6 +51,12 @@ the RFC itself for full legal notices.</text>
 derived.</text>
     </description>
   </identity>
+  <identity name="mac">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>Simple MAC with optional VLAN transport type</text>
+    </description>
+  </identity>
   <identity name="vxlan-gpe">
     <base name="sl-transport-type"/>
     <description>
@@ -82,6 +88,15 @@ derived.</text>
 types</text>
     </description>
   </identity>
+  <typedef name="sl-transport-type-def">
+    <type name="identityref">
+      <base name="sl-transport-type"/>
+    </type>
+    <description>
+      <text>This type is used to reference all
+registered transport types</text>
+    </description>
+  </typedef>
   <grouping name="lisp-locator">
     <description>
       <text>Data plane-locator: Lisp Eid(IP)</text>
@@ -131,8 +146,14 @@ types</text>
   </grouping>
   <grouping name="mpls-locator">
     <description>
-      <text>Data plane-locator: MPLS</text>
+      <text>Data plane-locator: MPLS label and mac address</text>
     </description>
+    <leaf name="mac-address">
+      <type name="yang:mac-address"/>
+      <description>
+        <text>Data-plane MAC address</text>
+      </description>
+    </leaf>
     <leaf name="mpls-label">
       <type name="uint32">
         <range value="1..1048575"/>

@@ -129,13 +129,19 @@ chain state</text>
           <text>the name of the service function chain</text>
         </description>
       </leaf>
-      <leaf-list name="sfc-service-function-path">
-        <type name="string"/>
+      <list name="sfc-service-path">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>The name of the Service Path</text>
+          </description>
+        </leaf>
         <description>
           <text>A list of all service function paths instantiated from
 this chain</text>
         </description>
-      </leaf-list>
+      </list>
     </list>
     <description>
       <text>This containers holds operational service function

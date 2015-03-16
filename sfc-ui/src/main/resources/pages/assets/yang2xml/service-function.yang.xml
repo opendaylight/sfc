@@ -18,6 +18,9 @@
   <import module="service-locator">
     <prefix value="sfc-sl"/>
   </import>
+  <import module="service-statistics">
+    <prefix value="sfc-ss"/>
+  </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
   </organization>
@@ -175,6 +178,11 @@ in the domain</text>
           <text>the name of the service function</text>
         </description>
       </leaf>
+      <uses name="sfc-ss:service-statistics-group">
+        <description>
+          <text>Global Service Function statistics</text>
+        </description>
+      </uses>
       <list name="sf-service-path">
         <key value="name"/>
         <leaf name="name">
@@ -183,6 +191,7 @@ in the domain</text>
             <text>The name of the Service Path</text>
           </description>
         </leaf>
+        <uses name="sfc-ss:service-statistics-group"/>
         <description>
           <text>A list of all service function paths that contain this
 service function</text>

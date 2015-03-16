@@ -341,6 +341,28 @@ public class SfcProviderRpc implements ServiceFunctionService,
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
+    /**
+     * This methong reads all the necessary information for the first hop of a
+     * Rendered Service Path by ServiceFunctionTypeIdentity list.
+     * <p>
+     * @param input RPC input including a ServiceFunctionTypeIdentity list
+     * @return RPC output including a renderedServicePathFirstHop.
+     */
+    @Override
+    public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(ReadRspFirstHopBySftListInput input) {
+        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSftList());
+        ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;
+        if (renderedServicePathFirstHop != null) {
+            ReadRspFirstHopBySftListOutputBuilder readRspFirstHopBySftListOutputBuilder = new ReadRspFirstHopBySftListOutputBuilder();
+            readRspFirstHopBySftListOutputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
+            readRspFirstHopBySftListOutput = readRspFirstHopBySftListOutputBuilder.build();
+        }
+
+        RpcResultBuilder<ReadRspFirstHopBySftListOutput> rpcResultBuilder = RpcResultBuilder.success(readRspFirstHopBySftListOutput);
+        return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
     @Override
     public Future<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(TraceRenderedServicePathInput input) {
         return null;

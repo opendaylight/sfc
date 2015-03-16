@@ -71,7 +71,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
 
         DataBroker dataBrokerService = getDataBrokerDependency();
         opendaylightSfc.setDataProvider(dataBrokerService);
-        Broker broker = getDomRegistryDependency();
+        BindingAwareBroker broker = getBindingRegistryDependency();
         opendaylightSfc.setBroker(broker);
 
         final SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();

@@ -26,10 +26,10 @@
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
                         <name>binding-data-broker</name>
                     </data-broker>
-                    <dom-registry>
-                        <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">prefix:dom-broker-osgi-registry</type>
-                        <name>dom-broker</name>
-                    </dom-registry>
+                    <binding-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                        <name>binding-broker-impl</name>
+                    </binding-registry>
                 </module>
 
                 <module>

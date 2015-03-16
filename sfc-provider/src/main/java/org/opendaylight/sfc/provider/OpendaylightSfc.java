@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.core.api.Broker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -37,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev1405
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * This the main SFC Provider class. It is instantiated from the
@@ -99,7 +98,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
     private final ExecutorService executor;
     protected DataBroker dataProvider;
-    protected Broker broker;
+    protected BindingAwareBroker broker;
     private static OpendaylightSfc opendaylightSfcObj;
     private final Lock lock = new ReentrantLock();
 
@@ -135,11 +134,11 @@ public class OpendaylightSfc implements AutoCloseable {
         return this.dataProvider;
     }
 
-    public void setBroker(Broker broker) {
+    public void setBroker(BindingAwareBroker broker) {
         this.broker = broker;
     }
 
-    public Broker getBroker() {
+    public BindingAwareBroker getBroker() {
         return this.broker;
     }
 

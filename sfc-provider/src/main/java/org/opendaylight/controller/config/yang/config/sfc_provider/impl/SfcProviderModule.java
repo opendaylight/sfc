@@ -17,7 +17,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.core.api.Broker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcProviderRpc;
 import org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener;
@@ -78,7 +77,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
 
         DataBroker dataBrokerService = getDataBrokerDependency();
         opendaylightSfc.setDataProvider(dataBrokerService);
-        Broker broker = getDomRegistryDependency();
+        BindingAwareBroker broker = getBindingRegistryDependency();
         opendaylightSfc.setBroker(broker);
 
         final SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();

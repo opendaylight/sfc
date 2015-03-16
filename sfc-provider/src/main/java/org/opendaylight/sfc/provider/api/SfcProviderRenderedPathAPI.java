@@ -11,10 +11,9 @@ package org.opendaylight.sfc.provider.api;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
-import org.opendaylight.sfc.provider.api.SfcServiceFunctionSchedulerAPI.SfcServiceFunctionSchedulerType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHopBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
@@ -30,14 +29,24 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Ids;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
+//import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
@@ -47,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-//import javax.ws.rs.HttpMethod;
+import org.opendaylight.sfc.provider.api.SfcServiceFunctionSchedulerAPI.SfcServiceFunctionSchedulerType;
 
 
 /**
@@ -69,7 +78,19 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     private static final int MAX_STARTING_INDEX = 255;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    static final Comparator<SfcServiceFunction> SF_ORDER =
+            new Comparator<SfcServiceFunction>() {
+                public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
+                    return e2.getOrder().compareTo(e1.getOrder());
+                }
+            };
 
+    static final Comparator<SfcServiceFunction> SF_ORDER_REV =
+            new Comparator<SfcServiceFunction>() {
+                public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
+                    return e1.getOrder().compareTo(e2.getOrder());
+                }
+            };
 
     private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType = SfcServiceFunctionSchedulerType.ROUND_ROBIN;
     private SfcServiceFunctionSchedulerAPI scheduler;

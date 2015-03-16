@@ -1009,6 +1009,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var sfTypePrefix = "service-function-type:";
       var locatorMatcher = new RegExp("^service-locator:");
       var locatorPrefix = "service-locator:";
+      var sffMatcher = new RegExp("^sevice-function-forwarder:");
+      var sffPrefix = "service-function-forwarder:";
 
       if (!_.isEmpty(sff['sff-data-plane-locator'])) {
         _.each(sff['sff-data-plane-locator'], function (locator) {
@@ -1026,6 +1028,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
             // add prefix
             sf['type'] = sfTypePrefix + sf['type'];
+          }
+
+          if (angular.isDefined(sf['failmode']) && sf['failmode'].search(sffMatcher) < 0) {
+            sf['failmode'] = sffPrefix + sf['failmode'];
           }
 
           if (angular.isDefined(sf['sff-sf-data-plane-locator']) &&

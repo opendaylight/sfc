@@ -7,16 +7,14 @@
 */
 package org.opendaylight.sfc.provider;
 
-import java.util.Collection;
-import java.util.Collections;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMMountPointService;
-import org.opendaylight.controller.sal.core.api.Broker;
-import org.opendaylight.controller.sal.core.api.Provider;
+import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
+import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 
-public class SfcNetconfDataProvider implements Provider {
+public class SfcNetconfDataProvider implements BindingAwareConsumer {
 
-    DOMMountPointService mountService;
+    private MountPointService mountService;
     static SfcNetconfDataProvider sfcNetconfDataProvider;
 
     /*
@@ -31,21 +29,14 @@ public class SfcNetconfDataProvider implements Provider {
         }
     }
 
-    public DOMMountPointService getMountService() {
+    public MountPointService getMountService() {
         return mountService;
     }
 
-    public void setMountService(DOMMountPointService mountService) {
-        this.mountService = mountService;
+    
+    @Override
+    public void onSessionInitialized(ConsumerContext session) {
+        mountService = session.getSALService(MountPointService.class);
     }
 
-    @Override
-    public Collection<Provider.ProviderFunctionality> getProviderFunctionality() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public void onSessionInitiated(final Broker.ProviderSession session) {
-        mountService = session.getService(DOMMountPointService.class);
-    }
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_e80aa8d1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-03-16T01:04:24Z",
+      "side": 1,
+      "message": "I think it should have a default behavior here. If the scheduler doesn\u0027t build the SF name list  correctly, the list should be created with first available SF for each type.",
+      "range": {
+        "startLine": 425,
+        "startChar": 12,
+        "endLine": 425,
+        "endChar": 24
+      },
+      "revId": "7f23f8178b11631e53489dbf97d4253316320e33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

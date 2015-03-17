@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_64c1e02d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 968,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "Since both get-SF-descriptiion/description-info and description-info uses same grouping from YANG model, we can use copy constructor from DescriptionInfoBuilder to copy all grouping data from rpc result.",
+      "range": {
+        "startLine": 968,
+        "startChar": 16,
+        "endLine": 968,
+        "endChar": 117
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_44c4e43f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1038,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "Since both get-SF-monitor-info/monitor-info and monitor-info uses same grouping from YANG model, we can use copy constructor from MonitorInfoBuilder to copy all grouping data from rpc result.",
+      "range": {
+        "startLine": 1038,
+        "startChar": 16,
+        "endLine": 1038,
+        "endChar": 109
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_84caec4d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "We get netconf mountpoint, we get service-function-monitor-report Java Adapter and invoke get-SF-description RPC from device.\nReturned result is already parsed into GetSFDescriptionOutput",
+      "range": {
+        "startLine": 56,
+        "startChar": 63,
+        "endLine": 56,
+        "endChar": 116
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a4c7e844",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "We get netconf mountpoint, we get service-function-monitor-report Java Adapter and invoke get-SF-monitor-info RPC from device.\nReturned result is already parsed in GetSFMonitorInfoOutput.",
+      "range": {
+        "startLine": 68,
+        "startChar": 11,
+        "endLine": 69,
+        "endChar": 44
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c4b0f4df",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "Here we are retrieving Binding Mount point for Netconf device. Binding mount point does parsing from XML / NormalizedNode to Binding DTOs (java objects) for you, given that models on device and in controller are similar.",
+      "range": {
+        "startLine": 81,
+        "startChar": 8,
+        "endLine": 81,
+        "endChar": 75
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e4b5f0cd",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T07:18:06Z",
+      "side": 1,
+      "message": "From mount point we get java wrapper for service-function-description-monitor-report model to invoke RPCs.",
+      "range": {
+        "startLine": 85,
+        "startChar": 8,
+        "endLine": 85,
+        "endChar": 97
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

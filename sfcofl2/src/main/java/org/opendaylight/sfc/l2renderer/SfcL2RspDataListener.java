@@ -60,6 +60,10 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     private Map<String, ServiceFunctionForwarder> serviceFunctionFowarders;
     private Map<String, Boolean> sffInitialized;
     private boolean addFlow;
+    // TODO Later these should be parameterized per SFF
+    private static final int GW_PORT = 3;
+    private static final int SF_PORT = 1;
+    private static final int SFF_SFF_PORT = 2;
 
     public SfcL2RspDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
         setDataBroker(dataBroker);
@@ -252,11 +256,11 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     private void initializeSff(final String sffName) {
         if(!getSffInitialized(sffName)) {
             LOG.info("Initializing SFF [{}]", sffName);
-            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffName, false, true);
+            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffName, true, true);
             this.sfcL2FlowProgrammer.configureIngressTableMatchAny(sffName, false, true);
             this.sfcL2FlowProgrammer.configureAclTableMatchAny(sffName, false, true);
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffName, false, true);
-            this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffName, true, true);
+            //this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffName, true, true);
 
             setSffInitialized(sffName, true);
         }
@@ -313,52 +317,67 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     private void configureSffNextHopFlow(final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, final long pathId) {
         LOG.info("configureSffNextHopFlow sff [{}] pathId [{}]", sffName, pathId);
 
-        MacAddress srcMac = null;
-        MacAddress dstMac = null;
+        String srcMac = null;
+        String dstMac = null;
 
-        LocatorType srcSffLocatorType = srcDpl.getLocatorType();
+        LocatorType srcSffLocatorType = (srcDpl != null) ? srcDpl.getLocatorType() : null;
         LocatorType dstSffLocatorType = dstDpl.getLocatorType();
             // Assuming srcDpl and dstDpl are of the same type
-        Class<? extends DataContainer> implementedInterface = srcSffLocatorType.getImplementedInterface();
+        Class<? extends DataContainer> implementedInterface = dstSffLocatorType.getImplementedInterface();
 
         // Mac
         if (implementedInterface.equals(Mac.class)) {
-            srcMac = ((MacAddressLocator) srcSffLocatorType).getMac();
-            dstMac = ((MacAddressLocator) dstSffLocatorType).getMac();
+            if(srcSffLocatorType != null) {
+                // If the srcSffLocatorType, then the packet is entering SFC and we dont know from where
+                srcMac = ((MacAddressLocator) srcSffLocatorType).getMac().getValue();
+            }
+            dstMac = ((MacAddressLocator) dstSffLocatorType).getMac().getValue();
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
-            srcMac = ((MplsLocator) srcSffLocatorType).getMacAddress();
-            dstMac = ((MplsLocator) dstSffLocatorType).getMacAddress();
+            if(srcSffLocatorType != null) {
+                // If the srcSffLocatorType, then the packet is entering SFC and we dont know from where
+                srcMac = ((MplsLocator) srcSffLocatorType).getMacAddress().getValue();
+            }
+            dstMac = ((MplsLocator) dstSffLocatorType).getMacAddress().getValue();
         }
         // TODO add VxLAN
         else {
             return;
         }
 
-        this.sfcL2FlowProgrammer.configureNextHopFlow(sffName, pathId, srcMac.getValue(), dstMac.getValue(), this.addFlow);
+        this.sfcL2FlowProgrammer.configureNextHopFlow(sffName, pathId, srcMac, dstMac, this.addFlow);
     }
 
-    private void configureSffTransportEgressFlow(final String sffName, DataPlaneLocator dpl) {
+    private void configureSffTransportEgressFlow(final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, int port) {
         LOG.info("configureSffTransportEgressFlow sff [{}]", sffName);
 
-        LocatorType sffLocatorType = dpl.getLocatorType();
-        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+        LocatorType srcLocatorType = srcDpl.getLocatorType();
+        LocatorType dstLocatorType = (dstDpl == null ? null : dstDpl.getLocatorType());
+        Class<? extends DataContainer> implementedInterface = srcLocatorType.getImplementedInterface();
 
         // Mac/IP and possibly VLAN
         if (implementedInterface.equals(Mac.class)) {
-            Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
-            MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
+            Integer vlanTag = ((MacAddressLocator) srcLocatorType).getVlanId();
+            String srcMac = ((MacAddressLocator) srcLocatorType).getMac().getValue();
+            String dstMac = dstLocatorType == null ?
+                    null : ((MacAddressLocator) dstLocatorType).getMac().getValue();
             if(vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(sffName, mac.getValue(), this.addFlow);
+                this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(
+                        sffName, srcMac, dstMac, port, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(sffName, mac.getValue(), vlanTag, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(
+                        sffName, srcMac, dstMac, vlanTag, port, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
-            MacAddress mac = ((MplsLocator) sffLocatorType).getMacAddress();
-            long mplsLabel = ((MplsLocator) sffLocatorType).getMplsLabel();
-            this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(sffName, mac.getValue(), mplsLabel, this.addFlow);
+            String srcMac = ((MplsLocator) srcLocatorType).getMacAddress().getValue();
+            String dstMac = dstLocatorType ==null ?
+                    null : ((MplsLocator) dstLocatorType).getMacAddress().getValue();
+            long mplsLabel = ((MplsLocator) srcLocatorType).getMplsLabel();
+            this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(
+                    sffName, srcMac, dstMac, mplsLabel, port, this.addFlow);
         }
+        // TODO add VxLAN
     }
 
     /**
@@ -394,12 +413,13 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         configureSffIngressFlow(sffDstName, sffDstIngressDpl.getDataPlaneLocator(), entry.getPathId());
         // configure the SF Transport Ingress Flow
         configureSffTransportIngressFlow(sffDstName, sfDpl);
-        // configure the SF Ingress Flow
-        configureSffIngressFlow(sffDstName, sfDpl, entry.getPathId());
+        // configure the SF Ingress Flow, setting negative pathId so it wont
+        // set metadata and will goto classification table instead of NextHop
+        configureSffIngressFlow(sffDstName, sfDpl, -1);
 
         // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
-            // configure the Transport Ingress Flow using the sffDstIngressDpl
+            // configure the SFF Transport Ingress Flow using the sffDstIngressDpl
             configureSffTransportIngressFlow(sffDstName, sffDstIngressDpl.getDataPlaneLocator());
             return;
         }
@@ -423,20 +443,53 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         LOG.info("configureSffEgress srcSff [{}] dstSff [{}] sf [{}] pathId [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId());
 
+        /* These are the SFFGraph entries and how the NextHops are calculated:
+         * (retrieved with: grep addEntry karaf.log | awk -F "|" '{print $6}')
+         *
+         * "openflow:2" => SFF1, "openflow:2" => SFF2
+         *  srcSff        dstSff       SF     pathId => SFF, NHop, MACsrc
+         *  [ingress]     [openflow:2] [sf1]  [1]    => 1,   SF1,  GW1/null  (dont put macSrc and use lower priority)
+         *  [openflow:2]  [openflow:3] [sf2]  [1]    => 1,   SFF2, SF1
+         *                                           => 2,   SF2,  SFF1ulEgr
+         *  [openflow:3]  [egress]     [null] [1]    => 2,   GW2,  SFF2dlEgr (dont have GW macDst, leave out of nextHop)
+         *  [ingress]     [openflow:3] [sf2]  [2]    => 2,   SF2,  GW2/null  (dont put macSrc and use lower priority)
+         *  [openflow:3]  [openflow:2] [sf1]  [2]    => 2,   SFF1, SF2
+         *                                           => 1,   SF1,  SFF2dlEgr
+         *  [openflow:2]  [egress]     [null] [2]    => 1,   GW1,  SFF1ulEgr (dont have GW macDst, leave out of nextHop)
+         */
+
+        ServiceFunctionForwarder sffSrc = getServiceFunctionForwarder(entry.getSrcSff());
+        SffDataPlaneLocator sffSrcEgressDpl = null;
         if(entry.getDstSff().equals(SffGraph.EGRESS)) {
-            // Nothing to be done for the egress tables, skip it
+            sffSrcEgressDpl =
+                    getSffDataPlaneLocator(sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+
+            // Configure the SFF-Egress Transport Egress
+            configureSffTransportEgressFlow(
+                    entry.getSrcSff(), sffSrcEgressDpl.getDataPlaneLocator(), null, GW_PORT);
+
+            // Nothing else to be done for the egress tables
             return;
         }
 
+        // Configure NextHop flows TO the SFs
         ServiceFunctionForwarder sffDst = getServiceFunctionForwarder(entry.getDstSff());
-        SffSfDataPlaneLocator sffSfDpl = getSffSfDataPlaneLocator(sffDst, entry.getSf());
-        ServiceFunction sf = getServiceFunction(entry.getSf());
-        SfDataPlaneLocator sfDpl = getSfDataPlaneLocator(sf);
-        if(sffSfDpl != null && sfDpl != null) {
-            // Configure the SFF-SF NextHop using sfDpl
-            configureSffNextHopFlow(entry.getDstSff(), sffSfDpl, sfDpl, entry.getPathId());
+        ServiceFunction sfDst = getServiceFunction(entry.getSf());
+        SfDataPlaneLocator sfDstDpl = getSfDataPlaneLocator(sfDst);
+        if(sfDstDpl != null) {
+            if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
+                // Configure the GW-SFF-SF NextHop using sfDpl
+                configureSffNextHopFlow(entry.getDstSff(), null, sfDstDpl, entry.getPathId());
+            } else {
+                sffSrcEgressDpl =
+                        getSffDataPlaneLocator(sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+                // Configure the SFF-SFF-SF NextHop using sfDpl
+                configureSffNextHopFlow(entry.getDstSff(), sffSrcEgressDpl.getDataPlaneLocator(), sfDstDpl, entry.getPathId());
+            }
+
+            SffSfDataPlaneLocator sffSfDstDpl = getSffSfDataPlaneLocator(sffDst, entry.getSf());
             // Configure the SFF-SF Transport Egress using sfDpl
-            configureSffTransportEgressFlow(entry.getDstSff(), sffSfDpl);
+            configureSffTransportEgressFlow(entry.getDstSff(), sffSfDstDpl, sfDstDpl, SF_PORT);
         }
 
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
@@ -444,18 +497,24 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             return;
         }
 
-        ServiceFunctionForwarder sffSrc = getServiceFunctionForwarder(entry.getSrcSff());
-        SffDataPlaneLocator sffSrcEgressDpl =
-                getSffDataPlaneLocator(sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+        // TODO what if there is more than one SF in the dict?
+        // TODO add srcSf to SffGraph and change current sf to dstSf
+        ServiceFunction sfSrc = getServiceFunction(sffSrc.getServiceFunctionDictionary().get(0).getName());
+        SfDataPlaneLocator sfSrcDpl = getSfDataPlaneLocator(sfSrc);
+
         SffDataPlaneLocator sffDstIngressDpl =
                 getSffDataPlaneLocator(sffDst, sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
-        // Configure the SFF-SFF NextHop using the sffSrcEgressDpl and sffDstIngressDpl
-        configureSffNextHopFlow(entry.getDstSff(),
+
+        // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
+        configureSffNextHopFlow(
+                entry.getSrcSff(), sfSrcDpl, sffDstIngressDpl.getDataPlaneLocator(), entry.getPathId());
+
+        // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
+        configureSffTransportEgressFlow(
+                entry.getSrcSff(),
                 sffSrcEgressDpl.getDataPlaneLocator(),
                 sffDstIngressDpl.getDataPlaneLocator(),
-                entry.getPathId());
-        // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
-        configureSffTransportEgressFlow(entry.getDstSff(), sffDstIngressDpl.getDataPlaneLocator());
+                SFF_SFF_PORT);
     }
 
 

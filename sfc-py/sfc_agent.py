@@ -280,7 +280,7 @@ def check_nfq_classifier_state():
     Check if the NFQ classifier is running, log an error and abort otherwise
     """
     if not nfq_classifier.nfq_running():
-        logger.error('Classifier is not running: ignoring ACL')
+        logger.warning('Classifier is not running: ignoring ACL')
         flask.abort(500)
 
 
@@ -311,7 +311,7 @@ def remove_acl(acl_name):
                                  'acl-name': acl_name}]}
 
     nfq_classifier.process_acl(acl_data)
-    return '', 200
+    return '', 204
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
@@ -361,19 +361,28 @@ def create_path(rsp_name):
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
            'rendered-service-path/<rsp_name>', methods=['DELETE'])
 def delete_path(rsp_name):
-    rsp_removed = nfq_classifier.remove_rsp(rsp_name)
-    if rsp_removed:
-        return '', 204
-    else:
-        logger.error('RSP "%s" not found', rsp_name)
-        return '', 404
+    status_code = 204
+    not_found_msg = 'RSP "%s" not found' % rsp_name
 
-    # TODO: do we still need to keep and update these agent local variables?
-#    local_path = sfc_globals.get_path()
-#    local_data_plane_path = sfc_globals.get_data_plane_path()
-#    rsp_id = local_path[rsp_name]['path-id']
-#    local_data_plane_path.pop(rsp_id, None)
-#    local_path.pop(rsp_name, None)
+    local_path = sfc_globals.get_path()
+    local_data_plane_path = sfc_globals.get_data_plane_path()
+
+    try:
+        sfp_id = local_path[rsp_name]['path-id']
+        local_data_plane_path.pop(sfp_id, None)
+        local_path.pop(rsp_name, None)
+
+        if nfq_classifier.nfq_running():
+            rsp_removed = nfq_classifier.remove_rsp(rsp_name)
+            if not rsp_removed:
+                logger.error(not_found_msg)
+                status_code = 404
+
+    except KeyError:
+        logger.error(not_found_msg)
+        status_code = 404
+
+    return '', status_code
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/',
@@ -435,25 +444,22 @@ def create_sf(sfname):
            '<sfname>', methods=['DELETE'])
 def delete_sf(sfname):
     logger.info("Received request for SF deletion: %s", sfname)
-    local_sf_topo = sfc_globals.get_sf_threads()
+
+    status_code = 204
+    local_sf_topo = sfc_globals.get_sf_topo()
     local_sf_threads = sfc_globals.get_sf_threads()
 
     try:
         if sfname in local_sf_threads.keys():
             stop_sf(sfname)
 
-        local_sf_topo.pop(sfname, None)
+        local_sf_topo.pop(sfname)
 
     except KeyError:
-        msg = "SF name {} not found, message".format(sfname)
-        logger.warning(msg)
-        return msg, 404
+        logger.warning("SF name %s not found", sfname)
+        status_code = 404
 
-    except:
-        logger.warning("Unexpected exception, re-raising it")
-        raise
-
-    return '', 204
+    return '', status_code
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/'
@@ -494,13 +500,14 @@ def create_sff(sffname):
            'service-function-forwarder/<sffname>', methods=['DELETE'])
 def delete_sff(sffname):
     """
-    Deletes SFF from topology, kills associated thread  and if necessary remove
+    Deletes SFF from topology, kills associated thread and if necessary remove
     all SFPs that depend on it
 
     :param sffname: SFF name
     :type sffname: str
 
     """
+    status_code = 204
     local_sff_topo = sfc_globals.get_sff_topo()
     local_sff_threads = sfc_globals.get_sff_threads()
 
@@ -508,21 +515,17 @@ def delete_sff(sffname):
         if sffname in local_sff_threads.keys():
             stop_sff(sffname)
 
-        local_sff_topo.pop(sffname, None)
         if sffname == sfc_globals.get_my_sff_name():
             sfc_globals.reset_path()
             sfc_globals.reset_data_plane_path()
 
+        local_sff_topo.pop(sffname)
+
     except KeyError:
-        msg = "SFF name {} not found, message".format(sffname)
-        logger.warning(msg)
-        return msg, 404
+        logger.warning('SFF name %s not found', sffname)
+        status_code = 404
 
-    except:
-        logger.warning("Unexpected exception, re-raising it")
-        raise
-
-    return '', 204
+    return '', status_code
 
 
 @app.route('/config/service-function-forwarder:service-function-forwarders/',
@@ -751,7 +754,7 @@ def auto_sff_name():
                         sfc_globals.set_my_sff_name(sff_name)
                         sff_name = sfc_globals.get_my_sff_name()
 
-                        logger.info("Auto SFF name is: %s \n", sff_name)
+                        logger.info("Auto SFF name is: %s", sff_name)
                         return 0
     else:
         logger.warn("Could not determine SFF name \n")

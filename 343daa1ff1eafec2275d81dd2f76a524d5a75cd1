@@ -94,6 +94,29 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_24e3d8da",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-03-17T07:55:50Z",
+      "side": 1,
+      "message": "I think getSfDescriptionMonitorService is better,because it not only includes description information.",
+      "range": {
+        "startLine": 77,
+        "startChar": 59,
+        "endLine": 77,
+        "endChar": 80
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_c4b0f4df",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
         "patchSetId": 1
@@ -110,6 +133,29 @@
         "startChar": 8,
         "endLine": 81,
         "endChar": 75
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c4e794e3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-03-17T07:55:50Z",
+      "side": 1,
+      "message": "I saw RpcConsumerRegistry had been changed into DOMRpcService in netconf connector.",
+      "range": {
+        "startLine": 83,
+        "startChar": 23,
+        "endLine": 83,
+        "endChar": 42
       },
       "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

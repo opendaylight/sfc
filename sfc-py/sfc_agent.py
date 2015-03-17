@@ -280,7 +280,7 @@ def check_nfq_classifier_state():
     Check if the NFQ classifier is running, log an error and abort otherwise
     """
     if not nfq_classifier.nfq_running():
-        logger.error('Classifier is not running: ignoring ACL')
+        logger.warning('Classifier is not running: ignoring ACL')
         flask.abort(500)
 
 
@@ -311,7 +311,7 @@ def remove_acl(acl_name):
                                  'acl-name': acl_name}]}
 
     nfq_classifier.process_acl(acl_data)
-    return '', 200
+    return '', 204
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
@@ -361,20 +361,28 @@ def create_path(rsp_name):
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
            'rendered-service-path/<rsp_name>', methods=['DELETE'])
 def delete_path(rsp_name):
-    rsp_removed = nfq_classifier.remove_rsp(rsp_name)
-    if rsp_removed:
-        return '', 204
-    else:
-        logger.error('RSP "%s" not found', rsp_name)
-        return '', 404
+    status_code = 204
+    not_found_msg = 'RSP "%s" not found' % rsp_name
 
-    # TODO: do we still need to keep and update these agent local variables?
-#    local_path = sfc_globals.get_path()
-#    local_data_plane_path = sfc_globals.get_data_plane_path()
-#    rsp_id = local_path[rsp_name]['path-id']
-#    local_data_plane_path.pop(rsp_id, None)
-#    local_path.pop(rsp_name, None)
+    local_path = sfc_globals.get_path()
+    local_data_plane_path = sfc_globals.get_data_plane_path()
 
+    try:
+        sfp_id = local_path[rsp_name]['path-id']
+        local_data_plane_path.pop(sfp_id, None)
+        local_path.pop(rsp_name, None)
+
+        if nfq_classifier.nfq_running():
+            rsp_removed = nfq_classifier.remove_rsp(rsp_name)
+            if not rsp_removed:
+                logger.error(not_found_msg)
+                status_code = 404
+
+    except KeyError:
+        logger.error(not_found_msg)
+        status_code = 404
+
+    return '', status_code
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/',
            methods=['GET'])
@@ -751,7 +759,7 @@ def auto_sff_name():
                         sfc_globals.set_my_sff_name(sff_name)
                         sff_name = sfc_globals.get_my_sff_name()
 
-                        logger.info("Auto SFF name is: %s \n", sff_name)
+                        logger.info("Auto SFF name is: %s", sff_name)
                         return 0
     else:
         logger.warn("Could not determine SFF name \n")

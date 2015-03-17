@@ -6,6 +6,7 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+import sys
 import json
 import socket
 import logging
@@ -13,11 +14,6 @@ import requests
 import ipaddress
 import threading
 import subprocess
-
-try:
-    from netfilterqueue import NetfilterQueue
-except ImportError:
-    print("Netfilter not supported or installed")
 
 from nsh.encode import build_packet
 from common.sfc_globals import ODLIP, USERNAME, PASSWORD
@@ -59,6 +55,16 @@ requests_logger.setLevel(logging.WARNING)
 IPV4 = 4
 IPv6 = 6
 NFQ_NUMBER = 2
+NFQ_AVAILABLE = False
+
+
+#: NetfilterQueue is available only on Linux as it cooperates with ip(6)tables
+if sys.platform.startswith('linux'):
+    try:
+        from netfilterqueue import NetfilterQueue
+        NFQ_AVAILABLE = True
+    except ImportError:
+        pass
 
 
 #: ACE items to ip(6)tables flags/types mapping
@@ -394,11 +400,18 @@ class NfqClassifier(metaclass=Singleton):
 
     def packet_collector(self):
         """
-        Main NFQ related method. Configure the queue and wait for packets.
+        Main NFQ related method.
+
+        Configure the queue (if available) and wait for packets.
 
         NOTE: NetfilterQueue.run() blocs!
 
         """
+        if not NFQ_AVAILABLE:
+            logger.error('Classifier can\'t start\n\n'
+                         '*** NetfilterQueue not supported or installed ***\n')
+            return
+
         try:
             self.nfq = NetfilterQueue()
 

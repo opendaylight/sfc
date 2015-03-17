@@ -117,6 +117,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_4afceb3e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T18:37:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a93c517_24e3d8da",
+      "range": {
+        "startLine": 77,
+        "startChar": 59,
+        "endLine": 77,
+        "endChar": 80
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_c4b0f4df",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
         "patchSetId": 1
@@ -151,6 +175,30 @@
       "writtenOn": "2015-03-17T07:55:50Z",
       "side": 1,
       "message": "I saw RpcConsumerRegistry had been changed into DOMRpcService in netconf connector.",
+      "range": {
+        "startLine": 83,
+        "startChar": 23,
+        "endLine": 83,
+        "endChar": 42
+      },
+      "revId": "343daa1ff1eafec2275d81dd2f76a524d5a75cd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_0ac82321",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-03-17T18:37:06Z",
+      "side": 1,
+      "message": "RpcConsumerRegistry is Binding version of DOMRpcService (if you go into sal-binding-broker-impl) you could see that there is class, which implements RpcConsumerRegistry and uses DOMRpcService.\n\nThat class only does serialization / deserilization from DOMRpcService and data returned from DOMRpcService (I implemented mount point code).",
+      "parentUuid": "5a93c517_c4e794e3",
       "range": {
         "startLine": 83,
         "startChar": 23,

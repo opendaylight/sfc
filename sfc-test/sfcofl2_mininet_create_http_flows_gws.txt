@@ -1,0 +1,18 @@
+# HTTP for each client in SFF1
+        # Client 1, connected to GW1, port 3, IP 10.0.0.1
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=3,dl_type=0x0800,nw_proto=6,nw_src=10.0.0.1,actions=output=1"
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,nw_dst=10.0.0.1,actions=output=3"
+
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=4,dl_type=0x0800,nw_proto=6,nw_src=10.0.0.2,actions=output=1"
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,nw_dst=10.0.0.2,actions=output=4"
+
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=5,dl_type=0x0800,nw_proto=6,nw_src=10.0.0.3,actions=output=1"
+sudo ovs-ofctl add-flow gw1 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,nw_dst=10.0.0.3,actions=output=5"
+
+
+# HTTP for each client in SFF2
+        # Server 1, connected to GW2, port 3, IP 10.0.0.10
+sudo ovs-ofctl add-flow gw2 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,nw_dst=10.10.0.1,actions=output=3"
+sudo ovs-ofctl add-flow gw2 "table=0,priority=10,in_port=3,dl_type=0x0800,nw_proto=6,nw_src=10.10.0.1,actions=output=1"
+
+

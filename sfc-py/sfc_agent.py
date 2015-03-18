@@ -29,12 +29,10 @@ __version__ = "0.4"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
 
-
 """
 SFC Agent Server. This Server should be co-located with the python SFF data
 plane implementation (sff_thread.py)
 """
-
 
 app = flask.Flask(__name__)
 logger = logging.getLogger(__file__)
@@ -757,7 +755,9 @@ def auto_sff_name():
                         logger.info("Auto SFF name is: %s", sff_name)
                         return 0
     else:
-        logger.warn("Could not determine SFF name \n")
+        logger.warn("Could not determine SFF name. This means ODL is not running"
+                    "or there is no SFF with a data plane locator IP that matches"
+                    "one where the SFC agent is running. SFC Agent will retry later... \n")
         return -1
 
 
@@ -842,6 +842,13 @@ def main():
 
     #: execute actions --------------------------------------------------------
     try:
+
+        logger.info("====== STARTING SFC AGENT ======")
+
+        logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
+                    "appropriate action such as creating, deleting, updating  SFs, SFFs, "
+                    "or classifier. \n")
+
         if args.odl_get_sff:
             get_sffs_from_odl(common.sfc_globals.ODLIP)
 

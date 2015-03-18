@@ -63,6 +63,7 @@
         <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
         <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
         <jackson.version>2.3.2</jackson.version>
+        <config.version>0.3.0-SNAPSHOT</config.version>
 
         <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
         <yangtools.binding.version>0.7.0-SNAPSHOT</yangtools.binding.version>

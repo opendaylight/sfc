@@ -31,22 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev14120
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.Capabilities;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.CapabilitiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilization;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilizationBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidth;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidthBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidth;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthKey;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilization;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.Map;
-import java.util.HashMap;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
@@ -962,8 +946,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         SfcSfDescMon sfDescMon = null;
         ServiceFunctionState dataSfcStateObject;
-        Map<String, Object> sfDescInfoMap  = new HashMap<String, Object>();
-
         try {
             if (ODL_SFC.getDataProvider() != null) {
                 //get mount point
@@ -978,45 +960,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
                 //get sf description information from netconf
-                sfDescInfoMap = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
-                if(sfDescInfoMap == null) {
+                GetSFDescriptionOutput sfDescInfoOutput = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
+                if(sfDescInfoOutput == null) {
                     return false;
                 }
-                //ports capability
-                Map<String, Object> capMap = (Map<String, Object>)sfDescInfoMap.get("capabilities");
-                List<Map<String, Object>> portsMap = (List<Map<String, Object>>)capMap.get("ports");
-                List<PortBandwidth> portBandwidthList = new ArrayList<PortBandwidth>();
 
-                for(Map<String, Object> portcap: portsMap) {
-                    Ipv4Address portIpv4Addr = (Ipv4Address)portcap.get("ipaddress");
-                    PortBandwidthKey portBandwidthKey = new PortBandwidthKey((long)portcap.get("port-id"));
-                    MacAddress macAddr = (MacAddress)portcap.get("macaddress");
-                    PortBandwidth portBandwidth= new PortBandwidthBuilder()
-                        .setIpaddress(portIpv4Addr)
-                        .setKey(portBandwidthKey)
-                        .setMacaddress(macAddr)
-                        .setPortId((long)portcap.get("port-id"))
-                        .setSupportedBandwidth((long)portcap.get("supported-bandwidth")).build();
-                    portBandwidthList.add(portBandwidth);
-                }
-
-                PortsBandwidth portsBandwidth = new PortsBandwidthBuilder()
-                        .setPortBandwidth(portBandwidthList).build();
-                //sf cap
-                Capabilities cap = new CapabilitiesBuilder()
-                    .setPortsBandwidth(portsBandwidth)
-                    .setFIBSize((long)capMap.get("FIB-size"))
-                    .setRIBSize((long)capMap.get("RIB-size"))
-                    .setSupportedACLNumber((long)capMap.get("supported-ACL-number"))
-                    .setSupportedBandwidth((long)capMap.get("supported-bandwidth"))
-                    .setSupportedPacketRate((long)capMap.get("supported-packet-rate")).build();
-
-                //sf description
-                long numPorts = (long)sfDescInfoMap.get("number-of-dataports");
-                DescriptionInfo descInfo = new DescriptionInfoBuilder()
-                    .setCapabilities(cap)
-                    .setNumberOfDataports(numPorts).build();
-
+                DescriptionInfo descInfo = new DescriptionInfoBuilder(sfDescInfoOutput.getDescriptionInfo()).build();
                 //build the service function capbility and utilization
                 if(dataSfcStateObject!=null) {
                     if(dataSfcStateObject.getAugmentation(ServiceFunctionState1.class)!=null) {
@@ -1068,8 +1017,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         SfcSfDescMon sfDescMon = null;
         ServiceFunctionState dataSfcStateObject;
-        Map<String, Object> sfMonInfoMap  = new HashMap<String, Object>();
-
         try {
             if (ODL_SFC.getDataProvider() != null) {
                 //get mount point
@@ -1084,42 +1031,11 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
                 //get sf monitor data from netconf
-                sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
+                GetSFMonitoringInfoOutput sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
                 if(sfMonInfoMap == null) {
                     return false;
                 }
-                //port utilization
-                Map<String, Object> utilMap = (Map<String, Object>)sfMonInfoMap.get("utilization");
-                List<Map<String, Object>> portsUtilMap = (List<Map<String, Object>>)utilMap.get("ports");
-                List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<PortBandwidthUtilization>();
-
-                for(Map<String, Object> portutil: portsUtilMap) {
-                    PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey((long)portutil.get("port-id"));
-                    PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-                        .setBandwidthUtilization((long)portutil.get("bandwidth-utilization"))
-                        .setKey(portBandwidthUtilKey)
-                        .setPortId((long)portutil.get("port-id")).build();
-                    portBandwidthUtilList.add(portBandwidthUtil);
-                }
-
-                SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
-                    .setPortBandwidthUtilization(portBandwidthUtilList).build();
-
-                ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                    .setAvailableMemory((long)utilMap.get("available-memory"))
-                    .setBandwidthUtilization((long)utilMap.get("bandwidth-utilization"))
-                    .setCPUUtilization((long)utilMap.get("CPU-utilization"))
-                    .setFIBUtilization((long)utilMap.get("FIB-utilization"))
-                    .setRIBUtilization((long)utilMap.get("RIB-utilization"))
-                    .setMemoryUtilization((long)utilMap.get("memory-utilization"))
-                    .setPacketRateUtilization((long)utilMap.get("packet-rate-utilization"))
-                    .setPowerUtilization((long)utilMap.get("power-utilization"))
-                    .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
-
-                //sf monitor data
-                MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                    .setResourceUtilization(resrcUtil)
-                    .setLiveness((boolean)sfMonInfoMap.get("liveness")).build();
+                MonitoringInfo monInfo = new MonitoringInfoBuilder(sfMonInfoMap.getMonitoringInfo()).build();
 
                 //build the service function capbility and utilization
                 if(dataSfcStateObject!=null) {

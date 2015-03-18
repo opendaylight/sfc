@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_dbabef87",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-03-18T10:04:35Z",
+      "side": 1,
+      "message": "duplicate property for config.version",
+      "revId": "262754257928bdc23ea125315cb2562121bd63fe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public abstract class SfcServiceFunctionSchedulerAPI {
     public enum SfcServiceFunctionSchedulerType {
-        ROUND_ROBIN, RANDOM;
+        ROUND_ROBIN, RANDOM, LOAD_BALANCE
     }
     private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType;
 

@@ -16,6 +16,24 @@
       "revId": "273da1fb8579b189959c1d68291aec8dad3c6b69",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c081b74b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-03-19T08:02:52Z",
+      "side": 1,
+      "message": "If there is no MountPoint instance, the code can give the SF description and monitor initialization static data, then the load balance algorithm can get a static CPU utilization, not null value. Then though it doesn\u0027t have the netconf server, the algorithm can work well. Or if someone wants to use the SF description and monitor initialization data, Then though he doesn\u0027t have the netconf server, he can also use it.",
+      "parentUuid": "5a93c517_80ac0fef",
+      "revId": "273da1fb8579b189959c1d68291aec8dad3c6b69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

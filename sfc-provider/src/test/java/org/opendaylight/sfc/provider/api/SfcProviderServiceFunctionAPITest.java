@@ -30,6 +30,32 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMonBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.Capabilities;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.CapabilitiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidth;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidthBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidth;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidthKey;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,4 +244,117 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", sf2.getSfDataPlaneLocator(), dataPlaneLocatorList2);
     }
 
+    @Test
+    public void testCreateReadServiceFunctionDescription() throws ExecutionException, InterruptedException {
+        ServiceFunctionState dataSfcStateObject;
+        ServiceFunctionStateKey serviceFunctionStateKey =
+            new ServiceFunctionStateKey("unittest-fw-1");
+        SfcSfDescMon sfDescMon = null;
+        List<PortBandwidth> portBandwidthList = new ArrayList<PortBandwidth>();
+
+        Long[] data = null;
+        data = new Long[10];
+        for(int i = 0; i < 10; i++){
+            data[i] = Long.parseLong(Integer.toString(i+1));
+        }
+        PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
+        PortBandwidth portBandwidth= new PortBandwidthBuilder()
+            .setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS[1]))
+            .setKey(portBandwidthKey)
+            .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
+            .setPortId(data[0])
+            .setSupportedBandwidth(data[1]).build();
+        portBandwidthList.add(portBandwidth);
+
+        PortsBandwidth portsBandwidth = new PortsBandwidthBuilder()
+            .setPortBandwidth(portBandwidthList).build();
+        //sf cap
+        Capabilities cap = new CapabilitiesBuilder()
+            .setPortsBandwidth(portsBandwidth)
+            .setFIBSize(data[2])
+            .setRIBSize(data[3])
+            .setSupportedACLNumber(data[4])
+            .setSupportedBandwidth(data[5])
+            .setSupportedPacketRate(data[6]).build();
+
+        //sf description
+        long numberOfDataports = 1;
+        DescriptionInfo descInfo = new DescriptionInfoBuilder()
+            .setCapabilities(cap)
+            .setNumberOfDataports(numberOfDataports).build();
+
+        sfDescMon = new SfcSfDescMonBuilder()
+            .setDescriptionInfo(descInfo).build();
+
+        ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
+            .setKey(serviceFunctionStateKey)
+            .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+        SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
+
+        SfcSfDescMon readSfcSfDescMon =
+            SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor("unittest-fw-1");
+        Long numPorts = new Long(1);
+        assertNotNull("Must be not null", readSfcSfDescMon);
+        assertEquals("Must be equal", cap, readSfcSfDescMon.getDescriptionInfo().getCapabilities());
+        assertEquals("Must be equal", numPorts, readSfcSfDescMon.getDescriptionInfo().getNumberOfDataports());
+    }
+
+    @Test
+    public void testCreateReadServiceFunctionMonitor() throws ExecutionException, InterruptedException {
+        SfcSfDescMon sfDescMon = null;
+        ServiceFunctionState dataSfcStateObject;
+
+        ServiceFunctionStateKey serviceFunctionStateKey =
+             new ServiceFunctionStateKey("unittest-fw-2");
+
+        List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<PortBandwidthUtilization>();
+
+        Long[] data = null;
+        data = new Long[10];
+        for(int i = 0; i < 10; i++){
+            data[i] = Long.parseLong(Integer.toString(i+1));
+        }
+        PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
+        PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
+            .setBandwidthUtilization(data[2])
+            .setKey(portBandwidthUtilKey)
+            .setPortId(data[0]).build();
+        portBandwidthUtilList.add(portBandwidthUtil);
+
+        SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
+            .setPortBandwidthUtilization(portBandwidthUtilList).build();
+
+        ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
+            .setAvailableMemory(data[1])
+            .setBandwidthUtilization(data[2])
+            .setCPUUtilization(data[3])
+            .setFIBUtilization(data[4])
+            .setRIBUtilization(data[5])
+            .setMemoryUtilization(data[6])
+            .setPacketRateUtilization(data[7])
+            .setPowerUtilization(data[8])
+            .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
+
+        //sf monitor data
+        boolean liveness = true;
+        MonitoringInfo monInfo = new MonitoringInfoBuilder()
+            .setResourceUtilization(resrcUtil)
+            .setLiveness(liveness).build();
+
+        sfDescMon = new SfcSfDescMonBuilder()
+                        .setMonitoringInfo(monInfo).build();
+
+        ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
+            .setKey(serviceFunctionStateKey)
+            .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+        SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
+        SfcSfDescMon readSfcSfDescMon =
+            SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor("unittest-fw-2");
+        Boolean livenessStatus = new Boolean(true);
+        assertNotNull("Must be not null", readSfcSfDescMon);
+        assertEquals("Must be equal", resrcUtil, readSfcSfDescMon.getMonitoringInfo().getResourceUtilization());
+        assertEquals("Must be equal", livenessStatus, readSfcSfDescMon.getMonitoringInfo().isLiveness());
+    }
 }

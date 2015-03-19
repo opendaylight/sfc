@@ -58,6 +58,7 @@
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <feature>odl-restconf</feature>
         <feature>http</feature>
+        <feature>webconsole</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-ui/${project.version}</bundle>
     </feature>
 

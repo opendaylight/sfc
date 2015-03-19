@@ -13,7 +13,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         page: 1,          // show first page
         count: 10,        // count per page
         sorting: {
-          name: 'asc'     // initial sorting
+          'acl-name': 'asc'     // initial sorting
         }
       },
       {

@@ -96,6 +96,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         case ROUND_ROBIN:
             scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
             break;
+        case LOAD_BALANCE:
+            scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
+            break;
         case RANDOM:
         default:
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();

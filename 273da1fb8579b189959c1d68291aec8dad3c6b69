@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_80ac0fef",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-19T07:53:21Z",
+      "side": 1,
+      "message": "Why this code is here? I see it in the unit tests as well.",
+      "revId": "273da1fb8579b189959c1d68291aec8dad3c6b69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -102,10 +102,6 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "sff-data-plane-locator": [
           {
             "name": "eth0",
-            "service-function-forwarder-ovs:ovs-bridge": {
-              "bridge-name": "br-tun",
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
-            },
             "data-plane-locator": {
               "port": 4789,
               "ip": "10.0.1.44",
@@ -136,10 +132,6 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "sff-data-plane-locator": [
           {
             "name": "eth0",
-            "service-function-forwarder-ovs:ovs-bridge": {
-              "bridge-name": "br-tun",
-              "uuid": "4c3778e4-840d-47f4-b45e-0988e514d26c"
-            },
             "data-plane-locator": {
               "port": 4789,
               "ip": "10.0.1.41",
@@ -170,10 +162,6 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "sff-data-plane-locator": [
           {
             "name": "eth0",
-            "service-function-forwarder-ovs:ovs-bridge": {
-              "bridge-name": "br-tun",
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
-            },
             "data-plane-locator": {
               "port": 4789,
               "ip": "10.0.1.45",
@@ -190,10 +178,6 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "sff-data-plane-locator": [
           {
             "name": "eth0",
-            "service-function-forwarder-ovs:ovs-bridge": {
-              "bridge-name": "br-tun",
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
-            },
             "data-plane-locator": {
               "port": 4789,
               "ip": "10.0.1.42",
@@ -224,10 +208,6 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         "sff-data-plane-locator": [
           {
             "name": "eth0",
-            "service-function-forwarder-ovs:ovs-bridge": {
-              "bridge-name": "br-tun",
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0"
-            },
             "data-plane-locator": {
               "port": 4789,
               "ip": "10.0.1.43",

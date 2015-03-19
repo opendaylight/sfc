@@ -23,7 +23,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       _.find($rootScope.serviceLocatorConstants['type'], function (locatorType) {
         matchingKeys = svc.__getMatchingKeys(locatorType);
 
-        if (_.every(matchingKeys, function (key) {
+        if (_.some(matchingKeys, function (key) {
             return _.contains(locatorKeys, key);
           })) {
 

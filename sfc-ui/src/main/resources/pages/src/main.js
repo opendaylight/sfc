@@ -1,7 +1,7 @@
 require.config({
   baseUrl : 'src',
   paths : {
-    'jquery' : '../vendor/jquery/jquery',
+    'jquery' : '../vendor/jquery/jquery.min',
     'jquery-ui' : '../vendor/jquery-ui/ui/jquery-ui',
     'angular' : '../vendor/angular/angular',
     'angularAMD' : '../vendor/angularAMD/angularAMD',

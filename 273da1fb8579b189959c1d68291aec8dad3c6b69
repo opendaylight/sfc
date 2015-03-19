@@ -52,6 +52,24 @@
       "revId": "273da1fb8579b189959c1d68291aec8dad3c6b69",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a39fd502",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-19T15:29:51Z",
+      "side": 1,
+      "message": "This method is passed no parameters. It seems you are giving back the same data if mount point is not available. How can this be useful?",
+      "parentUuid": "5a93c517_83ff3934",
+      "revId": "273da1fb8579b189959c1d68291aec8dad3c6b69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

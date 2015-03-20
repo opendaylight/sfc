@@ -55,7 +55,7 @@ def _sff_present(sff_name, local_sff_topo):
     sff_present = True
 
     if sff_name not in local_sff_topo.keys():
-        if get_sff_from_odl(common.sfc_globals.ODLIP, sff_name) != 0:
+        if get_sff_from_odl(sfc_globals.get_odl_locator(), sff_name) != 0:
             logger.error("Failed to find data plane locator for SFF: %s",
                          sff_name)
 
@@ -77,7 +77,7 @@ def _sf_local_host(sf_name):
     """
     sf_hosted = False
     local_sf_topo = sfc_globals.get_sf_topo()
-    if (sf_name in local_sf_topo.keys()) or (get_sf_from_odl(common.sfc_globals.ODLIP, sf_name) == 0):
+    if (sf_name in local_sf_topo.keys()) or (get_sf_from_odl(sfc_globals.get_odl_locator(), sf_name) == 0):
         ip_addr, _ = urlparse(local_sf_topo[sf_name]['rest-uri']).netloc.split(':')
         if _ip_local_host(ip_addr):
             sf_hosted = True
@@ -371,10 +371,7 @@ def delete_path(rsp_name):
         local_path.pop(rsp_name, None)
 
         if nfq_classifier.nfq_running():
-            rsp_removed = nfq_classifier.remove_rsp(rsp_name)
-            if not rsp_removed:
-                logger.error(not_found_msg)
-                status_code = 404
+            nfq_classifier.remove_rsp(rsp_name)
 
     except KeyError:
         logger.error(not_found_msg)
@@ -587,8 +584,7 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
         odl_dataplane_url = url.format(odl_ip_port, sff_name, sf_name)
 
         s = requests.Session()
-        r = s.get(odl_dataplane_url, auth=(common.sfc_globals.USERNAME,
-                                           common.sfc_globals.PASSWORD),
+        r = s.get(odl_dataplane_url, auth=sfc_globals.get_odl_credentials(),
                   stream=False)
     except (requests.exceptions.ConnectionError,
             requests.exceptions.RequestException) as exc:
@@ -624,8 +620,7 @@ def get_sffs_from_odl(odl_ip_port):
         odl_sff_url = url.format(odl_ip_port)
 
         s = requests.Session()
-        r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
-                                     common.sfc_globals.PASSWORD),
+        r = s.get(odl_sff_url, auth=sfc_globals.get_odl_credentials(),
                   stream=False)
     except requests.exceptions.ConnectionError as e:
         logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
@@ -668,8 +663,7 @@ def get_sf_from_odl(odl_ip_port, sf_name):
         odl_sf_url = url.format(odl_ip_port, sf_name)
 
         s = requests.Session()
-        r = s.get(odl_sf_url, auth=(common.sfc_globals.USERNAME,
-                                    common.sfc_globals.PASSWORD),
+        r = s.get(odl_sf_url, auth=sfc_globals.get_odl_credentials(),
                   stream=False)
     except (requests.exceptions.ConnectionError,
             requests.exceptions.RequestException) as exc:
@@ -707,8 +701,7 @@ def get_sff_from_odl(odl_ip_port, sff_name):
         odl_sff_url = url.format(odl_ip_port, sff_name)
 
         s = requests.Session()
-        r = s.get(odl_sff_url, auth=(common.sfc_globals.USERNAME,
-                                     common.sfc_globals.PASSWORD),
+        r = s.get(odl_sff_url, auth=sfc_globals.get_odl_credentials(),
                   stream=False)
     except (requests.exceptions.ConnectionError,
             requests.exceptions.RequestException) as exc:
@@ -798,7 +791,7 @@ def main():
 
     parser.add_argument('--odl-ip-port',
                         help='Set ODL IP and port in form <IP>:<PORT>. '
-                             'Default is %s' % common.sfc_globals.ODLIP)
+                             'Default is %s' % sfc_globals.get_odl_locator())
 
     parser.add_argument('--ovs-sff-cp-ip',
                         help='Set local SFF Open vSwitch IP. '
@@ -814,7 +807,7 @@ def main():
     args = parser.parse_args()
 
     if args.odl_ip_port is not None:
-        common.sfc_globals.ODLIP = args.odl_ip_port
+        sfc_globals.set_odl_locator(args.odl_ip_port)
 
     if args.agent_port is not None:
         agent_port = args.agent_port
@@ -842,15 +835,13 @@ def main():
 
     #: execute actions --------------------------------------------------------
     try:
-
         logger.info("====== STARTING SFC AGENT ======")
-
         logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
                     "appropriate action such as creating, deleting, updating  SFs, SFFs, "
                     "or classifier. \n")
 
         if args.odl_get_sff:
-            get_sffs_from_odl(common.sfc_globals.ODLIP)
+            get_sffs_from_odl(sfc_globals.get_odl_locator())
 
         if odl_auto_sff:
             auto_sff_name()

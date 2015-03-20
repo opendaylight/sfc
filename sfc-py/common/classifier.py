@@ -6,6 +6,7 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+
 import sys
 import json
 import socket
@@ -16,7 +17,7 @@ import threading
 import subprocess
 
 from nsh.encode import build_packet
-from common.sfc_globals import ODLIP, USERNAME, PASSWORD
+from common.sfc_globals import sfc_globals
 from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
 
 
@@ -77,7 +78,7 @@ ace_2_iptables = {'source-ips': {'flag': '-s',
                                                'destination-ipv6-address')
                                       },
                   'protocols': {'flag': '-p',
-                                'type': {7: 'tcp',
+                                'type': {6: 'tcp',
                                          17: 'udp'}
                                 },
                   'ports': {'source-port-range': '--sport',
@@ -290,8 +291,9 @@ class NfqClassifier(metaclass=Singleton):
         :return dict or None
 
         """
+        odl_locator = sfc_globals.get_odl_locator()
         url = ('http://{odl}/restconf/operations/rendered-service-path:'
-               'read-rendered-service-path-first-hop'.format(odl=ODLIP))
+               'read-rendered-service-path-first-hop'.format(odl=odl_locator))
 
         data = {'input':
                     {'name': rsp_name}
@@ -305,7 +307,7 @@ class NfqClassifier(metaclass=Singleton):
                                      timeout=5,
                                      headers=headers,
                                      data=json.dumps(data),
-                                     auth=(USERNAME, PASSWORD))
+                                     auth=sfc_globals.get_odl_credentials())
         except requests.exceptions.Timeout:
             logger.exception('Failed to get RSP "%s" from ODL: timeout',
                              rsp_name)
@@ -363,11 +365,22 @@ class NfqClassifier(metaclass=Singleton):
         # NOTES:
         # so far metadata are not supported -> just sending an empty ctx_header
         # tunnel_id (0x0500) is hard-coded, will it be always the same?
-        ctx_header = CONTEXTHEADER(0, 0, 0, 0)
-        vxlan_header = VXLANGPE(int('00000100', 2), 0, 0x894F, 0x0500, 64)
-        base_header = BASEHEADER(0x1, int('01000000', 2), 0x6,
-                                 0x1, next_protocol, rsp_id,
-                                 fwd_to['starting-index'])
+        ctx_header = CONTEXTHEADER(network_shared=0,
+                                   service_shared=0,
+                                   network_platform=0,
+                                   service_platform=0)
+        vxlan_header = VXLANGPE(vni=0x0500,
+                                reserved=0,
+                                reserved2=64,
+                                protocol_type=0x894F,
+                                flags=int('00000100', 2))
+        base_header = BASEHEADER(length=0x6,
+                                 version=0x1,
+                                 md_type=0x1,
+                                 service_path=rsp_id,
+                                 flags=int('00000000', 2),
+                                 next_protocol=next_protocol,
+                                 service_index=fwd_to['starting-index'])
 
         nsh_encapsulation = build_packet(vxlan_header, base_header, ctx_header)
         nsh_packet = nsh_encapsulation + packet.get_payload()
@@ -455,6 +468,7 @@ class NfqClassifier(metaclass=Singleton):
         :return list
 
         """
+        ipv = None
         ace_rule_cmd = ['-I', self.rsp_chain]
 
         if 'ip-protocol' in ace_matches:
@@ -475,7 +489,7 @@ class NfqClassifier(metaclass=Singleton):
             if src_ip in ace_matches:
                 src_ip_flag = ace_2_iptables['source-ips']['flag']
                 src_ip = ace_matches.pop(src_ip)
-                self.rsp_ipv = (self._get_current_ip_version(src_ip),)
+                ipv = (self._get_current_ip_version(src_ip),)
 
                 ace_rule_cmd.extend([src_ip_flag, src_ip])
                 break
@@ -485,7 +499,7 @@ class NfqClassifier(metaclass=Singleton):
             if dst_ip in ace_matches:
                 dst_ip_flag = ace_2_iptables['destination-ips']['flag']
                 dst_ip = ace_matches.pop(dst_ip)
-                self.rsp_ipv = (self._get_current_ip_version(dst_ip),)
+                ipv = (self._get_current_ip_version(dst_ip),)
 
                 ace_rule_cmd.extend([dst_ip_flag, dst_ip])
                 break
@@ -510,9 +524,10 @@ class NfqClassifier(metaclass=Singleton):
         if source_mac in ace_matches:
             ace_rule_cmd.extend(['-m', 'mac', '--mac-source'])
             ace_rule_cmd.append(ace_matches[source_mac])
-            self.rsp_ipv = (IPV4, IPv6)
 
+        self.rsp_ipv = (IPV4, IPv6) if ipv is None else ipv
         self.rsp_mark = self._compose_packet_mark()
+
         ace_rule_cmd.extend(['-j', 'MARK', '--set-mark', self.rsp_mark])
         return ace_rule_cmd
 
@@ -646,14 +661,12 @@ class NfqClassifier(metaclass=Singleton):
         :param rsp_name: RSP name
         :type rsp_name: str
 
-        :return bool
-
         """
-        try:
-            rsp_id, rsp_data = self._get_rsp_by_name(rsp_name)
-        except TypeError:
-            return False
+        _rsp_data = self._get_rsp_by_name(rsp_name)
+        if _rsp_data is None:
+            return
 
+        rsp_id, rsp_data = _rsp_data
         logger.debug('Removing iptables rules for RSP "%s"', rsp_id)
 
         for chain_name, ipv in rsp_data['chains'].items():
@@ -663,7 +676,6 @@ class NfqClassifier(metaclass=Singleton):
             self.unregister_rsp()
 
         del self.rsp_2_sff[rsp_id]
-        return True
 
     def remove_acl_rsps(self):
         """
@@ -723,10 +735,7 @@ class NfqClassifier(metaclass=Singleton):
         :return bool
 
         """
-        if self.nfq is None:
-            return False
-        else:
-            return True
+        return False if self.nfq is None else True
 
 
 def start_classifier():

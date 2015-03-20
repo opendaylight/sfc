@@ -5,19 +5,23 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
+import os
+import sys
+import socket
 import logging
 import asyncio
 import binascii
 import ipaddress
-import os
-import sys
+
+from struct import unpack
 
 import nsh.decode as nsh_decode
+
 from common.sfc_globals import sfc_globals
-from nsh.service_index import process_service_index
 from nsh.encode import add_sf_to_trace_pkt
+from nsh.service_index import process_service_index
+
 from nsh.common import *  # noqa
-import socket
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"
@@ -44,7 +48,7 @@ SERVICE_HOP_INVALID = 0xDEADBEEF
 
 #: Services names
 FWL = 'firewall'
-NAT = 'napt44'  # TODO: should this be `napt44` or just `nat`?
+NAT = 'napt44'
 DPI = 'dpi'
 QOS = 'qos'
 IDS = 'ids'
@@ -83,7 +87,10 @@ class BasicService(object):
     def __init__(self, loop):
         """
         Service Blueprint Class
-        TODO: add arguments description
+
+        :param loop:
+        :type loop: `:class:asyncio.unix_events._UnixSelectorEventLoop`
+
         """
         self.loop = loop
         self.transport = None
@@ -120,8 +127,7 @@ class BasicService(object):
     def _process_incoming_packet(self, data, addr):
         """
         TODO: add docstring
-        :param self: MySFFServer
-        :type  self: MySFFServer
+
         :param data: UDP payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
@@ -144,8 +150,7 @@ class BasicService(object):
     def datagram_received(self, data, addr):
         """
         TODO: add docstring
-        :param self: MySFFServer
-        :type  self: MySFFServer
+
         :param data: UDP payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
@@ -268,47 +273,82 @@ class MySffServer(BasicService):
             local_data_plane_path = sfc_globals.get_data_plane_path()
             next_hop = local_data_plane_path[service_path][service_index]
         except KeyError:
-            msg = ('Could not determine next service hop. SP: %d, SI: %d' %
-                   (service_path, service_index))
-
-            logger.error(msg)
+            logger.error('Could not determine next service hop. SP: %d, SI: %d',
+                         service_path, service_index)
 
         return next_hop
 
+    def _get_packet_bearing(self, packet):
+        """
+        Parse a packet to get source and destination info
+
+        CREDITS: http://www.binarytides.com/python-packet-sniffer-code-linux/
+
+        :param packet: received packet (IP header and upper layers)
+        :type packet: bytes
+
+        :return dict or None
+
+        """
+        ip_header = packet[:20]
+        iph = unpack('!BBHHHBBH4s4s', ip_header)
+
+        protocol = iph[6]
+        s_addr = socket.inet_ntoa(iph[8])
+        d_addr = socket.inet_ntoa(iph[9])
+
+        if protocol == 6:
+            tcp_header = packet[20:40]
+            protocolh = unpack('!HHLLBBHHH', tcp_header)
+
+        elif protocol == 17:
+            udp_header = packet[20:28]
+            protocolh = unpack('!HHHH', udp_header)
+
+        else:
+            logger.error('Only TCP and UDP protocls are supported')
+            return
+
+        s_port = protocolh[0]
+        d_port = protocolh[1]
+
+        return {'s_addr': s_addr,
+                's_port': s_port,
+                'd_addr': d_addr,
+                'd_port': d_port}
+
     def _process_incoming_packet(self, data, addr):
         """
-        TODO: SFF main processing packet function
-        :param self: MySFFServer
-        :type  self: MySFFServer
+        SFF main processing packet function
+
         :param data: UDP payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
         :type addr: tuple (str, int)
+
         """
         logger.info("%s: Processing packet from: %s", self.service_type, addr)
 
         address = ()
 
-        # Copy payload into bytearray so it can be changed
+        # Copy payload into byte array so it can be changed
         rw_data = bytearray(data)
         self._decode_headers(data)
 
         # Lookup what to do with the packet based on Service Path Identifier
-        # (SPI)
-
         next_hop = self._lookup_next_sf(self.server_base_values.service_path,
                                         self.server_base_values.service_index)
 
         if nsh_decode.is_data_message(data):
-
+            # send the packet to the next SFF based on address
             if next_hop != SERVICE_HOP_INVALID:
                 address = next_hop['ip'], next_hop['port']
                 logger.info("%s: Sending packets to: %s", self.service_type, address)
-                # send the packet to the next SFF based on address
+
                 self.transport.sendto(rw_data, address)
-                logger.info("%s: Listening for NSH packets ...", self.service_type)
+
+            # send packet to its original destination
             elif self.server_base_values.service_index:
-                # bye, bye packet
                 logger.info("%s: End of path", self.service_type)
                 logger.debug("%s: Packet dump: %s", self.service_type, binascii.hexlify(rw_data))
                 logger.debug('%s: service index end up as: %d', self.service_type,
@@ -323,14 +363,17 @@ class MySffServer(BasicService):
                         args = ['sudo', sys.executable] + sys.argv + [os.environ]
                         # the next line replaces the currently-running process with the sudo
                         os.execlpe('sudo', *args)
-                    sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
-                    host = socket.gethostbyname(socket.gethostname())
-                    sock_raw.bind((host, 0))
-                    sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-                    sock_raw.sendto(inner_packet)
 
+                    sock_raw = socket.socket(socket.AF_INET,
+                                             socket.SOCK_RAW,
+                                             socket.IPPROTO_RAW)
+
+                    bearing = self._get_packet_bearing(inner_packet)
+                    sock_raw.sendto(inner_packet, (bearing['d_addr'],
+                                                   bearing['d_port']))
+
+            # end processing as Service Index reaches zero (SI = 0)
             else:
-                # SI = 0, loop detected
                 logger.error("%s: Loop Detected", self.service_type)
                 logger.error("%s: Packet dump: %s", self.service_type, binascii.hexlify(rw_data))
 
@@ -338,7 +381,6 @@ class MySffServer(BasicService):
                 data = ""
 
         elif nsh_decode.is_trace_message(data):
-
             # Have to differentiate between no SPID and End of path
             if (self.server_trace_values.sil == self.server_base_values.service_index) or (
                     next_hop == SERVICE_HOP_INVALID):
@@ -359,16 +401,16 @@ class MySffServer(BasicService):
     def datagram_received(self, data, addr):
         """
         TODO:
-        :param self: MySFFServer
-        :type  self: MySFFServer
+
         :param data: UDP payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
         :type addr: tuple (str, int)
+
         """
         logger.info('%s: Received a packet from: %s', self.service_type, addr)
 
-        rw_data, address = self._process_incoming_packet(data, addr)
+        self._process_incoming_packet(data, addr)
 
     def connection_lost(self, exc):
         logger.error('stop', exc)

@@ -371,10 +371,7 @@ def delete_path(rsp_name):
         local_path.pop(rsp_name, None)
 
         if nfq_classifier.nfq_running():
-            rsp_removed = nfq_classifier.remove_rsp(rsp_name)
-            if not rsp_removed:
-                logger.error(not_found_msg)
-                status_code = 404
+            nfq_classifier.remove_rsp(rsp_name)
 
     except KeyError:
         logger.error(not_found_msg)

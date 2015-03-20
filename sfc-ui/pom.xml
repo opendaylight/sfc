@@ -5,18 +5,18 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4-Helium-SR3</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfc-ui</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4-Helium-SR3</version>
     <packaging>bundle</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>dlux-web</artifactId>
-            <version>0.1.3-SNAPSHOT</version>
+            <version>0.1.3-Helium-SR3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

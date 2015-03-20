@@ -20,6 +20,10 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionDescriptionMonitorReportService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.concurrent.Future;
@@ -31,7 +35,6 @@ public class SfcProviderSfDescriptionMonitorAPI{
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static ConsumerContext sessionData;
-    private static final InstanceIdentifier<?> NETCONF_NODES_PATH = null;
 
     public SfcProviderSfDescriptionMonitorAPI() {
             setSession();
@@ -40,9 +43,11 @@ public class SfcProviderSfDescriptionMonitorAPI{
     protected void setSession()  {
         printTraceStart(LOG);
         try {
-            if(sessionData==null) {
-                sessionData = odlSfc.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
-                Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
+            if(odlSfc.getBroker()!=null) {
+                if(sessionData==null) {
+                    sessionData = odlSfc.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
+                    Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
+                }
             }
         } catch (Exception e) {
             LOG.warn("failed to ...." , e);
@@ -75,7 +80,9 @@ public class SfcProviderSfDescriptionMonitorAPI{
     }
 
     private ServiceFunctionDescriptionMonitorReportService getSfDescriptionMonitorService(String mountpoint) {
-        final InstanceIdentifier<?> path = NETCONF_NODES_PATH;
+        NodeId nodeId = new NodeId(mountpoint);
+        InstanceIdentifier<?> path = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId)).toInstance();
         MountPointService mountService = SfcNetconfDataProvider.GetNetconfDataProvider().getMountService();
         Preconditions.checkState(mountService != null, "Mount service is null");
         Optional<MountPoint> mountPoint = mountService.getMountPoint(path);

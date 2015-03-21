@@ -234,7 +234,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
     }
 
     @Override
-    public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(CreateRenderedPathInput input) {
+    public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(CreateRenderedPathInput createRenderedPathInput) {
 
         ServiceFunctionPath createdServiceFunctionPath;
         RenderedServicePath renderedServicePath;
@@ -244,17 +244,20 @@ public class SfcProviderRpc implements ServiceFunctionService,
         boolean ret = false;
         createRenderedPathOutputBuilder.setResult(ret);
 
-        createdServiceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(input.getParentServiceFunctionPath());
+        createdServiceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor
+                (createRenderedPathInput.getParentServiceFunctionPath());
 
         if (createdServiceFunctionPath != null) {
-            renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(createdServiceFunctionPath);
+            renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState
+                    (createdServiceFunctionPath, createRenderedPathInput);
             if (renderedServicePath != null) {
                 ret = true;
                 createRenderedPathOutputBuilder.setResult(ret);
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
 
                 if ((createdServiceFunctionPath.getClassifier() != null) &&
-                        SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(createdServiceFunctionPath.getClassifier()) != null) {
+                        SfcProviderServiceClassifierAPI.readServiceClassifierExecutor
+                                (createdServiceFunctionPath.getClassifier()) != null) {
                     SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
                             (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
                 } else {
@@ -263,12 +266,14 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
                 if ((createdServiceFunctionPath.isSymmetric() != null) && createdServiceFunctionPath.isSymmetric()) {
 
-                    revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+                    revRenderedServicePath = SfcProviderRenderedPathAPI.
+                            createSymmetricRenderedServicePathAndState(renderedServicePath);
                     if (revRenderedServicePath == null) {
                         LOG.error("Failed to create symmetric service path: {}");
                     } else if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
                             SfcProviderServiceClassifierAPI
-                                    .readServiceClassifierExecutor(createdServiceFunctionPath.getSymmetricClassifier()) != null) {
+                                    .readServiceClassifierExecutor
+                                            (createdServiceFunctionPath.getSymmetricClassifier()) != null) {
                         SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
                                 (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
 

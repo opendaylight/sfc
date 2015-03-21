@@ -86,6 +86,20 @@
                         <name>binding-data-broker</name>
                     </data-broker>
                 </module>
+                <module>
+                    <type xmlns:sfc-netconf="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-netconf:impl">
+                        sfc-netconf:sfc-netconf-impl
+                    </type>
+                    <name>sfc-netconf-impl</name>
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                    <binding-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                        <name>binding-osgi-broker</name>
+                    </binding-registry>
+                </module>
             </modules>
 
 
@@ -111,6 +125,7 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl?module=sfc-sb-rest-provider-impl&amp;revision=2014-10-20</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl?module=sfc-ovs-impl&amp;revision=2014-10-20</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-netconf:impl?module=sfc-netconf-impl&amp;revision=2014-10-20</capability>
     </required-capabilities>
 
 </snapshot>

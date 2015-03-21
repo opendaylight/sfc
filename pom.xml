@@ -50,6 +50,7 @@
 
         <ietf.model.version>2010.09.24.7-SNAPSHOT</ietf.model.version>
         <ietf.yang.types.version>2013.07.15.7-SNAPSHOT</ietf.yang.types.version>
+        <ietf.topology.version>2013.10.21.2-SNAPSHOT</ietf.topology.version>
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <compiler.version>2.3.2</compiler.version>
         <bundle.plugin.version>2.4.0</bundle.plugin.version>
@@ -112,6 +113,7 @@
         <module>sfclisp</module>
         <module>sfcofl2</module>
         <module>sfc-ovs</module>
+        <module>sfc-netconf</module>
         <module>features</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
@@ -119,6 +121,7 @@
         <module>features-sfclisp</module>
         <module>features-sfcofl2</module>
         <module>features-sfc-ovs</module>
+        <module>features-sfc-netconf</module>
         <module>sfc-karaf</module>
     </modules>
 

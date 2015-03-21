@@ -14,7 +14,6 @@ from sfc_demo_regression_messages import *
 
 if __name__ == "__main__":
 
-
     delete_configuration()
     put_and_check(SF_URL, SERVICE_FUNCTIONS_JSON, SERVICE_FUNCTIONS_JSON)
     check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type...")

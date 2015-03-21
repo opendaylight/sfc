@@ -174,7 +174,7 @@ class SffExporter extends AbstractExporter implements Exporter {
 
 
         try {
-            if (ovsBridge.getUuid() != null) {
+            if (ovsBridge.getUuid() != null && !ovsBridge.getUuid().getValue().isEmpty()) {
                 ovsBridgeNode.put(_UUID, ovsBridge.getUuid().getValue());
             }
         } catch (IllegalArgumentException e) {

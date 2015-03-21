@@ -1,0 +1,53 @@
+module sfc-netconf-impl {
+
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-netconf:impl";
+  prefix "sfc-netconf-impl";
+
+  import config { prefix config; revision-date 2013-04-05; }
+  import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+
+  description
+      "This module contains the base YANG definitions for
+      sfc-netconf implementation.";
+
+  revision "2014-10-20" {
+      description
+          "Initial revision.";
+  }
+
+  // This is the definition of the service implementation as a module identity
+  identity sfc-netconf-impl {
+      base config:module-type;
+
+      // Specifies the prefix for generated java classes.
+      config:java-name-prefix SfcNetconf;
+  }
+
+
+  // Augments the 'configuration' choice node under modules/module.
+  augment "/config:modules/config:module/config:configuration" {
+    case sfc-netconf-impl {
+      when "/config:modules/config:module/config:type = 'sfc-netconf-impl'";
+
+      //wires in the data-broker service
+      container data-broker {
+        uses config:service-ref {
+          refine type {
+              mandatory false;
+              config:required-identity mdsal:binding-async-data-broker;
+          }
+        }
+      }
+      container binding-registry {
+        uses config:service-ref {
+          refine type {
+              mandatory true;
+              config:required-identity mdsal:binding-broker-osgi-registry;
+          }
+        }
+      }
+    }
+  }
+}

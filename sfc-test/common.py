@@ -8,8 +8,13 @@ import requests
 import json
 import time
 
-putheaders = {'content-type': 'application/json'}
-getheaders = {'Accept': 'application/json'}
+put_json_headers = {'content-type': 'application/json'}
+get_json_headers = {'Accept': 'application/json'}
+
+post_xml_headers = {'content-type': 'application/xml', 'Accept': 'application/xml'}
+get_xml_headers = {'Accept': 'application/xml'}
+
+
 # ODL IP:port
 ODLIP = "localhost:8181"
 # Static URLs for testing
@@ -27,6 +32,8 @@ SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-func
 IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
 RSP_RPC_URL = "http://" + ODLIP + "/restconf/operations/rendered-service-path:create-rendered-path"
 SCF_URL = "http://" + ODLIP + "/restconf/config/service-function-classifier:service-function-classifiers/"
+NETCONF_CONNECTOR_URL = "http://" + ODLIP + "/restconf/config/network-topology:network-topology/topology/" \
+                        "topology-netconf/node/controller-config/yang-ext:mount/config:modules"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -71,8 +78,8 @@ def delete_configuration():
 def put_and_check(url, json_req, json_resp):
     s = requests.Session()
     print("PUTing {} \n".format(url))
-    r = s.put(url, data=json_req, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
-    if r.status_code == 200:
+    r = s.put(url, data=json_req, headers=put_json_headers, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 204:
         print("Checking... \n")
         # Creation of SFPs is slow, need to pause here.
         time.sleep(2)
@@ -97,17 +104,22 @@ def check(url, json_resp, message):
               "probably a false negative due to string compare \n".format(r.status_code))
 
 
-def post_rpc(url, json_input, ison_resp):
+def post_rpc(url, json_input):
     s = requests.Session()
     print("POSTing RPC {} \n".format(url))
-    r = s.post(url, data=json_input, headers=putheaders, stream=False, auth=(USERNAME, PASSWORD))
+    r = s.post(url, data=json_input, headers=put_json_headers, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
-        print("Checking... \n")
-        if (r.status_code == 200) and (json.loads(r.text) == json.loads(ison_resp)):
-            print("=>RCP posted successfully \n")
-        else:
-            print("=>RPC unsuccessful, error code: {}. If error code was 2XX it is "
-                  "probably a false negative due to string compare \n".format(r.status_code))
+        print("=>RPC posted successfully \n")
+    else:
+        print("=>Failure, status code: {} \n".format(r.status_code))
+
+
+def post_netconf_connector(url, xml_input):
+    s = requests.Session()
+    print("POSTing Netconf Connector {} \n".format(url))
+    r = s.post(url, data=xml_input, headers=post_xml_headers, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 204:
+        print("=>POST successful \n")
     else:
         print("=>Failure, status code: {} \n".format(r.status_code))
 

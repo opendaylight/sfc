@@ -85,6 +85,14 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>features-sfc-netconf</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
       <artifactId>features-sfclisp</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -322,6 +330,7 @@
             <feature>odl-sfcofl2</feature>
             <feature>odl-sfc-sb-rest</feature>
             <feature>odl-sfc-ovs</feature>
+            <feature>odl-sfc-netconf</feature>
             <feature>odl-mdsal-apidocs</feature>
             <!-- 
               Add entries here for the features you want in your local distro

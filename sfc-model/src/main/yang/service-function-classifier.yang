@@ -62,12 +62,6 @@ module service-function-classifier {
         type string;
       }
 
-      leaf rendered-service-path {
-        description
-           "The classifier will direct packets to the SFP
-          specified here";
-        type string;
-      }
       list scl-service-function-forwarder {
         description
           "The classifier will be attached to these SFFs";

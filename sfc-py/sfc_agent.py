@@ -749,8 +749,8 @@ def auto_sff_name():
                         return 0
     else:
         logger.warn("Could not determine SFF name. This means ODL is not running"
-                    "or there is no SFF with a data plane locator IP that matches"
-                    "one where the SFC agent is running. SFC Agent will retry later... \n")
+                    " or there is no SFF with a data plane locator IP that matches"
+                    " one where the SFC agent is running. SFC Agent will retry later... \n")
         return -1
 
 

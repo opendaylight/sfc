@@ -66,8 +66,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                 ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("\n########## getOriginalConfigurationData {}  {}",
                         originalServiceFunction.getType(), originalServiceFunction.getName());
-                SfcProviderServiceFunctionAPI.putServiceFunctionDescriptionExecutor(originalServiceFunction);
-                SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(originalServiceFunction);
             }
         }
 
@@ -77,8 +75,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
-                SfcProviderServiceFunctionAPI.putServiceFunctionDescriptionExecutor(createdServiceFunction);
-                SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(createdServiceFunction);
+
                 if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(createdServiceFunction)) {
                     LOG.error("Failed to create service function type: {}", createdServiceFunction.getType());
                 }
@@ -131,8 +128,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
 
 
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
-                SfcProviderServiceFunctionAPI.putServiceFunctionDescriptionExecutor(updatedServiceFunction);
-                SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(updatedServiceFunction);
 
                 // We only update SF type entry if type has changed
                 if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_32f9cce9",
+        "filename": "sfc-ui/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-22T12:55:37Z",
+      "side": 1,
+      "message": "Thanh, this is why the build is failing. Looking at the jenkins (link at bottom), you can see that it cant find it:\n\nCould not find artifact org.opendaylight.dlux:dlux-web:jar:0.1.4-SNAPSHOT in opendaylight-snapshot\n\nThe previous working version found 0.1.3-Helium-SR3\n\nhttps://jenkins.opendaylight.org/releng/job/sfc-verify-stable-helium/jdk\u003dopenjdk7,nodes\u003ddynamic_verify/3/console",
+      "range": {
+        "startLine": 19,
+        "startChar": 27,
+        "endLine": 19,
+        "endChar": 35
+      },
+      "revId": "84525a30b850a39974522cfd8df4af3c40c88c01",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

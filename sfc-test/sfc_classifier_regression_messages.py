@@ -150,7 +150,7 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF1",
         "sff-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path"
           }
         ]
       }
@@ -166,7 +166,7 @@ SERVICE_FUNCTION_OPER_JSON = """
         "name": "SF1",
         "sf-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path"
           }
         ]
       }

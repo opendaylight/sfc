@@ -436,7 +436,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                         numCreatedPathIncrementGet();
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopArrayList);
         if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty())  {
-            renderedServicePathBuilder.setName(serviceFunctionChainName + "-Path-" + pathId);
+            renderedServicePathBuilder.setName(serviceFunctionPath.getName() + "-Path-" + pathId);
         } else {
             renderedServicePathBuilder.setName(createRenderedPathInput.getName());
 

@@ -81,7 +81,7 @@ def put_and_check(url, json_req, json_resp):
     s = requests.Session()
     print("PUTing {} \n".format(url))
     r = s.put(url, data=json_req, headers=put_json_headers, stream=False, auth=(USERNAME, PASSWORD))
-    if r.status_code == 204:
+    if r.status_code == 200:
         print("Checking... \n")
         # Creation of SFPs is slow, need to pause here.
         time.sleep(2)
@@ -106,7 +106,7 @@ def check(url, json_resp, message):
               "probably a false negative due to string compare \n".format(r.status_code))
 
 
-def post_rpc(url, json_input):
+def post_netconf_rpc(url, json_input):
     s = requests.Session()
     print("POSTing RPC {} \n".format(url))
     r = s.post(url, data=json_input, headers=put_json_headers, stream=False, auth=(USERNAME, PASSWORD))
@@ -114,6 +114,19 @@ def post_rpc(url, json_input):
         print("=>RPC posted successfully \n")
     else:
         print("=>Failure, status code: {} \n".format(r.status_code))
+
+
+def post_rpc(url, json_input, json_resp):
+    s = requests.Session()
+    print("POSTing RPC {} \n".format(url))
+    r = s.post(url, data=json_input, headers=put_json_headers, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("Checking... \n")
+        if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
+            print("=>RCP posted successfully \n")
+        else:
+            print("=>RPC unsuccessful, error code: {}. If error code was 2XX it is "
+                  "probably a false negative due to string compare \n".format(r.status_code))
 
 
 def post_netconf_connector(url, xml_input):

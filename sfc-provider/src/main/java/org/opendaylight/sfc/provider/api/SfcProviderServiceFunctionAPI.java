@@ -174,6 +174,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -238,6 +240,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -299,6 +303,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -339,6 +345,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -481,6 +489,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -590,21 +600,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         sf = SfcDataStoreAPI.readTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
 
-/*        if (ODL_SFC.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunction> serviceFunctionDataObject;
-            try {
-                serviceFunctionDataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
-                if (serviceFunctionDataObject != null
-                        && serviceFunctionDataObject.isPresent()) {
-                    sf = serviceFunctionDataObject.get();
-                } else {
-                    LOG.error("Could not find Service Function {}", serviceFunctionName);
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Function {} from DataStore", serviceFunctionName);
-            }
-        }*/
         printTraceStop(LOG);
         return sf;
     }
@@ -632,6 +627,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -726,6 +723,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -758,6 +757,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -841,6 +842,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -1097,6 +1100,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -1124,7 +1129,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         } catch (InterruptedException e) {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;

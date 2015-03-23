@@ -299,7 +299,8 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
 
         boolean ret;
-        // If a RSP is deleted we  both SF and SFF operational states.
+        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
+        // If a RSP is deleted we delete both SF and SFF operational states.
         SfcProviderServiceForwarderAPI
                 .deletePathFromServiceForwarderStateExecutor(input.getName());
         SfcProviderServiceFunctionAPI
@@ -308,8 +309,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
         ret = SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(input.getName());
         DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
         deleteRenderedPathOutputBuilder.setResult(ret);
-        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder =
-                RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
+        if (ret) {
+            rpcResultBuilder =
+                    RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
+        } else {
+            String message = "Error Deleting Rendered Service Path: " + input.getName();
+            rpcResultBuilder =
+                    RpcResultBuilder.<DeleteRenderedPathOutput>failed()
+                            .withError(ErrorType.APPLICATION, message);
+        }
 
 
         return Futures.immediateFuture(rpcResultBuilder.build());
@@ -328,6 +336,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
     public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(ReadRenderedServicePathFirstHopInput input) {
 
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+        RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
         renderedServicePathFirstHop =
                             SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
@@ -338,10 +347,16 @@ public class SfcProviderRpc implements ServiceFunctionService,
                     new ReadRenderedServicePathFirstHopOutputBuilder();
             renderedServicePathFirstHopOutputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
             renderedServicePathFirstHopOutput = renderedServicePathFirstHopOutputBuilder.build();
+
+            rpcResultBuilder =
+                    RpcResultBuilder.success(renderedServicePathFirstHopOutput);
+        } else {
+            String message = "Error Reading RSP First Hop from DataStore: " + input.getName();
+            rpcResultBuilder =
+                    RpcResultBuilder.<ReadRenderedServicePathFirstHopOutput>failed()
+                            .withError(ErrorType.APPLICATION, message);
         }
 
-        RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder =
-                RpcResultBuilder.success(renderedServicePathFirstHopOutput);
 
         return Futures.immediateFuture(rpcResultBuilder.build());
     }

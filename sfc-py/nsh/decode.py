@@ -177,6 +177,10 @@ def decode_trace_req(payload, trace_req_header_values):
 
 def decode_trace_resp(payload, trace_resp_header_values):
     """Decode headers for a OAM Trace Response"""
+
+
+    sf_type = None
+    sf_name = None
     trace_header = payload[NSH_OAM_PKT_START_OFFSET: NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
@@ -188,12 +192,15 @@ def decode_trace_resp(payload, trace_resp_header_values):
     trace_resp_header_values.ip_3 = _header_values[5]
     trace_resp_header_values.ip_4 = _header_values[6]
 
-    sf_type_len = payload[NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET]
-    sf_type_end = NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET + (sf_type_len << 2)
-    sf_type = payload[NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET:sf_type_end].decode('utf-8')
-    sf_name_len = payload[sf_type_end]
-    sf_name_end = sf_type_end + 1 + (sf_name_len << 2)
-    sf_name = payload[sf_type_end + 1:sf_name_end].decode('utf-8')
+    try:
+        sf_type_len = payload[NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET]
+        sf_type_end = NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET + (sf_type_len << 2)
+        sf_type = payload[NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET:sf_type_end].decode('utf-8')
+        sf_name_len = payload[sf_type_end]
+        sf_name_end = sf_type_end + 1 + (sf_name_len << 2)
+        sf_name = payload[sf_type_end + 1:sf_name_end].decode('utf-8')
+    except IndexError:
+        logger.debug("Trace with Service Index {} has no report\n".format(payload[15]))
 
     if not __debug__:
         logger.info('NSH Trace Req Header Decode ...')

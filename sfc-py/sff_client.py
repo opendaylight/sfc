@@ -244,12 +244,12 @@ def main(argv):
                                         NSH_NEXT_PROTO_OAM, int(sfp_id), int(sfp_index))
         ctx_header_values = CONTEXTHEADER(0, 0, 0, 0)
         trace_req_header_values = build_trace_req_header(OAM_TRACE_REQ_TYPE, 254,
-                                                         remote_sff_ip, 5000)
+                                                         remote_sff_ip, 55555)
         traceclient = MyTraceClient(loop, vxlan_header_values, base_header_values,
                                     ctx_header_values, trace_req_header_values, remote_sff_ip, int(remote_sff_port),
                                     int(num_trace_hops))
 
-        start_client(loop, (str(ipaddress.IPv4Address(trace_req_header_values.ip_4)), 5000),
+        start_client(loop, (str(ipaddress.IPv4Address(trace_req_header_values.ip_4)), 55555),
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)

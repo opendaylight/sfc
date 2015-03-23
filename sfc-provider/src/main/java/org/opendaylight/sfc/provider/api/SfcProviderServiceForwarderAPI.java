@@ -662,8 +662,9 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
             LOG.warn(FAILED_TO_STR , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
-
         return ret;
     }
 
@@ -692,6 +693,8 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
             LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         printTraceStop(LOG);
         return ret;

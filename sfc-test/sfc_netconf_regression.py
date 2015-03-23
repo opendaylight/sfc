@@ -40,5 +40,10 @@ if __name__ == "__main__":
         print("Error sending POST request to spawn connector \n")
 
     input("Press Enter to finish test...")
+    time.sleep(2)
+    check(SFF_ONE_URL.format(device_name), SERVICE_FUNCTION_FORWARDER_NETCONF_JSON,
+          "Checking if Netconf SFF was created successfully")
+
+    input("Press Enter to finish test...")
 
     process.kill()

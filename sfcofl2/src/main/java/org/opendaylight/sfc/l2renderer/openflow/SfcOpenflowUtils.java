@@ -64,6 +64,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 
+/* Import Nicira extension */
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionSetNsiNodesNodeTableFlowApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionSetNspNodesNodeTableFlowApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.set.nsi.grouping.NxSetNsi;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.set.nsi.grouping.NxSetNsiBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.set.nsp.grouping.NxSetNsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.set.nsp.grouping.NxSetNspBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsiBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+import com.google.common.collect.Lists;
+
 public class SfcOpenflowUtils {
 
     public static final int ETHERTYPE_IPV4 = 0x0800;
@@ -171,6 +192,49 @@ public class SfcOpenflowUtils {
         metadata.setMetadataMask(metadataMask);
 
         match.setMetadata(metadata.build());
+    }
+
+    private static void addExtension (MatchBuilder match, Class<? extends ExtensionKey> extensionKey, NxAugMatchNodesNodeTableFlow am) {
+        GeneralAugMatchNodesNodeTableFlow existingAugmentations = match.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
+        List<ExtensionList> extensions = null;
+        if (existingAugmentations != null ) {
+            extensions = existingAugmentations.getExtensionList();
+        }
+        if (extensions == null) {
+            extensions = Lists.newArrayList();
+        }
+
+        extensions.add(new ExtensionListBuilder()
+                           .setExtensionKey(extensionKey)
+                           .setExtension(new ExtensionBuilder()
+                           .addAugmentation(NxAugMatchNodesNodeTableFlow.class, am)
+                           .build())
+                           .build());
+
+        GeneralAugMatchNodesNodeTableFlow m = new GeneralAugMatchNodesNodeTableFlowBuilder()
+        .setExtensionList(extensions)
+        .build();
+        match.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, m);
+    }
+
+    public static void addMatchNxNsp(MatchBuilder match, long nsp) {
+        NxAugMatchNodesNodeTableFlow am =
+                new NxAugMatchNodesNodeTableFlowBuilder()
+                .setNxmNxNsp(new NxmNxNspBuilder()
+                .setValue(nsp)
+                .build())
+                .build();
+        addExtension(match, NxmNxNspKey.class, am);
+    }
+
+    public static void addMatchNxNsi(MatchBuilder match, short nsi) {
+        NxAugMatchNodesNodeTableFlow am =
+                new NxAugMatchNodesNodeTableFlowBuilder()
+                .setNxmNxNsi(new NxmNxNsiBuilder()
+                .setNsi(nsi)
+                .build())
+                .build();
+        addExtension(match, NxmNxNsiKey.class, am);
     }
 
 
@@ -331,6 +395,30 @@ public class SfcOpenflowUtils {
 
         ActionBuilder ab = createActionBuilder(order);
         ab.setAction(dac.build());
+
+        return ab.build();
+    }
+
+    public static Action createActionNxSetNsp(Long nsp, int order) {
+        NxSetNspBuilder builder = new NxSetNspBuilder();
+        if (nsp != null) {
+            builder.setNsp(nsp);
+        }
+        NxSetNsp r = builder.build();
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new NxActionSetNspNodesNodeTableFlowApplyActionsCaseBuilder().setNxSetNsp(r).build());
+
+        return ab.build();
+    }
+
+    public static Action createActionNxSetNsi(Short nsi, int order) {
+        NxSetNsiBuilder builder = new NxSetNsiBuilder();
+        if (nsi != null) {
+            builder.setNsi(nsi);
+        }
+        NxSetNsi r = builder.build();
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new NxActionSetNsiNodesNodeTableFlowApplyActionsCaseBuilder().setNxSetNsi(r).build());
 
         return ab.build();
     }

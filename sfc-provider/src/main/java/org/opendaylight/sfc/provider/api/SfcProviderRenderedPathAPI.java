@@ -200,6 +200,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
             LOG.warn(FAILED_TO_STR , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         return ret;
     }
@@ -562,8 +564,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
             LOG.warn(FAILED_TO_STR , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
-
         return ret;
     }
 
@@ -648,8 +651,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
             LOG.warn(FAILED_TO_STR , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
-
         return ret;
     }
 
@@ -664,7 +668,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         RenderedServicePathKey  renderedServicePathKey = new RenderedServicePathKey(renderedServicePathName);
         InstanceIdentifier<RenderedServicePath> rspEntryIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePathKey).toInstance();
+                .child(RenderedServicePath.class, renderedServicePathKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, LogicalDatastoreType.OPERATIONAL)) {
             ret = true;
@@ -697,6 +701,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
             LOG.warn(FAILED_TO_STR , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
         }
         if (!ret) {
             LOG.error("{}: Failed to delete RSP {}", Thread.currentThread().getStackTrace()[1],
@@ -774,7 +780,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     }
 
     private static String getServiceTypeName(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
-        int i;
         String serviceTypeName = null;
 
         printTraceStart(LOG);
@@ -791,7 +796,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         } else if (serviceFunctionType == Qos.class) {
             serviceTypeName = "qos";
         } else {
-            LOG.error("Unknowed ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
+            LOG.error("Unknown ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
         }
         printTraceStop(LOG);
         return serviceTypeName;

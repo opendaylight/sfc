@@ -29,11 +29,13 @@ RSP_URL = "http://" + ODLIP + "/restconf/operational/rendered-service-path:rende
 SFP_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-path:service-function-paths/" \
                                   "service-function-path/{}/"
 SF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/service-function/{}/"
+SFF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:service-function-forwarders/" \
+                                  "service-function-forwarder/{}/"
 IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
 RSP_RPC_URL = "http://" + ODLIP + "/restconf/operations/rendered-service-path:create-rendered-path"
 SCF_URL = "http://" + ODLIP + "/restconf/config/service-function-classifier:service-function-classifiers/"
 NETCONF_CONNECTOR_URL = "http://" + ODLIP + "/restconf/config/network-topology:network-topology/topology/" \
-                        "topology-netconf/node/controller-config/yang-ext:mount/config:modules"
+                                            "topology-netconf/node/controller-config/yang-ext:mount/config:modules"
 
 USERNAME = "admin"
 PASSWORD = "admin"

@@ -38,3 +38,13 @@ NETCONF_CONNECTOR_XML = """
   </processing-executor>
 </module>"""
 
+SERVICE_FUNCTION_FORWARDER_NETCONF_JSON = """
+{
+  "service-function-forwarder": [
+    {
+      "name": "sfc-netconf",
+      "ip-mgmt-address": "127.0.0.1"
+    }
+  ]
+}"""
+

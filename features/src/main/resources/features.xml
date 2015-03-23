@@ -18,6 +18,7 @@
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
+    <!--<repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${feature.openflowplugin.version}/xml/features</repository>-->
     <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
     <!--<repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>-->
     <!--<repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>-->
@@ -41,6 +42,7 @@
 
     <feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfc :: OpenFlowL2 '>
         <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>

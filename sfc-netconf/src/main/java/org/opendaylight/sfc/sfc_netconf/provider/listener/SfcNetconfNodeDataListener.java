@@ -68,12 +68,6 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
-/*        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if (entry.getValue() instanceof OvsdbNodeAugmentation) {
-                OvsdbNodeAugmentation originalOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
-                LOG.debug("\nOriginal Rendered Service Path: {}", originalOvsdbNodeAugmentation.toString());
-            }
-        }*/
 
         // Node CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
@@ -87,6 +81,12 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
             }
         }
 
+
+        //enum connecting;
+
+        //enum connected;
+
+        //enum unable-to-connect;
 
         // EXAMPLE: New node discovery
         // React to new Netconf nodes added to the Netconf topology or existing
@@ -122,7 +122,8 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
         // topology
         for ( Map.Entry<InstanceIdentifier<?>,
                 DataObject> entry : change.getUpdatedData().entrySet()) {
-            if (entry.getKey().getTargetType() == NetconfNode.class) {
+            if ((entry.getKey().getTargetType() == NetconfNode.class) &&
+                    (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 // We have a Netconf device
                 // We have a Netconf device
                 NodeId nodeId = getNodeId(entry);
@@ -132,10 +133,16 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
 
                 NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == NetconfNodeFields.ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode
+                    if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
+                            SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetonf(nodeName, nnode))) {
+                        LOG.info("Successfully created SFF from Netconf node {}", nodeName);
+                    } else {
+                        LOG.error("Error creating SFF from Netconf node {}", nodeName);
+                    }
+/*                    List<String> capabilities = nnode
                             .getAvailableCapabilities()
                             .getAvailableCapability();
-                    LOG.info("Capabilities: {}", capabilities);
+                    LOG.info("Capabilities: {}", capabilities);*/
                 }
             }
         }

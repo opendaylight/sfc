@@ -577,68 +577,62 @@ RENDERED_SERVICE_PATH_ADD_ONE_JSON = """
   "rendered-service-paths": {
     "rendered-service-path": [
       {
-        "name": "Path-2-SFC2",
-        "path-id": 38,
-        "service-chain-name": "SFC2",
-        "starting-index": 2,
-        "rendered-service-path-hop": [
-          {
-            "hop-number": 0,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
-            "service-index": 2
-          },
-          {
-            "hop-number": 1,
-            "service-function-name": "SF2",
-            "service-function-forwarder": "SFF1",
-            "service-index": 1
-          }
-        ]
-      },
-      {
-        "name": "Path-1-SFC1",
-        "path-id": 37,
+        "name": "SFC1-Path-2",
+        "path-id": 2,
+        "parent-service-function-path": "Path-1-SFC1",
+        "starting-index": 255,
         "service-chain-name": "SFC1",
-        "starting-index": 3,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
-            "service-function-name": "SF1",
+            "service-index": 255,
             "service-function-forwarder": "SFF1",
-            "service-index": 3
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF1"
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF5",
-            "service-function-forwarder": "SFF4",
-            "service-index": 2
+            "service-index": 254,
+            "service-function-forwarder": "SFF2",
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF2"
           },
           {
             "hop-number": 2,
-            "service-function-name": "SF4",
+            "service-index": 253,
             "service-function-forwarder": "SFF3",
-            "service-index": 1
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF3"
           }
         ]
       },
       {
-        "name": "Path-3-SFC2",
-        "path-id": 39,
-        "service-chain-name": "SFC2",
-        "starting-index": 2,
+        "name": "SFC1-Path-2-Reverse",
+        "path-id": 3,
+        "parent-service-function-path": "Path-1-SFC1",
+        "starting-index": 255,
+        "service-chain-name": "SFC1",
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF2",
-            "service-index": 2
+            "service-index": 255,
+            "service-function-forwarder": "SFF3",
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF3"
           },
           {
             "hop-number": 1,
-            "service-function-name": "SF2",
+            "service-index": 254,
+            "service-function-forwarder": "SFF2",
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF2"
+          },
+          {
+            "hop-number": 2,
+            "service-index": 253,
             "service-function-forwarder": "SFF1",
-            "service-index": 1
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF1"
           }
         ]
       }

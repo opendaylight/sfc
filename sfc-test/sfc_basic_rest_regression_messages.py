@@ -328,93 +328,81 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
   "rendered-service-paths": {
     "rendered-service-path": [
       {
-        "name": "Path-1-SFC1-Reverse",
+        "name": "Path-1-SFC1-Path-1",
+        "path-id": 1,
         "parent-service-function-path": "Path-1-SFC1",
-        "path-id": 2,
-        "service-chain-name": "SFC1",
         "starting-index": 255,
+        "service-chain-name": "SFC1",
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
             "service-index": 255,
+            "service-function-forwarder": "SFF1",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3"
+            "service-function-name": "SF1"
           },
           {
             "hop-number": 1,
             "service-index": 254,
+            "service-function-forwarder": "SFF2",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF2",
-            "service-function-forwarder": "SFF2"
+            "service-function-name": "SF2"
           },
           {
             "hop-number": 2,
             "service-index": 253,
+            "service-function-forwarder": "SFF3",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1"
+            "service-function-name": "SF3"
           }
         ]
       },
       {
-        "name": "Path-1-SFC1",
+        "name": "Path-1-SFC1-Path-1-Reverse",
+        "path-id": 2,
         "parent-service-function-path": "Path-1-SFC1",
-        "path-id": 1,
-        "service-chain-name": "SFC1",
         "starting-index": 255,
+        "service-chain-name": "SFC1",
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
             "service-index": 255,
+            "service-function-forwarder": "SFF3",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1"
+            "service-function-name": "SF3"
           },
           {
             "hop-number": 1,
             "service-index": 254,
+            "service-function-forwarder": "SFF2",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF2",
-            "service-function-forwarder": "SFF2"
+            "service-function-name": "SF2"
           },
           {
             "hop-number": 2,
             "service-index": 253,
+            "service-function-forwarder": "SFF1",
             "service-function-forwarder-locator": "eth0",
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3"
+            "service-function-name": "SF1"
           }
         ]
       }
     ]
   }
-}
-"""
+}"""
 
 SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
 {
   "service-function-forwarders-state": {
     "service-function-forwarder-state": [
       {
-        "name": "SFF1",
-        "sff-service-path": [
-          {
-            "name": "Path-1-SFC1"
-          },
-          {
-            "name": "Path-1-SFC1-Reverse"
-          }
-        ]
-      },
-      {
         "name": "SFF2",
         "sff-service-path": [
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-1-SFC1-Path-1"
           },
           {
-            "name": "Path-1-SFC1-Reverse"
+            "name": "Path-1-SFC1-Path-1-Reverse"
           }
         ]
       },
@@ -422,10 +410,21 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF3",
         "sff-service-path": [
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-1-SFC1-Path-1"
           },
           {
-            "name": "Path-1-SFC1-Reverse"
+            "name": "Path-1-SFC1-Path-1-Reverse"
+          }
+        ]
+      },
+      {
+        "name": "SFF1",
+        "sff-service-path": [
+          {
+            "name": "Path-1-SFC1-Path-1"
+          },
+          {
+            "name": "Path-1-SFC1-Path-1-Reverse"
           }
         ]
       }
@@ -438,24 +437,13 @@ SERVICE_FUNCTION_OPER_JSON = """
   "service-functions-state": {
     "service-function-state": [
       {
-        "name": "SF3",
-        "sf-service-path": [
-          {
-            "name": "Path-1-SFC1-Reverse"
-          },
-          {
-            "name": "Path-1-SFC1"
-          }
-        ]
-      },
-      {
         "name": "SF2",
         "sf-service-path": [
           {
-            "name": "Path-1-SFC1-Reverse"
+            "name": "Path-1-SFC1-Path-1-Reverse"
           },
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-1-SFC1-Path-1"
           }
         ]
       },
@@ -463,10 +451,21 @@ SERVICE_FUNCTION_OPER_JSON = """
         "name": "SF1",
         "sf-service-path": [
           {
-            "name": "Path-1-SFC1-Reverse"
+            "name": "Path-1-SFC1-Path-1-Reverse"
           },
           {
-            "name": "Path-1-SFC1"
+            "name": "Path-1-SFC1-Path-1"
+          }
+        ]
+      },
+      {
+        "name": "SF3",
+        "sf-service-path": [
+          {
+            "name": "Path-1-SFC1-Path-1-Reverse"
+          },
+          {
+            "name": "Path-1-SFC1-Path-1"
           }
         ]
       }
@@ -530,6 +529,28 @@ SERVICE_PATH_ADD_ONE_JSON = """
       "service-chain-name": "SFC2"
     }
   ]
+}"""
+
+
+SERVICE_PATH_ADD_ONE_RESP_JSON = """
+{
+  "service-function-paths": {
+    "service-function-path": [
+      {
+        "name": "Path-1-SFC1",
+        "symmetric": true,
+        "service-chain-name": "SFC1"
+      },
+      {
+        "name": "Path-3-SFC2",
+        "service-chain-name": "SFC2"
+      },
+      {
+        "name": "Path-2-SFC2",
+        "service-chain-name": "SFC2"
+      }
+    ]
+  }
 }"""
 
 SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON = """

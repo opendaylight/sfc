@@ -123,7 +123,7 @@ def post_rpc(url, json_input, json_resp):
     if r.status_code == 200:
         print("Checking... \n")
         if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
-            print("=>RCP posted successfully \n")
+            print("=>RPC posted successfully \n")
         else:
             print("=>RPC unsuccessful, error code: {}. If error code was 2XX it is "
                   "probably a false negative due to string compare \n".format(r.status_code))

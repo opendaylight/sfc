@@ -1,0 +1,35 @@
+# Only HTTP goes to SF1 and then on to SFF2
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1 "table=0,priority=10,in_port=3,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=1"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=2"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1 "table=0,priority=10,in_port=2,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=1"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=3"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1 "table=0,priority=1,actions=drop"
+
+# Using a switch instead of a SF to test, to be removed later. does a simple loop-back
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=in_port"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff1-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=in_port"
+
+
+# HTTP goes to SF1 and then on to SFF2
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2 "table=0,priority=10,in_port=2,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=1"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=3"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2 "table=0,priority=10,in_port=3,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=1"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=2"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2 "table=0,priority=1,actions=drop"
+
+# Using a switch instead of a SF to test, to be removed later. does a simple loop-back
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=in_port"
+sudo ovs-ofctl -O OpenFlow13 add-flow sff2-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=in_port"
+
+
+# HTTP goes to SF3 and then on to SFF3
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3 "table=0,priority=10,in_port=2,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=1"
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=output=3"
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3 "table=0,priority=10,in_port=3,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=1"
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3 "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=output=2"
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3 "table=0,priority=1,actions=drop"
+
+# Using a switch instead of a SF to test, to be removed later. does a simple loop-back
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=in_port"
+# sudo ovs-ofctl -O OpenFlow13 add-flow sff3-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=in_port"
+

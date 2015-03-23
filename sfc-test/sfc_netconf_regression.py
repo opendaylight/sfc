@@ -32,7 +32,7 @@ if __name__ == "__main__":
     except CalledProcessError as e:
         print(e.output)
 
-    input("Press Enter to continue to Auto-Provisioning...")
+    # input("Press Enter to continue to Auto-Provisioning...")
 
     try:
         post_netconf_connector(NETCONF_CONNECTOR_URL, NETCONF_CONNECTOR_XML.format(device_name, "localhost"))

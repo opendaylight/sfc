@@ -23,15 +23,15 @@ __status__ = "alpha"
 
 
 """
-Manage service [and its' associated thread] starting and stopping
+Manage LOCAL service [and associated thread] starting and stopping
 """
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 #: constants
-# WE assume agent and thread(s) are co-located
-SFF_UDP_IP = "127.0.0.1"
 DPCP = 'data_plane_control_port'
 
 
@@ -73,34 +73,47 @@ def _check_thread_state(service_type, service_name, thread):
     """
     global_threads = _get_global_threads(service_type)
 
-    while not thread.is_alive():
+    timeout = 0
+    while timeout < 10:
         sleep(0.1)
+        timeout += 0.1
 
-    while service_name not in global_threads:
-        sleep(0.1)
+        if not thread.is_alive():
+            continue
 
-    while not global_threads[service_name]:
-        sleep(0.1)
+        if service_name not in global_threads:
+            continue
+
+        if not global_threads[service_name]:
+            continue
+
+        break
+
+    else:
+        raise RuntimeError('Failed to start %s "%s": service thread is '
+                           'still not running after 10s or SfcGlobals was not'
+                           'updated properly' %
+                           (service_type.upper(), service_name))
 
     global_threads[service_name]['thread'] = thread
 
 
-def start_server(loop, addr, udpserver):
+def _connect(loop, addr, service):
     """
-    TODO: add docstring
+    Create a background socket connection for the specified service.
 
     :param loop:
     :type loop: `:class:asyncio.unix_events._UnixSelectorEventLoop`
-    :param addr: IP address and port
-    :type addr: tuple (str, int)
-    :param udpserver: UDP server instance
-    :type udpserver: `:class:ControlUdpServer`
+    :param addr: IP address, port
+    :type addr: tuple
+    :param service: service instance
+    :type service: `:class:common.services.BasicService`
 
     :return `:class:asyncio.selector_events._SelectorDatagramTransport`
 
     """
-    listen = loop.create_datagram_endpoint(lambda: udpserver, local_addr=addr)
-    transport = loop.run_until_complete(listen)[0]
+    listen = loop.create_datagram_endpoint(lambda: service, local_addr=addr)
+    transport, _ = loop.run_until_complete(listen)
 
     return transport
 
@@ -123,41 +136,35 @@ def start_service(service_name, service_ip, service_port, service_type):
     :type service_type: str
 
     """
-    service_threads = _get_global_threads(service_type)
-    service_threads[service_name] = {}
-
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
+    logger.info('Starting %s serving as %s at %s:%s',
+                service_type.upper(), service_name, service_ip, service_port)
 
     service_class = find_service(service_type)
     service = service_class(loop)
     service.set_name(service_name)
 
-    logger.info('Starting %s serving as %s at %s:%s',
-                service_type.upper(), service_name, service_ip, service_port)
-
-    udpserver_transport = start_server(loop,
-                                       (service_ip, service_port),
-                                       service)
+    service_transport = _connect(loop, (service_ip, service_port), service)
+    service_socket = service_transport.get_extra_info('socket')
 
     control_port = sfc_globals.get_data_plane_control_port()
     sfc_globals.set_data_plane_control_port(control_port + 1)
 
-    udpserver_socket = udpserver_transport.get_extra_info('socket')
-
-    service_threads[service_name]['socket'] = udpserver_socket
+    service_threads = _get_global_threads(service_type)
+    service_threads[service_name] = {}
+    service_threads[service_name]['socket'] = service_socket
     service_threads[service_name][DPCP] = control_port
 
     logger.info('Starting control UDP server for %s at %s:%s',
                 service_name, service_ip, control_port)
 
-    control_udp_server = find_service(CUDP)(loop)
-    start_server(loop,
-                 (service_ip, control_port),
-                 control_udp_server)
+    control_udp_server_class = find_service(CUDP)
+    control_udp_server = control_udp_server_class(loop)
+    _connect(loop, (service_ip, control_port), control_udp_server)
 
     loop.run_forever()
-    udpserver_socket.close()
     loop.close()
 
 
@@ -165,8 +172,9 @@ def stop_service(service_type, service_name):
     """
     Stop a service.
 
-    Stop a service by sending an ending message to its control UDP server.
-    This will result in exiting the thread in which both are running.
+    Stop a service by sending a message (no matter what the content is at the
+    moment) to its control UDP server. This will result in exiting the thread
+    in which both are running.
 
     :param service_type: service type (SF or SFF)
     :type service_type: str
@@ -175,19 +183,32 @@ def stop_service(service_type, service_name):
 
     """
     service_threads = _get_global_threads(service_type)
+    service_thread = service_threads[service_name]['thread']
+    service_socket = service_threads[service_name]['socket']
+
+    service_CUDP_ip = '127.0.0.1'
+    service_CUDP_port = service_threads[service_name][DPCP]
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # TODO: at this point it doesn't matter what the message body is ...
-    sock.sendto(b"Kill thread",
-                (SFF_UDP_IP, service_threads[service_name][DPCP]))
+    sock.sendto(b'', (service_CUDP_ip, service_CUDP_port))
 
-    thread = service_threads[service_name]['thread']
-    while thread.is_alive():
+    timeout = 0
+    while timeout < 10:
         sleep(0.1)
+        timeout += 0.1
 
-    sock = service_threads[service_name]['socket']
-    if not sock._closed:
-        sock.close()
+        if service_thread.is_alive():
+            continue
+
+        break
+
+    else:
+        raise RuntimeError('Failed to stop %s "%s": service thread is '
+                           'still running after 10s' %
+                           (service_type.upper(), service_name))
+
+    if not service_socket._closed:
+        service_socket.close()
 
     service_threads.pop(service_name, None)
 
@@ -248,12 +269,3 @@ def stop_sff(sff_name):
     """
     logger.info("Stopping Service Function Forwarder: %s", sff_name)
     stop_service(SFF, sff_name)
-
-
-# This does not work in MacOS when SFF/SF are different python
-# applications on the same machine
-# def start_server(loop, addr, service, myip):
-#     t = asyncio.Task(loop.create_datagram_endpoint(
-#         service, local_addr=(myip, 57444), remote_addr=addr))
-#     loop.run_until_complete(t)
-#     print('Listening for packet on:', addr)

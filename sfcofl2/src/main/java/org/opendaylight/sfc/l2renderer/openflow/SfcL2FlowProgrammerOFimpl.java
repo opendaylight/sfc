@@ -84,7 +84,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final int FLOW_PRIORITY_CLASSIFICATION = 256;
     private static final int FLOW_PRIORITY_NEXT_HOP = 256;
     private static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 256;
-    private static final int FLOW_PRIORITY_MATCH_ANY = 5000;
+    private static final int FLOW_PRIORITY_MATCH_ANY = 5;
 
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
     private static final int QUEUE_SIZE = 50;
@@ -281,10 +281,15 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     // Congfigure Table 0, Transport Ingress
     //
     public void configureIpv4TransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
-        ConfigureTransportIngressThread configureIngressTransportThread =
-                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, isAddFlow);
+        ConfigureTransportIngressThread configureIngressTransportTcpThread =
+                new ConfigureTransportIngressThread(
+                        sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, SfcOpenflowUtils.IP_PROTOCOL_TCP, isAddFlow);
+        ConfigureTransportIngressThread configureIngressTransportUdpThread =
+                new ConfigureTransportIngressThread(
+                        sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, SfcOpenflowUtils.IP_PROTOCOL_UDP, isAddFlow);
         try {
-            threadPoolExecutorService.execute(configureIngressTransportThread);
+            threadPoolExecutorService.execute(configureIngressTransportTcpThread);
+            threadPoolExecutorService.execute(configureIngressTransportUdpThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
@@ -292,7 +297,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
         ConfigureTransportIngressThread configureIngressTransportThread =
-                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN, isAddFlow);
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN, (short) 0, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -303,7 +308,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
 
         ConfigureTransportIngressThread configureIngressTransportThread =
-                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST, isAddFlow);
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST, (short) 0, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -315,11 +320,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         String sffNodeName;
         boolean isAddFlow;
         long etherType;
+        short ipProtocol;
 
-        public ConfigureTransportIngressThread(final String sffNodeName, long etherType, final boolean isAddFlow) {
+        public ConfigureTransportIngressThread(final String sffNodeName, long etherType, short ipProtocol, final boolean isAddFlow) {
             this.sffNodeName = sffNodeName;
             this.etherType = etherType;
             this.isAddFlow = isAddFlow;
+            this.ipProtocol = ipProtocol;
         }
 
         @Override
@@ -332,6 +339,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 // Create the matching criteria
                 MatchBuilder match = new MatchBuilder();
                 SfcOpenflowUtils.addMatchEtherType(match, this.etherType);
+                if(this.ipProtocol > 0) {
+                    SfcOpenflowUtils.addMatchIpProtocol(match, this.ipProtocol);
+                }
 
                 //
                 // Action, goto Ingress table
@@ -695,8 +705,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sfpId [{}] srcMac [{}] dstMac [{}]",
+                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sff [{}] sfpId [{}] srcMac [{}] dstMac [{}]",
                         this.sffNodeName, this.sfpId, this.srcMac, this.dstMac);
+
+                int flowPriority = FLOW_PRIORITY_NEXT_HOP;
 
                 //
                 // Create the matching criteria
@@ -706,7 +718,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(sfpId), METADATA_MASK_SFP_MATCH);
 
                 // match on the src mac
-                SfcOpenflowUtils.addMatchSrcMac(match, srcMac);
+                if(srcMac != null) {
+                    SfcOpenflowUtils.addMatchSrcMac(match, srcMac);
+                } else {
+                    // If the srcSffLocatorType, then the packet is entering SFC and we dont know from where
+                    // Make it a lower priority, and only match on the pathId
+                    flowPriority -= 10;
+                }
 
                 //
                 // Create the Actions
@@ -746,7 +764,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder nextHopFlow =
                         SfcOpenflowUtils.createFlowBuilder(
                                 TABLE_INDEX_NEXT_HOP,
-                                FLOW_PRIORITY_NEXT_HOP,
+                                flowPriority,
                                 "nextHop",
                                 match,
                                 isb);
@@ -766,11 +784,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     //
     // Table 10, Transport Egress
-    // TODO we need to parameterize the out port "1"
     //
-    public void configureMacTransportEgressFlow(final String sffNodeName, final String dstMac, final boolean isAddFlow) {
+    public void configureMacTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, int port, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -778,9 +796,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
-    public void configureVlanTransportEgressFlow(final String sffNodeName, final String dstMac, final int dstVlan, final boolean isAddFlow) {
+    public void configureVlanTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, final int dstVlan, int port, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, isAddFlow);
         configureEgressTransportThread.setDstVlan(dstVlan);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
@@ -789,10 +808,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
-    public void configureMplsTransportEgressFlow(final String sffNodeName, final String dstMac, final long mplsLabel, final boolean isAddFlow) {
+    public void configureMplsTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, final long mplsLabel, int port, final boolean isAddFlow) {
 
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, dstMac, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, isAddFlow);
         configureEgressTransportThread.setMplsLabel(mplsLabel);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
@@ -803,17 +823,21 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     private class ConfigureTransportEgressThread implements Runnable {
         String sffNodeName;
+        String srcMac;
         String dstMac;
         int dstVlan;
         long mplsLabel;
+        int port;
         boolean isAddFlow;
 
-        public ConfigureTransportEgressThread(final String sffNodeName, String dstMac, boolean isAddFlow) {
+        public ConfigureTransportEgressThread(final String sffNodeName, String srcMac, String dstMac, int port, boolean isAddFlow) {
             super();
             this.sffNodeName = sffNodeName;
+            this.srcMac = srcMac;
             this.dstMac = dstMac;
             this.dstVlan = -1;   // unused
             this.mplsLabel = -1; // unused
+            this.port = port;
             this.isAddFlow = isAddFlow;
         }
         public void setDstVlan(final int dstVlan) { this.dstVlan = dstVlan; }
@@ -825,11 +849,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 LOG.info("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow sff [{}] mac [{}] vlan [{}] mpls [{}]",
                         this.sffNodeName, this.dstMac, this.dstVlan, this.mplsLabel);
 
+                int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+
                 MatchBuilder match = new MatchBuilder();
-                SfcOpenflowUtils.addMatchDstMac(match, dstMac);
+                if(dstMac != null) {
+                    SfcOpenflowUtils.addMatchDstMac(match, dstMac);
+                    flowPriority -= 10;
+                }
 
                 int order = 0;
                 List<Action> actionList = new ArrayList<Action>();
+
+                // Set the macSrc
+                Action setMacSrc = SfcOpenflowUtils.createActionSetDlSrc(this.srcMac, order++);
+                actionList.add(setMacSrc);
 
                 // Optionally set either the VLAN or MPLS info
                 if(dstVlan > 0) {
@@ -846,8 +879,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     actionList.add(setMpls);
                 }
 
-                // TODO we need to parameterize the out port "1"
-                Action outPortBuilder = SfcOpenflowUtils.createActionOutPort("1", order);
+                Action outPortBuilder = SfcOpenflowUtils.createActionOutPort(this.port, order);
                 actionList.add(outPortBuilder);
 
                 // Create an Apply Action
@@ -866,7 +898,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder egressTransportFlow =
                         SfcOpenflowUtils.createFlowBuilder(
                                 TABLE_INDEX_TRANSPORT_EGRESS,
-                                FLOW_PRIORITY_TRANSPORT_EGRESS,
+                                flowPriority,
                                 "default_egress_flow",
                                 match,
                                 isb);

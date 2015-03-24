@@ -85,7 +85,17 @@ module rendered-service-path {
         type string;
         description
           "Service Function Path from which this RSP was instantiated";
-
+      }
+      leaf transport-type {
+        type sfc-sl:sl-transport-type-def;
+        default "service-locator:vxlan-gpe";
+        description
+          "Transport type as set in the Parent Service Function Path";
+      }
+      container rendered-service-path-egress-data-plane-locator {
+        uses sfc-sl:data-plane-locator;
+        description
+          "Rendered Service Path Egress Data Plane Locator details.";
       }
       leaf context-metadata {
         type sfc-md:context-metadata-ref;
@@ -126,6 +136,11 @@ module rendered-service-path {
           type sfc-sff:service-function-forwarder-locator-ref;
           description
             "The name of the SFF data plane locator";
+        }
+        container rendered-service-path-hop-data-plane-locator {
+          uses sfc-sl:data-plane-locator;
+          description
+            "Transport details to be used on this hop of this RSP";
         }
         leaf service-index {
           type uint8;
@@ -189,7 +204,6 @@ module rendered-service-path {
       }
     }
   }
-
 
   rpc delete-rendered-path {
     description
@@ -284,6 +298,7 @@ module rendered-service-path {
       }
 
       uses sfc-sl:ip-port-locator;
+      uses sfc-sl:mac-address-locator;
       uses sfc-sl:mpls-locator;
     }
   }

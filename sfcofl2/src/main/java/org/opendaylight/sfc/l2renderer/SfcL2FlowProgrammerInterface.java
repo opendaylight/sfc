@@ -60,11 +60,14 @@ public interface SfcL2FlowProgrammerInterface {
     // Table 10, Transport Egress
     // TODO we need to parameterize the out port "1"
     //
-    public void configureMacTransportEgressFlow(final String sffNodeName, final String dstMac, final boolean isAddFlow);
+    public void configureMacTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, int port, final boolean isAddFlow);
 
-    public void configureVlanTransportEgressFlow(final String sffNodeName, final String dstMac, final int dstVlan, final boolean isAddFlow);
+    public void configureVlanTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, final int dstVlan, int port, final boolean isAddFlow);
 
-    public void configureMplsTransportEgressFlow(final String sffNodeName, final String dstMac, final long mplsLabel, final boolean isAddFlow);
+    public void configureMplsTransportEgressFlow(
+            final String sffNodeName, final String srcMac, final String dstMac, final long mplsLabel, int port, final boolean isAddFlow);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

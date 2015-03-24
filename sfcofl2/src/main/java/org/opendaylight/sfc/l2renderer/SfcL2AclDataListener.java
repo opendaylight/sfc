@@ -19,11 +19,11 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
+//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Matches;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIp;
@@ -100,10 +100,25 @@ public class SfcL2AclDataListener extends SfcL2AbstractDataListener {
         while (aclEntryIter.hasNext()) {
 
             AccessListEntries createdAccessListEntries = aclEntryIter.next();
+            /* TODO this class is currently broken (March 9, 2015)
+            LOG.info("configureAclFlows createdAccessListEntries {}", createdAccessListEntries);
+            LOG.info("configureAclFlows createdAccessListEntries.getActions() {}", createdAccessListEntries.getActions());
+
+            // This call is returning null
+            LOG.info("configureAclFlows createdAccessListEntries.getActions().getAugmentation(Actions1.class) {}",
+                    createdAccessListEntries.getActions().getAugmentation(Actions1.class));
+
+            LOG.info("configureAclFlows createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction() {}",
+                    createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction());
+
+            // This call is throwing a NullPointerException
             SfcAction sfcAction =
                     createdAccessListEntries.getActions().getAugmentation(Actions1.class).getSfcAction();
 
             String aclRenderedServicePathName = ((AclRenderedServicePath) sfcAction).getRenderedServicePath();
+
+             */
+            String aclRenderedServicePathName = "TODO_to_be_fixed";
             RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePathExecutor(aclRenderedServicePathName);
 
             if(renderedServicePath == null) {

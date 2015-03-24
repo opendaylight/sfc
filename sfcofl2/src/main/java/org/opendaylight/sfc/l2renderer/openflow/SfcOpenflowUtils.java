@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -69,6 +70,9 @@ public class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
+
+    public static final short IP_PROTOCOL_TCP = (short) 6;
+    public static final short IP_PROTOCOL_UDP = (short) 17;
 
     private static final int DEFAULT_SB_CAPACITY = 16;
     private static final int FLOWREF_CAPACITY = 256;
@@ -121,6 +125,13 @@ public class SfcOpenflowUtils {
         eth.setEthernetType(ethTypeBuilder.build());
 
         match.setEthernetMatch(eth.build());
+    }
+
+    public static void addMatchIpProtocol(MatchBuilder match, final short ipProtocol) {
+        IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
+        ipMatch.setIpProtocol((short) ipProtocol);
+
+        match.setIpMatch(ipMatch.build());
     }
 
     public static void addMatchMplsLabel(MatchBuilder match, long label) {
@@ -194,6 +205,9 @@ public class SfcOpenflowUtils {
         return gotoTb;
     }
 
+    public static Action createActionOutPort(final int portUri, final int order) {
+        return createActionOutPort(String.valueOf(portUri), order);
+    }
     public static Action createActionOutPort(final String portUri, final int order) {
         OutputActionBuilder output = new OutputActionBuilder();
         Uri value = new Uri(portUri);

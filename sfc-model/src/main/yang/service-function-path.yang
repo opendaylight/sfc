@@ -7,6 +7,7 @@ module service-function-path {
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
+  import service-function-forwarder {prefix sfc-sff; }
   import service-function-metadata {prefix sfc-md; }
   import service-locator {prefix sfc-sl; }
 
@@ -83,7 +84,12 @@ module service-function-path {
         description
           "Transport type from service-locator.yang.";
       }
-
+      container service-function-path-egress-data-plane-locator {
+        uses sfc-sl:data-plane-locator;
+        description
+          "Service Function Path Egress Data Plane Locator details."
+         +"For symmetric Paths, will also be used as the Reverse Path Ingress";
+      }
       leaf symmetric {
         type boolean;
         default false;
@@ -134,6 +140,16 @@ module service-function-path {
           type string;
           description
             "Service Function Forwarder name";
+        }
+        leaf service-function-forwarder-locator {
+          type sfc-sff:service-function-forwarder-locator-ref;
+          description
+            "The name of the ingress SFF data plane locator to use on this hop";
+        }
+        container service-path-hop-data-plane-locator {
+          uses sfc-sl:data-plane-locator;
+          description
+            "Transport details to be used on this hop of this SFP";
         }
         leaf service-index {
           type uint8;

@@ -194,6 +194,7 @@ class NfqClassifier(metaclass=Singleton):
         ACL            RULES FOR
         ----------------------------------
         MAC            iptables, ip6tables
+        PORT           iptables, ip6tables
         IPv4           iptables
         IPv6           ip6tables
 
@@ -283,12 +284,12 @@ class NfqClassifier(metaclass=Singleton):
 
     def _fetch_rsp_first_hop_from_odl(self, rsp_name):
         """
-        Fetch RSPs' forwarding parameters (SFF locator) from ODL
+        Fetch RSP forwarding parameters (SFF locator) from ODL
 
         :param rsp_name: RSP name
         :type rsp_name: str
 
-        :return dict or None
+        :return dict
 
         """
         odl_locator = sfc_globals.get_odl_locator()
@@ -309,15 +310,21 @@ class NfqClassifier(metaclass=Singleton):
                                      data=json.dumps(data),
                                      auth=sfc_globals.get_odl_credentials())
         except requests.exceptions.Timeout:
-            logger.exception('Failed to get RSP "%s" from ODL: timeout',
-                             rsp_name)
-            return
+            logger.error('Failed to get RSP "%s" from ODL: timeout', rsp_name)
+            raise
 
         if not rsp_data.content:
-            logger.warning('RSP "%s" not found in ODL', rsp_name)
-            return
+            logger.error('RSP "%s" not found in ODL', rsp_name)
+            raise
 
         rsp_json = rsp_data.json()
+        if 'errors' in rsp_json:
+            for errors in rsp_json['errors'].values():
+                for e in errors:
+                    logger.error('%s (%s)', e['error-message'], e['error-tag'])
+
+            raise
+
         return rsp_json['output']['rendered-service-path-first-hop']
 
     def _compose_packet_mark(self):
@@ -362,7 +369,7 @@ class NfqClassifier(metaclass=Singleton):
         fwd_to = self.rsp_2_sff[rsp_id]['sff']
         next_protocol = ipv_2_next_protocol[ipv]
 
-        # NOTES:
+        # NOTE:
         # so far metadata are not supported -> just sending an empty ctx_header
         # tunnel_id (0x0500) is hard-coded, will it be always the same?
         ctx_header = CONTEXTHEADER(network_shared=0,
@@ -537,7 +544,8 @@ class NfqClassifier(metaclass=Singleton):
 
         To be able to create/remove an ip(6)tables rule/chain these attributes
         must be set (i.e. not None):
-        self.rsp_chain, self.rsp_ipv + self.rsp_id for creating a rule/chain
+        self.rsp_chain, self.rsp_ipv, self.rsp_mark + self.rsp_id for creating
+        a rule/chain.
 
         :param acl_data: ACL
         :type acl_data: dict
@@ -555,8 +563,6 @@ class NfqClassifier(metaclass=Singleton):
                                ['service-function-acl:rendered-service-path'])
 
                 sff_data = self._fetch_rsp_first_hop_from_odl(rsp_name)
-                if sff_data is None:
-                    continue
 
                 # NOTE: assuming that RSP IDs are unique
                 rsp_id = sff_data['path-id']
@@ -754,4 +760,5 @@ def clear_classifier():
     nfq_classifier = NfqClassifier()
 
     if nfq_classifier.nfq_running():
+        # TODO: logging exceptions ocures (sometimes) -> debug
         nfq_classifier.remove_all_rsps()

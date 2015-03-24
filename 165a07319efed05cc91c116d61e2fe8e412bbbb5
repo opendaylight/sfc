@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_69668353",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadBalanceSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-03-24T00:36:52Z",
+      "side": 1,
+      "message": "why still returns sftServiceFunctionName here?",
+      "range": {
+        "startLine": 45,
+        "startChar": 19,
+        "endLine": 45,
+        "endChar": 41
+      },
+      "revId": "165a07319efed05cc91c116d61e2fe8e412bbbb5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_49614738",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadBalanceSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-03-24T00:36:52Z",
+      "side": 1,
+      "message": "may throw exception if the read executor returns null, i think.",
+      "range": {
+        "startLine": 60,
+        "startChar": 40,
+        "endLine": 60,
+        "endChar": 57
+      },
+      "revId": "165a07319efed05cc91c116d61e2fe8e412bbbb5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

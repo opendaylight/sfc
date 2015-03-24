@@ -39,7 +39,7 @@ if __name__ == "__main__":
     except requests.exceptions.RequestException:
         print("Error sending POST request to spawn connector \n")
 
-    input("Press Enter to finish test...")
+    input("Press Enter to check SFF creation...")
     time.sleep(2)
     check(SFF_ONE_URL.format(device_name), SERVICE_FUNCTION_FORWARDER_NETCONF_JSON,
           "Checking if Netconf SFF was created successfully")

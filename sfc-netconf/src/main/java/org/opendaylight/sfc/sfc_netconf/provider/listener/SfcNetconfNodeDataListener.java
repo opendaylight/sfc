@@ -132,17 +132,44 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                 NetconfNode nnode = (NetconfNode)entry.getValue();
 
                 NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
-                if (csts == NetconfNodeFields.ConnectionStatus.Connected) {
-                    if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                            SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetonf(nodeName, nnode))) {
-                        LOG.info("Successfully created SFF from Netconf node {}", nodeName);
-                    } else {
-                        LOG.error("Error creating SFF from Netconf node {}", nodeName);
+
+                switch (csts) {
+                    case Connected: {
+                        // Fully connected, all services for remote device available from MountPointService
+                        LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
+                        List<String> capabilities =
+                                nnode.getAvailableCapabilities().getAvailableCapability();
+                        LOG.info("Capabilities: {}", capabilities);
+                        if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
+                                SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetonf(nodeName, nnode))) {
+                            LOG.info("Successfully created SFF from Netconf node {}", nodeName);
+                        } else {
+                            LOG.error("Error creating SFF from Netconf node {}", nodeName);
+                        }
+                        break;
                     }
-/*                    List<String> capabilities = nnode
-                            .getAvailableCapabilities()
-                            .getAvailableCapability();
-                    LOG.info("Capabilities: {}", capabilities);*/
+                    case Connecting: {
+                        // Connecting state is set initially but netconf device can get back to it after a disconnect
+                        // Note that device could jump back and forth between connected and connecting for various reasons:
+                        // disconnect from remote device, network connectivity loss etc.
+                        LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
+                        if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                            LOG.info("SFF {} deleted successfully", nodeName);
+                        } else {
+                            LOG.error("Failed to delete SFF {}", nodeName);
+                        }
+                        break;
+                    }
+                    case UnableToConnect: {
+                        // Its over for the device, no more reconnects
+                        LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
+                        if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                            LOG.info("SFF {} deleted successfully", nodeName);
+                        } else {
+                            LOG.error("Failed to delete SFF {}", nodeName);
+                        }
+                        break;
+                    }
                 }
             }
         }

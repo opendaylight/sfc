@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_a73fcf24",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-25T15:50:40Z",
+      "side": 1,
+      "message": "The idea is that what\u0027s on the SFF is basic underlay info, and here would be transport info specific to this particular RSP. Using VLAN as an example, I wanted to be able to have a different VLAN ID per RSP (and RSP hop), and if the VLAN ID is specified on the SFF, then it cant differ per RSP.",
+      "parentUuid": "5a93c517_c7a0db92",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_a7a34f9d",
         "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2015-03-25T15:26:16Z",
       "side": 1,
       "message": "You are already in the rendered service path model, there is no need to repeat it in the leaf name",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_87ef33b0",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-25T15:50:40Z",
+      "side": 1,
+      "message": "Ok, I was thinking of the name of the generated Java Class. Since this same element exists in the SFP, I wanted the Java Classes to have unique names.",
+      "parentUuid": "5a93c517_a7a34f9d",
       "revId": "7b759551e0086c4f19343594feca1194f139afda",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_47184bd3",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-25T15:50:40Z",
+      "side": 1,
+      "message": "I didnt consider the possibility of being able to create multiple RSPs per SFP :o\n\nWith VxLAN, how do you distinguish between traffic coming from RSP path Id 1 and 2?",
+      "parentUuid": "5a93c517_87c17330",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_27b73fda",
         "filename": "sfc-model/src/main/yang/service-function-path.yang",
         "patchSetId": 4
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_e70cf796",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-25T15:50:40Z",
+      "side": 1,
+      "message": "This was intended mainly for symmetric RSPs. I need to know the Ingress DPL for the reverse RSP, and intended to take it from this field.",
+      "parentUuid": "5a93c517_27b73fda",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_07b6c3d9",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 4
@@ -81,6 +153,24 @@
       "writtenOn": "2015-03-25T15:26:16Z",
       "side": 1,
       "message": "I\u0027m not sure how this patch is solving the problem of determining the data plane locators between hops. If it is coming from SFP, then the problem was shifted there and I would ask how it is determined over there. \n\nWe need something automatic without user input.",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_874653be",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-25T15:50:40Z",
+      "side": 1,
+      "message": "I would prefer that as well. But, as mentioned in the rsp.yang comments, I want different encapsulation info per RSP, to be able to distinguish RSP pathIds. For instance VLAN ID 100 is RSP path 1, VLAN ID 200 is RSP path 2, etc. If the encapsulation is fixed on the SFF, then it cant vary per RSP.",
+      "parentUuid": "5a93c517_07b6c3d9",
       "revId": "7b759551e0086c4f19343594feca1194f139afda",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_c7a0db92",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-25T15:26:16Z",
+      "side": 1,
+      "message": "I do not understand why you need both SFF locator and the new leaf below. The sff locator is unique because you know the SFF name and its locator name",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a7a34f9d",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-25T15:26:16Z",
+      "side": 1,
+      "message": "You are already in the rendered service path model, there is no need to repeat it in the leaf name",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_87c17330",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-25T15:26:16Z",
+      "side": 1,
+      "message": "I do not I understand where the information is coming from, I mentioned this in the other file. Besides several RSPs can be spawned from the same SFP, so you can not nail the locators here.\n\nWhen you build a OVS VXLAN overlay you need to construct the tunnels and therefore there is way to find out next-hop locators, it comes from the configuration. Something equivalent needs to be done for other encaps. \n\nYou need a function f(current SFF, next SFF), tell me the data plane locators. If that is available teh solution to this problem is straightforward.\n\nWe probably need to discuss on the next meeting.",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_27b73fda",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-25T15:26:16Z",
+      "side": 1,
+      "message": "I do not understand this. In general overloading semantics of a field is frowned upon, but I\u0027m not sure how this field can help determine hop by hop forwarding since it is at the SFP level",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_07b6c3d9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-03-25T15:26:16Z",
+      "side": 1,
+      "message": "I\u0027m not sure how this patch is solving the problem of determining the data plane locators between hops. If it is coming from SFP, then the problem was shifted there and I would ask how it is determined over there. \n\nWe need something automatic without user input.",
+      "revId": "7b759551e0086c4f19343594feca1194f139afda",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

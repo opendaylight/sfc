@@ -1,10 +1,10 @@
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
 
 
-__author__ = "Reinaldo Penno"
+__author__ = "Reinaldo Penno, Jim Guichard"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __version__ = "0.1"
-__email__ = "rapenno@gmail.com"
+__email__ = "rapenno@gmail.com, jguichar@cisco.com"
 __status__ = "alpha"
 
 
@@ -34,6 +34,7 @@ NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET = NSH_OAM_TRACE_RESP_START_OFFSET
 NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET = NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET + 1
 
 
+# Class structure for VXLAN-GPE
 class VXLANGPE(Structure):
     _fields_ = [('flags', c_ubyte),
                 ('reserved', c_ubyte),
@@ -42,6 +43,17 @@ class VXLANGPE(Structure):
                 ('reserved2', c_uint, 8)]
 
 
+# Class structure for GRE
+class GREHEADER(Structure):
+    _fields_ = [('c', c_uint, 1),
+                ('reserved0', c_uint, 12),
+                ('version', c_uint, 3),
+                ('protocol_type', c_uint, 16),
+                ('checksum', c_uint, 16),
+                ('reserved1', c_uint, 16)]
+
+
+# Class structure for NSH base header
 class BASEHEADER(Structure):
     _fields_ = [('version', c_ushort, 2),
                 ('flags', c_ushort, 8),
@@ -52,6 +64,7 @@ class BASEHEADER(Structure):
                 ('service_index', c_uint, 8)]
 
 
+# Class structure for NSH type-1 metadata
 class CONTEXTHEADER(Structure):
     _fields_ = [('network_platform', c_uint),
                 ('network_shared', c_uint),

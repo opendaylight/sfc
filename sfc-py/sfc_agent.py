@@ -296,7 +296,11 @@ def apply_acl(acl_name):
         logger.error('Received ACL is empty, aborting ...')
         flask.abort(400)
 
-    nfq_classifier.process_acl(flask.request.get_json())
+    try:
+        nfq_classifier.process_acl(flask.request.get_json())
+    except:
+        return '', 500
+
     return '', 201
 
 

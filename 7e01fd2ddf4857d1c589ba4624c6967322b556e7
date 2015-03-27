@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_8980a147",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:11:57Z",
+      "side": 1,
+      "message": "Are you missing a terminating semi-colon \";\" on this line?",
+      "range": {
+        "startLine": 66,
+        "startChar": 95,
+        "endLine": 66,
+        "endChar": 104
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_496e1998",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:11:57Z",
+      "side": 1,
+      "message": "Should the code be in this function be in RenderedServicePath? The instantiation of the scheduler seems specific to either the SfcServiceFunctionSchedulerAPI or SfcProviderScheduleTypeAPI class, and should perhaps be there. Then in the SfcProviderRenderedPathAPI constructor, call SfcServiceFunctionSchedulerAPI.initServiceFunctionScheduler().",
+      "range": {
+        "startLine": 94,
+        "startChar": 17,
+        "endLine": 94,
+        "endChar": 44
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_695995fd",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:11:57Z",
+      "side": 1,
+      "message": "Why the long package name? Cant we just import this type and only use the Class name?",
+      "range": {
+        "startLine": 96,
+        "startChar": 34,
+        "endLine": 96,
+        "endChar": 111
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_29faadbd",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionSchedulerAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:11:57Z",
+      "side": 1,
+      "message": "Should this method also accept the ServiceFunctionPath in case a specific ServiceFunction was specified? If so, maybe that should be in a separate patch.",
+      "range": {
+        "startLine": 35,
+        "startChar": 33,
+        "endLine": 35,
+        "endChar": 56
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

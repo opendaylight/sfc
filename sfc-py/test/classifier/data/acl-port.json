@@ -1,0 +1,24 @@
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "ACL1",
+        "access-list-entries": [
+          {
+            "rule-name": "ACE1",
+            "matches": {
+              "source-port-range": {
+                "upper-port": 20000,
+                "lower-port": 15000
+              },
+              "ip-protocol": 17
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

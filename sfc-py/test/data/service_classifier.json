@@ -1,0 +1,15 @@
+{
+  "service-function-classifiers": {
+    "service-function-classifier": [
+      {
+        "name": "Classifier1",
+        "access-list": "ACL1",
+        "scl-service-function-forwarder": [
+          {
+            "name": "SFF1"
+          }
+        ]
+      }
+    ]
+  }
+}

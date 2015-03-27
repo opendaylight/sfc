@@ -1,0 +1,16 @@
+{
+  "service-function-chains": {
+    "service-function-chain": [
+      {
+        "name": "SFC1",
+        "sfc-service-function": [
+          {
+            "name": "dpi-abstract",
+            "type": "service-function-type:dpi",
+            "order": 0
+          }
+        ]
+      }
+    ]
+  }
+}

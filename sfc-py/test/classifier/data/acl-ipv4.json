@@ -1,0 +1,21 @@
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "ACL1",
+        "access-list-entries": [
+          {
+            "rule-name": "ACE1",
+            "matches": {
+              "destination-ipv4-address": "0.0.0.0/0",
+              "source-ipv4-address": "0.0.0.0/0"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

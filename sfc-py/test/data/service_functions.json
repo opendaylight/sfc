@@ -1,0 +1,22 @@
+{
+  "service-functions": {
+    "service-function": [
+      {
+        "name": "SF1",
+        "sf-data-plane-locator": [
+          {
+            "name": "vxlan",
+            "ip": "127.0.0.1",
+            "port": 40001,
+            "transport": "service-locator:vxlan-gpe",
+            "service-function-forwarder": "SFF1"
+          }
+        ],
+        "rest-uri": "http://127.0.0.1:5000",
+        "nsh-aware": true,
+        "ip-mgmt-address": "127.0.0.1",
+        "type": "service-function-type:dpi"
+      } 
+    ]
+  }
+}

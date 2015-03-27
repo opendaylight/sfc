@@ -1,0 +1,20 @@
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "ACL1",
+        "access-list-entries": [
+          {
+            "rule-name": "ACE1",
+            "matches": {
+              "source-mac-address": "00:00:00:00:00:00"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

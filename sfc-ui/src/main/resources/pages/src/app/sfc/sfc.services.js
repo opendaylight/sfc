@@ -469,6 +469,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     SfcRestBaseSvc.prototype.put = function (elem, key) {
+      key = encodeURIComponent(key);
       return this.baseRest().customPUT(elem, this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key);
     };
 
@@ -477,6 +478,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     SfcRestBaseSvc.prototype._delete = function (key) {
+      key = encodeURIComponent(key);
       return this.baseRest().customDELETE(this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key);
     };
 
@@ -485,15 +487,18 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     SfcRestBaseSvc.prototype.getOne = function (key) {
+      key = encodeURIComponent(key);
       return this.baseRest().customGET(this.modelUrl + ":" + this.containerName + '/' + this.listName + '/' + key);
     };
 
     SfcRestBaseSvc.prototype.getOperationalOne = function (key) {
+      key = encodeURIComponent(key);
       return this.baseOperationalRest().customGET(this.modelUrl + ":" + this.containerName + '/' + this.listName + '/' + key);
     };
 
     SfcRestBaseSvc.prototype.getItem = function (key, callback) {
       var instance = this; // save 'this' to closure
+      key = encodeURIComponent(key);
 
       this.getOne(key).then(function (result) {
         var stripped = instance.stripNamespacePrefixes(result[instance.listName]);
@@ -512,6 +517,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     SfcRestBaseSvc.prototype.getOperationalItem = function (key, callback) {
       var instance = this; // save 'this' to closure
+      key = encodeURIComponent(key);
 
       this.getOperationalOne(key).then(function (result) {
         var stripped = instance.stripNamespacePrefixes(result[instance.listName]);

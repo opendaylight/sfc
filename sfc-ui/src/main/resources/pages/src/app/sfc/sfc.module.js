@@ -313,7 +313,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.servicenode-edit', {
-      url: '/servicenode-edit:snName',
+      url: '/servicenode-edit-:snName',
       access: access.public,
       views: {
         'sfc': {
@@ -346,7 +346,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.serviceforwarder-edit', {
-      url: '/serviceforwarder-edit:sffName',
+      url: '/serviceforwarder-edit-:sffName',
       access: access.public,
       views: {
         'sfc': {
@@ -357,7 +357,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.serviceforwarder-clone', {
-      url: '/serviceforwarder-edit:sff',
+      url: '/serviceforwarder-edit-:sff',
       access: access.public,
       views: {
         'sfc': {
@@ -390,7 +390,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.servicefunction-edit', {
-      url: '/servicefunction-edit:sfName',
+      url: '/servicefunction-edit-:sfName',
       access: access.public,
       views: {
         'sfc': {
@@ -401,7 +401,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.servicefunction-clone', {
-      url: '/servicefunction-clone:sf',
+      url: '/servicefunction-clone-:sf',
       access: access.public,
       views: {
         'sfc': {
@@ -478,7 +478,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.classifier-create', {
-      url: '/classifier-create:itemKey',
+      url: '/classifier-create-:itemKey',
       access: access.public,
       views: {
         'sfc': {
@@ -500,7 +500,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.metadata-context-create', {
-      url: '/metadata-context-create:itemKey',
+      url: '/metadata-context-create-:itemKey',
       access: access.public,
       views: {
         'sfc': {
@@ -511,7 +511,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.metadata-variable-create', {
-      url: '/metadata-variable-create:itemKey',
+      url: '/metadata-variable-create-:itemKey',
       access: access.public,
       views: {
         'sfc': {

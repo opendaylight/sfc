@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_e9f125ce",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:56:59Z",
+      "side": 1,
+      "message": "Ok",
+      "parentUuid": "5a93c517_29214d4d",
+      "range": {
+        "startLine": 66,
+        "startChar": 95,
+        "endLine": 66,
+        "endChar": 104
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_496e1998",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 1
@@ -107,6 +131,30 @@
       "side": 1,
       "message": "I tries this, but get error like:\nerror: incomparable types: ServiceFunctionSchedulerTypeIdentity and Class\u003cRoundRobin\u003e...",
       "parentUuid": "5a93c517_695995fd",
+      "range": {
+        "startLine": 96,
+        "startChar": 34,
+        "endLine": 96,
+        "endChar": 111
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_09ed71ef",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-27T11:56:59Z",
+      "side": 1,
+      "message": "Ok",
+      "parentUuid": "5a93c517_29e86de1",
       "range": {
         "startLine": 96,
         "startChar": 34,

@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRoundRobinSchedulerAPI.class);
     private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin = new HashMap<>();
     SfcServiceFunctionRoundRobinSchedulerAPI() {
-        super.setSfcServiceFunctionSchedulerType(SfcServiceFunctionSchedulerType.ROUND_ROBIN);
+        super.setSfcServiceFunctionSchedulerType(RoundRobin.class);
     }
 
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {

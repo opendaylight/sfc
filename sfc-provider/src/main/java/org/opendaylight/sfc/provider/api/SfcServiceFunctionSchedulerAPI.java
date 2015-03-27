@@ -22,16 +22,13 @@ import java.util.List;
  * @since 2015-03-04
  */
 public abstract class SfcServiceFunctionSchedulerAPI {
-    public enum SfcServiceFunctionSchedulerType {
-        ROUND_ROBIN, LOAD_BALANCE, RANDOM;
-    }
-    private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType;
+    private java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> sfcServiceFunctionSchedulerType;
 
-    public SfcServiceFunctionSchedulerType getSfcServiceFunctionSchedulerType() {
+    public java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> getSfcServiceFunctionSchedulerType() {
         return this.sfcServiceFunctionSchedulerType;
     }
 
-    public void setSfcServiceFunctionSchedulerType(SfcServiceFunctionSchedulerType schedulerType) {
+    public void setSfcServiceFunctionSchedulerType(java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> schedulerType) {
         this.sfcServiceFunctionSchedulerType = schedulerType;
     }
 

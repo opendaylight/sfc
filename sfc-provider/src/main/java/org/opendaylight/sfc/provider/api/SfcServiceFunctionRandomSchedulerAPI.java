@@ -32,7 +32,7 @@ import java.util.Random;
 public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRandomSchedulerAPI.class);
     SfcServiceFunctionRandomSchedulerAPI() {
-        super.setSfcServiceFunctionSchedulerType(SfcServiceFunctionSchedulerType.RANDOM);
+        super.setSfcServiceFunctionSchedulerType(org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random.class);
     }
 
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {

@@ -11,7 +11,6 @@ package org.opendaylight.sfc.provider.api;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
-import org.opendaylight.sfc.provider.api.SfcServiceFunctionSchedulerAPI.SfcServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
@@ -38,6 +37,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -86,34 +89,30 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 }
             };
 
-    private SfcServiceFunctionSchedulerType sfcServiceFunctionSchedulerType = SfcServiceFunctionSchedulerType.ROUND_ROBIN;
     private SfcServiceFunctionSchedulerAPI scheduler;
 
     private void initServiceFuntionScheduler()
     {
-        //TODO: read schedule type from datastore and init scheduler.
-        switch(sfcServiceFunctionSchedulerType) {
-        case ROUND_ROBIN:
-            scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
-            break;
-        case LOAD_BALANCE:
-            scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
-            break;
-        case RANDOM:
-        default:
-            scheduler = new SfcServiceFunctionRandomSchedulerAPI();
-            break;
+        java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
+
+        try {
+            serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI
+                    .readEnabledServiceFunctionScheduleTypeEntryExecutor().getType();
+        } catch (Exception e) {
+            serviceFunctionSchedulerType = Random.class;
         }
-    }
 
-    public void setSfcServiceFunctionSchedulerType(SfcServiceFunctionSchedulerType type)
-    {
-        this.sfcServiceFunctionSchedulerType = type;
-    }
+        if (serviceFunctionSchedulerType == RoundRobin.class) {
+            scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
+        } else if (serviceFunctionSchedulerType == LoadBalance.class) {
+            scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
+        } else if (serviceFunctionSchedulerType == Random.class) {
+            scheduler = new SfcServiceFunctionRandomSchedulerAPI();
+        } else {
+            scheduler = new SfcServiceFunctionRandomSchedulerAPI();
+        }
 
-    public SfcServiceFunctionSchedulerType getSfcServiceFunctionSchedulerType()
-    {
-        return this.sfcServiceFunctionSchedulerType;
+        LOG.info("Selected SF Schdedule Type: {}",  serviceFunctionSchedulerType);
     }
 
     @SuppressWarnings("unused")

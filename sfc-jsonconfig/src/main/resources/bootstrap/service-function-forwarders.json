@@ -46,7 +46,7 @@
           {
             "name": "eth0",
             "service-function-forwarder-ovs:ovs-bridge": {
-              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a0",
+              "uuid": "fd4d849f-5140-48cd-bc60-6ad1f5fc0a01",
               "bridge-name": "br-tun"
             },
             "data-plane-locator": {

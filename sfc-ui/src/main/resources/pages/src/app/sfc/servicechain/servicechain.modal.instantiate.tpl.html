@@ -15,7 +15,24 @@
         </div>
     </div>
 
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="name"
+               class="col-lg-6 control-label small-label">Select a schedule type:</label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="sf-sched-type" name="type" ui-select2="{allowClear: true}" ng-model="data.type" ng-required="true" place-holder="Select a type">
+                <option label="" selected="selected" value="?">Select a type</option>
+                <option label="Random" value="0">Random</option>
+                <option label="RoundRobin" value="1">Round Robin</option>
+                <option label="LoadBalance" value="2">Load Balance</option>
+                <option label="ShortestPath" value="3">Shortest Path</option>
+                <option label="WShortestPath" value="4">Weighted SP</option>
+                <option label="UserDefined" value="5">User Defined</option>
+            </select>
+        </div>
+    </div>
 </div>
+
 <div class="modal-footer">
     <button class="btn btn-orange" ng-disabled="!(!!data.name)"  ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>
     <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL' | translate}}</button>

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter, SfcServiceFunctionScheduleTypeSvc) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     var thisCtrl = this;
@@ -240,7 +240,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.deploySFC = function deploySFC(sfc) {
 
-      ModalSfpInstantiateSvc.open(sfc, function (sfp) {
+      ModalSfpInstantiateSvc.open(sfc, function (sfp, type) {
         //if user entered name in modal dialog (and it's unique name)
         if (angular.isDefined(sfp.name)) {
           ServicePathSvc.putItem(sfp, function (result) {
@@ -264,6 +264,25 @@ define(['app/sfc/sfc.module'], function (sfc) {
             }
           });
         }
+
+     if (type != undefined) {
+       SfcServiceFunctionScheduleTypeSvc.putItem(type, function (result) {
+         if (angular.isDefined(result)) {
+           var response = result.response;
+           console.log(response);
+           ModalErrorSvc.open({
+              head: "Failed to update schedule type",
+              rpcError: response
+           });
+         } else {
+            ModalInfoSvc.open({
+              "head": "Update schedule type successfully",
+              "body": "Success"
+            });
+         }  
+       });
+     }
+
       });
     };
   });
@@ -295,10 +314,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.save = function () {
       var sfp = {};
-      sfp.name = this.data.name;
+      var type = document.getElementById('sf-sched-type').selectedIndex;
+      var msg = "Selected algrithm: " + type;
+      alert(msg);
       sfp['service-chain-name'] = sfc.name;
 
-      $modalInstance.close(sfp);
+
+      $modalInstance.close(sfp, type);
     };
 
     $scope.dismiss = function () {

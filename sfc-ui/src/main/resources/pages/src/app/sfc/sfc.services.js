@@ -1170,6 +1170,76 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcClassifierSvc();
   });
 
+  // ******* SfcServiceFunctionScheduleTypeSvc *********
+  sfc.register.factory('SfcServiceFunctionScheduleTypeSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-scheduler-type';
+    var containerName = 'service-function-scheduler-types';
+    var listName = 'service-function-scheduler-type';
+
+    // constructor
+    function SfcServiceFunctionScheduleTypeSvc() {
+    }
+
+    SfcServiceFunctionScheduleTypeSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    SfcServiceFunctionScheduleTypeSvc.prototype.getListKeyFromItem = function (itemData) {
+      return itemData['name']; // default
+    };
+
+    SfcServiceFunctionScheduleTypeSvc.prototype.put = function (elem, key) {
+      return this.baseRest().customPUT(elem, this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' + key);
+    };
+
+    SfcServiceFunctionScheduleTypeSvc.prototype.wrapInListname = function (item) {
+    	var schedTypes = {};
+    	var result = {};
+    	var msg = {};
+    	switch (item) {
+    	  case 1:
+    	    schedTypes['name'] = "random-intel";
+          schedTypes['type'] = "service-function-scheduler-type:random";
+          schedTypes['enabled'] = true;
+          break;
+        case 2:
+    	    schedTypes['name'] = "round-robin";
+          schedTypes['type'] = "service-function-scheduler-type:round-robin";
+          schedTypes['enabled'] = true;
+          break;
+        case 3:
+    	    schedTypes['name'] = "load-balance";
+          schedTypes['type'] = "service-function-scheduler-type:load-balance";
+          schedTypes['enabled'] = true;
+          break;
+        default:
+          msg = "Selected algorithm is not available yet!";
+              alert(msg);
+              break;       
+      }
+
+      result[this.listName] = schedTypes;
+      return result;
+    };
+
+    SfcServiceFunctionScheduleTypeSvc.prototype.putItem = function (item, callback) {
+      if (wrappedElem != undefined) {
+        var wrappedElem = this.wrapInListname(item);
+        this.put(wrappedElem, this.getListKeyFromItem(wrappedElem)).then(function () {
+          if (callback) {
+            callback();
+          }
+        }, function (response) {
+          console.log("Error with status code", response.status, " while PUT");
+          if (callback) {
+            callback(response); // on REST error pass response
+          }
+        });
+      }
+    };
+
+    return new SfcServiceFunctionScheduleTypeSvc();
+  });
+
   // ******* SfcClassifierStateSvc *********
   sfc.register.factory('SfcClassifierStateSvc', function (SfcRestBaseSvc) {
 

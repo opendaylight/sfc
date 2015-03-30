@@ -22,6 +22,30 @@
       "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e10939de",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.controller.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-03-30T09:00:09Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "5a93c517_c183dd54",
+      "range": {
+        "startLine": 298,
+        "startChar": 6,
+        "endLine": 298,
+        "endChar": 32
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

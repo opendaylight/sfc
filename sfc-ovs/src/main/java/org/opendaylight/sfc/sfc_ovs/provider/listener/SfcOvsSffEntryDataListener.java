@@ -25,6 +25,7 @@ import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -64,6 +65,9 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
+
+                SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(
+                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder));
 
 //                List<OvsdbBridgeAugmentation> ovsdbBridgeList =
 //                        SfcSffToOvsMappingAPI.getOvsdbBridgeListFromServiceForwarder(serviceFunctionForwarder);

@@ -79,6 +79,12 @@ module service-function-forwarder-ovs {
   }
 
   augment "/sfc-sff:service-function-forwarders/"
+          + "sfc-sff:service-function-forwarder/" {
+
+    uses bridge;
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
 

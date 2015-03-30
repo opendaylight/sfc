@@ -12,10 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -72,6 +69,14 @@ public class SfcOvsToSffMappingAPI {
             ovsNodeBuilder.setNodeId(ovsdbBridgeAugmentation.getManagedBy());
             ovsServiceForwarderAugmentation.setOvsNode(ovsNodeBuilder.build());
             serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder1.class, ovsServiceForwarderAugmentation.build());
+
+            //add OVS Bridge to SFF
+            ServiceFunctionForwarder2Builder ovsServiceForwarder2Augmentation = new ServiceFunctionForwarder2Builder();
+            OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
+            ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
+            ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
+            ovsServiceForwarder2Augmentation.setOvsBridge(ovsBridgeBuilder.build());
+            serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, ovsServiceForwarder2Augmentation.build());
 
             //add SFF DP locators list to SFF
             serviceFunctionForwarderBuilder.setSffDataPlaneLocator(

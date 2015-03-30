@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -45,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
@@ -59,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -83,6 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+
 import com.google.common.collect.Lists;
 
 public class SfcOpenflowUtils {
@@ -91,6 +95,10 @@ public class SfcOpenflowUtils {
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
 
+    public static final short IP_PROTOCOL_TCP = (short) 6;
+    public static final short IP_PROTOCOL_UDP = (short) 17;
+    public static final int PKT_LENGTH_IP_HEADER = 14+20; // length of ETHER HDR + IP HDR
+
     private static final int DEFAULT_SB_CAPACITY = 16;
     private static final int FLOWREF_CAPACITY = 256;
     private static final String FLOWID_PREFIX = "SFC";
@@ -98,7 +106,9 @@ public class SfcOpenflowUtils {
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();
 
-    public static FlowBuilder createFlowBuilder(final short table, final int priority, final String flowName, MatchBuilder match, InstructionsBuilder isb) {
+    public static FlowBuilder createFlowBuilder(
+            final short table, final int priority, final BigInteger cookieValue,
+            final String flowName, MatchBuilder match, InstructionsBuilder isb) {
         FlowBuilder flow = new FlowBuilder();
         //flow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(table)));
         //flow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(table))));
@@ -107,7 +117,6 @@ public class SfcOpenflowUtils {
         flow.setKey(new FlowKey(new FlowId(idStr)));
         flow.setTableId(table);
         flow.setFlowName(flowName);
-        BigInteger cookieValue = new BigInteger("20", COOKIE_BIGINT_INT_RADIX);
         flow.setCookie(new FlowCookie(cookieValue));
         flow.setCookieMask(new FlowCookie(cookieValue));
         flow.setContainerName(null);
@@ -123,6 +132,11 @@ public class SfcOpenflowUtils {
         }
 
         return flow;
+    }
+
+    public static FlowBuilder createFlowBuilder(
+            final short table, final int priority, final String flowName, MatchBuilder match, InstructionsBuilder isb) {
+        return createFlowBuilder(table, priority, new BigInteger("20", COOKIE_BIGINT_INT_RADIX), flowName, match, isb);
     }
 
 
@@ -142,6 +156,21 @@ public class SfcOpenflowUtils {
         eth.setEthernetType(ethTypeBuilder.build());
 
         match.setEthernetMatch(eth.build());
+    }
+
+    public static void addMatchIpProtocol(MatchBuilder match, final short ipProtocol) {
+        IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
+        ipMatch.setIpProtocol((short) ipProtocol);
+
+        match.setIpMatch(ipMatch.build());
+    }
+
+    public static void addMatchDscp(MatchBuilder match, short dscpVal) {
+        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder(); // ipv4 version
+        Dscp dscp = new Dscp(dscpVal);
+        ipMatchBuilder.setIpDscp(dscp);
+
+        match.setIpMatch(ipMatchBuilder.build());
     }
 
     public static void addMatchMplsLabel(MatchBuilder match, long label) {
@@ -258,10 +287,39 @@ public class SfcOpenflowUtils {
         return gotoTb;
     }
 
+    public static Action createActionOutPort(final int portUri, final int order) {
+        return createActionOutPort(String.valueOf(portUri), order);
+    }
     public static Action createActionOutPort(final String portUri, final int order) {
         OutputActionBuilder output = new OutputActionBuilder();
         Uri value = new Uri(portUri);
         output.setOutputNodeConnector(value);
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+
+        return ab.build();
+    }
+
+    public static Action createActionWriteDscp(short dscpVal, final int order) {
+        IpMatchBuilder ipMatch = new IpMatchBuilder();
+        Dscp dscp = new Dscp(dscpVal);
+        ipMatch.setIpDscp(dscp);
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        setFieldBuilder.setIpMatch(ipMatch.build());
+
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+
+        return ab.build();
+    }
+
+    public static Action createActionPktIn(final int pktLength, final int order) {
+        OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(new Integer(0xffff));
+        Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
+        output.setOutputNodeConnector(controllerPort);
+
         ActionBuilder ab = createActionBuilder(order);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
 

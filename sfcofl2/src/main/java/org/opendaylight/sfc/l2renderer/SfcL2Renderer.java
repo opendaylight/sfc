@@ -10,7 +10,9 @@
 package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
+
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +26,20 @@ import org.slf4j.LoggerFactory;
 public class SfcL2Renderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
-    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
+    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer = null;
+    SfcL2RspDataListener openflowRspDataListener = null;
 
     public SfcL2Renderer(DataBroker dataBroker) {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
         this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl();
-        SfcL2RspDataListener openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer);
-        SfcL2AclDataListener openflowAclDataListener = new SfcL2AclDataListener(dataBroker, sfcL2FlowProgrammer);
+        this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer);
 
         LOG.info("SfcL2Renderer successfully started the SfcL2Renderer plugin");
+    }
+
+    public SfcL2RspDataListener getSfcL2RspDataListener() {
+        return this.openflowRspDataListener;
     }
 
     /**
@@ -42,6 +48,12 @@ public class SfcL2Renderer implements AutoCloseable {
     @Override
     public void close() throws ExecutionException, InterruptedException {
         LOG.info("SfcL2Renderer auto-closed");
-        sfcL2FlowProgrammer.shutdown();
+        try {
+            if(sfcL2FlowProgrammer != null) {
+                sfcL2FlowProgrammer.shutdown();
+            }
+        } catch(Exception e) {
+            LOG.error("SfcL2Renderer auto-closed exception {}", e.getMessage());
+        }
     }
 }

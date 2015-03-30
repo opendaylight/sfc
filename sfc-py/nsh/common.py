@@ -71,6 +71,7 @@ class ETHHEADER(Structure):
                 ('len0', c_ubyte),
                 ('len1', c_ubyte)]
 
+
 class BASEHEADER(Structure):
     _fields_ = [('version', c_ushort, 2),
                 ('flags', c_ushort, 8),

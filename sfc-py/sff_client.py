@@ -93,8 +93,8 @@ class MyUdpClient:
 
 
 class MyEthClient:
-    def __init__(self, loop, encapsulate_type, ethernet_values, encapsulate_header_values, base_header_values, ctx_header_values,
-                 dest_addr, dest_port):
+    def __init__(self, loop, encapsulate_type, ethernet_values, encapsulate_header_values, base_header_values,
+                 ctx_header_values, dest_addr, dest_port):
         self.transport = None
         self.loop = loop
         self.ethernet_values = ethernet_values
@@ -116,17 +116,19 @@ class MyEthClient:
         magic_number = 0xC704DD7B
         FCS_value = struct.pack('!I', magic_number)
         packet = build_eth_packet(self.ethernet_values, self.encapsulate_header_values, self.base_header_values,
-                              self.ctx_header_values)
+                                  self.ctx_header_values)
         nsh_ethernet_packet = packet + ip_packet + FCS_value
         print("Ethernet dump: ", binascii.hexlify(nsh_ethernet_packet))
         # logger.info("Sending VXLAN-GPE/NSH packet to SFF: %s", (self.dest_addr, self.dest_port))
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
         logger.debug("Packet dump: %s", binascii.hexlify(packet))
         # Send the packet
-        #self.transport.sendto(packet, (self.dest_addr, self.dest_port))
+        # self.transport.sendto(packet, (self.dest_addr, self.dest_port))
         self.transport.sendto(nsh_ethernet_packet, (self.dest_addr, self.dest_port))
 
+
 # Client side code: Build NSH packet encapsulated in GRE & NSH.
+
 class MyGreClient:
     def __init__(self, loop, encapsulate_type, encapsulate_header_values, base_header_values, ctx_header_values,
                  dest_addr, dest_port):
@@ -140,50 +142,26 @@ class MyGreClient:
         self.server_base_values = BASEHEADER()
         self.server_ctx_values = CONTEXTHEADER()
         self.dest_addr = dest_addr
-        self.dest_port = dest_port
+        #self.dest_port = dest_port
         self.encapsulate_type = encapsulate_type
 
     def send_gre_nsh(self):
         # create a raw socket
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_GRE)
 
         except socket.error as msg:
             print('Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
             sys.exit()
 
-        # ip header fields
-        ip_ihl = 5
-        ip_ver = 4
-        ip_tos = 0
-        ip_tot_len = 0  # kernel will fill the correct total length
-        ip_id = 54321  # Id of this packet
-        ip_frag_off = 0
-        ip_ttl = 255
-        ip_proto = socket.IPPROTO_GRE
-        ip_check = 0  # kernel will fill the correct checksum
-        ip_saddr = socket.inet_aton(
-            socket.gethostbyname(socket.gethostname()))  # Spoof the source ip address if you want to
-        ip_daddr = socket.inet_aton(self.dest_addr)
-
-        ip_ihl_ver = (ip_ver << 4) + ip_ihl
-
-        # the ! in the pack format string means network order
-        ip_header = struct.pack('!BBHHHBBH4s4s', ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto,
-                                ip_check, ip_saddr, ip_daddr)
-
         # Building client packet to send to SFF
         gre_nsh_packet = build_packet(self.encapsulate_type, self.encapsulate_header_values, self.base_header_values,
                                       self.ctx_header_values)
 
-        packet = ip_header + gre_nsh_packet
+        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, self.dest_addr)
+        logger.debug("Packet dump: %s", binascii.hexlify(gre_nsh_packet))
 
-        print("GRE/NSH packet: ", binascii.hexlify(packet))  # debug
-
-        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
-        logger.debug("Packet dump: %s", binascii.hexlify(packet))
-
-        s.sendto(packet, (self.dest_addr, self.dest_port))
+        s.sendto(gre_nsh_packet, (self.dest_addr, 0))
 
 
 class MyTraceClient:
@@ -357,7 +335,8 @@ def main(argv):
                      (remote_sff_ip, int(remote_sff_port)), (traceclient))
     else:
         if encapsulate == 'vxlan-gpe':
-            vxlan_header_values = VXLANGPE(int('00000100', 2), 0, VXLAN_NEXT_PROTO_NSH, int('111111111111111111111111', 2), 64)
+            vxlan_header_values = VXLANGPE(int('00000100', 2), 0, VXLAN_NEXT_PROTO_NSH,
+                                           int('111111111111111111111111', 2), 64)
             base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_IPV4,
                                      int(sfp_id), int(sfp_index))
             ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
@@ -367,7 +346,7 @@ def main(argv):
 
         elif encapsulate == 'gre':
             # add GRE header
-            gre_header_values = GREHEADER(int('1', 2), int('000000000000', 2), int('000', 2), 0x894F,
+            gre_header_values = GREHEADER(int('0', 2), int('000000000000', 2), int('000', 2), 0x894F,
                                           int('0000000000000000', 2), 0)
 
             base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_IPV4,
@@ -379,12 +358,15 @@ def main(argv):
             greclient.send_gre_nsh()
 
         elif encapsulate == 'ethernet':
-            ethernet_header_values = ETHHEADER(0x6c, 0x22, 0x40, 0xa4, 0x5f, 0xd6, 0xff, 0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
-            vxlan_header_values = VXLANGPE(int('00000100', 2), 0, VXLAN_NEXT_PROTO_NSH, int('111111111111111111111111', 2), 64)
+            ethernet_header_values = ETHHEADER(0x6c, 0x22, 0x40, 0xa4, 0x5f, 0xd6, 0xff, 0xff, 0x01, 0x02, 0x03, 0x04,
+                                               0x05, 0x06)
+            vxlan_header_values = VXLANGPE(int('00000100', 2), 0, VXLAN_NEXT_PROTO_NSH,
+                                           int('111111111111111111111111', 2), 64)
             base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_ETH,
                                      int(sfp_id), int(sfp_index))
             ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
-            udpclient = MyEthClient(loop, 'VXLAN/ETH', ethernet_header_values, vxlan_header_values, base_values, ctx_values, remote_sff_ip,
+            udpclient = MyEthClient(loop, 'VXLAN/ETH', ethernet_header_values, vxlan_header_values, base_values,
+                                    ctx_values, remote_sff_ip,
                                     int(remote_sff_port))
             start_client(loop, (local_ip, 5000), (remote_sff_ip, remote_sff_port), udpclient)
 

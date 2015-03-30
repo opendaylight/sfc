@@ -17,7 +17,11 @@ NSH_MD_TYPE1 = 0x1
 NSH_VERSION1 = int('01', 2)
 NSH_NEXT_PROTO_IPV4 = int('00000001', 2)
 NSH_NEXT_PROTO_OAM = int('00000100', 2)
+NSH_NEXT_PROTO_ETH = int('00000011', 2)
 NSH_BASE_HEADER_START_OFFSET = 8
+
+#:  VXLAN-gpe Constants
+VXLAN_NEXT_PROTO_NSH = int('00000100', 2)
 
 #: NSH OAM Constants
 NSH_TYPE1_OAM_PACKET = int('01100000000001100000000100000100', 2)
@@ -36,11 +40,36 @@ NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET = NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_O
 
 class VXLANGPE(Structure):
     _fields_ = [('flags', c_ubyte),
-                ('reserved', c_ubyte),
-                ('protocol_type', c_ushort),
+                ('reserved', c_uint, 16),
+                ('protocol_type', c_uint, 8),
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
+
+class GREHEADER(Structure):
+    _fields_ = [('c', c_uint, 1),
+                ('reserved0', c_uint, 12),
+                ('version', c_uint, 3),
+                ('protocol_type', c_uint, 16),
+                ('checksum', c_uint, 16),
+                ('reserved1', c_uint, 16)]
+
+
+class ETHHEADER(Structure):
+    _fields_ = [('dmac0', c_ubyte),
+                ('dmac1', c_ubyte),
+                ('dmac2', c_ubyte),
+                ('dmac3', c_ubyte),
+                ('dmac4', c_ubyte),
+                ('dmac5', c_ubyte),
+                ('smac0', c_ubyte),
+                ('smac1', c_ubyte),
+                ('smac2', c_ubyte),
+                ('smac3', c_ubyte),
+                ('smac4', c_ubyte),
+                ('smac5', c_ubyte),
+                ('len0', c_ubyte),
+                ('len1', c_ubyte)]
 
 class BASEHEADER(Structure):
     _fields_ = [('version', c_ushort, 2),

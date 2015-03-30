@@ -24,7 +24,7 @@ SERVICE_FUNCTIONS_JSON = """
         "nsh-aware": true,
         "ip-mgmt-address": "127.0.0.1",
         "type": "service-function-type:dpi"
-      } 
+      }
     ]
   }
 }"""
@@ -33,8 +33,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
-      {  
-	"name": "SFF1",
+      {
+        "name": "SFF1",
         "sff-data-plane-locator": [
           {
             "name": "eth0",
@@ -209,7 +209,7 @@ IETF_ACL_JSON_IPV4 = """
               "ip-protocol": 17
             },
             "actions": {
-              "service-function-acl:rendered-service-path": "SFC1-SFP1"
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
             }
           }
         ]
@@ -233,7 +233,7 @@ IETF_ACL_JSON_IPV6 = """
               "flow-label": "1234"
             },
             "actions": {
-              "service-function-acl:rendered-service-path": "SFC1-SFP1"
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
             }
           }
         ]
@@ -256,7 +256,7 @@ IETF_ACL_JSON_MAC = """
               "destination-mac-address": "00:11:22:33:44:55"
             },
             "actions": {
-              "service-function-acl:rendered-service-path": "SFC1-SFP1"
+              "service-function-acl:rendered-service-path": "SFC1-SFP1-Path-1"
             }
           }
         ]

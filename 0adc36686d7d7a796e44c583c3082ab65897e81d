@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_e1861965",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.controller.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-30T07:37:05Z",
+      "side": 1,
+      "message": "This is not angular way of retrieving data. In html template you have ng-model\u003d\"data.type\" which is automatically binding the data to this.data.type",
+      "range": {
+        "startLine": 317,
+        "startChar": 17,
+        "endLine": 317,
+        "endChar": 72
+      },
+      "revId": "0adc36686d7d7a796e44c583c3082ab65897e81d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_817dd570",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.modal.instantiate.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-30T07:37:05Z",
+      "side": 1,
+      "message": "All Strings should be then moved to assets/data/locale-en_US.json and then interpolated using {{ \u0027STRING_NAME\u0027 | translate }}",
+      "revId": "0adc36686d7d7a796e44c583c3082ab65897e81d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a1801147",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/sfc.services.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1192,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-30T07:37:05Z",
+      "side": 1,
+      "message": "If you are not modifying the body of methods, there is no reason to override the parent methods. Just delete them :)",
+      "range": {
+        "startLine": 1186,
+        "startChar": 4,
+        "endLine": 1192,
+        "endChar": 6
+      },
+      "revId": "0adc36686d7d7a796e44c583c3082ab65897e81d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c1eafd0e",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/sfc.services.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1238,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-30T07:37:05Z",
+      "side": 1,
+      "message": "This is probably also not the cleanest way. Let me introduce patch for your needs.",
+      "range": {
+        "startLine": 1194,
+        "startChar": 4,
+        "endLine": 1238,
+        "endChar": 6
+      },
+      "revId": "0adc36686d7d7a796e44c583c3082ab65897e81d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

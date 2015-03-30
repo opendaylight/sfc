@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_c183dd54",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.controller.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-30T07:37:05Z",
+      "side": 0,
+      "message": "Please keep this line, the value is used (first use on line 245).",
+      "range": {
+        "startLine": 298,
+        "startChar": 6,
+        "endLine": 298,
+        "endChar": 32
+      },
+      "revId": "7e01fd2ddf4857d1c589ba4624c6967322b556e7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

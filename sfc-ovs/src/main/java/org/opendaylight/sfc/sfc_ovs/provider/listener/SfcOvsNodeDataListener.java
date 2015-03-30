@@ -8,8 +8,9 @@
 
 /**
  * DataChangeListener attached to the OVSDB southbound operational datastore
+ * <p/>
+ * <p/>
  *
- * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since 2015-02-13

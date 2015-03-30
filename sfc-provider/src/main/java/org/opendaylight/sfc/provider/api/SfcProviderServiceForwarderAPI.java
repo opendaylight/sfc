@@ -356,7 +356,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         ServiceFunctionForwarders sffs = null;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
+                InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
         if (ODL_SFC.getDataProvider() != null) {
             ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
@@ -376,6 +376,35 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return sffs;
+    }
+
+    /**
+     * Creates a executor and calls appropriate function to update
+     * SFF configuration
+     *
+     * <p>
+     * @param serviceFunctionForwarder Service Function Forwarder Object
+     * @return true if SFF was updated, false otherwise.
+     */
+    public static ServiceFunctionForwarders readAllServiceFunctionForwardersExecutor() {
+
+        printTraceStart(LOG);
+        ServiceFunctionForwarders ret = null;
+        Object[] serviceForwarderObject = {};
+        Class[] serviceForwarderClass = {};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getReadAll(serviceForwarderObject, serviceForwarderClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (ServiceFunctionForwarders) future.get();
+            LOG.debug("getReadAll: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
     }
 
     /**

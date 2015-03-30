@@ -20,13 +20,16 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -55,7 +58,6 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
-
         // SFF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
@@ -65,12 +67,14 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
 
-//                List<OvsdbBridgeAugmentation> ovsdbBridgeList =
-//                        SfcSffToOvsMappingAPI.getOvsdbBridgeListFromServiceForwarder(serviceFunctionForwarder);
-//
-//                for (OvsdbBridgeAugmentation ovsdbBridge : ovsdbBridgeList) {
-//                    SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(ovsdbBridge);
-//                }
+                //TODO: check if the same SFF exists in operational Datastore
+
+                List<OvsdbBridgeAugmentation> ovsdbBridgeList =
+                        SfcSffToOvsMappingAPI.getOvsdbBridgeListFromServiceForwarder(serviceFunctionForwarder);
+
+                for (OvsdbBridgeAugmentation ovsdbBridge : ovsdbBridgeList) {
+                    SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(ovsdbBridge);
+                }
 
             }
         }

@@ -5,6 +5,7 @@ module sfc-ovs-impl {
   prefix "sfc-ovs-impl";
 
   import config { prefix config; revision-date 2013-04-05; }
+  import rpc-context { prefix rpcx; revision-date 2013-06-17; }
   import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
 
 
@@ -37,6 +38,15 @@ module sfc-ovs-impl {
           refine type {
               mandatory false;
               config:required-identity mdsal:binding-async-data-broker;
+          }
+        }
+      }
+
+      container rpc-registry {
+        uses config:service-ref {
+          refine type {
+              mandatory true;
+              config:required-identity mdsal:binding-rpc-registry;
           }
         }
       }

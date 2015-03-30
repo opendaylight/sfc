@@ -23,6 +23,11 @@ module service-function-forwarder-ovs {
     revision-date 2015-01-05;
   }
 
+  import overlay {
+    prefix "ovsdb-overlay";
+    revision-date 2015-01-05;
+  }
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -79,6 +84,12 @@ module service-function-forwarder-ovs {
   }
 
   augment "/sfc-sff:service-function-forwarders/"
+          + "sfc-sff:service-function-forwarder/" {
+
+    uses bridge;
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
 
@@ -92,4 +103,29 @@ module service-function-forwarder-ovs {
 
     uses bridge;
   }
+
+  rpc create-ovs-bridge {
+      description
+        "Creates OVS Bridge on specified OVS Node";
+      input {
+        leaf name {
+          type string;
+          description
+            "The name of OVS Bridge to be created";
+        }
+
+        container ovs-node {
+          description
+          "Contains ip:port locator of the OVS Node,
+          on which OVS Bridge is going to be created";
+
+          uses ovsdb-overlay:ip-port-locator;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
 }

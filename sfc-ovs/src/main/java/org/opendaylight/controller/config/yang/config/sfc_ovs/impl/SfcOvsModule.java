@@ -17,9 +17,12 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_ovs.impl;
 
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarderOvsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +49,10 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
     public java.lang.AutoCloseable createInstance() {
         final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
+        final SfcOvsRpc sfcOvsRpc = new SfcOvsRpc();
+        final BindingAwareBroker.RpcRegistration<ServiceFunctionForwarderOvsService> sfcOvsRpcRegistration =
+                getRpcRegistryDependency().addRpcImplementation(ServiceFunctionForwarderOvsService.class, sfcOvsRpc);
+
         final SfcOvsNodeDataListener sfcOvsNodeDataListener = new SfcOvsNodeDataListener(opendaylightSfc);
         final SfcOvsSffEntryDataListener sfcOvsSffEntryDataListener = new SfcOvsSffEntryDataListener(opendaylightSfc);
 
@@ -56,6 +63,7 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
 
             @Override
             public void close() {
+                sfcOvsRpcRegistration.close();
                 sfcOvsNodeDataListener.getDataChangeListenerRegistration().close();
                 sfcOvsSffEntryDataListener.getDataChangeListenerRegistration().close();
 

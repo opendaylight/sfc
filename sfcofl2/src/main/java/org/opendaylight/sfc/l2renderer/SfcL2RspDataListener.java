@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -254,12 +255,17 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             if(((MacAddressLocator) sffLocatorType).getVlanId() == null) {
                 this.sfcL2FlowProgrammer.configureIpv4TransportIngressFlow(sffName, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanTransportIngressFlow(sffName, this.addFlow);
+                // VxLAN-gpe or VLAN
+                if (dpl.getTransport().equals(VxlanGpe.class)) {
+                    //set nsi and set nsp
+                    this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(sffName, this.addFlow);
+                } else {
+                    this.sfcL2FlowProgrammer.configureVlanTransportIngressFlow(sffName, this.addFlow);
+                }
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             this.sfcL2FlowProgrammer.configureMplsTransportIngressFlow(sffName, this.addFlow);
         }
-        // TODO add VxLAN
     }
 
     private void configureSffIngressFlow(final String sffName, DataPlaneLocator dpl, final long pathId) {
@@ -272,17 +278,25 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         if (implementedInterface.equals(Mac.class)) {
             Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
             MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
+            long nsp = pathId;
+            short nsi = 5; //TODO, how to get it
             if(vlanTag == null) {
                 this.sfcL2FlowProgrammer.configureMacIngressFlow(sffName, mac.getValue(), pathId, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffName, vlanTag, pathId, this.addFlow);
+                // VxLAN-gpe or VLAN
+                if (dpl.getTransport().equals(VxlanGpe.class)) {
+                    this.sfcL2FlowProgrammer.configureVxlanGpeIngressFlow(sffName, vlanTag, nsp, nsi, pathId, this.addFlow);
+                }
+                else {
+                    this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffName, vlanTag, pathId, this.addFlow);
+                }
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) sffLocatorType).getMplsLabel();
             this.sfcL2FlowProgrammer.configureMplsIngressFlow(sffName, mplsLabel, pathId, this.addFlow);
         }
-        // TODO add VxLAN
+
     }
 
     private void configureSffNextHopFlow(final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, final long pathId) {
@@ -311,7 +325,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         this.sfcL2FlowProgrammer.configureNextHopFlow(sffName, pathId, srcMac.getValue(), dstMac.getValue(), this.addFlow);
     }
 
-    private void configureSffTransportEgressFlow(final String sffName, DataPlaneLocator dpl) {
+    private void configureSffTransportEgressFlow(final String sffName, final long pathId, DataPlaneLocator dpl) {
         LOG.info("configureSffTransportEgressFlow sff [{}]", sffName);
 
         LocatorType sffLocatorType = dpl.getLocatorType();
@@ -321,10 +335,18 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         if (implementedInterface.equals(Mac.class)) {
             Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
             MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
+            long nsp = pathId;
+            short nsi = 5; //TODO how to get it
             if(vlanTag == null) {
                 this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(sffName, mac.getValue(), this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(sffName, mac.getValue(), vlanTag, this.addFlow);
+                // VxLAN-gpe or VLAN
+                if (dpl.getTransport().equals(VxlanGpe.class)) {
+                    this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(sffName, mac.getValue(), vlanTag, nsp, nsi, this.addFlow);
+                }
+                else {
+                    this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(sffName, mac.getValue(), vlanTag, this.addFlow);
+                }
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
@@ -407,7 +429,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             // Configure the SFF-SF NextHop using sfDpl
             configureSffNextHopFlow(entry.getDstSff(), sffSfDpl, sfDpl, entry.getPathId());
             // Configure the SFF-SF Transport Egress using sfDpl
-            configureSffTransportEgressFlow(entry.getDstSff(), sffSfDpl);
+            configureSffTransportEgressFlow(entry.getDstSff(), entry.getPathId(), sffSfDpl);
         }
 
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
@@ -422,7 +444,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         configureSffNextHopFlow(entry.getDstSff(), sffSrcIngressDpl.getDataPlaneLocator(),
                 sffDstIngressDpl.getDataPlaneLocator(), entry.getPathId());
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
-        configureSffTransportEgressFlow(entry.getDstSff(), sffDstIngressDpl.getDataPlaneLocator());
+        configureSffTransportEgressFlow(entry.getDstSff(), entry.getPathId(), sffDstIngressDpl.getDataPlaneLocator());
     }
 
 

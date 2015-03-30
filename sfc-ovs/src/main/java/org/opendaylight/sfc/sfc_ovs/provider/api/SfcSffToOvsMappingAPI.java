@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -45,6 +46,18 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @since 2015-03-23
  */
 public class SfcSffToOvsMappingAPI {
+
+    public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation (ServiceFunctionForwarder serviceFunctionForwarder) {
+        Preconditions.checkNotNull(serviceFunctionForwarder);
+
+        OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
+
+        ServiceFunctionForwarder2 serviceFunctionForwarder2 = serviceFunctionForwarder.getAugmentation(ServiceFunctionForwarder2.class);
+
+        ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(serviceFunctionForwarder2.getOvsBridge().getBridgeName()));
+
+        return ovsdbBridgeBuilder.build();
+    }
 
     public static List<OvsdbBridgeAugmentation> getOvsdbBridgeListFromServiceForwarder(ServiceFunctionForwarder serviceFunctionForwarder) {
         Preconditions.checkNotNull(serviceFunctionForwarder);

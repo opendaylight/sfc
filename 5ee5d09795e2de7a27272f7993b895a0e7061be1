@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_e89fd6b2",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.controller.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-31T10:05:11Z",
+      "side": 1,
+      "message": "use $scope.$eval(\u0027\"STRING_NAME\" | translate\u0027}",
+      "range": {
+        "startLine": 282,
+        "startChar": 23,
+        "endLine": 282,
+        "endChar": 53
+      },
+      "revId": "5ee5d09795e2de7a27272f7993b895a0e7061be1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_a8a9cee0",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicechain/servicechain.controller.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-03-31T10:05:11Z",
+      "side": 1,
+      "message": "The same issue ($scope.$eval). Add \"body\" element to make the message more clear for UI users.",
+      "range": {
+        "startLine": 288,
+        "startChar": 25,
+        "endLine": 288,
+        "endChar": 58
+      },
+      "revId": "5ee5d09795e2de7a27272f7993b895a0e7061be1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -13,15 +13,16 @@ import asyncio
 import binascii
 import ipaddress
 
-from struct import unpack
+from struct import pack, unpack
 
 import nsh.decode as nsh_decode
 
 from common.sfc_globals import sfc_globals
 from nsh.encode import add_sf_to_trace_pkt
 from nsh.service_index import process_service_index
-
-from nsh.common import *  # noqa
+from nsh.common import (NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET,
+                        VXLANGPE, BASEHEADER, CONTEXTHEADER, TRACEREQHEADER,
+                        PAYLOAD_START_INDEX, NSH_OAM_TRACE_DEST_IP_REPORT_LEN)
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"
@@ -30,9 +31,11 @@ __version__ = "0.3"
 __email__ = "jguichar@cisco.com, rapenno@gmail.com"
 __status__ = "beta"
 
+
 """
 All supported services
 """
+
 
 logger = logging.getLogger(__name__)
 
@@ -126,35 +129,77 @@ class BasicService(object):
 
     def _process_incoming_packet(self, data, addr):
         """
-        TODO: add docstring
+        Decode NSH headers and process service index
 
-        :param data: UDP payload
+        :param data: packet payload
         :type data: bytes
         :param addr: IP address and port to which data are passed
-        :type addr: tuple (str, int)
+        :type addr: tuple
+
         """
         logger.info('%s: Processing received packet', self.service_type)
 
         self._decode_headers(data)
 
-        # TODO: should't this be converted before applying _decode_headers()
-        # like in MyUdpServer?
         rw_data = bytearray(data)
-        rw_data = process_service_index(rw_data, self.server_base_values)[0]
+        rw_data, _ = process_service_index(rw_data, self.server_base_values)
 
         return rw_data
+
+    def _update_metadata(self, data,
+                         network_platform=None, network_shared=None,
+                         service_platform=None, service_shared=None):
+        """
+        Update NSH context header in received packet data
+
+        :param data: packet data
+        :type data: bytes
+        :param network_platform: new network_platform value
+        :type network_platform: int
+        :param network_shared: new network_shared value
+        :type network_shared: int
+        :param service_platform: new service_platform value
+        :type service_platform: int
+        :param service_shared: new service_shared value
+        :type service_shared: int
+
+        :return bytearray
+
+        """
+        if network_platform is not None:
+            self.server_ctx_values.network_platform = network_platform
+
+        if network_shared is not None:
+            self.server_ctx_values.network_shared = network_shared
+
+        if service_platform is not None:
+            self.server_ctx_values.service_platform = service_platform
+
+        if service_shared is not None:
+            self.server_ctx_values.service_shared = service_shared
+
+        new_ctx_header = pack('!I I I I',
+                              self.server_ctx_values.network_platform,
+                              self.server_ctx_values.network_shared,
+                              self.server_ctx_values.service_platform,
+                              self.server_ctx_values.service_shared)
+
+        data = bytearray(data)
+        data[16:32] = new_ctx_header
+
+        return data
 
     def connection_made(self, transport):
         self.transport = transport
 
     def datagram_received(self, data, addr):
         """
-        TODO: add docstring
+        Forward received packet accordingly based on its type
 
-        :param data: UDP payload
+        :param data: packet data
         :type data: bytes
         :param addr: IP address and port to which data are passed
-        :type addr: tuple (str, int)
+        :type addr: tuple
 
         """
         logger.info('%s service received packet from %s:', self.service_type, addr)
@@ -169,9 +214,9 @@ class BasicService(object):
             if self.server_base_values.service_index == self.server_trace_values.sil:
                 trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
                 self.transport.sendto(trace_pkt, addr)
+            # Send packet back to SFF
             else:
                 self.transport.sendto(rw_data, addr)
-                # Send packet back to SFF
 
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
@@ -263,7 +308,15 @@ class MySffServer(BasicService):
     @staticmethod
     def _lookup_next_sf(service_path, service_index):
         """
-        TODO:
+        Retrieve next SF locator info from SfcGlobals
+
+        :param service_path: service path identifier
+        :type service_path: int
+        :param service_index: service index
+        :type service_index: int
+
+        :return dict or hex
+
         """
         next_hop = SERVICE_HOP_INVALID
 
@@ -319,7 +372,7 @@ class MySffServer(BasicService):
 
     def _process_incoming_packet(self, data, addr):
         """
-        SFF main processing packet function
+        SFF main packet processing function
 
         :param data: UDP payload
         :type data: bytes
@@ -330,8 +383,6 @@ class MySffServer(BasicService):
         logger.info("%s: Processing packet from: %s", self.service_type, addr)
 
         address = ()
-
-        # Copy payload into byte array so it can be changed
         rw_data = bytearray(data)
         self._decode_headers(data)
 
@@ -400,12 +451,12 @@ class MySffServer(BasicService):
 
     def datagram_received(self, data, addr):
         """
-        TODO:
+        Process received packet
 
-        :param data: UDP payload
+        :param data: packet data
         :type data: bytes
         :param addr: IP address and port to which data are passed
-        :type addr: tuple (str, int)
+        :type addr: tuple
 
         """
         logger.info('%s: Received a packet from: %s', self.service_type, addr)

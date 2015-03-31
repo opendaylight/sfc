@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceChainCtrl', function ($scope, $rootScope, ServiceFunctionSvc, SfcServiceFunctionSchedulerTypeSvc, ServiceChainSvc, ServicePathSvc, ModalDeleteSvc, ModalSfNameSvc, ModalSfpInstantiateSvc, ModalInfoSvc, ModalErrorSvc, ngTableParams, $filter) {
 
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     var thisCtrl = this;
@@ -240,7 +240,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.deploySFC = function deploySFC(sfc) {
 
-      ModalSfpInstantiateSvc.open(sfc, function (sfp) {
+      ModalSfpInstantiateSvc.open(sfc, function (modalResult) {
+        var sfp;
+        var scheduler;
+
+        if (angular.isDefined(modalResult)) {
+          sfp = modalResult['sfp'];
+          scheduler = modalResult['scheduler'];
+        }
+
         //if user entered name in modal dialog (and it's unique name)
         if (angular.isDefined(sfp.name)) {
           ServicePathSvc.putItem(sfp, function (result) {
@@ -260,6 +268,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
               ModalInfoSvc.open({
                 "head": $scope.$eval('"SFC_CHAIN_MODAL_PATH_SUCCESS_HEAD" | translate'),
                 "body": modalBody
+              });
+            }
+          });
+        }
+         if (angular.isDefined(scheduler.type)) {
+          SfcServiceFunctionSchedulerTypeSvc.putItem(scheduler, function (result) {
+            if (angular.isDefined(result)) {
+              // error
+              var response = result.response;
+              console.log(response);
+              ModalErrorSvc.open({
+                head: "Failed to update schedule type",
+                rpcError: response
+              });
+            } else {
+              // ok
+              ModalInfoSvc.open({
+                "head": "Update schedule type successfully"
               });
             }
           });
@@ -294,11 +320,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.data.name = sfc.name + "-";
 
     $scope.save = function () {
-      var sfp = {};
-      sfp.name = this.data.name;
-      sfp['service-chain-name'] = sfc.name;
+      var result = {};
+      result['sfp'] = {};
 
-      $modalInstance.close(sfp);
+      result['sfp']['name'] = this.data.name;
+      result['sfp']['service-chain-name'] = sfc.name;
+
+      result['scheduler'] = {};
+      result['scheduler']['type'] = this.data.type;
+
+      $modalInstance.close(result);
     };
 
     $scope.dismiss = function () {

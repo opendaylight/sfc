@@ -7,6 +7,8 @@ __status__ = "alpha"
 import requests
 import json
 import time
+from subprocess import *
+import pexpect
 
 put_json_headers = {'content-type': 'application/json'}
 get_json_headers = {'Accept': 'application/json'}
@@ -17,6 +19,7 @@ get_xml_headers = {'Accept': 'application/xml'}
 
 # ODL IP:port
 ODLIP = "localhost:8181"
+NETCONF_CONNECTOR_IP_PORT = "127.0.0.1:8181"
 # Static URLs for testing
 SF_URL = "http://" + ODLIP + "/restconf/config/service-function:service-functions/"
 SFC_URL = "http://" + ODLIP + "/restconf/config/service-function-chain:service-function-chains/"
@@ -34,8 +37,8 @@ SFF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:s
 IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
 RSP_RPC_URL = "http://" + ODLIP + "/restconf/operations/rendered-service-path:create-rendered-path"
 SCF_URL = "http://" + ODLIP + "/restconf/config/service-function-classifier:service-function-classifiers/"
-NETCONF_CONNECTOR_URL = "http://" + ODLIP + "/restconf/config/network-topology:network-topology/topology/" \
-                                            "topology-netconf/node/controller-config/yang-ext:mount/config:modules"
+NETCONF_CONNECTOR_URL = "http://" + NETCONF_CONNECTOR_IP_PORT + "/restconf/config/network-topology:network-topology/" \
+                        "topology/topology-netconf/node/controller-config/yang-ext:mount/config:modules"
 
 USERNAME = "admin"
 PASSWORD = "admin"
@@ -132,7 +135,7 @@ def post_rpc(url, json_input, json_resp):
 def post_netconf_connector(url, xml_input):
     s = requests.Session()
     print("POSTing Netconf Connector {} \n".format(url))
-    r = s.post(url, data=xml_input, headers=post_xml_headers, stream=False, auth=(USERNAME, PASSWORD))
+    r = s.post(url, data=xml_input, headers=post_xml_headers, stream=False, auth=(USERNAME, PASSWORD), timeout=5)
     if r.status_code == 204:
         print("=>POST successful \n")
     else:
@@ -147,3 +150,52 @@ def delete_and_check(url, message):
         print("=>Check successful \n")
     else:
         print("=>Check not successful, error code: {} \n".format(r.status_code))
+
+
+def initialize_karaf():
+    """
+    Initializes Karaf
+
+    :return child:  A spawn object
+
+    """
+
+    # Another option is to start Karaf server in background
+    # and connect to remote server port
+    # try:
+    # process = Popen(
+    # ['../sfc-karaf/target/assembly/bin/start'])
+    #
+    # except CalledProcessError as e:
+    #     print(e.output)
+
+    print("Starting SFC Karaf. This will take 2 minutes...")
+    child = pexpect.spawn('../sfc-karaf/target/assembly/bin/karaf clean')
+    # We wait 120 seconds for SFC karaf to start
+    time.sleep(120)
+    return child
+
+
+def check_sfc_initialized(child):
+    """
+    Checks if SFC was initialized properly
+
+    :param child: a pexpect handle
+    :type child: a spawn object
+    :return init_string:  "SfcOvsModule" if properly initialized, None otherwise
+
+    """
+    ret = False
+    ovs_pattern = 'display \| grep \"SFC OVS module initialized\"\s{2}.+?(?=SfcOvsModule)(\w+)'
+    karaf_cmd = 'log:display | grep \"SFC OVS module initialized\"'
+    try:
+        child.sendline(karaf_cmd)
+        child.expect(ovs_pattern, timeout=5)
+        init_string = child.match.groups()
+        if init_string[0].decode("utf-8") == "SfcOvsModule":
+            ret = True
+    except pexpect.TIMEOUT:
+        print("SFC not initialized properly, timeout waiting for command answer")
+    except KeyError:
+        print("SFC not initialized properly, empty answer from Karaf")
+    return ret

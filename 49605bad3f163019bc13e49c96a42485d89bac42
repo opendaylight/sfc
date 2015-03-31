@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_6d3678e9",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-31T05:43:25Z",
+      "side": 1,
+      "message": "I wonder if VxLAN GPE should be in the Mac transport together with VLAN. If Im not mistaken, it should be in a separate \"else if\" checking for ip-port locator.",
+      "range": {
+        "startLine": 259,
+        "startChar": 16,
+        "endLine": 259,
+        "endChar": 62
+      },
+      "revId": "49605bad3f163019bc13e49c96a42485d89bac42",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_cd4eac6f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 417,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-03-31T05:43:25Z",
+      "side": 1,
+      "message": "I dont think we should set the VlanId on a VxLAN flow. Same comment everywhere else its being set for VxLAN.",
+      "range": {
+        "startLine": 417,
+        "startChar": 35,
+        "endLine": 417,
+        "endChar": 44
+      },
+      "revId": "49605bad3f163019bc13e49c96a42485d89bac42",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

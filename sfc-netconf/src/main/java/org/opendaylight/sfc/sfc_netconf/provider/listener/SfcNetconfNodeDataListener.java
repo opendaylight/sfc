@@ -88,21 +88,17 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
 
         //enum unable-to-connect;
 
-        // EXAMPLE: New node discovery
-        // React to new Netconf nodes added to the Netconf topology or existing
-        // Netconf nodes deleted from the Netconf topology
-        for ( Map.Entry<InstanceIdentifier<?>,
-                DataObject> entry : change.getCreatedData().entrySet()) {
+        for ( Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
             Node node = null;
             if (entry.getKey().getTargetType() == NetconfNode.class) {
                 // We have a Netconf device
                 NodeId nodeId = getNodeId(entry);
                 String nodeName = nodeId.getValue();
-                LOG.info("NETCONF Node: {}", nodeId.getValue());
                 NetconfNode nnode = (NetconfNode)entry.getValue();
+                LOG.info("NETCONF Listener created event: {}", nodeName);
 
 
-                NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
+/*                NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == NetconfNodeFields.ConnectionStatus.Connected) {
                     List<String> capabilities = nnode.getAvailableCapabilities()
                             .getAvailableCapability();
@@ -113,90 +109,66 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                     LOG.info("Successfully created SFF from Netconf node {}", nodeName);
                 } else {
                     LOG.error("Error creating SFF from Netconf node {}", nodeName);
-                }
+                }*/
             }
         }
 
-        // EXAMPLE: Status change in existing node(s)
-        // React to data changes in Netconf nodes present in the Netconf
-        // topology
-        for ( Map.Entry<InstanceIdentifier<?>,
-                DataObject> entry : change.getUpdatedData().entrySet()) {
+
+        // React to data changes in Netconf nodes present in the Netcon topology
+        for ( Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
             if ((entry.getKey().getTargetType() == NetconfNode.class) &&
                     (!(dataCreatedObject.containsKey(entry.getKey())))) {
-                // We have a Netconf device
-                // We have a Netconf device
                 NodeId nodeId = getNodeId(entry);
                 String nodeName = nodeId.getValue();
-                LOG.info("NETCONF Node: {}", nodeId.getValue());
-                NetconfNode nnode = (NetconfNode)entry.getValue();
 
-                NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
+                // We bypass the internal Netconf server
+                if (!nodeName.equals("controller-config")) {
+                    NetconfNode nnode = (NetconfNode) entry.getValue();
 
-                switch (csts) {
-                    case Connected: {
-                        // Fully connected, all services for remote device available from MountPointService
-                        LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
-                        List<String> capabilities =
-                                nnode.getAvailableCapabilities().getAvailableCapability();
-                        LOG.info("Capabilities: {}", capabilities);
-                        if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                                SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetonf(nodeName, nnode))) {
-                            LOG.info("Successfully created SFF from Netconf node {}", nodeName);
-                        } else {
-                            LOG.error("Error creating SFF from Netconf node {}", nodeName);
+                    NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
+
+                    switch (csts) {
+                        case Connected: {
+                            // Fully connected, all services for remote device available from MountPointService
+                            LOG.debug("NETCONF Node: {} is fully connected", nodeId.getValue());
+                            List<String> capabilities =
+                                    nnode.getAvailableCapabilities().getAvailableCapability();
+                            LOG.debug("Capabilities: {}", capabilities);
+                            if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
+                                    SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetconf(nodeName, nnode))) {
+                                LOG.info("Successfully created SFF from Netconf node {}", nodeName);
+                            } else {
+                                LOG.error("Error creating SFF from Netconf node {}", nodeName);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case Connecting: {
-                        // Connecting state is set initially but netconf device can get back to it after a disconnect
-                        // Note that device could jump back and forth between connected and connecting for various reasons:
-                        // disconnect from remote device, network connectivity loss etc.
-                        LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
-                        if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
-                            LOG.info("SFF {} deleted successfully", nodeName);
-                        } else {
-                            LOG.error("Failed to delete SFF {}", nodeName);
+                        case Connecting: {
+                            // Connecting state is set initially but netconf device can get back to it after a disconnect
+                            // Note that device could jump back and forth between connected and connecting for various reasons:
+                            // disconnect from remote device, network connectivity loss etc.
+                            LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
+                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                                LOG.info("SFF {} deleted successfully", nodeName);
+                            } else {
+                                LOG.error("Failed to delete SFF {}", nodeName);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case UnableToConnect: {
-                        // Its over for the device, no more reconnects
-                        LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
-                        if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
-                            LOG.info("SFF {} deleted successfully", nodeName);
-                        } else {
-                            LOG.error("Failed to delete SFF {}", nodeName);
+                        case UnableToConnect: {
+                            // Its over for the device, no more reconnects
+                            LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
+                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                                LOG.info("SFF {} deleted successfully", nodeName);
+                            } else {
+                                LOG.error("Failed to delete SFF {}", nodeName);
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
         }
 
-/*       // NODE UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof OvsdbNodeAugmentation)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
-                OvsdbNodeAugmentation updatedOvsdbNodeAugmentation = (OvsdbNodeAugmentation) entry.getValue();
-                LOG.debug("\nModified OvsdbNodeAugmentation : {}", updatedOvsdbNodeAugmentation.toString());
-
-            }
-        }
-
-
-        // NODE DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if (dataObject instanceof OvsdbNodeAugmentation) {
-
-                OvsdbNodeAugmentation deletedOvsdbNodeAugmentation = (OvsdbNodeAugmentation) dataObject;
-                LOG.debug("\nDeleted OvsdbNodeAugmentation: {}", deletedOvsdbNodeAugmentation.toString());
-
-            }
-        }*/
         printTraceStop(LOG);
     }
 

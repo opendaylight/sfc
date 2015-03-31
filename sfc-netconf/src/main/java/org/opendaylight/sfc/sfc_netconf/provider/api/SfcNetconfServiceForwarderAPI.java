@@ -45,7 +45,7 @@ public class SfcNetconfServiceForwarderAPI {
      * @param nnode Netconf node Object
      * @return ServiceFunctionForwarder Object
      */
-    public static ServiceFunctionForwarder buildServiceForwarderFromNetonf(String nodeName, NetconfNode nnode) {
+    public static ServiceFunctionForwarder buildServiceForwarderFromNetconf(String nodeName, NetconfNode nnode) {
         Preconditions.checkNotNull(nnode);
 
 

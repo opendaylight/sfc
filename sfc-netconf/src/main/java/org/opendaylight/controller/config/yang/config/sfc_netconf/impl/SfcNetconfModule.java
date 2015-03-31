@@ -14,7 +14,7 @@ import org.opendaylight.sfc.sfc_netconf.provider.listener.SfcNetconfNodeDataList
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
+//import java.util.concurrent.ExecutionException;
 
 public class SfcNetconfModule extends org.opendaylight.controller.config.yang.config.sfc_netconf.impl.AbstractSfcNetconfModule {
 
@@ -39,7 +39,7 @@ public class SfcNetconfModule extends org.opendaylight.controller.config.yang.co
 
         final SfcNetconfNodeDataListener sfcNetconfNodeDataListener = new SfcNetconfNodeDataListener(opendaylightSfc);
 
-        LOG.info("SFC OVS module initialized");
+        LOG.info("SFC Netconf module initialized");
 
         final class AutoCloseableSfcOvs implements AutoCloseable {
 
@@ -47,11 +47,11 @@ public class SfcNetconfModule extends org.opendaylight.controller.config.yang.co
             public void close() {
                 sfcNetconfNodeDataListener.getDataChangeListenerRegistration().close();
 
-                try {
+/*                try {
                     opendaylightSfc.close();
                 } catch (ExecutionException | InterruptedException e) {
                     LOG.error("\nFailed to close SfcNetconfModule instance {} cleanly", this);
-                }
+                }*/
                 LOG.info("SfcNetconfModule (instance {}) torn down", this);
             }
         }

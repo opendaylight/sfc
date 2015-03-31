@@ -1210,6 +1210,67 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new RenderedServicePathSvc();
   });
 
+// ******* SfcServiceFunctionScheduleTypeSvc *********
+  sfc.register.factory('SfcServiceFunctionSchedulerTypeSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-scheduler-type';
+    var containerName = 'service-function-scheduler-types';
+    var listName = 'service-function-scheduler-type';
+
+    // constructor
+    function SfcServiceFunctionSchedulerTypeSvc() {
+    }
+
+    SfcServiceFunctionSchedulerTypeSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    // @override
+    SfcServiceFunctionSchedulerTypeSvc.prototype.getListKeyFromItem = function (itemData) {
+      return itemData['type'];
+    };
+
+    // @override
+    SfcServiceFunctionSchedulerTypeSvc.prototype.addNamespacePrefixes = function (schedulerType) {
+      var schedulerTypeMatcher = new RegExp("^service-function-scheduler-type:");
+      var schedulerTypePrefix = "service-function-scheduler-type:";
+
+      //add scheduler name (name should come from view, filling it in services does not give much sense)
+      if (angular.isUndefined(schedulerType['name'])) {
+          schedulerType['name'] = schedulerType['type'];
+      }
+
+      //set enabled to true
+      if (angular.isUndefined(schedulerType['enabled'])) {
+          schedulerType['enabled'] = true;
+      }
+
+      // add namespace prefix
+      if (angular.isDefined(schedulerType['type']) && schedulerType['type'].search(schedulerTypeMatcher) < 0) {
+        schedulerType['type'] = schedulerTypePrefix + schedulerType['type'];
+      }
+
+      return schedulerType;
+    };
+
+    // @override
+    SfcServiceFunctionSchedulerTypeSvc.prototype.stripNamespacePrefixes = function (schedulerTypeArray) {
+
+      var schedulerTypeMatcher = new RegExp("^service-function-scheduler-type:");
+
+      _.each(schedulerTypeArray, function (schedulerType) {
+
+        // remove namespace prefix
+        if (angular.isDefined(schedulerType['type'])) {
+          schedulerType['type'] = schedulerType['type'].replace(schedulerTypeMatcher, "");
+        }
+
+      });
+
+      return schedulerTypeArray;
+    };
+
+
+    return new SfcServiceFunctionSchedulerTypeSvc();
+  });
 
 })
 ; // end define

@@ -634,6 +634,17 @@
   "SFC_PLACEHOLDER_inet:ip-address": "Example: 10.0.0.1",
   "SFC_PLACEHOLDER_inet:port-number": "Number in range 0-65535",
   "SFC_PLACEHOLDER_uint32": "Type in a number",
+  "SFC_CHAIN_MODAL_SCHED_TYPE": "Select a schedule type:",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_HINT": "Select a type",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_RANDOM": "Random",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_ROUND_ROBIN": "Round Robin",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_LOAD_BALANCE": "Load Balance",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_SHORTEST_PATH": "Shortest Path",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_WEIGHTED_SP": "Weighted SP",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_USER_DEFINED": "User Defined",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_HEAD": "Update schedule type successfully",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_BODY": "Service Function Schedule Algorithm is updated to:<br><br>",
+  "SFC_CHAIN_MODAL_SCHED_TYPE_FAIL_HEAD": "Failed to update schedule type",
 
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

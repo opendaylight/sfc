@@ -850,6 +850,15 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     actionList.add(setMacSrc);
                 }
 
+                // Optionally write the DSCP with the pathId
+                if(this.setDscp) {
+                    // TODO currently it is not working to set the IP DSCP, with and without setting IPv4
+                    //Action setIp = SfcOpenflowUtils.createActionSetEtherType(SfcOpenflowUtils.ETHERTYPE_IPV4, order++);
+                    Action writeDscp = SfcOpenflowUtils.createActionWriteDscp((short) this.pathId, order++);
+                    //actionList.add(setIp);
+                    actionList.add(writeDscp);
+                }
+
                 // Optionally set either the VLAN or MPLS info
                 if(dstVlan > 0) {
                     Action vlanPush = SfcOpenflowUtils.createActionPushVlan(order++);
@@ -863,12 +872,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                     Action setMpls = SfcOpenflowUtils.createActionSetMplsLabel(this.mplsLabel, order++);
                     actionList.add(setMpls);
-                }
-
-                // Optionally write the DSCP with the pathId
-                if(this.setDscp) {
-                    Action writeDscp = SfcOpenflowUtils.createActionWriteDscp((short) this.pathId, order++);
-                    actionList.add(writeDscp);
                 }
 
                 Action outPortBuilder = SfcOpenflowUtils.createActionOutPort(this.port, order);

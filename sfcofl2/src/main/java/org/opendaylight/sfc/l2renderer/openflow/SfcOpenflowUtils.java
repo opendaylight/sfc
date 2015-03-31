@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlTypeActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
@@ -32,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.type.action._case.SetDlTypeActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -166,11 +168,13 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchDscp(MatchBuilder match, short dscpVal) {
-        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder(); // ipv4 version
-        Dscp dscp = new Dscp(dscpVal);
-        ipMatchBuilder.setIpDscp(dscp);
+        addMatchEtherType(match, ETHERTYPE_IPV4);
 
-        match.setIpMatch(ipMatchBuilder.build());
+        IpMatchBuilder ipMatch = new IpMatchBuilder();
+        Dscp dscp = new Dscp(dscpVal);
+        ipMatch.setIpDscp(dscp);
+
+        match.setIpMatch(ipMatch.build());
     }
 
     public static void addMatchMplsLabel(MatchBuilder match, long label) {
@@ -300,16 +304,28 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
+    public static Action createActionSetEtherType(final long etherType, final int order) {
+        SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
+        setDlTypeActionBuilder.setDlType(new EtherType(etherType));
+
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
+
+        return ab.build();
+    }
+
     public static Action createActionWriteDscp(short dscpVal, final int order) {
         IpMatchBuilder ipMatch = new IpMatchBuilder();
         Dscp dscp = new Dscp(dscpVal);
         ipMatch.setIpDscp(dscp);
 
-        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        setFieldBuilder.setIpMatch(ipMatch.build());
+        SetFieldCaseBuilder setFieldCase = new SetFieldCaseBuilder();
+        setFieldCase.setSetField(
+                new SetFieldBuilder().setIpMatch(ipMatch.build())
+                .build());
 
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setAction(setFieldCase.build());
 
         return ab.build();
     }

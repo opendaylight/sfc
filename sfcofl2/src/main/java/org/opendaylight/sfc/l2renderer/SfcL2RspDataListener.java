@@ -229,16 +229,31 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     }
 
     private void initializeSff(final String sffName) {
+        String sffNodeName = getSffServiceNodeName(sffName);
+        if(sffNodeName == null) {
+            LOG.error("initializeSff SFF [{}] does not exist", sffName);
+            return;
+        }
+
         if(!getSffInitialized(sffName)) {
-            LOG.info("Initializing SFF [{}]", sffName);
-            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffName, true, true);
-            this.sfcL2FlowProgrammer.configureIngressTableMatchAny(sffName, false, true);
-            this.sfcL2FlowProgrammer.configureAclTableMatchAny(sffName, true, true);
-            this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffName, false, true);
-            this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffName, true, true);
+            LOG.info("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
+            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true, true);
+            this.sfcL2FlowProgrammer.configureIngressTableMatchAny(          sffNodeName, false, true);
+            this.sfcL2FlowProgrammer.configureAclTableMatchAny(              sffNodeName, true, true);
+            this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(          sffNodeName, false, true);
+            this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(  sffNodeName, true, true);
 
             setSffInitialized(sffName, true);
         }
+    }
+
+    private String getSffServiceNodeName(final String sffName) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName);
+        if(sff == null) {
+            return null;
+        }
+
+        return sff.getServiceNode();
     }
 
     /**
@@ -248,7 +263,13 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
      * @param dpl - details about the transport to write
      */
     private void configureSffTransportIngressFlow(final String sffName, DataPlaneLocator dpl) {
-        LOG.info("configureSffTransportIngressFlow sff [{}]", sffName);
+        String sffNodeName = getSffServiceNodeName(sffName);
+        if(sffNodeName == null) {
+            LOG.error("configureSffTransportIngressFlow SFF {} does not exist", sffName);
+            return;
+        }
+
+        LOG.info("configureSffTransportIngressFlow sff [{}] node [{}]", sffName, sffNodeName);
 
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
@@ -256,18 +277,24 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         // Mac/IP and possibly VLAN
         if (implementedInterface.equals(Mac.class)) {
             if(((MacAddressLocator) sffLocatorType).getVlanId() == null) {
-                this.sfcL2FlowProgrammer.configureIpv4TransportIngressFlow(sffName, this.addFlow);
+                this.sfcL2FlowProgrammer.configureIpv4TransportIngressFlow(sffNodeName, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanTransportIngressFlow(sffName, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVlanTransportIngressFlow(sffNodeName, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
-            this.sfcL2FlowProgrammer.configureMplsTransportIngressFlow(sffName, this.addFlow);
+            this.sfcL2FlowProgrammer.configureMplsTransportIngressFlow(sffNodeName, this.addFlow);
         }
         // TODO add VxLAN
     }
 
     private void configureSffIngressFlow(final String sffName, DataPlaneLocator dpl, final long pathId) {
-        LOG.info("configureSffIngressFlow sff [{}] pathId [{}]", sffName, pathId);
+        String sffNodeName = getSffServiceNodeName(sffName);
+        if(sffNodeName == null) {
+            LOG.error("configureSffIngressFlow SFF {} does not exist", sffName);
+            return;
+        }
+
+        LOG.info("configureSffIngressFlow sff [{}] node [{}] pathId [{}]", sffName, sffNodeName, pathId);
 
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
@@ -277,23 +304,30 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
             MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
             if(vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacIngressFlow(sffName, mac.getValue(), pathId, this.addFlow);
+                this.sfcL2FlowProgrammer.configureMacIngressFlow(sffNodeName, mac.getValue(), pathId, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffName, vlanTag, pathId, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffNodeName, vlanTag, pathId, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) sffLocatorType).getMplsLabel();
-            this.sfcL2FlowProgrammer.configureMplsIngressFlow(sffName, mplsLabel, pathId, this.addFlow);
+            this.sfcL2FlowProgrammer.configureMplsIngressFlow(sffNodeName, mplsLabel, pathId, this.addFlow);
         }
         // TODO add VxLAN
     }
 
     private void configureSffNextHopFlow(final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, final long pathId) {
+        String sffNodeName = getSffServiceNodeName(sffName);
+        if(sffNodeName == null) {
+            LOG.error("configureSffNextHopFlow SFF {} does not exist", sffName);
+            return;
+        }
+
         LOG.info("configureSffNextHopFlow sff [{}] pathId [{}]", sffName, pathId);
 
         if(srcDpl == null && dstDpl == null) {
-            LOG.info("configureSffNextHopFlow sff [{}] pathId [{}] both srcDpl and dstDpl are null", sffName, pathId);
+            LOG.error("configureSffNextHopFlow sff [{}] node [{}] pathId [{}] both srcDpl and dstDpl are null",
+                    sffName, sffNodeName, pathId);
             return;
         }
 
@@ -320,16 +354,23 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         }
         // TODO add VxLAN
 
-        this.sfcL2FlowProgrammer.configureNextHopFlow(sffName, pathId, srcMac, dstMac, this.addFlow);
+        this.sfcL2FlowProgrammer.configureNextHopFlow(sffNodeName, pathId, srcMac, dstMac, this.addFlow);
     }
 
     private void configureSffTransportEgressFlow(
             final String sffName, DataPlaneLocator srcDpl, DataPlaneLocator dstDpl, int port, long pathId, boolean isSf) {
-        LOG.info("configureSffTransportEgressFlow sff [{}]", sffName);
+
+        String sffNodeName = getSffServiceNodeName(sffName);
+        if(sffNodeName == null) {
+            LOG.error("configureSffTransportEgressFlow SFF {} does not exist", sffName);
+            return;
+        }
+
+        LOG.info("configureSffTransportEgressFlow sff [{}] node [{}]", sffName, sffNodeName);
 
         // Either the srcDpl or the dstDpl can be null, but not both
         if(srcDpl == null && dstDpl == null) {
-            LOG.info("configureSffTransportEgressFlow sff [{}] pathId [{}] both dstDpl and srcDpl are null", sffName, pathId);
+            LOG.error("configureSffTransportEgressFlow sff [{}] pathId [{}] both dstDpl and srcDpl are null", sffName, pathId);
             return;
         }
 
@@ -348,9 +389,11 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             String dstMac = dstLocatorType == null ?
                     null : ((MacAddressLocator) dstLocatorType).getMac().getValue();
             if(vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(sffName, srcMac, dstMac, port, pathId, isSf, this.addFlow);
+                this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(
+                        sffNodeName, srcMac, dstMac, port, pathId, isSf, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(sffName, srcMac, dstMac, vlanTag, port, pathId, isSf, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(
+                        sffNodeName, srcMac, dstMac, vlanTag, port, pathId, isSf, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
@@ -360,7 +403,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
                     null : ((MplsLocator) srcLocatorType).getMacAddress().getValue();
             String dstMac = dstLocatorType ==null ?
                     null : ((MplsLocator) dstLocatorType).getMacAddress().getValue();
-            this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(sffName, srcMac, dstMac, mplsLabel, port, pathId, isSf, this.addFlow);
+            this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, mplsLabel, port, pathId, isSf, this.addFlow);
         }
     }
 
@@ -401,7 +445,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         configureSffIngressFlow(sffDstName, sfDpl, -1);
 
         // Configure the SF ACL flow
-        this.sfcL2FlowProgrammer.configureClassificationFlow(sffDstName, entry.getPathId(), true);
+        this.sfcL2FlowProgrammer.configureClassificationFlow(
+                getSffServiceNodeName(sffDstName), entry.getPathId(), true);
 
         // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {

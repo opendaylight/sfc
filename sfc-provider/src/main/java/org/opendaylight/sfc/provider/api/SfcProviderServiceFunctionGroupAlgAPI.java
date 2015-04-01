@@ -13,24 +13,17 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.ServiceFunctionGroupAlgorithms;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithms.ServiceFunctionGroupAlgorithmKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.ServiceFunctionGroupAlgorithms;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithmKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to operate on the ServiceFunctionGroupAlgorithm
- * datastore.
- * <p/>
- * It is normally called from onDataChanged() through a executor service. We
- * need to use an executor service because we can not operate on a datastore
- * while on onDataChanged() context.
- *
+ * This class has the APIs to operate on the ServiceFunctionGroupAlgorithm datastore. <p/> It is normally called from onDataChanged() through a executor service. We need to use an executor service because we can not operate on a datastore while on onDataChanged() context.
  * @author Kfir Yeshayahu (kfir.yeshayahu@contextream.com)
- * @version 0.1
- * <p/>
+ * @version 0.1 <p/>
  * @since 2015-02-14
  */
 public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAPI {
@@ -50,28 +43,28 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
     public static SfcProviderServiceFunctionGroupAlgAPI getPut(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "putServiceFunctionGroupAlgorithm");
     }
+
     @SuppressWarnings("rawtypes")
     public static SfcProviderServiceFunctionGroupAlgAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "readServiceFunctionGroupAlgorithm");
     }
+
     @SuppressWarnings("rawtypes")
     public static SfcProviderServiceFunctionGroupAlgAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "deleteServiceFunctionGroupAlgorithm");
     }
 
     /**
-     * Reads a SFG Algorithm from the datastore
-     * <p>
+     * Reads a SFG Algorithm from the datastore <p>
      * @param serviceFunctionGroupAlgorithm name
      * @return ServiceFunctionGroupAlgorithm object or null if not found
      */
-    protected  ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlgorithm(String serviceFunctionGroupAlgorithmName) {
+    protected ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlgorithm(String serviceFunctionGroupAlgorithmName) {
         printTraceStart(LOG);
         ServiceFunctionGroupAlgorithm sfgAlg;
         InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgIID;
         ServiceFunctionGroupAlgorithmKey serviceFunctionGroupAlgorithmKey = new ServiceFunctionGroupAlgorithmKey(serviceFunctionGroupAlgorithmName);
-        sfgAlgIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class)
-                .child(ServiceFunctionGroupAlgorithm.class, serviceFunctionGroupAlgorithmKey).build();
+        sfgAlgIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class).child(ServiceFunctionGroupAlgorithm.class, serviceFunctionGroupAlgorithmKey).build();
 
         sfgAlg = SfcDataStoreAPI.readTransactionAPI(sfgAlgIID, LogicalDatastoreType.CONFIGURATION);
         printTraceStop(LOG);
@@ -79,16 +72,14 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
     }
 
     /**
-     * Puts a SFG Algorithm in the datastore
-     * <p>
+     * Puts a SFG Algorithm in the datastore <p>
      * @param sfgAlg the ServiceFunctionGroupAlgorithm to put
      * @return boolean success or failure
      */
-    protected boolean putServiceFunctionGroupAlgorithm (ServiceFunctionGroupAlgorithm sfgAlg) {
+    protected boolean putServiceFunctionGroupAlgorithm(ServiceFunctionGroupAlgorithm sfgAlg) {
         boolean ret;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionGroupAlgorithm > sfgAlgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class).
-                child(ServiceFunctionGroupAlgorithm.class, sfgAlg.getKey()).toInstance();
+        InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class).child(ServiceFunctionGroupAlgorithm.class, sfgAlg.getKey()).toInstance();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfgAlgEntryIID, sfgAlg, LogicalDatastoreType.CONFIGURATION);
 
@@ -97,8 +88,7 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
     }
 
     /**
-     * Deletes a SFG Algorithm from the datastore
-     * <p>
+     * Deletes a SFG Algorithm from the datastore <p>
      * @param serviceFunctionGroupAlgorithmName SFG Algorithm name
      * @return boolean success of failure
      */
@@ -106,8 +96,7 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionGroupAlgorithmKey serviceFunctionGroupAlgorithmKey = new ServiceFunctionGroupAlgorithmKey(serviceFunctionGroupAlgorithmName);
-        InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class).
-                child(ServiceFunctionGroupAlgorithm.class, serviceFunctionGroupAlgorithmKey).toInstance();
+        InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroupAlgorithms.class).child(ServiceFunctionGroupAlgorithm.class, serviceFunctionGroupAlgorithmKey).toInstance();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfgAlgEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;

@@ -7,6 +7,12 @@
  */
 package org.opendaylight.sfc.provider;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -21,8 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.ServiceFunctionGroups;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
@@ -34,67 +40,40 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
- * This the main SFC Provider class. It is instantiated from the
- * SFCProviderModule class.
- *
- * <p>
+ * This the main SFC Provider class. It is instantiated from the SFCProviderModule class. <p>
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since 2014-06-30
  * @see org.opendaylight.controller.config.yang.config.sfc_provider.impl.SfcProviderModule
  */
 
 public class OpendaylightSfc implements AutoCloseable {
 
-
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
 
-    public static final InstanceIdentifier<ServiceFunctionChain>  SFC_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionChains.class)
-                    .child(ServiceFunctionChain.class).build();
+    public static final InstanceIdentifier<ServiceFunctionChain> SFC_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionClassifier> SCF_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                    .child(ServiceFunctionClassifier.class).build();
+    public static final InstanceIdentifier<ServiceFunctionClassifier> SCF_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class).build();
 
-    public static final InstanceIdentifier<ServiceFunction>  SF_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
+    public static final InstanceIdentifier<ServiceFunction> SF_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionGroup>  SFG_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class).build();
+    public static final InstanceIdentifier<ServiceFunctionGroup> SFG_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionForwarder>  SFF_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class).build();
+    public static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionPath>  SFP_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                    .child(ServiceFunctionPath.class).build();
+    public static final InstanceIdentifier<ServiceFunctionPath> SFP_ENTRY_IID = InstanceIdentifier.builder(ServiceFunctionPaths.class).child(ServiceFunctionPath.class).build();
 
-    public static final InstanceIdentifier<RenderedServicePath>  RSP_ENTRY_IID =
-            InstanceIdentifier.builder(RenderedServicePaths.class)
-                    .child(RenderedServicePath.class).build();
+    public static final InstanceIdentifier<RenderedServicePath> RSP_ENTRY_IID = InstanceIdentifier.builder(RenderedServicePaths.class).child(RenderedServicePath.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
-           InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+    public static final InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionTypes>  SFT_IID =
-           InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
+    public static final InstanceIdentifier<ServiceFunctionTypes> SFT_IID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-    public static final InstanceIdentifier<AccessList>  ACL_ENTRY_IID =
-            InstanceIdentifier.builder(AccessLists.class)
-                    .child(AccessList.class).build();
+    public static final InstanceIdentifier<AccessList> ACL_ENTRY_IID = InstanceIdentifier.builder(AccessLists.class).child(AccessList.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
-            InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
+    public static final InstanceIdentifier<ServiceFunctionForwarders> SFF_IID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
     public static final InstanceIdentifier<ServiceFunctionSchedulerType>  SFST_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
@@ -117,7 +96,8 @@ public class OpendaylightSfc implements AutoCloseable {
     }
 
     public void getLock() {
-        while (!lock.tryLock()) {}
+        while (!lock.tryLock()) {
+        }
         return;
     }
 
@@ -133,7 +113,7 @@ public class OpendaylightSfc implements AutoCloseable {
     }
 
     public void setDataProvider(DataBroker salDataProvider) {
-       this.dataProvider = salDataProvider;
+        this.dataProvider = salDataProvider;
     }
 
     public DataBroker getDataProvider() {
@@ -148,39 +128,32 @@ public class OpendaylightSfc implements AutoCloseable {
         return this.broker;
     }
 
-    public static OpendaylightSfc getOpendaylightSfcObj () {
+    public static OpendaylightSfc getOpendaylightSfcObj() {
         return OpendaylightSfc.opendaylightSfcObj;
     }
 
     /**
-    * Implemented from the AutoCloseable interface.
-    */
+     * Implemented from the AutoCloseable interface.
+     */
     @Override
     public void close() throws ExecutionException, InterruptedException {
         // When we close this service we need to shutdown our executor!
         executor.shutdown();
 
         if (dataProvider != null) {
-            final InstanceIdentifier<ServiceFunctionChains>  SFC_IID =
-                    InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+            final InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-            final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID =
-                    InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
+            final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
 
-            final InstanceIdentifier<ServiceFunctions>  SF_IID =
-                    InstanceIdentifier.builder(ServiceFunctions.class).build();
+            final InstanceIdentifier<ServiceFunctions> SF_IID = InstanceIdentifier.builder(ServiceFunctions.class).build();
 
-            final InstanceIdentifier<ServiceFunctionForwarders>  SFF_IID =
-                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
+            final InstanceIdentifier<ServiceFunctionForwarders> SFF_IID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-            final InstanceIdentifier<ServiceFunctionPaths>  SFP_IID =
-                    InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+            final InstanceIdentifier<ServiceFunctionPaths> SFP_IID = InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
 
-            final InstanceIdentifier<RenderedServicePaths>  RSP_IID =
-                    InstanceIdentifier.builder(RenderedServicePaths.class).build();
+            final InstanceIdentifier<RenderedServicePaths> RSP_IID = InstanceIdentifier.builder(RenderedServicePaths.class).build();
 
-            final InstanceIdentifier<AccessLists>  ACL_IID =
-                    InstanceIdentifier.builder(AccessLists.class).build();
+            final InstanceIdentifier<AccessLists> ACL_IID = InstanceIdentifier.builder(AccessLists.class).build();
 
             final InstanceIdentifier<ServiceFunctionSchedulerTypes>  SFST_IID =
                     InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).build();

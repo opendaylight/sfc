@@ -10,7 +10,7 @@ import struct
 import socket
 import ipaddress
 
-from nsh.common import TRACEREQHEADER
+from nsh.common import *
 
 
 __author__ = "Reinaldo Penno, Jim Guichard"
@@ -209,3 +209,37 @@ def add_sf_to_trace_pkt(rw_data, sf_type, sf_name):
     # rw_data[9] += (len(sf_data) >> 2)
     # trace_pkt = rw_data + sf_data
     return trace_pkt
+
+
+def build_ip_header(ip_tot_len, proto, src_ip, dest_ip):
+    # ip header fields
+
+    if src_ip:
+        ip_saddr = socket.inet_aton(src_ip)
+    else:
+        ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
+
+    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
+    ip_daddr = socket.inet_aton(dest_ip)
+    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+    # # ip header fields
+    # ip_ihl = 5
+    # ip_ver = 4
+    # ip_tos = 0
+    # ip_tot_len = 0  # kernel will fill the correct total length
+    # ip_id = 54321   #Id of this packet
+    # ip_frag_off = 0
+    # ip_ttl = 255
+    # ip_proto = socket.IPPROTO_TCP
+    # ip_check = 0    # kernel will fill the correct checksum
+    # ip_saddr = socket.inet_aton ( source_ip )   #Spoof the source ip address if you want to
+    # ip_daddr = socket.inet_aton ( dest_ip )
+
+    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+                         ip_saddr, ip_daddr)
+
+    checksum = ip_header.get_ip_checksum()
+    ip_header.set_ip_checksum(checksum)
+    ip_header_pack = ip_header.get_ip_header_pack()
+
+    return ip_header_pack

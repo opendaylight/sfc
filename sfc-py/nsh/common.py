@@ -1,4 +1,6 @@
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
+import struct
+import array
 
 
 __author__ = "Reinaldo Penno"
@@ -97,3 +99,30 @@ class TRACEREQHEADER(Structure):
                 ('ip_2', c_uint),
                 ('ip_3', c_uint),
                 ('ip_4', c_uint)]
+
+
+class IPHEADER(Structure):
+
+    _fields_ = [
+        ('v_hl', c_ubyte),
+        ('tos', c_ubyte),
+        ('len', c_ushort),
+        ('id', c_ushort),
+        ('off', c_ushort),
+        ('ttl', c_ubyte),
+        ('proto', c_ubyte),
+        ('chksum', c_ushort),
+        ('src', c_uint),
+        ('dst', c_uint)]
+
+    def ip_header_pack(self):
+        self.ip_header_pack = struct.pack('!BBHHHBBH4s4s', self.v_hl, self.tos, self.len, self.id, self.off, self.ttl,
+                                          self.proto, self.chksum, self.src, self.dst)
+
+    def ip_checksum(self):
+        ip_header_array_ushort = array.array("H", self.ip_header_pack)
+        temp_sum = sum(ip_header_array_ushort)
+        while temp_sum >> 16:
+            temp_sum = (temp_sum >> 16) + (temp_sum & 0xffff)
+        checksum = ~temp_sum
+        return checksum

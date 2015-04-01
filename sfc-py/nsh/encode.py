@@ -8,6 +8,7 @@
 import struct
 import socket
 import ipaddress
+import array
 
 from nsh.common import *  # noqa
 
@@ -195,6 +196,31 @@ def build_dummy_ip(dest_addr):
         ip_header = struct.pack('!BBHHHBBH4s4s', ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto,
                                 ip_check, ip_saddr, ip_daddr)
         return ip_header
+
+   # in 6
+   #     {
+   #         /* Compute Internet Checksum for "count" bytes
+   #          *         beginning at location "addr".
+   #          */
+   #     register long sum = 0;
+   #
+   #      while( count > 1 )  {
+   #         /*  This is the inner loop */
+   #             sum += * (unsigned short) addr++;
+   #             count -= 2;
+   #     }
+   #
+   #         /*  Add left-over byte, if any */
+   #     if( count > 0 )
+   #             sum += * (unsigned char *) addr;
+   #
+   #         /*  Fold 32-bit sum to 16 bits */
+   #     while (sum>>16)
+   #         sum = (sum & 0xffff) + (sum >> 16);
+   #
+   #     checksum = ~sum;
+   # }
+
 
 
 def build_trace_req_packet(vxlan_header_values, base_header_values, ctx_header_values, trace_req_header_values):

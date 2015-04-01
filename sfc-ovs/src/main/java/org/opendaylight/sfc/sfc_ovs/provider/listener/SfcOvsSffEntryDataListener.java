@@ -22,10 +22,13 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -67,12 +70,17 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
 
-                SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder));
+                SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                        new SfcOvsDataStoreAPI(
+                                SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE,
+                                SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder)
+                        );
+
+                SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, getOpendaylightSfc().getExecutor());
             }
         }
 
-/*        // SFF UPDATE
+        // SFF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionForwarder)
@@ -93,7 +101,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
 
             }
-        }*/
+        }
         printTraceStop(LOG);
     }
 

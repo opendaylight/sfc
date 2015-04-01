@@ -9,9 +9,6 @@
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.ovsdb.southbound.SouthboundConstants;
-import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
@@ -21,14 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,52 +73,25 @@ public class SfcSffToOvsMappingAPI {
         return ovsdbBridgeBuilder.build();
     }
 
-    public static OvsdbTerminationPointAugmentation getTerminationPointFromSffDatePlaneLocator(SffDataPlaneLocator sffDataPlaneLocator) {
+    private static OvsdbTerminationPointAugmentation buildTerminationPointAugmentation(SffDataPlaneLocator sffDataPlaneLocator) {
         Preconditions.checkNotNull(sffDataPlaneLocator);
 
-        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder
+        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointBuilder
                 = new OvsdbTerminationPointAugmentationBuilder();
-        ovsdbTerminationPointAugmentationBuilder.setName(sffDataPlaneLocator.getName());
 
-        ovsdbTerminationPointAugmentationBuilder = getTerminationPointBuilderFromDataPlaneLocator(
-                sffDataPlaneLocator.getDataPlaneLocator(), ovsdbTerminationPointAugmentationBuilder);
+        ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());
+        ovsdbTerminationPointBuilder.setInterfaceType(getDataPlaneLocatorInterfaceType(sffDataPlaneLocator.getDataPlaneLocator()));
 
-        return ovsdbTerminationPointAugmentationBuilder.build();
+        return ovsdbTerminationPointBuilder.build();
     }
 
-    private static OvsdbTerminationPointAugmentationBuilder getTerminationPointBuilderFromDataPlaneLocator(
-            DataPlaneLocator dataPlaneLocator, OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder) {
-        Preconditions.checkNotNull(dataPlaneLocator);
-        Preconditions.checkNotNull(ovsdbTerminationPointAugmentationBuilder);
+    private static Class<? extends InterfaceTypeBase> getDataPlaneLocatorInterfaceType(DataPlaneLocator dataPlaneLocator) {
+        Preconditions.checkNotNull(dataPlaneLocator, "Cannot determine DataPlaneLocator interface type, dataPlaneLocator is null.");
 
         if (dataPlaneLocator.getTransport() == VxlanGpe.class) {
-            ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
+            return InterfaceTypeVxlan.class;
         }
 
-        return ovsdbTerminationPointAugmentationBuilder;
-    }
-
-    public static boolean putOvsdbBridgeAugmentation(OvsdbBridgeAugmentation ovsdbBridge) {
-        Preconditions.checkNotNull(ovsdbBridge, "Cannot PUT new record into OVS configuration store, OvsdbBridgeAugmentation is null.");
-
-        String bridgeName = (ovsdbBridge.getBridgeName().getValue());
-        InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) ovsdbBridge.getManagedBy().getValue();
-
-        KeyedInstanceIdentifier keyedInstanceIdentifier = (KeyedInstanceIdentifier) nodeIID.firstIdentifierOf(Node.class);
-        if (keyedInstanceIdentifier != null) {
-            NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
-            String nodeId = nodeKey.getNodeId().getValue();
-            nodeId = nodeId.concat("/" + bridgeName);
-
-            InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
-                    InstanceIdentifier
-                            .builder(NetworkTopology.class)
-                            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                            .child(Node.class, new NodeKey(new NodeId(nodeId)))
-                            .augmentation(OvsdbBridgeAugmentation.class).build();
-
-            return SfcDataStoreAPI.writePutTransactionAPI(bridgeEntryIID, ovsdbBridge, LogicalDatastoreType.CONFIGURATION);
-        }
-        return false;
+        return null;
     }
 }

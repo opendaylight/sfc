@@ -26,7 +26,7 @@ import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutputBuilder;
@@ -60,7 +60,8 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
      * This method writes a new OVS Bridge into OVSDB Config DataStore. This write event triggers
      * creation of the OVS Bridge in running OpenVSwitch instance identified by OVS Node ip:port
      * locator.
-     * <p>
+     * <p/>
+     *
      * @param input RPC input including a OVS Bridge name and parent OVS Node ip:port locator
      * @return RPC output: true if write to OVSDB Config DataStore was successful, otherwise false.
      */
@@ -85,7 +86,10 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
         ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));
 
-        if (SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(ovsdbBridgeBuilder.build())){
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, ovsdbBridgeBuilder.build());
+
+        if (SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
             rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
         } else {
             String message = "Error writing OVS Bridge into OVSDB Configuration DataStore: " + input.getName();

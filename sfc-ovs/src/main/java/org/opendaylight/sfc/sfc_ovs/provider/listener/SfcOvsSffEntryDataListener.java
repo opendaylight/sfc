@@ -21,14 +21,20 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -67,12 +73,33 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
 
-                SfcSffToOvsMappingAPI.putOvsdbBridgeAugmentation(
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder));
+                //put Bridge
+                OvsdbBridgeAugmentation ovsdbBridge =
+                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder);
+
+                SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutBridge =
+                        new SfcOvsDataStoreAPI(
+                                SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE,
+                                ovsdbBridge
+                        );
+                SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, getOpendaylightSfc().getExecutor());
+
+                //put Termination Points
+                List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList =
+                        SfcSffToOvsMappingAPI.buildTerminationPointAugmentationList(ovsdbBridge, serviceFunctionForwarder);
+
+                for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint: ovsdbTerminationPointList) {
+                    SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint =
+                            new SfcOvsDataStoreAPI(
+                                    SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT,
+                                    ovsdbBridge
+                            );
+                    SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, getOpendaylightSfc().getExecutor());
+                }
             }
         }
 
-/*        // SFF UPDATE
+        // SFF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionForwarder)
@@ -93,7 +120,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
 
             }
-        }*/
+        }
         printTraceStop(LOG);
     }
 

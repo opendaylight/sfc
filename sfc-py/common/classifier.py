@@ -16,7 +16,7 @@ import ipaddress
 import threading
 import subprocess
 
-from nsh.encode import build_packet
+from nsh.encode import build_nsh_header
 from common.sfc_globals import sfc_globals
 from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
 
@@ -370,6 +370,7 @@ class NfqClassifier(metaclass=Singleton):
         next_protocol = ipv_2_next_protocol[ipv]
 
         # NOTE:
+        # so far only VXLAN is supported
         # so far metadata are not supported -> just sending an empty ctx_header
         # tunnel_id (0x0500) is hard-coded, will it be always the same?
         ctx_header = CONTEXTHEADER(network_shared=0,
@@ -389,7 +390,9 @@ class NfqClassifier(metaclass=Singleton):
                                  next_protocol=next_protocol,
                                  service_index=fwd_to['starting-index'])
 
-        nsh_encapsulation = build_packet(vxlan_header, base_header, ctx_header)
+        nsh_encapsulation = build_nsh_header(vxlan_header,
+                                             base_header,
+                                             ctx_header)
         nsh_packet = nsh_encapsulation + packet.get_payload()
 
         self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))

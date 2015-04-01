@@ -10,7 +10,7 @@ import struct
 import socket
 import ipaddress
 
-from nsh.common import TRACEREQHEADER
+from nsh.common import TRACEREQHEADER, IPHEADER, IPV4_VERSION, IPV4_TOS, IPV4_TTL, IP_HEADER_LEN, IPV4_PACKET_ID
 
 
 __author__ = "Reinaldo Penno, Jim Guichard"
@@ -143,29 +143,6 @@ def build_nsh_trace_header(encapsulation_header, base_header,
                         ctx_header, trace_header)
 
 
-def build_dummy_ip(dest_addr):
-        # ip header fields
-        ip_ihl = 5
-        ip_ver = 4
-        ip_tos = 0
-        ip_tot_len = 0  # kernel will fill the correct total length
-        ip_id = 54321  # Id of this packet
-        ip_frag_off = 0
-        ip_ttl = 255
-        ip_proto = socket.IPPROTO_RAW
-        ip_check = 0  # kernel will fill the correct checksum
-        ip_saddr = socket.inet_aton(
-            socket.gethostbyname(socket.gethostname()))  # Spoof the source ip address if you want to
-        ip_daddr = socket.inet_aton(dest_addr)
-
-        ip_ihl_ver = (ip_ver << 4) + ip_ihl
-
-        # the ! in the pack format string means network order
-        ip_header = struct.pack('!BBHHHBBH4s4s', ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto,
-                                ip_check, ip_saddr, ip_daddr)
-        return ip_header
-
-
 def build_trace_req_header(oam_type, sil, remote_ip, remote_port):
     trace_req_header_values = TRACEREQHEADER()
     trace_req_header_values.oam_type = oam_type
@@ -209,3 +186,37 @@ def add_sf_to_trace_pkt(rw_data, sf_type, sf_name):
     # rw_data[9] += (len(sf_data) >> 2)
     # trace_pkt = rw_data + sf_data
     return trace_pkt
+
+
+def build_ip_header(ip_tot_len, proto, src_ip, dest_ip):
+    # ip header fields
+
+    if src_ip:
+        ip_saddr = socket.inet_aton(src_ip)
+    else:
+        ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
+
+    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
+    ip_daddr = socket.inet_aton(dest_ip)
+    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+    # # ip header fields
+    # ip_ihl = 5
+    # ip_ver = 4
+    # ip_tos = 0
+    # ip_tot_len = 0  # kernel will fill the correct total length
+    # ip_id = 54321   #Id of this packet
+    # ip_frag_off = 0
+    # ip_ttl = 255
+    # ip_proto = socket.IPPROTO_TCP
+    # ip_check = 0    # kernel will fill the correct checksum
+    # ip_saddr = socket.inet_aton ( source_ip )   #Spoof the source ip address if you want to
+    # ip_daddr = socket.inet_aton ( dest_ip )
+
+    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+                         ip_saddr, ip_daddr)
+
+    checksum = ip_header.get_ip_checksum()
+    ip_header.set_ip_checksum(checksum)
+    ip_header_pack = ip_header.get_ip_header_pack()
+
+    return ip_header_pack

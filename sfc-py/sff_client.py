@@ -60,8 +60,9 @@ class MyVxlanGpeNshIpClient:
     def connection_made(self, transport):
         self.transport = transport
         # Building client packet to send to SFF
-        packet = build_packet(self.encapsulate_type, self.encapsulate_header_values, self.base_header_values,
-                              self.ctx_header_values)
+        packet = build_nsh_header(self.encapsulate_header_values,
+                                  self.base_header_values,
+                                  self.ctx_header_values)
         # logger.info("Sending VXLAN-GPE/NSH packet to SFF: %s", (self.dest_addr, self.dest_port))
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
         logger.debug("Packet dump: %s", binascii.hexlify(packet))
@@ -114,8 +115,10 @@ class MyVxlanGpeNshEthClient:
         ip_packet = build_dummy_ip(self.dest_addr)
         # magic_number = 0xC704DD7B  # use Ethernet magic number FCS
         # FCS_value = struct.pack('!I', magic_number)
-        packet = build_nsh_eth_packet(self.ethernet_values, self.encapsulate_header_values, self.base_header_values,
-                                      self.ctx_header_values)
+        packet = build_nsh_eth_header(self.encapsulate_header_values,
+                                      self.base_header_values,
+                                      self.ctx_header_values,
+                                      self.ethernet_values)
         # nsh_ethernet_packet = packet + ip_packet + FCS_value
         nsh_ethernet_packet = packet + ip_packet
         print("Ethernet dump: ", binascii.hexlify(nsh_ethernet_packet))
@@ -158,8 +161,9 @@ class MyGreClient:
             sys.exit()
 
         # Building client packet to send to SFF
-        gre_nsh_packet = build_packet(self.encapsulate_type, self.encapsulate_header_values, self.base_header_values,
-                                      self.ctx_header_values)
+        gre_nsh_packet = build_nsh_header(self.encapsulate_header_values,
+                                          self.base_header_values,
+                                          self.ctx_header_values)
 
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, self.dest_addr)
         logger.debug("Packet dump: %s", binascii.hexlify(gre_nsh_packet))
@@ -187,7 +191,9 @@ class MyTraceClient:
 
     def connection_made(self, transport):
         self.transport = transport
-        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.ctx_header_values,
+        packet = build_nsh_trace_header(self.vxlan_header_values,
+                                        self.base_header_values,
+                                        self.ctx_header_values,
                                         self.trace_req_header_values)
         # udp_socket = self.transport.get_extra_info('socket')
         print("Sending Trace packet to Service Path and Service Index: ({0}, {1})".format(
@@ -229,7 +235,9 @@ class MyTraceClient:
         logger.error('Error received: %s', exc)
 
     def send_packet(self, dest_addr):
-        packet = build_trace_req_packet(self.vxlan_header_values, self.base_header_values, self.ctx_header_values,
+        packet = build_nsh_trace_header(self.vxlan_header_values,
+                                        self.base_header_values,
+                                        self.ctx_header_values,
                                         self.trace_req_header_values)
         # logger.info("Sending Trace packet to: %s", dest_addr)
         self.transport.sendto(packet, dest_addr)

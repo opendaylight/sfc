@@ -1,11 +1,28 @@
+#
+# Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+
+from struct import pack
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
 
 
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
-__version__ = "0.1"
+__version__ = "0.2"
 __email__ = "rapenno@gmail.com"
 __status__ = "alpha"
+
+
+"""
+NSH related constants and various header classes.
+
+Each NSH header class is a named tuple and MUST provides only "build" method,
+which is responsible for composing a (raw) bytes representation of a header.
+"""
 
 
 #: constants
@@ -20,8 +37,10 @@ NSH_NEXT_PROTO_OAM = int('00000100', 2)
 NSH_NEXT_PROTO_ETH = int('00000011', 2)
 NSH_BASE_HEADER_START_OFFSET = 8
 
+
 #:  VXLAN-gpe constants
 VXLAN_NEXT_PROTO_NSH = int('00000100', 2)
+
 
 #: NSH OAM Constants
 NSH_TYPE1_OAM_PACKET = int('01100000000001100000000100000100', 2)
@@ -45,6 +64,13 @@ class VXLANGPE(Structure):
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
+    def build(self):
+        return pack('!B B H I',
+                    self.flags,
+                    self.reserved,
+                    self.protocol_type,
+                    (self.vni << 8) + self.reserved2)
+
 
 class GREHEADER(Structure):
     _fields_ = [('c', c_uint, 1),
@@ -53,6 +79,13 @@ class GREHEADER(Structure):
                 ('protocol_type', c_uint, 16),
                 ('checksum', c_uint, 16),
                 ('reserved1', c_uint, 16)]
+
+    def build(self):
+        return pack('!H H H H',
+                    (self.c << 15) + (self.reserved0 << 3) + self.version,
+                    self.protocol_type,
+                    self.checksum,
+                    self.reserved1)
 
 
 class ETHHEADER(Structure):
@@ -71,6 +104,23 @@ class ETHHEADER(Structure):
                 ('ethertype0', c_ubyte),
                 ('ethertype1', c_ubyte)]
 
+    def build(self):
+        return pack('!B B B B B B B B B B B B B B',
+                    self.dmac0,
+                    self.dmac1,
+                    self.dmac2,
+                    self.dmac3,
+                    self.dmac4,
+                    self.dmac5,
+                    self.smac0,
+                    self.smac1,
+                    self.smac2,
+                    self.smac3,
+                    self.smac4,
+                    self.smac5,
+                    self.ethertype0,
+                    self.ethertype1)
+
 
 class BASEHEADER(Structure):
     _fields_ = [('version', c_ushort, 2),
@@ -81,12 +131,26 @@ class BASEHEADER(Structure):
                 ('service_path', c_uint, 24),
                 ('service_index', c_uint, 8)]
 
+    def build(self):
+        return pack('!H B B I',
+                    (self.version << 14) + (self.flags << 6) + self.length,
+                    self.md_type,
+                    self.next_protocol,
+                    (self.service_path << 8) + self.service_index)
+
 
 class CONTEXTHEADER(Structure):
     _fields_ = [('network_platform', c_uint),
                 ('network_shared', c_uint),
                 ('service_platform', c_uint),
                 ('service_shared', c_uint)]
+
+    def build(self):
+        return pack('!I I I I',
+                    self.network_platform,
+                    self.network_shared,
+                    self.service_platform,
+                    self.service_shared)
 
 
 class TRACEREQHEADER(Structure):
@@ -97,3 +161,13 @@ class TRACEREQHEADER(Structure):
                 ('ip_2', c_uint),
                 ('ip_3', c_uint),
                 ('ip_4', c_uint)]
+
+    def build(self):
+        return pack('!B B H I I I I',
+                    self.oam_type,
+                    self.sil,
+                    self.port,
+                    self.ip_1,
+                    self.ip_2,
+                    self.ip_3,
+                    self.ip_4)

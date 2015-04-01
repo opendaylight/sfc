@@ -1,4 +1,6 @@
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
+import struct
+import array
 
 
 __author__ = "Reinaldo Penno"
@@ -19,6 +21,15 @@ NSH_NEXT_PROTO_IPV4 = int('00000001', 2)
 NSH_NEXT_PROTO_OAM = int('00000100', 2)
 NSH_NEXT_PROTO_ETH = int('00000011', 2)
 NSH_BASE_HEADER_START_OFFSET = 8
+
+#: IP constants
+
+IP_HEADER_LEN = 5
+IPV4_VERSION = 4
+IPV4_PACKET_ID = 54321
+IPV4_TTL = 255
+IPV4_TOS = 0
+IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
 
 #:  VXLAN-gpe constants
 VXLAN_NEXT_PROTO_NSH = int('00000100', 2)
@@ -97,3 +108,72 @@ class TRACEREQHEADER(Structure):
                 ('ip_2', c_uint),
                 ('ip_3', c_uint),
                 ('ip_4', c_uint)]
+
+
+class IPHEADER(Structure):
+
+    _fields_ = [
+        ('ip_ihl', c_ubyte),
+        ('ip_ver', c_ubyte),
+        ('ip_tos', c_ubyte),
+        ('ip_tot_len', c_ushort),
+        ('ip_id', c_ushort),
+        ('ip_frag_offset', c_ushort),
+        ('ip_ttl', c_ubyte),
+        ('ip_proto', c_ubyte),
+        ('ip_chksum', c_ushort),
+        ('ip_saddr', c_uint),
+        ('ip_daddr', c_uint)]
+
+    def get_ip_header_pack(self):
+        ip_header_pack = struct.pack('!B B H H H B B H I I', IPV4_IHL_VER, self.ip_tos, self.ip_tot_len, self.ip_id,
+                                     self.ip_frag_offset, self.ip_ttl, self.ip_proto, self.ip_chksum, self.ip_saddr,
+                                     self.ip_daddr)
+        return ip_header_pack
+
+        # in 6
+        # {
+        # /* Compute Internet Checksum for "count" bytes
+        #          *         beginning at location "addr".
+        #          */
+        #     register long sum = 0;
+        #
+        #      while( count > 1 )  {
+        #         /*  This is the inner loop */
+        #             sum += * (unsigned short) addr++;
+        #             count -= 2;
+        #     }
+        #
+        #         /*  Add left-over byte, if any */
+        #     if( count > 0 )
+        #             sum += * (unsigned char *) addr;
+        #
+        #         /*  Fold 32-bit sum to 16 bits */
+        #     while (sum>>16)
+        #         sum = (sum & 0xffff) + (sum >> 16);
+        #
+        #     checksum = ~sum;
+        # }
+
+    def get_ip_checksum(self):
+        """
+        Function for IP header checksum calculation.
+
+        """
+        ip_header_pack = self.get_ip_header_pack()
+        s = 0
+        i = 0
+        n = len(ip_header_pack) % 2
+        for i in range(0, len(ip_header_pack) - n, 2):
+            s += (ip_header_pack[i] << 8) + (ip_header_pack[i+1])
+        if n:
+            s += ip_header_pack[i+1]
+        while s >> 16:
+            # print("s >> 16: ", s >> 16)
+            s = (s & 0xFFFF) + (s >> 16)
+        # print("sum:", s)
+        s = ~s & 0xffff
+        return s
+
+    def set_ip_checksum(self, checksum):
+        self.ip_chksum = checksum

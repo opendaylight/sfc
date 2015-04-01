@@ -8,6 +8,7 @@
 import struct
 import socket
 import ipaddress
+import array
 
 from nsh.common import *  # noqa
 
@@ -128,7 +129,6 @@ def build_packet(encapsulate_type, encapsulate_header_values, base_header_values
 
 
 def build_nsh_eth_packet(ethernet_values, encapsulate_header_values, base_header_values, ctx_header_values):
-
     # Build VXLAN + NSH headers
     vxlan_header = struct.pack('!B B B I',
                                encapsulate_header_values.flags,
@@ -174,27 +174,38 @@ def build_nsh_eth_packet(ethernet_values, encapsulate_header_values, base_header
     return vxlan_header + base_header + context_header + ethernet_header
 
 
-def build_dummy_ip(dest_addr):
-        # ip header fields
-        ip_ihl = 5
-        ip_ver = 4
-        ip_tos = 0
-        ip_tot_len = 0  # kernel will fill the correct total length
-        ip_id = 54321  # Id of this packet
-        ip_frag_off = 0
-        ip_ttl = 255
-        ip_proto = socket.IPPROTO_RAW
-        ip_check = 0  # kernel will fill the correct checksum
-        ip_saddr = socket.inet_aton(
-            socket.gethostbyname(socket.gethostname()))  # Spoof the source ip address if you want to
-        ip_daddr = socket.inet_aton(dest_addr)
+def build_ip_header(ip_tot_len, proto, src_ip, dest_ip):
+    # ip header fields
 
-        ip_ihl_ver = (ip_ver << 4) + ip_ihl
+    if src_ip:
+        ip_saddr = socket.inet_aton(src_ip)
+    else:
+        ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
 
-        # the ! in the pack format string means network order
-        ip_header = struct.pack('!BBHHHBBH4s4s', ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto,
-                                ip_check, ip_saddr, ip_daddr)
-        return ip_header
+    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
+    ip_daddr = socket.inet_aton(dest_ip)
+    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+    # # ip header fields
+    # ip_ihl = 5
+    # ip_ver = 4
+    # ip_tos = 0
+    # ip_tot_len = 0  # kernel will fill the correct total length
+    # ip_id = 54321   #Id of this packet
+    # ip_frag_off = 0
+    # ip_ttl = 255
+    # ip_proto = socket.IPPROTO_TCP
+    # ip_check = 0    # kernel will fill the correct checksum
+    # ip_saddr = socket.inet_aton ( source_ip )   #Spoof the source ip address if you want to
+    # ip_daddr = socket.inet_aton ( dest_ip )
+
+    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+                         ip_saddr, ip_daddr)
+
+    checksum = ip_header.get_ip_checksum()
+    ip_header.set_ip_checksum(checksum)
+    ip_header_pack = ip_header.get_ip_header_pack()
+
+    return ip_header_pack
 
 
 def build_trace_req_packet(vxlan_header_values, base_header_values, ctx_header_values, trace_req_header_values):

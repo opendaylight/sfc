@@ -8,6 +8,8 @@
 import getopt
 import sys
 import asyncio
+import os
+import platform
 from nsh.decode import *  # noqa
 from nsh.encode import *  # noqa
 
@@ -112,7 +114,7 @@ class MyVxlanGpeNshEthClient:
     def connection_made(self, transport):
         self.transport = transport
         # Building client dummy IP packet to send to SFF
-        ip_packet = build_dummy_ip(self.dest_addr)
+        udp_packet = build_udp_packet(self.dest_addr, "10.0.1.1", 10000, self.des)
         # magic_number = 0xC704DD7B  # use Ethernet magic number FCS
         # FCS_value = struct.pack('!I', magic_number)
         packet = build_nsh_eth_header(self.encapsulate_header_values,
@@ -120,7 +122,7 @@ class MyVxlanGpeNshEthClient:
                                       self.ctx_header_values,
                                       self.ethernet_values)
         # nsh_ethernet_packet = packet + ip_packet + FCS_value
-        nsh_ethernet_packet = packet + ip_packet
+        nsh_ethernet_packet = packet + udp_packet
         print("Ethernet dump: ", binascii.hexlify(nsh_ethernet_packet))
         # logger.info("Sending VXLAN-GPE/NSH packet to SFF: %s", (self.dest_addr, self.dest_port))
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
@@ -280,7 +282,7 @@ def main(argv):
     sfp_index = 3
     trace_req = False
     num_trace_hops = 254
-    encapsulate = 'vxlan-gpe'
+    encapsulate = 'gpe-nsh-ipv4'
 
     try:
         logging.basicConfig(level=logging.INFO)
@@ -330,6 +332,35 @@ def main(argv):
 
     loop = asyncio.get_event_loop()
 
+
+    # create a raw socket
+    euid = os.geteuid()
+    if euid != 0:
+        print("Script not started as root. Running sudo...")
+        args = ['sudo', sys.executable] + sys.argv + [os.environ]
+        # the next line replaces the currently-running process with the sudo
+        os.execlpe('sudo', *args)
+
+    if platform.system() == "Darwin":
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
+        except socket.error as msg:
+            print("Socket could not be created. Error Code : {}".format(msg))
+            sys.exit()
+    else:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+        except socket.error as msg:
+            print("Socket could not be created. Error Code : {}".format(msg))
+            sys.exit()
+
+    udp_packet = build_udp_packet("", "10.0.1.1", 10000, 20000, "test".encode('utf-8'))
+    try:
+        s.sendto(udp_packet, ("10.0.1.5", 20000))
+    except socket.error as msg:
+        print(msg)
+
+
     if trace_req:
         # MD-type 0x1, OAM set
         vxlan_header_values = VXLANGPE(int('00000100', 2), 0, 0x894F, int('111111111111111111111111', 2), 64)
@@ -370,13 +401,16 @@ def main(argv):
             greclient.send_gre_nsh()
 
         elif encapsulate == 'gpe-nsh-ethernet':
-            ethernet_header_values = ETHHEADER(0x6c, 0x22, 0x40, 0xa4, 0x5f, 0xd6, 0xff, 0xff, 0x01, 0x02, 0x03, 0x04,
-                                               0x80, 0x00)
+
             vxlan_header_values = VXLANGPE(int('00000100', 2), 0, VXLAN_NEXT_PROTO_NSH,
                                            int('111111111111111111111111', 2), 64)
             base_values = BASEHEADER(NSH_VERSION1, int('00000000', 2), NSH_TYPE1_LEN, NSH_MD_TYPE1, NSH_NEXT_PROTO_ETH,
                                      int(sfp_id), int(sfp_index))
             ctx_values = CONTEXTHEADER(0xffffffff, 0, 0xffffffff, 0)
+
+            ethernet_header_values = ETHHEADER(0x6c, 0x22, 0x40, 0xa4, 0x5f, 0xd6, 0xff, 0xff, 0x01, 0x02, 0x03, 0x04,
+                                               0x80, 0x00)
+
             udpclient = MyVxlanGpeNshEthClient(loop, 'VXLAN-GPE/NSH/Ethernet', ethernet_header_values,
                                                vxlan_header_values, base_values,
                                                ctx_values, remote_sff_ip,

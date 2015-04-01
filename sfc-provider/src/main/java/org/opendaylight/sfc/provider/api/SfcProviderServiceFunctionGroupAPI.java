@@ -12,23 +12,17 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.ServiceFunctionGroups;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroup;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroupKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to operate on the ServiceFunctionGroup datastore.
- * <p/>
- * It is normally called from onDataChanged() through a executor service. We
- * need to use an executor service because we can not operate on a datastore
- * while on onDataChanged() context.
- *
+ * This class has the APIs to operate on the ServiceFunctionGroup datastore. <p/> It is normally called from onDataChanged() through a executor service. We need to use an executor service because we can not operate on a datastore while on onDataChanged() context.
  * @author Kfir Yeshayahu (kfir.yeshayahu@contextream.com)
- * @version 0.1
- *          <p/>
+ * @version 0.1 <p/>
  * @since 2015-02-14
  */
 public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
@@ -70,11 +64,8 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * Reads a SFG from the datastore
-     * <p>
-     *
-     * @param serviceFunctionGroup
-     *            name
+     * Reads a SFG from the datastore <p>
+     * @param serviceFunctionGroup name
      * @return ServiceFunctionGroup object or null if not found
      */
     protected ServiceFunctionGroup readServiceFunctionGroup(String serviceFunctionGroupName) {
@@ -90,18 +81,14 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * Puts a SFG in the datastore
-     * <p>
-     *
-     * @param sfg
-     *            the ServiceFunctionGroup to put
+     * Puts a SFG in the datastore <p>
+     * @param sfg the ServiceFunctionGroup to put
      * @return boolean success or failure
      */
     protected boolean putServiceFunctionGroup(ServiceFunctionGroup sfg) {
         boolean ret;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
-                .child(ServiceFunctionGroup.class, sfg.getKey()).build();
+        InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class, sfg.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfgEntryIID, sfg, LogicalDatastoreType.CONFIGURATION);
 
@@ -110,19 +97,15 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * Deletes a SFG from the datastore
-     * <p>
-     *
-     * @param serviceFunctionGroupName
-     *            SFG name
+     * Deletes a SFG from the datastore <p>
+     * @param serviceFunctionGroupName SFG name
      * @return boolean success of failure
      */
     protected boolean deleteServiceFunctionGroup(String serviceFunctionGroupName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionGroupKey serviceFunctionGroupKey = new ServiceFunctionGroupKey(serviceFunctionGroupName);
-        InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
-                .child(ServiceFunctionGroup.class, serviceFunctionGroupKey).build();
+        InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class, serviceFunctionGroupKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfgEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
@@ -134,40 +117,32 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * Adds a SF to SFG
-     * <p>
-     *
-     * @param serviceFunctionGroupName
-     *            SFG name
-     * @param serviceFunctionName
-     *            name of SF to add
+     * Adds a SF to SFG <p>
+     * @param serviceFunctionGroupName SFG name
+     * @param serviceFunctionName name of SF to add
      * @return boolean success of failure
      */
     protected boolean addServiceFunctionToGroup(String serviceFunctionGroupName, String serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 
-        //TODO Implement
+        // TODO Implement
 
         printTraceStop(LOG);
         return ret;
     }
 
     /**
-     * Removes a SF from SFG
-     * <p>
-     *
-     * @param serviceFunctionGroupName
-     *            SFG name
-     * @param serviceFunctionName
-     *            name of SF to remove
+     * Removes a SF from SFG <p>
+     * @param serviceFunctionGroupName SFG name
+     * @param serviceFunctionName name of SF to remove
      * @return boolean success of failure
      */
     protected boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName, String serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 
-        //TODO Implement
+        // TODO Implement
 
         printTraceStop(LOG);
         return ret;

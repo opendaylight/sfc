@@ -35,7 +35,7 @@ module service-function-group {
      // RFC Ed.: update the date below with the date of RFC publication
      // and remove this note.
 
-  revision 2015-14-02 {
+  revision 2015-02-14 {
     description
     "Revised based on SFF Load Balance Feature Proposal";
   }

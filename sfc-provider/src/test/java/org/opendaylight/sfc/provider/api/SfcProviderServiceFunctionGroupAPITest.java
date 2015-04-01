@@ -26,8 +26,8 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev160202.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev160202.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -49,13 +49,10 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         executor = opendaylightSfc.getExecutor();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
-        SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan", dummyIp, "sff-moscow",
-                VxlanGpe.class);
+        SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan", dummyIp, "sff-moscow", VxlanGpe.class);
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_101", Firewall.class, new IpAddress(new Ipv4Address("192.168.100.101")),
-                dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_102", Firewall.class, new IpAddress(new Ipv4Address("192.168.100.102")),
-                dummyLocator, Boolean.FALSE));
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_101", Firewall.class, new IpAddress(new Ipv4Address("192.168.100.101")), dummyLocator, Boolean.FALSE));
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_102", Firewall.class, new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
     }
 
     @After
@@ -89,7 +86,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         result = executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getRead(params2, paramsTypes2)).get();
         sfgAlg2 = (ServiceFunctionGroupAlgorithm) result;
 
-        assertNull("Must be null", sfgAlg2); //TODO: test passes locally but fails on Jenkins
+        assertNull("Must be null", sfgAlg2); // TODO: test passes locally but fails on Jenkins
     }
 
     @Test
@@ -97,7 +94,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
-        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; //Not checking that the algorithm exists
+        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking that the algorithm exists
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Put:
@@ -121,7 +118,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         result = executor.submit(SfcProviderServiceFunctionGroupAPI.getRead(params2, paramsTypes2)).get();
         sfg2 = (ServiceFunctionGroup) result;
 
-        assertNull("Must be null", sfg2); //TODO: test passes locally but fails on Jenkins
+        assertNull("Must be null", sfg2); // TODO: test passes locally but fails on Jenkins
     }
 
     @Test
@@ -130,7 +127,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
-        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; //Not checking that the algorithm exists
+        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking that the algorithm exists
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Add Service Function:

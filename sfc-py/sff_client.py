@@ -112,7 +112,7 @@ class MyVxlanGpeNshEthClient:
     def connection_made(self, transport):
         self.transport = transport
         # Building client dummy IP packet to send to SFF
-        ip_packet = build_dummy_ip(self.dest_addr)
+        ip_packet = build_ip_header(self.dest_addr)
         # magic_number = 0xC704DD7B  # use Ethernet magic number FCS
         # FCS_value = struct.pack('!I', magic_number)
         packet = build_nsh_eth_header(self.encapsulate_header_values,
@@ -329,6 +329,8 @@ def main(argv):
             continue
 
     loop = asyncio.get_event_loop()
+
+    build_ip_header(128, 17, "10.0.0.1", "10.0.0.2")
 
     if trace_req:
         # MD-type 0x1, OAM set

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_b2bff8a9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-01T18:44:20Z",
+      "side": 1,
+      "message": "The limit in general is 120 chars per line. Not sure why the file was reformatted.",
+      "revId": "e45a7d09439d6b939aff73519d43936df627b218",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

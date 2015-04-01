@@ -68,8 +68,8 @@ class ETHHEADER(Structure):
                 ('smac3', c_ubyte),
                 ('smac4', c_ubyte),
                 ('smac5', c_ubyte),
-                ('len0', c_ubyte),
-                ('len1', c_ubyte)]
+                ('ethertype0', c_ubyte),
+                ('ethertype1', c_ubyte)]
 
 
 class BASEHEADER(Structure):

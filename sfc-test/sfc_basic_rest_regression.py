@@ -35,7 +35,7 @@ def main():
 
     #: setup parser -----------------------------------------------------------
     parser = argparse.ArgumentParser(description='SFC Basic RestConf Regression',
-                                     usage=("\npython3.4 sfc_agent "
+                                     usage=("\npython3.4 sfc_basic_rest_regression "
                                             "--run-karaf "))
 
     parser.add_argument('--run-karaf', action='store_true',

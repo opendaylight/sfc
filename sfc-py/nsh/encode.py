@@ -127,7 +127,7 @@ def build_packet(encapsulate_type, encapsulate_header_values, base_header_values
         return gre_header + base_header + context_header
 
 
-def build_eth_packet(ethernet_values, encapsulate_header_values, base_header_values, ctx_header_values):
+def build_nsh_eth_packet(ethernet_values, encapsulate_header_values, base_header_values, ctx_header_values):
 
     # Build VXLAN + NSH headers
     vxlan_header = struct.pack('!B B B I',
@@ -168,8 +168,8 @@ def build_eth_packet(ethernet_values, encapsulate_header_values, base_header_val
                                   ethernet_values.smac3,
                                   ethernet_values.smac4,
                                   ethernet_values.smac5,
-                                  ethernet_values.len0,
-                                  ethernet_values.len1)
+                                  ethernet_values.ethertype0,
+                                  ethernet_values.ethertype1)
 
     return vxlan_header + base_header + context_header + ethernet_header
 

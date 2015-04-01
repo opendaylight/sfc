@@ -617,21 +617,23 @@ def test_packet_sending(capfd, acl_json, acl_data,
     Fail: if an exception is raised or the assert fails
 
     """
-    safe_classifier.collect_packets()
     try:
+        safe_classifier.collect_packets()
         safe_classifier.process_acl(acl_data['access-lists'])
-    except:
+
+        for _ in range(0, 5):
+            _send_udp_packet(s_ip='0.0.0.0', s_port=9999,
+                             d_ip='0.0.0.0', d_port=8080)
+
+        rsp_ipv = safe_classifier.rsp_ipv
+        iptables_content = _list_iptables_raw_table(rsp_ipv)
+
+        iptables_lines = iptables_content.splitlines()
+        nfqueue = iptables_lines[-1].split()
+
+        assert int(nfqueue[0]) >= 5
+
+    finally:
         _, err = capfd.readouterr()
-        pytest.fail(err)
-
-    for _ in range(0, 5):
-        _send_udp_packet(s_ip='0.0.0.0', s_port=9999,
-                         d_ip='0.0.0.0', d_port=8080)
-
-    rsp_ipv = safe_classifier.rsp_ipv
-    iptables_content = _list_iptables_raw_table(rsp_ipv)
-
-    iptables_lines = iptables_content.splitlines()
-    nfqueue = iptables_lines[-1].split()
-
-    assert int(nfqueue[0]) >= 5
+        if err:
+            pytest.fail(err)

@@ -38,7 +38,7 @@ NSH_NEXT_PROTO_ETH = int('00000011', 2)
 NSH_BASE_HEADER_START_OFFSET = 8
 
 
-#:  VXLAN-gpe constants
+#: VXLAN-gpe constants
 VXLAN_NEXT_PROTO_NSH = int('00000100', 2)
 
 
@@ -60,7 +60,7 @@ NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET = NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_O
 class VXLANGPE(Structure):
     _fields_ = [('flags', c_ubyte),
                 ('reserved', c_uint, 16),
-                ('protocol_type', c_uint, 8),
+                ('next_protocol', c_uint, 8),
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
@@ -68,7 +68,7 @@ class VXLANGPE(Structure):
         return pack('!B B H I',
                     self.flags,
                     self.reserved,
-                    self.protocol_type,
+                    self.next_protocol,
                     (self.vni << 8) + self.reserved2)
 
 

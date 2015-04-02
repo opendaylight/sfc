@@ -85,7 +85,7 @@ public class SfcOvsToSffMappingAPI {
             return serviceFunctionForwarderBuilder.build();
 
         } catch (NullPointerException e) {
-            LOG.debug("Cannot build Service Function Forwarder: OVS Bridge does not exist!");
+            LOG.warn("Cannot build Service Function Forwarder: OVS Bridge does not exist!");
             return null;
         }
     }
@@ -106,7 +106,7 @@ public class SfcOvsToSffMappingAPI {
      */
     private static List<SffDataPlaneLocator> buildSffDataPlaneLocatorList(OvsdbBridgeAugmentation ovsdbBridge,
                                                                           List<TerminationPoint> terminationPointList) {
-        Preconditions.checkNotNull(ovsdbBridge);
+        Preconditions.checkNotNull(ovsdbBridge, "Cannot build SffDataPlaneLocator: OVS Bridge does not exist!");
         List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
 
         try {
@@ -156,10 +156,14 @@ public class SfcOvsToSffMappingAPI {
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
-        if (terminationPoint.getInterfaceType().isAssignableFrom(InterfaceTypeVxlan.class)) {
-            dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
-        } else {
-            dataPlaneLocatorBuilder.setTransport(Other.class);
+        try {
+            if (terminationPoint.getInterfaceType().isAssignableFrom(InterfaceTypeVxlan.class)) {
+                dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
+            } else {
+                dataPlaneLocatorBuilder.setTransport(Other.class);
+            }
+        } catch (NullPointerException e) {
+            LOG.warn("Cannot determine OVS TerminationPoint transport type: {}", terminationPoint.getName());
         }
 
         return dataPlaneLocatorBuilder.build();

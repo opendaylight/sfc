@@ -280,7 +280,7 @@ def main(argv):
     sfp_index = 3
     trace_req = False
     num_trace_hops = 254
-    encapsulate = 'vxlan-gpe'
+    encapsulate = 'gpe-nsh-ipv4'  # make vxlan-gpe encapsulation default
 
     try:
         logging.basicConfig(level=logging.INFO)
@@ -301,7 +301,7 @@ def main(argv):
         if opt in ('-h', '--help'):
             print("sff_client --remote-sff-ip=<IP address of remote SFF> --remote-sff-port=<UDP port of remote SFF> "
                   "--sfp-id=<Service Function Path id> --sfp-index<SFP starting index> "
-                  "--encapsulate=<vxlan-gpe|gre|ethernet>")
+                  "--encapsulate=<gpe-nsh-ipv4|gre|gpe-nsh-ethernet>")
             sys.exit()
 
         if opt == "--remote-sff-ip":

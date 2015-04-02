@@ -18,7 +18,7 @@ import subprocess
 
 from nsh.encode import build_nsh_header
 from common.sfc_globals import sfc_globals
-from nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER
+from nsh.common import VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER
 
 
 __author__ = 'Martin Lauko, Dusan Madar'
@@ -369,19 +369,25 @@ class NfqClassifier(metaclass=Singleton):
         fwd_to = self.rsp_2_sff[rsp_id]['sff']
         next_protocol = ipv_2_next_protocol[ipv]
 
-        # NOTE:
-        # so far only VXLAN is supported
-        # so far metadata are not supported -> just sending an empty ctx_header
-        # tunnel_id (0x0500) is hard-coded, will it be always the same?
-        ctx_header = CONTEXTHEADER(network_shared=0,
-                                   service_shared=0,
-                                   network_platform=0,
-                                   service_platform=0)
-        vxlan_header = VXLANGPE(vni=0x0500,
-                                reserved=0,
-                                reserved2=64,
-                                protocol_type=0x894F,
-                                flags=int('00000100', 2))
+        transport = fwd_to['transport-type']
+        if 'vxlan' in transport:
+            # NOTE
+            # tunnel_id (0x0500) is hard-coded, will it be always the same?
+            encap_header = VXLANGPE(vni=0x0500,
+                                    reserved=0,
+                                    reserved2=64,
+                                    protocol_type=0x894F,
+                                    flags=int('00000100', 2))
+        elif 'gre' in transport:
+            encap_header = GREHEADER(reserved1=0,
+                                     c=int('0', 2),
+                                     protocol_type=0x894F,
+                                     version=int('000', 2),
+                                     reserved0=int('000000000000', 2),
+                                     checksum=int('0000000000000000', 2))
+        else:
+            raise ValueError('Unsupported transport type "%s"', transport)
+
         base_header = BASEHEADER(length=0x6,
                                  version=0x1,
                                  md_type=0x1,
@@ -390,10 +396,15 @@ class NfqClassifier(metaclass=Singleton):
                                  next_protocol=next_protocol,
                                  service_index=fwd_to['starting-index'])
 
-        nsh_encapsulation = build_nsh_header(vxlan_header,
-                                             base_header,
-                                             ctx_header)
-        nsh_packet = nsh_encapsulation + packet.get_payload()
+        # NOTE
+        # so far metadata are not supported -> just sending an empty ctx_header
+        ctx_header = CONTEXTHEADER(network_shared=0,
+                                   service_shared=0,
+                                   network_platform=0,
+                                   service_platform=0)
+
+        nsh_header = build_nsh_header(encap_header, base_header, ctx_header)
+        nsh_packet = nsh_header + packet.get_payload()
 
         self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
 

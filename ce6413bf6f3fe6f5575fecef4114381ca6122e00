@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_b8a59748",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "why double \"sff\" here? what does each one stand for?",
+      "range": {
+        "startLine": 190,
+        "startChar": 18,
+        "endLine": 190,
+        "endChar": 25
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_58649321",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "why double \"sff\"? what does each stand for?",
+      "range": {
+        "startLine": 196,
+        "startChar": 13,
+        "endLine": 196,
+        "endChar": 21
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_784e2f98",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "Why you pass the whole list if you just use only one item in the list?",
+      "range": {
+        "startLine": 41,
+        "startChar": 98,
+        "endLine": 41,
+        "endChar": 108
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ac51d80f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "It\u0027s OOP manner, i think.",
+      "range": {
+        "startLine": 51,
+        "startChar": 12,
+        "endLine": 51,
+        "endChar": 35
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_38166756",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderTopologyNode.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s a good idea to set these data as public.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 20
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_cc1d4468",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "RSP might not match the meaning here, i think.",
+      "range": {
+        "startLine": 266,
+        "startChar": 17,
+        "endLine": 266,
+        "endChar": 30
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_2c0f0830",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-04-02T09:30:18Z",
+      "side": 1,
+      "message": "are there any exceptions thrown here?",
+      "range": {
+        "startLine": 268,
+        "startChar": 27,
+        "endLine": 268,
+        "endChar": 35
+      },
+      "revId": "ce6413bf6f3fe6f5575fecef4114381ca6122e00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

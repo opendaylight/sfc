@@ -14,27 +14,26 @@ import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.type.AddressFamilyNumberEnum;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.LispAFIAddress;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.MapReply;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.MapRequest;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.eidrecords.EidRecord;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.eidrecords.EidRecordBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.eidtolocatorrecords.EidToLocatorRecord;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.LispAddressContainer;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.LispAddressContainerBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.Address;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.DistinguishedName;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.DistinguishedNameBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.Ipv4;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.Ipv4Builder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.Ipv6Builder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.LcafApplicationData;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.lispaddress.lispaddresscontainer.address.NoBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.locatorrecords.LocatorRecord;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.maprequest.ItrRloc;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.maprequest.ItrRlocBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.maprequest.SourceEidBuilder;
-import org.opendaylight.yang.gen.v1.lispflowmapping.rev131031.maprequestnotification.MapRequestBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.LispAFIAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.MapReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.MapRequest;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.eidrecords.EidRecord;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.eidrecords.EidRecordBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.eidtolocatorrecords.EidToLocatorRecord;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.LispAddressContainer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.LispAddressContainerBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.DistinguishedName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.DistinguishedNameBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.LcafApplicationData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.ipv4.Ipv4AddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.ipv6.Ipv6AddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.no.NoAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.locatorrecords.LocatorRecord;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.maprequest.ItrRloc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.maprequest.ItrRlocBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.maprequest.SourceEidBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.maprequestnotification.MapRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorKey;
@@ -81,7 +80,10 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
     }
 
     private DistinguishedName buildDistinguishedNameAddress(String rloc) {
-        return new DistinguishedNameBuilder().setAfi(AddressFamilyNumberEnum.DISTINGUISHED_NAME.getIanaCode()).setDistinguishedName(rloc).build();
+        return new DistinguishedNameBuilder()
+                .setDistinguishedName(new org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.distinguishedname.DistinguishedNameBuilder()
+                        .setAfi(AddressFamilyNumberEnum.DISTINGUISHED_NAME.getIanaCode())
+                        .setDistinguishedName(rloc).build()).build();
     }
 
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
@@ -197,8 +199,8 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
     }
 
     private Ip createLocator(LcafApplicationData applicationData) {
-        IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(applicationData.getIpTos()).getHostAddress()));
-        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getLocalPort()).build();
+        IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(applicationData.getLcafApplicationDataAddr().getIpTos()).getHostAddress()));
+        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getLcafApplicationDataAddr().getLocalPort()).build();
         return locatorType;
     }
 
@@ -207,7 +209,7 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
         mapRequestBuilder.setNonce((long) 4);
         mapRequestBuilder.setPitr(false);
         mapRequestBuilder
-                .setSourceEid(new SourceEidBuilder().setLispAddressContainer(toContainer(new NoBuilder().setAfi((short) 0).build())).build());
+                .setSourceEid(new SourceEidBuilder().setLispAddressContainer(toContainer(new NoAddressBuilder().setAfi((short) 0).build())).build());
         mapRequestBuilder.setEidRecord(new ArrayList<EidRecord>());
         mapRequestBuilder.getEidRecord().add(new EidRecordBuilder().setMask((short) 32).setLispAddressContainer(asLispContainer(ip)).build());
         mapRequestBuilder.setItrRloc(new ArrayList<ItrRloc>());
@@ -224,10 +226,10 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
 
     protected Address asLispAddress(IpAddress eid) {
         if (eid.getIpv4Address() != null) {
-            return new Ipv4Builder().setAfi(AddressFamilyNumberEnum.IP.getIanaCode()).setIpv4Address(eid.getIpv4Address()).build();
+            return (Address) new Ipv4AddressBuilder().setAfi(AddressFamilyNumberEnum.IP.getIanaCode()).setIpv4Address(eid.getIpv4Address()).build();
 
         } else if (eid.getIpv6Address() != null) {
-            return new Ipv6Builder().setAfi(AddressFamilyNumberEnum.IP6.getIanaCode()).setIpv6Address(eid.getIpv6Address()).build();
+            return (Address) new Ipv6AddressBuilder().setAfi(AddressFamilyNumberEnum.IP6.getIanaCode()).setIpv6Address(eid.getIpv6Address()).build();
         }
         return null;
     }
@@ -240,8 +242,8 @@ public class LispUpdater extends AbstractBindingAwareProvider implements ILispUp
         }
     }
 
-    protected Ipv4 asIPAfiAddress(String ip) {
-        return new Ipv4Builder().setIpv4Address(new Ipv4Address(ip)).setAfi((short) AddressFamilyNumberEnum.IP.getIanaCode()).build();
+    protected org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.control.plane.rev150314.lispaddress.lispaddresscontainer.address.ipv4.Ipv4Address asIPAfiAddress(String ip) {
+        return new Ipv4AddressBuilder().setIpv4Address(new Ipv4Address(ip)).setAfi((short) AddressFamilyNumberEnum.IP.getIanaCode()).build();
     }
 
     @Override

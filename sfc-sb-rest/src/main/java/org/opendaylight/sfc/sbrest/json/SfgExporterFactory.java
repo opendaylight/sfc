@@ -56,7 +56,7 @@ class SfgExporter extends AbstractExporter implements Exporter {
                 sfgNode.put(_REST_URI, sfg.getRestUri().getValue());
             }
             if (sfg.getType() != null) {
-                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().toLowerCase());
+                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getName().toLowerCase());
             }
 
             sfgArray.add(sfgNode);

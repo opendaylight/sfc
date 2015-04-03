@@ -49,6 +49,16 @@ module service-function-group-algorithm {
       }
   }
 
+  typedef service-function-group-algorithm-ref {
+    type leafref {
+      path "/sfc-sfg-alg:service-function-group-algorithms/sfc-sfg-alg:service-function-group-algorithm/"
+          + "sfc-sfg-alg:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       configured service functions.";
+  }
+
   // Service Function Group Algorithms
 
   container service-function-group-algorithms {

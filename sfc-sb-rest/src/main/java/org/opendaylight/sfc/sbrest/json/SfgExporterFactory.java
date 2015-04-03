@@ -37,6 +37,7 @@ class SfgExporter extends AbstractExporter implements Exporter {
     public static final String _NAME = "name";
     public static final String _TYPE = "type";
     public static final String _REST_URI = "rest-uri";
+    public static final String _ALGORITHM = "algorithm";
     public static final String _IP_MGMT_ADDRESS = "ip-mgmt-address";
 
     public static final String SERVICE_FUNCTION_TYPE_PREFIX = "service-function-type:";
@@ -52,12 +53,14 @@ class SfgExporter extends AbstractExporter implements Exporter {
             ObjectNode sfgNode = mapper.createObjectNode();
             sfgNode.put(_NAME, sfg.getName());
             sfgNode.put(_IP_MGMT_ADDRESS, ExporterUtil.convertIpAddress(sfg.getIpMgmtAddress()));
+            sfgNode.put(_ALGORITHM, sfg.getAlgorithm());
             if (sfg.getRestUri() != null) {
                 sfgNode.put(_REST_URI, sfg.getRestUri().getValue());
             }
             if (sfg.getType() != null) {
-                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().toLowerCase());
+                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getName().toLowerCase());
             }
+
 
             sfgArray.add(sfgNode);
             try {

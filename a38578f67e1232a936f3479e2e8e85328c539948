@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_f17c9522",
+        "filename": "sfc-py/scapyNSH.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-04T09:21:39Z",
+      "side": 1,
+      "message": "To keep consistent with other .py scripts, I recommend to use logger instead of print.",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 91,
+        "endChar": 9
+      },
+      "revId": "a38578f67e1232a936f3479e2e8e85328c539948",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

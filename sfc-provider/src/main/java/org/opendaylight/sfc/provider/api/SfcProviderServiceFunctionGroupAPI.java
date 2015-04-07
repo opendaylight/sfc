@@ -11,10 +11,14 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +53,11 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     @SuppressWarnings("rawtypes")
+    public static SfcProviderServiceFunctionGroupAPI getByType(Object[] params, Class[] paramsTypes) {
+        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "getServiceFunctionGroupByType");
+    }
+
+    @SuppressWarnings("rawtypes")
     public static SfcProviderServiceFunctionGroupAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "deleteServiceFunctionGroup");
     }
@@ -76,6 +85,33 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
         sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class, serviceFunctionGroupKey).build();
 
         sfg = SfcDataStoreAPI.readTransactionAPI(sfgIID, LogicalDatastoreType.CONFIGURATION);
+        printTraceStop(LOG);
+        return sfg;
+    }
+
+    /**
+     * Reads a SFG from the datastore <p>
+     * @param serviceFunctionGroup name
+     * @return ServiceFunctionGroup object or null if not found
+     */
+    protected ServiceFunctionGroup getServiceFunctionGroupByType(String serviceFunctionType) {
+        printTraceStart(LOG);
+        ServiceFunctionGroup sfg = null;
+        InstanceIdentifier<ServiceFunctionGroups> sfgIID;
+        sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
+
+        ServiceFunctionGroups sfgs = SfcDataStoreAPI.readTransactionAPI(sfgIID, LogicalDatastoreType.CONFIGURATION);
+
+        for (ServiceFunctionGroup element : sfgs.getServiceFunctionGroup()) {
+            if(element.getType().getName().equals(serviceFunctionType)){
+                sfg = element;
+                LOG.debug("found group " + sfg + " that matches type " + serviceFunctionType);
+                break;
+            }
+        }
+        if(sfg == null){
+            LOG.debug("didn't found group " + sfg + " that matches type " + serviceFunctionType);
+        }
         printTraceStop(LOG);
         return sfg;
     }
@@ -144,6 +180,59 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
 
         // TODO Implement
 
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    public static ServiceFunctionGroup getServiceFunctionGroupbyTypeExecutor(Class<? extends ServiceFunctionTypeIdentity> sft) {
+
+        printTraceStart(LOG);
+        ServiceFunctionGroup ret = null;
+        Object[] servicePathObj = {sft.getName()};
+        Class[] servicePathClass = {String.class};
+        SfcProviderServiceFunctionGroupAPI sfcProviderServiceFunctionGroupAPI = SfcProviderServiceFunctionGroupAPI
+                .getByType(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionGroupAPI);
+        try {
+            ret = (ServiceFunctionGroup) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * This method reads the operational state for a service function.
+     * <p>
+     * @param serviceFunctionName SF name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     * this service function, null otherwise
+     */
+    public static ServiceFunctionGroup readServiceFunctionGroupExecutor(String serviceFunctionGroupName) {
+
+        printTraceStart(LOG);
+        ServiceFunctionGroup ret = null;
+        Object[] servicePathObj = {serviceFunctionGroupName};
+        Class[] servicePathClass = {String.class};
+        SfcProviderServiceFunctionGroupAPI sfcProviderServiceFunctionGroupAPI = SfcProviderServiceFunctionGroupAPI
+                .getRead(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionGroupAPI);
+        try {
+            ret = (ServiceFunctionGroup) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
+        }
         printTraceStop(LOG);
         return ret;
     }

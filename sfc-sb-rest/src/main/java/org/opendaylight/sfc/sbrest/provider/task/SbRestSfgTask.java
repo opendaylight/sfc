@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfgTask extends SbRestAbstractTask {
 
-    private static final String SFG_REST_URI = "/config/service-function:service-function-groups/service-function-group/";
+    private static final String SFG_REST_URI = "/config/service-function-group:service-function-groups/service-function-group/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgTask.class);
 
     public SbRestSfgTask(RestOperation restOperation, ServiceFunctionGroup dataObject, ExecutorService odlExecutor) {

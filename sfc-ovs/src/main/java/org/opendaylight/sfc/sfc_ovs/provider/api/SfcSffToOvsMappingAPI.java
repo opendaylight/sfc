@@ -22,7 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.OptionsBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,23 +96,53 @@ public class SfcSffToOvsMappingAPI {
 
             ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());
             ovsdbTerminationPointBuilder.setInterfaceType(getDataPlaneLocatorInterfaceType(sffDataPlaneLocator.getDataPlaneLocator()));
-            ovsdbTerminationPointBuilder.setBridgeName(ovsdbBridge.getBridgeName().getValue());
-            ovsdbTerminationPointBuilder.setAttachedTo(new OvsdbBridgeRef(SfcOvsUtil.buildOvsdbBridgeIID(ovsdbBridge)));
+            ovsdbTerminationPointBuilder.setOptions(getDataPlaneLocatorOptions(sffDataPlaneLocator.getDataPlaneLocator()));
             ovsdbTerminationPointList.add(ovsdbTerminationPointBuilder.build());
         }
 
         return ovsdbTerminationPointList;
     }
 
+    private static List<Options> getDataPlaneLocatorOptions(DataPlaneLocator dataPlaneLocator) {
+        Preconditions.checkNotNull(dataPlaneLocator, "Cannot determine DataPlaneLocator locator type, dataPlaneLocator is null.");
+        List<Options> options = new ArrayList<>();
+
+        try {
+            Class<? extends DataContainer> locatorType = dataPlaneLocator.getLocatorType().getImplementedInterface();
+            if (locatorType.isAssignableFrom(Ip.class)) {
+                Ip ipPortLocator = (Ip) dataPlaneLocator.getLocatorType();
+
+                OptionsBuilder optionsIpBuilder = new OptionsBuilder();
+                optionsIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+                optionsIpBuilder.setValue(ipPortLocator.getIp().getIpv4Address().getValue());
+
+                OptionsBuilder optionsPortBuilder = new OptionsBuilder();
+                optionsPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_SRC_PORT);
+                optionsPortBuilder.setValue(ipPortLocator.getPort().getValue().toString());
+
+                options.add(optionsIpBuilder.build());
+                options.add(optionsPortBuilder.build());
+            }
+        } catch (NullPointerException e) {
+            LOG.warn("Cannot determine DataPlaneLocator locator type, dataPlaneLocator.getLocatorType() is null.");
+        }
+
+        return options;
+    }
+
     private static Class<? extends InterfaceTypeBase> getDataPlaneLocatorInterfaceType(DataPlaneLocator dataPlaneLocator) {
-        Preconditions.checkNotNull(dataPlaneLocator, "Cannot determine DataPlaneLocator interface type, dataPlaneLocator is null.");
+        Preconditions.checkNotNull(dataPlaneLocator, "Cannot determine DataPlaneLocator transport type, dataPlaneLocator is null.");
 
         if (dataPlaneLocator.getTransport() == Other.class) {
             return InterfaceTypeInternal.class;
         } else if (dataPlaneLocator.getTransport() == VxlanGpe.class) {
             return InterfaceTypeVxlan.class;
-        }
+        } else {
+            LOG.warn("Cannot determine DataPlaneLocator transport type, dataPlaneLocator.getTransport() is null.");
 
-        return null;
+            //TODO: remove once MDSAL OVSDB will not require interface type to be specified
+            LOG.warn("Falling back to InterfaceTypeInternal");
+            return InterfaceTypeInternal.class;
+        }
     }
 }

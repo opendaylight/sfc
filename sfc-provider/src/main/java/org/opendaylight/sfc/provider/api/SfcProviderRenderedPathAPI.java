@@ -381,9 +381,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 posIndex = 0;
                 serviceIndex = initialServiceIndex;
             }
-        }
-
-        if (serviceFunctionNameList != null){
+        } else {
             for (String serviceFunctionName : serviceFunctionNameList) {
                 ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionName);
                 if (serviceFunction == null) {

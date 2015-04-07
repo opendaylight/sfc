@@ -107,8 +107,12 @@ public class SfcSffToOvsMappingAPI {
             return InterfaceTypeInternal.class;
         } else if (dataPlaneLocator.getTransport() == VxlanGpe.class) {
             return InterfaceTypeVxlan.class;
-        }
+        } else {
+            LOG.warn("Cannot determine DataPlaneLocator interface type, dataPlaneLocator.getTransport() is null.");
 
-        return null;
+            //TODO: remove once MDSAL OVSDB will not require interface type to be specified
+            LOG.warn("Falling back to InterfaceTypeInternal");
+            return InterfaceTypeInternal.class;
+        }
     }
 }

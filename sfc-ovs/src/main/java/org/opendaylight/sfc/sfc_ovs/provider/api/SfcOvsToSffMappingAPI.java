@@ -125,8 +125,10 @@ public class SfcOvsToSffMappingAPI {
                 if (terminationPointAugmentation != null) {
                     SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
                     sffDataPlaneLocatorBuilder.setName(terminationPointAugmentation.getName());
-                    sffDataPlaneLocatorBuilder.setDataPlaneLocator(buildDataPlaneLocatorFromTerminationPoint(terminationPointAugmentation));
-
+                    DataPlaneLocator dataPlaneLocator = buildDataPlaneLocatorFromTerminationPoint(terminationPointAugmentation);
+                    if (dataPlaneLocator != null) {
+                        sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocator);
+                    }
                     SffDataPlaneLocator1Builder sffDataPlaneLocator1Builder = new SffDataPlaneLocator1Builder();
                     sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
                     sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator1.class, sffDataPlaneLocator1Builder.build());
@@ -163,7 +165,11 @@ public class SfcOvsToSffMappingAPI {
                 dataPlaneLocatorBuilder.setTransport(Other.class);
             }
         } catch (NullPointerException e) {
-            LOG.warn("Cannot determine OVS TerminationPoint transport type: {}", terminationPoint.getName());
+            LOG.warn("Cannot determine OVS TerminationPoint transport type: {}.", terminationPoint.getName());
+
+            //TODO: remove once MDSAL OVSDB will not require interface type to be specified
+            LOG.warn("Falling back to transport type: Other");
+            dataPlaneLocatorBuilder.setTransport(Other.class);
         }
 
         return dataPlaneLocatorBuilder.build();

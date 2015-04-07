@@ -27,17 +27,29 @@ import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,15 +125,41 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder deletedServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
                 LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
 
-                //build OvsdbBridge
-                OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(deletedServiceFunctionForwarder);
+                KeyedInstanceIdentifier keyedInstanceIdentifier =
+                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
+                if (keyedInstanceIdentifier != null) {
+                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
+                    String sffName = sffKey.getName();
 
-                //delete OvsdbNode
-                deleteOvsdbNode(ovsdbBridge);
+                    InstanceIdentifier<Node> nodeIID =
+                            InstanceIdentifier
+                                    .create(NetworkTopology.class)
+                                    .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                                    .child(Node.class, new NodeKey(new NodeId(sffName)));
+
+                    //delete OvsdbNode
+                    deleteOvsdbNode(nodeIID);
+                }
 
             } else if (dataObject instanceof SffDataPlaneLocator) {
-                //TODO: delete TerminationPoint
+                SffDataPlaneLocator sffDataPlaneLocator = (SffDataPlaneLocator) dataObject;
+                LOG.debug("Deleted SffDataPlaneLocator: {}", sffDataPlaneLocator.getName());
+                KeyedInstanceIdentifier keyedInstanceIdentifier =
+                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
+                if (keyedInstanceIdentifier != null) {
+                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
+                    String sffName = sffKey.getName();
+
+                    InstanceIdentifier<TerminationPoint> terminationPointIID =
+                            InstanceIdentifier
+                                    .create(NetworkTopology.class)
+                                    .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                                    .child(Node.class, new NodeKey(new NodeId(sffName)))
+                                    .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffName + "/terminationpoint/" + sffDataPlaneLocator.getName())));
+
+                    //delete OvsdbTerminationPoint
+                    deleteOvsdbTerminationPoint(terminationPointIID);
+                }
             }
         }
         printTraceStop(LOG);
@@ -136,12 +174,20 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
         return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, getOpendaylightSfc().getExecutor());
     }
 
-    private boolean deleteOvsdbNode(OvsdbBridgeAugmentation ovsdbBridge) {
+    private boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
         SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteNode = new SfcOvsDataStoreAPI(
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE,
-                ovsdbBridge
+                ovsdbNodeIID
         );
         return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, getOpendaylightSfc().getExecutor());
+    }
+
+    private boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint= new SfcOvsDataStoreAPI(
+                SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT,
+                ovsdbTerminationPointIID
+        );
+        return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, getOpendaylightSfc().getExecutor());
     }
 
     private boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,  ServiceFunctionForwarder serviceFunctionForwarder) {

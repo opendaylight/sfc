@@ -86,8 +86,9 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
         ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));
 
+        Object[] methodParams = {ovsdbBridgeBuilder.build()};
         SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
-                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, ovsdbBridgeBuilder.build());
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParams);
 
         if (SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
             rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());

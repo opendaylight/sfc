@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
@@ -23,7 +24,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.slf4j.Logger;
@@ -125,8 +131,10 @@ public class SfcOvsToSffMappingAPI {
                 if (terminationPointAugmentation != null) {
                     SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
                     sffDataPlaneLocatorBuilder.setName(terminationPointAugmentation.getName());
-                    sffDataPlaneLocatorBuilder.setDataPlaneLocator(buildDataPlaneLocatorFromTerminationPoint(terminationPointAugmentation));
-
+                    DataPlaneLocator dataPlaneLocator = buildDataPlaneLocatorFromTerminationPoint(terminationPointAugmentation);
+                    if (dataPlaneLocator != null) {
+                        sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocator);
+                    }
                     SffDataPlaneLocator1Builder sffDataPlaneLocator1Builder = new SffDataPlaneLocator1Builder();
                     sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
                     sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator1.class, sffDataPlaneLocator1Builder.build());
@@ -157,13 +165,38 @@ public class SfcOvsToSffMappingAPI {
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
         try {
+            //set ip:port locator
+            IpBuilder ipBuilder = new IpBuilder();
+
+            List<Options> options = terminationPoint.getOptions();
+            for (Options option : options) {
+                switch (option.getOption()) {
+                    case SfcOvsUtil.OVSDB_OPTION_LOCAL_IP:
+                        ipBuilder.setIp(new IpAddress(new Ipv4Address(option.getValue())));
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_SRC_PORT:
+                        ipBuilder.setPort(new PortNumber(Integer.parseInt(option.getValue())));
+                        break;
+                }
+            }
+            dataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
+        } catch (NullPointerException e) {
+            LOG.warn("Cannot determine OVS TerminationPoint locator type: {}.", terminationPoint.getName());
+        }
+
+        //set transport type
+        try {
             if (terminationPoint.getInterfaceType().isAssignableFrom(InterfaceTypeVxlan.class)) {
                 dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
             } else {
                 dataPlaneLocatorBuilder.setTransport(Other.class);
             }
         } catch (NullPointerException e) {
-            LOG.warn("Cannot determine OVS TerminationPoint transport type: {}", terminationPoint.getName());
+            LOG.warn("Cannot determine OVS TerminationPoint transport type: {}.", terminationPoint.getName());
+
+            //TODO: remove once MDSAL OVSDB will not require interface type to be specified
+            LOG.warn("Falling back to transport type: Other");
+            dataPlaneLocatorBuilder.setTransport(Other.class);
         }
 
         return dataPlaneLocatorBuilder.build();

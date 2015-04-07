@@ -103,7 +103,6 @@ public class SfcOvsUtil {
     /**
      * Method builds OVS Node InstanceIdentifier which is based on OVS NodeId
      *
-     * If the two aforementioned fields are missing, NullPointerException is raised.
      *
      * <p>
      * @param ovsdbBridge OvsdbBridgeAugmentation
@@ -111,13 +110,31 @@ public class SfcOvsUtil {
      * @see SfcOvsUtil getManagedByNodeId
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(OvsdbBridgeAugmentation ovsdbBridge) {
-        InstanceIdentifier<Node> nodeEntryIID =
+        InstanceIdentifier<Node> nodeIID =
                 InstanceIdentifier
                         .create(NetworkTopology.class)
                         .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                         .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)));
 
-        return nodeEntryIID;
+        return nodeIID;
+    }
+
+    /**
+     * Method builds OVS Node InstanceIdentifier which is based on Service Function Forwarder name.
+     * Method will return valid InstanceIdentifier only if the given SFF name belongs to SFF instance mapped to OVS.
+     *
+     * <p>
+     * @param serviceFunctionForwarderName String
+     * @return InstanceIdentifier<Node>
+     */
+    public static InstanceIdentifier<Node> buildOvsdbNodeIID(String serviceFunctionForwarderName) {
+        InstanceIdentifier<Node> nodeIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(new NodeId(serviceFunctionForwarderName)));
+
+        return nodeIID;
     }
 
     /**
@@ -152,7 +169,7 @@ public class SfcOvsUtil {
      * @param terminationPoint OvsdbTerminationPointAugmentation
      * @return InstanceIdentifier<OvsdbTerminationPointAugmentation>
      */
-    public static InstanceIdentifier<OvsdbTerminationPointAugmentation> buildOvsdbTerminationPointIID(
+    public static InstanceIdentifier<OvsdbTerminationPointAugmentation> buildOvsdbTerminationPointAugmentationIID(
             OvsdbTerminationPointAugmentation terminationPoint) {
 
         Preconditions.checkNotNull(terminationPoint,
@@ -180,6 +197,28 @@ public class SfcOvsUtil {
                         .child(Node.class, nodeKey)
                         .child(TerminationPoint.class, new TerminationPointKey(new TpId(terminationPointId)))
                         .augmentation(OvsdbTerminationPointAugmentation.class);
+
+        return terminationPointIID;
+    }
+
+    /**
+     * Method builds OVS TerminationPoint InstanceIdentifier which is based on SFF name and SFF DataPlane locator name.
+     * Method will return valid InstanceIdentifier only if the given SFF and SFF DataPlane locator
+     * belongs to SFF instance mapped to OVS.
+     *
+     * <p>
+     * @param sffName Service Function Forwarder Name
+     * @param sffDataPlaneLocatorName Service Function Forwarder Data Plane locator name
+     * @return InstanceIdentifier<TerminationPoint>
+     */
+    public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(String sffName, String sffDataPlaneLocatorName) {
+        InstanceIdentifier<TerminationPoint> terminationPointIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(new NodeId(sffName)))
+                        .child(TerminationPoint.class, new TerminationPointKey(
+                                new TpId(sffName + OVSDB_TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName)));
 
         return terminationPointIID;
     }

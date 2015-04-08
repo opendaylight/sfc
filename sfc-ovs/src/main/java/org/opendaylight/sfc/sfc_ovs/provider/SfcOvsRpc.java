@@ -24,7 +24,6 @@ import java.util.concurrent.Future;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
@@ -35,12 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -71,29 +66,50 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         Preconditions.checkNotNull(input.getOvsNode(), "create-ovs-bridge RPC input container ovs-node must be not null!");
 
         RpcResultBuilder<CreateOvsBridgeOutput> rpcResultBuilder;
+        NodeId nodeId = null;
+
+        OvsNode ovsNode = input.getOvsNode();
 
         //create parent OVS Node InstanceIdentifier (based on ip:port locator)
-        OvsNode ovsNode = input.getOvsNode();
-        String nodeId = OVSDB_NODE_PREFIX + ovsNode.getIp().getIpv4Address().getValue() + ":" + ovsNode.getPort().getValue();
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier
-                .create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, new NodeKey(new NodeId(nodeId)));
+        if (ovsNode.getPort() != null && ovsNode.getIp() != null) {
+            nodeId = new NodeId(OVSDB_NODE_PREFIX
+                    + ovsNode.getIp().getIpv4Address().getValue()
+                    + ":" + ovsNode.getPort().getValue());
 
-        //build OVS Bridge
-        //TODO: seperate into function as it will grow in future (including DP locators, etc.)
-        OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
-        ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
-        ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));
+        //create parent OVS Node InstanceIdentifier (based on ip)
+        } else if (ovsNode.getIp() != null) {
+            Object[] methodParams = {ovsNode.getIp().getIpv4Address().getValue()};
+            SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                    new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
+            Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor());
+            nodeId = node.getNodeId();
+        }
 
-        Object[] methodParams = {ovsdbBridgeBuilder.build()};
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
-                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParams);
+        try {
+            Preconditions.checkNotNull(nodeId);
+            InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(nodeId);
 
-        if (SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
-            rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
-        } else {
-            String message = "Error writing OVS Bridge into OVSDB Configuration DataStore: " + input.getName();
+            //build OVS Bridge
+            //TODO: seperate into function as it will grow in future (including DP locators, etc.)
+            OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
+            ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
+            ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));
+
+            Object[] methodParams = {ovsdbBridgeBuilder.build()};
+            SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                    new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParams);
+
+            if ((boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
+                rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
+            } else {
+                String message = "Error writing OVS Bridge into OVSDB Configuration DataStore: " + input.getName();
+                rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, message);
+            }
+
+        } catch (Exception e) {
+            String message = "Error writing OVS Bridge into OVSDB Configuration DataStore (cannot determine parent NodeId): "
+                    + input.getName();
             rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
                     .withError(RpcError.ErrorType.APPLICATION, message);
         }

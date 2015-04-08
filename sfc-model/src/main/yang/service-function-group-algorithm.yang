@@ -47,6 +47,26 @@ module service-function-group-algorithm {
         description
           "The name of the service function group algorithm";
       }
+      leaf algorithm_type {
+        type enumeration {
+          enum ALL {
+             value 0;
+             description "All (multicast/broadcast) group.";
+          }
+          enum SELECT {
+             value 1;
+             description "Select group.";
+          }
+          enum INDIRECT {
+             value 2;
+             description "Indirect group.";
+          }
+          enum FAST_FAILURE {
+             value 3;
+             description "Fast failover group.";
+          }
+        }
+      }
   }
 
   typedef service-function-group-algorithm-ref {

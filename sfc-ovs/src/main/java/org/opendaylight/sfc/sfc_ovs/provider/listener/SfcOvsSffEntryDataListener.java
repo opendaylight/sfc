@@ -80,11 +80,13 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 OvsdbBridgeAugmentation ovsdbBridge =
                         SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder);
 
-                //put Bridge
-                putOvsdbBridge(ovsdbBridge);
+                if (ovsdbBridge != null) {
+                    //put Bridge
+                    putOvsdbBridge(ovsdbBridge);
 
-                //put Termination Points
-                putOvsdbTerminationPoints(ovsdbBridge, serviceFunctionForwarder);
+                    //put Termination Points
+                    putOvsdbTerminationPoints(ovsdbBridge, serviceFunctionForwarder);
+                }
             }
         }
 
@@ -100,11 +102,13 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 OvsdbBridgeAugmentation ovsdbBridge =
                         SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder);
 
-                //put Bridge
-                putOvsdbBridge(ovsdbBridge);
+                if (ovsdbBridge != null) {
+                    //put Bridge
+                    putOvsdbBridge(ovsdbBridge);
 
-                //put Termination Points
-                putOvsdbTerminationPoints(ovsdbBridge, updatedServiceFunctionForwarder);
+                    //put Termination Points
+                    putOvsdbTerminationPoints(ovsdbBridge, updatedServiceFunctionForwarder);
+                }
             }
         }
 
@@ -152,7 +156,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                         SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE,
                         methodParameters
                 );
-        return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, getOpendaylightSfc().getExecutor());
+        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, getOpendaylightSfc().getExecutor());
     }
 
     private boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
@@ -161,7 +165,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE,
                 methodParameters
         );
-        return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, getOpendaylightSfc().getExecutor());
+        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, getOpendaylightSfc().getExecutor());
     }
 
     private boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
@@ -170,7 +174,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT,
                 methodParameters
         );
-        return SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, getOpendaylightSfc().getExecutor());
+        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, getOpendaylightSfc().getExecutor());
     }
 
     private boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,  ServiceFunctionForwarder serviceFunctionForwarder) {
@@ -186,7 +190,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                             methodParameters
                     );
             boolean partialResult =
-                    SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, getOpendaylightSfc().getExecutor());
+                    (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, getOpendaylightSfc().getExecutor());
 
             //once result is false, we will keep it false (it will be not overwritten with next partialResults)
             if (result) {

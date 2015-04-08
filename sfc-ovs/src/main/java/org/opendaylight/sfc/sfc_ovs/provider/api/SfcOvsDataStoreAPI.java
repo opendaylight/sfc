@@ -26,6 +26,7 @@ import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -36,7 +37,8 @@ public class SfcOvsDataStoreAPI implements Callable {
 
     public enum Method {
         PUT_OVSDB_BRIDGE, DELETE_OVSDB_NODE,
-        PUT_OVSDB_TERMINATION_POINT, DELETE_OVSDB_TERMINATION_POINT
+        PUT_OVSDB_TERMINATION_POINT, DELETE_OVSDB_TERMINATION_POINT,
+        READ_OVSDB_NODE_BY_IP
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
@@ -93,6 +95,13 @@ public class SfcOvsDataStoreAPI implements Callable {
                             "is not instance of InstanceIdentifier<TerminationPoint>: {}", methodParameters[0].toString());
                 }
                 break;
+            case READ_OVSDB_NODE_BY_IP:
+                try {
+                    result = readOvsdbNodeByIp((String) methodParameters[0]);
+                } catch (ClassCastException e) {
+                    LOG.error("Cannot call readOvsdbNodeByIp, passed method argument " +
+                            "is not instance of String: {}", methodParameters[0].toString());
+                }
         }
 
         return result;
@@ -126,5 +135,24 @@ public class SfcOvsDataStoreAPI implements Callable {
                 "Cannot DELETE Termination Point from OVS configuration store, InstanceIdentifier<TerminationPoint> is null.");
 
         return SfcDataStoreAPI.deleteTransactionAPI(ovsdbTerminationPointIID, LogicalDatastoreType.CONFIGURATION);
+    }
+
+    private Node readOvsdbNodeByIp(String ipAddress) {
+        Preconditions.checkNotNull(ipAddress,
+                "Cannot READ Node for given ipAddress from OVS operational store, ipAddress is null.");
+
+        Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(), LogicalDatastoreType.OPERATIONAL);
+        try {
+            for (Node node: topology.getNode()) {
+                if (node.getNodeId().getValue().contains(ipAddress)) {
+                    return node;
+                }
+            }
+
+        } catch (NullPointerException e) {
+            LOG.warn("Cannot READ Node for given ipAddress from OVS operational store, Topology does not contain any Node.");
+        }
+
+        return null;
     }
 }

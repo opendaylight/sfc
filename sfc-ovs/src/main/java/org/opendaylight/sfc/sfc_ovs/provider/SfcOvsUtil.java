@@ -60,19 +60,28 @@ public class SfcOvsUtil {
      * @param executor ExecutorService
      * @return true if callable completed successfully, otherwise false.
      */
-    public static boolean submitCallable(Callable callable, ExecutorService executor) {
+    public static Object submitCallable(Callable callable, ExecutorService executor) {
         Future future = null;
-        boolean result = false;
+        Object result = null;
 
         future = executor.submit(callable);
 
         try {
-            result = (boolean) future.get();
+            result = future.get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("{} failed to: {}", callable.toString(), e);
         }
 
         return result;
+    }
+
+    public static InstanceIdentifier<Topology> buildOvsdbTopologyIID() {
+        InstanceIdentifier<Topology> ovsdbTopologyIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID));
+
+        return ovsdbTopologyIID;
     }
 
     /**
@@ -141,6 +150,23 @@ public class SfcOvsUtil {
     }
 
     /**
+     * Method builds OVS Node InstanceIdentifier which is based on NodeId.
+     * <p/>
+     *
+     * @param nodeId NodeId
+     * @return InstanceIdentifier<Node>
+     */
+    public static InstanceIdentifier<Node> buildOvsdbNodeIID(NodeId nodeId) {
+        InstanceIdentifier<Node> nodeIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(nodeId));
+
+        return nodeIID;
+    }
+
+    /**
      * Method builds OVS BridgeAugmentation InstanceIdentifier which is based on OVS NodeId
      * <p/>
      * If the two aforementioned fields are missing, NullPointerException is raised.
@@ -169,7 +195,7 @@ public class SfcOvsUtil {
      * If the two aforementioned fields are missing, NullPointerException is raised.
      * <p/>
      *
-     * @param ovsdbBridge OvsdbBridgeAugmentation
+     * @param ovsdbBridge           OvsdbBridgeAugmentation
      * @param ovsdbTerminationPoint OvsdbTerminationPointAugmentation
      * @return InstanceIdentifier<OvsdbTerminationPointAugmentation>
      */

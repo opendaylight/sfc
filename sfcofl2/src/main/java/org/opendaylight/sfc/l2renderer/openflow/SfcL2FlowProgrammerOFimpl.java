@@ -48,6 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 
 /**
  * This class writes Openflow Flow Entries to the SFF once an SFF has been configured.
@@ -321,6 +325,18 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, int dstPort, final boolean isAddFlow) {
+        ConfigureTransportIngressThread configureIngressTransportThread =
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN, isAddFlow);
+        configureIngressTransportThread.setIpProtocol(SfcOpenflowUtils.IP_PROTOCOL_UDP);
+        configureIngressTransportThread.setDstUdpPort(new PortNumber(dstPort));
+        try {
+            threadPoolExecutorService.execute(configureIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
 
         ConfigureTransportIngressThread configureIngressTransportThread =
@@ -337,15 +353,18 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         boolean isAddFlow;
         long etherType;
         short ipProtocol;
+        PortNumber dstUdpPort;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType, final boolean isAddFlow) {
             this.sffNodeName = sffNodeName;
             this.etherType = etherType;
             this.isAddFlow = isAddFlow;
             this.ipProtocol = (short) -1;
+            this.dstUdpPort = null;
         }
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
+        public void setDstUdpPort(PortNumber dstUdpPort) { this.dstUdpPort = dstUdpPort; }
 
         @Override
         public void run() {
@@ -358,6 +377,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 MatchBuilder match = new MatchBuilder();
                 if(this.ipProtocol > 0) {
                     SfcOpenflowUtils.addMatchIpProtocol(match, this.ipProtocol);
+                }
+
+                if (this.dstUdpPort != null) {
+                    SfcOpenflowUtils.addMatchDstUdpPort(match, this.dstUdpPort);
                 }
 
                 if(this.etherType == SfcOpenflowUtils.ETHERTYPE_VLAN) {
@@ -441,15 +464,30 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    public void configureVxlanGpeIngressFlow(final String sffNodeName, long nsp, short nsi, long pathId, final boolean isAddFlow) {
+        ConfigureIngressFlowThread configureIngressFlowThread = new ConfigureIngressFlowThread(sffNodeName, pathId, isAddFlow);
+        configureIngressFlowThread.setNsp(nsp);
+        configureIngressFlowThread.setNsi(nsi);
+        try {
+            threadPoolExecutorService.execute(configureIngressFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
     private class ConfigureIngressFlowThread implements Runnable {
         String sffNodeName;
         long pathId;
         int vlan;
+        long nsp;
+        short nsi;
         long mplsLabel;
         String macAddress;
         boolean isAddFlow;
 
         public void setVlanId(final int vlan) { this.vlan = vlan; }
+        public void setNsp(final long nsp) { this.nsp = nsp; }
+        public void setNsi(final short nsi) { this.nsi = nsi; }
         public void setMplsLabel(final long label) { this.mplsLabel = label; }
         public void setMacAddress(final String macAddress) { this.macAddress = macAddress; }
 
@@ -458,6 +496,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.pathId = pathId;
             this.isAddFlow = isAddFlow;
             this.vlan = -1; // not set
+            this.nsp = -1; // not set
+            this.nsi = -1; // not set
             this.mplsLabel = -1; // not set
         }
 
@@ -480,6 +520,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 } else if(this.macAddress.length() > 0) {
                     // TODO, should this be addMatchSrcMac() or addMatchDstMac() ???
                     SfcOpenflowUtils.addMatchSrcMac(match, this.macAddress);
+                } else if (this.nsp >= 0 && this.nsi >= 0) {
+                    //VxLAN-gpe + NSH
+                    SfcOpenflowUtils.addMatchNxNsp(match, this.nsp);
+                    SfcOpenflowUtils.addMatchNxNsi(match, this.nsi);
+                    actionList.add(SfcOpenflowUtils.createActionNxSetNsp(this.nsp, actionOrder++));
+                    actionList.add(SfcOpenflowUtils.createActionNxSetNsi(this.nsi, actionOrder++));
                 }
 
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -650,12 +696,35 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    public void configureVxlanGpeNextHopFlow(final String sffNodeName, final long sfpId, final String srcIp, final String dstIp, final long nsp, final short nsi, final boolean isAddFlow) {
+        ConfigureNextHopFlowThread configureNextHopFlowThread =
+                new ConfigureNextHopFlowThread(sffNodeName, sfpId, null, null, isAddFlow);
+        configureNextHopFlowThread.setSrcIp(srcIp);
+        configureNextHopFlowThread.setDstIp(dstIp);
+        configureNextHopFlowThread.setNsp(nsp);
+        configureNextHopFlowThread.setNsi(nsi);
+        try {
+            threadPoolExecutorService.execute(configureNextHopFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
     private class ConfigureNextHopFlowThread implements Runnable {
         String sffNodeName;
         long sfpId;
         String srcMac;
         String dstMac;
+        String srcIp;
+        String dstIp;
+        long nsp;
+        short nsi;
         boolean isAddFlow;
+
+        public void setSrcIp(final String srcIp) { this.srcIp = srcIp; }
+        public void setDstIp(final String dstIp) { this.dstIp = dstIp; }
+        public void setNsp(final long nsp) { this.nsp = nsp; }
+        public void setNsi(final short nsi) { this.nsi = nsi; }
 
         public ConfigureNextHopFlowThread(
                 final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow) {
@@ -696,14 +765,31 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     flowPriority -= 10;
                 }
 
+                if (nsp >= 0 && nsi >= 0) {
+                    SfcOpenflowUtils.addMatchNxNsp(match, this.nsp);
+                    SfcOpenflowUtils.addMatchNxNsi(match, this.nsi);
+                }
+
+                if (srcIp != null) {
+                    SfcOpenflowUtils.addMatchSrcIpv4(match, new Ipv4Prefix(srcIp + "/32"));
+                }
+
                 //
                 // Create the Actions
-
-                // Set the DL (Data Link) Dest Mac Address
-                Action actionDstMac = SfcOpenflowUtils.createActionSetDlDst(dstMac, 0);
-
                 List<Action> actionList = new ArrayList<Action>();
-                actionList.add(actionDstMac);
+
+                if (dstMac != null) {
+                    // Set the DL (Data Link) Dest Mac Address
+                    Action actionDstMac = SfcOpenflowUtils.createActionSetDlDst(dstMac, 0);
+                    actionList.add(actionDstMac);
+                }
+
+                if (dstIp != null) {
+                    Address ipaddr;
+                    ipaddr = new Ipv4Builder().setIpv4Address(new Ipv4Prefix(dstIp + "/32")).build();
+                    Action actionSetNwDst = SfcOpenflowUtils.createActionSetNwDst(ipaddr, 0);
+                    actionList.add(actionSetNwDst);
+                }
 
                 // Create an Apply Action
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -781,6 +867,23 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    public void configureVxlanGpeTransportEgressFlow(
+            final String sffNodeName, final String srcIp, final String dstIp,
+            final long dstNsp, final short dstNsi, int port,
+            final long pathId, boolean setDscp, final boolean isAddFlow) {
+        ConfigureTransportEgressThread configureEgressTransportThread =
+                new ConfigureTransportEgressThread(sffNodeName, null, null, port, pathId, setDscp, isAddFlow);
+        configureEgressTransportThread.setSrcIp(srcIp);
+        configureEgressTransportThread.setDstIp(dstIp);
+        configureEgressTransportThread.setDstNsp(dstNsp);
+        configureEgressTransportThread.setDstNsi(dstNsi);
+        try {
+            threadPoolExecutorService.execute(configureEgressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
     public void configureMplsTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
             final long mplsLabel, int port, final long pathId, boolean setDscp, final boolean isAddFlow) {
@@ -800,6 +903,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         String srcMac;
         String dstMac;
         int dstVlan;
+        String srcIp;
+        String dstIp;
+        long dstNsp;
+        short dstNsi;
         long mplsLabel;
         int port;
         long pathId;
@@ -814,6 +921,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.srcMac = srcMac;
             this.dstMac = dstMac;
             this.dstVlan = -1;   // unused
+            this.srcIp = null;
+            this.dstIp = null;
+            this.dstNsp = -1;   // unused
+            this.dstNsi = -1;   // unused
             this.mplsLabel = -1; // unused
             this.port = port;
             this.pathId = pathId;
@@ -821,6 +932,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.isAddFlow = isAddFlow;
         }
         public void setDstVlan(final int dstVlan) { this.dstVlan = dstVlan; }
+        public void setSrcIp(final String srcIp) { this.srcIp = srcIp; }
+        public void setDstIp(final String dstIp) { this.dstIp = dstIp; }
+        public void setDstNsp(final long dstNsp) { this.dstNsp = dstNsp; }
+        public void setDstNsi(final short dstNsi) { this.dstNsi = dstNsi; }
         public void setMplsLabel(final long mplsLabel) { this.mplsLabel = mplsLabel; }
 
         @Override
@@ -872,6 +987,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                     Action setMpls = SfcOpenflowUtils.createActionSetMplsLabel(this.mplsLabel, order++);
                     actionList.add(setMpls);
+                } else if (this.dstNsp >=0 && this.dstNsi >= 0) {
+                    actionList.add(SfcOpenflowUtils.createActionNxSetNsp(this.dstNsp, order++));
+                    actionList.add(SfcOpenflowUtils.createActionNxSetNsi(this.dstNsi, order++));
                 }
 
                 Action outPortBuilder = SfcOpenflowUtils.createActionOutPort(this.port, order);

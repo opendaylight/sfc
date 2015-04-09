@@ -27,15 +27,18 @@ public class SffGraph {
         private String dstSff;
         private String sf;
         private long pathId;
+        private short serviceIndex;
         public String getSrcSff() { return srcSff; }
         public String getDstSff() { return dstSff; }
         public String getSf()     { return sf;     }
         public long   getPathId() { return pathId; }
-        public SffGraphEntry(final String srcSff, final String dstSff, final String sf, long pathId) {
+        public short  getServiceIndex() { return serviceIndex; }
+        public SffGraphEntry(final String srcSff, final String dstSff, final String sf, long pathId, short serviceIndex) {
             this.srcSff = srcSff;
             this.dstSff = dstSff;
             this.sf = sf;
             this.pathId = pathId;
+            this.serviceIndex = serviceIndex;
         }
     }
 
@@ -45,16 +48,16 @@ public class SffGraph {
         graphEntries = new ArrayList<SffGraphEntry>();
     }
 
-    public void addEntry(final String srcSff, final String dstSff, long pathId) {
-        addEntry(srcSff, dstSff, null, pathId);
+    public void addEntry(final String srcSff, final String dstSff, long pathId, short serviceIndex) {
+        addEntry(srcSff, dstSff, null, pathId, serviceIndex);
     }
 
-    public void addEntry(final String srcSff, final String dstSff, final String sf, long pathId) {
-        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, pathId);
+    public void addEntry(final String srcSff, final String dstSff, final String sf, long pathId, short serviceIndex) {
+        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, pathId, serviceIndex);
         graphEntries.add(entry);
 
-        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] pathId [{}]",
-                srcSff, dstSff, sf, pathId);
+        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
+                srcSff, dstSff, sf, pathId, serviceIndex);
     }
 
     public Iterator<SffGraphEntry> iterator() {

@@ -32,6 +32,8 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, int dstUdpPort, final boolean isAddFlow);
+
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
     //
@@ -43,6 +45,8 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVlanIngressFlow(final String sffNodeName, final int vlan, long pathId, final boolean isAddFlow);
 
+    public void configureVxlanGpeIngressFlow(final String sffNodeName, final long nsp, final short nsi, long pathId, final boolean isAddFlow);
+
     //
     // Configure Table 2, ACL
     //
@@ -53,6 +57,9 @@ public interface SfcL2FlowProgrammerInterface {
     //
     public void configureNextHopFlow(
             final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow);
+
+    public void configureVxlanGpeNextHopFlow(
+            final String sffNodeName, final long sfpId, final String srcIp, final String dstIp, final long nsp, final short nsi, final boolean isAddFlow);
 
     //
     // Table 10, Transport Egress
@@ -67,6 +74,12 @@ public interface SfcL2FlowProgrammerInterface {
             final String sffNodeName,
             final String srcMac, final String dstMac,
             final int dstVlan, int port, final long pathId,
+            boolean setDscp, final boolean isAddFlow);
+
+    public void configureVxlanGpeTransportEgressFlow(
+            final String sffNodeName,
+            final String srcIp, final String dstIp,
+            final long dstNsp, final short dstNsi, int port, final long pathId,
             boolean setDscp, final boolean isAddFlow);
 
     public void configureMplsTransportEgressFlow(

@@ -18,6 +18,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
@@ -26,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlTypeActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -35,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.type.action._case.SetDlTypeActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -68,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 
 /* Import Nicira extension */
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionSetNsiNodesNodeTableFlowApplyActionsCaseBuilder;
@@ -167,6 +174,13 @@ public class SfcOpenflowUtils {
         match.setIpMatch(ipMatch.build());
     }
 
+    public static void addMatchDstUdpPort(MatchBuilder match, PortNumber port) {
+        UdpMatchBuilder udpMatch = new UdpMatchBuilder(); //UDP
+        udpMatch.setUdpDestinationPort(port);
+
+        match.setLayer4Match(udpMatch.build());
+    }
+
     public static void addMatchDscp(MatchBuilder match, short dscpVal) {
         addMatchEtherType(match, ETHERTYPE_IPV4);
 
@@ -217,6 +231,18 @@ public class SfcOpenflowUtils {
         ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 
         match.setEthernetMatch(ethernetMatch.build());
+    }
+
+    public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {
+        Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
+        ipv4match.setIpv4Source(srcIp);
+        match.setLayer3Match(ipv4match.build());
+    }
+
+    public static void addMatchDstIpv4(MatchBuilder match, Ipv4Prefix dstIp) {
+        Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
+        ipv4match.setIpv4Destination(dstIp);
+        match.setLayer3Match(ipv4match.build());
     }
 
     public static void addMatchMetada(MatchBuilder match, BigInteger metadataValue, BigInteger metadataMask) {
@@ -374,6 +400,17 @@ public class SfcOpenflowUtils {
 
         ActionBuilder ab = createActionBuilder(order);
         ab.setAction(setFieldCase.build());
+
+        return ab.build();
+    }
+
+    public static Action createActionSetNwDst(Address ip, int order) {
+        SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
+        nwDstBuilder.setAddress(ip);
+        SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
+        nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(nwDstCaseBuilder.build());
 
         return ab.build();
     }

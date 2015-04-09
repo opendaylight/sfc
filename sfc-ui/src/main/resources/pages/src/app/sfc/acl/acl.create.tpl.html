@@ -79,13 +79,11 @@
                         <!--<select class="form-control input-sm" id="metadata-context_{{$index}}" ui-select2-->
                                 <!--ng-model="ace['context-metadata']" ng-required="false"-->
                                 <!--data-placeholder="{{'SFC_ACL_CREATE_METADATA_CONTEXT' | translate}}" disabled>-->
-
                             <!--<option value=""></option>-->
                             <!--<option ng-repeat="item in contextMetadata" value="{{item.name}}">{{item.name}}</option>-->
                         <!--</select>-->
                     <!--</div>-->
                 <!--</div>-->
-
                 <!--<div class="form-group">-->
                     <!--<label class="col-lg-6 control-label small-label" ui-select2-label="metadata-variable_{{$index}}">-->
                         <!--{{'SFC_ACL_METADATA_VARIABLE' | translate}}-->
@@ -185,7 +183,9 @@
                 <acl-ethernet-matches matches="ace['matches']" id-suffix="{{'_' + $index}}"
                                       ng-if="ace_type == aclConstants['ace-type'][1]"
                                       reset-on="ace_type_change" not-reset-condition="{{aclConstants['ace-type'][1]}}"></acl-ethernet-matches>
-
+                <acl-level7-matches matches="ace['matches']" id-suffix="{{'_' + $index}}" l7maps="l7maps"
+                                      ng-if="ace_type == aclConstants['ace-type'][2]"
+                                      reset-on="ace_type_change" not-reset-condition="{{aclConstants['ace-type'][2]}}"></acl-level7-matches>
             </div>
         </div>
     </div>

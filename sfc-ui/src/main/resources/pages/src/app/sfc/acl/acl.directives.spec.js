@@ -1,6 +1,6 @@
-define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app/sfc/acl/acl.ip.v6.tpl.html', 'app/sfc/acl/acl.ethernet.tpl.html', 'app/sfc/acl/acl.ip.tpl.html'], function (sfc) {
+define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app/sfc/acl/acl.ip.v6.tpl.html', 'app/sfc/acl/acl.ethernet.tpl.html', 'app/sfc/acl/acl.ip.tpl.html', 'app/sfc/acl/acl.l7.tpl.html'], function (sfc) {
 
-  ddescribe('SFC - acl.directives', function () {
+  describe('SFC - acl.directives', function () {
     var scope, compile;
 
     beforeEach(angular.mock.module('app.sfc'));
@@ -8,6 +8,7 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ip.v6.tpl.html'));
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ethernet.tpl.html'));
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ip.tpl.html'));
+    beforeEach(angular.mock.module('src/app/sfc/acl/acl.l7.tpl.html'));
 
     beforeEach(angular.mock.inject(function ($rootScope, $compile) {
       scope = $rootScope.$new();
@@ -142,7 +143,7 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
         inputElement = compile('<acl-ethernet-matches id-suffix="0" matches="outer_matches" reset-on="ipv6-reset-event-key" not-reset-condition="not-reset"></acl-ethernet-matches>')(scope);
       };
 
-      it("should delete properties in matches model on registed event", function () {
+      it("should delete properties in matches model on registered event", function () {
 
         scope.outer_matches = {
           'destination-mac-address': 'test',
@@ -188,7 +189,7 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
         inputElement = compile('<acl-ip-matches acl-constants="[\'ipv4\', \'ipv6\']" id-suffix="0" matches="outer_matches" reset-on="ip-reset-event-key" not-reset-condition="not-reset"></acl-ip-matches>')(scope);
       };
 
-      it("should delete properties in matches model on registed event", function () {
+      it("should delete properties in matches model on registered event", function () {
 
         scope.outer_matches = {};
 
@@ -233,6 +234,50 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
 
     });
 
+describe('directive: acl-level7-matches', function () {
 
+      beforeEach(function () {
+        this.addMatchers(sfc.customJasmineMatchers);
+      });
+
+      var inputElement;
+
+      var compileDirective = function (scope) {
+        inputElement = compile('<acl-level7-matches id-suffix="0" matches="outer_matches" reset-on="ip-reset-event-key" not-reset-condition="not-reset"></acl-level7-matches>')(scope);
+      };
+
+      it("should delete properties in matches model on registered event", function () {
+
+        scope.outer_matches = {
+          'service-function-acl:application-id': '1234',
+          'service-function-acl:service-type': '1234',
+          'service-function-acl:protocol-path': '1234',
+          'service-function-acl:subscriber-class': '1234'
+        };
+
+        compileDirective(scope);
+        scope.$digest();
+
+        expect(scope.outer_matches).toContainProperty('service-function-acl:application-id');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:service-type');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:protocol-path');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:subscriber-class');
+
+        scope.$broadcast('ipv6-reset-event-key', 'not-reset');
+
+        expect(scope.outer_matches).toContainProperty('service-function-acl:application-id');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:service-type');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:protocol-path');
+        expect(scope.outer_matches).toContainProperty('service-function-acl:subscriber-class');
+
+        scope.$broadcast('ipv6-reset-event-key', 'whatever');
+
+        expect(scope.outer_matches).not.toContainProperty('service-function-acl:application-id');
+        expect(scope.outer_matches).not.toContainProperty('service-function-acl:service-type');
+        expect(scope.outer_matches).not.toContainProperty('service-function-acl:protocol-path');
+        expect(scope.outer_matches).not.toContainProperty('service-function-acl:subscriber-class');
+      });
+
+    });
   });
 });

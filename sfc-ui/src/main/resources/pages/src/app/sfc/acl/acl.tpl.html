@@ -61,6 +61,25 @@
                 filter="{ 'dscp-string': 'text' }">
                 {{entry['matches']['dscp']}}
             </td>
+
+            <td data-title="'SFC_ACL_L7_APPLICATION_ID' | translate" sortable="'valueOf()[\'service-function-acl:application-id\']'"
+                filter="{ 'service-function-acl:application-id': 'text' }">
+                {{entry['matches']['service-function-acl:application-id']}}
+            </td>
+            <td data-title="'SFC_ACL_L7_SERVICE_TYPE' | translate" sortable="'valueOf()[\'service-function-acl:service-type\']'"
+                filter="{ 'service-function-acl:service-type': 'text' }">
+                {{entry['matches']['service-function-acl:service-type']}}
+            </td>
+            <td data-title="'SFC_ACL_L7_PROTOCOL_PATH' | translate" sortable="'valueOf()[\'service-function-acl:protocol-path\']'"
+                filter="{ 'service-function-acl:protocol-path': 'text' }">
+                {{entry['matches']['service-function-acl:protocol-path']}}
+            </td>
+            <td data-title="'SFC_ACL_L7_SUBSCRIBER_CLASS' | translate" sortable="'valueOf()[\'service-function-acl:subscriber-class\']'"
+                filter="{ 'service-function-acl:subscriber-class': 'text' }">
+                {{entry['matches']['service-function-acl:subscriber-class']}}
+            </td>
+
+
             <td data-title="'SFC_ACL_ACTIONS' | translate">
                 <a ng-click="showMetadata(entry)">
                     <i class="icon-list-alt" style="cursor: pointer" popover-trigger="mouseenter"

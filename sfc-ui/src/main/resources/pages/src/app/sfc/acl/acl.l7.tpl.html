@@ -1,0 +1,69 @@
+<div class="form-horizontal" ng-form="f_level7">
+<!--
+    <h3>{{'SFC_ACL_LEVEL7_MATCHES' | translate}}</h3>
+-->
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_l7_appid{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_L7_APPLICATION_ID' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+
+            <select class="form-control input-sm" id="ace_l7_sel_appid{{idSuffix}}" ui-select2="{allowClear: true}"
+                    ng-model="matches['service-function-acl:application-id']" ng-required="false" name="ace_l7_sel_appid"
+                    data-placeholder="{{'SFC_ACL_CREATE_L7_APPLICATION_ID' | translate}}">
+                <option value=""></option>
+                <option ng-repeat="app in $parent.l7maps.applicationIds" value="{{app['id']}}">{{app['id']}}-{{app['name']}}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_l7_service_type{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_L7_SERVICE_TYPE' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="ace_l7_sel_servicetype{{idSuffix}}" ui-select2="{allowClear: true}"
+                    ng-model="matches['service-function-acl:service-type']" ng-required="false" name="ace_l7_sel_servicetype"
+                    data-placeholder="{{'SFC_ACL_CREATE_L7_SERVICE_TYPE' | translate}}">
+                <option value=""></option>
+                <option ng-repeat="st in $parent.l7maps.serviceTypes" value="{{st['id']}}">{{st['id']}}-{{st['name']}}</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_l7_protocol_path{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_L7_PROTOCOL_PATH' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+
+            <select class="form-control input-sm" id="ace_l7_sel_protopath{{idSuffix}}" ui-select2="{allowClear: true}"
+                    ng-model="matches['service-function-acl:protocol-path']" ng-required="false" name="ace_l7_sel_protopath"
+                    data-placeholder="{{'SFC_ACL_CREATE_L7_PROTOCOL_PATH' | translate}}">
+                <option value=""></option>
+                <option ng-repeat="pp in $parent.l7maps.protocolPaths" value="{{pp['id']}}">{{pp['id']}}-{{pp['name']}}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label for="acl_l7_subscriber_class{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_ACL_L7_SUBSCRIBER_CLASS' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="ace_l7_sel_subsclass{{idSuffix}}" ui-select2="{allowClear: true}"
+                    ng-model="matches['service-function-acl:subscriber-class']" ng-required="false" name="ace_l7_sel_subsclass"
+                    data-placeholder="{{'SFC_ACL_CREATE_L7_SUBSCRIBER_CLASS' | translate}}">
+                <option value=""></option>
+                <option ng-repeat="sc in $parent.l7maps.subscriberClasses" value="{{sc['id']}}">{{sc['id']}}-{{sc['name']}}</option>
+            </select>
+        </div>
+    </div>
+
+</div>

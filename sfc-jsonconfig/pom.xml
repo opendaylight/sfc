@@ -74,6 +74,26 @@
                   <type>xml</type>
                   <classifier>config-sn</classifier>
                 </artifact>
+                <artifact>
+                   <file>${project.build.directory}/classes/${bootstrapdir}/acl-application-id-dictionary.json</file>
+                   <type>xml</type>
+                   <classifier>config-acl-appid</classifier>
+               </artifact>
+               <artifact>
+                   <file>${project.build.directory}/classes/${bootstrapdir}/acl-protocol-path-dictionary.json</file>
+                   <type>xml</type>
+                   <classifier>config-acl-pp</classifier>
+               </artifact>
+               <artifact>
+                   <file>${project.build.directory}/classes/${bootstrapdir}/acl-service-type-dictionary.json</file>
+                   <type>xml</type>
+                   <classifier>config-acl-st</classifier>
+               </artifact>
+               <artifact>
+                   <file>${project.build.directory}/classes/${bootstrapdir}/acl-subscriber-class-dictionary.json</file>
+                   <type>xml</type>
+                   <classifier>config-acl-sc</classifier>
+               </artifact>
                 <!--
                   Optional TODO: Add additional config files
                     You may need to add more than one config file

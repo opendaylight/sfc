@@ -104,9 +104,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc) {
+  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc,
+                            SfcClassifierL7ServiceTypeSvc, SfcClassifierL7ProtocolPathSvc, SfcClassifierL7ApplicationIdSvc, SfcClassifierL7SubscriberClassSvc) {
 
     $scope.data = {'access-list-entries': []}; // initial data
+    $scope.l7maps = {};
+
+    $scope.l7maps.dictServiceType=[];
+    $scope.l7maps.dictProtocolPath=[];
+    $scope.l7maps.dictApplicationId=[];
+    $scope.l7maps.dictSubscriberClass=[];
 
     SfcContextMetadataSvc.getArray(function (data) {
       $scope.contextMetadata = data;
@@ -114,6 +121,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     SfcVariableMetadataSvc.getArray(function (data) {
       $scope.variableMetadata = data;
+    });
+
+    SfcClassifierL7ServiceTypeSvc.getArray(function(data) {
+      $scope.l7maps.serviceTypes = data;
+    });
+
+    SfcClassifierL7ProtocolPathSvc.getArray(function(data) {
+      $scope.l7maps.protocolPaths = data;
+    });
+
+    SfcClassifierL7ApplicationIdSvc.getArray(function(data) {
+      $scope.l7maps.applicationIds = data;
+    });
+
+    SfcClassifierL7SubscriberClassSvc.getArray(function (data) {
+      $scope.l7maps.subscriberClasses = data;
     });
 
     if ($stateParams.itemKey) {
@@ -125,7 +148,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     }
 
     $scope.valueOfAceType = function (matches) {
-      return SfcAclHelper.valueOfAceType(matches, $rootScope);  // IP. ethernet
+      return SfcAclHelper.valueOfAceType(matches, $rootScope);  // IP. ethernet Level7
     };
 
     // form actions

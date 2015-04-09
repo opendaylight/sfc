@@ -54,4 +54,77 @@ module service-function-acl {
     }
   }
 
+  container l7-application-id-dictionary {
+      description "Dictionary for AppIds";
+        list application-id {
+          key "id";
+          leaf id {
+              description "Application specific identifier";
+              type uint32;
+              mandatory true;
+          }
+          leaf name {
+            type string;
+            description
+              "The name of the Application Specific Identifier";
+          }
+          description
+          "A list of all application id";
+        }
+  }
+
+  container l7-service-type-dictionary {
+      description "Dictionary for ServiceTypes";
+        list service-type {
+          key "id";
+          leaf id {
+              description "Service Type Id";
+              type uint32;
+          }
+          leaf name {
+            type string;
+            description
+              "The name of the Service Type";
+          }
+          description
+          "A list of all service types";
+        }
+   }
+
+  container l7-protocol-path-dictionary {
+      description "Dictionary for ProtocolPaths";
+        list protocol-path {
+          key "id";
+          leaf id {
+              description "Protocol Path Identifier";
+              type uint32;
+          }
+          leaf name {
+            type string;
+            description
+              "The name of the Protocol Path Identifier";
+          }
+          description
+          "A list of all application id";
+        }
+  }
+
+  container l7-subscriber-class-dictionary {
+      description "Dictionary for Subscriber Class";
+        list subscriber-class {
+          key "id";
+          leaf id {
+              description "Subscriber Class Identifier";
+              type uint32;
+          }
+          leaf name {
+            type string;
+            description
+              "The name of the Subscriber Class Identifier";
+          }
+          description
+          "A list of all Subscriber Class Id";
+        }
+  }
+
 }

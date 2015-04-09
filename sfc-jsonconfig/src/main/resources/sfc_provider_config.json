@@ -19,6 +19,22 @@
       {
         "name": "service-nodes.json",
         "urlpath": "service-node:service-nodes"
+      },
+      {
+        "name": "acl-application-id-dictionary.json",
+        "urlpath": "service-function-acl:l7-application-id-dictionary"
+      },
+      {
+        "name": "acl-protocol-path-dictionary.json",
+        "urlpath": "service-function-acl:l7-protocol-path-dictionary"
+      },
+      {
+        "name": "acl-service-type-dictionary.json",
+        "urlpath": "service-function-acl:l7-service-type-dictionary"
+      },
+      {
+        "name": "acl-subscriber-class-dictionary.json",
+        "urlpath": "service-function-acl:l7-subscriber-class-dictionary"
       }
     ]
   }

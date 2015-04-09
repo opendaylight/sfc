@@ -1176,7 +1176,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcClassifierSvc();
   });
 
-  // ******* SfcClassifierStateSvc *********
+// ******* SfcClassifierStateSvc *********
   sfc.register.factory('SfcClassifierStateSvc', function (SfcRestBaseSvc) {
 
     var modelUrl = 'service-function-classifier';
@@ -1191,6 +1191,71 @@ define(['app/sfc/sfc.module'], function (sfc) {
     SfcClassifierStateSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName, availabilityCheckFunction);
 
     return new SfcClassifierStateSvc();
+  });
+
+// ******* SfcClassifierL7ProtocolPathSvc *********
+  sfc.register.factory('SfcClassifierL7ApplicationIdSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-acl';
+    var containerName = 'l7-application-id-dictionary';
+    var listName = 'application-id';
+
+    // constructor
+    function SfcClassifierL7ApplicationIdSvc() {
+    }
+
+    SfcClassifierL7ApplicationIdSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcClassifierL7ApplicationIdSvc();
+  });
+
+// ******* SfcClassifierL7ProtocolPathSvc *********
+    sfc.register.factory('SfcClassifierL7ServiceTypeSvc', function (SfcRestBaseSvc) {
+
+      var modelUrl = 'service-function-acl';
+      var containerName = 'l7-service-type-dictionary';
+      var listName = 'service-type';
+
+      // constructor
+      function SfcClassifierL7ServiceTypeSvc() {
+      }
+
+      SfcClassifierL7ServiceTypeSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+      return new SfcClassifierL7ServiceTypeSvc();
+    });
+
+// ******* SfcClassifierL7ProtocolPathSvc *********
+  sfc.register.factory('SfcClassifierL7ProtocolPathSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-acl';
+    var containerName = 'l7-protocol-path-dictionary';
+    var listName = 'protocol-path';
+
+    // constructor
+    function SfcClassifierL7ProtocolPathSvc() {
+    }
+
+    SfcClassifierL7ProtocolPathSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcClassifierL7ProtocolPathSvc();
+  });
+
+
+// ******* SfcClassifierL7ProtocolPathSvc *********
+  sfc.register.factory('SfcClassifierL7SubscriberClassSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-acl';
+    var containerName = 'l7-subscriber-class-dictionary';
+    var listName = 'subscriber-class';
+
+    // constructor
+    function SfcClassifierL7SubscriberClassSvc() {
+    }
+
+    SfcClassifierL7SubscriberClassSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcClassifierL7SubscriberClassSvc();
   });
 
 // ******* RenderedServicePathSvc *********

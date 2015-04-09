@@ -123,6 +123,31 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+sfc.register.directive('aclLevel7Matches', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'src/app/sfc/acl/acl.l7.tpl.html',
+      scope: {
+        idSuffix: '@idSuffix',
+        matches: '=matches',
+        resetOn: '@resetOn',
+        notResetCondition: '@notResetCondition'
+      },
+      controller: function ($scope) {
+
+        $scope.$on($scope.resetOn, function (event, arg) {
+          if (arg != $scope.notResetCondition) {
+            delete $scope['matches']['service-function-acl:application-id'];
+            delete $scope['matches']['service-function-acl:service-type'];
+            delete $scope['matches']['service-function-acl:protocol-path'];
+            delete $scope['matches']['service-function-acl:subscriber-class'];
+          }
+        });
+      }
+    };
+  });
+
   sfc.register.directive('classifierSff', function () {
     return {
       restrict: 'E',
@@ -184,5 +209,4 @@ define(['app/sfc/sfc.module'], function (sfc) {
       }
     };
   });
-
 });

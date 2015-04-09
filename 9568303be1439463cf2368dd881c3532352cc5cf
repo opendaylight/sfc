@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_87f94082",
+        "filename": "sfc-ui/src/main/resources/pages/assets/data/locale-en_US.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 561,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-04-09T17:32:47Z",
+      "side": 1,
+      "message": "Looks like this line is duplicated.",
+      "range": {
+        "startLine": 561,
+        "startChar": 3,
+        "endLine": 561,
+        "endChar": 24
+      },
+      "revId": "9568303be1439463cf2368dd881c3532352cc5cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

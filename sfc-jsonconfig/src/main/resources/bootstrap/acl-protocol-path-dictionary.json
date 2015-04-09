@@ -1,0 +1,22 @@
+{
+    "l7-protocol-path-dictionary": {
+      "protocol-path": [
+        {
+          "id": 0,
+          "name": "Undefined"
+        },
+        {
+          "id": 1,
+          "name": "HTTP"
+        },
+        {
+          "id": 2,
+          "name": "HTTPS"
+        },
+        {
+          "id": 3,
+          "name": "UDP"
+        }
+      ]
+    }
+}

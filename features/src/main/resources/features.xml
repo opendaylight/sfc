@@ -75,6 +75,10 @@
         <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
+        <configfile finalname="configuration/startup/bootstrap/acl-subscriber-class-dictionary.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-acl-sc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/acl-service-type-dictionary.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-acl-st</configfile>
+        <configfile finalname="configuration/startup/bootstrap/acl-application-id-dictionary.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-acl-appid</configfile>
+        <configfile finalname="configuration/startup/bootstrap/acl-protocol-path-dictionary.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-acl-pp</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-core/${logback.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-classic/${logback.version}</bundle>

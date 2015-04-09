@@ -15,7 +15,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     svc.valueOfAceType = function (matches, $rootScope) {
-      var r1, r2;
+      var r0, r1, r2;
+
+      if (matches['service-function-acl:application-id'] ||
+        matches['service-function-acl:service-type'] ||
+        matches['service-function-acl:protocol-path'] ||
+        matches['service-function-acl:subscriber-class']) {
+        r0 = $rootScope.aclConstants['ace-type'][2]; // l7
+      }
 
       if (matches['destination-mac-address'] ||
         matches['destination-mac-address-mask'] ||
@@ -32,11 +39,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
         r2 = $rootScope.aclConstants['ace-type'][0]; // ip
       }
 
-      if (r1 && r2) {
-        throw new Error("IP/ETH mismatch");
+      if ((r0 && r1) || (r0 && r2)  || (r1 && r2)) {
+        throw new Error("L7/IP/ETH mismatch");
       }
 
-      return r1 || r2;
+      return r0 || r1 || r2;
     };
 
     svc.valueOfIpVersion = function (matches, $rootScope) {

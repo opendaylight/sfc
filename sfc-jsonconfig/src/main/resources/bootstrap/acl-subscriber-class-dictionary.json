@@ -1,0 +1,22 @@
+{
+    "l7-subscriber-class-dictionary": {
+      "subscriber-class": [
+        {
+          "id": 0,
+          "name": "Undefined"
+        },
+        {
+          "id": 1,
+          "name": "Bronze"
+        },
+        {
+          "id": 2,
+          "name": "Silver"
+        },
+        {
+          "id": 3,
+          "name": "Gold"
+        }
+      ]
+    }
+}

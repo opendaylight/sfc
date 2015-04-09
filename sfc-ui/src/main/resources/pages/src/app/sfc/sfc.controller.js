@@ -55,7 +55,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $rootScope.aclConstants =
     {
-      "ace-type": ["ip", "eth"],
+      "ace-type": ["ip", "eth", "level7"],
       "ace-ip": ["IPv4", "IPv6"]
     };
 

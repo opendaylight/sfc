@@ -38,4 +38,10 @@ module service-function-forwarder-ofs {
     uses port-details;
   }
 
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:service-function-dictionary" {
+
+    uses port-details;
+  }
 }

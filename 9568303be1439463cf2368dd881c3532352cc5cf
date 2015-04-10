@@ -22,6 +22,52 @@
       "revId": "9568303be1439463cf2368dd881c3532352cc5cf",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b00fd42d",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/acl/acl.controller.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-10T08:03:51Z",
+      "side": 1,
+      "message": "What are these arrays for? I could not find any usage of them.",
+      "range": {
+        "startLine": 113,
+        "startChar": 4,
+        "endLine": 116,
+        "endChar": 41
+      },
+      "revId": "9568303be1439463cf2368dd881c3532352cc5cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_d0586034",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/acl/acl.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-10T08:03:51Z",
+      "side": 1,
+      "message": "Sortable and Filter are not working. Probably ngTable is not capable of handling the colon symbol (e.g. service-function-acl:application-id). But I guess we can ignore this issue for now.",
+      "range": {
+        "startLine": 65,
+        "startChar": 12,
+        "endLine": 80,
+        "endChar": 17
+      },
+      "revId": "9568303be1439463cf2368dd881c3532352cc5cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

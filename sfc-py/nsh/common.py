@@ -41,6 +41,15 @@ class VXLANGPE(Structure):
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
+#add GRE header
+class GREHEADER(Structure):
+    _fields_ = [('c', c_uint, 1 ),
+                ('reserved0',c_uint, 12),
+                ('version',c_uint,3),
+                ('protocol_type',c_uint,16),
+                ('checksum',c_uint,16),
+                ('reserved1',c_uint,16)]
+
 
 class BASEHEADER(Structure):
     _fields_ = [('version', c_ushort, 2),

@@ -31,6 +31,16 @@ Provides a Function to fully encode VXLAN-GPE + NSH Base + Context Headers
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 
+    The GRE packet header has the form:
+
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |C|       Reserved0       | Ver |         Protocol Type         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |      Checksum (optional)      |       Reserved1 (Optional)    |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |Ver|O|C|R|R|R|R|R|R|   Length  |    MD Type    | Next Protocol |
@@ -56,35 +66,64 @@ Provides a Function to fully encode VXLAN-GPE + NSH Base + Context Headers
 """
 
 
-def build_packet(vxlan_header_values, base_header_values, ctx_header_values):
+def build_packet(encapsulate_header_values, encapsulate_type, base_header_values, ctx_header_values):
     """
     TODO: add docstring, params description
     """
-    # Build VXLAN header
-    vxlan_header = struct.pack('!B B H I',
-                               vxlan_header_values.flags,
-                               vxlan_header_values.reserved,
-                               vxlan_header_values.protocol_type,
-                               (vxlan_header_values.vni << 8) +
-                               vxlan_header_values.reserved2)
-    # Build base NSH header
-    base_header = struct.pack('!H B B I',
-                              (base_header_values.version << 14) +
-                              (base_header_values.flags << 6) +
-                              base_header_values.length,
-                              base_header_values.md_type,
-                              base_header_values.next_protocol,
-                              (base_header_values.service_path << 8) +
-                              base_header_values.service_index)
 
-    # Build NSH context headers
-    context_header = struct.pack('!I I I I',
-                                 ctx_header_values.network_platform,
-                                 ctx_header_values.network_shared,
-                                 ctx_header_values.service_platform,
-                                 ctx_header_values.service_shared)
+    if encapsulate_type == 'VXLAN/NSH':
+        # Build VXLAN header
+        vxlan_header = struct.pack('!B B H I',
+                                   encapsulate_header_values.flags,
+                                   encapsulate_header_values.reserved,
+                                   encapsulate_header_values.protocol_type,
+                                   (encapsulate_header_values.vni << 8) +
+                                   encapsulate_header_values.reserved2)
 
-    return vxlan_header + base_header + context_header
+        # Build base NSH header
+        base_header = struct.pack('!H B B I',
+                                  (base_header_values.version << 14) +
+                                  (base_header_values.flags << 6) +
+                                  base_header_values.length,
+                                  base_header_values.md_type,
+                                  base_header_values.next_protocol,
+                                  (base_header_values.service_path << 8) +
+                                  base_header_values.service_index)
+
+        # Build NSH context headers
+        context_header = struct.pack('!I I I I',
+                                     ctx_header_values.network_platform,
+                                     ctx_header_values.network_shared,
+                                     ctx_header_values.service_platform,
+                                     ctx_header_values.service_shared)
+        return vxlan_header + base_header + context_header
+
+    elif encapsulate_type == 'GRE/NSH':
+        # Build GRE header
+        gre_header = struct.pack('!H H H H',
+                                   (encapsulate_header_values.c << 15) + 
+                                   (encapsulate_header_values.reserved0 << 3) +
+                                   (encapsulate_header_values.version),
+                                   encapsulate_header_values.protocol_type,
+                                   encapsulate_header_values.checksum,
+                                   encapsulate_header_values.reserved1)
+        # Build base NSH header
+        base_header = struct.pack('!H B B I',
+                                  (base_header_values.version << 14) +
+                                  (base_header_values.flags << 6) +
+                                  base_header_values.length,
+                                  base_header_values.md_type,
+                                  base_header_values.next_protocol,
+                                  (base_header_values.service_path << 8) +
+                                  base_header_values.service_index)
+
+        # Build NSH context headers
+        context_header = struct.pack('!I I I I',
+                                     ctx_header_values.network_platform,
+                                     ctx_header_values.network_shared,
+                                     ctx_header_values.service_platform,
+                                     ctx_header_values.service_shared)
+        return gre_header + base_header + context_header
 
 
 def build_trace_req_packet(vxlan_header_values, base_header_values, ctx_header_values, trace_req_header_values):

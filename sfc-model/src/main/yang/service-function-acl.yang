@@ -8,6 +8,9 @@ module service-function-acl {
   import ietf-acl {
     prefix "ietf-acl";
   }
+  import acl-ipfix {
+    prefix "acl-ipfix";
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -15,7 +18,6 @@ module service-function-acl {
   revision 2014-07-01 {
     description "creating Service Function Chaining extensions to ietf-acl model";
   }
-
 
   augment "/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:actions" {
     description "SFC simple filter actions";
@@ -31,27 +33,12 @@ module service-function-acl {
   }
 
   augment "/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:matches" {
-    description "Level 7 match criteria, all leafs will have a corresponding enum based on IPFIX/Netflow identifiers";
-    leaf application-id {
-      description "Application specific identifier (Facebook, Skype, ...)";
-      type uint32;
-    }
-    leaf service-type {
-      description "Type of service : video / audio / P2P / ... ";
-      type uint32;
-    }
-    leaf protocol-path {
-      description "Matcher on protocol presence in protocol path (HTTP, ...)";
-      type uint32;
+    description "Level 7 match criteria";
+    list l7matchers {
+      leaf l7matcher {
+        description "Application specific identifier (Facebook, Skype, ...)";
+        type acl-ipfix:selectorid-ref;
+      }
     }
   }
-
-  augment "/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:matches" {
-    description "Subscriber based match criterium";
-    leaf subscriber-class {
-      description "Matcher checking the result of a lookup table based on an IP address. The table is provisionned independently";
-      type uint32;
-    }
-  }
-
 }

@@ -1,0 +1,75 @@
+module acl-ipfix {
+    yang-version 1;
+
+    namespace "urn:qosmos:params:xml:ns:yang:acl-ipfix";
+
+    prefix acl-ipfix;
+
+    import ietf-yang-types {
+        prefix "yang";
+        revision-date 2013-07-15;
+    }
+
+    organization "Qosmos";
+    contact "Christophe Fontaine <christophe.fontaine@qosmos.com>";
+
+    revision 2015-04-10 {
+        description "Initial version of IPFIX fields used by access-lists";
+    }
+
+    typedef selectorid-ref {
+        description "This type is used by data models that need to reference a selector id";
+        type leafref {
+            path "/acl-ipfix:selector-id-dictionary/acl-ipfix:selector-id/acl-ipfix:name";
+        }
+    }
+
+    container class-id-dictionary {
+        description "Dictionary for classification ids";
+        list class-id {
+            key "id";
+            leaf id {
+                description "Classification identifier";
+                type uint8;
+                mandatory true;
+            }
+            leaf name {
+                type string;
+                description "The name of the classification Identifier";
+            }
+            description "A list of all classification ids";
+        }
+    }
+
+    container selector-id-dictionary {
+        description "Dictionary for selector ids";
+        list selector-id {
+            key "name";
+            unique "class-id id";
+            leaf class-id {
+                type leafref {
+                    path "/acl-ipfix:class-id-dictionary/acl-ipfix:class-id/acl-ipfix:id";
+                }
+                mandatory true;
+            }
+            leaf id {
+                type uint32 {
+                    range "0..16777216";
+                }
+                description "Selector identifier";
+                mandatory true;
+            }
+            leaf pen {
+                type uint32;
+                description "Private Entreprise Number, only relevant when used with class-id";
+                mandatory false;
+            }
+            leaf name {
+                type string;
+                description "The name of the selector Identifier";
+            }
+            description"A list of all selector ids";
+        }
+    }
+}
+

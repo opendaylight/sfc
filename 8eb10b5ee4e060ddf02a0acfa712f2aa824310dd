@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_01919846",
+        "filename": "sfc-model/src/main/yang/service-function-group-algorithm.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:34:18Z",
+      "side": 1,
+      "message": "Please provide much more description on what these mean.",
+      "revId": "8eb10b5ee4e060ddf02a0acfa712f2aa824310dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

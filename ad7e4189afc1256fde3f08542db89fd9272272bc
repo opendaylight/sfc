@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_c1ac10a3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPI.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:33:23Z",
+      "side": 1,
+      "message": "Please add Javadocs to the methods and classes",
+      "revId": "ad7e4189afc1256fde3f08542db89fd9272272bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_8196084b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:33:23Z",
+      "side": 1,
+      "message": "This file has absolutely no comments. Please add Javadocs.\n\nI think in general we should have a SFC meeting where you go through this functionality in a presentation and explain in detail.\n\nWe can make it timezone friendly.",
+      "revId": "ad7e4189afc1256fde3f08542db89fd9272272bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_619bbc72",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:33:23Z",
+      "side": 1,
+      "message": "Need comments. Not clear the purpose or how it is used",
+      "revId": "ad7e4189afc1256fde3f08542db89fd9272272bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_018af81a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:33:23Z",
+      "side": 1,
+      "message": "PLease change name so that you do not use \"4\" in the name",
+      "revId": "ad7e4189afc1256fde3f08542db89fd9272272bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_817da81e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderTopologyNode.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-04-10T16:33:23Z",
+      "side": 1,
+      "message": "Please add comments and Javadocs.",
+      "revId": "ad7e4189afc1256fde3f08542db89fd9272272bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

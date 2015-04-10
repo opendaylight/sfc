@@ -450,6 +450,14 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
         renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
+        if(serviceFunctionPath.getTransportType() == null) {
+            // TODO this is a temporary workaround to a YANG problem
+            //      Even though the SFP.transportType is defined with a default, if its not
+            //      specified in the configuration, it can still return null
+            renderedServicePathBuilder.setTransportType(VxlanGpe.class);
+        } else {
+            renderedServicePathBuilder.setTransportType(serviceFunctionPath.getTransportType());
+        }
 
         RenderedServicePathKey renderedServicePathKey = new
                 RenderedServicePathKey(renderedServicePathBuilder.getName());

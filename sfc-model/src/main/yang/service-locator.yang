@@ -133,11 +133,7 @@ module service-locator {
 
   grouping mpls-locator {
     description
-      "Data plane-locator: MPLS label and mac address";
-    leaf mac-address {
-      type yang:mac-address;
-      description "Data-plane MAC address";
-    }
+      "Data plane-locator: MPLS label";
     leaf mpls-label {
       type uint32 {
         range "1..1048575";

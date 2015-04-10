@@ -363,10 +363,6 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             this.sfcL2FlowProgrammer.configureNextHopFlow(sffNodeName, pathId, srcMac, dstMac, this.addFlow);
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
-            // TODO I added MacAddress to MplsLocator, but was it necessary?
-            srcMac = ((srcDpl == null) ? null : ((MplsLocator) srcSffLocatorType).getMacAddress().getValue());
-            dstMac = ((dstDpl == null) ? null : ((MplsLocator) dstSffLocatorType).getMacAddress().getValue());
-            dstMac = ((MplsLocator) transportLocatorType).getMacAddress().getValue();
             this.sfcL2FlowProgrammer.configureNextHopFlow(sffNodeName, pathId, srcMac, dstMac, this.addFlow);
         } else if (implementedInterface.equals(Ip.class)) {
            //VxLAN-gpe, it is IP/UDP flow with VLAN tag
@@ -422,10 +418,9 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             // MPLS
             long mplsLabel = ((MplsLocator) transportLocatorType).getMplsLabel();
 
-            String srcMac = srcLocatorType == null ?
-                    null : ((MplsLocator) srcLocatorType).getMacAddress().getValue();
-            String dstMac = dstLocatorType ==null ?
-                    null : ((MplsLocator) dstLocatorType).getMacAddress().getValue();
+            // TODO the mac was removed from MPLS, need to get it now from the SFF DPL
+            String srcMac = null;
+            String dstMac = null;
             this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(
                     sffNodeName, srcMac, dstMac, mplsLabel, port, pathId, isSf, this.addFlow);
         } else if (implementedInterface.equals(Ip.class)) {

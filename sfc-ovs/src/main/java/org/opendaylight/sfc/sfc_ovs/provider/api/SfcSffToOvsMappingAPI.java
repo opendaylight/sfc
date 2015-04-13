@@ -15,8 +15,10 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder2;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNode;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
@@ -96,7 +98,7 @@ public class SfcSffToOvsMappingAPI {
 
             ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());
             ovsdbTerminationPointBuilder.setInterfaceType(getDataPlaneLocatorInterfaceType(sffDataPlaneLocator.getDataPlaneLocator()));
-            ovsdbTerminationPointBuilder.setOptions(getDataPlaneLocatorOptions(sffDataPlaneLocator.getDataPlaneLocator()));
+            ovsdbTerminationPointBuilder.setOptions(getSffDataPlaneLocatorOptions(sffDataPlaneLocator));
             ovsdbTerminationPointList.add(ovsdbTerminationPointBuilder.build());
         }
 
@@ -116,15 +118,74 @@ public class SfcSffToOvsMappingAPI {
                 optionsIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
                 optionsIpBuilder.setValue(ipPortLocator.getIp().getIpv4Address().getValue());
 
-                OptionsBuilder optionsPortBuilder = new OptionsBuilder();
-                optionsPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_SRC_PORT);
-                optionsPortBuilder.setValue(ipPortLocator.getPort().getValue().toString());
-
                 options.add(optionsIpBuilder.build());
-                options.add(optionsPortBuilder.build());
             }
         } catch (NullPointerException e) {
             LOG.warn("Cannot determine DataPlaneLocator locator type, dataPlaneLocator.getLocatorType() is null.");
+        }
+
+        return options;
+    }
+
+    private static List<Options> getSffDataPlaneLocatorOptions(SffDataPlaneLocator sffDataPlaneLocator) {
+        Preconditions.checkNotNull(sffDataPlaneLocator, "Cannot gather SffDataPlaneLocator Options, sffDataPlaneLocator is null.");
+        List<Options> options = new ArrayList<>();
+
+        SffDataPlaneLocator2 sffDataPlaneLocatorOvsOptions = sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class);
+        OvsOptions ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();
+
+        try {
+            OptionsBuilder optionsLocalIpBuilder = new OptionsBuilder();
+            optionsLocalIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+            optionsLocalIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getLocalIp()));
+            options.add(optionsLocalIpBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+        }
+
+        try {
+            OptionsBuilder optionsDstIpBuilder = new OptionsBuilder();
+            optionsDstIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
+            optionsDstIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getRemoteIp()));
+            options.add(optionsDstIpBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
+        }
+
+        try {
+            OptionsBuilder optionsDstPortBuilder = new OptionsBuilder();
+            optionsDstPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
+            optionsDstPortBuilder.setValue(ovsOptions.getDstPort().getValue().toString());
+            options.add(optionsDstPortBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
+        }
+
+        try {
+            OptionsBuilder optionsKeyBuilder = new OptionsBuilder();
+            optionsKeyBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_KEY);
+            optionsKeyBuilder.setValue(ovsOptions.getKey());
+            options.add(optionsKeyBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_KEY);
+        }
+
+        try {
+            OptionsBuilder optionsNspBuilder = new OptionsBuilder();
+            optionsNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSP);
+            optionsNspBuilder.setValue(ovsOptions.getNsp());
+            options.add(optionsNspBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSP);
+        }
+
+        try {
+            OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+            optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSI);
+            optionsNsiBuilder.setValue(ovsOptions.getNsi());
+            options.add(optionsNsiBuilder.build());
+        } catch (Exception e) {
+            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
         }
 
         return options;

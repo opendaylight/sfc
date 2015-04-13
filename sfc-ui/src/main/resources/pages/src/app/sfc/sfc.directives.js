@@ -181,6 +181,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('uint64', function (SfcValidatorSvc) {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(SfcValidatorSvc.uint64(ctrl));
+      }
+    };
+  });
+
   sfc.register.directive('port', function (SfcValidatorSvc) {
     return {
       require: 'ngModel',

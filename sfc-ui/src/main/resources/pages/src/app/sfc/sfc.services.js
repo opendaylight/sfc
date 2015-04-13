@@ -200,6 +200,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
           ctrl.$setValidity('numberRange', true);
           return null;
         }
+        else if (svc.__isHexadecimal(viewValue)) {
+          var decimal = parseInt(viewValue, 16);
+          if (decimal >= params.from && decimal <= params.to) {
+            ctrl.$setValidity('numberRange', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('numberRange', false);
+            return undefined;
+          }
+        }
         else if (viewValue >= params.from && viewValue <= params.to) {
           ctrl.$setValidity('numberRange', true);
           return viewValue;
@@ -245,7 +256,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           ctrl.$setValidity('uint16', true);
           return null;
         }
-        else if (svc.__isHexadecimal(viewValue)(viewValue)) {
+        else if (svc.__isHexadecimal(viewValue)) {
           var decimal = parseInt(viewValue, 16);
           if (decimal >= 0 && decimal <= 65535) {
             ctrl.$setValidity('uint16', true);
@@ -273,7 +284,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           ctrl.$setValidity('uint32', true);
           return null;
         }
-        else if (svc.__isHexadecimal(viewValue)(viewValue)) {
+        else if (svc.__isHexadecimal(viewValue)) {
           var decimal = parseInt(viewValue, 16);
           if (decimal >= 0 && decimal <= 4294967295) {
             ctrl.$setValidity('uint32', true);
@@ -290,6 +301,34 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
         else {
           ctrl.$setValidity('uint32', false);
+          return undefined;
+        }
+      };
+    };
+
+    svc.uint64 = function (ctrl) {
+      return function (viewValue) {
+        if (viewValue === null || viewValue === "") {
+          ctrl.$setValidity('uint64', true);
+          return null;
+        }
+        else if (svc.__isHexadecimal(viewValue)) {
+          var decimal = parseInt(viewValue, 16);
+          if (decimal >= 0 && decimal <= 18446744073709551615) {
+            ctrl.$setValidity('uint64', true);
+            return viewValue;
+          }
+          else {
+            ctrl.$setValidity('uint64', false);
+            return undefined;
+          }
+        }
+        else if (viewValue >= 0 && viewValue <= 18446744073709551615) {
+          ctrl.$setValidity('uint64', true);
+          return viewValue;
+        }
+        else {
+          ctrl.$setValidity('uint64', false);
           return undefined;
         }
       };
@@ -977,6 +1016,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
               locator['ovs-bridge'] = locator['service-function-forwarder-ovs:ovs-bridge'];
               delete(locator['service-function-forwarder-ovs:ovs-bridge']);
             }
+
+            // strip namespace in 'ovs-options' property name
+            if (locator['service-function-forwarder-ovs:ovs-options']) {
+              locator['ovs-options'] = locator['service-function-forwarder-ovs:ovs-options'];
+              delete(locator['service-function-forwarder-ovs:ovs-options']);
+            }
           });
         }
 
@@ -1001,6 +1046,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
             if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge'])) {
               dictionary['sff-sf-data-plane-locator']['ovs-bridge'] = dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge'];
               delete(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge']);
+            }
+
+            // strip namespace in 'ovs-options' property name
+            if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-options'])) {
+              dictionary['sff-sf-data-plane-locator']['ovs-options'] = dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-options'];
+              delete(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-options']);
             }
           });
         }

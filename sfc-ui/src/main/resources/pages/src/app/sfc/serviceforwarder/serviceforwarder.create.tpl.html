@@ -84,6 +84,7 @@
              ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};">
             <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
             <sff-bridge bridge="locator['ovs-bridge']" id-suffix="loc_{{$index}}"></sff-bridge>
+            <sff-options options="locator['ovs-options']" id-suffix="loc_{{$index}}"></sff-options>
         </div>
 
     </div>

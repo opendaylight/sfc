@@ -29,4 +29,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('sffOptions', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.options.tpl.html',
+      scope: {
+        idSuffix: '@idSuffix',
+        options: '=options'
+      },
+      controller: function ($scope) {
+        
+      }
+    };
+  });
+
 });

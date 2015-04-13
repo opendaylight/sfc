@@ -25,6 +25,9 @@ import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -48,8 +51,10 @@ public class SfcOvsUtil {
     private static final String OVSDB_TERMINATION_POINT_PREFIX = "/terminationpoint/";
     public static final String OVSDB_OPTION_LOCAL_IP = "local_ip";
     public static final String OVSDB_OPTION_REMOTE_IP = "remote_ip";
-    public static final String OVSDB_OPTION_SRC_PORT = "src_port";
     public static final String OVSDB_OPTION_DST_PORT = "dst_port";
+    public static final String OVSDB_OPTION_NSP = "nsp";
+    public static final String OVSDB_OPTION_NSI = "nsi";
+    public static final String OVSDB_OPTION_KEY = "key";
 
     /**
      * Submits callable for execution by given ExecutorService.
@@ -75,6 +80,12 @@ public class SfcOvsUtil {
         return result;
     }
 
+    /**
+     * Method builds OVSDB Topology InstanceIdentifier
+     * <p/>
+     *
+     * @return InstanceIdentifier<Topology>
+     */
     public static InstanceIdentifier<Topology> buildOvsdbTopologyIID() {
         InstanceIdentifier<Topology> ovsdbTopologyIID =
                 InstanceIdentifier
@@ -243,5 +254,45 @@ public class SfcOvsUtil {
                                 new TpId(sffName + OVSDB_TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName)));
 
         return terminationPointIID;
+    }
+
+    public static IpAddress convertStringToIpAddress(String ipAddressString) {
+        Preconditions.checkNotNull(ipAddressString, "Supplied string value of ipAddress must not be null");
+
+        try {
+            return new IpAddress(new Ipv4Address(ipAddressString));
+        } catch (Exception e) {
+            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv4", ipAddressString);
+        }
+
+        try {
+            return new IpAddress(new Ipv6Address(ipAddressString));
+        } catch (Exception e) {
+            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv6", ipAddressString);
+        }
+
+        LOG.error("Supplied string value of ipAddress ({}) cannot be converted to IpAddress object!", ipAddressString);
+        return null;
+    }
+
+    public static String convertIpAddressToString(IpAddress ipAddress) {
+        Preconditions.checkNotNull(ipAddress, "Supplied IpAddress value must not be null");
+
+        try {
+            Preconditions.checkArgument(ipAddress.getIpv4Address().getValue() != null);
+            return ipAddress.getIpv4Address().getValue();
+        } catch (Exception e) {
+            LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv4", ipAddress.toString());
+        }
+
+        try {
+            Preconditions.checkArgument(ipAddress.getIpv6Address().getValue() != null);
+            return ipAddress.getIpv6Address().getValue();
+        } catch (Exception e) {
+            LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv6", ipAddress.toString());
+        }
+
+        LOG.error("Supplied IpAddress value ({}) cannot be converted to String!", ipAddress.toString());
+        return null;
     }
 }

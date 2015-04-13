@@ -77,6 +77,40 @@ module service-function-forwarder-ovs {
     }
   }
 
+  grouping options {
+    container ovs-options {
+      description "Port/Interface related optional input values";
+      leaf local_ip {
+        type inet:ip-address;
+        description "Local interface IP address";
+      }
+      leaf remote_ip {
+        type inet:ip-address;
+        description "Remote IP address, e.g. the remote Vxlan tunnel endpoint IP";
+      }
+      leaf src_port {
+        type inet:port-number;
+        description "Local interface port";
+      }
+      leaf dst_port {
+        type inet:port-number;
+        description "Remote port, e.g. the remote Vxlan tunnel endpoint port";
+      }
+      leaf nsp {
+        type string;
+        description "NSH Service Path ID";
+      }
+      leaf nsi {
+        type string;
+        description "NSH Starting Index";
+      }
+      leaf key {
+        type string;
+        description "Vxlan tunnel ID";
+      }
+    }
+  }
+
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/" {
 
@@ -98,10 +132,25 @@ module service-function-forwarder-ovs {
 
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:sff-data-plane-locator" {
+
+    uses options;
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:service-function-dictionary/"
         + "sfc-sff:sff-sf-data-plane-locator" {
 
     uses bridge;
+  }
+
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:service-function-dictionary/"
+        + "sfc-sff:sff-sf-data-plane-locator" {
+
+    uses options;
   }
 
   rpc create-ovs-bridge {

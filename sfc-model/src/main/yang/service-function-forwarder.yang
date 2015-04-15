@@ -179,6 +179,39 @@ module service-function-forwarder {
         description
           "A list of all Service Functions attached to this SFF.";
       }
+
+      list connected-sff-dictionary {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "The name of the SFF connected to this SFF";
+        }
+        container sff-sff-data-plane-locator {
+          description
+            "The SFF uses this data plane locator when sending packets to the
+             associated SFF";
+          uses sfc-sl:data-plane-locator;
+        }
+        list sff-interfaces {
+          key "sff-interface";
+          leaf sff-interface {
+            type string;
+            description
+              "An individual SFF interface connected to this SFF";
+          }
+          description
+            "A list of SFF interfaces connected to this SFF";
+        }
+        leaf failmode {
+          type failmode-type;
+          description
+            "This leaf defines what the SFF should do if it can not
+             send packets to a connected SFF";
+        }
+        description
+          "A list of all Service Function Forwarders connected to this SFF";
+      }
     }
   }
 
@@ -216,7 +249,3 @@ module service-function-forwarder {
     }
   }
 }
-
-
-
-

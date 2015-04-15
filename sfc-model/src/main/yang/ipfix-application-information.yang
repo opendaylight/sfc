@@ -115,7 +115,6 @@ module ipfix-application-information {
             }
             leaf pen {
                 type uint32;
-                default "0";
                 description "Private Entreprise Number, only relevant when used with appropriate class-id.
                              Set to 0 when not used.";
                 mandatory true;

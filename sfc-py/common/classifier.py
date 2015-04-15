@@ -389,13 +389,9 @@ class NfqClassifier(metaclass=Singleton):
         else:
             raise ValueError('Unsupported transport type "%s"', transport)
 
-        base_header = BASEHEADER(length=0x6,
-                                 version=0x1,
-                                 md_type=0x1,
-                                 service_path=rsp_id,
-                                 flags=int('00000000', 2),
-                                 next_protocol=next_protocol,
-                                 service_index=fwd_to['starting-index'])
+        base_header = BASEHEADER(service_path=rsp_id,
+                                 service_index=fwd_to['starting-index'],
+                                 next_protocol=next_protocol)
 
         # NOTE
         # so far metadata are not supported -> just sending an empty ctx_header

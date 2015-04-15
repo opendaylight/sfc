@@ -19,6 +19,10 @@
       {
         "name": "service-nodes.json",
         "urlpath": "service-node:service-nodes"
+      },
+      { 
+        "name": "ipfix-class-id.json",
+        "urlpath": "ipfix-application-information:class-id-dictionary"
       }
     ]
   }

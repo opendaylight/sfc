@@ -1,0 +1,56 @@
+{ 
+"class-id-dictionary":{
+  "class-id": [
+    {
+      "id": "1",
+      "name": "IANA-L3",
+      "description": "The Assigned Internet Protocol Number (layer 3 (L3)) is exported in the Selector ID."
+    },
+    {
+      "id": "2",
+      "name": "PANA-L3",
+      "description": "Proprietary layer 3 definition. An enterprise can export its own layer 3 protocol numbers.\nThe Selector ID has a global significance for all devices from the same enterprise."
+    },
+    {
+      "id": "3",
+      "name": "IANA-L4",
+      "description": "The IANA layer 4 (L4) well-known port number is exported in the Selector ID."
+    },
+    {
+      "id": "4",
+      "name": "PANA-L4",
+      "description": "Proprietary layer 4 definition.\nAn enterprise can export its own layer 4 port numbers.\nThe Selector ID has global significance for devices from the same enterprise."
+    },
+    {
+      "id": "6",
+      "name": "USER-Defined",
+      "description": "The Selector ID represents Defined applications defined by the user (using CLI, GUI, etc.)"
+    },
+    {
+      "id": "12",
+      "name": "PANA-L2",
+      "description": "Proprietary layer 2 (L2) definition.\nAn enterprise can export its own layer 2 identifiers.\nThe Selector ID represents the enterprise's unique global layer 2 applications.\nThe Selector ID has a global significance for all devices from the same enterprise."
+    },
+    {
+      "id": "13",
+      "name": "PANA-L7",
+      "description": "Proprietary layer 7 definition.\nThe Selector ID represents the enterprise's unique global ID for layer 7 applications.\nThe Selector ID has a global significance for all devices from the same enterprise.\nThis Classification Engine ID is used when the application registry is owned by the Exporter manufacturer"
+    },
+    {
+      "id": "18",
+      "name": "ETHERTYPE",
+      "description": "The Selector ID represents the well-known Ethertype."
+    },
+    {
+      "id": "19",
+      "name": "LLC",
+      "description": "The Selector ID represents the well-known IEEE 802.2 Link Layer Control (LLC) Destination Service Access Point (DSAP)."
+    },
+    {
+      "id": "20",
+      "name": "PANA-L7-PEN",
+      "description": "Proprietary layer 7 definition, PEN including a Private Enterprise Number (PEN) [IANA-PEN] to identify that the application registry being used is not owned by the Exporter manufacturer or to identify the original enterprise in the case of a mediator or 3rd party device.\nThe Selector ID represents the enterprise unique global ID for the layer 7 applications.\nThe Selector ID has a global significance for all devices from the same enterprise."
+    }
+  ]
+}
+}

@@ -74,6 +74,11 @@
                   <type>xml</type>
                   <classifier>config-sn</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/${bootstrapdir}/ipfix-class-id.json</file>
+                  <type>xml</type>
+                  <classifier>config-ipfix-class-id</classifier>
+                </artifact>
                 <!--
                   Optional TODO: Add additional config files
                     You may need to add more than one config file

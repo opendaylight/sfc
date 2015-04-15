@@ -183,6 +183,13 @@
       </dependency>
       <dependency>
         <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-ipfix-class-id</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-config</artifactId>
         <version>${project.version}</version>
         <type>xml</type>

@@ -379,6 +379,34 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * This method creates an executor and reads all the Service Function
+     * Forwarders from SFC datastore
+     * <p>
+     * @param no
+     * @return ServiceFunctionForwarders object including all Service Function
+     * Forwarders
+     */
+    public static ServiceFunctionForwarders readAllServiceFunctionForwardersExecutor() {
+        printTraceStart(LOG);
+        ServiceFunctionForwarders ret = null;
+        Object[] servicePathObj = {};
+        Class[] servicePathClass = {};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getReadAll(servicePathObj, servicePathClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (ServiceFunctionForwarders) future.get();
+            LOG.debug("getReadAll: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
      * Delete All Service Function Forwarders in the data store
      * devices
      * <p>

@@ -9,8 +9,9 @@
 import struct
 import socket
 import ipaddress
+import platform
 
-from nsh.common import TRACEREQHEADER
+from nsh.common import *
 
 
 __author__ = "Reinaldo Penno, Jim Guichard"
@@ -143,29 +144,6 @@ def build_nsh_trace_header(encapsulation_header, base_header,
                         ctx_header, trace_header)
 
 
-def build_dummy_ip(dest_addr):
-        # ip header fields
-        ip_ihl = 5
-        ip_ver = 4
-        ip_tos = 0
-        ip_tot_len = 0  # kernel will fill the correct total length
-        ip_id = 54321  # Id of this packet
-        ip_frag_off = 0
-        ip_ttl = 255
-        ip_proto = socket.IPPROTO_RAW
-        ip_check = 0  # kernel will fill the correct checksum
-        ip_saddr = socket.inet_aton(
-            socket.gethostbyname(socket.gethostname()))  # Spoof the source ip address if you want to
-        ip_daddr = socket.inet_aton(dest_addr)
-
-        ip_ihl_ver = (ip_ver << 4) + ip_ihl
-
-        # the ! in the pack format string means network order
-        ip_header = struct.pack('!BBHHHBBH4s4s', ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto,
-                                ip_check, ip_saddr, ip_daddr)
-        return ip_header
-
-
 def build_trace_req_header(oam_type, sil, remote_ip, remote_port):
     trace_req_header_values = TRACEREQHEADER()
     trace_req_header_values.oam_type = oam_type
@@ -209,3 +187,93 @@ def add_sf_to_trace_pkt(rw_data, sf_type, sf_name):
     # rw_data[9] += (len(sf_data) >> 2)
     # trace_pkt = rw_data + sf_data
     return trace_pkt
+
+
+def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
+    """
+    Builds a complete IP header including checksum
+    """
+
+    if src_ip:
+        ip_saddr = socket.inet_aton(src_ip)
+    else:
+        ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
+
+    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
+    ip_daddr = socket.inet_aton(dest_ip)
+    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+
+    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+                         ip_saddr, ip_daddr)
+
+    checksum = compute_internet_checksum(ip_header.build())
+    ip_header.set_ip_checksum(checksum)
+    ip_header_pack = ip_header.build()
+
+    return ip_header, ip_header_pack
+
+
+def build_udp_header(src_port, dest_port, ip_header, data):
+    """
+    Building an UDP header requires fields from
+    IP header in order to perform checksum calculation
+    """
+
+    # build UDP header with sum = 0
+    udp_header = UDPHEADER(src_port, dest_port, UDP_HEADER_LEN_BYTES + len(data), 0)
+    udp_header_pack = udp_header.build()
+
+    # build Pseudo Header
+    p_header = PSEUDO_UDPHEADER()
+    p_header.dest_ip = ip_header.ip_daddr
+    p_header.src_ip = ip_header.ip_saddr
+    p_header.length = udp_header.udp_len
+
+    p_header_pack = p_header.build()
+
+    udp_checksum = compute_internet_checksum(p_header_pack + udp_header_pack + data)
+    udp_header.udp_sum = udp_checksum
+    # pack UDP header again but this time with checksum
+    udp_header_pack = udp_header.build()
+
+    return udp_header, udp_header_pack
+
+
+def build_udp_packet(src_ip, dest_ip, src_port, dest_port, data):
+
+    """
+    data needs to encoded as Python bytes. In the case of strings
+    this means a bytearray of an UTF-8 encoding
+    """
+
+    total_len = len(data) + IPV4_HEADER_LEN_BYTES + UDP_HEADER_LEN_BYTES
+    # First we build the IP header
+    ip_header, ip_header_pack = build_ipv4_header(total_len, socket.IPPROTO_UDP, src_ip, dest_ip)
+
+    # Build UDP header
+    udp_header, udp_header_pack = build_udp_header(src_port, dest_port, ip_header, data)
+
+    udp_packet = ip_header_pack + udp_header_pack + data
+
+    return udp_packet
+
+
+def compute_internet_checksum(data):
+    """
+    Function for Internet checksum calculation. Works
+    for both IP and UDP.
+
+    """
+    checksum = 0
+    n = len(data) % 2
+    # data padding
+    pad = bytearray('', encoding='UTF-8')
+    if n == 1:
+        pad = bytearray('\x00')
+    # for i in range(0, len(data + pad) - n, 2):
+    for i in range(0, len(data + pad), 2):
+        checksum += (data[i] << 8) + (data[i + 1])
+    while checksum >> 16:
+        checksum = (checksum & 0xFFFF) + (checksum >> 16)
+    checksum = ~checksum & 0xffff
+    return checksum

@@ -1,0 +1,178 @@
+module ipfix-application-information {
+    yang-version 1;
+
+    namespace "urn:ietf:params:xml:ns:yang:ipfix-application-information";
+
+    prefix ipfix-app-info;
+
+    import ietf-yang-types {
+        prefix "yang";
+        revision-date 2013-07-15;
+    }
+
+    organization "Qosmos";
+    contact "Christophe Fontaine <christophe.fontaine@qosmos.com>";
+
+    revision 2015-04-10 {
+        description "Initial version of IPFIX fields used by access-lists";
+    }
+
+    typedef application-id-ref {
+        description "This type is used by data models that need to reference an application-id";
+        type leafref {
+            path "/ipfix-app-info:application-id-dictionary/ipfix-app-info:application-id/ipfix-app-info:applicationName";
+        }
+    }
+
+    typedef class-id-name {
+      type enumeration {
+        enum "IANA-L3" {
+          value 1;
+          description
+            "IANA-L3";
+        }
+        enum "PANA-L3" {
+          value 2;
+          description
+            "PANA-L3";
+        }
+        enum "IANA-L4" {
+          value 3;
+          description
+            "IANA-L4";
+        }
+        enum "PANA-L4" {
+          value 4;
+          description
+            "PANA-L4";
+        }
+        enum "USER-Defined" {
+          value 6;
+          description
+            "USER-Defined";
+        }
+        enum "PANA-L2" {
+          value 12;
+          description
+            "PANA-L2";
+        }
+        enum "PANA-L7" {
+          value 13;
+          description
+            "PANA-L7";
+        }
+        enum "ETHERTYPE" {
+          value 18;
+          description
+            "ETHERTYPE";
+        }
+        enum "LLC" {
+          value 19;
+          description
+            "LLC";
+        }
+        enum "PANA-L7-PEN" {
+          value 20;
+          description
+            "PANA-L7-PEN";
+        }
+      }
+      description
+        "The definitions for Classification engine ID names.";
+    }
+
+    container class-id-dictionary {
+        description "Dictionary for classification ids";
+        list class-id {
+            key "id";
+            unique "name";
+            leaf id {
+                description "Classification identifier";
+                type uint8;
+            }
+            leaf name {
+                type string;
+                description "classification Engine name";
+            }
+            leaf description {
+                type string;
+                description "Description of the class-id";
+            }
+            description "A list of all classification ids";
+        }
+    }
+
+    container application-id-dictionary {
+        description "Dictionary for application ids";
+        list application-id {
+            key "class-id pen selector-id";
+            unique "class-id pen selector-id";
+            leaf class-id {
+                type leafref {
+                    path "/ipfix-app-info:class-id-dictionary/ipfix-app-info:class-id/ipfix-app-info:id";
+                }
+                mandatory true;
+            }
+            leaf pen {
+                type uint32;
+                description "Private Entreprise Number, only relevant when used with appropriate class-id.
+                             Set to 0 when not used.";
+                mandatory true;
+            }
+            leaf selector-id {
+                type uint32 {
+                    range "0..16777216";
+                }
+                mandatory true;
+                description "Selector identifier";
+            }
+            leaf applicationName {
+                type string;
+                mandatory true;
+                description "The name of the application";
+            }
+            leaf applicationDescription {
+                type string;
+                description "The description of the application";
+            }
+            leaf applicationCategoryName {
+                type string;
+                description "An attribute that provides a first-
+                             level categorization for each
+                             Application ID.  Examples include
+                             browsing, email, file-sharing,
+                             gaming, instant messaging, voice-
+                             and-video, etc.
+                             The category attribute is encoded by
+                             the applicationCategoryName
+                             Information Element";
+            }
+            leaf applicationSubCategoryName {
+                type string;
+                description "An attribute that provides a second-
+                             level categorization for each
+                             Application ID.  Examples include
+                             backup-systems, client-server,
+                             database, routing-protocol, etc.
+                             The sub-category attribute is
+                             encoded by the applicationSubCategoryName
+                             Information Element";
+            }
+            leaf applicationGroupName {
+                type string;
+                description "An attribute that groups multiple
+                             Application IDs that belong to the
+                             same networking application.  For
+                             example, the ftp-group contains
+                             ftp-data (port 20), ftp (port 20),
+                             ni-ftp (port 47), sftp (port 115),
+                             bftp (port 152), ftp-agent(port
+                             574), ftps-data (port 989).  The
+                             application-group attribute is
+                             encoded by the applicationGroupName
+                             Information Element";
+            }
+            description "A list of all applications";
+        }
+    }
+}

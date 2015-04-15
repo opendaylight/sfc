@@ -684,6 +684,33 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return sfs;
     }
 
+    /**
+     * This method creates an executor and reads all the Service Functions
+     * from SFC datastore
+     * <p>
+     * @param no
+     * @return ServiceFunctions object including all Service Functions
+     */
+    public static ServiceFunctions readAllServiceFunctionsExecutor() {
+        printTraceStart(LOG);
+        ServiceFunctions ret = null;
+        Object[] servicePathObj = {};
+        Class[] servicePathClass = {};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getReadAll(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (ServiceFunctions) future.get();
+            LOG.debug("getReadAll: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
     protected boolean deleteAllServiceFunctions() {
         boolean ret = false;
         printTraceStart(LOG);

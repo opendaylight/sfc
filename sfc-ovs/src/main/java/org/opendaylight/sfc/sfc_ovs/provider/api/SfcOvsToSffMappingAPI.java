@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -267,5 +268,30 @@ public class SfcOvsToSffMappingAPI {
         Preconditions.checkNotNull(node);
 
         return node.getNodeId().getValue();
+    }
+
+    /**
+     * Returns IP address of OvsBridge specified in BridgeOtherConfigs.
+     * The IP address is stored with key "local_ip".
+     * <p/>
+     * Parameter ovsdbBridge and ovsdbBridge.getBridgeOtherConfigs()
+     * must be not null otherwise NullPointerException will be raised.
+     *
+     * @param ovsdbBridge OvsdbBridgeAugmentation
+     * @return IpAddress object or null when no "local_ip" is present.
+     */
+    public static IpAddress getOvsBridgeLocalIp(OvsdbBridgeAugmentation ovsdbBridge) {
+        Preconditions.checkNotNull(ovsdbBridge, "OvsdbBridgeAugmentation is null, cannot get Bridge Local IP");
+        Preconditions.checkNotNull(ovsdbBridge.getBridgeOtherConfigs(),
+                "OvsdbBridgeAugmentation OtherConfig list is null, cannot get Bridge Local IP");
+
+        List<BridgeOtherConfigs> otherConfigsList = ovsdbBridge.getBridgeOtherConfigs();
+
+        for (BridgeOtherConfigs otherConfig : otherConfigsList) {
+            if (otherConfig.getBridgeOtherConfigKey().equals(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP)) {
+                return SfcOvsUtil.convertStringToIpAddress(otherConfig.getBridgeOtherConfigValue());
+            }
+        }
+        return null;
     }
 }

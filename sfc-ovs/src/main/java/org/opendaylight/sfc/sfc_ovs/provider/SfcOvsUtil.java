@@ -18,6 +18,7 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -25,9 +26,13 @@ import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -55,6 +60,7 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_NSP = "nsp";
     public static final String OVSDB_OPTION_NSI = "nsi";
     public static final String OVSDB_OPTION_KEY = "key";
+    public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
     /**
      * Submits callable for execution by given ExecutorService.
@@ -180,8 +186,6 @@ public class SfcOvsUtil {
     /**
      * Method builds OVS BridgeAugmentation InstanceIdentifier which is based on OVS NodeId
      * <p/>
-     * If the two aforementioned fields are missing, NullPointerException is raised.
-     * <p/>
      *
      * @param ovsdbBridge OvsdbBridgeAugmentation
      * @return InstanceIdentifier<OvsdbBridgeAugmentation>
@@ -194,6 +198,20 @@ public class SfcOvsUtil {
                         .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                         .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)))
                         .augmentation(OvsdbBridgeAugmentation.class);
+
+        return bridgeEntryIID;
+    }
+
+    /**
+     * Method builds OVS BridgeAugmentation InstanceIdentifier which is based on OVS Bridge name
+     * <p/>
+     *
+     * @param serviceFunctionForwarderName serviceFunctionForwarderName String
+     * @return InstanceIdentifier<OvsdbBridgeAugmentation>
+     */
+    public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(String serviceFunctionForwarderName) {
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = buildOvsdbNodeIID(serviceFunctionForwarderName)
+                .augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
     }
@@ -294,5 +312,31 @@ public class SfcOvsUtil {
 
         LOG.error("Supplied IpAddress value ({}) cannot be converted to String!", ipAddress.toString());
         return null;
+    }
+
+    public static boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,
+                                                    List<SffDataPlaneLocator> sffDataPlaneLocatorList,
+                                                    ExecutorService executor) {
+        boolean result = true;
+        List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList =
+                SfcSffToOvsMappingAPI.buildTerminationPointAugmentationList(sffDataPlaneLocatorList);
+
+        for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint : ovsdbTerminationPointList) {
+            Object[] methodParameters = {ovsdbBridge, ovsdbTerminationPoint};
+            SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint =
+                    new SfcOvsDataStoreAPI(
+                            SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT,
+                            methodParameters
+                    );
+            boolean partialResult =
+                    (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, executor);
+
+            //once result is false, we will keep it false (it will be not overwritten with next partialResults)
+            if (result) {
+                result = partialResult;
+            }
+        }
+
+        return result;
     }
 }

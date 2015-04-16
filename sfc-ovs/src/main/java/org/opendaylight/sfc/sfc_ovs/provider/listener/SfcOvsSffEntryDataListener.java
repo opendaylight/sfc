@@ -21,7 +21,6 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -85,7 +83,8 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     putOvsdbBridge(ovsdbBridge);
 
                     //put Termination Points
-                    putOvsdbTerminationPoints(ovsdbBridge, serviceFunctionForwarder);
+                    SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
+                            serviceFunctionForwarder.getSffDataPlaneLocator(), opendaylightSfc.getExecutor());
                 }
             }
         }
@@ -107,7 +106,8 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     putOvsdbBridge(ovsdbBridge);
 
                     //put Termination Points
-                    putOvsdbTerminationPoints(ovsdbBridge, updatedServiceFunctionForwarder);
+                    SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
+                            updatedServiceFunctionForwarder.getSffDataPlaneLocator(), opendaylightSfc.getExecutor());
                 }
             }
         }
@@ -170,34 +170,10 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
     private boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
         Object[] methodParameters = {ovsdbTerminationPointIID};
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint= new SfcOvsDataStoreAPI(
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint = new SfcOvsDataStoreAPI(
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT,
                 methodParameters
         );
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, getOpendaylightSfc().getExecutor());
-    }
-
-    private boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,  ServiceFunctionForwarder serviceFunctionForwarder) {
-        boolean result = true;
-        List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList =
-                SfcSffToOvsMappingAPI.buildTerminationPointAugmentationList(ovsdbBridge, serviceFunctionForwarder);
-
-        for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint: ovsdbTerminationPointList) {
-            Object[] methodParameters = {ovsdbBridge, ovsdbTerminationPoint};
-            SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint =
-                    new SfcOvsDataStoreAPI(
-                            SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT,
-                            methodParameters
-                    );
-            boolean partialResult =
-                    (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, getOpendaylightSfc().getExecutor());
-
-            //once result is false, we will keep it false (it will be not overwritten with next partialResults)
-            if (result) {
-                result = partialResult;
-            }
-        }
-
-        return result;
     }
 }

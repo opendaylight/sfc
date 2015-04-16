@@ -21,13 +21,23 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -64,29 +74,36 @@ public class SfcOvsRspEntryDataListener extends SfcOvsAbstractDataListener {
                 RenderedServicePath renderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\nCreated Rendered Service Path: {}", renderedServicePath.toString());
 
+                List<HopOvsdbBridgePair> hopOvsdbBridgePairList = buildHopOvsdbBridgePairList(renderedServicePath);
 
+                for (int index = 0; index < hopOvsdbBridgePairList.size(); index++) {
+                    List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
+
+                    //build forward VXLAN tunnel
+                    if (index + 1 < hopOvsdbBridgePairList.size()) {
+                        sffDataPlaneLocatorList.add(
+                                SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(
+                                        renderedServicePath,
+                                        hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index + 1)));
+                    }
+
+                    //build backward VXLAN tunnel
+                    if (index - 1 >= 0) {
+                        sffDataPlaneLocatorList.add(
+                                SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(
+                                        renderedServicePath,
+                                        hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index - 1)));
+                    }
+
+                    //put TerminationPoints into OVS Datastore
+                    SfcOvsUtil.putOvsdbTerminationPoints(hopOvsdbBridgePairList.get(index).ovsdbBridgeAugmentation,
+                            sffDataPlaneLocatorList, opendaylightSfc.getExecutor());
+                }
             }
         }
 
-//        // SFF UPDATE
-//        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-//        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-//            if ((entry.getValue() instanceof ServiceFunctionForwarder)
-//                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
-//                ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-//                LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
-//
-//                //build OvsdbBridge
-//                OvsdbBridgeAugmentation ovsdbBridge =
-//                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder);
-//
-//                //put Bridge
-//                putOvsdbBridge(ovsdbBridge);
-//
-//                //put Termination Points
-//                putOvsdbTerminationPoints(ovsdbBridge, updatedServiceFunctionForwarder);
-//            }
-//        }
+
+        // RSP UPDATE - RSP CANNOT BE UPDATED
 //
 //
 //        // SFF DELETION
@@ -123,5 +140,27 @@ public class SfcOvsRspEntryDataListener extends SfcOvsAbstractDataListener {
 //            }
 //        }
         printTraceStop(LOG);
+    }
+
+    private List<HopOvsdbBridgePair> buildHopOvsdbBridgePairList(RenderedServicePath renderedServicePath) {
+        Preconditions.checkNotNull(renderedServicePath);
+
+        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = new ArrayList<>();
+
+        for (RenderedServicePathHop hop : renderedServicePath.getRenderedServicePathHop()) {
+            Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(hop.getServiceFunctionForwarder())};
+            SfcOvsDataStoreAPI readOvsdbBridge =
+                    new SfcOvsDataStoreAPI(
+                            SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE,
+                            methodParams
+                    );
+
+            OvsdbBridgeAugmentation ovsdbBridge =
+                    (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge, opendaylightSfc.getExecutor());
+
+            hopOvsdbBridgePairList.add(hop.getHopNumber(), new HopOvsdbBridgePair(hop, ovsdbBridge));
+        }
+
+        return hopOvsdbBridgePairList;
     }
 }

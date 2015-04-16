@@ -21,13 +21,20 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -64,64 +71,81 @@ public class SfcOvsRspEntryDataListener extends SfcOvsAbstractDataListener {
                 RenderedServicePath renderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\nCreated Rendered Service Path: {}", renderedServicePath.toString());
 
+                List<HopOvsdbBridgePair> hopOvsdbBridgePairList =
+                        HopOvsdbBridgePair.buildHopOvsdbBridgePairList(
+                                renderedServicePath, getOpendaylightSfc().getExecutor());
 
+                for (int index = 0; index < hopOvsdbBridgePairList.size(); index++) {
+                    List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
+
+                    //build forward VXLAN tunnel
+                    if (index + 1 < hopOvsdbBridgePairList.size()) {
+                        sffDataPlaneLocatorList.add(
+                                SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(
+                                        renderedServicePath,
+                                        hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index + 1)));
+                    }
+
+                    //build backward VXLAN tunnel
+                    if (index - 1 >= 0) {
+                        sffDataPlaneLocatorList.add(
+                                SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(
+                                        renderedServicePath,
+                                        hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index - 1)));
+                    }
+
+                    //put TerminationPoints into OVS Datastore
+                    SfcOvsUtil.putOvsdbTerminationPoints(hopOvsdbBridgePairList.get(index).ovsdbBridgeAugmentation,
+                            sffDataPlaneLocatorList, opendaylightSfc.getExecutor());
+                }
             }
         }
 
-//        // SFF UPDATE
-//        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-//        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-//            if ((entry.getValue() instanceof ServiceFunctionForwarder)
-//                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
-//                ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-//                LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
-//
-//                //build OvsdbBridge
-//                OvsdbBridgeAugmentation ovsdbBridge =
-//                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder);
-//
-//                //put Bridge
-//                putOvsdbBridge(ovsdbBridge);
-//
-//                //put Termination Points
-//                putOvsdbTerminationPoints(ovsdbBridge, updatedServiceFunctionForwarder);
-//            }
-//        }
-//
-//
-//        // SFF DELETION
-//        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-//        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-//            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-//            if (dataObject instanceof ServiceFunctionForwarder) {
-//                ServiceFunctionForwarder deletedServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
-//                LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
-//
-//                KeyedInstanceIdentifier keyedInstanceIdentifier =
-//                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
-//                if (keyedInstanceIdentifier != null) {
-//                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-//                    String sffName = sffKey.getName();
-//
-//                    //delete OvsdbNode
-//                    deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName));
-//                }
-//
-//            } else if (dataObject instanceof SffDataPlaneLocator) {
-//                SffDataPlaneLocator sffDataPlaneLocator = (SffDataPlaneLocator) dataObject;
-//                LOG.debug("Deleted SffDataPlaneLocator: {}", sffDataPlaneLocator.getName());
-//
-//                KeyedInstanceIdentifier keyedInstanceIdentifier =
-//                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
-//                if (keyedInstanceIdentifier != null) {
-//                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-//                    String sffName = sffKey.getName();
-//
-//                    //delete OvsdbTerminationPoint
-//                    deleteOvsdbTerminationPoint(SfcOvsUtil.buildOvsdbTerminationPointIID(sffName, sffDataPlaneLocator.getName()));
-//                }
-//            }
-//        }
+        // RSP UPDATE N/A (RSP CANNOT BE UPDATED)
+
+        // RSP DELETION
+        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
+        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+            if (dataObject instanceof RenderedServicePath) {
+                RenderedServicePath deletedRenderedServicePath = (RenderedServicePath) dataObject;
+                LOG.debug("\nDeleted Rendered Service Path: {}", deletedRenderedServicePath.toString());
+
+                List<HopOvsdbBridgePair> hopOvsdbBridgePairList =
+                        HopOvsdbBridgePair.buildHopOvsdbBridgePairList(
+                                deletedRenderedServicePath, getOpendaylightSfc().getExecutor());
+
+                for (int index = 0; index < hopOvsdbBridgePairList.size(); index++) {
+
+                    //delete forward VXLAN tunnel
+                    if (index + 1 < hopOvsdbBridgePairList.size()) {
+                        String dplName = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocatorName(
+                                deletedRenderedServicePath,
+                                hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index + 1));
+
+                        SfcOvsUtil.deleteOvsdbTerminationPoint(
+                                SfcOvsUtil.buildOvsdbTerminationPointIID(
+                                        hopOvsdbBridgePairList.get(index).renderedServicePathHop.getServiceFunctionForwarder(),
+                                        dplName),
+                                opendaylightSfc.getExecutor());
+                    }
+
+                    //delete backward VXLAN tunnel
+                    if (index - 1 >= 0) {
+                        String dplName = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocatorName(
+                                deletedRenderedServicePath,
+                                hopOvsdbBridgePairList.get(index), hopOvsdbBridgePairList.get(index - 1));
+
+                        SfcOvsUtil.deleteOvsdbTerminationPoint(
+                                SfcOvsUtil.buildOvsdbTerminationPointIID(
+                                        hopOvsdbBridgePairList.get(index).renderedServicePathHop.getServiceFunctionForwarder(),
+                                        dplName),
+                                opendaylightSfc.getExecutor());
+                    }
+                }
+
+            }
+        }
         printTraceStop(LOG);
     }
 }

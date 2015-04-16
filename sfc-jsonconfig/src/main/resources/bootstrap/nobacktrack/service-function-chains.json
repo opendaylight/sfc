@@ -25,13 +25,13 @@
         "name": "SFC2",
         "sfc-service-function": [
           {
-            "name": "napt44-abstract2",
-            "type": "service-function-type:napt44",
+            "name": "firewall-abstract2",
+            "type": "service-function-type:firewall",
             "order" : 0
           },
           {
-            "name": "firewall-abstract2",
-            "type": "service-function-type:firewall",
+            "name": "napt44-abstract2",
+            "type": "service-function-type:napt44",
             "order" : 1
           }
         ]

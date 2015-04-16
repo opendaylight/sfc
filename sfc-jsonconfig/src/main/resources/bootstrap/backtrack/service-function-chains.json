@@ -35,6 +35,26 @@
             "order" : 1
           }
         ]
+      },
+      {
+        "name": "SFC3",
+        "sfc-service-function": [
+          {
+            "name": "dpi-abstract1",
+            "type": "service-function-type:dpi",
+            "order" : 2
+          },
+          {
+            "name": "firewall-abstract1",
+            "type": "service-function-type:firewall",
+            "order" : 1
+          },
+          {
+            "name": "napt44-abstract1",
+            "type": "service-function-type:napt44",
+            "order" : 0
+          }
+        ]
       }
     ]
   }

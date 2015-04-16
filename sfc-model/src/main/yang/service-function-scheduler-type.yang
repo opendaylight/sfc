@@ -53,6 +53,11 @@ module service-function-scheduler-type {
     description "Weighted Shortest Path.";
   }
 
+  identity two-level-optimization {
+    base "service-function-scheduler-type-identity";
+    description "Two Level Optimization Path.";
+  }
+
   identity user-defined {
     base "service-function-scheduler-type-identity";
     description "User Defined Scheduler Type.";

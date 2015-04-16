@@ -467,7 +467,18 @@ define([
     });
 
     $stateProvider.state('main.sfc.acl-create', {
-      url: '/acl-create:itemKey',
+      url: '/acl-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/acl/acl.create.tpl.html',
+          controller: 'sfcAclCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.acl-edit', {
+      url: '/acl-edit-:itemKey',
       access: access.public,
       views: {
         'sfc': {
@@ -478,7 +489,18 @@ define([
     });
 
     $stateProvider.state('main.sfc.classifier-create', {
-      url: '/classifier-create-:itemKey',
+      url: '/classifier-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/acl/acl.classifier.create.tpl.html',
+          controller: 'sfcClassifierCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.classifier-edit', {
+      url: '/classifier-edit-:itemKey',
       access: access.public,
       views: {
         'sfc': {
@@ -500,7 +522,18 @@ define([
     });
 
     $stateProvider.state('main.sfc.metadata-context-create', {
-      url: '/metadata-context-create-:itemKey',
+      url: '/metadata-context-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/metadata/metadata.context.create.tpl.html',
+          controller: 'sfcMetadataContextCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.metadata-context-edit', {
+      url: '/metadata-context-edit-:itemKey',
       access: access.public,
       views: {
         'sfc': {
@@ -511,7 +544,18 @@ define([
     });
 
     $stateProvider.state('main.sfc.metadata-variable-create', {
-      url: '/metadata-variable-create-:itemKey',
+      url: '/metadata-variable-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/metadata/metadata.variable.create.tpl.html',
+          controller: 'sfcMetadataVariableCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.metadata-variable-edit', {
+      url: '/metadata-variable-edit-:itemKey',
       access: access.public,
       views: {
         'sfc': {

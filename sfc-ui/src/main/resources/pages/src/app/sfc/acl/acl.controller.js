@@ -100,7 +100,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editItem = function editItem(ace) {
-      $state.transitionTo('main.sfc.acl-create', {itemKey: ace['acl-name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.acl-edit', {itemKey: ace['acl-name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
   });
 
@@ -222,7 +222,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editItem = function editItem(classifier) {
-      $state.transitionTo('main.sfc.classifier-create', {itemKey: classifier['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.classifier-edit', {itemKey: classifier['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
 
   });

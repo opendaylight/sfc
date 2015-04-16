@@ -114,7 +114,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editContextItem = function editContextItem(contextItem) {
-      $state.transitionTo('main.sfc.metadata-context-create', {itemKey: contextItem['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.metadata-context-edit', {itemKey: contextItem['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
 
     $scope.deleteVariableItem = function deleteVariableItem(variableItem) {
@@ -139,7 +139,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editVariableItem = function editVariableItem(variableItem) {
-      $state.transitionTo('main.sfc.metadata-variable-create', {itemKey: variableItem['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.metadata-variable-edit', {itemKey: variableItem['name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
     };
 
     $scope.decimalToHex = function decimalToHex(decimalNumber) {

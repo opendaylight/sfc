@@ -141,6 +141,16 @@ module service-function {
          in the domain";
       key "name";
       uses service-function-entry;
+      leaf CPU-utilization {
+           type uint32;
+           description "Percentage of CPU utilization.We don't have the monitor info from the app,
+             the cpu utilization mocks by the config file named service-functions.json";
+      }
+      leaf memory-utilization {
+           type uint32;
+           description "Percentage of memory utilization.We don't have the monitor info from the app,
+             the memory utilization mocks by the config file named service-functions.json";
+      }
     }
   }
 

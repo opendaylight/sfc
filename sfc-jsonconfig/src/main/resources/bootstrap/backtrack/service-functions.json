@@ -3,40 +3,6 @@
     "service-function": [
       {
         "rest-uri": "http://localhost:5000",
-        "ip-mgmt-address": "10.1.1.2",
-        "sf-data-plane-locator": [
-          {
-            "name": "Server-1",
-            "port": 5000,
-            "ip": "192.168.1.2",
-            "service-function-forwarder": "Server-1"
-          }
-        ],
-        "name": "DPI-1",
-        "type": "service-function-type:dpi",
-        "nsh-aware": true,
-        "CPU-utilization": 70,
-        "memory-utilization": 72
-      },
-      {
-        "rest-uri": "http://localhost:5000",
-        "ip-mgmt-address": "10.1.1.3",
-        "sf-data-plane-locator": [
-          {
-            "name": "Server-1",
-            "port": 5000,
-            "ip": "192.168.1.2",
-            "service-function-forwarder": "Server-1"
-          }
-        ],
-        "name": "DPI-2",
-        "type": "service-function-type:dpi",
-        "nsh-aware": true,
-        "CPU-utilization": 65,
-        "memory-utilization": 68      
-      },
-      {
-        "rest-uri": "http://localhost:5000",
         "ip-mgmt-address": "10.1.1.4",
         "sf-data-plane-locator": [
           {
@@ -85,40 +51,6 @@
         "nsh-aware": true,
         "CPU-utilization": 70,
         "memory-utilization": 60
-      },
-      {
-        "rest-uri": "http://localhost:5000",
-        "ip-mgmt-address": "10.1.1.7",
-        "sf-data-plane-locator": [
-          {
-            "name": "Server-2",
-            "port": 5000,
-            "ip": "192.168.1.3",
-            "service-function-forwarder": "Server-2"
-          }
-        ],
-        "name": "FW-1",
-        "type": "service-function-type:firewall",
-        "nsh-aware": true,
-        "CPU-utilization": 80,
-        "memory-utilization": 67      
-      },
-      {
-        "rest-uri": "http://localhost:5000",
-        "ip-mgmt-address": "10.1.1.8",
-        "sf-data-plane-locator": [
-          {
-            "name": "Server-3",
-            "port": 5000,
-            "ip": "192.168.1.4",
-            "service-function-forwarder": "Server-3"
-          }
-        ],
-        "name": "FW-4",
-        "type": "service-function-type:firewall",
-        "nsh-aware": true,
-        "CPU-utilization": 36,
-        "memory-utilization": 30      
       },
       {
         "rest-uri": "http://localhost:5000",

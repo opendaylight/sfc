@@ -4,8 +4,6 @@
             {
                 "name": "Server-1",
                 "service-function": [
-                    "DPI-1",
-                    "DPI-2",
                     "FW-2",
                     "FW-3"
                 ],
@@ -14,15 +12,13 @@
             {
                 "name": "Server-2",
                 "service-function": [
-                    "DPI-3",
-                    "FW-1"
+                    "DPI-3"
                 ],
                 "ip-mgmt-address": "192.168.1.3"
             },
             {
                 "name": "Server-3",
                 "service-function": [
-                    "FW-4",
                     "NAPT44-1"
                 ],
                 "ip-mgmt-address": "192.168.1.4"

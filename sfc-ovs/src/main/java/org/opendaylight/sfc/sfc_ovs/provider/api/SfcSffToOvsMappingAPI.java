@@ -84,16 +84,14 @@ public class SfcSffToOvsMappingAPI {
     }
 
     public static List<OvsdbTerminationPointAugmentation> buildTerminationPointAugmentationList(
-            OvsdbBridgeAugmentation ovsdbBridge, ServiceFunctionForwarder serviceFunctionForwarder) {
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList) {
 
-        Preconditions.checkNotNull(ovsdbBridge);
-        Preconditions.checkNotNull(serviceFunctionForwarder);
-        Preconditions.checkNotNull(serviceFunctionForwarder.getSffDataPlaneLocator(),
-                "Cannot build TerminationPointAugmentation, SffDataPlaneLocator list is null.");
+        Preconditions.checkNotNull(sffDataPlaneLocatorList,
+                "Cannot build TerminationPointAugmentation, SffDataPlaneLocatorList is null.");
 
         List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList = new ArrayList<>();
 
-        for (SffDataPlaneLocator sffDataPlaneLocator : serviceFunctionForwarder.getSffDataPlaneLocator()) {
+        for (SffDataPlaneLocator sffDataPlaneLocator : sffDataPlaneLocatorList) {
             OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointBuilder = new OvsdbTerminationPointAugmentationBuilder();
 
             ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());

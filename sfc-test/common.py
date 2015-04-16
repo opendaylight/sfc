@@ -40,6 +40,8 @@ SCF_URL = "http://" + ODLIP + "/restconf/config/service-function-classifier:serv
 NETCONF_CONNECTOR_URL = "http://" + NETCONF_CONNECTOR_IP_PORT + "/restconf/config/network-topology:network-topology/" \
                         "topology/topology-netconf/node/controller-config/yang-ext:mount/config:modules"
 
+SFF_OVS_RPC_URL = "http://" + ODLIP + "/restconf/operations/service-function-forwarder-ovs:create-ovs-bridge"
+
 USERNAME = "admin"
 PASSWORD = "admin"
 

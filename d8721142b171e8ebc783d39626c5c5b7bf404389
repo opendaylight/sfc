@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_3c20e69a",
+        "filename": "sfc-py/common/services.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 3434
+      },
+      "writtenOn": "2015-04-16T08:30:58Z",
+      "side": 1,
+      "message": "`import *` is considered a bad practice:\nhttps://www.python.org/dev/peps/pep-0008/#imports",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 34
+      },
+      "revId": "d8721142b171e8ebc783d39626c5c5b7bf404389",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_fc127e57",
+        "filename": "sfc-py/common/services.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 3434
+      },
+      "writtenOn": "2015-04-16T08:30:58Z",
+      "side": 1,
+      "message": "Please try to avoid repeating code, do not use `print` as we use loggers throughout the code-base, e.g.:\ntry:\n    if platform.system() \u003d\u003d \"Darwin\":\n       # Assuming IPv4 packet for now. Move pointer forward\n       inner_packet \u003d rw_data[PAYLOAD_START_INDEX + IPV4_HEADER_LEN_BYTES:]\n       sock_raw \u003d socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)\n    else:\n       sock_raw \u003d socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)\nexcept socket.error as msg:\n    logger.error(\"Socket could not be created. Error Code : {}\", msg)\n    sys.exit()",
+      "range": {
+        "startLine": 417,
+        "startChar": 0,
+        "endLine": 440,
+        "endChar": 42
+      },
+      "revId": "d8721142b171e8ebc783d39626c5c5b7bf404389",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_9c2b3a82",
+        "filename": "sfc-py/nsh/encode.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 3434
+      },
+      "writtenOn": "2015-04-16T08:30:58Z",
+      "side": 1,
+      "message": "`import *` is considered a bad practice:\nhttps://www.python.org/dev/peps/pep-0008/#imports",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 32
+      },
+      "revId": "d8721142b171e8ebc783d39626c5c5b7bf404389",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

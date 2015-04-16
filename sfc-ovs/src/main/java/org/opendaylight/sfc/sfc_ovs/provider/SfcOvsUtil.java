@@ -18,6 +18,7 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +26,9 @@ import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -294,5 +298,31 @@ public class SfcOvsUtil {
 
         LOG.error("Supplied IpAddress value ({}) cannot be converted to String!", ipAddress.toString());
         return null;
+    }
+
+    public static boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,
+                                              List<SffDataPlaneLocator> sffDataPlaneLocatorList,
+                                              ExecutorService executor) {
+        boolean result = true;
+        List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList =
+                SfcSffToOvsMappingAPI.buildTerminationPointAugmentationList(sffDataPlaneLocatorList);
+
+        for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint: ovsdbTerminationPointList) {
+            Object[] methodParameters = {ovsdbBridge, ovsdbTerminationPoint};
+            SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint =
+                    new SfcOvsDataStoreAPI(
+                            SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT,
+                            methodParameters
+                    );
+            boolean partialResult =
+                    (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, executor);
+
+            //once result is false, we will keep it false (it will be not overwritten with next partialResults)
+            if (result) {
+                result = partialResult;
+            }
+        }
+
+        return result;
     }
 }

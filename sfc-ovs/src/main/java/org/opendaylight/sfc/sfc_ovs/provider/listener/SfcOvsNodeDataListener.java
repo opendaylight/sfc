@@ -88,6 +88,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
                 if (serviceFunctionForwarder != null) {
                     SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
+                    LOG.info("Created new Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }
         }
@@ -105,6 +106,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
                 if (serviceFunctionForwarder != null) {
                     SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
+                    LOG.info("Updated Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }
         }
@@ -117,8 +119,10 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
             if (dataObject instanceof Node) {
                 Node deletedNode = (Node) dataObject;
                 LOG.debug("\nDeleted OVS Node: {}", deletedNode.toString());
-                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(
-                        SfcOvsToSffMappingAPI.getServiceForwarderNameFromNode(deletedNode));
+
+                String sffName = SfcOvsToSffMappingAPI.getServiceForwarderNameFromNode(deletedNode);
+                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(sffName);
+                LOG.info("Deleted Service Function Forwarder: {}", sffName);
 
             } else if (dataObject instanceof OvsdbBridgeAugmentation) {
                 OvsdbBridgeAugmentation deletedBridge = (OvsdbBridgeAugmentation) dataObject;
@@ -128,6 +132,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                     NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
                     String nodeId = nodeKey.getNodeId().getValue();
                     SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeId);
+                    LOG.info("Deleted Service Function Forwarder: {}", nodeId);
                 }
 
             } else if (dataObject instanceof OvsdbTerminationPointAugmentation) {
@@ -138,6 +143,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                     NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
                     String nodeId = nodeKey.getNodeId().getValue();
                     SfcProviderServiceForwarderAPI.deleteSffDataPlaneLocatorExecutor(nodeId, deletedTerminationPoint.getName());
+                    LOG.info("Deleted SFF DataPlane locator: {}", deletedTerminationPoint.getName());
                 }
             }
         }

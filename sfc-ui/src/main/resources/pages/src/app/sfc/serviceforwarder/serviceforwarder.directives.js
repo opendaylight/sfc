@@ -29,4 +29,33 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('sffOptions', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.options.tpl.html',
+      scope: {
+        idSuffix: '@idSuffix',
+        options: '=options'
+      },
+      controller: function ($scope) {
+
+        $scope.$watch('options', function (newVal) {
+          if (angular.isUndefined(newVal)) {
+            return;
+          }
+
+          var options = newVal;
+
+          _.each(Object.keys(options), function (key) {
+            if (options[key] == null) {
+              delete options[key];
+            }
+          });
+
+        }, true);
+      }
+    };
+  });
+
 });

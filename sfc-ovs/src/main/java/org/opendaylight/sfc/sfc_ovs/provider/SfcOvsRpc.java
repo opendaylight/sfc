@@ -82,7 +82,13 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
                     new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
             Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor());
-            nodeId = node.getNodeId();
+
+            try {
+                nodeId = node.getNodeId();
+            } catch (NullPointerException e) {
+                LOG.debug("OVS Node for IP address {} does not exist!", methodParams[0]);
+                nodeId = null;
+            }
         }
 
         try {

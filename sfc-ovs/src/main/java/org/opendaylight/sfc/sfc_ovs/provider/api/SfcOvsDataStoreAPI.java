@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -36,9 +37,9 @@ import org.slf4j.LoggerFactory;
 public class SfcOvsDataStoreAPI implements Callable {
 
     public enum Method {
-        PUT_OVSDB_BRIDGE, DELETE_OVSDB_NODE,
+        READ_OVSDB_BRIDGE, PUT_OVSDB_BRIDGE,
         PUT_OVSDB_TERMINATION_POINT, DELETE_OVSDB_TERMINATION_POINT,
-        READ_OVSDB_NODE_BY_IP
+        DELETE_OVSDB_NODE, READ_OVSDB_NODE_BY_IP
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
@@ -56,6 +57,15 @@ public class SfcOvsDataStoreAPI implements Callable {
         Object result = null;
 
         switch (methodToCall) {
+            case READ_OVSDB_BRIDGE:
+                try {
+                    InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID = (InstanceIdentifier<OvsdbBridgeAugmentation>) methodParameters[0];
+                    result = readOvsdbBridge(bridgeIID);
+                } catch (ClassCastException e) {
+                    LOG.error("Cannot call readOvsdbBridge, passed method argument " +
+                            "is not instance of InstanceIdentifier<OvsdbBridgeAugmentation>: {}", methodParameters[0].toString());
+                }
+                break;
             case PUT_OVSDB_BRIDGE:
                 try {
                     OvsdbBridgeAugmentation ovsdbBridge = (OvsdbBridgeAugmentation) methodParameters[0];
@@ -81,7 +91,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     result = putOvsdbTerminationPoint(ovsdbBridge, ovsdbTerminationPoint);
                 } catch (ClassCastException e) {
                     LOG.error("Cannot call putOvsdbTerminationPoint, passed method arguments " +
-                            "are not instances of OvsdbBridgeAugmentation{} and OvsdbTerminationPointAugmentation: {}",
+                                    "are not instances of OvsdbBridgeAugmentation{} and OvsdbTerminationPointAugmentation: {}",
                             methodParameters[0].toString(), methodParameters[1].toString());
                 }
                 break;
@@ -143,9 +153,13 @@ public class SfcOvsDataStoreAPI implements Callable {
 
         Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(), LogicalDatastoreType.OPERATIONAL);
         try {
-            for (Node node: topology.getNode()) {
+            for (Node node : topology.getNode()) {
                 if (node.getNodeId().getValue().contains(ipAddress)) {
-                    return node;
+                    //we are looking for OvsdbNode (not OvsdbBridge or OvsdbTerminationPoint)
+                    OvsdbNodeAugmentation ovsdbNodeAugmentation = node.getAugmentation(OvsdbNodeAugmentation.class);
+                    if (ovsdbNodeAugmentation != null) {
+                        return node;
+                    }
                 }
             }
 
@@ -154,5 +168,12 @@ public class SfcOvsDataStoreAPI implements Callable {
         }
 
         return null;
+    }
+
+    private OvsdbBridgeAugmentation readOvsdbBridge(InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID) {
+        Preconditions.checkNotNull(bridgeIID,
+                "Cannot READ OVS Bridge from OVS operational store, InstanceIdentifier<OvsdbBridgeAugmentation> is null.");
+
+        return SfcDataStoreAPI.readTransactionAPI(bridgeIID, LogicalDatastoreType.OPERATIONAL);
     }
 }

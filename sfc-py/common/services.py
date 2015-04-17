@@ -12,6 +12,7 @@ import logging
 import asyncio
 import binascii
 import ipaddress
+import platform
 
 from struct import pack, unpack
 
@@ -20,9 +21,7 @@ import nsh.decode as nsh_decode
 from common.sfc_globals import sfc_globals
 from nsh.encode import add_sf_to_trace_pkt
 from nsh.service_index import process_service_index
-from nsh.common import (NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET,
-                        VXLANGPE, BASEHEADER, CONTEXTHEADER, TRACEREQHEADER,
-                        PAYLOAD_START_INDEX, NSH_OAM_TRACE_DEST_IP_REPORT_LEN)
+from nsh.common import *    # noqa
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"
@@ -415,13 +414,31 @@ class MySffServer(BasicService):
                         # the next line replaces the currently-running process with the sudo
                         os.execlpe('sudo', *args)
 
-                    sock_raw = socket.socket(socket.AF_INET,
-                                             socket.SOCK_RAW,
-                                             socket.IPPROTO_RAW)
+                        # Reinaldo note:
+                        # Unfortunately it has to be this way. Python has poor raw socket support in
+                        # MacOS.  What happens is that MacoS will _always_ include the IP header unless you use
+                        # socket option IP_HDRINCL
+                        # https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man4/ip.4.html
+                        #
+                        # But if you try to set this option at the Python level (instead of C level) it does not
+                        # work. the only way around is to create a raw socket of type UDP and leave the IP header
+                        # out when sending/building the packet.
+                        sock_raw = None
 
-                    bearing = self._get_packet_bearing(inner_packet)
-                    sock_raw.sendto(inner_packet, (bearing['d_addr'],
-                                                   bearing['d_port']))
+                        try:
+                            if platform.system() == "Darwin":
+                                # Assuming IPv4 packet for now. Move pointer forward
+                                inner_packet = rw_data[PAYLOAD_START_INDEX + IPV4_HEADER_LEN_BYTES:]
+                                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
+                            else:
+                                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+                        except socket.error as msg:
+                            logger.error("Socket could not be created. Error Code : {}", msg)
+                            sys.exit()
+
+                        bearing = self._get_packet_bearing(inner_packet)
+                        sock_raw.sendto(inner_packet, (bearing['d_addr'],
+                                                       bearing['d_port']))
 
             # end processing as Service Index reaches zero (SI = 0)
             else:

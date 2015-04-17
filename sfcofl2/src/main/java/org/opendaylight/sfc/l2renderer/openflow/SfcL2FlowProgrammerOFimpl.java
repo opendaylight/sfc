@@ -734,6 +734,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.srcMac = srcMac;
             this.dstMac = dstMac;
             this.isAddFlow = isAddFlow;
+            this.nsi = -1;     // unused
+            this.nsp = -1;     // unused
+            this.srcIp = null; // unused
+            this.dstIp = null; // unused
         }
 
         @Override
@@ -741,11 +745,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             try {
                 LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sffName [{}] sfpId [{}] srcMac [{}] dstMac [{}]",
                         this.sffNodeName, this.sfpId, this.srcMac, this.dstMac);
-
-                if(this.dstMac == null) {
-                    LOG.error("SfcProviderSffFlowWriter.configureNextHopFlow dstMac is null, returning");
-                    return;
-                }
 
                 int flowPriority = FLOW_PRIORITY_NEXT_HOP;
 
@@ -967,10 +966,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 // Optionally write the DSCP with the pathId
                 if(this.setDscp) {
-                    // TODO currently it is not working to set the IP DSCP, with and without setting IPv4
-                    //Action setIp = SfcOpenflowUtils.createActionSetEtherType(SfcOpenflowUtils.ETHERTYPE_IPV4, order++);
+                    // In order to set the IP DSCP, we need to match IPv4
+                    SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
                     Action writeDscp = SfcOpenflowUtils.createActionWriteDscp((short) this.pathId, order++);
-                    //actionList.add(setIp);
                     actionList.add(writeDscp);
                 }
 

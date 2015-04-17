@@ -75,7 +75,6 @@
         <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
-        <configfile finalname="configuration/startup/bootstrap/ipfix-class-id.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-ipfix-class-id</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-core/${logback.version}</bundle>
         <bundle>mvn:ch.qos.logback/logback-classic/${logback.version}</bundle>
@@ -103,7 +102,6 @@
         <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sf</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sfc</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sn</configfile>
-        <configfile finalname="configuration/startup/bootstrap/ipfix-class-id.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-ipfix-class-id</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}</bundle>
     </feature>
     <feature name='odl-sfc-model' version='${project.version}' description='OpenDaylight :: sfc :: Model'>

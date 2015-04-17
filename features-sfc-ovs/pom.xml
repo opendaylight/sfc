@@ -40,7 +40,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    </dependency>
 
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -60,12 +60,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <scope>test</scope>
     </dependency>
     <dependency>
-       <groupId>org.opendaylight.sfc</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>sfc-provider</artifactId>
        <version>${project.version}</version>
     </dependency>
     <dependency>
-       <groupId>org.opendaylight.sfc</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>sfc-ovs</artifactId>
        <version>${project.version}</version>
     </dependency>
@@ -84,12 +84,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.2</version>
+      <version>${slf4j.version}</version>
     </dependency>
     </dependencies>
-
-
-
 
    <build>
       <resources>

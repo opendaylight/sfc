@@ -59,7 +59,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.2</version>
+      <version>${slf4j.version}</version>
     </dependency>
     </dependencies>
 

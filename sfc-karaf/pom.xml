@@ -16,7 +16,9 @@
     <!-- Move these properties to your parent pom and possibly DependencyManagement section of your parent pom -->
     <branding.version>1.1.0-SNAPSHOT</branding.version>
     <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-    <pax.logging.version>1.7.4</pax.logging.version>
+    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
+    <!--<karaf.version>3.0.1</karaf.version>-->
+    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
   </properties>
 
   <dependencies>
@@ -148,7 +150,7 @@
     <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-client</artifactId>
-        <version>1.17</version>
+        <version>${jersey.version}</version>
     </dependency>
     <dependency>
         <groupId>com.sun.jersey</groupId>
@@ -158,7 +160,7 @@
     <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.2.4</version>
+        <version>${gson.version}</version>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -204,12 +206,12 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>${pax.logging.version}</version>
+      <version>${pax.logging.api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
-      <version>${pax.logging.version}</version>
+      <version>${pax.logging.service.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.ovsdb</groupId>
@@ -331,14 +333,14 @@
             <feature>standard</feature>
             <feature>webconsole</feature>
             <feature>odl-restconf</feature>
-            <feature>odl-sfc-core</feature>
-            <feature>odl-sfc-test-consumer</feature>
-            <feature>odl-sfc-ui</feature>
-            <feature>odl-sfcofl2</feature>
-            <feature>odl-sfc-sb-rest</feature>
-            <feature>odl-sfc-ovs</feature>
-            <feature>odl-sfc-netconf</feature>
             <feature>odl-mdsal-apidocs</feature>
+            <feature>odl-sfc-core</feature>
+            <!--<feature>odl-sfc-test-consumer</feature>-->
+            <!--<feature>odl-sfc-ui</feature>-->
+            <!--<feature>odl-sfcofl2</feature>-->
+            <!--<feature>odl-sfc-sb-rest</feature>-->
+            <!--<feature>odl-sfc-ovs</feature>-->
+            <!--<feature>odl-sfc-netconf</feature>-->
             <!-- 
               Add entries here for the features you want in your local distro
               Note: odl-restconf is a separate feature from odl-mdsal-broker.
@@ -385,14 +387,14 @@
                 <artifactItem>
                     <groupId>org.ops4j.pax.logging</groupId>
                     <artifactId>pax-logging-api</artifactId>
-                    <version>${pax.logging.version}</version>
-                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/${pax.logging.version}</outputDirectory>
+                    <version>${pax.logging.api.version}</version>
+                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/${pax.logging.api.version}</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                     <groupId>org.ops4j.pax.logging</groupId>
                     <artifactId>pax-logging-service</artifactId>
-                    <version>${pax.logging.version}</version>
-                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-service/${pax.logging.version}</outputDirectory>
+                    <version>${pax.logging.service.version}</version>
+                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-service/${pax.logging.service.version}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -458,12 +460,12 @@
           <file>${project.build.directory}/assembly/etc/startup.properties</file>
           <replacements>
             <replacement>
-              <token>mvn\\:org.ops4j.pax.logging/pax-logging-api/1.7.2</token>
-              <value>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.version}</value>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.api.version}</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.api.version}</value>
             </replacement>
             <replacement>
-              <token>mvn\\:org.ops4j.pax.logging/pax-logging-service/1.7.2</token>
-              <value>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.version}</value>
+              <token>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.api.version}</token>
+              <value>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.service.version}</value>
             </replacement>
           </replacements>
         </configuration>

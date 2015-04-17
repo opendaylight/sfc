@@ -281,3 +281,19 @@ SERVICE_CLASSIFIER_JSON = """
     ]
   }
 }"""
+
+
+METADATA_JSON = """
+{
+  "service-function-metadata": {
+    "context-metadata": [
+      {
+        "name": "test-metadata",
+        "context-header2": 2,
+        "context-header3": 3,
+        "context-header1": 1,
+        "context-header4": 4
+      }
+    ]
+  }
+}"""

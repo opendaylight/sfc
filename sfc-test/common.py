@@ -37,6 +37,9 @@ SFF_ONE_URL = "http://" + ODLIP + "/restconf/config/service-function-forwarder:s
 IETF_ACL_URL = "http://" + ODLIP + "/restconf/config/ietf-acl:access-lists/"
 RSP_RPC_URL = "http://" + ODLIP + "/restconf/operations/rendered-service-path:create-rendered-path"
 SCF_URL = "http://" + ODLIP + "/restconf/config/service-function-classifier:service-function-classifiers/"
+METADATA_URL = "http://" + ODLIP + "/restconf/config/service-function-metadata:service-function-metadata/"
+
+
 NETCONF_CONNECTOR_URL = "http://" + NETCONF_CONNECTOR_IP_PORT + "/restconf/config/network-topology:network-topology/" \
                         "topology/topology-netconf/node/controller-config/yang-ext:mount/config:modules"
 

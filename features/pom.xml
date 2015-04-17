@@ -117,79 +117,79 @@
     -->
 
     <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-provider</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-ovs</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-netconf</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-test-consumer</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-ui</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-sff</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-sfc</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-sn</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-sf</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-ipfix-class-id</classifier>
       </dependency>
       <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-config</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
@@ -284,7 +284,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.2</version>
+      <version>${slf4j.version}</version>
     </dependency>
 <!--    <dependency>
        <groupId>org.opendaylight.ovsdb</groupId>

@@ -16,11 +16,7 @@
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <branding.version>1.1.0-SNAPSHOT</branding.version>
-      <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-      <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
       <lisp.version>1.2.0-SNAPSHOT</lisp.version>
-      <surefire.version>2.16</surefire.version>
    </properties>
    <dependencies>
        <dependency>
@@ -31,14 +27,14 @@
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>sfclisp</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -65,7 +61,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.2</version>
+      <version>${slf4j.version}</version>
     </dependency>
    </dependencies>
    <build>

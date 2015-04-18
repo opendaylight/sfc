@@ -10,24 +10,27 @@
   <artifactId>sfc-karaf</artifactId>
   <packaging>pom</packaging>
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>3.2</maven>
   </prerequisites>
-  <properties>
-    <!-- Move these properties to your parent pom and possibly DependencyManagement section of your parent pom -->
-    <branding.version>1.1.0-SNAPSHOT</branding.version>
-    <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
-    <!--<karaf.version>3.0.1</karaf.version>-->
-    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
-  </properties>
-
   <dependencies>
     <!-- Basic Karaf dependencies -->
     <dependency>
+      <!-- scope is compile so all features (there is only one) are installed
+            into startup.properties and the feature repo itself is not installed -->
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>framework</artifactId>
       <version>${karaf.version}</version>
       <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.sshd</groupId>
+          <artifactId>sshd-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
@@ -35,7 +38,13 @@
       <version>${karaf.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.karaf.webconsole</groupId>
+      <artifactId>webconsole</artifactId>
+      <version>${webconsole.version}</version>
+      <type>pom</type>
     </dependency>
 
     <!-- ODL Branding -->
@@ -61,7 +70,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -69,7 +78,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-sb-rest</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -77,7 +86,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-ovs</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -85,7 +94,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-netconf</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -93,7 +102,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfclisp</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -101,7 +110,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfcofl2</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -330,17 +339,20 @@
         <extensions>true</extensions>
         <configuration>
           <bootFeatures>
+
             <feature>standard</feature>
             <feature>webconsole</feature>
+
+
             <feature>odl-restconf</feature>
             <feature>odl-mdsal-apidocs</feature>
             <feature>odl-sfc-core</feature>
-            <!--<feature>odl-sfc-test-consumer</feature>-->
-            <!--<feature>odl-sfc-ui</feature>-->
-            <!--<feature>odl-sfcofl2</feature>-->
-            <!--<feature>odl-sfc-sb-rest</feature>-->
-            <!--<feature>odl-sfc-ovs</feature>-->
-            <!--<feature>odl-sfc-netconf</feature>-->
+            <feature>odl-sfc-test-consumer</feature>
+            <feature>odl-sfc-ui</feature>
+            <feature>odl-sfcofl2</feature>
+            <feature>odl-sfc-sb-rest</feature>
+            <feature>odl-sfc-ovs</feature>
+            <feature>odl-sfc-netconf</feature>
             <!-- 
               Add entries here for the features you want in your local distro
               Note: odl-restconf is a separate feature from odl-mdsal-broker.
@@ -367,7 +379,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.6</version>
+        <version>2.8</version>
         <executions>
           <execution>
             <id>copy</id>

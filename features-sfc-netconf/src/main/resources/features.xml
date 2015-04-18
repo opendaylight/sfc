@@ -14,7 +14,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-    <feature name='odl-sfc-netconf' version='${project.version}' description='OpenDaylight :: OpenvSwitch '>
+    <feature name='odl-sfc-netconf' version='${project.version}' description='OpenDaylight :: Netconf '>
           <!--
             Necessary TODO:
             List all of the user consumable features you define in this feature file here.

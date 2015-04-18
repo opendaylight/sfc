@@ -25,7 +25,7 @@
 
     <feature name='odl-sfc-core' version='${project.version}' description='OpenDaylight :: sfc :: Core'>
         <feature version='${project.version}'>odl-sfc-provider</feature>
-        <feature version='${project.version}'>odl-sfc-model</feature>
+        <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
     </feature>
 
     <!--
@@ -40,13 +40,13 @@
         It's also nice to list inside a feature, first the features it needs, then the bundles it needs, then the configfiles.
     -->
 
-    <feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfc :: OpenFlowL2 '>
-        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
-        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>
-        <feature version='${project.version}'>odl-sfc-provider</feature>
-        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
-        <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
-    </feature>
+    <!--<feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfc :: OpenFlowL2 '>-->
+        <!--<feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>-->
+        <!--<feature version='${feature.openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>-->
+        <!--<feature version='${project.version}'>odl-sfc-provider</feature>-->
+        <!--<configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>-->
+        <!--<bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>-->
+    <!--</feature>-->
     <!--
     <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: sfc :: OpenvSwitch '>
         <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
@@ -58,7 +58,7 @@
     -->
     <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>
         <feature version='${project.version}'>odl-sfc-provider</feature>
-        <feature>odl-restconf</feature>
+        <!--<feature version="${mdsal.version}">odl-restconf</feature>-->
         <feature>http</feature>
         <!--<feature version='${webconsole.version}'>webconsole</feature>-->
         <feature>webconsole</feature>
@@ -67,9 +67,9 @@
 
     <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
         <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
-        <feature version='${mdsal.version}'>odl-netconf-connector-all</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>

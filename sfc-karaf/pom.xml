@@ -10,24 +10,27 @@
   <artifactId>sfc-karaf</artifactId>
   <packaging>pom</packaging>
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>3.2</maven>
   </prerequisites>
-  <properties>
-    <!-- Move these properties to your parent pom and possibly DependencyManagement section of your parent pom -->
-    <branding.version>1.1.0-SNAPSHOT</branding.version>
-    <karaf.resources.version>1.5.0-SNAPSHOT</karaf.resources.version>
-    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
-    <!--<karaf.version>3.0.1</karaf.version>-->
-    <!--<pax.logging.version>1.7.4</pax.logging.version>-->
-  </properties>
-
   <dependencies>
     <!-- Basic Karaf dependencies -->
     <dependency>
+      <!-- scope is compile so all features (there is only one) are installed
+            into startup.properties and the feature repo itself is not installed -->
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>framework</artifactId>
       <version>${karaf.version}</version>
       <type>kar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.sshd</groupId>
+          <artifactId>sshd-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
@@ -35,8 +38,14 @@
       <version>${karaf.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>runtime</scope>
     </dependency>
+
+    <!--<dependency>-->
+      <!--<groupId>org.apache.karaf.webconsole</groupId>-->
+      <!--<artifactId>webconsole</artifactId>-->
+      <!--<version>${webconsole.version}</version>-->
+      <!--<type>pom</type>-->
+    <!--</dependency>-->
 
     <!-- ODL Branding -->
     <dependency>
@@ -61,7 +70,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -69,7 +78,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-sb-rest</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -77,7 +86,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-ovs</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -85,7 +94,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc-netconf</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -93,7 +102,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfclisp</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -101,7 +110,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>features-sfcofl2</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
@@ -146,83 +155,90 @@
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
-    <!-- Start -->
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
-        <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-json</artifactId>
-        <version>1.18.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-json-org</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
 
-    <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-base</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-jaxb-annotations</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-api</artifactId>
-      <version>${pax.logging.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-service</artifactId>
-      <version>${pax.logging.service.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.ovsdb</groupId>
-      <artifactId>southbound-api</artifactId>
-      <version>${ovsdb.southbound.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.ovsdb</groupId>
-      <artifactId>southbound-impl</artifactId>
-      <version>${ovsdb.southbound.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.swissbox</groupId>
+        <artifactId>pax-swissbox-bnd</artifactId>
+        <version>1.8.0</version>
+      </dependency>
+
+    <!-- Start -->
+    <!--<dependency>-->
+        <!--<groupId>com.sun.jersey</groupId>-->
+        <!--<artifactId>jersey-client</artifactId>-->
+        <!--<version>${jersey.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.sun.jersey</groupId>-->
+        <!--<artifactId>jersey-json</artifactId>-->
+        <!--<version>1.18.1</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.google.code.gson</groupId>-->
+        <!--<artifactId>gson</artifactId>-->
+        <!--<version>${gson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+        <!--<artifactId>jackson-annotations</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+        <!--<artifactId>jackson-core</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+        <!--<artifactId>jackson-databind</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.datatype</groupId>-->
+        <!--<artifactId>jackson-datatype-json-org</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+        <!--<artifactId>jackson-jaxrs-base</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+        <!--<artifactId>jackson-jaxrs-json-provider</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>com.fasterxml.jackson.module</groupId>-->
+        <!--<artifactId>jackson-module-jaxb-annotations</artifactId>-->
+        <!--<version>${jackson.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+        <!--<groupId>org.glassfish</groupId>-->
+        <!--<artifactId>javax.json</artifactId>-->
+        <!--<version>1.0.4</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.ops4j.pax.logging</groupId>-->
+      <!--<artifactId>pax-logging-api</artifactId>-->
+      <!--<version>${pax.logging.api.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.ops4j.pax.logging</groupId>-->
+      <!--<artifactId>pax-logging-service</artifactId>-->
+      <!--<version>${pax.logging.service.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.opendaylight.ovsdb</groupId>-->
+      <!--<artifactId>southbound-api</artifactId>-->
+      <!--<version>${ovsdb.southbound.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.opendaylight.ovsdb</groupId>-->
+      <!--<artifactId>southbound-impl</artifactId>-->
+      <!--<version>${ovsdb.southbound.version}</version>-->
+    <!--</dependency>-->
 
     <!-- Project local feautures -->
     <!--
@@ -324,6 +340,29 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <!-- here the phase you need -->
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/assembly</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/assembly</directory>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
         <version>${karaf.version}</version>
@@ -331,16 +370,16 @@
         <configuration>
           <bootFeatures>
             <feature>standard</feature>
-            <feature>webconsole</feature>
-            <feature>odl-restconf</feature>
-            <feature>odl-mdsal-apidocs</feature>
+            <!--<feature>webconsole</feature>-->
+            <!--<feature>odl-restconf</feature>-->
+            <!--<feature>odl-mdsal-apidocs</feature>-->
             <feature>odl-sfc-core</feature>
-            <!--<feature>odl-sfc-test-consumer</feature>-->
-            <!--<feature>odl-sfc-ui</feature>-->
-            <!--<feature>odl-sfcofl2</feature>-->
-            <!--<feature>odl-sfc-sb-rest</feature>-->
-            <!--<feature>odl-sfc-ovs</feature>-->
-            <!--<feature>odl-sfc-netconf</feature>-->
+            <feature>odl-sfc-test-consumer</feature>
+            <feature>odl-sfc-ui</feature>
+            <feature>odl-sfcofl2</feature>
+            <feature>odl-sfc-sb-rest</feature>
+            <feature>odl-sfc-ovs</feature>
+            <feature>odl-sfc-netconf</feature>
             <!-- 
               Add entries here for the features you want in your local distro
               Note: odl-restconf is a separate feature from odl-mdsal-broker.
@@ -367,34 +406,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.6</version>
+        <version>2.8</version>
         <executions>
           <execution>
             <id>copy</id>
             <goals>
               <goal>copy</goal>
             </goals>
+            <!-- here the phase you need -->
             <phase>generate-resources</phase>
             <configuration>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.opendaylight.controller</groupId>
                   <artifactId>karaf.branding</artifactId>
-                  <version>${branding.version}</version>
+                  <version>${karaf.branding.version}</version>
                   <outputDirectory>target/assembly/lib</outputDirectory>
                   <destFileName>karaf.branding-${branding.version}.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                    <groupId>org.ops4j.pax.logging</groupId>
-                    <artifactId>pax-logging-api</artifactId>
-                    <version>${pax.logging.api.version}</version>
-                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/${pax.logging.api.version}</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                    <groupId>org.ops4j.pax.logging</groupId>
-                    <artifactId>pax-logging-service</artifactId>
-                    <version>${pax.logging.service.version}</version>
-                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-service/${pax.logging.service.version}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -406,12 +434,29 @@
             </goals>
             <phase>prepare-package</phase>
             <configuration>
-             <outputDirectory>${project.build.directory}/assembly</outputDirectory>
-             <groupId>org.opendaylight.controller</groupId>
-             <includeArtifactIds>opendaylight-karaf-resources</includeArtifactIds>
-             <excludes>META-INF\/**</excludes>
-             <excludeTransitive>true</excludeTransitive>
-             <ignorePermissions>false</ignorePermissions>
+              <outputDirectory>${project.build.directory}/assembly</outputDirectory>
+              <groupId>org.opendaylight.controller</groupId>
+              <includeArtifactIds>opendaylight-karaf-resources</includeArtifactIds>
+              <excludes>META-INF\/**</excludes>
+              <excludeTransitive>true</excludeTransitive>
+              <ignorePermissions>false</ignorePermissions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/assembly/system</outputDirectory>
+              <excludeArtifactIds>distribution.vtn-coordinator</excludeArtifactIds>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <useRepositoryLayout>true</useRepositoryLayout>
+              <addParentPoms>true</addParentPoms>
+              <copyPom>true</copyPom>
             </configuration>
           </execution>
         </executions>
@@ -420,27 +465,27 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
-            <execution>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <chmod perm="755">
-                        <fileset dir="${project.build.directory}/assembly/bin">
-                          <include name="karaf" />
-                          <include name="instance" />
-                          <include name="start" />
-                          <include name="stop" />
-                          <include name="status" />
-                          <include name="client" />
-                          <include name="shell" />
-                        </fileset>
-                    </chmod>
-                  </tasks>
-                </configuration>
-            </execution>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <chmod perm="755">
+                  <fileset dir="${project.build.directory}/assembly/bin">
+                    <include name="karaf"/>
+                    <include name="instance"/>
+                    <include name="start"/>
+                    <include name="stop"/>
+                    <include name="status"/>
+                    <include name="client"/>
+                    <include name="shell"/>
+                  </fileset>
+                </chmod>
+              </tasks>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

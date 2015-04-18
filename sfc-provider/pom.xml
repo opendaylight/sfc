@@ -85,12 +85,12 @@
             <version>${config.version}</version>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>yang-jmx-generator-plugin</artifactId>
-            <version>${config.version}</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>yang-jmx-generator-plugin</artifactId>-->
+            <!--<version>${config.version}</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -236,8 +236,8 @@
                 <version>${compiler.version}</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -251,6 +251,9 @@
                         <Export-Package>
                             org.opendaylight.sfc.provider.*;
                         </Export-Package>
+                        <Import-Package>
+                            Import-Package: org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
+                        </Import-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>

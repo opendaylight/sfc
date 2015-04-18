@@ -139,52 +139,52 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-api</artifactId>
-            <version>${config.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-config</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-broker-impl</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>config-api</artifactId>-->
+            <!--<version>${config.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-api</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common-api</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-config</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-util</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-broker-impl</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common-util</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sfc-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>${project.groupId}</groupId>-->
+            <!--<artifactId>sfc-model</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-provider</artifactId>
@@ -208,12 +208,12 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+            <!--<version>${junit.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>

@@ -18,56 +18,56 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sfc-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-api</artifactId>
-            <version>${config.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-api</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-config</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-broker-impl</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>${project.groupId}</groupId>-->
+            <!--<artifactId>sfc-model</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-api</artifactId>-->
+            <!--<version>${slf4j.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>config-api</artifactId>-->
+            <!--<version>${config.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-api</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common-api</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-config</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-binding-util</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-broker-impl</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller</groupId>-->
+            <!--<artifactId>sal-common-util</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-provider</artifactId>
@@ -113,11 +113,11 @@
           <artifactId>openflowplugin</artifactId>
           <version>${openflowplugin.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <artifactId>model-inventory</artifactId>
-            <version>${mdsal.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.opendaylight.controller.model</groupId>-->
+            <!--<artifactId>model-inventory</artifactId>-->
+            <!--<version>${mdsal.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>yang-jmx-generator</artifactId>
@@ -190,61 +190,61 @@
             <artifactId>munge-maven-plugin</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.17</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.19</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sun.jersey</groupId>-->
+            <!--<artifactId>jersey-client</artifactId>-->
+            <!--<version>1.17</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.sun.jersey</groupId>-->
+            <!--<artifactId>jersey-json</artifactId>-->
+            <!--<version>1.19</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>${commons.lang.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-json-org</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google.code.gson</groupId>-->
+            <!--<artifactId>gson</artifactId>-->
+            <!--<version>${gson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+            <!--<artifactId>jackson-annotations</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+            <!--<artifactId>jackson-core</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+            <!--<artifactId>jackson-databind</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.datatype</groupId>-->
+            <!--<artifactId>jackson-datatype-json-org</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+            <!--<artifactId>jackson-jaxrs-base</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+            <!--<artifactId>jackson-jaxrs-json-provider</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml.jackson.module</groupId>-->
+            <!--<artifactId>jackson-module-jaxb-annotations</artifactId>-->
+            <!--<version>${jackson.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
@@ -290,8 +290,8 @@
                 <version>${compiler.version}</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>

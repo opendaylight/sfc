@@ -297,7 +297,7 @@
                   <pluginExecutionFilter>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <versionRange>[0,)</versionRange>
+                    <versionRange>${karaf.maven.version}</versionRange>
                     <goals>
                       <goal>commands-generate-help</goal>
                     </goals>
@@ -365,7 +365,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf.version}</version>
+        <version>${karaf.maven.version}</version>
         <extensions>true</extensions>
         <configuration>
           <bootFeatures>
@@ -376,7 +376,7 @@
             <feature>odl-sfc-core</feature>
             <feature>odl-sfc-test-consumer</feature>
             <feature>odl-sfc-ui</feature>
-            <feature>odl-sfcofl2</feature>
+            <!--<feature>odl-sfcofl2</feature>-->
             <feature>odl-sfc-sb-rest</feature>
             <feature>odl-sfc-ovs</feature>
             <feature>odl-sfc-netconf</feature>

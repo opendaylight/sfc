@@ -38,7 +38,6 @@
             <artifactId>model-inventory</artifactId>
             <version>${mdsal.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-api</artifactId>
@@ -251,9 +250,6 @@
                         <Export-Package>
                             org.opendaylight.sfc.provider.*;
                         </Export-Package>
-                        <Import-Package>
-                            Import-Package: org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
-                        </Import-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>

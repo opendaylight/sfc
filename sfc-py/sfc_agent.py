@@ -16,6 +16,7 @@ import netifaces
 from urllib.parse import urlparse
 
 import xe_cli
+import xr_cli
 import ovs_cli
 
 import common.sfc_globals
@@ -338,8 +339,13 @@ def create_path(rsp_name):
     if not build_data_plane_service_path(local_path[rsp_name]):
         # Testing XE cli processing module
         if local_sff_os == 'XE':
-            logger.info("Provisioning %s SFF", local_sff_os)
+            logger.info("Provisioning %s XE SFF", local_sff_os)
             xe_cli.process_xe_cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == 'XR':
+            logger.info("Provisioning %s XR SFF", local_sff_os)
+            print('local path : ', local_path)  # debug to see if receive metadata - will remove
+            xr_cli.process_xr_cli(sfc_globals.get_data_plane_path())
 
         elif local_sff_os == 'OVS':
             logger.info("Provisioning %s SFF", local_sff_os)
@@ -773,6 +779,7 @@ def main():
                                             "--odl-get-sff "
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
+                                            "--sff-os=<agent os>"
                                             " --agent-port=<agent listening port>"
                                             "\n\nnote:\n"
                                             "root privileges are required "
@@ -801,7 +808,7 @@ def main():
                         help='Set local SFF Open vSwitch IP. '
                              'Default is %s' % ovs_local_sff_cp_ip)
 
-    parser.add_argument('--sff-os', choices=['XE', 'OVS'],
+    parser.add_argument('--sff-os', choices=['XE', 'XR', 'OVS'],
                         help='Set SFF switch OS')
 
     parser.add_argument('--agent-port', type=int,

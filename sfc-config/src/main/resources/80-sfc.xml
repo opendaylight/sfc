@@ -131,6 +131,7 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl?module=sfc-sb-rest-provider-impl&amp;revision=2014-10-20</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl?module=sfc-ovs-impl&amp;revision=2014-10-20</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-netconf:impl?module=sfc-netconf-impl&amp;revision=2014-10-20</capability>
+        <!--<capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-l2renderer:impl?module=sfc-l2renderer-impl&amp;revision=2014-09-01</capability>-->
     </required-capabilities>
 
 </snapshot>

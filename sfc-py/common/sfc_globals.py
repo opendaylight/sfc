@@ -60,7 +60,7 @@ class SfcGlobals:
     """
     sff_os = "ODL"
     my_sff_name = None
-    sff_os_set = {"OVS", "XE"}
+    sff_os_set = {"OVS", "XE", "XR"}
 
     path = {}
     sf_topo = {}

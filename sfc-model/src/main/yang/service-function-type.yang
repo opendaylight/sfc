@@ -84,6 +84,16 @@ module service-function-type {
     description "HTTP services that add HTTP headers for charging and adding subscriber metadata";
   }
 
+  identity Cisco-vASA {
+    base "service-function-type-identity";
+    description "Cisco vASA";
+  }
+
+  identity Cisco-vNBAR {
+    base "service-function-type-identity";
+    description "Cisco vNBAR";
+  }
+
   typedef service-function-type {
     type identityref {
       base "service-function-type-identity";

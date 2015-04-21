@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_6e922659",
+        "filename": "features-sfcofl2/src/main/resources/features.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-04-21T09:59:51Z",
+      "side": 1,
+      "message": "Dependency is currently missing in features-sfcofl2/pom.xml (if I see correcty).",
+      "range": {
+        "startLine": 30,
+        "startChar": 127,
+        "endLine": 30,
+        "endChar": 137
+      },
+      "revId": "fe4395a46c0e5aaa909bb7bfbf8b503fb54e6a16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

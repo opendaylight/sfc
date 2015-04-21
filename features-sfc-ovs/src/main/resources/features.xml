@@ -10,20 +10,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <features name="odl-sfc-ovs-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <!--<repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>-->
     <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
     <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: OpenvSwitch '>
-          <!--
-            Necessary TODO:
-            List all of the user consumable features you define in this feature file here.
-            Generally you would *not* list individual bundles here, but only features defined in *this* file.
-            It is useful to list them in the same order they occur in the file.
 
-            Examples:
-            <feature version='${project.version}'>odl-sfc-provider</feature>
-            <feature version='${project.version}'>odl-sfc-model</feature>
-        -->
+        <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">mvn:org.opendaylight.sfc/sfc-ovs/${project.version}/xml/config</configfile>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version='${mdsal.version}'>odl-mdsal-broker</feature>-->
@@ -31,8 +23,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
     </feature>
-    
-    <!-- Optional TODO: Remove TODO Comments -->
 
 </features>
 

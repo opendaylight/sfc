@@ -32,23 +32,6 @@
                     </binding-registry>
                 </module>
 
-                <!--<module>-->
-                    <!--<type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-l2renderer:impl">-->
-                        <!--sfc:sfc-l2renderer-impl-->
-                    <!--</type>-->
-                    <!--<name>sfc-l2renderer-impl</name>-->
-
-                    <!--<rpc-registry>-->
-                        <!--<type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>-->
-                        <!--<name>binding-rpc-broker</name>-->
-                    <!--</rpc-registry>-->
-
-                    <!--<data-broker>-->
-                        <!--<type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>-->
-                        <!--<name>binding-data-broker</name>-->
-                    <!--</data-broker>-->
-                <!--</module>-->
-
                 <module>
                     <type xmlns:consumer="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-test-consumer:impl">
                         consumer:sfc-test-consumer-impl
@@ -131,7 +114,6 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl?module=sfc-sb-rest-provider-impl&amp;revision=2014-10-20</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl?module=sfc-ovs-impl&amp;revision=2014-10-20</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-netconf:impl?module=sfc-netconf-impl&amp;revision=2014-10-20</capability>
-        <!--<capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-l2renderer:impl?module=sfc-l2renderer-impl&amp;revision=2014-09-01</capability>-->
     </required-capabilities>
 
 </snapshot>

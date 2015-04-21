@@ -15,9 +15,7 @@ import requests
 import netifaces
 from urllib.parse import urlparse
 
-import xe_cli
-import xr_cli
-import ovs_cli
+from cli import xe_cli, xr_cli, ovs_cli
 
 import common.sfc_globals
 from common import classifier

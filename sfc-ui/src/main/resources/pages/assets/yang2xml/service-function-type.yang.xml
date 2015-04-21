@@ -85,6 +85,18 @@ types are derived.</text>
       <text>HTTP services that add HTTP headers for charging and adding subscriber metadata</text>
     </description>
   </identity>
+  <identity name="Cisco-vASA">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Cisco vASA</text>
+    </description>
+  </identity>
+  <identity name="Cisco-vNBAR">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Cisco vNBAR</text>
+    </description>
+  </identity>
   <typedef name="service-function-type">
     <type name="identityref">
       <base name="service-function-type-identity"/>

@@ -55,7 +55,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $rootScope.aclConstants =
     {
-      "ace-type": ["ip", "eth"],
+      "ace-type": ["ip", "eth", "ipfix"],
       "ace-ip": ["IPv4", "IPv6"]
     };
 
@@ -129,8 +129,19 @@ define(['app/sfc/sfc.module'], function (sfc) {
           {"flags": {}, "tlv-class": "0x123", "tlv-type": "0x12", "tlv-data": "data", "length": "4"}
         ],
         "name": "VariableMetadata1"
+      },
+      classIdDefault: {
+        "id": "255",
+        "name": "SubscriberClass",
+        "description": "Classification from a mapping IP Address to a class of user. This mapping is provided to the classifier independently."
+      },
+      appIdDefault : {
+        "class-id": "255",
+        "selector-id": "1",
+        "pen": "0",
+        "applicationName": "Gold",
+        "applicationDescription": "Gold Subscriber Class with privileged access to the network."
       }
-
     };
 
     $sessionStorage.$default({

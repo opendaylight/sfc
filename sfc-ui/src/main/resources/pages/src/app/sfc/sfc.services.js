@@ -1244,6 +1244,42 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcClassifierStateSvc();
   });
 
+  // ******* SfcIpfixClassIdSvc *********
+  sfc.register.factory('SfcIpfixClassIdSvc', function (SfcRestBaseSvc) {
+    var modelUrl = 'ipfix-application-information';
+    var containerName = 'class-id-dictionary';
+    var listName = 'class-id';
+
+    // constructor
+    function SfcIpfixClassIdSvc() {
+    }
+
+    SfcIpfixClassIdSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcIpfixClassIdSvc();
+  });
+
+// ******* SfcIpfixAppIdSvc *********
+  sfc.register.factory('SfcIpfixAppIdSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'ipfix-application-information';
+    var containerName = 'application-id-dictionary';
+    var listName = 'application-id';
+
+    // constructor
+    function SfcIpfixAppIdSvc() {
+    }
+
+    SfcIpfixAppIdSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    // @override
+    SfcIpfixAppIdSvc.prototype.getListKeyFromItem = function (itemData) {
+        return itemData['applicationName'];
+    };
+
+    return new SfcIpfixAppIdSvc();
+  });
+
 // ******* RenderedServicePathSvc *********
   sfc.register.factory('RenderedServicePathSvc', function (SfcRestBaseSvc) {
 

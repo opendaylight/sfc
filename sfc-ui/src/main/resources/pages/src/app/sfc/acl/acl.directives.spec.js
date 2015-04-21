@@ -1,4 +1,4 @@
-define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app/sfc/acl/acl.ip.v6.tpl.html', 'app/sfc/acl/acl.ethernet.tpl.html', 'app/sfc/acl/acl.ip.tpl.html'], function (sfc) {
+define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app/sfc/acl/acl.ip.v6.tpl.html', 'app/sfc/acl/acl.ethernet.tpl.html', 'app/sfc/acl/acl.ip.tpl.html', 'app/sfc/acl/acl.ip.tpl.html', 'app/sfc/acl/acl.ipfix.tpl.html'], function (sfc) {
 
   ddescribe('SFC - acl.directives', function () {
     var scope, compile;
@@ -8,6 +8,7 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ip.v6.tpl.html'));
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ethernet.tpl.html'));
     beforeEach(angular.mock.module('src/app/sfc/acl/acl.ip.tpl.html'));
+    beforeEach(angular.mock.module('src/app/sfc/acl/acl.ipfix.tpl.html'));
 
     beforeEach(angular.mock.inject(function ($rootScope, $compile) {
       scope = $rootScope.$new();
@@ -233,6 +234,37 @@ define(['app/sfc/sfc.test.module.loader', 'app/sfc/acl/acl.ip.v4.tpl.html', 'app
 
     });
 
+ describe('directive: acl-ipfix-matches', function () {
+
+      beforeEach(function () {
+        this.addMatchers(sfc.customJasmineMatchers);
+      });
+
+      var inputElement;
+
+      var compileDirective = function (scope) {
+        inputElement = compile('<acl-ipfix-matches id-suffix="0" matches="outer_matches" reset-on="ipv6-reset-event-key" not-reset-condition="not-reset"></acl-ipfix-matches>')(scope);
+      };
+
+      it("should delete properties in matches model on registed event", function () {
+
+        scope.outer_matches = {
+          'service-function-acl:application-id': 'test'
+        };
+
+        compileDirective(scope);
+        scope.$digest();
+
+        expect(scope.outer_matches).toContainProperty('service-function-acl:application-id');
+
+        scope.$broadcast('ipv6-reset-event-key', 'not-reset');
+
+        expect(scope.outer_matches).toContainProperty('service-function-acl:application-id');
+        scope.$broadcast('ipv6-reset-event-key', 'whatever');
+
+        expect(scope.outer_matches).not.toContainProperty('service-function-acl:application-id');
+      });
+    });
 
   });
 });

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('sfcAclCtrl', function ($scope, $state, SfcAclSvc, SfcAclHelper, SfcAclModalMetadata, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
+  sfc.register.controller('sfcAclCtrl', function ($scope, $state, $sce, SfcAclSvc, SfcAclHelper, SfcIpFixHelper, SfcAclModalMetadata, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
 
     var thisCtrl = this;
 
@@ -71,6 +71,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       entry['destination-port-range-string'] = SfcAclHelper.destinationPortRangeToString(entry['matches']['destination-port-range']);
       entry['dscp-string'] = SfcAclHelper.dscpToString(entry['matches']);
       entry['ip-protocol-string'] = SfcAclHelper.ipProtocolToString(entry['matches']);
+      entry['application-id-string'] = $sce.trustAsHtml(SfcIpFixHelper.appIdToString(entry['matches']));
     };
 
     //table actions
@@ -104,7 +105,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc) {
+  sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, SfcIpfixClassIdSvc, SfcIpfixAppIdSvc, SfcIpFixHelper) {
 
     $scope.data = {'access-list-entries': []}; // initial data
 
@@ -116,6 +117,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.variableMetadata = data;
     });
 
+    SfcIpfixClassIdSvc.getArray(function (data) {
+      $scope.classid = data.sort(function(a, b) { return a.id - b.id; }); // sort by id
+    });
+
+    SfcIpfixAppIdSvc.getArray(function (data) {
+      $scope.appid = data.sort(function(a, b) { return a['selector-id'] - b['selector-id']; }); // sort by id
+    });
+
     if ($stateParams.itemKey) {
       SfcAclSvc.getItem($stateParams.itemKey, function (item) {
         $scope.data = item;
@@ -125,7 +134,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     }
 
     $scope.valueOfAceType = function (matches) {
-      return SfcAclHelper.valueOfAceType(matches, $rootScope);  // IP. ethernet
+      return SfcAclHelper.valueOfAceType(matches, $rootScope);  // IP. ethernet IPFIX
     };
 
     // form actions

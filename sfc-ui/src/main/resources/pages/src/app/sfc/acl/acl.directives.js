@@ -123,6 +123,58 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
+  sfc.register.directive('aclIpfixMatches', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'src/app/sfc/acl/acl.ipfix.tpl.html',
+      scope: {
+        idSuffix: '@idSuffix',
+        matches: '=matches',
+        classid: '=classid',
+        appid: '=appid',
+        resetOn: '@resetOn',
+        notResetCondition: '@notResetCondition',
+      },
+      controller: function ($scope) {
+        $scope.appid_filtered = []; // initial data
+
+        $scope.$on($scope.resetOn, function (event, arg) {
+          if (arg != $scope.notResetCondition) {
+            delete $scope['matches']['service-function-acl:application-id'];
+          }
+        });
+
+        $scope.classIdChanged = function (cid, matches){
+          $scope.appid_filtered = [];
+          if(cid != "") {
+            if (angular.isUndefined(matches['service-function-acl:application-id'])) {
+              matches['service-function-acl:application-id'] = [];
+            }
+            for (var i = 0, len = $scope.appid.length; i < len; i++) {
+              // Check the class-id and if the applicationId is not already selected
+              if($scope.appid[i]['class-id'] == cid
+                 && matches['service-function-acl:application-id'].indexOf($scope.appid[i]['applicationName']) == -1 ) {
+                $scope.appid_filtered.push($scope.appid[i]);
+              }
+            }
+
+          }
+        };
+
+        $scope.appIdSelected = function (aid, matches){
+          if(aid != "") {
+            if (angular.isUndefined(matches['service-function-acl:application-id'])) {
+              matches['service-function-acl:application-id'] = [];
+            }
+            matches['service-function-acl:application-id'].push(aid);
+            $scope.classIdChanged($scope.sel_classid, matches); // update appid dropdown list
+          }
+        };
+      }
+    };
+  });
+
   sfc.register.directive('classifierSff', function () {
     return {
       restrict: 'E',

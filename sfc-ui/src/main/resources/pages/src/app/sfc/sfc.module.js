@@ -204,6 +204,7 @@ define([
       'app/sfc/utils/modal.controller',
       'app/sfc/acl/acl.controller',
       'app/sfc/metadata/metadata.controller',
+      'app/sfc/ipfix/ipfix.controller',
       'app/sfc/servicelocator/servicelocator.controller',
       'app/sfc/system/system.controller',
       'app/sfc/servicepath/renderedservicepath/renderedservicepath.controller'];
@@ -230,6 +231,7 @@ define([
       'app/sfc/serviceforwarder/serviceforwarder.directives',
       'app/sfc/acl/acl.directives',
       'app/sfc/metadata/metadata.directives',
+      'app/sfc/ipfix/ipfix.directives',
       'app/sfc/servicepath/servicepath.directives',
       'app/sfc/utils/datatemplate.directives'
     ];
@@ -561,6 +563,61 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/metadata/metadata.variable.create.tpl.html',
           controller: 'sfcMetadataVariableCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.ipfix', {
+      url: '/ipfix',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/ipfix/ipfix.tpl.html',
+          controller: 'sfcIpfixCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.ipfix-classid-create', {
+      url: '/ipfix-classid-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/ipfix/ipfix.classid.create.tpl.html',
+          controller: 'sfcIpfixClassIdCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.ipfix-classid-edit', {
+      url: '/ipfix-classid-edit-:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/ipfix/ipfix.classid.create.tpl.html',
+          controller: 'sfcIpfixClassIdCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.ipfix-appid-create', {
+      url: '/ipfix-appid-create',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/ipfix/ipfix.appid.create.tpl.html',
+          controller: 'sfcIpfixAppIdCreateCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.ipfix-appid-edit', {
+      url: '/ipfix-appid-edit-:itemKey',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/ipfix/ipfix.appid.create.tpl.html',
+          controller: 'sfcIpfixAppIdCreateCtrl'
         }
       }
     });

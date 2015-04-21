@@ -15,7 +15,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     svc.valueOfAceType = function (matches, $rootScope) {
-      var r1, r2;
+      var r0, r1, r2;
+
+      if (matches['service-function-acl:application-id']) {
+        r0 = $rootScope.aclConstants['ace-type'][2]; // service-function-acl:application-id
+      }
 
       if (matches['destination-mac-address'] ||
         matches['destination-mac-address-mask'] ||
@@ -32,11 +36,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
         r2 = $rootScope.aclConstants['ace-type'][0]; // ip
       }
 
-      if (r1 && r2) {
-        throw new Error("IP/ETH mismatch");
+      if (r0 && r1 || r0 && r2 || r1 && r2) {
+        throw new Error("IP/ETH/IPFIX mismatch");
       }
 
-      return r1 || r2;
+      return r0 || r1 || r2;
     };
 
     svc.valueOfIpVersion = function (matches, $rootScope) {
@@ -215,6 +219,23 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     return svc;
   });
+
+    sfc.register.factory("SfcIpFixHelper", function () {
+    var svc = {};
+
+    svc.appIdToString = function (matches) {
+      var str = "";
+      if (!angular.isUndefined(matches['service-function-acl:application-id'])) {
+        matches['service-function-acl:application-id'].sort();
+        for ( var i = 0; i < matches['service-function-acl:application-id'].length; i++ ) {
+            str += matches['service-function-acl:application-id'][i] + "<br/>";
+        }
+      }
+      return str;
+    };
+
+    return svc;
+    });
 
   sfc.register.factory('SfcAclModalMetadata', function ($modal) {
     var svc = {};

@@ -185,6 +185,9 @@
                 <acl-ethernet-matches matches="ace['matches']" id-suffix="{{'_' + $index}}"
                                       ng-if="ace_type == aclConstants['ace-type'][1]"
                                       reset-on="ace_type_change" not-reset-condition="{{aclConstants['ace-type'][1]}}"></acl-ethernet-matches>
+                <acl-ipfix-matches matches="ace['matches']" id-suffix="{{'_' + $index}}" classid="classid" appid="appid"
+                                   ng-if="ace_type == aclConstants['ace-type'][2]"
+                                   reset-on="ace_type_change" not-reset-condition="{{aclConstants['ace-type'][2]}}"></acl-ipfix-matches>
 
             </div>
         </div>

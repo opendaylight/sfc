@@ -1,0 +1,95 @@
+<div class="col-xs-12" style="padding: 0px">
+    <div class="col-md-12" style="padding: 0; margin-bottom: 20px; margin-top: 20px">
+        <a class="btn btn-info add-row" href="index.html#/sfc/ipfix-classid-create">
+            {{'SFC_IPFIX_CLASSID_ADD' | translate}}
+        </a>
+
+        <button type="button" ng-click="classIdTableParams.sorting({})"
+                class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+        </button>
+    </div>
+    <table ng-table="classIdTableParams" show-filter="true" class="footable table">
+        <tr ng-repeat="entry in $data track by $index">
+            <td data-title="'SFC_IPFIX_CLASSID_ID' | translate" sortable="'id'" filter="{ 'id': 'text' }">
+                {{entry['id']}}
+            </td>
+            <td data-title="'SFC_IPFIX_CLASSID_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
+                {{entry['name']}}
+            </td>
+            <td data-title="'SFC_IPFIX_CLASSID_DESC' | translate">
+                {{entry['description']}}
+            </td>
+            <td data-title="'SFC_IPFIX_ACTIONS' | translate">
+                <a ng-click="deleteClassIdItem(entry)">
+                    <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_IPFIX_CLASSID_DELETE' | translate }}"></i>
+                </a>
+                <a ng-click="editClassIdItem(entry)">
+                    <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_IPFIX_CLASSID_EDIT' | translate }}"></i>
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <button type="button" ng-click="deleteAllClassId()" class="btn btn-danger pull-right" style="margin-bottom: 20px">
+        {{'SFC_IPFIX_CLASSID_DELETE_ALL' | translate}}
+    </button>
+
+    <div class="col-md-12" style="padding: 0; margin-bottom: 20px; margin-top: 20px">
+        <a class="btn btn-info add-row" href="index.html#/sfc/ipfix-appid-create">
+            {{'SFC_IPFIX_APPID_ADD' | translate}}
+        </a>
+
+        <button type="button" ng-click="variableMetadataTableParams.sorting({})"
+                class="btn btn-default pull-right">{{'SFC_CLEAR_SORTING' | translate}}
+        </button>
+    </div>
+
+    <table ng-table="appIdTableParams" show-filter="true" class="footable table">
+        <tr ng-repeat="entry in $data track by $index">
+            <td data-title="'SFC_IPFIX_APPID_CLASSID' | translate" sortable="'class-id'" filter="{ 'class-id': 'text' }">
+                {{entry['class-id']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_SELECTORID' | translate" sortable="'selector-id'" filter="{ 'selector-id': 'text' }">
+                {{entry['selector-id']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_PEN' | translate" sortable="'pen'" filter="{ 'pen': 'text' }">
+                {{entry['pen']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_NAME' | translate" sortable="'applicationName'"
+                filter="{ 'applicationName': 'text' }">
+                {{entry['applicationName']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_GROUP' | translate" sortable="'applicationGroupName'"
+                filter="{ 'applicationGroupName': 'text' }">
+                {{entry['applicationGroupName']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_CATEGORY' | translate" sortable="'applicationCategoryName'"
+                filter="{ 'applicationCategoryName': 'text' }">
+                {{entry['applicationCategoryName']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_SUBCATEGORY' | translate" sortable="'applicationSubCategoryName'"
+                filter="{ 'applicationSubCategoryName': 'text' }">
+                {{entry['applicationSubCategoryName']}}
+            </td>
+            <td data-title="'SFC_IPFIX_APPID_DESC' | translate">
+                {{entry['applicationDescription']}}
+            </td>
+            <td data-title="'SFC_IPFIX_ACTIONS' | translate">
+                <a ng-click="deleteAppIdItem(entry)">
+                    <i class="icon-remove" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_IPFIX_APPID_DELETE' | translate }}"></i>
+                </a>
+                <a ng-click="editAppIdItem(entry)">
+                    <i class="icon-edit" style="cursor: pointer" popover-trigger="mouseenter"
+                       popover="{{ 'SFC_IPFIX_APPID_EDIT' | translate }}"></i>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <button type="button" ng-click="deleteAllAppId()" class="btn btn-danger pull-right" style="margin-bottom: 20px">
+        {{'SFC_IPFIX_APPID_DELETE_ALL' | translate}}
+    </button>
+
+</div>

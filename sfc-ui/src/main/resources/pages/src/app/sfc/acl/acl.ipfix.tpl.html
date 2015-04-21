@@ -1,0 +1,39 @@
+<div class="form-horizontal"
+     ng-form="f_ipfix"
+     sfc-watch-for-reinit="matches">
+<!--
+    <h4>{{'SFC_ACL_IPFIX_SEARCH_MATCHER' | translate}}</h4>
+-->
+    <div class="form-group">
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="class-id" name="class_id_select"
+                    ui-select2="{allowClear: true}"
+                    ng-model="sel_classid"
+                    ng-required="false"
+                    data-placeholder="{{'SFC_ACL_FILTER_BY_CLASSID' | translate}}"
+                    ng-click="classIdChanged(sel_classid, matches)">
+
+                <option value=""></option>
+                <option ng-repeat="cid in classid" value="{{cid['id']}}">{{cid['id']}}-{{cid['name']}}</option>
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="app-id" name="app_id_select"
+                    ui-select2="{allowClear: true}"
+                    ng-model="sel_appid"
+                    ng-required="false"
+                    data-placeholder="{{'SFC_ACL_SELECT_APPID' | translate}}"
+                    ng-click="appIdSelected(sel_appid, matches)">
+
+                 <option value=""></option>
+                 <option ng-repeat="aid in appid_filtered" value="{{aid['applicationName']}}">{{aid['selector-id']}}-{{aid['applicationName']}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <select class="form-control input-sm" id="appids" ui-select2 multiple
+                ng-model="matches['service-function-acl:application-id']">
+            <option ng-repeat="aid in appid" value="{{aid['applicationName']}}">{{aid['class-id']}}..{{aid['selector-id']}} / {{aid['applicationName']}}</option>
+        </select>
+    </div>
+</div>

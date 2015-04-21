@@ -84,8 +84,8 @@ module ipfix-application-information {
     container class-id-dictionary {
         description "Dictionary for classification ids";
         list class-id {
-            key "id";
-            unique "name";
+            key "name";
+            unique "id";
             leaf id {
                 description "Classification identifier";
                 type uint8;
@@ -105,7 +105,7 @@ module ipfix-application-information {
     container application-id-dictionary {
         description "Dictionary for application ids";
         list application-id {
-            key "class-id pen selector-id";
+            key "applicationName";
             unique "class-id pen selector-id";
             leaf class-id {
                 type leafref {

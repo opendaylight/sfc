@@ -61,6 +61,9 @@
                 filter="{ 'dscp-string': 'text' }">
                 {{entry['matches']['dscp']}}
             </td>
+            <td data-title="'SFC_ACL_IPFIX' | translate"
+                filter="{ 'application-id-string': 'text' }" ng-bind-html="entry['application-id-string']">
+            </td>
             <td data-title="'SFC_ACL_ACTIONS' | translate">
                 <a ng-click="showMetadata(entry)">
                     <i class="icon-list-alt" style="cursor: pointer" popover-trigger="mouseenter"

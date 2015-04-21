@@ -20,8 +20,8 @@ XR CLI processing module
 """
 
 # hard code dictionary of service nodes with type and index
-service_node = {'10.1.1.2': {'node_type': 'vxlan-gpe-nsh', 'index': 20},
-                '10.1.1.1': {'node_type': 'vxlan-gpe-nsh', 'index': 10}}
+service_node = {'10.0.20.241': {'node_type': 'vxlan-gpe-nsh', 'index': 20},
+                '10.0.21.233': {'node_type': 'vxlan-gpe-nsh', 'index': 21}}
 
 
 def process_rendered_service_path(rsp):
@@ -109,9 +109,27 @@ def ssh_execute_cli(rsp_service_hops, ending_si_index, spi, sff_locator):
 
     # complete the service-path cli and push it
     # once work on metadata will do a check to see if metadata present - following assumes no metadata
-    ending_rsp_cli = 'service-index ' + str(ending_si_index) + ' terminate service-node output 10'
+    ending_rsp_cli = 'service-index ' + str(
+        ending_si_index) + ' terminate service-node output 200 lookup metadata-location 1'
     send_command_and_wait_for_execution(sshChannel, ending_rsp_cli + '\n', "#", False)
+    send_command_and_wait_for_execution(sshChannel, "exit\n", "#", False)
     print('debug: sending ', ending_rsp_cli)
+
+    # Process policy-map configuration
+    policy_map_cli = 'policy-map type pbr nsh' + str(spi)
+    send_command_and_wait_for_execution(sshChannel, policy_map_cli + '\n', "#", False)
+    send_command_and_wait_for_execution(sshChannel, "class type traffic nsh\n", "#", False)
+    ending_si_index += len(rsp_service_hops)
+    ending_policy_cli = 'redirect service-path ' + str(spi) + ' service-index ' + str(ending_si_index) + ' metadata 1'
+    send_command_and_wait_for_execution(sshChannel, ending_policy_cli + '\n', "#", False)
+    send_command_and_wait_for_execution(sshChannel, "exit\n", "#", False)
+    send_command_and_wait_for_execution(sshChannel, "exit\n", "#", False)
+
+    # Process interface configuration
+    send_command_and_wait_for_execution(sshChannel, "interface GigabitEthernet0/0/1/0\n", "#", False)
+    send_command_and_wait_for_execution(sshChannel, "no service-policy type pbr input\n", "#", False)
+    interface_cli = 'service-policy type pbr input nsh' + str(spi)
+    send_command_and_wait_for_execution(sshChannel, interface_cli + '\n', "#", False)
 
     # commit the configuration
     send_command_and_wait_for_execution(sshChannel, "commit\n", "#", False)  # commit the configuration
@@ -138,7 +156,7 @@ def process_xr_cli(data_plane_path):
         rsp_service_hops, ending_si_index = process_rendered_service_path(rsp)
 
         # dummy locator for testing purposes - needs to be removed
-        # locator = '172.29.66.237'
+        # locator = '172.29.66.230'
 
         # send cli to configure XR router
         # ssh_execute_cli(rsp_cli_to_push, sff_locator)

@@ -19,15 +19,21 @@
     <name>sfc</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
-    <!--
+    <!-- The following sections are for compatability with Maven Central -->
+    <description>Open Daylight SDN controller Service Function Chaining application</description>
+    <url>https://wiki.opendaylight.org/view/Service_Function_Chaining:Main</url>
+    <licenses>
+      <license>
+        <name>Eclipse Public License v1.0</name>
+        <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      </license>
+    </licenses>
     <scm>
       <connection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</connection>
       <developerConnection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</developerConnection>
       <url>https://wiki.opendaylight.org/view/Service_Function_Chaining:Main</url>
       <tag>HEAD</tag>
     </scm>
-    -->
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

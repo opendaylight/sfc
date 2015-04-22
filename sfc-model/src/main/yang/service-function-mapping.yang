@@ -1,0 +1,76 @@
+module service-function-mapping {
+
+  namespace "urn:ericsson:params:xml:ns:yang:sfc-sf-map";
+
+  prefix sfc-sf-map;
+
+  import service-function-type {prefix sfc-sft;}
+  import service-locator {prefix sfc-sl;}
+
+  organization "Ericsson Inc.";
+  contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
+
+  description
+    "The defenitions herein allow for an SF and SFF to easily be
+     identified given the Service Locator transport type and the
+     SF type. These entities will be populated when the SFF and
+     SFs are populated, and cannot be configured via RESTConf.
+     Currently, there is no way of knowing if SFFs specified in
+     adjacent Service Chain hops are reachable, so later, when
+     SFC has something capable of determining the SFF topology,
+     the SFF list may be modified.";
+
+  revision 2014-07-01 {
+    description
+    "First version.";
+  }
+
+  container service-function-mapping {
+    config false;
+    description
+      "This container maps the transport type to service functions
+       that are reachable by the transport type. Each service function
+       then maps to the service function forwarders that reach the
+       service function";
+
+    list sl-transports {
+      key "transport";
+      leaf transport {
+        type identityref {
+          base sfc-sl:sl-transport-type;
+        }
+        description
+          "the name of the locator transport";
+      }
+
+      list service-functions {
+        // TODO Im doubting if the key should be sf-name or sf-type.
+        //      I dont think it will work if its type, as there can
+        //      be several SFs of the same type
+
+        key "sf-name";
+        leaf sf-name {
+          type string;
+          description
+            "the name of the service function";
+        }
+
+        leaf sf-type {
+          type sfc-sft:service-function-type;
+          description
+              "The service function type";
+        }
+
+        list service-function-forwarders {
+          key "sff-name";
+          leaf sff-name {
+            type string;
+            description
+              "the name of the service function forwarder";
+          }
+        }
+      }
+    }
+  }
+}
+

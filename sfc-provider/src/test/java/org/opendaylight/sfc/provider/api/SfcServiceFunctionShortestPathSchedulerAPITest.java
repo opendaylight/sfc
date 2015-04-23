@@ -78,6 +78,13 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
+        /* Some unit tests didn't delete all the objects, so clean up them first */
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+
         //build SFs
         final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1", "196.168.55.2", "196.168.55.3",
@@ -222,7 +229,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         /* Must create ServiceFunctionType first */
         for (ServiceFunction serviceFunction : sfList) {
-            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
+            boolean ret = SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
+            LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
+            assertTrue("Must be true", ret);
         }
 
         for (ServiceFunction serviceFunction : sfList) {
@@ -232,6 +241,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
                     .getRead(parameters2, parameterTypes2)).get();
             ServiceFunction sf2 = (ServiceFunction) result;
 
+            LOG.debug("read ServiceFunction {}", serviceFunction.getName());
             assertNotNull("Must be not null", sf2);
             assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());

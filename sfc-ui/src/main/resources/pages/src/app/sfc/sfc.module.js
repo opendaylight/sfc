@@ -358,6 +358,28 @@ define([
       }
     });
 
+    $stateProvider.state('main.sfc.servicefunction-statsvasa', {
+      url: '/servicefunction-statsvasa-:sf',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/servicefunction/servicefunction.vasastats.tpl.html',
+          controller: 'serviceFunctionCreateCtrl'
+        }
+      }
+    });
+
+   $stateProvider.state('main.sfc.servicefunction-statsvnbar', {
+      url: '/servicefunction-statsvnbar-:sf',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/servicefunction/servicefunction.vnbarstats.tpl.html',
+          controller: 'serviceFunctionCreateCtrl'
+        }
+      }
+    });
+
     $stateProvider.state('main.sfc.serviceforwarder-clone', {
       url: '/serviceforwarder-edit-:sff',
       access: access.public,
@@ -453,6 +475,17 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/config/config.tpl.html',
           controller: 'configCtrl'
+        }
+      }
+    });
+
+    $stateProvider.state('main.sfc.servicevnbar', {
+      url: '/servicevnbar',
+      access: access.public,
+      views: {
+        'sfc': {
+          templateUrl: 'src/app/sfc/servicevnbar/servicevnbar.tpl.html',
+          controller: 'servicePathCtrl'
         }
       }
     });

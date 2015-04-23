@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceFunctionCtrl', function ($scope, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter, $q) {
+  sfc.register.controller('serviceFunctionCtrl', function ($scope, $window, $state, ServiceFunctionSvc, ServiceFunctionHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter, $q) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams;
 
@@ -99,6 +99,32 @@ define(['app/sfc/sfc.module'], function (sfc) {
         relative: $state.$current,
         notify: true
       });
+    };
+
+    $scope.statsSF = function statsSF(sf) {
+
+    if (sf['type'] == 'Cisco-vASA' ) {
+        sf['ip-mgmt-address'] = "https://"+ sf['ip-mgmt-address'] ;
+        sf['ip-mgmt-address'] =  sf['ip-mgmt-address'] + "/admin/exec/show+nsh";
+        $state.transitionTo('main.sfc.servicefunction-statsvasa', {"sf": JSON.stringify(sf)}, {
+        location: true,
+        inherit: true,
+        relative: $state.$current,
+        notify: true
+      });
+    }
+    else if (sf['type'] == 'Cisco-vNBAR') {
+        sf['ip-mgmt-address'] =  "http://" + sf['ip-mgmt-address'] ;
+        sf['ip-mgmt-address'] =  sf['ip-mgmt-address'] + "/appBars.html";
+        $state.transitionTo('main.sfc.servicefunction-statsvnbar', {"sf": JSON.stringify(sf)}, {
+        location: true,
+        inherit: true,
+        relative: $state.$current,
+        notify: true
+      });
+
+    }
+    else {}
     };
 
     $scope.deleteAll = function deleteAll() {

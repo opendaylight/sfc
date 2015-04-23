@@ -275,6 +275,7 @@
   "SFC_SERVICE_PATHS": "Service Function Paths",
   "SFC_RENDERED_SERVICE_PATHS": "Rendered Service Paths",
   "SFC_CONFIG": "Config",
+  "SFC_SERVICE_VNBAR": "vNBAR Statistics",
   "SFC_SYSTEM": "System info",
   "SFC_ACCESS_LISTS_MENU": "Access Lists/Classifiers",
   "SFC_ACCESS_LISTS": "Access Lists",
@@ -701,6 +702,6 @@
   "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_HEAD": "Update schedule type successfully",
   "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_BODY": "Service Function Schedule Algorithm is updated to:<br><br>",
   "SFC_CHAIN_MODAL_SCHED_TYPE_FAIL_HEAD": "Failed to update schedule type",
-
+  "SFC_SF_STATS_LOCATION": "Statistics",
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

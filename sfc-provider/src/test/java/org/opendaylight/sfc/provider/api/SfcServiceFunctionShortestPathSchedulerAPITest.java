@@ -78,6 +78,13 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
+        /* Some unit tests didn't delete all the objects, so clean up them first */
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+
         //build SFs
         final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1", "196.168.55.2", "196.168.55.3",

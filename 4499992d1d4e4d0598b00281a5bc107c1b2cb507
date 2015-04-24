@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_dd31a00c",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicefunction/servicefunction.controller.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "Usage of $window not seen",
+      "range": {
+        "startLine": 3,
+        "startChar": 67,
+        "endLine": 3,
+        "endChar": 74
+      },
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_5d5ef046",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicefunction/servicefunction.vasastats.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "Attention - this may be breaking the whole UI concept\n(usage of inline javascript instead of angular ng-click events, etc.)",
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_7d5bac54",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicefunction/servicefunction.vnbarstats.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "The same as vasastats",
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_1d586855",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/servicevnbar/servicevnbar.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "The same as vasastats",
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_fd681cf7",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/sfc.module.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "Actually the template is not using this controller. If it is not using any controller, controller property can be ommited.",
+      "range": {
+        "startLine": 367,
+        "startChar": 23,
+        "endLine": 367,
+        "endChar": 48
+      },
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_bd7294e3",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/sfc.module.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "The same applies here.",
+      "range": {
+        "startLine": 378,
+        "startChar": 23,
+        "endLine": 378,
+        "endChar": 48
+      },
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_7d740ccf",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/sfc.module.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 488,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-24T08:29:31Z",
+      "side": 1,
+      "message": "The same as two previous cases.",
+      "range": {
+        "startLine": 488,
+        "startChar": 23,
+        "endLine": 488,
+        "endChar": 38
+      },
+      "revId": "4499992d1d4e4d0598b00281a5bc107c1b2cb507",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

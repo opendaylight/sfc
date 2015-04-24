@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
@@ -139,6 +140,7 @@ public class SfcL2RspProcessor {
                 configureSffEgress(entry, sffGraph);
             }
         } catch(RuntimeException e) {
+            // TODO once this class is more formalized, dont dump the stack trace
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         }
     }
@@ -188,17 +190,11 @@ public class SfcL2RspProcessor {
         }
 
         // configure the Ingress-SFF-SF ingress Flow
-        configureSffIngressFlow(sffDstName, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
+        configureSffIngressFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
         // configure the SF Transport Ingress Flow
         configureSffTransportIngressFlow(sffDstName, sfDpl);
-        // configure the SF Ingress Flow, setting negative pathId so it wont
-        // set metadata and will goto classification table instead of NextHop
-        configureSffIngressFlow(sffDstName, sfDpl, -1, entry.getServiceIndex());
-
-        // Configure the SF ACL flow
-        // TODO need to change this to write to the Ingress table instead
-        this.sfcL2FlowProgrammer.configureClassificationFlow(
-                getSffServiceNodeName(sffDstName), entry.getPathId(), true);
+        // configure the SF Ingress Flow
+        configureSffIngressFlow(sffDstName, true, sfDpl, entry.getPathId(), entry.getServiceIndex());
 
         // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
@@ -208,7 +204,7 @@ public class SfcL2RspProcessor {
         }
 
         // configure SFF-SFF-SF ingress flow using dstHopIngressDpl
-        configureSffIngressFlow(sffDstName, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
+        configureSffIngressFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
     }
 
     /**
@@ -327,7 +323,6 @@ public class SfcL2RspProcessor {
             LOG.info("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true, true);
             this.sfcL2FlowProgrammer.configureIngressTableMatchAny(          sffNodeName, false, true);
-            this.sfcL2FlowProgrammer.configureAclTableMatchAny(              sffNodeName, true, true);
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(          sffNodeName, false, true);
             this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(  sffNodeName, true, true);
 
@@ -373,7 +368,7 @@ public class SfcL2RspProcessor {
     }
 
     private void configureSffIngressFlow(
-            final String sffName, DataPlaneLocator hopDpl, final long pathId, final short serviceIndex) {
+            final String sffName, boolean isSf, DataPlaneLocator hopDpl, final long pathId, final short serviceIndex) {
         String sffNodeName = getSffServiceNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
@@ -394,22 +389,19 @@ public class SfcL2RspProcessor {
             Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
             MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
             if(vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacIngressFlow(sffNodeName, mac.getValue(), pathId, this.addFlow);
+                this.sfcL2FlowProgrammer.configureMacIngressFlow(sffNodeName, mac.getValue(), pathId, isSf, this.addFlow);
             } else {
-                this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffNodeName, vlanTag, pathId, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVlanIngressFlow(sffNodeName, vlanTag, pathId, isSf, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) sffLocatorType).getMplsLabel();
-            this.sfcL2FlowProgrammer.configureMplsIngressFlow(sffNodeName, mplsLabel, pathId, this.addFlow);
-        } else if (implementedInterface.equals(Ip.class)) {
-           //VxLAN-gpe, it is IP/UDP flow with VLAN tag
-           if (hopDpl.getTransport().equals(VxlanGpe.class)) {
-                long nsp = pathId;
-                short nsi = serviceIndex; //TODO get current hop number
-                this.sfcL2FlowProgrammer.configureVxlanGpeIngressFlow(sffNodeName, nsp, nsi, pathId, this.addFlow);
-           }
+            this.sfcL2FlowProgrammer.configureMplsIngressFlow(sffNodeName, mplsLabel, pathId, isSf, this.addFlow);
         }
+        // Nothing to be done for IP/UDP VxLAN-gpe, as the RSP ID is the NSH.nsp
+        // else if (implementedInterface.equals(Ip.class)) {
+        //   if (hopDpl.getTransport().equals(VxlanGpe.class))
+
     }
 
     // Simple pass-through method
@@ -471,12 +463,13 @@ public class SfcL2RspProcessor {
 
         if (implementedInterface.equals(Ip.class)) {
             //VxLAN-gpe, it is IP/UDP flow with VLAN tag
-            if (srcDpl != null && srcDpl.getTransport().equals(VxlanGpe.class)) {
-                 String srcIp = ((IpPortLocator) srcSffLocatorType).getIp().toString();
-                 String dstIp = ((IpPortLocator) dstSffLocatorType).getIp().toString();
-                 long nsp = pathId;
-                 short nsi = serviceIndex; //TODO get current hop number
-                 this.sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(sffNodeName, pathId, srcIp, dstIp, nsp, nsi, this.addFlow);
+            if(dstDpl != null) {
+                if(dstDpl.getTransport().equals(VxlanGpe.class)) {
+                    String dstIp = String.valueOf(((IpPortLocator) dstSffLocatorType).getIp().getValue());
+                    long nsp = pathId;
+                    short nsi = serviceIndex;
+                    this.sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(sffNodeName, dstIp, nsp, nsi, this.addFlow);
+                }
             }
         } else {
             // Same thing for Mac/VLAN and MPLS
@@ -563,16 +556,7 @@ public class SfcL2RspProcessor {
 
         LOG.info("configureSffTransportEgressFlow sff [{}] node [{}]", sffName, sffNodeName);
 
-        // Either the srcDpl or the dstDpl can be null, but not both
-        if(srcDpl == null && dstDpl == null) {
-            throw new RuntimeException(
-                    "configureSffTransportEgressFlow SFF [" + sffName + "] pathId [" + pathId +
-                    "] both dstDpl and srcDpl are null");
-        }
-
         LocatorType hopLocatorType = hopDpl.getLocatorType();
-        LocatorType srcLocatorType = srcDpl.getLocatorType();
-        LocatorType dstLocatorType = (dstDpl == null ? null : dstDpl.getLocatorType());
         Class<? extends DataContainer> implementedInterface = hopLocatorType.getImplementedInterface();
 
         if (implementedInterface.equals(Mac.class)) {
@@ -592,13 +576,11 @@ public class SfcL2RspProcessor {
                     sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPort, pathId, isSf, this.addFlow);
         } else if (implementedInterface.equals(Ip.class)) {
            //VxLAN-gpe, it is IP/UDP flow with VLAN tag
-           if (srcDpl != null && srcDpl.getTransport().equals(VxlanGpe.class)) {
-                String srcIp = ((IpPortLocator) srcLocatorType).getIp().toString();
-                String dstIp = ((IpPortLocator) dstLocatorType).getIp().toString();
+           if (hopDpl.getTransport().equals(VxlanGpe.class)) {
                 long nsp = pathId;
                 short nsi = serviceIndex;
                 this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(
-                        sffNodeName, srcIp, dstIp, nsp, nsi, srcOfsPort, pathId, isSf, this.addFlow);
+                        sffNodeName, nsp, nsi, srcOfsPort, this.addFlow);
            }
         }
     }
@@ -676,6 +658,11 @@ public class SfcL2RspProcessor {
                                                        final long pathId,
                                                        SffGraph sffGraph) {
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
+        if(sffDplList.size() == 1) {
+            // Nothing to be done here
+            return true;
+        }
+
         for(SffDataPlaneLocator sffDpl : sffDplList) {
             if(sffDpl.getName().equals(alreadySetSffDpl.getName())) {
                 continue;
@@ -703,6 +690,39 @@ public class SfcL2RspProcessor {
                                                SffGraph sffGraph) {
         List<SffDataPlaneLocator> prevSffDplList = prevSff.getSffDataPlaneLocator();
         List<SffDataPlaneLocator> curSffDplList = curSff.getSffDataPlaneLocator();
+        boolean hasSingleDpl = false;
+
+        // If the prevSffDplList has just one DPL, nothing special needs to be done
+        // Just check that its DPL transport matches the RSP transport
+        if(prevSffDplList.size() == 1) {
+            SffDataPlaneLocator prevSffDpl = prevSffDplList.get(0);
+            if(!prevSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
+                LOG.info("SFF [{}] transport type does not match the RSP DPL transport type [{}]", prevSff, rspTransport);
+                return false;
+            }
+            sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
+            sffGraph.setSffIngressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
+
+            // Nothing else needs to be done
+            hasSingleDpl = true;
+        }
+
+        if(curSffDplList.size() == 1) {
+            SffDataPlaneLocator curSffDpl = curSffDplList.get(0);
+            if(!curSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
+                LOG.info("SFF [{}] transport type does not match the RSP DPL transport type [{}]", curSff, rspTransport);
+                return false;
+            }
+            sffGraph.setSffEgressDpl(curSff.getName(), pathId, curSffDpl.getName());
+            sffGraph.setSffIngressDpl(curSff.getName(), pathId, curSffDpl.getName());
+
+            // Nothing else needs to be done
+            hasSingleDpl = true;
+        }
+
+        if(hasSingleDpl) {
+            return true;
+        }
 
         // This is an O(n squared) search, can be improved using a hash table.
         // Considering there should only be 3-4 DPLs, its not worth the extra
@@ -777,6 +797,7 @@ public class SfcL2RspProcessor {
         int hopIncrement = 1;
         boolean isMpls = false;
         boolean isMac = false;
+        boolean isVxlanGpe = false;
 
         if(rspTransport.getName().equals(
                 org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls.class.getName())) {
@@ -792,10 +813,16 @@ public class SfcL2RspProcessor {
             this.lastVlanId = transportData;
             hopIncrement = VLAN_ID_INCR_HOP;
             isMac = true;
+        } else if(rspTransport.getName().equals(
+                org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe.class.getName())) {
+
+            isVxlanGpe = true;
         }
 
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
         while (sffGraphIter.hasNext()) {
+            SffGraph.SffGraphEntry entry = sffGraphIter.next();
+
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rspTransport);
             if(isMpls) {
@@ -806,9 +833,21 @@ public class SfcL2RspProcessor {
                 MacBuilder macBuilder = new MacBuilder();
                 macBuilder.setVlanId(transportData);
                 dpl.setLocatorType(macBuilder.build());
+            } else if(isVxlanGpe) {
+                ServiceFunctionForwarder sff;
+                if(entry.getDstSff().equals(SffGraph.EGRESS)) {
+                    sff = getServiceFunctionForwarder(entry.getSrcSff());
+                } else {
+                    sff = getServiceFunctionForwarder(entry.getDstSff());;
+                }
+                String sffEgressDplName = sffGraph.getSffEgressDpl(sff.getName(), pathId);
+                LocatorType loc = getSffDataPlaneLocator(sff, sffEgressDplName).getDataPlaneLocator().getLocatorType();
+                IpBuilder ipBuilder = new IpBuilder();
+                ipBuilder.setIp(((Ip) loc).getIp());
+                ipBuilder.setPort(((Ip) loc).getPort());
+                dpl.setLocatorType(ipBuilder.build());
             }
 
-            SffGraph.SffGraphEntry entry = sffGraphIter.next();
             if(entry.getDstSff().equals(SffGraph.EGRESS)) {
                 sffGraph.setPathEgressDpl(pathId, dpl.build());
             } else {

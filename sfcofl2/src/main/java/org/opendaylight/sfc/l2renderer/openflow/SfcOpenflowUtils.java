@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -276,7 +276,7 @@ public class SfcOpenflowUtils {
         match.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, m);
     }
 
-    public static void addMatchNxNsp(MatchBuilder match, long nsp) {
+    public static void addMatchNshNsp(MatchBuilder match, long nsp) {
         NxAugMatchNodesNodeTableFlow am =
                 new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsp(new NxmNxNspBuilder()
@@ -286,7 +286,7 @@ public class SfcOpenflowUtils {
         addExtension(match, NxmNxNspKey.class, am);
     }
 
-    public static void addMatchNxNsi(MatchBuilder match, short nsi) {
+    public static void addMatchNshNsi(MatchBuilder match, short nsi) {
         NxAugMatchNodesNodeTableFlow am =
                 new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsi(new NxmNxNsiBuilder()
@@ -404,9 +404,13 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
-    public static Action createActionSetNwDst(Address ip, int order) {
+    public static Action createActionSetNwDst(String ipStr, int netmask, int order) {
+        Ipv4Prefix prefixdst = new Ipv4Prefix(ipStr + "/" + String.valueOf(netmask));
+        Ipv4Builder ipdst = new Ipv4Builder();
+        ipdst.setIpv4Address(prefixdst);
+
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
-        nwDstBuilder.setAddress(ip);
+        nwDstBuilder.setAddress(ipdst.build());
         SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         ActionBuilder ab = createActionBuilder(order);

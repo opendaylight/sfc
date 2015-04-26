@@ -11,6 +11,9 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.ServiceFunctionGroupAlgorithms;
@@ -30,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAPI {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceTypeAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAlgAPI.class);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
 
     SfcProviderServiceFunctionGroupAlgAPI(Object[] params, String m) {
@@ -108,4 +111,28 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
         printTraceStop(LOG);
         return ret;
     }
+
+    @SuppressWarnings("rawtypes")
+    public static ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlg(String serviceFunctionGroupAlgName) {
+
+        printTraceStart(LOG);
+        ServiceFunctionGroupAlgorithm ret = null;
+        Object[] sfgObj = { serviceFunctionGroupAlgName};
+        Class[] sfgClass = { String.class };
+        SfcProviderServiceFunctionGroupAlgAPI sfgAPI = SfcProviderServiceFunctionGroupAlgAPI.getRead(sfgObj, sfgClass);
+        Future future = ODL_SFC.getExecutor().submit(sfgAPI);
+        try {
+            ret = (ServiceFunctionGroupAlgorithm) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ....", e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ....", e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
 }

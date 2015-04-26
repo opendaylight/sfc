@@ -400,21 +400,31 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(pathName);
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
-            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
+            String serviceFunctionName = renderedServicePathHop.getServiceFunctionName();
+            String serviceFunctionGroupName = renderedServicePathHop.getServiceFunctionGroupName();
+            LOG.debug("handling hop index: {}, sf: {}, sfg: {}", renderedServicePathHop.getHopNumber(), serviceFunctionName, serviceFunctionGroupName);
+            if(serviceFunctionName != null){
+                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
 
-            InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
-                    .builder(ServiceFunctionsState.class)
-                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                    .child(SfServicePath.class, sfServicePathKey).build();
-            serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
+                InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
+                        .builder(ServiceFunctionsState.class)
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .child(SfServicePath.class, sfServicePathKey).build();
+                serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
 
-            if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
-                    LogicalDatastoreType.OPERATIONAL)) {
+                if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
+                        LogicalDatastoreType.OPERATIONAL)) {
+                    ret = true;
+                } else {
+                    LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
+                            Thread.currentThread().getStackTrace()[1], pathName,
+                            renderedServicePathHop.getServiceFunctionName());
+                }
+            } else if(serviceFunctionGroupName != null){
+                LOG.info("{}: Could not add SFP {} to operational state of SFG: {}", Thread.currentThread().getStackTrace()[1],
+                        pathName, serviceFunctionGroupName);
                 ret = true;
-            } else {
-                LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
-                        Thread.currentThread().getStackTrace()[1], pathName,
-                        renderedServicePathHop.getServiceFunctionName());
+
             }
         }
         printTraceStop(LOG);
@@ -443,22 +453,32 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
-            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
+            String serviceFunctionName = renderedServicePathHop.getServiceFunctionName();
+            String serviceFunctionGroupName = renderedServicePathHop.getServiceFunctionGroupName();
+            LOG.debug("handling hop index: {}, sf: {}, sfg: {}", renderedServicePathHop.getHopNumber(), serviceFunctionName, serviceFunctionGroupName);
+            if(serviceFunctionName != null){
+                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
 
-            InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
-                    .builder(ServiceFunctionsState.class)
-                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                    .child(SfServicePath.class, sfServicePathKey).build();
-            serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
+                InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier
+                        .builder(ServiceFunctionsState.class)
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .child(SfServicePath.class, sfServicePathKey).build();
+                serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
 
-            if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
-                    LogicalDatastoreType.OPERATIONAL)) {
+                if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
+                        LogicalDatastoreType.OPERATIONAL)) {
+                    ret = true;
+                } else {
+                    LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
+                            Thread.currentThread().getStackTrace()[1], renderedServicePath.getName(),
+                            renderedServicePathHop.getServiceFunctionName());
+                }
+            } else if(serviceFunctionGroupName != null){
+                LOG.info("{}: Could not add SFP {} to operational state of SFG: {}", Thread.currentThread().getStackTrace()[1],
+                        renderedServicePath.getName(), serviceFunctionGroupName);
                 ret = true;
-            } else {
-                LOG.error("{}: Could not add SFP {} to operational state of SF: {}",
-                        Thread.currentThread().getStackTrace()[1], renderedServicePath.getName(),
-                        renderedServicePathHop.getServiceFunctionName());
             }
+
         }
         printTraceStop(LOG);
         return ret;

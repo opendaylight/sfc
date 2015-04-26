@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -26,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
@@ -54,6 +57,7 @@ public class SfcL2RspProcessor {
     // each time onDataChanged() is called, store the SFs and SFFs internally
     // so we dont have to query the DataStore repeatedly for the same thing
     private Map<String, ServiceFunction> serviceFunctions;
+    private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
     private Map<String, ServiceFunctionForwarder> serviceFunctionFowarders;
     private Map<String, Boolean> sffInitialized;
     private boolean addFlow;
@@ -75,6 +79,7 @@ public class SfcL2RspProcessor {
     public SfcL2RspProcessor(SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.serviceFunctions = new HashMap<String, ServiceFunction>();
+        this.serviceFunctionGroups = new HashMap<String, ServiceFunctionGroup>();
         this.serviceFunctionFowarders = new HashMap<String, ServiceFunctionForwarder>();
         this.sffInitialized = new HashMap<String, Boolean>();
         this.lastMplsLabel = 0;
@@ -85,6 +90,7 @@ public class SfcL2RspProcessor {
     public void processRenderedServicePath(RenderedServicePath rsp, boolean addFlow) {
         // Reset the internal SF and SFF storage
         this.serviceFunctions.clear();
+        this.serviceFunctionGroups.clear();
         this.serviceFunctionFowarders.clear();
         this.addFlow = addFlow;
 
@@ -101,20 +107,22 @@ public class SfcL2RspProcessor {
             //
             Iterator<RenderedServicePathHop> servicePathHopIter = rsp.getRenderedServicePathHop().iterator();
             String sfName = null;
+            String sfgName = null;
             while (servicePathHopIter.hasNext()) {
                 RenderedServicePathHop rspHop = servicePathHopIter.next();
                 String curSffName = rspHop.getServiceFunctionForwarder();
                 sfName = rspHop.getServiceFunctionName();
+                sfgName = rspHop.getServiceFunctionGroupName();
 
                 LOG.info("processRenderedServicePath pathId [{}] renderedServicePathHop [{}]",
                         rsp.getPathId(), rspHop.getHopNumber());
 
-                sffGraph.addGraphEntry(prevSffName, curSffName, sfName, rsp.getPathId(), rspHop.getServiceIndex());
+                sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(), rspHop.getServiceIndex());
                 prevSffName = curSffName;
             }
             // Add the final connection, which will be the RSP Egress
             // Using the previous sfName as the SrcSf
-            sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, rsp.getPathId(), (short)0);
+            sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), (short)0);
 
             //
             // Populate the SFF ingress and egress DPLs from the sffGraph
@@ -132,16 +140,29 @@ public class SfcL2RspProcessor {
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
             while (sffGraphIter.hasNext()) {
                 SffGraph.SffGraphEntry entry = sffGraphIter.next();
+                LOG.debug("build flows of entry: {}", entry);
+
                 if(!entry.getDstSff().equals(SffGraph.EGRESS)) {
                     initializeSff(entry.getDstSff());
                 }
                 configureSffIngress(entry, sffGraph);
-                configureSffEgress(entry, sffGraph);
+                if(entry.getSf() != null) {
+                    configureSffEgress(entry, sffGraph);
+                } else if(entry.getSfg() != null){
+                    configureSffEgressForGroup(entry, sffGraph);
+                }
             }
         } catch(RuntimeException e) {
             // TODO once this class is more formalized, dont dump the stack trace
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         }
+    }
+
+    private void configureSffEgressForGroup(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
+        LOG.info("configureSffEgress srcSff [{}] dstSff [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
+                entry.getSrcSff(), entry.getDstSff(), entry.getSfg(), entry.getPathId(), entry.getServiceIndex());
+
+
     }
 
     /****************************************************************
@@ -155,8 +176,8 @@ public class SfcL2RspProcessor {
      * @param entry
      */
     private void configureSffIngress(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
-        LOG.info("configureSffIngress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
-                entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId(), entry.getServiceIndex());
+        LOG.info("configureSffIngress srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
+                entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getSfg(), entry.getPathId(), entry.getServiceIndex());
 
         final String sffDstName = entry.getDstSff();
 
@@ -182,18 +203,28 @@ public class SfcL2RspProcessor {
         }
 
         // Configure the SF related flows
-        SffSfDataPlaneLocator sfDpl = getSffSfDataPlaneLocator(sffDst, entry.getSf());
-        if(sfDpl == null) {
-            throw new RuntimeException(
-                    "Cant find SFF [" + sffDstName + "] to SF [" + entry.getSf() + "] DataPlaneLocator");
-        }
+        if(entry.getSf() != null){
+            SffSfDataPlaneLocator sfDpl = getSffSfDataPlaneLocator(sffDst, entry.getSf());
+            if(sfDpl == null) {
+                throw new RuntimeException(
+                        "Cant find SFF [" + sffDstName + "] to SF [" + entry.getSf() + "] DataPlaneLocator");
+            }
+            configureSingleSfIngressFlow(entry, sffDstName, dstHopIngressDpl, sfDpl);
+        } else if(entry.getSfg() != null){
+            LOG.debug("configure ingress flow for SFG {}", entry.getSfg());
+            ServiceFunctionGroup sfg = getServiceFunctionGroup(entry.getSfg());
+            List<SfcServiceFunction> sfgSfs = sfg.getSfcServiceFunction();
+            for (SfcServiceFunction sfgSf : sfgSfs) {
+                LOG.debug("configure ingress flow for SF {}", sfgSf);
+                SffSfDataPlaneLocator sfDpl = getSffSfDataPlaneLocator(sffDst, sfgSf.getName());
+                if(sfDpl == null) {
+                    throw new RuntimeException(
+                            "Cant find SFF [" + sffDstName + "] to SF [" + sfgSf + "] DataPlaneLocator");
+                }
+                configureSingleSfIngressFlow(entry, sffDstName, dstHopIngressDpl, sfDpl);
 
-        // configure the Ingress-SFF-SF ingress Flow
-        configureSffIngressFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
-        // configure the SF Transport Ingress Flow
-        configureSffTransportIngressFlow(sffDstName, sfDpl);
-        // configure the SF Ingress Flow
-        configureSffIngressFlow(sffDstName, true, sfDpl, entry.getPathId(), entry.getServiceIndex());
+            }
+        }
 
         // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
@@ -204,6 +235,17 @@ public class SfcL2RspProcessor {
 
         // configure SFF-SFF-SF ingress flow using dstHopIngressDpl
         configureSffIngressFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
+    }
+
+    private void configureSingleSfIngressFlow(SffGraph.SffGraphEntry entry, final String sffDstName,
+            DataPlaneLocator dstHopIngressDpl, SffSfDataPlaneLocator sfDpl) {
+        // configure the Ingress-SFF-SF ingress Flow
+        configureSffIngressFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
+        // configure the SF Transport Ingress Flow
+        configureSffTransportIngressFlow(sffDstName, sfDpl);
+        // configure the SF Ingress Flow, setting negative pathId so it wont
+        // set metadata and will goto classification table instead of NextHop
+        configureSffIngressFlow(sffDstName, true, sfDpl, -1, entry.getServiceIndex());
     }
 
     /**
@@ -597,7 +639,7 @@ public class SfcL2RspProcessor {
             if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
                 continue;
             }
-
+            LOG.debug("processSffDpl - handling entry {}", entry);
             ServiceFunctionForwarder srcSff = getServiceFunctionForwarder(entry.getSrcSff());
             if(srcSff == null) {
                 throw new RuntimeException(
@@ -660,6 +702,7 @@ public class SfcL2RspProcessor {
         }
 
         for(SffDataPlaneLocator sffDpl : sffDplList) {
+            LOG.debug("try to match sffDpl name: {}, type: {}", sffDpl.getName(), sffDpl.getDataPlaneLocator().getTransport().getName());
             if(sffDpl.getName().equals(alreadySetSffDpl.getName())) {
                 continue;
             }
@@ -737,7 +780,7 @@ public class SfcL2RspProcessor {
 
                 LocatorType prevLocatorType = prevSffDpl.getDataPlaneLocator().getLocatorType();
                 LocatorType curLocatorType = curSffDpl.getDataPlaneLocator().getLocatorType();
-
+                LOG.debug("comparing prev locator {} : {} to {} : {}", prevSffDpl.getName(), prevLocatorType, curSffDpl.getName(), curLocatorType);
                 if(compareLocatorTypes(prevLocatorType, curLocatorType)) {
                     sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
                     sffGraph.setSffIngressDpl(curSff.getName(), pathId, curSffDpl.getName());
@@ -818,7 +861,7 @@ public class SfcL2RspProcessor {
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
         while (sffGraphIter.hasNext()) {
             SffGraph.SffGraphEntry entry = sffGraphIter.next();
-
+            LOG.debug("RspTransport entry: {}", entry);
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rspTransport);
             if(isMpls) {
@@ -1089,4 +1132,17 @@ public class SfcL2RspProcessor {
 
         return sff.getServiceNode();
     }
+
+    private ServiceFunctionGroup getServiceFunctionGroup(final String sfgName) {
+        ServiceFunctionGroup sfg = this.serviceFunctionGroups.get(sfgName);
+        if (sfg == null) {
+            sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(sfgName);
+            if (sfg != null) {
+                this.serviceFunctionGroups.put(sfgName, sfg);
+            }
+        }
+
+        return sfg;
+    }
+
 }

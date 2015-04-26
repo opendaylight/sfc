@@ -168,6 +168,9 @@ public class OpendaylightSfc implements AutoCloseable {
             final InstanceIdentifier<ServiceFunctions> SF_IID = InstanceIdentifier.builder(ServiceFunctions.class)
                     .build();
 
+            final InstanceIdentifier<ServiceFunctionGroups> SFG_IID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
+                    .build();
+
             final InstanceIdentifier<ServiceFunctionForwarders> SFF_IID = InstanceIdentifier.builder(
                     ServiceFunctionForwarders.class).build();
 
@@ -186,6 +189,7 @@ public class OpendaylightSfc implements AutoCloseable {
             SfcDataStoreAPI.deleteTransactionAPI(SCF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFT_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SFG_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFP_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(RSP_IID, LogicalDatastoreType.OPERATIONAL);

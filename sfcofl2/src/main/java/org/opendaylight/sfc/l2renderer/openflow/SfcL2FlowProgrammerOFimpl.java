@@ -11,10 +11,6 @@ package org.opendaylight.sfc.l2renderer.openflow;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.*;
 import java.math.BigInteger;
 
@@ -22,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -39,6 +36,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -964,5 +971,121 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      */
     private short getTableId(short tableIndex) {
         return (short) (tableBase + tableIndex);
+    }
+
+    @Override
+    public void configureGroup(String sffNodeName, String openflowNodeId, String sfgName, long sfgId, int groupType,
+            List<GroupBucketInfo> bucketInfos, boolean isAddGroup) {
+
+        ConfigureGroupThread configureGroupThread = new ConfigureGroupThread(sffNodeName, openflowNodeId, sfgName, sfgId, groupType, bucketInfos, isAddGroup);
+        try {
+            threadPoolExecutorService.execute(configureGroupThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureGroupThread implements Runnable {
+        String sffNodeName;
+        String sfgName;
+        long sfgId;
+        int groupType;
+        List<GroupBucketInfo> bucketInfos;
+        boolean isAddGroup;
+        String openflowNodeId;
+
+        public ConfigureGroupThread(String sffNodeName, String openflowNodeId, String sfgName, long sfgId, int groupType,
+                List<GroupBucketInfo> bucketInfos, boolean isAddGroup) {
+            super();
+            this.sffNodeName = sffNodeName;
+            this.openflowNodeId = openflowNodeId;
+            this.sfgName = sfgName;
+            this.sfgId = sfgId;
+            this.groupType = groupType;
+            this.bucketInfos = bucketInfos;
+            this.isAddGroup = isAddGroup;
+        }
+
+
+        @Override
+        public void run() {
+            LOG.debug("configuring group: sffName {}, groupName {}, ofNodeId {}, id {}, type {}", sffNodeName, sfgName, openflowNodeId, sfgId, groupType);
+            GroupBuilder gb = new GroupBuilder();
+            BucketsBuilder bbs = new BucketsBuilder();
+            gb.setBarrier(true);
+            gb.setGroupType(GroupTypes.forValue(groupType));
+            gb.setGroupName(sfgName);
+            gb.setGroupId(new GroupId(sfgId));
+
+            List<Bucket> buckets = new ArrayList<Bucket>();
+            BucketBuilder bb = new BucketBuilder();
+            for (GroupBucketInfo bucketInfo : bucketInfos) {
+                LOG.debug("building bucket {}", bucketInfo);
+                buckets.add(buildBucket(bb, bucketInfo));
+            }
+            bbs.setBucket(buckets);
+            gb.setBuckets(bbs.build());
+            String nodeName = openflowNodeId != null ? openflowNodeId : sffNodeName;
+            writeGroupToDataStore(nodeName, gb, isAddGroup);
+            LOG.debug("finish writing group to data store \nID: {}\nGroup: {}", sfgId, sfgName);
+
+        }
+
+        private Bucket buildBucket(BucketBuilder bb, GroupBucketInfo bucketInfo){
+            int order = 0;
+            BucketId bucketId = new BucketId((long) bucketInfo.getIndex());
+            bb.setBucketId(bucketId);
+            bb.setKey(new BucketKey(bucketId));
+            String sfMac = bucketInfo.getSfMac();
+            String sfIp = bucketInfo.getSfIp();
+            List<Action> actionList = new ArrayList<Action>();
+            if (sfMac != null) {
+                // Set the DL (Data Link) Dest Mac Address
+                Action actionDstMac = SfcOpenflowUtils.createActionSetDlDst(sfMac, order);
+                order++;
+                actionList.add(actionDstMac);
+            }
+
+            if (sfIp != null) {
+                Action actionSetNwDst = SfcOpenflowUtils.createActionSetNwDst(sfIp, 32, order);
+                order++;
+                actionList.add(actionSetNwDst);
+            }
+
+            Action actionOutPort = SfcOpenflowUtils.createActionOutPort(bucketInfo.getOutPort(), order);
+            actionList.add(actionOutPort);
+
+            bb.setAction(actionList);
+            return bb.build();
+        }
+    }
+
+    private void writeGroupToDataStore(String sffNodeName, GroupBuilder gb, boolean isAdd) {
+        // Create the NodeBuilder
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setId(new NodeId(sffNodeName));
+        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+
+        GroupKey gk = new GroupKey(gb.getGroupId());
+        InstanceIdentifier<Group> groupIID;
+
+        groupIID = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class).child(Group.class, gk).build();
+        Group group = gb.build();
+        LOG.debug("about to write group to data store \nID: {}\nGroup: {}", groupIID, group);
+//        if (changeType == ChangeType.ADD) {
+//            if (!SfcDataStoreAPI.writePutTransactionAPI(groupIID, group, LogicalDatastoreType.CONFIGURATION)) {
+//                LOG.warn("Failed to write group to data store");
+//            }
+//        } else
+        if (isAdd) {
+            if (!SfcDataStoreAPI.writeMergeTransactionAPI(groupIID, group, LogicalDatastoreType.CONFIGURATION)) {
+                LOG.warn("Failed to write group to data store");
+            }
+        } else {
+            if (!SfcDataStoreAPI.deleteTransactionAPI(groupIID, LogicalDatastoreType.CONFIGURATION)) {
+                LOG.warn("Failed to remove group from data store");
+            }
+        }
     }
 }

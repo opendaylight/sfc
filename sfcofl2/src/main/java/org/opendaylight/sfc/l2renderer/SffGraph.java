@@ -30,19 +30,27 @@ public class SffGraph {
         private String srcSff;
         private String dstSff;
         private String sf;
+        private String sfg;
         private long pathId;
         private short serviceIndex;
         public String getSrcSff() { return srcSff; }
         public String getDstSff() { return dstSff; }
         public String getSf()     { return sf;     }
+        public String getSfg()     { return sfg;   }
         public long   getPathId() { return pathId; }
         public short  getServiceIndex() { return serviceIndex; }
-        public SffGraphEntry(final String srcSff, final String dstSff, final String sf, long pathId, short serviceIndex) {
+        public SffGraphEntry(final String srcSff, final String dstSff, final String sf, final String sfg, long pathId, short serviceIndex) {
             this.srcSff = srcSff;
             this.dstSff = dstSff;
             this.sf = sf;
+            this.sfg = sfg;
             this.pathId = pathId;
             this.serviceIndex = serviceIndex;
+        }
+        @Override
+        public String toString() {
+            return "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", sfg=" + sfg
+                    + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex + "]";
         }
     }
 
@@ -90,15 +98,15 @@ public class SffGraph {
     // Graph methods
     //
     public void addGraphEntry(final String srcSff, final String dstSff, long pathId, short serviceIndex) {
-        addGraphEntry(srcSff, dstSff, null, pathId, serviceIndex);
+        addGraphEntry(srcSff, dstSff, null, null, pathId, serviceIndex);
     }
 
-    public void addGraphEntry(final String srcSff, final String dstSff, final String sf, long pathId, short serviceIndex) {
-        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, pathId, serviceIndex);
+    public void addGraphEntry(final String srcSff, final String dstSff, final String sf, final String sfg, long pathId, short serviceIndex) {
+        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, sfg, pathId, serviceIndex);
         graphEntries.add(entry);
 
-        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
-                srcSff, dstSff, sf, pathId, serviceIndex);
+        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
+                srcSff, dstSff, sf, sfg, pathId, serviceIndex);
     }
 
     public Iterator<SffGraphEntry> getGraphEntryIterator() {

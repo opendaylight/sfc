@@ -9,6 +9,7 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -108,4 +109,21 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
+
+    // group configuration
+    public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName, final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
+
+    public static class GroupBucketInfo{
+        public String sfMac;
+        public String sfIp;
+        public String outPort;
+        public int index;
+
+        @Override
+        public String toString() {
+            return "GroupBucketInfo [sfMac=" + sfMac + ", sfIp=" + sfIp + ", outPort=" + outPort + ", index=" + index
+                    + "]";
+        }
+    }
+
 }

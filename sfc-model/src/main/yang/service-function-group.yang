@@ -49,6 +49,11 @@ module service-function-group {
         description
           "The name of the service function group";
       }
+      leaf groupId {
+        type uint32;
+        description
+          "The groupId of the service function group";
+      }
       leaf algorithm {
         type sfc-sfg-alg:service-function-group-algorithm-ref;
         mandatory true;

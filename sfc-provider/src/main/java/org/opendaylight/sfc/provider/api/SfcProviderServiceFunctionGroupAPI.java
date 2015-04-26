@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceTypeAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAPI.class);
 
     SfcProviderServiceFunctionGroupAPI(Object[] params, String m) {
         super(params, m);
@@ -210,28 +210,27 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * This method reads the operational state for a service function.
+     * This method reads the service function group corresponding to the name.
      * <p>
-     * @param serviceFunctionGroupName SF name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     * @param serviceFunctionGroupName SFG name
+     * @return service function group corresponding to the name
      */
+    @SuppressWarnings("rawtypes")
     public static ServiceFunctionGroup readServiceFunctionGroupExecutor(String serviceFunctionGroupName) {
 
         printTraceStart(LOG);
         ServiceFunctionGroup ret = null;
-        Object[] servicePathObj = {serviceFunctionGroupName};
-        Class[] servicePathClass = {String.class};
-        SfcProviderServiceFunctionGroupAPI sfcProviderServiceFunctionGroupAPI = SfcProviderServiceFunctionGroupAPI
-                .getRead(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionGroupAPI);
+        Object[] sfgObj = { serviceFunctionGroupName };
+        Class[] sfgClass = { String.class };
+        SfcProviderServiceFunctionGroupAPI sfgAPI = SfcProviderServiceFunctionGroupAPI.getRead(sfgObj, sfgClass);
+        Future future = ODL_SFC.getExecutor().submit(sfgAPI);
         try {
             ret = (ServiceFunctionGroup) future.get();
             LOG.debug("getRead: {}", future.get());
         } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn("failed to ....", e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn("failed to ....", e);
         } catch (Exception e) {
             LOG.error("Unexpected exception", e);
         }

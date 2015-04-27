@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -37,12 +38,25 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
 
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+        int maxTries = sftServiceFunctionNameList.size();
         Random rad = new Random();
+        ServiceFunction serviceFunction = null;
+        String serviceFunctionName = null;
 
-        return sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
+        while (maxTries > 0) {
+            serviceFunctionName = sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
+            serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionName);
+            if (serviceFunction != null) {
+                break;
+            } else {
+                maxTries--;
+                serviceFunctionName = null;
+            }
+        }
+        return serviceFunctionName;
     }
 
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());

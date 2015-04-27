@@ -57,6 +57,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType, String preSfName, SfcProviderGraph sfcProviderGraph) {
         String sfcProviderTopologyNodeName = null;
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+        int maxTries = sftServiceFunctionNameList.size();
 
         /* Return null if sftServiceFunctionNameList is empty */
         if (sftServiceFunctionNameList.size() == 0) {
@@ -71,7 +72,17 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         if (preSfName == null) {
             /* Randomly find one instance of serviceFunctionType */
             Random rad = new Random();
-            sfcProviderTopologyNodeName = sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
+            SfcProviderTopologyNode firstHopNode = null;
+            while (maxTries > 0) {
+                sfcProviderTopologyNodeName = sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
+                firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName);
+                if (firstHopNode != null) {
+                    break;
+                } else {
+                    sfcProviderTopologyNodeName = null;
+                    maxTries--;
+                }
+            }
             LOG.debug("The first ServiceFunction name: {}", sfcProviderTopologyNodeName);
             return sfcProviderTopologyNodeName; //The first hop
         }
@@ -90,6 +101,11 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         sfcProviderTopologyNodeName = null;
         for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
             String curSfName = sftServiceFunctionName.getName();
+            SfcProviderTopologyNode curSfcProviderTopologyNode = sfcProviderGraph.getNode(curSfName);
+            if (curSfcProviderTopologyNode == null) {
+                // curSfName doesn't exist in sfcProviderGraph, so skip it
+                continue;
+            }
             List<SfcProviderTopologyNode> sfcProviderTopologyNodeList = sfcProviderGraph.getShortestPath(preSfName, curSfName);
             length = sfcProviderTopologyNodeList.size();
             if (length <= 1) {
@@ -180,9 +196,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * <p>
      * @param chain Service Function Chain to render
      * @param serviceIndex Not used currently
-     * @return List<String> Service Funtion name list in the shortest path
+     * @return List<String> Service Function name list in the shortest path
      */
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         String preSfName = null;
         String sfName = null;
         List<String> sfNameList = new ArrayList<>();
@@ -213,7 +229,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                         preSfName = sfName;
                         LOG.debug("Next Service Function: {}", sfName);
                     } else {
-                        LOG.error("Couldn't find a reachable SF for ServiceFuntionType: {}", sfcServiceFunction.getType());
+                        LOG.error("Couldn't find a reachable SF for ServiceFunctionType: {}", sfcServiceFunction.getType());
                         return null;
                     }
                 } else {

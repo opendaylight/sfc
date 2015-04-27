@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_db6d2134",
+        "filename": "sfc-ui/src/main/resources/pages/src/app/sfc/serviceforwarder/serviceforwarder.create.tpl.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-04-27T14:42:37Z",
+      "side": 1,
+      "message": "You are populating data for leaf [\u0027sff-sff-data-plane-locator\u0027][\u0027ovs-bridge\u0027], but sff-sff-date-plane-locator is not augmented with ovs. \n\nIt\u0027s causing \"Error with status code 400  while PUT\", saying \"Error parsing input: Schema node with name ovs-bridge wasn\u0027t found.\"\n\nJust look on network tab inside browser developer tools, to see this kind of errors.",
+      "range": {
+        "startLine": 352,
+        "startChar": 0,
+        "endLine": 359,
+        "endChar": 14
+      },
+      "revId": "d8c91d34d5e1a934accb91e62cd6c09beca5e0ff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

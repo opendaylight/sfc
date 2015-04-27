@@ -62,8 +62,6 @@ public class SfcSffToOvsMappingAPI {
      * Builds OvsdbBridgeAugmentation from ServiceFunctionForwarder object. Built augmentation is intended to be written
      * into Configuration Ovsdb DataStore (network-topology/topology/ovsdb:1).
      * <p/>
-     * ServiceFunctionForwarder must be augmented with OvsBridge and OvsNode, otherwise NullPointerException will be
-     * raised.
      *
      * @param serviceFunctionForwarder ServiceFunctionForwarder Object
      * @return OvsdbBridgeAugmentation Object
@@ -75,32 +73,39 @@ public class SfcSffToOvsMappingAPI {
 
         ServiceFunctionForwarder2 serviceForwarderOvsBridgeAugmentation =
                 serviceFunctionForwarder.getAugmentation(ServiceFunctionForwarder2.class);
-        try {
-            Preconditions.checkNotNull(serviceForwarderOvsBridgeAugmentation);
+        if (serviceForwarderOvsBridgeAugmentation != null) {
             OvsBridge serviceForwarderOvsBridge = serviceForwarderOvsBridgeAugmentation.getOvsBridge();
 
-            Preconditions.checkNotNull(serviceForwarderOvsBridge);
-            ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(serviceForwarderOvsBridge.getBridgeName()));
-            ovsdbBridgeBuilder.setBridgeUuid(serviceForwarderOvsBridge.getUuid());
+            if (serviceForwarderOvsBridge != null) {
+                ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(serviceForwarderOvsBridge.getBridgeName()));
+                ovsdbBridgeBuilder.setBridgeUuid(serviceForwarderOvsBridge.getUuid());
+            } else {
+                LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Bridge augmentation on SFF {}", serviceFunctionForwarder.getName());
+                return null;
+            }
 
-        } catch (NullPointerException e) {
+        } else {
             LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Bridge augmentation on SFF {}", serviceFunctionForwarder.getName());
             return null;
         }
 
         ServiceFunctionForwarder1 serviceForwarderOvsNodeAugmentation =
                 serviceFunctionForwarder.getAugmentation(ServiceFunctionForwarder1.class);
-        try {
-            Preconditions.checkNotNull(serviceForwarderOvsNodeAugmentation);
+        if (serviceForwarderOvsNodeAugmentation != null) {
             OvsNode serviceForwarderOvsNode = serviceForwarderOvsNodeAugmentation.getOvsNode();
 
-            Preconditions.checkNotNull(serviceForwarderOvsNode);
-            ovsdbBridgeBuilder.setManagedBy(serviceForwarderOvsNode.getNodeId());
+            if (serviceForwarderOvsNode != null) {
+                ovsdbBridgeBuilder.setManagedBy(serviceForwarderOvsNode.getNodeId());
+            } else {
+                LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
+                return null;
+            }
 
-        } catch (NullPointerException e) {
+        } else {
             LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
             return null;
         }
+
         return ovsdbBridgeBuilder.build();
     }
 
@@ -139,7 +144,7 @@ public class SfcSffToOvsMappingAPI {
         Preconditions.checkNotNull(dataPlaneLocator, "Cannot determine DataPlaneLocator locator type, dataPlaneLocator is null.");
         List<Options> options = new ArrayList<>();
 
-        try {
+        if (dataPlaneLocator.getLocatorType() != null) {
             Class<? extends DataContainer> locatorType = dataPlaneLocator.getLocatorType().getImplementedInterface();
             if (locatorType.isAssignableFrom(Ip.class)) {
                 Ip ipPortLocator = (Ip) dataPlaneLocator.getLocatorType();
@@ -150,7 +155,7 @@ public class SfcSffToOvsMappingAPI {
 
                 options.add(optionsIpBuilder.build());
             }
-        } catch (NullPointerException e) {
+        } else {
             LOG.warn("Cannot determine DataPlaneLocator locator type, dataPlaneLocator.getLocatorType() is null.");
         }
 
@@ -164,63 +169,57 @@ public class SfcSffToOvsMappingAPI {
         SffDataPlaneLocator2 sffDataPlaneLocatorOvsOptions = sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class);
         OvsOptions ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getLocalIp());
+        if (ovsOptions.getLocalIp() != null) {
             OptionsBuilder optionsLocalIpBuilder = new OptionsBuilder();
             optionsLocalIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
             optionsLocalIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getLocalIp()));
             options.add(optionsLocalIpBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
         }
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getRemoteIp());
+        if (ovsOptions.getRemoteIp() != null) {
             OptionsBuilder optionsDstIpBuilder = new OptionsBuilder();
             optionsDstIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
             optionsDstIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getRemoteIp()));
             options.add(optionsDstIpBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
         }
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getDstPort());
+        if (ovsOptions.getDstPort() != null) {
             OptionsBuilder optionsDstPortBuilder = new OptionsBuilder();
             optionsDstPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
             optionsDstPortBuilder.setValue(ovsOptions.getDstPort().getValue().toString());
             options.add(optionsDstPortBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
         }
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getKey());
+        if (ovsOptions.getKey() != null) {
             OptionsBuilder optionsKeyBuilder = new OptionsBuilder();
             optionsKeyBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_KEY);
             optionsKeyBuilder.setValue(ovsOptions.getKey());
             options.add(optionsKeyBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_KEY);
         }
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getNsp());
+        if (ovsOptions.getNsp() != null) {
             OptionsBuilder optionsNspBuilder = new OptionsBuilder();
             optionsNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSP);
             optionsNspBuilder.setValue(ovsOptions.getNsp());
             options.add(optionsNspBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSP);
         }
 
-        try {
-            Preconditions.checkNotNull(ovsOptions.getNsi());
+        if (ovsOptions.getNsi() != null) {
             OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
             optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSI);
             optionsNsiBuilder.setValue(ovsOptions.getNsi());
             options.add(optionsNsiBuilder.build());
-        } catch (Exception e) {
+        } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
         }
 

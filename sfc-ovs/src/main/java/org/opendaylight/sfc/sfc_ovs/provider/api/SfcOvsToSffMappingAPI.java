@@ -57,7 +57,7 @@ public class SfcOvsToSffMappingAPI {
     /**
      * Returns an Service Function Forwarder object which can be stored
      * in DataStore. The returned object is built on basis of OVS Bridge & OVS Termination Points.
-     * The ovsdbBridgeAugmentation argument must be not null otherwise
+     * The node argument must be not null otherwise
      * NullPointerException will be raised.
      *
      * @param node Node Object
@@ -67,8 +67,7 @@ public class SfcOvsToSffMappingAPI {
         Preconditions.checkNotNull(node, "Cannot build Service Function Forwarder: OVS Node does not exist!");
 
         OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
-        try {
-            Preconditions.checkNotNull(ovsdbBridgeAugmentation);
+        if (ovsdbBridgeAugmentation != null){
 
             ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
             serviceFunctionForwarderBuilder.setName(getServiceForwarderNameFromNode(node));
@@ -94,7 +93,7 @@ public class SfcOvsToSffMappingAPI {
 
             return serviceFunctionForwarderBuilder.build();
 
-        } catch (NullPointerException e) {
+        } else {
             LOG.debug("Not building Service Function Forwarder: passed Node parameter does not contain OvsdbBridgeAugmentation");
             return null;
         }
@@ -106,9 +105,6 @@ public class SfcOvsToSffMappingAPI {
      * <p/>
      * The ovsdbBridge argument must be not null otherwise
      * NullPointerException will be raised.
-     * <p/>
-     * The terminationPointList must be not null othewrise
-     * empty SffDataPlaneLocator List will be returned.
      *
      * @param ovsdbBridge          OvsdbBridgeAugmentation Object
      * @param terminationPointList List<TerminationPoint>
@@ -119,9 +115,7 @@ public class SfcOvsToSffMappingAPI {
         Preconditions.checkNotNull(ovsdbBridge, "Cannot build SffDataPlaneLocator: OVS Bridge does not exist!");
         List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
 
-        try {
-            Preconditions.checkNotNull(terminationPointList);
-
+        if (terminationPointList != null){
             //OVS bridge will be the same for all DP locators
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridge.getBridgeName().getValue());
@@ -151,7 +145,7 @@ public class SfcOvsToSffMappingAPI {
                 }
             }
 
-        } catch (NullPointerException e) {
+        } else {
             LOG.debug("Not building SffDataPlaneLocatorList, Termination Point List is null.");
         }
 
@@ -172,7 +166,7 @@ public class SfcOvsToSffMappingAPI {
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
-        try {
+        if (terminationPoint.getOptions() != null) {
             //set ip:port locator
             IpBuilder ipBuilder = new IpBuilder();
 
@@ -186,18 +180,19 @@ public class SfcOvsToSffMappingAPI {
                 }
             }
             dataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
-        } catch (NullPointerException e) {
+        } else  {
             LOG.debug("Not building OVS TerminationPoint ({}) locator type. TerminationPoint options are null", terminationPoint.getName());
         }
 
         //set transport type
-        try {
+        if (terminationPoint.getInterfaceType() != null) {
             if (terminationPoint.getInterfaceType().isAssignableFrom(InterfaceTypeVxlan.class)) {
                 dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
             } else {
                 dataPlaneLocatorBuilder.setTransport(Other.class);
             }
-        } catch (NullPointerException e) {
+
+        } else {
             LOG.warn("Cannot determine OVS TerminationPoint transport type: {}.", terminationPoint.getName());
 
             //TODO: remove once MDSAL OVSDB will not require interface type to be specified
@@ -221,7 +216,7 @@ public class SfcOvsToSffMappingAPI {
         Preconditions.checkNotNull(terminationPoint);
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
 
-        try {
+        if (terminationPoint.getOptions() != null) {
             List<Options> options = terminationPoint.getOptions();
             for (Options option : options) {
                 switch (option.getOption()) {
@@ -248,7 +243,7 @@ public class SfcOvsToSffMappingAPI {
                         break;
                 }
             }
-        } catch (NullPointerException e) {
+        } else {
             LOG.debug("Not building OVS TerminationPoint Options: {}. TerminationPoint options are null.", terminationPoint.getName());
         }
 

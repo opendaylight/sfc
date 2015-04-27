@@ -152,7 +152,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                 "Cannot READ Node for given ipAddress from OVS operational store, ipAddress is null.");
 
         Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(), LogicalDatastoreType.OPERATIONAL);
-        try {
+        if (topology.getNode() != null) {
             for (Node node : topology.getNode()) {
                 if (node.getNodeId().getValue().contains(ipAddress)) {
                     //we are looking for OvsdbNode (not OvsdbBridge or OvsdbTerminationPoint)
@@ -163,7 +163,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                 }
             }
 
-        } catch (NullPointerException e) {
+        } else {
             LOG.warn("Cannot READ Node for given ipAddress from OVS operational store, Topology does not contain any Node.");
         }
 

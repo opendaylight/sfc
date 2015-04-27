@@ -99,7 +99,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import com.google.common.collect.Lists;
 
 public class SfcOpenflowUtils {
-
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;

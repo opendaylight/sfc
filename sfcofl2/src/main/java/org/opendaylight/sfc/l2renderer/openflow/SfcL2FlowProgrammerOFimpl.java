@@ -303,6 +303,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, isAddFlow);
         configureIngressTransportThread.setIpProtocol(SfcOpenflowUtils.IP_PROTOCOL_UDP);
         configureIngressTransportThread.setDstUdpPort(new PortNumber(dstPort));
+        configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -327,6 +328,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         long etherType;
         short ipProtocol;
         PortNumber dstUdpPort;
+        short nextTable;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType, final boolean isAddFlow) {
             this.sffNodeName = sffNodeName;
@@ -334,10 +336,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.isAddFlow = isAddFlow;
             this.ipProtocol = (short) -1;
             this.dstUdpPort = null;
+            this.nextTable = TABLE_INDEX_INGRESS;
         }
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
         public void setDstUdpPort(PortNumber dstUdpPort) { this.dstUdpPort = dstUdpPort; }
+        public void setNextTable(short nextTable) { this.nextTable = nextTable; }
 
         @Override
         public void run() {
@@ -369,8 +373,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 }
 
                 //
-                // Action, goto Ingress table
-                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_INGRESS));
+                // Action, goto the nextTable, defaults to Ingress table unless otherwise set
+                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
 
                 InstructionBuilder ib = new InstructionBuilder();
                 ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
@@ -504,8 +508,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     // TODO if the nsi is 0, drop the packet
                     SfcOpenflowUtils.addMatchNshNsp(match, this.nsp);
                     SfcOpenflowUtils.addMatchNshNsi(match, this.nsi);
-                    actionList.add(SfcOpenflowUtils.createActionNxSetNsp(this.nsp, actionOrder++));
-                    actionList.add(SfcOpenflowUtils.createActionNxSetNsi(this.nsi, actionOrder++));
                 }
 
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -810,18 +812,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 MatchBuilder match = new MatchBuilder();
 
-                // Match on the metadata pathId
-                SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH);
+                if (this.nshNsp >=0 && this.nshNsi >= 0) {
+                    // If its NSH, then we dont need the metadata
+                    SfcOpenflowUtils.addMatchNshNsp(match, this.nshNsp);
+                    SfcOpenflowUtils.addMatchNshNsi(match, this.nshNsi);
+                } else {
+                    // Match on the metadata pathId
+                    SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH);
+                }
 
                 if(this.dstMac != null) {
                     SfcOpenflowUtils.addMatchDstMac(match, dstMac);
                     flowPriority -= 10;
                 }
 
-                if (this.nshNsp >=0 && this.nshNsi >= 0) {
-                    SfcOpenflowUtils.addMatchNshNsp(match, this.nshNsp);
-                    SfcOpenflowUtils.addMatchNshNsi(match, this.nshNsi);
-                }
 
                 int order = 0;
                 List<Action> actionList = new ArrayList<Action>();

@@ -258,10 +258,18 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
-        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
+        try {
+            renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", renderedServicePath);
 
+        try {
         revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", revRenderedServicePath);
 
         RenderedServicePathFirstHop firstHop;
@@ -289,7 +297,11 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         sftList.add(HttpHeaderEnrichment.class);
         sftList.add(Qos.class);
         assertEquals("sftList size should be 5", sftList.size(), 5);
-        RenderedServicePathFirstHop firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+        try {
+            RenderedServicePathFirstHop firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", firstHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));

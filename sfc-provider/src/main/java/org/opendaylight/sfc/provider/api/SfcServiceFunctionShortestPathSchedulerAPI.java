@@ -180,9 +180,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * <p>
      * @param chain Service Function Chain to render
      * @param serviceIndex Not used currently
-     * @return List<String> Service Funtion name list in the shortest path
+     * @return List<String> Service Function name list in the shortest path
      */
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         String preSfName = null;
         String sfName = null;
         List<String> sfNameList = new ArrayList<>();
@@ -213,7 +213,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                         preSfName = sfName;
                         LOG.debug("Next Service Function: {}", sfName);
                     } else {
-                        LOG.error("Couldn't find a reachable SF for ServiceFuntionType: {}", sfcServiceFunction.getType());
+                        LOG.error("Couldn't find a reachable SF for ServiceFunctionType: {}", sfcServiceFunction.getType());
                         return null;
                     }
                 } else {

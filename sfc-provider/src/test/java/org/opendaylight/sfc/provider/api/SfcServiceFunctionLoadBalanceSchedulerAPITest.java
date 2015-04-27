@@ -45,6 +45,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,6 +60,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
     DataBroker dataBroker;
     ExecutorService executor;
     OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
 
     List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
     List<ServiceFunction> sfList = new ArrayList<>();
@@ -68,6 +71,13 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
+
+        /* Delete all the content in SFC data store before unit test */
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
 
         String sfcName = "loadbalance-unittest-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -128,6 +138,29 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         sfsBuilder.setServiceFunction(sfList);
         executor.submit(SfcProviderServiceFunctionAPI.getPutAll
                 (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
+        //Wait a while in order to ensure they are really created
+        Thread.sleep(1000);
+        int maxTries = 10;
+
+        /* Ensure all the ServiceFunctions in sfList are indeed created */
+        for (ServiceFunction serviceFunction : sfList) {
+            maxTries = 10;
+            ServiceFunction sf2 = null;
+            while (maxTries > 0) {
+                Object[] parameters2 = {serviceFunction.getName()};
+                Class[] parameterTypes2 = {String.class};
+                Object result = executor.submit(SfcProviderServiceFunctionAPI
+                    .getRead(parameters2, parameterTypes2)).get();
+                sf2 = (ServiceFunction) result;
+                maxTries--;
+                if (sf2 != null) {
+                    break;
+                }
+                Thread.sleep(1000);
+            }
+            LOG.debug("getRead ServiceFunction {} {} times: {}", serviceFunction.getName(), 10 - maxTries, (sf2 == null) ? "Failed" : "Successful");
+        }
+
         // set CPUUtilization for SF
         String sfNameFW = "simple_fw_";
         for (int i=100; i<130; i=i+10){
@@ -195,28 +228,12 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
     public void after() {
         executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     @Test
     public void testServiceFunctionLoadBalanceScheduler() throws ExecutionException, InterruptedException {
-
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
-
-        for (ServiceFunction serviceFuntion : sfList) {
-            Object[] parameters2 = {serviceFuntion.getName()};
-            Class[] parameterTypes2 = {String.class};
-            Object result = executor.submit(SfcProviderServiceFunctionAPI
-                    .getRead(parameters2, parameterTypes2)).get();
-            ServiceFunction sf2 = (ServiceFunction) result;
-
-            assertNotNull("Must be not null", sf2);
-            assertEquals("Must be equal", sf2.getName(), serviceFuntion.getName());
-            assertEquals("Must be equal", sf2.getType(), serviceFuntion.getType());
-        }
-
         Object[] sfcParameters = {sfChain};
         Class[] sfcParameterTypes = {ServiceFunctionChain.class};
         executor.submit(SfcProviderServiceChainAPI
@@ -262,7 +279,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
-        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         for (int i=0; i<3; i++){

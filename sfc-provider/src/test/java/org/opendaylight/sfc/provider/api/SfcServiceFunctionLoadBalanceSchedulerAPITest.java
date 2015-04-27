@@ -69,6 +69,13 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
+        /* Delete all the content in SFC data store before unit test */
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+
         String sfcName = "loadbalance-unittest-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
@@ -195,6 +202,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
     public void after() {
         executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
@@ -205,16 +213,16 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
-        for (ServiceFunction serviceFuntion : sfList) {
-            Object[] parameters2 = {serviceFuntion.getName()};
+        for (ServiceFunction serviceFunction : sfList) {
+            Object[] parameters2 = {serviceFunction.getName()};
             Class[] parameterTypes2 = {String.class};
             Object result = executor.submit(SfcProviderServiceFunctionAPI
                     .getRead(parameters2, parameterTypes2)).get();
             ServiceFunction sf2 = (ServiceFunction) result;
 
             assertNotNull("Must be not null", sf2);
-            assertEquals("Must be equal", sf2.getName(), serviceFuntion.getName());
-            assertEquals("Must be equal", sf2.getType(), serviceFuntion.getType());
+            assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
+            assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());
         }
 
         Object[] sfcParameters = {sfChain};
@@ -262,7 +270,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
-        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         for (int i=0; i<3; i++){

@@ -14,6 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,36 +38,53 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
     }
 
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
+        boolean ret = false;
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-        String sftServiceFunctionName = sftServiceFunctionNameList.get(0).getName();
+        String sfName = null;
+        String sftServiceFunctionName = null;
+        java.lang.Long preCPUUtilization = java.lang.Long.MAX_VALUE;
 
-        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sftServiceFunctionName);
-        if (!SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(serviceFunction)){
-            LOG.error("Put monitor information to Data Store failed! serviceFunction: {}", serviceFunction.getName());
-        }
+        for (SftServiceFunctionName curSftServiceFunctionName : sftServiceFunctionNameList){
+            sfName = curSftServiceFunctionName.getName();
 
-        if (SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sftServiceFunctionName) != null){
-            java.lang.Long preCPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sftServiceFunctionName)
-                                                   .getMonitoringInfo()
-                                                   .getResourceUtilization()
-                                                   .getCPUUtilization();
+            /* Check next one if curSftServiceFunctionName doesn't exist */
+            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfName);
+            if (serviceFunction == null) {
+                LOG.error("ServiceFunction {} doesn't exist", sfName);
+                continue;
+            }
 
-            for (SftServiceFunctionName curSftServiceFunctionName : sftServiceFunctionNameList){
-                java.lang.Long curCPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(curSftServiceFunctionName.getName())
-                                            .getMonitoringInfo()
-                                            .getResourceUtilization()
-                                            .getCPUUtilization();
+            /* Update ServiceFunctionMonitor information */
+            ret = SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(serviceFunction);
+            if (ret == false) {
+                LOG.error("Put monitor information to Data Store failed! serviceFunction: {}", sfName);
+            }
 
-                if (preCPUUtilization > curCPUUtilization){
-                    preCPUUtilization = curCPUUtilization;
-                    sftServiceFunctionName = curSftServiceFunctionName.getName();
-                }
+            /* Read ServiceFunctionMonitor information */
+            SfcSfDescMon sfcSfDescMon = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfName);
+            if (sfcSfDescMon == null) {
+                sftServiceFunctionName = sfName;
+                LOG.error("Read monitor information from Data Store failed! serviceFunction: {}", sfName);
+                // Use sfName if no sfcSfDescMon is available
+                break;
+            }
+
+            java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization().getCPUUtilization();
+
+            if (preCPUUtilization > curCPUUtilization){
+                preCPUUtilization = curCPUUtilization;
+                sftServiceFunctionName = sfName;
             }
         }
+
+        if (sftServiceFunctionName == null) {
+            LOG.error("Failed to get one available ServiceFunction");
+        }
+
         return sftServiceFunctionName;
     }
 
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());

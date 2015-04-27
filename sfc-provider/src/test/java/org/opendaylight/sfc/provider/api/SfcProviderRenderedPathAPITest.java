@@ -102,6 +102,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        Thread.sleep(1000); // Wait for real delete
 
         // Create Service Functions
         final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
@@ -135,6 +136,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         sfsBuilder.setServiceFunction(sfList);
 
         executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
+        Thread.sleep(1000); // Wait they are really created
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {
@@ -191,6 +193,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
             ServiceFunctionForwarder sff = sffBuilder.build();
             executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
         }
+        Thread.sleep(1000); // Wait they are really created
     }
 
     @After
@@ -258,10 +261,18 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
-        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
+        try {
+            renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", renderedServicePath);
 
-        revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+        try {
+            revRenderedServicePath = SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", revRenderedServicePath);
 
         RenderedServicePathFirstHop firstHop;
@@ -289,7 +300,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         sftList.add(HttpHeaderEnrichment.class);
         sftList.add(Qos.class);
         assertEquals("sftList size should be 5", sftList.size(), 5);
-        RenderedServicePathFirstHop firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+        RenderedServicePathFirstHop firstHop = null;
+        try {
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         assertNotNull("Must be not null", firstHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));

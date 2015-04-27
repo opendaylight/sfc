@@ -52,7 +52,8 @@ public class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            //e.printStackTrace();
             ret = false;
         }
         return ret;
@@ -70,7 +71,8 @@ public class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            LOG.error("writeMergeTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            //e.printStackTrace();
             ret = false;
         }
         return ret;
@@ -86,7 +88,8 @@ public class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Transaction failed. Message: {}", e.getMessage());
+            LOG.error("writePutTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            //e.printStackTrace();
             ret = false;
         }
         return ret;

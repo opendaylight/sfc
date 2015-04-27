@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -37,12 +38,31 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
 
     private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+        int maxTries = sftServiceFunctionNameList.size();
         Random rad = new Random();
+        ServiceFunction serviceFunction = null;
+        String serviceFunctionName = null;
+        int start = rad.nextInt(sftServiceFunctionNameList.size());
 
-        return sftServiceFunctionNameList.get(rad.nextInt(sftServiceFunctionNameList.size())).getName();
+        while (maxTries > 0) {
+            serviceFunctionName = sftServiceFunctionNameList.get(start).getName();
+            serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionName);
+            if (serviceFunction != null) {
+                break;
+            } else {
+                LOG.debug("ServiceFunction {} doesn't exist", serviceFunctionName);
+                maxTries--;
+                serviceFunctionName = null;
+                start = (start + 1) % sftServiceFunctionNameList.size();
+            }
+        }
+        if (serviceFunctionName == null) {
+            LOG.error("Could not find an existing ServiceFunction for {}", serviceFunctionType.getType().getSimpleName());
+        }
+        return serviceFunctionName;
     }
 
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());

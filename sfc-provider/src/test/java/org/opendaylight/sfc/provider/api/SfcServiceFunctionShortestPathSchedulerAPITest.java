@@ -83,6 +83,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        Thread.sleep(1000); // Wait for real delete
 
         //build SFs
         final String[] LOCATOR_IP_ADDRESS =
@@ -133,6 +134,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         sfsBuilder.setServiceFunction(sfList);
         executor.submit(SfcProviderServiceFunctionAPI.getPutAll
                 (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
+        Thread.sleep(1000); // Wait they are really created
 
         String sfcName = "ShortestPath-unittest-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -209,6 +211,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             ServiceFunctionForwarder sff = sffBuilder.build();
             executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
         }
+        Thread.sleep(1000); // Wait they are really created
     }
 
     @After
@@ -225,6 +228,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
+        int maxTries = 10;
 
         /* Must create ServiceFunctionType first */
         for (ServiceFunction serviceFunction : sfList) {
@@ -234,13 +238,21 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         }
 
         for (ServiceFunction serviceFunction : sfList) {
-            Object[] parameters2 = {serviceFunction.getName()};
-            Class[] parameterTypes2 = {String.class};
-            Object result = executor.submit(SfcProviderServiceFunctionAPI
+            maxTries = 10;
+            ServiceFunction sf2 = null;
+            while (maxTries > 0) {
+                Object[] parameters2 = {serviceFunction.getName()};
+                Class[] parameterTypes2 = {String.class};
+                Object result = executor.submit(SfcProviderServiceFunctionAPI
                     .getRead(parameters2, parameterTypes2)).get();
-            ServiceFunction sf2 = (ServiceFunction) result;
-
-            LOG.debug("read ServiceFunction {}", serviceFunction.getName());
+                sf2 = (ServiceFunction) result;
+                maxTries--;
+                if (sf2 != null) {
+                    break;
+                }
+                Thread.sleep(1000);
+            }
+            LOG.debug("SfcServiceFunctionShortestPathSchedulerAPITest: getRead ServiceFunction {} {} times: {}", serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
             assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());
@@ -270,7 +282,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         int serviceIndex = 255;
 
         SfcServiceFunctionShortestPathSchedulerAPI scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
-        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         Object[] parametersHop = {serviceFunctionNameArrayList.get(0)};

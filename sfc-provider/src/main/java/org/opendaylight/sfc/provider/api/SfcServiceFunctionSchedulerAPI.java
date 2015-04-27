@@ -32,5 +32,5 @@ public abstract class SfcServiceFunctionSchedulerAPI {
         this.sfcServiceFunctionSchedulerType = schedulerType;
     }
 
-    abstract public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex);
+    abstract public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex);
 }

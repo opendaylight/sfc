@@ -91,7 +91,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     private SfcServiceFunctionSchedulerAPI scheduler;
 
-    private void initServiceFuntionScheduler()
+    private void initServiceFunctionScheduler()
     {
         java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
 
@@ -132,12 +132,12 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     SfcProviderRenderedPathAPI(Object[] params, String m) {
         super(params, m);
-        initServiceFuntionScheduler();
+        initServiceFunctionScheduler();
     }
 
     SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
-        initServiceFuntionScheduler();
+        initServiceFunctionScheduler();
     }
 
 
@@ -466,9 +466,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         serviceIndex = MAX_STARTING_INDEX;
 
         List<String> sfgNameList = getSfgNameList(serviceFunctionChain);
-        List<String> sfNameList = scheduler.scheduleServiceFuntions(serviceFunctionChain, serviceIndex);
+        List<String> sfNameList = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex);
         if(sfNameList == null && sfgNameList == null) {
-            LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFuntions() returned null list");
+            LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFunctions() returned null list");
             return null;
         }
         List<RenderedServicePathHop> renderedServicePathHopArrayList = createRenderedServicePathHopList(sfNameList, sfgNameList, serviceIndex);

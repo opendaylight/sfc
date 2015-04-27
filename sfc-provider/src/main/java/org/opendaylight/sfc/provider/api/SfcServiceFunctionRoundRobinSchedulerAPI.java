@@ -59,7 +59,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         return sftServiceFunctionName.getName();
     }
 
-    public List<String> scheduleServiceFuntions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());

@@ -270,7 +270,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         int serviceIndex = 255;
 
         SfcServiceFunctionShortestPathSchedulerAPI scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
-        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFuntions(sfChain, serviceIndex);
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         Object[] parametersHop = {serviceFunctionNameArrayList.get(0)};

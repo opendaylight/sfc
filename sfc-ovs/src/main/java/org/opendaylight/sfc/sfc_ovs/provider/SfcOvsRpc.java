@@ -23,7 +23,6 @@ import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
@@ -47,7 +46,6 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
 
     private static final String OVSDB_NODE_PREFIX = "ovsdb://";
 
@@ -83,16 +81,15 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
                     new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
             Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor());
 
-            try {
+            if (node.getNodeId() != null) {
                 nodeId = node.getNodeId();
-            } catch (NullPointerException e) {
+            } else {
                 LOG.debug("OVS Node for IP address {} does not exist!", methodParams[0]);
                 nodeId = null;
             }
         }
 
-        try {
-            Preconditions.checkNotNull(nodeId);
+        if (nodeId != null) {
             InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(nodeId);
 
             //build OVS Bridge
@@ -113,7 +110,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
                         .withError(RpcError.ErrorType.APPLICATION, message);
             }
 
-        } catch (Exception e) {
+        } else {
             String message = "Error writing OVS Bridge into OVSDB Configuration DataStore (cannot determine parent NodeId): "
                     + input.getName();
             rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()

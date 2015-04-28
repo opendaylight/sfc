@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter) {
+  sfc.register.controller('serviceForwarderCtrl', function ($scope, $state, ServiceForwarderSvc, SfcServiceForwarderOvsSvc, ServiceForwarderHelper, ServiceLocatorHelper, ModalCreateOvsSvc, ModalInfoSvc, ModalErrorSvc, ModalDeleteSvc, SfcTableParamsSvc, ngTableParams, $filter, $timeout) {
     var thisCtrl = this;
     $scope.sffs = [];
 
@@ -99,7 +99,39 @@ define(['app/sfc/sfc.module'], function (sfc) {
         }
       });
     };
-  });
+
+    $scope.rpcCreateOvsBridge = function () {
+      ModalCreateOvsSvc.open(function(createOvsBridgeInput) {
+
+        if (angular.isDefined(createOvsBridgeInput['name']) && angular.isDefined(createOvsBridgeInput['ovs-node']['ip'])) {
+          SfcServiceForwarderOvsSvc.executeRpcOperation({input: createOvsBridgeInput}, 'create-ovs-bridge', null, function (result) {
+            if (angular.isDefined(result) && result['result'] === true) {
+        
+              var modalBody = $scope.$eval('"SFC_FORWARDER_MODAL_CREATE_OVS_RPC_SUCCESS_BODY" | translate') + ": <b>'" + createOvsBridgeInput['name'] + "'</b>.";
+
+              ModalInfoSvc.open({
+                "head": $scope.$eval('"SFC_FORWARDER_MODAL_CREATE_OVS_RPC_SUCCESS_HEADER" | translate'),
+                "body": modalBody
+              });
+
+              //reload the SFF table
+              $timeout(function () {
+                thisCtrl.fetchData();
+              }, 500);
+
+            }
+            else if (angular.isDefined(result)) {
+              ModalErrorSvc.open({
+                head: $scope.$eval('"SFC_FORWARDER_MODAL_CREATE_OVS_RPC_FAIL_HEADER" | translate'),
+                rpcError: result['response'] || ''
+              });
+            }
+          });
+        }
+      });
+    };
+
+   });
 
   sfc.register.controller('serviceForwarderCreateCtrl', function ($scope, $state, $stateParams, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc) {
 
@@ -189,4 +221,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
     };
   });
+
+  sfc.register.controller('ModalCreateOvsCtrl', function ($scope, $modalInstance) {
+
+    $scope.save = function () {
+
+      var createOvsBridgeInput = {};
+
+      createOvsBridgeInput['name'] = this.data.name;
+      createOvsBridgeInput['ovs-node'] = {};
+      createOvsBridgeInput['ovs-node']['ip'] = this.data.ip_address;
+      createOvsBridgeInput['ovs-node']['port'] = this.data.port;
+
+      $modalInstance.close(createOvsBridgeInput);
+    };
+
+    $scope.dismiss = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  });
+
 });

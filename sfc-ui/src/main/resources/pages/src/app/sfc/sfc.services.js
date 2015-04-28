@@ -1359,5 +1359,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcServiceFunctionSchedulerTypeSvc();
   });
 
+// ******* SfcServiceForwarderOvsSvc *********
+  sfc.register.factory('SfcServiceForwarderOvsSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function-forwarder-ovs';
+    var containerName = 'none';
+    var listName = 'none';
+
+    // constructor
+    function SfcServiceForwarderOvsSvc() {
+    }
+
+    SfcServiceForwarderOvsSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
+
+    return new SfcServiceForwarderOvsSvc();
+  });
+
 })
 ; // end define

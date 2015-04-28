@@ -84,7 +84,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             if (node != null && node.getNodeId() != null) {
                 nodeId = node.getNodeId();
             } else {
-                LOG.debug("OVS Node for IP address {} does not exist!", methodParams[0]);
+                LOG.warn("OVS Node for IP address {} does not exist!", methodParams[0]);
                 nodeId = null;
             }
         }
@@ -105,14 +105,14 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             if ((boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
                 rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
             } else {
-                String message = "Error writing OVS Bridge into OVSDB Configuration DataStore: " + input.getName();
+                String message = "Error writing OVS Bridge: '" + input.getName() + "' into OVSDB Configuration DataStore.";
                 rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, message);
             }
 
         } else {
-            String message = "Error writing OVS Bridge into OVSDB Configuration DataStore (cannot determine parent NodeId): "
-                    + input.getName();
+            String message = "Error writing OVS Bridge: '" + input.getName() +
+                    "' into OVSDB Configuration DataStore (cannot determine parent NodeId).";
             rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
                     .withError(RpcError.ErrorType.APPLICATION, message);
         }

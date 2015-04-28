@@ -1,0 +1,43 @@
+<div class="modal-header btn-info">
+    <h4 class="modal-title">{{'SFC_FORWARDER_CREATE_OVS_BRIDGE' | translate}}</h4>
+</div>
+<div class="modal-body form-horizontal" ng-form="f_ovs_bridge_input">
+
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="name"
+               class="col-lg-6 control-label small-label">{{'SFC_FORWARDER_BRIDGE_NAME' | translate}}</label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="data.name"
+                   placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_NAME' | translate}}"
+                   id="name" name="name" required focus-me="{{true}}">
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="ip_address"
+               class="col-lg-6 control-label small-label">{{'SFC_FORWARDER_OVS_NODE_IP' | translate}}</label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="data.ip_address"
+                   placeholder="{{'SFC_FORWARDER_CREATE_OVS_NODE_IP' | translate}}"
+                   id="ip_address" name="ip_address" required ip-address="{version:4, prefix:false}">
+        </div>
+    </div>
+
+    <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="port"
+               class="col-lg-6 control-label small-label">{{'SFC_FORWARDER_OVS_NODE_PORT' | translate}}</label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="data.port"
+                   placeholder="{{'SFC_FORWARDER_CREATE_OVS_NODE_PORT' | translate}}"
+                   id="port" name="port" port>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-orange" ng-disabled="! ((!!data.name) && (!!data.ip_address))"  ng-click="save()"><i class="icon-ok-sign"></i> {{'SFC_CHAIN_MODAL_OK' | translate}}</button>
+    <button class="btn btn-danger" ng-click="dismiss()"><i class="icon-remove-sign"></i> {{'SFC_CHAIN_MODAL_CANCEL' | translate}}</button>
+</div>

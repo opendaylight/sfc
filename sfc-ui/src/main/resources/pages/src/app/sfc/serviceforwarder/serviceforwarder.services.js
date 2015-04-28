@@ -147,4 +147,27 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     return svc;
   });
+
+  sfc.register.factory('ModalCreateOvsSvc', function ($modal) {
+    var svc = {};
+    var modalInstance;
+
+    svc.open = function (callback) {
+      modalInstance = $modal.open({
+        templateUrl: 'src/app/sfc/serviceforwarder/serviceforwarder.modal.createovs.tpl.html',
+        controller: 'ModalCreateOvsCtrl',
+      });
+
+      modalInstance.result.then(function (result) {
+        callback(result);
+      }, function (reason) {
+        callback(reason);
+      });
+
+      return modalInstance;
+    };
+
+    return svc;
+  });
+
 });

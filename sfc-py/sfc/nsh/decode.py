@@ -8,7 +8,7 @@
 import struct
 import logging
 import binascii
-from nsh.common import *  # noqa
+from .common import *  # noqa
 
 
 __author__ = 'Reinaldo Penno'

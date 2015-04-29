@@ -5,14 +5,24 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-import getopt
+
+import os
 import sys
-import asyncio
-# import os
-# import platform
-from nsh.decode import *  # noqa
-from nsh.encode import *  # noqa
 import time
+import getopt
+import asyncio
+
+
+# fix Python 3 relative imports inside packages
+# CREDITS: http://stackoverflow.com/a/6655098/4183498
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(1, parent_dir)
+import sfc  # noqa
+__package__ = 'sfc'
+
+
+from sfc.nsh.decode import *  # noqa
+from sfc.nsh.encode import *  # noqa
 
 
 __author__ = "Reinaldo Penno, Jim Guichard, Paul Quinn"

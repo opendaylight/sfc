@@ -59,8 +59,6 @@ public class SfcL2RspProcessor {
     private int lastMplsLabel;
     private int lastVlanId;
 
-    private static final int VXLAN_GPE_NSH_UDP_PORT = 6633;
-
     private static final int MPLS_LABEL_INCR_HOP = 1;
     private static final int MPLS_LABEL_INCR_RSP = 100;
     private static final int VLAN_ID_INCR_HOP = 1;
@@ -361,8 +359,7 @@ public class SfcL2RspProcessor {
            //VxLAN-gpe, it is IP flow with VLAN tag
            if (dpl.getTransport().equals(VxlanGpe.class)) {
                 //Only support VxLAN-gpe + NSH currently
-                this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                        sffNodeName, VXLAN_GPE_NSH_UDP_PORT, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(sffNodeName, this.addFlow);
            }
         }
     }

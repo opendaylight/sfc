@@ -32,7 +32,7 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, int dstUdpPort, final boolean isAddFlow);
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 

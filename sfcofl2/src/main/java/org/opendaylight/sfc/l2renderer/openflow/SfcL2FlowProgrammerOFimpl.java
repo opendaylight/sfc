@@ -45,7 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 
 /**
  * This class writes Openflow Flow Entries to the SFF once an SFF has been configured.
@@ -296,13 +295,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, int dstPort, final boolean isAddFlow) {
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final boolean isAddFlow) {
         ConfigureTransportIngressThread configureIngressTransportThread =
-                // TODO should this be VLAN or IP??
-                //new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN, isAddFlow);
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4, isAddFlow);
         configureIngressTransportThread.setIpProtocol(SfcOpenflowUtils.IP_PROTOCOL_UDP);
-        configureIngressTransportThread.setDstUdpPort(new PortNumber(dstPort));
         configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
@@ -327,7 +323,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         boolean isAddFlow;
         long etherType;
         short ipProtocol;
-        PortNumber dstUdpPort;
         short nextTable;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType, final boolean isAddFlow) {
@@ -335,12 +330,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.etherType = etherType;
             this.isAddFlow = isAddFlow;
             this.ipProtocol = (short) -1;
-            this.dstUdpPort = null;
             this.nextTable = TABLE_INDEX_INGRESS;
         }
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
-        public void setDstUdpPort(PortNumber dstUdpPort) { this.dstUdpPort = dstUdpPort; }
         public void setNextTable(short nextTable) { this.nextTable = nextTable; }
 
         @Override
@@ -354,10 +347,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 MatchBuilder match = new MatchBuilder();
                 if(this.ipProtocol > 0) {
                     SfcOpenflowUtils.addMatchIpProtocol(match, this.ipProtocol);
-                }
-
-                if (this.dstUdpPort != null) {
-                    SfcOpenflowUtils.addMatchDstUdpPort(match, this.dstUdpPort);
                 }
 
                 if(this.etherType == SfcOpenflowUtils.ETHERTYPE_VLAN) {
@@ -659,10 +648,16 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 }
 
                 if (dstIp != null) {
-                    // If we're going to set IP, then we first have
-                    // to match IP or else the flow will be discarded
-                    SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
-                    Action actionSetNwDst = SfcOpenflowUtils.createActionSetNwDst(dstIp, 32, order++);
+                    Action actionSetNwDst;
+                    if (nshNsp >= 0 && nshNsi >= 0) {
+                        // For NSH, we need to set the Tunnel Dst IP, not the inner Dst IP
+                        actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
+                    } else {
+                        // If we're going to set IP, then we first have
+                        // to match IP or else the flow will be discarded
+                        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+                        actionSetNwDst = SfcOpenflowUtils.createActionSetNwDst(dstIp, 32, order++);
+                    }
                     actionList.add(actionSetNwDst);
                 }
 

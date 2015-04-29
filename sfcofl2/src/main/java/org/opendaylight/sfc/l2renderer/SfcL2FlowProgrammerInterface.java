@@ -32,7 +32,7 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, int dstUdpPort, final boolean isAddFlow);
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
@@ -61,26 +61,39 @@ public interface SfcL2FlowProgrammerInterface {
     //
     public void configureMacTransportEgressFlow(
             final String sffNodeName,
-            final String srcMac, final String dstMac,
-            int port, final long pathId,
-            boolean setDscp, final boolean isAddFlow);
+            final String srcMac,
+            final String dstMac,
+            final String port,
+            final long pathId,
+            final boolean setDscp,
+            final boolean isAddFlow);
 
     public void configureVlanTransportEgressFlow(
             final String sffNodeName,
-            final String srcMac, final String dstMac,
-            final int dstVlan, int port, final long pathId,
-            boolean setDscp, final boolean isAddFlow);
+            final String srcMac,
+            final String dstMac,
+            final int dstVlan,
+            final String port,
+            final long pathId,
+            final boolean setDscp,
+            final boolean isAddFlow);
 
     public void configureVxlanGpeTransportEgressFlow(
             final String sffNodeName,
-            final long nshNsp, final short nshNsi, int port,
+            final long nshNsp,
+            final short nshNsi,
+            final String port,
             final boolean isAddFlow);
 
     public void configureMplsTransportEgressFlow(
             final String sffNodeName,
-            final String srcMac, final String dstMac,
-            final long mplsLabel, int port, final long pathId,
-            boolean setDscp, final boolean isAddFlow);
+            final String srcMac,
+            final String dstMac,
+            final long mplsLabel,
+            final String port,
+            final long pathId,
+            boolean setDscp,
+            final boolean isAddFlow);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

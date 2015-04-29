@@ -6,7 +6,7 @@
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 import paramiko
-from common.sfc_globals import sfc_globals
+from ..common.sfc_globals import sfc_globals
 
 
 __author__ = "Jim Guichard"

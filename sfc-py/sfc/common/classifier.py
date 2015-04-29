@@ -16,10 +16,10 @@ import ipaddress
 import threading
 import subprocess
 
-from nsh.encode import build_nsh_header
-from common.sfc_globals import sfc_globals
-from nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER,
-                        VXLAN_NEXT_PROTO_NSH)
+from ..nsh.encode import build_nsh_header
+from ..common.sfc_globals import sfc_globals
+from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER,
+                          VXLAN_NEXT_PROTO_NSH)
 
 
 __author__ = 'Martin Lauko, Dusan Madar'

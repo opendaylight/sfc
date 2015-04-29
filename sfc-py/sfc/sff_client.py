@@ -10,8 +10,8 @@ import sys
 import asyncio
 # import os
 # import platform
-from nsh.decode import *  # noqa
-from nsh.encode import *  # noqa
+from .nsh.decode import *  # noqa
+from .nsh.encode import *  # noqa
 import time
 
 

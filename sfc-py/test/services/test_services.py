@@ -11,7 +11,7 @@ import asyncio
 
 from struct import pack
 
-from common.services import BasicService
+from sfc.common.services import BasicService
 
 
 __author__ = 'Dusan Madar'

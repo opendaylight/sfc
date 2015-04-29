@@ -13,13 +13,22 @@ import logging
 import argparse
 import requests
 import netifaces
+
 from urllib.parse import urlparse
 
-from cli import xe_cli, xr_cli, ovs_cli
 
-import common.sfc_globals
-from common import classifier
-from common.launcher import start_sf, stop_sf, start_sff, stop_sff
+# fix Python 3 relative imports inside packages
+# CREDITS: http://stackoverflow.com/a/6655098/4183498
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(1, parent_dir)
+import sfc  # noqa
+__package__ = 'sfc'
+
+
+from sfc.common import classifier
+from sfc.cli import xe_cli, xr_cli, ovs_cli
+from sfc.common import sfc_globals as _sfc_globals
+from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 
 __author__ = "Paul Quinn, Reinaldo Penno"
@@ -27,6 +36,7 @@ __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.4"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
+
 
 """
 SFC Agent Server. This Server should be co-located with the python SFF data
@@ -36,7 +46,7 @@ plane implementation (sff_thread.py)
 app = flask.Flask(__name__)
 logger = logging.getLogger(__file__)
 nfq_classifier = classifier.NfqClassifier()
-sfc_globals = common.sfc_globals.sfc_globals
+sfc_globals = _sfc_globals.sfc_globals
 
 
 def _sff_present(sff_name, local_sff_topo):
@@ -588,7 +598,7 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
     """
     try:
         logger.info("Getting SFF information from ODL ...")
-        url = common.sfc_globals.SFF_SF_DATA_PLANE_LOCATOR_URL
+        url = _sfc_globals.SFF_SF_DATA_PLANE_LOCATOR_URL
         odl_dataplane_url = url.format(odl_ip_port, sff_name, sf_name)
 
         s = requests.Session()
@@ -624,7 +634,7 @@ def get_sffs_from_odl(odl_ip_port):
     """
     try:
         logger.info("Getting SFFs configured in ODL ...")
-        url = common.sfc_globals.SFF_PARAMETER_URL
+        url = _sfc_globals.SFF_PARAMETER_URL
         odl_sff_url = url.format(odl_ip_port)
 
         s = requests.Session()
@@ -667,7 +677,7 @@ def get_sf_from_odl(odl_ip_port, sf_name):
     """
     try:
         logger.info('Contacting ODL about information for SF: %s' % sf_name)
-        url = common.sfc_globals.SF_NAME_PARAMETER_URL
+        url = _sfc_globals.SF_NAME_PARAMETER_URL
         odl_sf_url = url.format(odl_ip_port, sf_name)
 
         s = requests.Session()
@@ -705,7 +715,7 @@ def get_sff_from_odl(odl_ip_port, sff_name):
     """
     try:
         logger.info('Contacting ODL about information for SFF: %s' % sff_name)
-        url = common.sfc_globals.SFF_NAME_PARAMETER_URL
+        url = _sfc_globals.SFF_NAME_PARAMETER_URL
         odl_sff_url = url.format(odl_ip_port, sff_name)
 
         s = requests.Session()

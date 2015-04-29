@@ -10,7 +10,7 @@ import struct
 import socket
 import ipaddress
 
-from nsh.common import *  # noqa
+from .common import *  # noqa
 
 
 __author__ = "Reinaldo Penno, Jim Guichard"

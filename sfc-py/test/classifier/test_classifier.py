@@ -15,11 +15,10 @@ import subprocess
 from time import sleep
 from requests.exceptions import ConnectionError
 
-from common.sfc_globals import sfc_globals
-from common.classifier import NfqClassifier, IPV4, IPv6
-from test.conftest import (SF_URL, SFC_URL, SFF_URL, SFP_URL, RSP_RPC_URL,
-                           url_2_json_data, get_test_files, read_json,
-                           ODL_PORT)
+from sfc.common.sfc_globals import sfc_globals
+from sfc.common.classifier import NfqClassifier, IPV4, IPv6
+from conftest import (SF_URL, SFC_URL, SFF_URL, SFP_URL, RSP_RPC_URL,
+                      url_2_json_data, get_test_files, read_json, ODL_PORT)
 
 
 __author__ = 'Dusan Madar'
@@ -633,7 +632,5 @@ def test_packet_sending(capfd, acl_json, acl_data,
 
         assert int(nfqueue[0]) >= 5
 
-    finally:
-        _, err = capfd.readouterr()
-        if err:
-            pytest.fail(err)
+    except Exception as exc:
+        pytest.fail(exc)

@@ -7,7 +7,7 @@
 
 import logging
 
-from common.sfc_globals import OF_TABLEID
+from ..common.sfc_globals import OF_TABLEID
 
 
 __author__ = "Paul Quinn"

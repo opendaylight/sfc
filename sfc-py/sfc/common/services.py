@@ -16,12 +16,11 @@ import platform
 
 from struct import pack, unpack
 
-import nsh.decode as nsh_decode
-
-from common.sfc_globals import sfc_globals
-from nsh.encode import add_sf_to_trace_pkt
-from nsh.service_index import process_service_index
-from nsh.common import *    # noqa
+from .sfc_globals import sfc_globals
+from ..nsh.common import *    # noqa
+from ..nsh import decode as nsh_decode
+from ..nsh.encode import add_sf_to_trace_pkt
+from ..nsh.service_index import process_service_index
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"

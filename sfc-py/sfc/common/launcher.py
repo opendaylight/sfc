@@ -11,8 +11,9 @@ import asyncio
 
 from time import sleep
 from threading import Thread
-from common.sfc_globals import sfc_globals
-from common.services import SF, SFF, CUDP, find_service
+
+from .sfc_globals import sfc_globals
+from .services import SF, SFF, CUDP, find_service
 
 
 __author__ = "Jim Guichard, Reinaldo Penno"

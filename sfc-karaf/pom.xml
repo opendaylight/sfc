@@ -377,6 +377,7 @@
             <feature>odl-sfc-ui</feature>
             <feature>odl-sfcofl2</feature>
             <feature>odl-sfc-sb-rest</feature>
+            <feature>odl-sfclisp</feature>
             <feature>odl-sfc-ovs</feature>
             <feature>odl-sfc-netconf</feature>
             <!-- 

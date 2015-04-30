@@ -5,14 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.lisp;
+package org.opendaylight.sfc.sfc_lisp.provider.listener;
 
 
 import java.util.Map;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
+import org.opendaylight.sfc.sfc_lisp.provider.api.SfcProviderServiceLispAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -27,20 +29,25 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * @author David Goldberg (david.goldberg@contextream.com)
+ * @author Florin Coras (fcoras@cisco.com)
  * @version 0.1
  * @since       2014-06-30
  */
-public class SfcLispProviderSfEntryDataListener implements DataChangeListener  {
-    private static final Logger LOG = LoggerFactory.getLogger(SfcLispProviderSfEntryDataListener.class);
+public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
+    private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
     private LispUpdater lispUpdater;
 
-    public SfcLispProviderSfEntryDataListener() {
-        lispUpdater = LispUpdater.getLispUpdaterObj();
+    public SfcLispSfEntryDataListener(OpendaylightSfc odlSfc, LispUpdater lispUpdater) {
+        setOpendaylightSfc(odlSfc);
+        setDataBroker(odlSfc.getDataProvider());
+        setInstanceIdentifier(OpendaylightSfc.SF_ENTRY_IID);
+        setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+        registerAsDataChangeListener();
+        this.lispUpdater = lispUpdater;
     }
 
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
 
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 

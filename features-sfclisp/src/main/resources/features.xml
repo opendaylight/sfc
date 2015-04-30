@@ -3,19 +3,16 @@
 <features name="odl-sfclisp-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-	<repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
-	<repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-	<repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/1.2.0-SNAPSHOT/xml/features</repository>
-	<repository>mvn:org.opendaylight.sfc/features-sfc/0.1.0-SNAPSHOT/xml/features</repository>
+
+    <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
+	<repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/${lisp.version}/xml/features</repository>
 
 	<feature name='odl-sfclisp' version='${project.version}' description='OpenDaylight :: sfclisp :: all'>
 		<feature version='${project.version}'>odl-sfc-provider</feature>
-        <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <feature version='${lisp.version}'>odl-lispflowmapping-mappingservice</feature>
-        <!--
-        <bundle>mvn:org.sonatype.sisu/sisu-guava/0.9.9</bundle>
-        -->
+        <feature version='${lisp.version}'>odl-lispflowmapping-southbound</feature>
         <bundle>mvn:org.opendaylight.sfc/sfclisp/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-lisp-initial.xml">mvn:org.opendaylight.sfc/sfclisp/${project.version}/xml/config</configfile>
 	</feature>
 </features>
 

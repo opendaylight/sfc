@@ -8,8 +8,9 @@
 
 /**
  * Rendered Service Path Hop - OvsdbBridgeAugmentation pair
+ * <p/>
+ * <p/>
  *
- * <p>
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @since 2015-04-14
@@ -19,6 +20,7 @@ package org.opendaylight.sfc.sfc_ovs.provider.util;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -28,8 +30,12 @@ import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HopOvsdbBridgePair {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HopOvsdbBridgePair.class);
 
     public final RenderedServicePathHop renderedServicePathHop;
     public final OvsdbBridgeAugmentation ovsdbBridgeAugmentation;
@@ -44,6 +50,8 @@ public class HopOvsdbBridgePair {
 
     public static List<HopOvsdbBridgePair> buildHopOvsdbBridgePairList(RenderedServicePath renderedServicePath, ExecutorService executor) {
         Preconditions.checkNotNull(renderedServicePath);
+        Preconditions.checkNotNull(renderedServicePath.getRenderedServicePathHop(),
+                "Cannot build HopOvsdbBridgePairList for RSP '"+ renderedServicePath.getName() + "', the RSP does not contain any HOPS!");
         Preconditions.checkNotNull(executor);
 
         List<HopOvsdbBridgePair> hopOvsdbBridgePairList = new ArrayList<>();
@@ -59,7 +67,21 @@ public class HopOvsdbBridgePair {
             OvsdbBridgeAugmentation ovsdbBridge =
                     (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge, executor);
 
-            hopOvsdbBridgePairList.add(hop.getHopNumber(), new HopOvsdbBridgePair(hop, ovsdbBridge));
+            if (ovsdbBridge != null) {
+                if (hop.getHopNumber() >= 0 && hop.getHopNumber() <= hopOvsdbBridgePairList.size()) {
+                    hopOvsdbBridgePairList.add(hop.getHopNumber(), new HopOvsdbBridgePair(hop, ovsdbBridge));
+                } else {
+                    LOG.warn("Some of the hops in RSP: '{}' are not using OVS SFF. Hybrid chains are not supported yet",
+                            renderedServicePath.getName());
+                    return Collections.emptyList();
+                }
+            }
+        }
+
+        if (hopOvsdbBridgePairList.size() != renderedServicePath.getRenderedServicePathHop().size()) {
+            LOG.warn("Some of the hops in RSP: '{}' are not using OVS SFF. Hybrid chains are not supported yet",
+                    renderedServicePath.getName());
+            return Collections.emptyList();
         }
 
         return hopOvsdbBridgePairList;

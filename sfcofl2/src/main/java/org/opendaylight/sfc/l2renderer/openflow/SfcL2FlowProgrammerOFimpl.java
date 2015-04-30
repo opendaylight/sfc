@@ -820,7 +820,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 }
 
                 if(this.dstMac != null) {
-                    LOG.info("BRADY ConfigureTransportEgressFlow writing Match dstMac [{}] this.dstMac [{}]", dstMac, this.dstMac);
                     SfcOpenflowUtils.addMatchDstMac(match, dstMac);
                 } else {
                     // If the dstMac is null, then the packet is leaving SFC and we dont know

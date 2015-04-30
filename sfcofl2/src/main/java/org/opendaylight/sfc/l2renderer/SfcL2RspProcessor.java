@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,6 @@ public class SfcL2RspProcessor {
     private boolean addFlow;
     private int lastMplsLabel;
     private int lastVlanId;
-
-    private static final int VXLAN_GPE_NSH_UDP_PORT = 6633;
 
     private static final int MPLS_LABEL_INCR_HOP = 1;
     private static final int MPLS_LABEL_INCR_RSP = 100;
@@ -361,8 +360,7 @@ public class SfcL2RspProcessor {
            //VxLAN-gpe, it is IP flow with VLAN tag
            if (dpl.getTransport().equals(VxlanGpe.class)) {
                 //Only support VxLAN-gpe + NSH currently
-                this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                        sffNodeName, VXLAN_GPE_NSH_UDP_PORT, this.addFlow);
+                this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(sffNodeName, this.addFlow);
            }
         }
     }
@@ -494,11 +492,10 @@ public class SfcL2RspProcessor {
                     "configureSffTransportEgressFlow OFS port not avail for SFF [" + sffName +
                     "] sffSfDict [" + srcSffSfDict.getName() + "]");
         }
-        int srcOfsPort = Integer.valueOf(srcOfsPortStr);
         String srcMac = getDictPortInfoMac(srcSffSfDict);
         String dstMac = getSfDplMac(dstSfDpl);
         configureSffTransportEgressFlow(
-                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPort, srcMac, dstMac, pathId, serviceIndex, isSf);
+                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, isSf);
     }
 
     // TODO I think isSf can be removed from this one, and just pass false to the final signature
@@ -517,13 +514,12 @@ public class SfcL2RspProcessor {
                     "configureSffTransportEgressFlow OFS port not avail for SFF [" + sffName +
                     "] srcDpl [" + srcDpl.getName() + "]");
         }
-        int srcOfsPort = Integer.valueOf(srcOfsPortStr);
         String srcMac = getDplPortInfoMac(srcDpl);
         String dstMac = getDplPortInfoMac(dstDpl);
         configureSffTransportEgressFlow(sffName,
                 srcDpl.getDataPlaneLocator(),
                 ((dstDpl == null) ? null : dstDpl.getDataPlaneLocator()),
-                hopDpl, srcOfsPort, srcMac, dstMac, pathId, serviceIndex, isSf);
+                hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, isSf);
     }
 
     // This version is only used by the previous 2 configureSffTransportEgressFlow() signatures
@@ -531,7 +527,7 @@ public class SfcL2RspProcessor {
                                                  DataPlaneLocator srcDpl,
                                                  DataPlaneLocator dstDpl,
                                                  DataPlaneLocator hopDpl,
-                                                 int srcOfsPort,
+                                                 String srcOfsPort,
                                                  String srcMac,
                                                  String dstMac,
                                                  long pathId,
@@ -872,7 +868,7 @@ public class SfcL2RspProcessor {
 
         SffDataPlaneLocator1 ofsDpl = sffDpl.getAugmentation(SffDataPlaneLocator1.class);
         if(ofsDpl == null) {
-            LOG.error("No OFS DPL available for dpl [{}]", sffDpl.getName());
+            LOG.info("No OFS DPL available for dpl [{}]", sffDpl.getName());
             return null;
         }
 
@@ -885,7 +881,7 @@ public class SfcL2RspProcessor {
         }
         ServiceFunctionDictionary1 ofsSffSfDict = sffSfDict.getAugmentation(ServiceFunctionDictionary1.class);
         if(ofsSffSfDict == null) {
-            LOG.error("No OFS SffSf Dictionary available for dict [{}]", sffSfDict.getName());
+            LOG.info("No OFS SffSf Dictionary available for dict [{}]", sffSfDict.getName());
             return null;
         }
 
@@ -896,7 +892,9 @@ public class SfcL2RspProcessor {
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
         if(ofsPort == null) {
-            return null;
+            // This case is most likely because the sff-of augmentation wasnt used
+            // assuming the packet should just be sent on the same port it was received on
+            return OutputPortValues.INPORT.toString();
         }
 
         return ofsPort.getPortId();
@@ -920,7 +918,9 @@ public class SfcL2RspProcessor {
         OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
         if(ofsPort == null) {
-            return null;
+            // This case is most likely because the sff-of augmentation wasnt used
+            // assuming the packet should just be sent on the same port it was received on
+            return OutputPortValues.INPORT.toString();
         }
 
         return ofsPort.getPortId();

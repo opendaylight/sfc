@@ -19,7 +19,7 @@
       <lisp.version>1.2.0-SNAPSHOT</lisp.version>
    </properties>
    <dependencies>
-       <dependency>
+    <dependency>
       <groupId>org.opendaylight.lispflowmapping</groupId>
       <artifactId>features-lispflowmapping</artifactId>
       <version>${lispflowmapping.version}</version>
@@ -29,6 +29,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit-dep</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -41,6 +47,13 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>sfclisp</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sfclisp</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
     </dependency>
     <dependency>
         <groupId>org.sonatype.sisu</groupId>

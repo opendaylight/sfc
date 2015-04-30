@@ -43,6 +43,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sfclisp</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
+    <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-guava</artifactId>
         <version>0.9.9</version>

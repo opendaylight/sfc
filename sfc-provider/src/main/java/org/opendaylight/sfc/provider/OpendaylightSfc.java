@@ -7,12 +7,7 @@
  */
 package org.opendaylight.sfc.provider;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -40,6 +35,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * This the main SFC Provider class. It is instantiated from the SFCProviderModule class. <p>
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -52,6 +52,12 @@ import org.slf4j.LoggerFactory;
 public class OpendaylightSfc implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
+
+    private static final long SHUTDOWN_TIME = 5;
+    private static final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("ServiceFunctionChaining-%d")
+            .setDaemon(false)
+            .build();
 
     public static final InstanceIdentifier<ServiceFunctionChain> SFC_ENTRY_IID = InstanceIdentifier
             .builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class).build();
@@ -100,7 +106,10 @@ public class OpendaylightSfc implements AutoCloseable {
     /* Constructors */
     public OpendaylightSfc() {
 
-        executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE);
+        executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE, threadFactory);
+        if (executor == null) {
+                LOG.error("Could you not create SFC Executors");
+        }
         opendaylightSfcObj = this;
         LOG.info("Opendaylight Service Function Chaining Initialized");
     }
@@ -148,7 +157,6 @@ public class OpendaylightSfc implements AutoCloseable {
     @Override
     public void close() throws ExecutionException, InterruptedException {
         // When we close this service we need to shutdown our executor!
-        executor.shutdown();
 
         if (dataProvider != null) {
             final InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(
@@ -176,12 +184,22 @@ public class OpendaylightSfc implements AutoCloseable {
 
             SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SCF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(SFT_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFP_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(RSP_IID, LogicalDatastoreType.OPERATIONAL);
             SfcDataStoreAPI.deleteTransactionAPI(ACL_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFST_IID, LogicalDatastoreType.CONFIGURATION);
+
+            // When we close this service we need to shutdown our executor!
+            executor.shutdown();
+            if (!executor.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
+                LOG.error("Executor did not terminate in the specified time.");
+                List<Runnable> droppedTasks = executor.shutdownNow();
+                LOG.error("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+            }
+
 
         }
     }

@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.math.BigInteger;
 
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammerOFimpl.class);
 
     private static final int COOKIE_BIGINT_HEX_RADIX = 16;
+    private static final long SHUTDOWN_TIME = 5;
 
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     private static final BigInteger METADATA_MASK_SFP_MATCH     = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
@@ -96,8 +98,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     }
 
     // This method should only be called by SfcL2Renderer.close()
-    public void shutdown() {
+    public void shutdown() throws ExecutionException, InterruptedException {
+        // When we close this service we need to shutdown our executor!
         threadPoolExecutorService.shutdown();
+        if (!threadPoolExecutorService.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
+            LOG.error("SfcL2 Executor did not terminate in the specified time.");
+            List<Runnable> droppedTasks = threadPoolExecutorService.shutdownNow();
+            LOG.error("SfcL2 Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+        }
     }
 
     public short getTableBase() {

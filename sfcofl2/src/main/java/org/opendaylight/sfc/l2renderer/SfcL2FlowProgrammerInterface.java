@@ -9,6 +9,7 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import java.util.concurrent.ExecutionException;
 
 /**
  * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.
@@ -19,7 +20,7 @@ package org.opendaylight.sfc.l2renderer;
  */
 public interface SfcL2FlowProgrammerInterface {
 
-    public void shutdown();
+    public void shutdown() throws ExecutionException, InterruptedException;
 
     public short getTableBase();
 

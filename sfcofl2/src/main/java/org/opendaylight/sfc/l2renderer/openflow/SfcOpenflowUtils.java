@@ -118,15 +118,9 @@ public class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
-
     public static final short IP_PROTOCOL_TCP = (short) 6;
     public static final short IP_PROTOCOL_UDP = (short) 17;
-    public static final int PKT_LENGTH_IP_HEADER = 14+20; // length of ETHER HDR + IP HDR
 
-    private static final int DEFAULT_SB_CAPACITY = 16;
-    private static final int FLOWREF_CAPACITY = 256;
-    private static final String FLOWID_PREFIX = "SFC";
-    private static final String FLOWID_SEPARATOR = ".";
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();
 
@@ -134,8 +128,6 @@ public class SfcOpenflowUtils {
             final short table, final int priority, final BigInteger cookieValue,
             final String flowName, MatchBuilder match, InstructionsBuilder isb) {
         FlowBuilder flow = new FlowBuilder();
-        //flow.setId(new FlowId(SfcOpenflowUtils.getFlowRef(table)));
-        //flow.setKey(new FlowKey(new FlowId(SfcOpenflowUtils.getFlowRef(table))));
         String idStr = String.valueOf(flowIdInc.getAndIncrement());
         flow.setId(new FlowId(idStr));
         flow.setKey(new FlowKey(new FlowId(idStr)));
@@ -642,7 +634,6 @@ public class SfcOpenflowUtils {
         return isb;
     }
 
-
     // Only configure OpenFlow Capable SFFs
     public static boolean isSffOpenFlowCapable(final String sffName) {
         InstanceIdentifier<FlowCapableNode> nodeInstancIdentifier =
@@ -659,45 +650,4 @@ public class SfcOpenflowUtils {
         }
         return false;
     }
-
-    public static String getFlowRef(final String srcIp, final short srcMask, final String dstIp, final short dstMask,
-            final short srcPort, final short dstPort, final byte protocol, final long sfpId) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(srcIp).append(FLOWID_SEPARATOR).append(srcMask)
-                .append(FLOWID_SEPARATOR).append(dstIp).append(FLOWID_SEPARATOR).append(dstMask)
-                .append(FLOWID_SEPARATOR).append(srcPort).append(FLOWID_SEPARATOR).append(dstPort)
-                .append(FLOWID_SEPARATOR).append(protocol).append(FLOWID_SEPARATOR).append(sfpId).toString();
-    }
-
-    public static String getFlowRef(final long sfpId, final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(dstMac).append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    public static String getFlowRef(final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(dstMac)
-                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    public static String getFlowRef(final int vlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(vlan).toString();
-    }
-
-    public static String getFlowRef(final long sfpId, final String srcMac, final String dstMac, final int dstVlan) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append(sfpId)
-                .append(FLOWID_SEPARATOR).append(srcMac).append(FLOWID_SEPARATOR).append(dstMac)
-                .append(FLOWID_SEPARATOR).append(dstVlan).toString();
-    }
-
-    public static String getFlowRef(final short tableId) {
-        return new StringBuilder(FLOWREF_CAPACITY).append(FLOWID_PREFIX).append(FLOWID_SEPARATOR).append("default")
-                .append(FLOWID_SEPARATOR).append(tableId).toString();
-    }
-
-    public static String longToIp(String ip, short mask) {
-        StringBuilder sb = new StringBuilder(DEFAULT_SB_CAPACITY);
-        sb.append(ip).append("/").append(mask);
-        return sb.toString();
-    }
-
 }

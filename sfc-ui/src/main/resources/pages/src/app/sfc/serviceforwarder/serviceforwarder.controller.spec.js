@@ -13,25 +13,41 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
       sffInterfaceToString: function() {
 //        return "sfi1, sfi2, sfi3";
       },
+      sffInterfaceInSffToString: function() {
+//        return "sfi1, sfi2, sfi3";
+      },
       sffInterfaceToObjectArray: function (sffInterfaces) {
         return exampleData.functionDictionaryObjectArray[0]['sff-interfaces'];
+      },
+      sffInterfaceInSffToObjectArray: function (sffInterfaces) {
+        return exampleData.forwarderDictionaryObjectArray[0]['sff-interfaces'];
       },
       sffInterfaceToStringArray: function (sffInterfaces) {
 //        return exampleData.functionDictionaryArray[0]['sff-interfaces'];
       },
+      sffInterfaceInSffToStringArray: function (sffInterfaces) {
+//        return exampleData.forwarderDictionaryArray[0]['sff-interfaces'];
+      },
       sffDpLocatorToString: function (sffDpLocators) {},
       sffFunctionDictionaryToString: function (sffFunctionDicitionary) {},
+      sffForwarderDictionaryToString: function (sffForwarderDicitionary) {},
       removeTemporaryPropertiesFromSf: function (sf) {
         delete sf.nonExistent;
+      },
+      removeTemporaryPropertiesFromSff: function (sff) {
+        delete sff.nonExistent;
       },
       removeNonExistentSn: function (sff, sns) {} ,
       addLocator: function (scope) {},
       removeLocator: function (index, scope) {},
       addFunction: function (scope) {},
       removeFunction: function (index, scope) {},
+      addForwarder: function (scope) {},
+      removeForwarder: function (index, scope) {},
       sfChangeListener: function (choosenSf, scope) {},
       dpChangeListener: function (sf, scope) {},
-      sfUpdate: function (sf, scope) {}
+      sfUpdate: function (sf, scope) {},
+      sffUpdate: function (sff, scope) {}
     };
     serviceFunctionSvcMock = {
       getArray: function (callback) {
@@ -85,6 +101,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
             "sff-sf-data-plane-locator": {},
             "sff-interfaces": []
           }
+        ],
+        "connected-sff-dictionary": [
+          {
+            nonExistent : false,
+            "sff-sff-data-plane-locator": {},
+            "sff-interfaces": []
+          }
         ]}
       ];
       exampleData.sns = [
@@ -102,12 +125,29 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
             "sff-sf-data-plane-locator": {},
             "sff-interfaces": []
           }
+        ],
+        "connected-sff-dictionary": [
+          {
+            nonExistent : false,
+            "sff-sff-data-plane-locator": {},
+            "sff-interfaces": []
+          }
         ]
       };
       exampleData.functionDictionaryArray = [
         {"sff-interfaces": ["sfi1", "sfi2", "sfi3"]}
       ];
       exampleData.functionDictionaryObjectArray = [
+        {"sff-interfaces": [
+          {"sff-interface": "sfi1"},
+          {"sff-interface": "sfi2"},
+          {"sff-interface": "sfi3"}
+        ]}
+      ];
+      exampleData.forwarderDictionaryArray = [
+        {"sff-interfaces": ["sfi1", "sfi2", "sfi3"]}
+      ];
+      exampleData.forwarderDictionaryObjectArray = [
         {"sff-interfaces": [
           {"sff-interface": "sfi1"},
           {"sff-interface": "sfi2"},
@@ -150,6 +190,12 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           createServiceForwarderCtrl();
           expect(scope.sffInterfaceToString).toBeDefined();
           expect(scope.sffInterfaceToString).toEqual(jasmine.any(Function));
+        });
+
+        it("ensure that $scope.sffInterfaceInSffToString function is defined", function () {
+          createServiceForwarderCtrl();
+          expect(scope.sffInterfaceInSffToString).toBeDefined();
+          expect(scope.sffInterfaceInSffToString).toEqual(jasmine.any(Function));
         });
 
         it("$scope.getLocatorTooltipText should call appropriate ServiceLocatorHelper method", function () {
@@ -255,6 +301,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           spyOn(serviceForwarderSvcMock, 'getItem').andCallThrough();
           spyOn(serviceForwarderHelperMock, 'removeNonExistentSn').andCallThrough();
           spyOn(serviceForwarderHelperMock, 'sfUpdate').andCallThrough();
+          spyOn(serviceForwarderHelperMock, 'sffUpdate').andCallThrough();
           //expect(stateParams.sfName).toBe(exampleData.sfs[0].name);
           stateParams.sffName = exampleData.sffs[0].name;
           createServiceForwarderEditCtrl();
@@ -262,6 +309,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.data).toEqual(exampleData.sffs[0]);
           expect(serviceForwarderHelperMock.removeNonExistentSn).toHaveBeenCalledWith(exampleData.sffs[0], exampleData.sns);
           expect(serviceForwarderHelperMock.sfUpdate).toHaveBeenCalledWith(exampleData.sffs[0]['service-function-dictionary'][0], scope);
+          expect(serviceForwarderHelperMock.sffUpdate).toHaveBeenCalledWith(exampleData.sffs[0]['connected-sff-dictionary'][0], scope);
         });
 
         it("scope.addLocator function should be defined and call SFF Helper function", function () {
@@ -300,6 +348,24 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(serviceForwarderHelperMock.removeFunction).toHaveBeenCalledWith(1, scope);
         });
 
+        it("scope.addForwarder function should be defined and call SFF Helper function", function () {
+          spyOn(serviceForwarderHelperMock, 'addForwarder').andCallThrough();
+          createServiceForwarderCreateCtrl();
+          expect(scope.addForwarder).toBeDefined();
+          expect(scope.addForwarder).toEqual(jasmine.any(Function));
+          scope.addForwarder();
+          expect(serviceForwarderHelperMock.addForwarder).toHaveBeenCalledWith(scope);
+        });
+
+        it("scope.removeForwarder function should be defined and call SFF Helper function", function () {
+          spyOn(serviceForwarderHelperMock, 'removeForwarder').andCallThrough();
+          createServiceForwarderCreateCtrl();
+          expect(scope.removeForwarder).toBeDefined();
+          expect(scope.removeForwarder).toEqual(jasmine.any(Function));
+          scope.removeForwarder(1);
+          expect(serviceForwarderHelperMock.removeForwarder).toHaveBeenCalledWith(1, scope);
+        });
+
         it("scope.sfChangeListener function should be defined and call SFF Helper function", function () {
           spyOn(serviceForwarderHelperMock, 'sfChangeListener').andCallThrough();
           createServiceForwarderCreateCtrl();
@@ -312,14 +378,20 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         it("should reformat SFF function dictionary, PUT it into controller and transition to main.sfc.serviceforwarder", function () {
           spyOn(serviceForwarderSvcMock, 'putItem').andCallThrough();
           spyOn(serviceForwarderHelperMock, 'sffInterfaceToObjectArray').andCallThrough();
+          spyOn(serviceForwarderHelperMock, 'sffInterfaceInSffToObjectArray').andCallThrough();
           spyOn(serviceForwarderHelperMock, 'removeTemporaryPropertiesFromSf').andCallThrough();
+          spyOn(serviceForwarderHelperMock, 'removeTemporaryPropertiesFromSff').andCallThrough();
           createServiceForwarderCreateCtrl();
           scope.data = exampleData.sffs[0];
           scope.data['service-function-dictionary'] = exampleData.functionDictionaryArray;
+          scope.data['connected-sff-dictionary'] = exampleData.forwarderDictionaryArray;
           scope.submit();
           expect(serviceForwarderHelperMock.sffInterfaceToObjectArray).toHaveBeenCalledWith(["sfi1", "sfi2", "sfi3"]);
+          expect(serviceForwarderHelperMock.sffInterfaceInSffToObjectArray).toHaveBeenCalledWith(["sfi1", "sfi2", "sfi3"]);
           expect(serviceForwarderHelperMock.removeTemporaryPropertiesFromSf).toHaveBeenCalledWith(exampleData.sffs[0]['service-function-dictionary'][0]);
+          expect(serviceForwarderHelperMock.removeTemporaryPropertiesFromSff).toHaveBeenCalledWith(exampleData.sffs[0]['connected-sff-dictionary'][0]);
           exampleData.sffs[0]['service-function-dictionary'] = exampleData.functionDictionaryObjectArray;
+          exampleData.sffs[0]['connected-sff-dictionary'] = exampleData.forwarderDictionaryObjectArray;
           expect(serviceForwarderSvcMock.putItem).toHaveBeenCalledWith(exampleData.sffs[0], jasmine.any(Function));
 //          rootScope.$digest();
 //          expect(state.current.name).toBe('main.sfc.serviceforwarder');

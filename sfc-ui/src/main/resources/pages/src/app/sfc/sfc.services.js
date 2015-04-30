@@ -1047,6 +1047,20 @@ define(['app/sfc/sfc.module'], function (sfc) {
               dictionary['sff-sf-data-plane-locator']['ovs-bridge'] = dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge'];
               delete(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-bridge']);
             }
+           if (!_.isEmpty(sff['connected-sff-dictionary'])) {
+
+               _.each(sff['connected-sff-dictionary'], function (dictionary) {
+
+                   if (angular.isDefined(dictionary['failmode'])) {
+                       dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
+                   }
+
+                   // strip namespace in 'transport' property value
+                   if (angular.isDefined(dictionary['sff-sff-data-plane-locator'] && dictionary['sff-sff-data-plane-locator']['transport'])) {
+                       dictionary['sff-sff-data-plane-locator']['transport'] = dictionary['sff-sff-data-plane-locator']['transport'].replace(serviceLocatorMatcher, "");
+                   }
+               });
+            }
 
             // strip namespace in 'ovs-options' property name
             if (angular.isDefined(dictionary['sff-sf-data-plane-locator']['service-function-forwarder-ovs:ovs-options'])) {
@@ -1098,6 +1112,21 @@ define(['app/sfc/sfc.module'], function (sfc) {
           }
         });
 
+      }
+
+      if (!_.isEmpty(sff['connected-sff-dictionary'])) {
+        _.each(sff['connected-sff-dictionary'], function (dictionary) {
+
+          if (angular.isDefined(dictionary['failmode']) && dictionary['failmode'].search(sffMatcher) < 0) {
+            dictionary['failmode'] = sffPrefix + dictionary['failmode'];
+          }
+
+          if (angular.isDefined(dictionary['sff-sff-data-plane-locator']) &&
+            angular.isDefined(dictionary['sff-sff-data-plane-locator']['transport'] &&
+            dictionary['sff-sff-data-plane-locator']['transport'].search(locatorMatcher) < 0)) {
+            dictionary['sff-sff-data-plane-locator']['transport'] = locatorPrefix + dictionary['sff-sff-data-plane-locator']['transport'];
+          }
+        });
       }
 
       return sff;

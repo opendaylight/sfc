@@ -15,6 +15,8 @@ import org.apache.felix.dm.Component;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.core.ComponentActivatorAbstractBase;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
+import org.opendaylight.sfc.sfc_lisp.provider.ILispUpdater;
+import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
 
 /**
  * Main application activator class for registering the dependencies.

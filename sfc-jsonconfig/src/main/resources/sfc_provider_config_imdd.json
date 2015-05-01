@@ -1,0 +1,29 @@
+{
+  "bootstrap": {
+    "bootstrapDataDir": "configuration/startup/bootstrap/",
+    "configDataUrl": "http://localhost:8181/restconf/config/",
+    "configDataMimeType": "application/json",
+    "files": [
+      {
+        "name": "service-function-forwarders.json",
+        "urlpath": "service-function-forwarder:service-function-forwarders"
+      },
+      {
+        "name": "service-functions.json",
+        "urlpath": "service-function:service-functions"
+      },
+      {
+        "name": "service-function-chains.json",
+        "urlpath": "service-function-chain:service-function-chains"
+      },
+      {
+        "name": "service-nodes.json",
+        "urlpath": "service-node:service-nodes"
+      },
+      { 
+        "name": "ipfix-class-id.json",
+        "urlpath": "ipfix-application-information:class-id-dictionary"
+      }
+    ]
+  }
+}

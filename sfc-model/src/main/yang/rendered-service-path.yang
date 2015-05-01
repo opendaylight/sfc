@@ -304,6 +304,19 @@ module rendered-service-path {
         description
           "The name of this rendered service path";
       }
+      container rsp_egress {
+        description
+          "Egress information, so SFC knows what to do with
+           the packets once they have traversed the RSP.
+           Comprised of a Generic tunnel ID and dataplane
+           information";
+        leaf tunnel_idenditfier {
+          type uint32;
+          description
+            "Generic Egress tunnel information.";
+        }
+        uses sfc-sl:data-plane-locator;
+      }
     }
     output {
       uses rendered-service-path-first-hop-info;

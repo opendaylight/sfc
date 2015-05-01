@@ -29,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.read.rendered.service.path.first.hop.input.EgressInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.read.rendered.service.path.first.hop.input.EgressInfo;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
@@ -275,11 +277,24 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         }
         assertNotNull("Must be not null", revRenderedServicePath);
 
+        // Everything needed to create the EgressInfo
+        IpBuilder ipBuilder = new IpBuilder();
+        ipBuilder.setIp(new IpAddress(new Ipv4Address("192.168.0.1"))).setPort(new PortNumber(6633));
+        org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.egress.info.DataPlaneLocatorBuilder
+            dplBuilder =
+                new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.egress.info.DataPlaneLocatorBuilder();
+        dplBuilder.setLocatorType(ipBuilder.build());
+        dplBuilder.setTransport(VxlanGpe.class);
+        EgressInfoBuilder egressInfoBuiler = new EgressInfoBuilder();
+        egressInfoBuiler.setTunnelIdentifier(100l);
+        egressInfoBuiler.setDataPlaneLocator(dplBuilder.build());
+        EgressInfo egressInfo = egressInfoBuiler.build();
+
         RenderedServicePathFirstHop firstHop;
         RenderedServicePathFirstHop lastHop;
-        firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName());
+        firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName(), egressInfo);
         assertNotNull("Must be not null", firstHop);
-        lastHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(revRenderedServicePath.getName());
+        lastHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(revRenderedServicePath.getName(), egressInfo);
         assertNotNull("Must be not null", lastHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
         LOG.debug("Last hop IP: {}, port: {}", lastHop.getIp().toString(), lastHop.getPort());

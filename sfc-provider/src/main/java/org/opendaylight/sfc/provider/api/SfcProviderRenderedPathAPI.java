@@ -17,6 +17,7 @@ import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.read.rendered.service.path.first.hop.input.EgressInfo;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -792,12 +793,17 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param rspName RSP name
      * @return Nothing.
      */
-    public static RenderedServicePathFirstHop readRenderedServicePathFirstHop (String rspName) {
+    public static RenderedServicePathFirstHop readRenderedServicePathFirstHop (String rspName, EgressInfo egressInfo) {
         final String FUNCTION = "function";
         final String IP = "ip";
         final String LISP = "lisp";
         final String MAC = "mac";
         final String MPLS = "mpls";
+
+        LOG.info("readRenderedServicePathFirstHop: RSP [{}] Egress Info tunnelId [{}] locator [{}] transport [{}]",
+                rspName, egressInfo.getTunnelIdentifier(),
+                egressInfo.getDataPlaneLocator().getLocatorType(),
+                egressInfo.getDataPlaneLocator().getTransport());
 
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
 
@@ -979,7 +985,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         printTraceStop(LOG);
-        firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName());
+        // TODO we need to also provide the egressInfo, setting to null for now
+        firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName(), null);
         return firstHop;
     }
 }

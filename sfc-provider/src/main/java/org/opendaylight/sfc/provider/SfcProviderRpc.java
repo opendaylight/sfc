@@ -339,7 +339,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
         renderedServicePathFirstHop =
-                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+                SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(
+                        input.getName(),
+                        input.getEgressInfo());
 
         ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
         if (renderedServicePathFirstHop != null) {

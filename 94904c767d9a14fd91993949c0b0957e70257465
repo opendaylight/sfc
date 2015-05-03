@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_ced46f49",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-03T09:27:49Z",
+      "side": 1,
+      "message": "Should be \"configureSffEgressForGroup\"",
+      "range": {
+        "startLine": 162,
+        "startChar": 18,
+        "endLine": 162,
+        "endChar": 36
+      },
+      "revId": "94904c767d9a14fd91993949c0b0957e70257465",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_6ecbdba5",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-03T09:27:49Z",
+      "side": 1,
+      "message": "We should refactor this part, similar to how I already do with the different DataPlaneLocators. Here we should simply call a method that internally implements this logic of SFs vs SFGs.",
+      "range": {
+        "startLine": 213,
+        "startChar": 10,
+        "endLine": 213,
+        "endChar": 14
+      },
+      "revId": "94904c767d9a14fd91993949c0b0957e70257465",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_8ece67b3",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2SfgDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-03T09:27:49Z",
+      "side": 1,
+      "message": "All flow programming should be from the SfcL2FlowProgrammerOFimpl class.",
+      "range": {
+        "startLine": 153,
+        "startChar": 19,
+        "endLine": 153,
+        "endChar": 30
+      },
+      "revId": "94904c767d9a14fd91993949c0b0957e70257465",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_aed1e358",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-03T09:27:49Z",
+      "side": 1,
+      "message": "Are the SFs still an XOR with the SFG? If so, then we should create 2 signatures for this method: one that only receives an SF and another that only receives an SFG. Or maybe that wont be possible since they are both Strings.",
+      "range": {
+        "startLine": 104,
+        "startChar": 16,
+        "endLine": 104,
+        "endChar": 29
+      },
+      "revId": "94904c767d9a14fd91993949c0b0957e70257465",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

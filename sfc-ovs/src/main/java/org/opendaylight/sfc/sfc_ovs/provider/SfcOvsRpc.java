@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutputBuilder;
@@ -60,10 +61,22 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
      */
     @Override
     public Future<RpcResult<CreateOvsBridgeOutput>> createOvsBridge(CreateOvsBridgeInput input) {
-        Preconditions.checkNotNull(input, "create-ovs-bridge RPC input must be not null!");
-        Preconditions.checkNotNull(input.getOvsNode(), "create-ovs-bridge RPC input container ovs-node must be not null!");
-
         RpcResultBuilder<CreateOvsBridgeOutput> rpcResultBuilder;
+
+        try {
+            Preconditions.checkNotNull(input, "Create-ovs-bridge RPC input must be not null!");
+            Preconditions.checkNotNull(input.getName(), "Create-ovs-bridge RPC input 'bridge name' must be not null!");
+            Preconditions.checkNotNull(input.getOtherConfigLocalIp(),
+                    "Create-ovs-bridge RPC input 'other-config-local-ip' must be not null!");
+            Preconditions.checkNotNull(input.getOvsNode(), "Create-ovs-bridge RPC input 'ovs-node' must be not null!");
+
+        } catch (NullPointerException e) {
+            rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, e.getMessage());
+
+            return Futures.immediateFuture(rpcResultBuilder.build());
+        }
+
         NodeId nodeId = null;
 
         OvsNode ovsNode = input.getOvsNode();
@@ -97,6 +110,8 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
             ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
             ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));
+            ovsdbBridgeBuilder.setBridgeOtherConfigs(
+                    SfcSffToOvsMappingAPI.buildOvsdbBridgeOtherConfig(input.getOtherConfigLocalIp()));
 
             Object[] methodParams = {ovsdbBridgeBuilder.build()};
             SfcOvsDataStoreAPI sfcOvsDataStoreAPI =

@@ -34,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.OptionsBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -79,6 +81,9 @@ public class SfcSffToOvsMappingAPI {
             if (serviceForwarderOvsBridge != null) {
                 ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(serviceForwarderOvsBridge.getBridgeName()));
                 ovsdbBridgeBuilder.setBridgeUuid(serviceForwarderOvsBridge.getUuid());
+                if (serviceForwarderOvsBridge.getOtherConfigLocalIp() != null) {
+                    ovsdbBridgeBuilder.setBridgeOtherConfigs(buildOvsdbBridgeOtherConfig(serviceForwarderOvsBridge.getOtherConfigLocalIp()));
+                }
             } else {
                 LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Bridge augmentation on SFF {}", serviceFunctionForwarder.getName());
                 return null;
@@ -297,5 +302,18 @@ public class SfcSffToOvsMappingAPI {
         return (renderedServicePath.getName() + VXLAN
                 + hopOvsdbBridgePairFrom.renderedServicePathHop.getHopNumber() + TO
                 + hopOvsdbBridgePairTo.renderedServicePathHop.getHopNumber());
+    }
+
+    public static List<BridgeOtherConfigs> buildOvsdbBridgeOtherConfig(IpAddress ipAddress) {
+        Preconditions.checkNotNull(ipAddress);
+
+        List<BridgeOtherConfigs> bridgeOtherConfigsList = new ArrayList<>();
+
+        BridgeOtherConfigsBuilder bridgeOtherConfigsBuilder = new BridgeOtherConfigsBuilder();
+        bridgeOtherConfigsBuilder.setBridgeOtherConfigKey(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+        bridgeOtherConfigsBuilder.setBridgeOtherConfigValue(SfcOvsUtil.convertIpAddressToString(ipAddress));
+
+        bridgeOtherConfigsList.add(bridgeOtherConfigsBuilder.build());
+        return bridgeOtherConfigsList;
     }
 }

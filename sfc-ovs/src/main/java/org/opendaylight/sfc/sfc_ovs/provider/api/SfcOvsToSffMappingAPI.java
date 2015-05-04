@@ -84,6 +84,9 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
+            if (ovsdbBridgeAugmentation.getBridgeOtherConfigs() != null) {
+                ovsBridgeBuilder.setOtherConfigLocalIp(getOvsBridgeLocalIp(ovsdbBridgeAugmentation));
+            }
             ovsServiceForwarder2Augmentation.setOvsBridge(ovsBridgeBuilder.build());
             serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, ovsServiceForwarder2Augmentation.build());
 
@@ -120,6 +123,9 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridge.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridge.getBridgeUuid());
+            if (ovsdbBridge.getBridgeOtherConfigs() != null) {
+                ovsBridgeBuilder.setOtherConfigLocalIp(getOvsBridgeLocalIp(ovsdbBridge));
+            }
 
             //fill SffDataPlaneLocatorList with DP locators
             for (TerminationPoint terminationPoint : terminationPointList) {

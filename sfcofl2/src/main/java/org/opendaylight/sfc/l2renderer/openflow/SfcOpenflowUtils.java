@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
@@ -160,18 +161,62 @@ public class SfcOpenflowUtils {
     // Add Match methods
     //
 
+    // If we call multiple ethernet match methods, the MatchBuilder
+    // EthernetMatch object gets overwritten each time, when we actually
+    // want to set additional fields on the existing EthernetMatch object
+    private static EthernetMatch mergeEthernetMatch(MatchBuilder match, EthernetMatchBuilder ethMatchBuilder) {
+        EthernetMatch ethMatch = match.getEthernetMatch();
+        if(ethMatch == null) {
+            return ethMatchBuilder.build();
+        }
+
+        if(ethMatch.getEthernetDestination() != null) {
+            ethMatchBuilder.setEthernetDestination(ethMatch.getEthernetDestination());
+        }
+
+        if(ethMatch.getEthernetSource() != null) {
+            ethMatchBuilder.setEthernetSource(ethMatch.getEthernetSource());
+        }
+
+        if(ethMatch.getEthernetType() != null) {
+            ethMatchBuilder.setEthernetType(ethMatch.getEthernetType());
+        }
+
+        return ethMatchBuilder.build();
+    }
+
+    // TODO will we need mergeIpMatch() for match.setLayer3Match()
+
     /**
      * Add an etherType match to an existing MatchBuilder
      * @param match
      * @param etherType
      */
     public static void addMatchEtherType(MatchBuilder match, final long etherType) {
-        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
         ethTypeBuilder.setType(new EtherType(etherType));
-        eth.setEthernetType(ethTypeBuilder.build());
+        ethernetMatch.setEthernetType(ethTypeBuilder.build());
 
-        match.setEthernetMatch(eth.build());
+        match.setEthernetMatch(mergeEthernetMatch(match, ethernetMatch));
+    }
+
+    public static void addMatchSrcMac(MatchBuilder match, final String srcMac) {
+        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+        EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
+        ethSourceBuilder.setAddress(new MacAddress(srcMac));
+        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+
+        match.setEthernetMatch(mergeEthernetMatch(match, ethernetMatch));
+    }
+
+    public static void addMatchDstMac(MatchBuilder match, final String dstMac) {
+        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+        EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+        ethDestinationBuilder.setAddress(new MacAddress(dstMac));
+        ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+
+        match.setEthernetMatch(mergeEthernetMatch(match, ethernetMatch));
     }
 
     public static void addMatchIpProtocol(MatchBuilder match, final short ipProtocol) {
@@ -220,24 +265,6 @@ public class SfcOpenflowUtils {
         vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
 
         match.setVlanMatch(vlanMatchBuilder.build());
-    }
-
-    public static void addMatchSrcMac(MatchBuilder match, final String srcMac) {
-        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-        ethSourceBuilder.setAddress(new MacAddress(srcMac));
-        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-
-        match.setEthernetMatch(ethernetMatch.build());
-    }
-
-    public static void addMatchDstMac(MatchBuilder match, final String dstMac) {
-        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-        ethDestinationBuilder.setAddress(new MacAddress(dstMac));
-        ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
-
-        match.setEthernetMatch(ethernetMatch.build());
     }
 
     public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {

@@ -56,6 +56,10 @@ module service-function-forwarder-ovs {
         description "Open vSwitch bridge UUID";
         type yang:uuid;
       }
+      leaf openflow-node-id {
+        description "Openflow node ID";
+        type string;
+      }
       list external-ids {
         description
           "The list of external ids associated with this

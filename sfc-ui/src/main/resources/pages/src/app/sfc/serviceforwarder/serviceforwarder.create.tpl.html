@@ -53,6 +53,18 @@
                 </div>
             </div>
 
+            <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+            <div class="form-group">
+                <label for="bridge_openflow_node_id_{{idSuffix}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_FORWARDER_BRIDGE_OPENFLOW_NODE_ID' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" ng-model="data['service-function-forwarder-ovs:ovs-bridge']['openflow-node-id']"
+                           id="bridge_openflow_node_id_{{idSuffix}}" name="bridge_openflow_node_id">
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

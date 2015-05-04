@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcOvsToSffMappingAPI {
 
+    private static final String OPENFLOW_PREFIX = "openflow:";
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsToSffMappingAPI.class);
 
     /**
@@ -84,6 +86,7 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
+            ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
             ovsServiceForwarder2Augmentation.setOvsBridge(ovsBridgeBuilder.build());
             serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, ovsServiceForwarder2Augmentation.build());
 
@@ -120,6 +123,7 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridge.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridge.getBridgeUuid());
+            ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridge.getDatapathId()));
 
             //fill SffDataPlaneLocatorList with DP locators
             for (TerminationPoint terminationPoint : terminationPointList) {
@@ -288,5 +292,22 @@ public class SfcOvsToSffMappingAPI {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns OpenflowNodeId of OvsBridge specified by DatapathId.
+     * OpenflowNodeId = openflow:hexTodec(DatapathId)
+     * <p/>
+     * Parameter DatapathId
+     * must be not null otherwise NullPointerException will be raised.
+     *
+     * @param datapathId DatapathId
+     * @return String OpenflowNodeId
+     */
+    private static String getOvsBridgeOpenflowNodeId(DatapathId datapathId) {
+        Preconditions.checkNotNull(datapathId, "DatapathId is null, cannot get Bridge OpenflowNode Id");
+
+        Long datapathIdDec = Long.parseLong(datapathId.getValue().replaceAll(":", ""), 16);
+        return OPENFLOW_PREFIX + datapathIdDec.toString();
     }
 }

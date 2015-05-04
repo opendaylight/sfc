@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
@@ -75,7 +74,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 
 // Import Nicira extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.DstChoice;
@@ -267,16 +268,36 @@ public class SfcOpenflowUtils {
         match.setVlanMatch(vlanMatchBuilder.build());
     }
 
+    // If we call multiple Layer3 match methods, the MatchBuilder
+    // Ipv4Match object gets overwritten each time, when we actually
+    // want to set additional fields on the existing Ipv4Match object
+    private static Ipv4Match mergeLayer3Match(MatchBuilder match, Ipv4MatchBuilder ipMatchBuilder) {
+        Ipv4Match ipv4Match = (Ipv4Match) match.getLayer3Match();
+        if(ipv4Match == null) {
+            return ipMatchBuilder.build();
+        }
+
+        if(ipv4Match.getIpv4Destination() != null) {
+            ipMatchBuilder.setIpv4Destination(ipv4Match.getIpv4Destination());
+        }
+
+        if(ipv4Match.getIpv4Source() != null) {
+            ipMatchBuilder.setIpv4Source(ipv4Match.getIpv4Source());
+        }
+
+        return ipMatchBuilder.build();
+    }
+
     public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Source(srcIp);
-        match.setLayer3Match(ipv4match.build());
+        match.setLayer3Match(mergeLayer3Match(match, ipv4match));
     }
 
     public static void addMatchDstIpv4(MatchBuilder match, Ipv4Prefix dstIp) {
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Destination(dstIp);
-        match.setLayer3Match(ipv4match.build());
+        match.setLayer3Match(mergeLayer3Match(match, ipv4match));
     }
 
     public static void addMatchMetada(MatchBuilder match, BigInteger metadataValue, BigInteger metadataMask) {

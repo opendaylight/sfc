@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_fbaa4818",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsToSffMappingAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-04T16:10:59Z",
+      "side": 1,
+      "message": "There\u0027s not much point in declaring a variable that is only used in the next line.  Declaring variables like this is sometimes done \"for clarity\", but I doubt that there\u0027s any ambiguity that \"getOptions\" is returning an \"options\" list.\n\nReplace the \"for\" line with:\n\nfor (Options option : terminationPoint.getOptions()) {",
+      "revId": "968f4ae6a3463b0f78e63e3e0c6beaa604ef32de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_5bac9c35",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsToSffMappingAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-04T16:10:59Z",
+      "side": 1,
+      "message": "A switch with only a single case?  This should just be an \"if\".",
+      "revId": "968f4ae6a3463b0f78e63e3e0c6beaa604ef32de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

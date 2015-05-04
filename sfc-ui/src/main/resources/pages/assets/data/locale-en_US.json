@@ -363,6 +363,7 @@
   "SFC_FORWARDER_IP_MGMT_ADDRESS": "The IP and port used to configure this SFF",
   "SFC_FORWARDER_SHORT_IP_MGMT_ADDRESS": "IP management address",
   "SFC_FORWARDER_CREATE_IP_MGMT_ADDRESS": "Example 10.0.0.1:5555",
+  "SFC_FORWARDER_BRIDGE_OPENFLOW_NODE_ID": "Openflow Node Id",
   "SFC_FORWARDER_OVS_BRIDGE": "OVS Bridge",
   "SFC_FORWARDER_BRIDGE_NAME": "Open vSwitch bridge name",
   "SFC_FORWARDER_SHORT_BRIDGE_NAME": "Name",

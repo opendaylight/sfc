@@ -273,6 +273,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       var createOvsBridgeInput = {};
 
       createOvsBridgeInput['name'] = this.data.name;
+      createOvsBridgeInput['other-config-local-ip'] = this.data.local_ip;
       createOvsBridgeInput['ovs-node'] = {};
       createOvsBridgeInput['ovs-node']['ip'] = this.data.ip_address;
       createOvsBridgeInput['ovs-node']['port'] = this.data.port;

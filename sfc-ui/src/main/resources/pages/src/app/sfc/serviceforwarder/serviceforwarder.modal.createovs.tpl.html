@@ -15,6 +15,19 @@
     </div>
 
     <div class="form-group" show-validation-error>
+        <label style="color:#444 !important;" for="local_ip"
+               class="col-lg-6 control-label small-label">{{'SFC_FORWARDER_BRIDGE_LOCAL_IP' | translate}}</label>
+
+        <div class="col-lg-6">
+            <input type="text" class="form-control input-sm" ng-model="data.local_ip"
+                   placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_LOCAL_IP' | translate}}"
+                   id="local_ip" name="local_ip" required ip-address="{version:4, prefix:false}">
+        </div>
+    </div>
+
+    <br/>
+    <h4 style="color:black !important;">{{'SFC_FORWARDER_OVS_NODE_INFO' | translate}}</h4>
+    <div class="form-group" show-validation-error>
         <label style="color:#444 !important;" for="ip_address"
                class="col-lg-6 control-label small-label">{{'SFC_FORWARDER_OVS_NODE_IP' | translate}}</label>
 

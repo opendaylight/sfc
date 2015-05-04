@@ -56,6 +56,11 @@ module service-function-forwarder-ovs {
         description "Open vSwitch bridge UUID";
         type yang:uuid;
       }
+      leaf other-config-local-ip {
+        description "Open vSwtich bridge local IP address to be stored in"
+        + "OVSDB bridge-other-configs";
+        type inet:ip-address;
+      }
       list external-ids {
         description
           "The list of external ids associated with this
@@ -158,7 +163,11 @@ module service-function-forwarder-ovs {
           description
             "The name of OVS Bridge to be created";
         }
-
+        leaf other-config-local-ip {
+          description "Open vSwtich bridge local IP address to be stored in"
+          + "OVSDB bridge-other-configs";
+          type inet:ip-address;
+        }
         container ovs-node {
           description
           "Contains ip:port locator of the OVS Node,

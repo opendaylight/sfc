@@ -53,6 +53,20 @@
                 </div>
             </div>
 
+            <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+            <div class="form-group">
+                <label for="bridge_local_ip_{{idSuffix}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_FORWARDER_BRIDGE_LOCAL_IP' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" ng-model="data['service-function-forwarder-ovs:ovs-bridge']['other-config-local-ip']"
+                           id="bridge_local_ip_{{idSuffix}}" name="bridge_local_ip"
+                           placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_LOCAL_IP' | translate}}"
+                            >
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

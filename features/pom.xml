@@ -127,6 +127,10 @@
         <artifactId>sfc-model</artifactId>
         <version>${project.version}</version>
       </dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfcofl2</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-ovs</artifactId>

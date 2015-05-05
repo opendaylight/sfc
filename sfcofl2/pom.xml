@@ -186,11 +186,6 @@
             <!--<artifactId>ietf-yang-types</artifactId>-->
             <!--<version>${ietf.model.version}</version>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>munge-maven-plugin</artifactId>
-            <version>1.0</version>
-        </dependency>
         <!--<dependency>-->
             <!--<groupId>com.sun.jersey</groupId>-->
             <!--<artifactId>jersey-client</artifactId>-->

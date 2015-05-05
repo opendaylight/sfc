@@ -45,9 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @see SfcOvsToSffMappingAPI
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since 2015-03-10
  */
 public class SfcOvsToSffMappingAPI {
@@ -56,7 +54,7 @@ public class SfcOvsToSffMappingAPI {
 
     /**
      * Returns an Service Function Forwarder object which can be stored
-     * in DataStore. The returned object is built on basis of OVS Bridge & OVS Termination Points.
+     * in DataStore. The returned object is built on basis of OVS Bridge &amp; OVS Termination Points.
      * The node argument must be not null otherwise
      * NullPointerException will be raised.
      *
@@ -102,13 +100,13 @@ public class SfcOvsToSffMappingAPI {
     /**
      * Builds a SffDataPlaneLocator List based on OvsdbBridgeAugmentation and TerminationPoint List.
      * TerminationPoints in the list must be augmented with OvsdbTerminationPointAugmentation.
-     * <p/>
+     * <p>
      * The ovsdbBridge argument must be not null otherwise
      * NullPointerException will be raised.
      *
      * @param ovsdbBridge          OvsdbBridgeAugmentation Object
-     * @param terminationPointList List<TerminationPoint>
-     * @return List<SffDataPlaneLocator> (filled or empty, but not null)
+     * @param terminationPointList List&lt;TerminationPoint&gt;
+     * @return List&lt;SffDataPlaneLocator&gt; (filled or empty, but not null)
      */
     private static List<SffDataPlaneLocator> buildSffDataPlaneLocatorList(OvsdbBridgeAugmentation ovsdbBridge,
                                                                           List<TerminationPoint> terminationPointList) {
@@ -154,7 +152,7 @@ public class SfcOvsToSffMappingAPI {
 
     /**
      * Builds a (SFF) DataPlaneLocator object based on OvsdbTerminationPointAugmentation.
-     * <p/>
+     * <p>
      * The terminationPoint argument must be not null otherwise
      * NullPointerException will be raised.
      *
@@ -205,7 +203,7 @@ public class SfcOvsToSffMappingAPI {
 
     /**
      * Builds an OvsOptions object based on OvsdbTerminationPointAugmentation Options list.
-     * <p/>
+     * <p>
      * The terminationPoint argument must be not null otherwise
      * NullPointerException will be raised.
      *
@@ -268,7 +266,7 @@ public class SfcOvsToSffMappingAPI {
     /**
      * Returns IP address of OvsBridge specified in BridgeOtherConfigs.
      * The IP address is stored with key "local_ip".
-     * <p/>
+     * <p>
      * Parameter ovsdbBridge and ovsdbBridge.getBridgeOtherConfigs()
      * must be not null otherwise NullPointerException will be raised.
      *

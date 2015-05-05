@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 
 /**
  * This class represents configuration data from file configuration/startup/sfc_provider_config.json
- * <p/>
+ * <p>
  *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
- * <p/>
+ * <p>
  *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1

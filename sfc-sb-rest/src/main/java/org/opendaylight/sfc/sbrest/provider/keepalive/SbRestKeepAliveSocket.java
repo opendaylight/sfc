@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
  * @see org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since 2015-03-09
  */
 

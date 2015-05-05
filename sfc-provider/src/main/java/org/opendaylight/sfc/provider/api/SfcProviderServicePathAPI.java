@@ -37,7 +37,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 /**
  * This class has the APIs to operate on the ServiceFunctionPath
  * datastore.
- * <p/>
+ * <p>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -46,9 +46,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
  * @see org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since       2014-06-30
  */
 public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {

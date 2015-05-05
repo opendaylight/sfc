@@ -58,14 +58,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class has the APIs to operate on the Service Classifier datastore.
- * <p/>
+ * <p>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since 2014-11-04
  */
 public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {

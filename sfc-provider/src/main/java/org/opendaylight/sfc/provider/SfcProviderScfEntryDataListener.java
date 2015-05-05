@@ -27,14 +27,12 @@ import org.slf4j.LoggerFactory;
  * This class gets called whenever there is a change to
  * a Service Function Classifier list entry, i.e.,
  * added/deleted/modified.
- * <p/>
- * <p/>
+ * <p>
  *
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
  * @since 2014-11-11
  */
-
 public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScfEntryDataListener.class);

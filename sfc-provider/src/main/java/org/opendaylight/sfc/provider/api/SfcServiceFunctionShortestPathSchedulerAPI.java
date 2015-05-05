@@ -30,12 +30,12 @@ import java.util.Random;
 
 /**
  * This class implements shortest path scheduling mode.
- * <p/>
+ * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @author Yi Yang (yi.y.yang@intel.com)
  *
- * <p/>
+ * <p>
  * @since 2015-03-13
  */
 public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
@@ -199,7 +199,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * <p>
      * @param chain Service Function Chain to render
      * @param serviceIndex Not used currently
-     * @return List<String> Service Function name list in the shortest path
+     * @return List&lt;String&gt; Service Function name list in the shortest path
      */
     public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
         String preSfName = null;

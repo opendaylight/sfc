@@ -46,9 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @see SfcSffToOvsMappingAPI
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since 2015-03-23
  */
 public class SfcSffToOvsMappingAPI {
@@ -61,7 +59,7 @@ public class SfcSffToOvsMappingAPI {
     /**
      * Builds OvsdbBridgeAugmentation from ServiceFunctionForwarder object. Built augmentation is intended to be written
      * into Configuration Ovsdb DataStore (network-topology/topology/ovsdb:1).
-     * <p/>
+     * <p>
      *
      * @param serviceFunctionForwarder ServiceFunctionForwarder Object
      * @return OvsdbBridgeAugmentation Object
@@ -110,15 +108,15 @@ public class SfcSffToOvsMappingAPI {
     }
 
     /**
-     * Builds List<OvsdbTerminationPointAugmentation> from List<SffDataPlanLocator>.
+     * Builds a list of OvsdbTerminationPointAugmentation from a list of SffDataPlanLocators.
      * In other words, it transforms ServiceForwarder DataPlane locators to OVS TerminationPoints.
-     * <p/>
+     * <p>
      * Built list of augmentations is intended to be written into Configuration Ovsdb DataStore
      * (network-topology/topology/ovsdb:1).
-     * <p/>
+     * <p>
      *
-     * @param sffDataPlaneLocatorList List<SffDataPlaneLocator>
-     * @return List<OvsdbTerminationPointAugmentation>
+     * @param sffDataPlaneLocatorList List&lt;SffDataPlaneLocator&gt;
+     * @return List&lt;OvsdbTerminationPointAugmentation&gt;
      */
     public static List<OvsdbTerminationPointAugmentation> buildTerminationPointAugmentationList(
             List<SffDataPlaneLocator> sffDataPlaneLocatorList) {

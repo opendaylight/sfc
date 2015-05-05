@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 /**
  * Abstract parent Runnable for the REST API.
- * <p/>
+ * <p>
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)

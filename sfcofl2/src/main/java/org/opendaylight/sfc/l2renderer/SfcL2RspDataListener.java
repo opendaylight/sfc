@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since 2015-01-27
  */
 public class SfcL2RspDataListener extends SfcL2AbstractDataListener {

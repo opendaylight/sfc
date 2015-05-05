@@ -48,7 +48,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 /**
  * This class has the APIs to operate on the ServiceFunction
  * datastore.
- * <p/>
+ * <p>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -688,7 +688,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * This method creates an executor and reads all the Service Functions
      * from SFC datastore
      * <p>
-     * @param no
      * @return ServiceFunctions object including all Service Functions
      */
     public static ServiceFunctions readAllServiceFunctionsExecutor() {
@@ -1108,8 +1107,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      * This method reads the Description information for a service function.
      * <p>
      * @param serviceFunction SF object
-     * @true if SF description information was put into datastore
-     * false otherwise
+     * @return true if SF description information was put into datastore, false otherwise
      */
     public static boolean putServiceFunctionDescriptionExecutor(ServiceFunction serviceFunction) {
 

@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 /**
  * This class has the APIs to operate on the ACL
  * datastore.
- * <p/>
+ * <p>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -42,9 +42,7 @@ import java.util.concurrent.Future;
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
  * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since 2014-11-04
  */
 public class SfcProviderAclAPI extends SfcProviderAbstractAPI {

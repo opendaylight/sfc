@@ -24,11 +24,11 @@ import java.util.List;
 
 /**
  * This class implements load balance scheduling mode.
- * <p/>
+ * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since 2015-03-13
  */
 public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctionSchedulerAPI {

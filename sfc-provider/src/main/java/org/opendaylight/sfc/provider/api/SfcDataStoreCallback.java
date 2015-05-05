@@ -21,11 +21,11 @@ import java.util.concurrent.Semaphore;
  * transaction is still in progress, in which case
  * transaction_successful value does not reflect the
  * outcome of the transaction.
- * <p/>
+ * <p>
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since       2014-06-30
  */
 public class SfcDataStoreCallback implements FutureCallback<Void>

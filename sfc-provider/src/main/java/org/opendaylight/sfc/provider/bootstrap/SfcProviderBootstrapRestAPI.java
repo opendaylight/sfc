@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 
 /**
  * Filling the data store with prepared data through the RESTconf API.
- * <p/>
+ * <p>
  * Reads config files containing fully prepared RESTconf data from the configuration/startup/
  * (in the run script subdirectory). After every Maven "clean" command those files will be deleted
  * along with the whole /target directory, and after a rebuild they will be copied from

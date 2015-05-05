@@ -24,9 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to operate on the ServiceFunctionGroup datastore. <p/> It is normally called from onDataChanged() through a executor service. We need to use an executor service because we can not operate on a datastore while on onDataChanged() context.
+ * This class has the APIs to operate on the ServiceFunctionGroup datastore. <p> It is normally called
+ * from onDataChanged() through a executor service. We need to use an executor service because we can
+ * not operate on a datastore while on onDataChanged() context.
  * @author Kfir Yeshayahu (kfir.yeshayahu@contextream.com)
- * @version 0.1 <p/>
+ * @version 0.1 <p>
  * @since 2015-02-14
  */
 public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
@@ -74,7 +76,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
 
     /**
      * Reads a SFG from the datastore <p>
-     * @param serviceFunctionGroup name
+     * @param serviceFunctionGroupName name
      * @return ServiceFunctionGroup object or null if not found
      */
     protected ServiceFunctionGroup readServiceFunctionGroup(String serviceFunctionGroupName) {
@@ -91,7 +93,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
 
     /**
      * Reads a SFG from the datastore <p>
-     * @param serviceFunctionGroup name
+     * @param serviceFunctionType function type
      * @return ServiceFunctionGroup object or null if not found
      */
     protected ServiceFunctionGroup getServiceFunctionGroupByType(String serviceFunctionType) {
@@ -210,7 +212,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
     /**
      * This method reads the operational state for a service function.
      * <p>
-     * @param serviceFunctionName SF name
+     * @param serviceFunctionGroupName SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      * this service function, null otherwise
      */

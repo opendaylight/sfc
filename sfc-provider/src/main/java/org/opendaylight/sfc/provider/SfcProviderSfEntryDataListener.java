@@ -35,7 +35,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * a Service Function list entry, i.e.,
  * added/deleted/modified.
  *
- * <p
+ * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since       2014-06-30

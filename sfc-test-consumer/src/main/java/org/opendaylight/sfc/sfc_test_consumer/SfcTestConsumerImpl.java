@@ -50,9 +50,9 @@ import java.util.concurrent.Future;
  *
  * Allow insecure connection if it asks. There will be the rightmost tab called
  * MBeans, with a folded tree of different components.
- * Go to org.opendaylight.controller -> Runtime bean -> test-consumer-impl (some times it
+ * Go to org.opendaylight.controller -&gt; Runtime bean -&gt; test-consumer-impl (some times it
  * takes a little time until all those beans are initialized, they appear one by one),
- * then once again test-consumer-impl (on next level) -> Operations, and there they
+ * then once again test-consumer-impl (on next level) -&gt; Operations, and there they
  * are, all RPC from consumer YANG, mapped to their Java implementations. When you
  * select one, on the right panel there is a button to invoke that function.
  *

@@ -8,8 +8,7 @@
 
 /**
  * SfcOvsUtil class contains various wrapper and utility methods
- * <p/>
- * <p/>
+ * <p>
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -65,7 +64,7 @@ public class SfcOvsUtil {
     /**
      * Submits callable for execution by given ExecutorService.
      * Thanks to this wrapper method, boolean result will be returned instead of Future.
-     * <p/>
+     * <p>
      *
      * @param callable Callable
      * @param executor ExecutorService
@@ -88,9 +87,9 @@ public class SfcOvsUtil {
 
     /**
      * Method builds OVSDB Topology InstanceIdentifier
-     * <p/>
+     * <p>
      *
-     * @return InstanceIdentifier<Topology>
+     * @return InstanceIdentifier&lt;Topology&gt;
      */
     public static InstanceIdentifier<Topology> buildOvsdbTopologyIID() {
         InstanceIdentifier<Topology> ovsdbTopologyIID =
@@ -105,9 +104,9 @@ public class SfcOvsUtil {
      * Method builds OVS NodeId which is based on:
      * 1. OVS Node InstanceIdentifier which manages the OVS Bridge
      * 2. OVS Bridge name
-     * <p/>
+     * <p>
      * If the two aforementioned fields are missing, NullPointerException is raised.
-     * <p/>
+     * <p>
      *
      * @param ovsdbBridge OvsdbBridgeAugmentation
      * @return NodeId
@@ -132,10 +131,10 @@ public class SfcOvsUtil {
 
     /**
      * Method builds OVS Node InstanceIdentifier which is based on OVS NodeId
-     * <p/>
+     * <p>
      *
      * @param ovsdbBridge OvsdbBridgeAugmentation
-     * @return InstanceIdentifier<Node>
+     * @return InstanceIdentifier&lt;Node&gt;
      * @see SfcOvsUtil getManagedByNodeId
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(OvsdbBridgeAugmentation ovsdbBridge) {
@@ -151,10 +150,10 @@ public class SfcOvsUtil {
     /**
      * Method builds OVS Node InstanceIdentifier which is based on Service Function Forwarder name.
      * Method will return valid InstanceIdentifier only if the given SFF name belongs to SFF instance mapped to OVS.
-     * <p/>
+     * <p>
      *
      * @param serviceFunctionForwarderName String
-     * @return InstanceIdentifier<Node>
+     * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(String serviceFunctionForwarderName) {
         InstanceIdentifier<Node> nodeIID =
@@ -168,10 +167,10 @@ public class SfcOvsUtil {
 
     /**
      * Method builds OVS Node InstanceIdentifier which is based on NodeId.
-     * <p/>
+     * <p>
      *
      * @param nodeId NodeId
-     * @return InstanceIdentifier<Node>
+     * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(NodeId nodeId) {
         InstanceIdentifier<Node> nodeIID =
@@ -185,10 +184,10 @@ public class SfcOvsUtil {
 
     /**
      * Method builds OVS BridgeAugmentation InstanceIdentifier which is based on OVS NodeId
-     * <p/>
+     * <p>
      *
      * @param ovsdbBridge OvsdbBridgeAugmentation
-     * @return InstanceIdentifier<OvsdbBridgeAugmentation>
+     * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      * @see SfcOvsUtil getManagedByNodeId
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(OvsdbBridgeAugmentation ovsdbBridge) {
@@ -204,10 +203,10 @@ public class SfcOvsUtil {
 
     /**
      * Method builds OVS BridgeAugmentation InstanceIdentifier which is based on OVS Bridge name
-     * <p/>
+     * <p>
      *
      * @param serviceFunctionForwarderName serviceFunctionForwarderName String
-     * @return InstanceIdentifier<OvsdbBridgeAugmentation>
+     * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(String serviceFunctionForwarderName) {
         InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = buildOvsdbNodeIID(serviceFunctionForwarderName)
@@ -220,13 +219,13 @@ public class SfcOvsUtil {
      * Method builds OVS TerminationPointAugmentation InstanceIdentifier which is based on:
      * 1. OVS Node InstanceIdentifier which manages the OVS Bridge, to which the OVS TerminationPoint is attached
      * 2. OVS Termination Point name
-     * <p/>
+     * <p>
      * If the two aforementioned fields are missing, NullPointerException is raised.
-     * <p/>
+     * <p>
      *
      * @param ovsdbBridge           OvsdbBridgeAugmentation
      * @param ovsdbTerminationPoint OvsdbTerminationPointAugmentation
-     * @return InstanceIdentifier<OvsdbTerminationPointAugmentation>
+     * @return InstanceIdentifier&lt;OvsdbTerminationPointAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbTerminationPointAugmentation> buildOvsdbTerminationPointAugmentationIID(
             OvsdbBridgeAugmentation ovsdbBridge, OvsdbTerminationPointAugmentation ovsdbTerminationPoint) {
@@ -256,11 +255,11 @@ public class SfcOvsUtil {
      * Method builds OVS TerminationPoint InstanceIdentifier which is based on SFF name and SFF DataPlane locator name.
      * Method will return valid InstanceIdentifier only if the given SFF and SFF DataPlane locator
      * belongs to SFF instance mapped to OVS.
-     * <p/>
+     * <p>
      *
      * @param sffName                 Service Function Forwarder Name
      * @param sffDataPlaneLocatorName Service Function Forwarder Data Plane locator name
-     * @return InstanceIdentifier<TerminationPoint>
+     * @return InstanceIdentifier&lt;TerminationPoint&gt;
      */
     public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(String sffName, String sffDataPlaneLocatorName) {
         InstanceIdentifier<TerminationPoint> terminationPointIID =

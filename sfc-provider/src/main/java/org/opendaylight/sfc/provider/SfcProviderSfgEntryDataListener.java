@@ -23,7 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class gets called whenever there is a change to a Service Function Group list entry, i.e., added/deleted/modified. <p
+ * This class gets called whenever there is a change to a Service Function Group list entry, i.e., added/deleted/modified.
+ * <p>
  * @author Shlomi Alfasi (shlomi.alfasi@contextream.com)
  * @version 0.1
  * @since 2015-03-08

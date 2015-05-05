@@ -21,9 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to operate on the ServiceFunctionGroupAlgorithm datastore. <p/> It is normally called from onDataChanged() through a executor service. We need to use an executor service because we can not operate on a datastore while on onDataChanged() context.
+ * This class has the APIs to operate on the ServiceFunctionGroupAlgorithm datastore. <p> It is normally
+ * called from onDataChanged() through a executor service. We need to use an executor service because we
+ * cannot operate on a datastore while on onDataChanged() context.
  * @author Kfir Yeshayahu (kfir.yeshayahu@contextream.com)
- * @version 0.1 <p/>
+ * @version 0.1 <p>
  * @since 2015-02-14
  */
 public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAPI {
@@ -56,7 +58,7 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
 
     /**
      * Reads a SFG Algorithm from the datastore <p>
-     * @param serviceFunctionGroupAlgorithm name
+     * @param serviceFunctionGroupAlgorithmName name
      * @return ServiceFunctionGroupAlgorithm object or null if not found
      */
     protected ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlgorithm(String serviceFunctionGroupAlgorithmName) {

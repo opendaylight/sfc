@@ -24,12 +24,12 @@ import java.util.LinkedList;
  * nodes/vertexes, it is mainly used to implement Dijkstra
  * shortest path algorithm, method getShortestPath can find
  * the shortest path between 'from' node and 'to' node in a graph.
- * <p/>
+ * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @author Yi Yang (yi.y.yang@intel.com)
  *
- * <p/>
+ * <p>
  * @since 2015-03-13
  */
 public class SfcProviderGraph {

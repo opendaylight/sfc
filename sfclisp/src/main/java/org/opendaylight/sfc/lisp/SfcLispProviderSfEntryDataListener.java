@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * a Service Function list entry, i.e.,
  * added.
  *
- * <p
+ * <p>
  * @author David Goldberg (david.goldberg@contextream.com)
  * @version 0.1
  * @since       2014-06-30

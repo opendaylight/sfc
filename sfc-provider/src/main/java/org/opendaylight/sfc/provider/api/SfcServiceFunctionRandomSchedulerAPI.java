@@ -23,11 +23,11 @@ import java.util.Random;
 
 /**
  * This class implements a random SF scheduling mode.
- * <p/>
+ * <p>
  *
  * @author Johnson Li (johnson.li@intel.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since 2015-03-04
  */
 public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSchedulerAPI {

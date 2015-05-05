@@ -14,11 +14,11 @@ import java.util.List;
 
 /**
  * This class defines the Generic API for SF scheduling.
- * <p/>
+ * <p>
  *
  * @author Johnson Li (johnson.li@intel.com)
  * @version 0.1
- * <p/>
+ * <p>
  * @since 2015-03-04
  */
 public abstract class SfcServiceFunctionSchedulerAPI {

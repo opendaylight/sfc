@@ -26,9 +26,7 @@ import java.util.List;
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @see org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceForwarderAPI
- * <p/>
- * <p/>
- * <p/>
+ * <p>
  * @since 2015-03-10
  */
 public class SfcNetconfServiceForwarderAPI {

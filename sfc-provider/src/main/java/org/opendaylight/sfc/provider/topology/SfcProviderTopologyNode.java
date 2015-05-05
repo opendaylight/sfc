@@ -13,9 +13,8 @@ package org.opendaylight.sfc.provider.topology;
  * , a node may be SF or SFF, please refer to class SfcProviderGraph for
  * topology graph
  *
- * @author Shuqiang Zhao <shuqiangx.zhao@intel.com>
- * @author Yi Yang <yi.y.yang@intel.com>
- *
+ * @author Shuqiang Zhao &lt;shuqiangx.zhao@intel.com&gt;
+ * @author Yi Yang &lt;yi.y.yang@intel.com&gt;
  */
 public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNode> {
     private String name;

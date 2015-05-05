@@ -8,8 +8,7 @@
 
 /**
  * Class for handling SFC OVS RPCs
- * <p/>
- * <p/>
+ * <p>
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -53,7 +52,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
      * This method writes a new OVS Bridge into OVSDB Config DataStore. This write event triggers
      * creation of the OVS Bridge in running OpenVSwitch instance identified by OVS Node ip:port
      * locator.
-     * <p/>
+     * <p>
      *
      * @param input RPC input including a OVS Bridge name and parent OVS Node ip:port locator
      * @return RPC output: true if write to OVSDB Config DataStore was successful, otherwise false.

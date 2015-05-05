@@ -119,8 +119,6 @@ public class Activator extends ComponentActivatorAbstractBase {
      *            be used for configuration
      * @param imp
      *            implementation to be configured
-     * @param containerName
-     *            container on which the configuration happens
      */
     @Override
     protected void configureGlobalInstance(Component c, Object imp) {

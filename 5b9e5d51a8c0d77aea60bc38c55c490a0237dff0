@@ -16,6 +16,24 @@
       "revId": "5b9e5d51a8c0d77aea60bc38c55c490a0237dff0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_d4cb991c",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-05T10:23:51Z",
+      "side": 1,
+      "message": "You\u0027re right, I havent updated the java code yet. This is just the YANG data model. Actually, I need to add one more thing to this data model: A map from RSPid to rspEgress info. I\u0027ll submit another patch now.",
+      "parentUuid": "3aa0d159_b4a28dac",
+      "revId": "5b9e5d51a8c0d77aea60bc38c55c490a0237dff0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3aa0d159_af0d5a39",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsToSffMappingAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-05-05T11:37:07Z",
+      "side": 1,
+      "message": "True, I\u0027ll correct it.",
+      "parentUuid": "3aa0d159_fbaa4818",
+      "revId": "968f4ae6a3463b0f78e63e3e0c6beaa604ef32de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3aa0d159_5bac9c35",
         "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsToSffMappingAPI.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2015-05-04T16:10:59Z",
       "side": 1,
       "message": "A switch with only a single case?  This should just be an \"if\".",
+      "revId": "968f4ae6a3463b0f78e63e3e0c6beaa604ef32de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_6f0f522f",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsToSffMappingAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-05-05T11:37:07Z",
+      "side": 1,
+      "message": "I used switch, because I expected also other cases. However, if there will be no other cases, I\u0027ll remove it in future.",
+      "parentUuid": "3aa0d159_5bac9c35",
       "revId": "968f4ae6a3463b0f78e63e3e0c6beaa604ef32de",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

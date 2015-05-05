@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_457d951b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 989,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-05-05T21:30:04Z",
+      "side": 1,
+      "message": "this will cause NPE in the first LOG of readRenderedServicePathFirstHop",
+      "revId": "859d870d8669ed63cd7148d17ffe115a53d9675e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

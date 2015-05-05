@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_b4a28dac",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-05T09:16:40Z",
+      "side": 1,
+      "message": "It is input parameter for rpc read-rendered-service-path-first-hop, so GBP must know these info and transfer them into read-rendered-service-path-first-hop on calling it.\n\nThere is another API readRenderedServicePathFirstHop that handles all the logic. So it must be changed to adapt these parameters. rendered-service-path in YANG model must add \"container rsp_egress\" to save these info.\n\nSFC will consume them  by RSP.",
+      "revId": "5b9e5d51a8c0d77aea60bc38c55c490a0237dff0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

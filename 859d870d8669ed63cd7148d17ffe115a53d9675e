@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "3aa0d159_c5bd256a",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-06T02:25:03Z",
+      "side": 1,
+      "message": "Don\u0027t need \"container egress-info {\", you can use \"uses rendered-service-path-egress-info;\" directly",
+      "revId": "859d870d8669ed63cd7148d17ffe115a53d9675e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_85b71d86",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-06T02:25:03Z",
+      "side": 1,
+      "message": "Same as Line 326",
+      "revId": "859d870d8669ed63cd7148d17ffe115a53d9675e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3aa0d159_457d951b",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 3

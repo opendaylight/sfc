@@ -54,7 +54,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
-                LOG.info("SfcL2RspDataListener.onDataChanged RSP {}", ((RenderedServicePath) entry.getValue()).getName());
+                LOG.info("SfcL2RspDataListener.onDataChanged create RSP {}", ((RenderedServicePath) entry.getValue()).getName());
                 this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue(), true);
             }
         }
@@ -63,6 +63,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof RenderedServicePath && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
+                LOG.info("SfcL2RspDataListener.onDataChanged update RSP {}", ((RenderedServicePath) entry.getValue()).getName());
                 this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue(), true);
             }
         }
@@ -72,6 +73,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         for (InstanceIdentifier<?> instanceIdentifier : dataRemovedConfigurationIID) {
             DataObject dataObject = change.getOriginalData().get(instanceIdentifier);
             if (dataObject instanceof RenderedServicePath) {
+                LOG.info("SfcL2RspDataListener.onDataChanged delete RSP");
                 this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) dataObject, false);
             }
         }

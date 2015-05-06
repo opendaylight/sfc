@@ -82,7 +82,7 @@ public class SfcL2RspProcessor {
         this.lastVlanId = 0;
     }
 
-    // TODO if this takes too long, consider launching it in a thread
+    // if this method takes too long, consider launching it in a thread
     public void processRenderedServicePath(RenderedServicePath rsp, boolean addFlow) {
         // Reset the internal SF and SFF storage
         this.serviceFunctions.clear();
@@ -156,7 +156,7 @@ public class SfcL2RspProcessor {
      * @param entry
      */
     private void configureSffIngress(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
-        LOG.info("configureSffIngress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
+        LOG.debug("configureSffIngress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId(), entry.getServiceIndex());
 
         final String sffDstName = entry.getDstSff();
@@ -212,7 +212,7 @@ public class SfcL2RspProcessor {
      * @param entry
      */
     private void configureSffEgress(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
-        LOG.info("configureSffEgress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
+        LOG.debug("configureSffEgress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId(), entry.getServiceIndex());
 
         /* These are the SFFGraph entries and how the NextHops are calculated:
@@ -287,7 +287,6 @@ public class SfcL2RspProcessor {
         }
 
         // TODO what if there is more than one SF in the dict?
-        // TODO add srcSf to SffGraph and change current sf to dstSf
         ServiceFunction sfSrc = getServiceFunction(sffSrc.getServiceFunctionDictionary().get(0).getName());
         SfDataPlaneLocator sfSrcDpl = getSfDataPlaneLocator(sfSrc);
 
@@ -320,7 +319,7 @@ public class SfcL2RspProcessor {
         }
 
         if(!getSffInitialized(sffName)) {
-            LOG.info("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
+            LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true, true);
             this.sfcL2FlowProgrammer.configureIngressTableMatchAny(          sffNodeName, false, true);
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(          sffNodeName, false, true);
@@ -343,7 +342,7 @@ public class SfcL2RspProcessor {
                     "configureSffTransportIngressFlow SFF [" + sffName + "] does not exist");
         }
 
-        LOG.info("configureSffTransportIngressFlow sff [{}] node [{}]", sffName, sffNodeName);
+        LOG.debug("configureSffTransportIngressFlow sff [{}] node [{}]", sffName, sffNodeName);
 
         LocatorType sffLocatorType = dpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
@@ -374,7 +373,8 @@ public class SfcL2RspProcessor {
                     "configureSffIngressFlow SFF [" + sffName + "] does not exist");
         }
 
-        LOG.info("configureSffIngressFlow sff [{}] node [{}] pathId [{}] serviceIndex [{}]", sffName, sffNodeName, pathId, serviceIndex);
+        LOG.debug("configureSffIngressFlow sff [{}] node [{}] pathId [{}] serviceIndex [{}]",
+                sffName, sffNodeName, pathId, serviceIndex);
 
         LocatorType sffLocatorType = hopDpl.getLocatorType();
         if(sffLocatorType == null) {
@@ -449,7 +449,7 @@ public class SfcL2RspProcessor {
                     "configureSffNextHopFlow SFF [" + sffName + "] does not exist");
         }
 
-        LOG.info("configureSffNextHopFlow sff [{}] pathId [{}] serviceIndex [{}] srcMac [{}] dstMac [{}]",
+        LOG.debug("configureSffNextHopFlow sff [{}] pathId [{}] serviceIndex [{}] srcMac [{}] dstMac [{}]",
                 sffName, pathId, serviceIndex, srcMac, dstMac);
 
         LocatorType srcSffLocatorType = (srcDpl != null) ? srcDpl.getLocatorType() : null;
@@ -551,7 +551,7 @@ public class SfcL2RspProcessor {
                     "configureSffTransportEgressFlow Sff Node name for SFF [" + sffName + "] does not exist");
         }
 
-        LOG.info("configureSffTransportEgressFlow sff [{}] node [{}]", sffName, sffNodeName);
+        LOG.debug("configureSffTransportEgressFlow sff [{}] node [{}]", sffName, sffNodeName);
 
         LocatorType hopLocatorType = hopDpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = hopLocatorType.getImplementedInterface();
@@ -694,7 +694,10 @@ public class SfcL2RspProcessor {
         if(prevSffDplList.size() == 1) {
             SffDataPlaneLocator prevSffDpl = prevSffDplList.get(0);
             if(!prevSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
-                LOG.info("SFF [{}] transport type does not match the RSP DPL transport type [{}]", prevSff, rspTransport);
+                LOG.warn("SFF [{}] transport type [{}] does not match the RSP DPL transport type [{}]",
+                        prevSff,
+                        prevSffDpl.getDataPlaneLocator().getTransport().getName(),
+                        rspTransport);
                 return false;
             }
             sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
@@ -707,7 +710,10 @@ public class SfcL2RspProcessor {
         if(curSffDplList.size() == 1) {
             SffDataPlaneLocator curSffDpl = curSffDplList.get(0);
             if(!curSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
-                LOG.info("SFF [{}] transport type does not match the RSP DPL transport type [{}]", curSff, rspTransport);
+                LOG.warn("SFF [{}] transport type [{}] does not match the RSP DPL transport type [{}]",
+                        curSff,
+                        curSffDpl.getDataPlaneLocator().getTransport().getName(),
+                        rspTransport);
                 return false;
             }
             sffGraph.setSffEgressDpl(curSff.getName(), pathId, curSffDpl.getName());
@@ -869,7 +875,7 @@ public class SfcL2RspProcessor {
 
         SffDataPlaneLocator1 ofsDpl = sffDpl.getAugmentation(SffDataPlaneLocator1.class);
         if(ofsDpl == null) {
-            LOG.info("No OFS DPL available for dpl [{}]", sffDpl.getName());
+            LOG.debug("No OFS DPL available for dpl [{}]", sffDpl.getName());
             return null;
         }
 
@@ -882,7 +888,7 @@ public class SfcL2RspProcessor {
         }
         ServiceFunctionDictionary1 ofsSffSfDict = sffSfDict.getAugmentation(ServiceFunctionDictionary1.class);
         if(ofsSffSfDict == null) {
-            LOG.info("No OFS SffSf Dictionary available for dict [{}]", sffSfDict.getName());
+            LOG.debug("No OFS SffSf Dictionary available for dict [{}]", sffSfDict.getName());
             return null;
         }
 

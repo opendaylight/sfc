@@ -102,9 +102,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         // When we close this service we need to shutdown our executor!
         threadPoolExecutorService.shutdown();
         if (!threadPoolExecutorService.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
-            LOG.error("SfcL2 Executor did not terminate in the specified time.");
+            LOG.error("SfcL2FlowProgrammerOFimpl Executor did not terminate in the specified time.");
             List<Runnable> droppedTasks = threadPoolExecutorService.shutdownNow();
-            LOG.error("SfcL2 Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+            LOG.error("SfcL2FlowProgrammerOFimpl Executor was abruptly shut down. [{}] tasks will not be executed.",
+                    droppedTasks.size());
         }
     }
 
@@ -204,7 +205,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}] doDrop {}",
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}] doDrop {}",
                         this.sffNodeName, this.tableId, this.nextTableId, this.doDrop);
 
                 //
@@ -265,8 +266,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, transportIngressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("ConfigureTableMatchAnyThread writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
+                LOG.error("ConfigureTableMatchAnyThread writer caught an Exception: ", e);
             }
         }
     }
@@ -346,7 +346,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.ConfigureTransportIngressFlow, sff [{}] etherType [{}]",
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportIngressFlow, sff [{}] etherType [{}]",
                         this.sffNodeName, this.etherType);
 
                 //
@@ -396,8 +396,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, transportIngressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("ConfigureTransportIngress writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
+                LOG.error("ConfigureTransportIngress writer caught an Exception: ", e);
             }
         }
     }
@@ -479,7 +478,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.configureIngressFlow sff [{}] pathId [{}] vlan [{}] mpls [{}] mac [{}]",
+                LOG.debug("SfcProviderSffFlowWriter.configureIngressFlow sff [{}] pathId [{}] vlan [{}] mpls [{}] mac [{}]",
                         this.sffNodeName, this.pathId, this.vlan, this.mplsLabel, this.macAddress);
 
                 MatchBuilder match = new MatchBuilder();
@@ -497,7 +496,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     SfcOpenflowUtils.addMatchMplsLabel(match, this.mplsLabel);
                     actionList.add(SfcOpenflowUtils.createActionPopMpls(actionOrder++));
                 } else if(this.macAddress.length() > 0) {
-                    // TODO, should this be addMatchSrcMac() or addMatchDstMac() ???
                     SfcOpenflowUtils.addMatchSrcMac(match, this.macAddress);
                 } else if (this.nsp >= 0 && this.nsi >= 0) {
                     //VxLAN-gpe + NSH
@@ -552,8 +550,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, ingressFlow);
                 }
             } catch (Exception e) {
-                LOG.info("ConfigureIngressFlow writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
+                LOG.error("ConfigureIngressFlow writer caught an Exception: ", e);
             }
         }
     }
@@ -616,7 +613,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.configureNextHopFlow sffName [{}] sfpId [{}] srcMac [{}] dstMac [{}]",
+                LOG.debug("SfcProviderSffFlowWriter.configureNextHopFlow sffName [{}] sfpId [{}] srcMac [{}] dstMac [{}]",
                         this.sffNodeName, this.sfpId, this.srcMac, this.dstMac);
 
                 int flowPriority = FLOW_PRIORITY_NEXT_HOP;
@@ -708,8 +705,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, nextHopFlow);
                 }
             } catch (Exception e) {
-                LOG.info("ConfigureNextHopFlow writer caught an Exception: ");
-                LOG.error(e.getMessage(), e);
+                LOG.error("ConfigureNextHopFlow writer caught an Exception: ", e);
             }
         }
     }
@@ -807,7 +803,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow sff [{}] macSrc [{}] macDst [{}] vlan [{}] mpls [{}] nsp [{}] nsi [{}]",
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow sff [{}] macSrc [{}] macDst [{}] vlan [{}] mpls [{}] nsp [{}] nsi [{}]",
                         this.sffNodeName, this.srcMac, this.dstMac, this.dstVlan, this.mplsLabel, this.nshNsp, this.nshNsi);
 
                 int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
@@ -896,8 +892,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, egressTransportFlow);
                 }
 
-            } catch (Exception ex) {
-                LOG.error("Caught an exception in ConfigureTransportEgressThread.run() : {}", ex.toString());
+            } catch (Exception e) {
+                LOG.error("Caught an exception in ConfigureTransportEgressThread.run() : {}", e);
             }
         }
     }
@@ -946,7 +942,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 .child(Flow.class, flow.getKey())
                 .build();
 
-        LOG.info("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
+        LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
 
         if (! SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(), LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("{}: Failed to create Flow on node: {}",

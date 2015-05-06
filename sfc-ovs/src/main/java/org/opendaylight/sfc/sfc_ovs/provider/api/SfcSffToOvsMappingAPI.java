@@ -8,17 +8,14 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator2Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptions;
@@ -39,6 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class has the APIs to map SFC Service Function Forwarder to OVS Bridge
@@ -69,8 +69,8 @@ public class SfcSffToOvsMappingAPI {
 
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
 
-        ServiceFunctionForwarder2 serviceForwarderOvsBridgeAugmentation =
-                serviceFunctionForwarder.getAugmentation(ServiceFunctionForwarder2.class);
+        SffOvsBridgeAugmentation serviceForwarderOvsBridgeAugmentation =
+                serviceFunctionForwarder.getAugmentation(SffOvsBridgeAugmentation.class);
         if (serviceForwarderOvsBridgeAugmentation != null) {
             OvsBridge serviceForwarderOvsBridge = serviceForwarderOvsBridgeAugmentation.getOvsBridge();
 
@@ -87,8 +87,8 @@ public class SfcSffToOvsMappingAPI {
             return null;
         }
 
-        ServiceFunctionForwarder1 serviceForwarderOvsNodeAugmentation =
-                serviceFunctionForwarder.getAugmentation(ServiceFunctionForwarder1.class);
+        SffOvsNodeAugmentation serviceForwarderOvsNodeAugmentation =
+                serviceFunctionForwarder.getAugmentation(SffOvsNodeAugmentation.class);
         if (serviceForwarderOvsNodeAugmentation != null) {
             OvsNode serviceForwarderOvsNode = serviceForwarderOvsNodeAugmentation.getOvsNode();
 

@@ -8,9 +8,6 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.*;
@@ -39,6 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class has the APIs to map OVS Bridge to SFC Service Function Forwarder
@@ -73,20 +73,21 @@ public class SfcOvsToSffMappingAPI {
             serviceFunctionForwarderBuilder.setName(getServiceForwarderNameFromNode(node));
 
             //add OVS Node ref to SFF
-            ServiceFunctionForwarder1Builder ovsServiceForwarderAugmentation = new ServiceFunctionForwarder1Builder();
+            SffOvsNodeAugmentationBuilder sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
             OvsNodeBuilder ovsNodeBuilder = new OvsNodeBuilder();
             ovsNodeBuilder.setNodeId(ovsdbBridgeAugmentation.getManagedBy());
-            ovsServiceForwarderAugmentation.setOvsNode(ovsNodeBuilder.build());
-            serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder1.class, ovsServiceForwarderAugmentation.build());
+            sffOvsNodeAugmentationBuilder.setOvsNode(ovsNodeBuilder.build());
+            serviceFunctionForwarderBuilder.addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
 
             //add OVS Bridge to SFF
-            ServiceFunctionForwarder2Builder ovsServiceForwarder2Augmentation = new ServiceFunctionForwarder2Builder();
+            SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
             ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
-            ovsServiceForwarder2Augmentation.setOvsBridge(ovsBridgeBuilder.build());
-            serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, ovsServiceForwarder2Augmentation.build());
+            sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
+            serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
+
 
             //add SFF DP locators list to SFF
             serviceFunctionForwarderBuilder.setSffDataPlaneLocator(

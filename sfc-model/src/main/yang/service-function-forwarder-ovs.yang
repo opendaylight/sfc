@@ -18,6 +18,8 @@ module service-function-forwarder-ovs {
     revision-date 2013-07-15;
   }
 
+  import yang-ext { prefix "ext"; }
+
   import ovsdb {
     prefix "ovsdb";
     revision-date 2015-01-05;
@@ -114,12 +116,14 @@ module service-function-forwarder-ovs {
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/" {
 
+    ext:augment-identifier "sff-ovs-node-augmentation";
     uses node;
   }
 
   augment "/sfc-sff:service-function-forwarders/"
           + "sfc-sff:service-function-forwarder/" {
 
+    ext:augment-identifier "sff-ovs-bridge-augmentation";
     uses bridge;
   }
 

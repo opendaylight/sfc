@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_0c36d5e7",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerInterface.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-06T20:23:27Z",
+      "side": 1,
+      "message": "SfcL2FlowProgrammerInterface is a Java interface. There shouldnt be anything concrete defined here. The GroupBucketInfo class definition should be moved elsewhere.",
+      "range": {
+        "startLine": 116,
+        "startChar": 24,
+        "endLine": 116,
+        "endChar": 39
+      },
+      "revId": "41efca282fad1e1eb887e0fddfa22fa47aa0957d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

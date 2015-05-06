@@ -157,8 +157,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener  {
                         readServiceFunctionStateExecutor(sfName);
                 List<String> rspList = new ArrayList<>();
                 if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
-                    if (SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfName)) {
-                    } else {
+                    if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfName)) {
                         LOG.error("{}: Failed to delete SF {} operational state",
                                 Thread.currentThread().getStackTrace()[1], sfName);
                     }

@@ -124,10 +124,14 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                  */
 
                 String sffName = serviceFunctionForwarder.getName();
-                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName);
-                List<String> rspList = new ArrayList<>();
                 List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+                //SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName);
+                List<String> rspList = new ArrayList<>();
                 if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
+                    if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName)) {
+                        LOG.error("{}: Failed to delete SFF {} operational state",
+                                Thread.currentThread().getStackTrace()[1], sffName);
+                    }
                     for (SffServicePath sffServicePath : sffServicePathList) {
                         String rspName = sffServicePath.getName();
                         SfcProviderServiceFunctionAPI
@@ -137,12 +141,6 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                     SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                 }
 
- /*               //Send to SB REST
-                Object[] serviceForwarderObj = {serviceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
-                SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
-                        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);*/
             }
         }
         ODL_SFC.releaseLock();

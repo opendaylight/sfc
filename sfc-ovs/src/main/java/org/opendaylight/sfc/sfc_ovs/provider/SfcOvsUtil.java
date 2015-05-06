@@ -302,15 +302,8 @@ public class SfcOvsUtil {
             LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv4", ipAddress.toString());
         }
 
-        try {
-            Preconditions.checkArgument(ipAddress.getIpv6Address().getValue() != null);
-            return ipAddress.getIpv6Address().getValue();
-        } catch (Exception e) {
-            LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv6", ipAddress.toString());
-        }
-
-        LOG.error("Supplied IpAddress value ({}) cannot be converted to String!", ipAddress.toString());
-        return null;
+        Preconditions.checkArgument(ipAddress.getIpv6Address().getValue() != null);
+        return ipAddress.getIpv6Address().getValue();
     }
 
     public static boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,

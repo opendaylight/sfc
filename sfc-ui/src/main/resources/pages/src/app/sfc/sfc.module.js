@@ -358,19 +358,19 @@ define([
       }
     });
 
-    $stateProvider.state('main.sfc.servicefunction-statsvasa', {
-      url: '/servicefunction-statsvasa-:sf',
+    $stateProvider.state('main.sfc.servicefunction-stats', {
+      url: '/servicefunction-stats-:sfName',
       access: access.public,
       views: {
         'sfc': {
-          templateUrl: 'src/app/sfc/servicefunction/servicefunction.vasastats.tpl.html',
+          templateUrl: 'src/app/sfc/servicefunction/servicefunction.stats.tpl.html',
           controller: 'serviceFunctionCreateCtrl'
         }
       }
     });
 
    $stateProvider.state('main.sfc.servicefunction-statsvnbar', {
-      url: '/servicefunction-statsvnbar-:sf',
+      url: '/servicefunction-statsvnbar-:sfName',
       access: access.public,
       views: {
         'sfc': {

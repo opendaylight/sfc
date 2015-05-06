@@ -102,29 +102,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.statsSF = function statsSF(sf) {
-
-    if (sf['type'] == 'Cisco-vASA' ) {
-        sf['ip-mgmt-address'] = "https://"+ sf['ip-mgmt-address'] ;
-        sf['ip-mgmt-address'] =  sf['ip-mgmt-address'] + "/admin/exec/show+nsh";
-        $state.transitionTo('main.sfc.servicefunction-statsvasa', {"sf": JSON.stringify(sf)}, {
-        location: true,
-        inherit: true,
-        relative: $state.$current,
-        notify: true
-      });
-    }
-    else if (sf['type'] == 'Cisco-vNBAR') {
-        sf['ip-mgmt-address'] =  "http://" + sf['ip-mgmt-address'] ;
-        sf['ip-mgmt-address'] =  sf['ip-mgmt-address'] + "/appBars.html";
-        $state.transitionTo('main.sfc.servicefunction-statsvnbar', {"sf": JSON.stringify(sf)}, {
-        location: true,
-        inherit: true,
-        relative: $state.$current,
-        notify: true
-      });
-
-    }
-    else {}
+      if (sf['type'] == 'Cisco-vASA' || sf['type'] == 'Cisco-vNBAR') {
+        $state.transitionTo('main.sfc.servicefunction-stats', {"sfName": sf.name}, {
+          location: true,
+          inherit: true,
+          relative: $state.$current,
+          notify: true
+        });
+     }
+     else {}
     };
 
     $scope.deleteAll = function deleteAll() {
@@ -138,7 +124,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
   });
 
-  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, $stateParams, SfcDataTemplateSvc, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
+  sfc.register.controller('serviceFunctionCreateCtrl', function ($scope, $state, $stateParams, $sce, SfcDataTemplateSvc, ServiceFunctionSvc, ServiceFunctionHelper, ServiceForwarderSvc) {
 
     $scope.data = {"sf-data-plane-locator": [{}]};
 
@@ -163,6 +149,24 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.removeLocator = function (index) {
       ServiceFunctionHelper.removeLocator(index, $scope);
+    };
+
+    $scope.htmlSafe = function (data) {
+        return $sce.trustAsHtml(data);
+    };
+
+    $scope.renderIframe = function () {
+      if ($scope.data['type'] == 'Cisco-vASA') {
+	var ifrm = '<iframe id=ifrm src="https://' + $scope.data['ip-mgmt-address'] + '/admin/exec/show+nsh" width="1100" height="850" style="background-color: Snow;"></iframe>';
+        var ifrmSafe = $scope.htmlSafe(ifrm);
+        return ifrmSafe; 
+      } 
+      else if ($scope.data['type'] == 'Cisco-vNBAR') {
+	var ifrm = '<iframe id=ifrm src="http://' + $scope.data['ip-mgmt-address'] + '/appBars.html" width="1100" height="850"></iframe>';
+        var ifrmSafe = $scope.htmlSafe(ifrm);
+        return ifrmSafe; 
+      } 
+      else {}
     };
 
     $scope.submit = function () {

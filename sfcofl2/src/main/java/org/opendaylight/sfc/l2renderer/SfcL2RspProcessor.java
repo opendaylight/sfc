@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarder2;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
@@ -312,7 +313,7 @@ public class SfcL2RspProcessor {
     }
 
     private void initializeSff(final String sffName) {
-        String sffNodeName = getSffServiceNodeName(sffName);
+        String sffNodeName = getSffOpenFlowNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
                     "initializeSff SFF [" + sffName + "] does not exist");
@@ -336,7 +337,7 @@ public class SfcL2RspProcessor {
      * @param dpl - details about the transport to write
      */
     private void configureSffTransportIngressFlow(final String sffName, DataPlaneLocator dpl) {
-        String sffNodeName = getSffServiceNodeName(sffName);
+        String sffNodeName = getSffOpenFlowNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
                     "configureSffTransportIngressFlow SFF [" + sffName + "] does not exist");
@@ -367,7 +368,7 @@ public class SfcL2RspProcessor {
 
     private void configureSffIngressFlow(
             final String sffName, boolean isSf, DataPlaneLocator hopDpl, final long pathId, final short serviceIndex) {
-        String sffNodeName = getSffServiceNodeName(sffName);
+        String sffNodeName = getSffOpenFlowNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
                     "configureSffIngressFlow SFF [" + sffName + "] does not exist");
@@ -442,7 +443,7 @@ public class SfcL2RspProcessor {
                                          final long pathId,
                                          final short serviceIndex) {
 
-        String sffNodeName = getSffServiceNodeName(sffName);
+        String sffNodeName = getSffOpenFlowNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
                     "configureSffNextHopFlow SFF [" + sffName + "] does not exist");
@@ -544,7 +545,7 @@ public class SfcL2RspProcessor {
                     "configureSffTransportEgressFlow SFF [" + sffName + "] does not exist");
         }
 
-        String sffNodeName = getSffServiceNodeName(sffName);
+        String sffNodeName = getSffOpenFlowNodeName(sffName);
         if(sffNodeName == null) {
             throw new RuntimeException(
                     "configureSffTransportEgressFlow Sff Node name for SFF [" + sffName + "] does not exist");
@@ -1081,12 +1082,22 @@ public class SfcL2RspProcessor {
     }
 
 
-    private String getSffServiceNodeName(final String sffName) {
+    private String getSffOpenFlowNodeName(final String sffName) {
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName);
         if(sff == null) {
             return null;
         }
 
+        // Check if its an service-function-forwarder-ovs augmentation
+        // if it is, then get the open flow node id there
+        ServiceFunctionForwarder2 ovsSff = sff.getAugmentation(ServiceFunctionForwarder2.class);
+        if(ovsSff != null) {
+            if(ovsSff.getOvsBridge() != null) {
+                return ovsSff.getOvsBridge().getOpenflowNodeId();
+            }
+        }
+
+        // it its not an sff-ovs, then just return the ServiceNode
         return sff.getServiceNode();
     }
 }

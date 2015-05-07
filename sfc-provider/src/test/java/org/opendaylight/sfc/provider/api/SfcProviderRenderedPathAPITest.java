@@ -19,9 +19,13 @@ import java.util.concurrent.ExecutorService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -58,9 +62,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.Mock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({SfcDataStoreAPI.class, SfcServiceFunctionSchedulerAPI.class})
 public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1", "196.168.55.2","196.168.55.3",
@@ -374,5 +386,106 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         //check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathStateExecutor(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName(), rspName);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryWhereServiceFunctionChainIsNull() throws Exception {
+        Object[] params = new Object[0];
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        RenderedServicePath testRenderedServicePath;
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(null);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertEquals(testRenderedServicePath, null);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntrySfNameListIsNull() throws Exception {
+    }
+
+    @Test
+    public void testCreateRenderedServicePathHopArrayListIsNull() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        Object[] params = new Object[0];
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        RenderedServicePath testRenderedServicePath;
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertEquals(testRenderedServicePath.getServiceChainName(), serviceChainName);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryPathInputNameAndTransportType() throws Exception {
+        String renderedPathInputName = "rpiName";
+        String serviceChainName = "unittest-chain-1";
+        Object[] params = new Object[0];
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(renderedPathInputName);
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
+        RenderedServicePath testRenderedServicePath;
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        testReadRenderedServicePathFirstHop();
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertEquals(testRenderedServicePath.getName(), "rpiName");
+        assertEquals(testRenderedServicePath.getTransportType(), VxlanGpe.class);
+
+    }
+    @Test
+    public void testCreateRenderedServicePathEntryRenderedServicePathFailed() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        Object[] params = new Object[0];
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        RenderedServicePath testRenderedServicePath;
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        Mockito mock = PowerMock.   methods(SfcDataStoreAPI.class, "writeMergeTransactionAPI");
+        Mockito.when(SfcDataStoreAPI.writeMergeTransactionAPI(Mockito.any(InstanceIdentifier.class), Mockito.any(RenderedServicePath.class), Mockito.any(LogicalDatastoreType.class))).thenReturn(false);
+
+//        PowerMockito.mockStatic(SfcServiceFunctionSchedulerAPI.class);
+//        SfcServiceFunctionSchedulerAPI object = Mockito.mock(SfcServiceFunctionSchedulerAPI.class);
+//        Mockito.when(object.scheduleServiceFunctions(Mockito.any(ServiceFunctionChain.class), Mockito.anyInt())).thenReturn(null);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertEquals(testRenderedServicePath, "");
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntry() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        Object[] params = new Object[0];
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        RenderedServicePath testRenderedServicePath;
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertEquals(testRenderedServicePath.getServiceChainName(), serviceChainName);
     }
 }

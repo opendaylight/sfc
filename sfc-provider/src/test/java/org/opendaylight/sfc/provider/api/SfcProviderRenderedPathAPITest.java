@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider.api;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,7 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -31,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
@@ -45,8 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -303,5 +308,71 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+    }
+
+    @Test
+    public void testCreateRenderedServicePathHopList() throws  ExecutionException, InterruptedException {
+        final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
+        List<String> sfNameList = Arrays.asList(sfNames);
+        final int startingIndex = 255;
+
+        Object[] parameters = {};
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(parameters, null);
+
+        List<RenderedServicePathHop> rspHopList = null;
+
+        //sfNameList and sfgNameList null
+        rspHopList = sfcProviderRenderedPathAPI.createRenderedServicePathHopList(null, null, startingIndex);
+        assertNull("Must be null", rspHopList);
+
+        //usual behaviour
+        rspHopList = sfcProviderRenderedPathAPI.createRenderedServicePathHopList(sfNameList, null, startingIndex);
+        assertEquals("Size must be equal", sfNameList.size(), rspHopList.size());
+        assertEquals("SI must be equal", rspHopList.get(0).getServiceIndex().intValue(), startingIndex);
+        assertEquals("SF name must be equal", rspHopList.get(0).getServiceFunctionName(), sfNameList.get(0));
+        assertEquals("SI must be equal", rspHopList.get(1).getServiceIndex().intValue(), startingIndex - 1);
+        assertEquals("SF name must be equal", rspHopList.get(1).getServiceFunctionName(), sfNameList.get(1));
+        assertEquals("SI must be equal", rspHopList.get(2).getServiceIndex().intValue(), startingIndex-2);
+        assertEquals("SF name must be equal", rspHopList.get(2).getServiceFunctionName(), sfNameList.get(2));
+
+        final String[] sfNamesNotExisting = {"unittest-fw-1", "unittest-blabla-1", "unittest-napt-1"};
+        sfNameList = Arrays.asList(sfNamesNotExisting);
+        //unittest-blabla-1 SF does not exist
+        rspHopList = sfcProviderRenderedPathAPI.createRenderedServicePathHopList(sfNameList, null, startingIndex);
+        assertNull("Must be null", rspHopList);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathAndState() throws ExecutionException, InterruptedException {
+        //TODO: fix this
+        //nasty workaround - this should be executed in after() block
+        SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[1]);
+        SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor("unittest-fw-1");
+        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
+
+        final String rspName = "unittest-rsp";
+
+        ServiceFunctionPath serviceFunctionPath =
+                SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
+        assertNotNull("Must be not null", serviceFunctionPath);
+
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(rspName);
+
+        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(
+                serviceFunctionPath, createRenderedPathInputBuilder.build());
+
+        //check if SFF oper contains RSP
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(SFF_NAMES[1]);
+        assertNotNull("Must be not null", sffServicePathList);
+        assertEquals(sffServicePathList.get(0).getName(), rspName);
+
+        //check if SF oper contains RSP
+        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionStateExecutor("unittest-fw-1");
+        assertEquals(sfServicePathList.get(0).getName(), rspName);
+
+        //check if SFP oper contains RSP
+        List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathStateExecutor(SFP_NAME);
+        assertEquals(sfpRenderedServicePathList.get(0).getName(), rspName);
     }
 }

@@ -207,14 +207,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <!-- version>4.8.1</version -->
-            <version>[4.8.1, 4.11]</version>
-            <!-- version>4.11</version -->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-core-api</artifactId>
             <version>${mdsal.version}</version>
@@ -225,9 +217,16 @@
             <version>${yangtools.version}</version>
         </dependency>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <!-- version>4.8.1</version -->
+            <version>[4.8.1, 4.11]</version>
+            <!-- version>4.11</version -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
+            <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

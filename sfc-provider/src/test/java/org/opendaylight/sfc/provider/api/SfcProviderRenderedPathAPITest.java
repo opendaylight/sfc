@@ -8,12 +8,22 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -27,46 +37,24 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-
-import static org.junit.Assert.*;
 
 public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String[] LOCATOR_IP_ADDRESS =
@@ -82,6 +70,9 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
     private static final int[] PORT = {1111, 2222, 3333, 4444, 5555};
     private static final Class[] sfTypes = {Firewall.class, Dpi.class, Napt44.class, HttpHeaderEnrichment.class, Qos.class};
+    private static final String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
+    private static final String SFC_NAME = "unittest-chain-1";
+    private static final String SFP_NAME = "unittest-sfp-1";
 
     DataBroker dataBroker;
     ExecutorService executor;
@@ -193,6 +184,52 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
             ServiceFunctionForwarder sff = sffBuilder.build();
             executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
         }
+
+        //Create Service Function Chain
+        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
+        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+
+        for (int i = 0; i < SF_ABSTRACT_NAMES.length; i++) {
+            SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
+            SfcServiceFunction sfcServiceFunction =
+                    sfcSfBuilder.setName(SF_ABSTRACT_NAMES[i])
+                            .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES[i]))
+                            .setType(sfTypes[i])
+                            .build();
+            sfcServiceFunctionList.add(sfcServiceFunction);
+        }
+        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
+        sfcBuilder.setName(SFC_NAME).setKey(sfcKey)
+                .setSfcServiceFunction(sfcServiceFunctionList)
+                .setSymmetric(true);
+
+        Object[] parameters = {sfcBuilder.build()};
+        Class[] parameterTypes = {ServiceFunctionChain.class};
+
+        executor.submit(SfcProviderServiceChainAPI
+                .getPut(parameters, parameterTypes)).get();
+        Thread.sleep(1000); // Wait SFC is really crated
+
+        //Check if Service Function Chain was created
+        Object[] parameters2 = {SFC_NAME};
+        Class[] parameterTypes2 = {String.class};
+        Object result = executor.submit(SfcProviderServiceChainAPI
+                .getRead(parameters2, parameterTypes2)).get();
+        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
+
+        assertNotNull("Must be not null", sfc2);
+        assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfcServiceFunctionList);
+
+        /* Create ServiceFunctionPath */
+        ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
+        pathBuilder.setName(SFP_NAME)
+                .setServiceChainName(SFC_NAME)
+                .setSymmetric(true);
+        ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
+        assertNotNull("Must be not null", serviceFunctionPath);
+        boolean ret = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPath);
+        assertTrue("Must be true", ret);
+
         Thread.sleep(1000); // Wait they are really created
     }
 
@@ -207,53 +244,9 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testReadRenderedServicePathFirstHop() throws ExecutionException, InterruptedException {
-        boolean ret;
-        String sfcName = "unittest-chain-1";
-        String[] sfNames = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
-        ServiceFunctionChainKey key = new ServiceFunctionChainKey(sfcName);
-
-        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-
-        for (int i = 0; i < sfNames.length; i++) {
-
-            SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                sfcSfBuilder.setName(sfNames[i])
-                            .setKey(new SfcServiceFunctionKey(sfNames[i]))
-                            .setType(sfTypes[i])
-                            .build();
-            sfcServiceFunctionList.add(sfcServiceFunction);
-        }
-        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(sfcName).setKey(key)
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(true);
-
-        Object[] parameters = {sfcBuilder.build()};
-        Class[] parameterTypes = {ServiceFunctionChain.class};
-
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(parameters, parameterTypes)).get();
-
-        Object[] parameters2 = {sfcName};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceChainAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
-
-        assertNotNull("Must be not null", sfc2);
-        assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfcServiceFunctionList);
-
-        /* Create ServiceFunctionPath */
-        String pathName = "unittest-sfp-1";
-        ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
-        pathBuilder.setName(pathName)
-                   .setServiceChainName(sfcName)
-                   .setSymmetric(true);
-        ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
+        ServiceFunctionPath serviceFunctionPath =
+                SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
-        ret = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPath);
-        assertTrue("Must be true", ret);
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;

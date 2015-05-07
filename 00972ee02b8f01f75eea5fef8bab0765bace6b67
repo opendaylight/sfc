@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_9593c4f9",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-07T18:51:04Z",
+      "side": 1,
+      "message": "Why are you using a hand-coded mock instead of using the facilities of Mockito? It is much easier to constrain behavior, and you can do it in the scope of the unit test itself.",
+      "revId": "00972ee02b8f01f75eea5fef8bab0765bace6b67",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

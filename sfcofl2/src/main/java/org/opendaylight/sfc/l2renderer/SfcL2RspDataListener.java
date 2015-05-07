@@ -38,7 +38,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     public SfcL2RspDataListener(
             DataBroker dataBroker,
             SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
-            SfcL2ProviderUtilsInterface sfcL2ProviderUtils) {
+            SfcL2AbstractProviderUtils sfcL2ProviderUtils) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);

@@ -19,7 +19,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
 import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.SfcL2ProviderUtilsInterface;
+import org.opendaylight.sfc.l2renderer.SfcL2AbstractProviderUtils;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -51,12 +51,12 @@ import org.slf4j.LoggerFactory;
 public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
 
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
-    private SfcL2ProviderUtilsInterface sfcL2ProviderUtils;
+    private SfcL2AbstractProviderUtils sfcL2ProviderUtils;
 
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2SfgDataListener.class);
 
-    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer, SfcL2ProviderUtilsInterface sfcL2ProviderUtils) {
+    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer, SfcL2AbstractProviderUtils sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
 

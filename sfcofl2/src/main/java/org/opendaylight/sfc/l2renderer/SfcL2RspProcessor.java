@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class SfcL2RspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspProcessor.class);
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
-    private SfcL2ProviderUtilsInterface sfcL2ProviderUtils;
+    private SfcL2AbstractProviderUtils sfcL2ProviderUtils;
     private Map<String, Boolean> sffInitialized;
     private boolean addFlow;
     private int lastMplsLabel;
@@ -68,7 +68,7 @@ public class SfcL2RspProcessor {
 
     public SfcL2RspProcessor(
             SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
-            SfcL2ProviderUtilsInterface sfcL2ProviderUtils) {
+            SfcL2AbstractProviderUtils sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
         this.sffInitialized = new HashMap<String, Boolean>();
@@ -78,8 +78,6 @@ public class SfcL2RspProcessor {
 
     // if this method takes too long, consider launching it in a thread
     public void processRenderedServicePath(RenderedServicePath rsp, boolean addFlow) {
-        // Reset the internal SF, SFG, and SFF storage
-        sfcL2ProviderUtils.resetCache();
         this.addFlow = addFlow;
 
         // Setting to INGRESS for the first graph entry, which is the RSP Ingress
@@ -143,6 +141,9 @@ public class SfcL2RspProcessor {
         } catch(RuntimeException e) {
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         }
+
+        // Reset the internal SF, SFG, and SFF storage
+        sfcL2ProviderUtils.resetCache();
     }
 
     private void configureSffEgressForGroup(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
@@ -762,18 +763,23 @@ public class SfcL2RspProcessor {
         for(SffDataPlaneLocator prevSffDpl : prevSffDplList) {
             if(!prevSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
                 // Only check the transport types that the RSP uses
+                LOG.debug("Discarding prevSff [{}] dpl [{}] rspTransport [{}]",
+                        prevSff, prevSffDpl.getDataPlaneLocator().getTransport().getName(), rspTransport);
                 continue;
             }
 
             for(SffDataPlaneLocator curSffDpl : curSffDplList) {
                 if(!curSffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
                     // Only check the transport types that the RSP uses
+                    LOG.debug("Discarding curSff [{}] dpl [{}] rspTransport [{}]",
+                            curSff, curSffDpl.getDataPlaneLocator().getTransport().getName(), rspTransport);
                     continue;
                 }
 
                 LocatorType prevLocatorType = prevSffDpl.getDataPlaneLocator().getLocatorType();
                 LocatorType curLocatorType = curSffDpl.getDataPlaneLocator().getLocatorType();
-                LOG.debug("comparing prev locator {} : {} to {} : {}", prevSffDpl.getName(), prevLocatorType, curSffDpl.getName(), curLocatorType);
+                LOG.debug("comparing prev locator [{}] : [{}] to [{}] : [{}]",
+                        prevSffDpl.getName(), prevLocatorType, curSffDpl.getName(), curLocatorType);
                 if(compareLocatorTypes(prevLocatorType, curLocatorType)) {
                     sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
                     sffGraph.setSffIngressDpl(curSff.getName(), pathId, curSffDpl.getName());

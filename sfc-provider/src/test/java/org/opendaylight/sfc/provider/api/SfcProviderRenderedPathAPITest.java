@@ -8,17 +8,10 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -51,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -58,33 +52,49 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+
+import static org.junit.Assert.*;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({SfcDataStoreAPI.class, SfcProviderServiceTypeAPI.class, SfcProviderRenderedPathAPI.class})
 public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String[] LOCATOR_IP_ADDRESS =
-            {"196.168.55.1", "196.168.55.2","196.168.55.3",
-             "196.168.55.4", "196.168.55.5"};
+            {"196.168.55.1", "196.168.55.2", "196.168.55.3",
+                    "196.168.55.4", "196.168.55.5"};
     private static final String[] IP_MGMT_ADDRESS =
             {"196.168.55.101", "196.168.55.102", "196.168.55.103",
-             "196.168.55.104", "196.168.55.105"};
-    private String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
-    private String[][] TO_SFF_NAMES =
-            {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
-    private String[] SFF_LOCATOR_IP =
-            {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
+                    "196.168.55.104", "196.168.55.105"};
     private static final int[] PORT = {1111, 2222, 3333, 4444, 5555};
     private static final Class[] sfTypes = {Firewall.class, Dpi.class, Napt44.class, HttpHeaderEnrichment.class, Qos.class};
     private static final String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
     private static final String SFC_NAME = "unittest-chain-1";
     private static final String SFP_NAME = "unittest-sfp-1";
-
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
-
-    List<ServiceFunction> sfList = new ArrayList<>();
+    private String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
+    private String[][] TO_SFF_NAMES =
+            {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
+    private String[] SFF_LOCATOR_IP =
+            {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
+    private DataBroker dataBroker;
+    private ExecutorService executor;
+    private OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private CreateRenderedPathInputBuilder createRenderedPathInputBuilder;
+    private ServiceFunctionPathBuilder serviceFunctionPathBuilder;
+    private RenderedServicePath testRenderedServicePath;
+    private SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI;
+    private List<ServiceFunction> sfList = new ArrayList<>();
+    private Object[] params;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
@@ -159,33 +169,33 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                                  .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                                  .setType(serviceFunction.getType())
-                                  .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                                  .setFailmode(Open.class)
-                                  .setSffInterfaces(null);
+                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .setType(serviceFunction.getType())
+                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
+                    .setFailmode(Open.class)
+                    .setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
 
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[i])))
-                     .setPort(new PortNumber(PORT[i]));
+                    .setPort(new PortNumber(PORT[i]));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build())
-                             .setTransport(VxlanGpe.class);
+                    .setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(SFF_LOCATOR_IP[i])
-                          .setKey(new SffDataPlaneLocatorKey(SFF_LOCATOR_IP[i]))
-                          .setDataPlaneLocator(sffLocatorBuilder.build());
+                    .setKey(new SffDataPlaneLocatorKey(SFF_LOCATOR_IP[i]))
+                    .setDataPlaneLocator(sffLocatorBuilder.build());
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             sffBuilder.setName(SFF_NAMES[i])
-                      .setKey(new ServiceFunctionForwarderKey(SFF_NAMES[i]))
-                      .setSffDataPlaneLocator(locatorList)
-                      .setServiceFunctionDictionary(sfDictionaryList)
-                      .setConnectedSffDictionary(sffDictionaryList)
-                      .setServiceNode(null);
+                    .setKey(new ServiceFunctionForwarderKey(SFF_NAMES[i]))
+                    .setSffDataPlaneLocator(locatorList)
+                    .setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList)
+                    .setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
         }
@@ -283,8 +293,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         LOG.debug("Last hop IP: {}, port: {}", lastHop.getIp().toString(), lastHop.getPort());
         assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
         assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
-        assertEquals("Must be equal", lastHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[SFF_LOCATOR_IP.length-1])));
-        assertEquals("Must be equal", lastHop.getPort(), new PortNumber(PORT[PORT.length-1]));
+        assertEquals("Must be equal", lastHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[SFF_LOCATOR_IP.length - 1])));
+        assertEquals("Must be equal", lastHop.getPort(), new PortNumber(PORT[PORT.length - 1]));
         SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(renderedServicePath.getName());
         SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
     }
@@ -306,12 +316,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         }
         assertNotNull("Must be not null", firstHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
-       assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
-       assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
+        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
     }
 
     @Test
-    public void testCreateRenderedServicePathHopList() throws  ExecutionException, InterruptedException {
+    public void testCreateRenderedServicePathHopList() throws ExecutionException, InterruptedException {
         final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
         List<String> sfNameList = Arrays.asList(sfNames);
         final int startingIndex = 255;
@@ -332,7 +342,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertEquals("SF name must be equal", rspHopList.get(0).getServiceFunctionName(), sfNameList.get(0));
         assertEquals("SI must be equal", rspHopList.get(1).getServiceIndex().intValue(), startingIndex - 1);
         assertEquals("SF name must be equal", rspHopList.get(1).getServiceFunctionName(), sfNameList.get(1));
-        assertEquals("SI must be equal", rspHopList.get(2).getServiceIndex().intValue(), startingIndex-2);
+        assertEquals("SI must be equal", rspHopList.get(2).getServiceIndex().intValue(), startingIndex - 2);
         assertEquals("SF name must be equal", rspHopList.get(2).getServiceFunctionName(), sfNameList.get(2));
 
         final String[] sfNamesNotExisting = {"unittest-fw-1", "unittest-blabla-1", "unittest-napt-1"};
@@ -374,5 +384,125 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         //check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathStateExecutor(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName(), rspName);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryWhereServiceFunctionChainIsNull() throws Exception {
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+        serviceFunctionPathBuilder.setServiceChainName(null);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNull("Must be null", testRenderedServicePath);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryWhereSfNameListIsNull() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        //this method is called in scheduleServiceFunctions method which is called by scheduler
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceTypeAPI.class, "readServiceFunctionTypeExecutor")).toReturn(null);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNull("Must be null", testRenderedServicePath);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryWhereServicePathHopIsNull() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        //set list renderedServicePathHopArrayList to null
+        PowerMockito.stub(PowerMockito.method(SfcProviderRenderedPathAPI.class, "createRenderedServicePathHopList")).toReturn(null);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNull("Must be null", testRenderedServicePath);
+    }
+
+
+    @Test
+    public void testCreateRenderedServicePathEntryPathInputNameAndTransportType() throws Exception {
+        String renderedPathInputName = "rpiName";
+        String serviceChainName = "unittest-chain-1";
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        createRenderedPathInputBuilder.setName(renderedPathInputName);
+        serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNotNull("Must not be null", testRenderedServicePath);
+        assertEquals("Name must be equal", testRenderedServicePath.getName(), renderedPathInputName);
+        assertEquals("Transport type class must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntryWhereCreationOfRenderedServicePathFailed() throws Exception {
+        String renderedPathInputName = "rpiName";
+        String serviceChainName = "unittest-chain-1";
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        createRenderedPathInputBuilder.setName(renderedPathInputName);
+        serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(false);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNull("Must be null", testRenderedServicePath);
+    }
+
+    @Test
+    public void testCreateRenderedServicePathEntry() throws Exception {
+        String serviceChainName = "unittest-chain-1";
+        Long pathId = 1L;
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+
+        testRenderedServicePath = sfcProviderRenderedPathAPI
+                .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
+
+        assertNotNull("Must not be null", testRenderedServicePath);
+        assertEquals("Chain name must be equal", testRenderedServicePath.getServiceChainName(), serviceChainName);
+        assertEquals("Transport type must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
+        assertEquals("Key name must be equal", testRenderedServicePath.getKey().getName(), "key-Path-1");
+        assertEquals("Name must be equal", testRenderedServicePath.getName(), "key-Path-1");
     }
 }

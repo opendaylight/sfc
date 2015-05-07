@@ -41,7 +41,7 @@ public class SfcOvsUtilTest {
     private static final String testString = "Test string";
     private static final String sffName = "sffName test";
     private static final String sffDataPlaneLocator = "sffDataPlaneLocator test";
-    private static String testIpAddress;
+    private String testIpAddress = "";
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private IpAddress ipAddress;
@@ -51,6 +51,23 @@ public class SfcOvsUtilTest {
 
     @Test
     public void submitCallableTest() throws Exception {
+        class CallableTest implements Callable {
+
+            @Override
+            public Object call() throws Exception {
+                return null;
+            }
+        }
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        Object object = SfcOvsUtil.submitCallable(new CallableTest(), executorService);
+        //submitCallable test
+        Assert.assertEquals(object, null);
+    }
+
+    @Test
+    public void submitCallableTestException() throws Exception {
         class CallableTest implements Callable {
 
             @Override
@@ -207,7 +224,6 @@ public class SfcOvsUtilTest {
         }
     }
 
-
     @Test
     public void buildOvsdbTerminationPointAugmentationIIDTestWhereTerminationPointNameIsNull() {
 
@@ -273,7 +289,7 @@ public class SfcOvsUtilTest {
     public void convertStringToIpAddressTests() {
         //Incorrect Ip address format
         ipAddress = SfcOvsUtil.convertStringToIpAddress(testIpAddress);
-        Assert.assertEquals(ipAddress.getIpv4Address(), null);
+        Assert.assertEquals(ipAddress, null);
 
         //Ip v4 test
         ipAddress = SfcOvsUtil.convertStringToIpAddress(ipv4Address);

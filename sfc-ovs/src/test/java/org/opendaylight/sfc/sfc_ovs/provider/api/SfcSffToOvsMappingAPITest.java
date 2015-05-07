@@ -67,8 +67,8 @@ public class SfcSffToOvsMappingAPITest {
     private RenderedServicePathBuilder renderedServicePathBuilder;
     private RenderedServicePathHopBuilder renderedServicePathHopBuilderFrom, renderedServicePathHopBuilderTo;
     private ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder;
-    private ServiceFunctionForwarder1Builder serviceFunctionForwarder1Builder;
-    private ServiceFunctionForwarder2Builder serviceFunctionForwarder2Builder;
+    private SffOvsNodeAugmentationBuilder sffOvsNodeAugmentationBuilder;
+    private SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder;
     private SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
     private SffDataPlaneLocator2Builder sffDataPlaneLocator2Builder;
 
@@ -105,10 +105,10 @@ public class SfcSffToOvsMappingAPITest {
     @Test
     public void buildOvsdbBridgeAugmentationTestWhereOvsBridgeIsNull() throws Exception {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarder2Builder = new ServiceFunctionForwarder2Builder();
+        sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
 
-        serviceFunctionForwarder2Builder.setOvsBridge(null);
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, serviceFunctionForwarder2Builder.build());
+        sffOvsBridgeAugmentationBuilder.setOvsBridge(null);
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //OvsBridge is null
 
@@ -122,14 +122,14 @@ public class SfcSffToOvsMappingAPITest {
     public void buildOvsdbBridgeAugmentationTestWhereOvsNodeAugmentationIsNull() throws Exception {
         ovsBridgeBuilder = new OvsBridgeBuilder();
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarder1Builder = new ServiceFunctionForwarder1Builder();
-        serviceFunctionForwarder2Builder = new ServiceFunctionForwarder2Builder();
+        sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
+        sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
 
         ovsBridgeBuilder.setBridgeName("Test Name");
         ovsBridgeBuilder.setUuid(null);
-        serviceFunctionForwarder2Builder.setOvsBridge(ovsBridgeBuilder.build());
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder1.class, null);
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, serviceFunctionForwarder2Builder.build());
+        sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsNodeAugmentation.class, null);
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //OvsNode is null
         ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
@@ -141,15 +141,15 @@ public class SfcSffToOvsMappingAPITest {
     public void buildOvsdbBridgeAugmentationTestWhereOvsNodeIsNull() throws Exception {
         ovsBridgeBuilder = new OvsBridgeBuilder();
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarder1Builder = new ServiceFunctionForwarder1Builder();
-        serviceFunctionForwarder2Builder = new ServiceFunctionForwarder2Builder();
+        sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
+        sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
 
-        serviceFunctionForwarder1Builder.setOvsNode(null);
+        sffOvsNodeAugmentationBuilder.setOvsNode(null);
         ovsBridgeBuilder.setBridgeName("Test Name");
         ovsBridgeBuilder.setUuid(null);
-        serviceFunctionForwarder2Builder.setOvsBridge(ovsBridgeBuilder.build());
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder1.class, serviceFunctionForwarder1Builder.build());
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, serviceFunctionForwarder2Builder.build());
+        sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //OvsNode is null
         ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
@@ -162,13 +162,13 @@ public class SfcSffToOvsMappingAPITest {
         OvsNodeBuilder ovsNodeBuilder = new OvsNodeBuilder();
         ovsBridgeBuilder = new OvsBridgeBuilder();
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarder1Builder = new ServiceFunctionForwarder1Builder();
-        serviceFunctionForwarder2Builder = new ServiceFunctionForwarder2Builder();
+        sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
+        sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
 
-        serviceFunctionForwarder1Builder.setOvsNode(null);
+        sffOvsNodeAugmentationBuilder.setOvsNode(null);
         ovsBridgeBuilder.setBridgeName("Test Name");
         ovsBridgeBuilder.setUuid(null);
-        serviceFunctionForwarder2Builder.setOvsBridge(ovsBridgeBuilder.build());
+        sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
         InstanceIdentifier<Node> nodeIID =
                 InstanceIdentifier
                         .create(NetworkTopology.class)
@@ -176,9 +176,9 @@ public class SfcSffToOvsMappingAPITest {
                         .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class,
                                 new NodeKey(new NodeId("testNode")));
         ovsNodeBuilder.setNodeId(new OvsdbNodeRef(nodeIID));
-        serviceFunctionForwarder1Builder.setOvsNode(ovsNodeBuilder.build());
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder1.class, serviceFunctionForwarder1Builder.build());
-        serviceFunctionForwarderBuilder.addAugmentation(ServiceFunctionForwarder2.class, serviceFunctionForwarder2Builder.build());
+        sffOvsNodeAugmentationBuilder.setOvsNode(ovsNodeBuilder.build());
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
+        serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //buildOvsdbBridgeAugmentation test
         ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
@@ -360,7 +360,7 @@ public class SfcSffToOvsMappingAPITest {
     }
 
     @Test
-    public void buildVxlanTunnelDataPlaneLocatorTestWhereRenderedServicePathIsNull() throws Exception {
+    public void buildVxlanTunnelDataPlaneLocatorTestWhereRenderedServicePathIsNull() {
         RenderedServicePath renderedServicePath = null;
 
         //RenderedServicePath is null
@@ -372,7 +372,7 @@ public class SfcSffToOvsMappingAPITest {
     }
 
     @Test
-    public void buildVxlanTunnelDataPlaneLocatorTestWhereHopOvsdbBridgePairFromIsNull() throws Exception {
+    public void buildVxlanTunnelDataPlaneLocatorTestWhereHopOvsdbBridgePairFromIsNull() {
         renderedServicePathBuilder = new RenderedServicePathBuilder();
 
         //HopOvsdbBridgePairFrom is null
@@ -384,7 +384,7 @@ public class SfcSffToOvsMappingAPITest {
     }
 
     @Test
-    public void buildVxlanTunnelDataPlaneLocatorTestWhereHopOvsdbBridgePairToIsNull() throws Exception {
+    public void buildVxlanTunnelDataPlaneLocatorTestWhereHopOvsdbBridgePairToIsNull() {
         renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathHopBuilderFrom = new RenderedServicePathHopBuilder();
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();

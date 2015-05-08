@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_5b2c8d02",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-08T09:48:54Z",
+      "side": 1,
+      "message": "This should be debug()",
+      "range": {
+        "startLine": 161,
+        "startChar": 12,
+        "endLine": 161,
+        "endChar": 16
+      },
+      "revId": "f2e3e62b098f0bc1cfdade5cc7afd805e2e5b31a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_7b2f09f7",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-08T09:48:54Z",
+      "side": 1,
+      "message": "This should be debug()",
+      "range": {
+        "startLine": 178,
+        "startChar": 12,
+        "endLine": 178,
+        "endChar": 16
+      },
+      "revId": "f2e3e62b098f0bc1cfdade5cc7afd805e2e5b31a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_3b398141",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-08T09:48:54Z",
+      "side": 1,
+      "message": "Lets put this code in its own method, called something like configureSfgSfIngressFlows().",
+      "range": {
+        "startLine": 213,
+        "startChar": 12,
+        "endLine": 225,
+        "endChar": 13
+      },
+      "revId": "f2e3e62b098f0bc1cfdade5cc7afd805e2e5b31a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

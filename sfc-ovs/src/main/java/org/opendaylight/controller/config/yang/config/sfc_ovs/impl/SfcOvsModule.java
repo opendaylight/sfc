@@ -21,7 +21,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener;
-import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsRspEntryDataListener;
 import org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarderOvsService;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
 
         final SfcOvsNodeDataListener sfcOvsNodeDataListener = new SfcOvsNodeDataListener(opendaylightSfc);
         final SfcOvsSffEntryDataListener sfcOvsSffEntryDataListener = new SfcOvsSffEntryDataListener(opendaylightSfc);
-        final SfcOvsRspEntryDataListener sfcOvsRspEntryDataListener = new SfcOvsRspEntryDataListener(opendaylightSfc);
 
         LOG.info("SFC OVS module initialized");
 
@@ -68,7 +66,6 @@ public class SfcOvsModule extends org.opendaylight.controller.config.yang.config
                 sfcOvsRpcRegistration.close();
                 sfcOvsNodeDataListener.getDataChangeListenerRegistration().close();
                 sfcOvsSffEntryDataListener.getDataChangeListenerRegistration().close();
-                sfcOvsRspEntryDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

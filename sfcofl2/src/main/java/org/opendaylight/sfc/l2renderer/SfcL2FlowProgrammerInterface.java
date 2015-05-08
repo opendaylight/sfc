@@ -9,7 +9,10 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 
 /**
  * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.
@@ -108,4 +111,8 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
+
+    // group configuration
+    public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName, final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
+
 }

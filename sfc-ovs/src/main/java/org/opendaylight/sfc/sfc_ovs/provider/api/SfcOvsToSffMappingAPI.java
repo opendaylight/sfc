@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
@@ -223,16 +222,13 @@ public class SfcOvsToSffMappingAPI {
             for (Options option : options) {
                 switch (option.getOption()) {
                     case SfcOvsUtil.OVSDB_OPTION_LOCAL_IP:
-                        IpAddress localIp = SfcOvsUtil.convertStringToIpAddress(option.getValue());
-                        ovsOptionsBuilder.setLocalIp(localIp);
+                        ovsOptionsBuilder.setLocalIp(option.getValue());
                         break;
                     case SfcOvsUtil.OVSDB_OPTION_REMOTE_IP:
-                        IpAddress remoteIp = SfcOvsUtil.convertStringToIpAddress(option.getValue());
-                        ovsOptionsBuilder.setRemoteIp(remoteIp);
+                        ovsOptionsBuilder.setRemoteIp(option.getValue());
                         break;
                     case SfcOvsUtil.OVSDB_OPTION_DST_PORT:
-                        PortNumber dstPort = new PortNumber(Integer.parseInt(option.getValue()));
-                        ovsOptionsBuilder.setDstPort(dstPort);
+                        ovsOptionsBuilder.setDstPort(option.getValue());
                         break;
                     case SfcOvsUtil.OVSDB_OPTION_KEY:
                         ovsOptionsBuilder.setKey(option.getValue());

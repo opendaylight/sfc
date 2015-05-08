@@ -293,13 +293,13 @@ public class SfcOvsToSffMappingAPITest {
 
         ovsOptions = org.powermock.reflect.Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "buildOvsOptionsFromTerminationPoint", ovsdbTerminationPointAugmentationBuilder.build());
 
-        String localAddress = SfcOvsUtil.convertIpAddressToString(ovsOptions.getLocalIp());
-        String remoteAddress = SfcOvsUtil.convertIpAddressToString(ovsOptions.getRemoteIp());
+        String localAddress = ovsOptions.getLocalIp();
+        String remoteAddress = ovsOptions.getRemoteIp();
 
         //Option list test
         Assert.assertEquals(OVSDB_OPTION_LOCAL_IP, localAddress);
         Assert.assertEquals(OVSDB_OPTION_REMOTE_IP, remoteAddress);
-        Assert.assertEquals(OVSDB_OPTION_DST_PORT, ovsOptions.getDstPort().getValue().toString());
+        Assert.assertEquals(OVSDB_OPTION_DST_PORT, ovsOptions.getDstPort());
         Assert.assertEquals(OVSDB_OPTION_KEY_VALUE, ovsOptions.getKey());
         Assert.assertEquals(OVSDB_OPTION_NSP_VALUE, ovsOptions.getNsp());
         Assert.assertEquals(OVSDB_OPTION_NSI_VALUE, ovsOptions.getNsi());

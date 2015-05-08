@@ -87,15 +87,15 @@ module service-function-forwarder-ovs {
     container ovs-options {
       description "Port/Interface related optional input values";
       leaf local-ip {
-        type inet:ip-address;
+        type string;
         description "Local interface IP address";
       }
       leaf remote-ip {
-        type inet:ip-address;
+        type string;
         description "Remote IP address, e.g. the remote Vxlan tunnel endpoint IP";
       }
       leaf dst-port {
-        type inet:port-number;
+        type string;
         description "Remote port, e.g. the remote Vxlan tunnel endpoint port";
       }
       leaf nsp {

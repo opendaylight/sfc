@@ -59,6 +59,7 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_NSP = "nsp";
     public static final String OVSDB_OPTION_NSI = "nsi";
     public static final String OVSDB_OPTION_KEY = "key";
+    public static final String OVSDB_OPTION_VALUE_FLOW = "flow";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
     /**

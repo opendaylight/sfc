@@ -19,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigsBuilder;
@@ -208,9 +207,9 @@ public class SfcSffToOvsMappingAPITest {
 
         sffDataPlaneLocatorBuilder.setName("Test name");
 
-        ovsOptionsBuilder.setLocalIp(SfcOvsUtil.convertStringToIpAddress(OVSDB_OPTION_LOCAL_IP_VALUE));
-        ovsOptionsBuilder.setRemoteIp(SfcOvsUtil.convertStringToIpAddress(OVSDB_OPTION_REMOTE_IP_VALUE));
-        ovsOptionsBuilder.setDstPort(PortNumber.getDefaultInstance(OVSDB_OPTION_DST_PORT_VALUE));
+        ovsOptionsBuilder.setLocalIp(OVSDB_OPTION_LOCAL_IP_VALUE);
+        ovsOptionsBuilder.setRemoteIp(OVSDB_OPTION_REMOTE_IP_VALUE);
+        ovsOptionsBuilder.setDstPort(OVSDB_OPTION_DST_PORT_VALUE);
         ovsOptionsBuilder.setKey(OVSDB_OPTION_KEY);
         ovsOptionsBuilder.setNsp(OVSDB_OPTION_NSP);
         ovsOptionsBuilder.setNsi(OVSDB_OPTION_NSI);
@@ -293,9 +292,9 @@ public class SfcSffToOvsMappingAPITest {
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocator2Builder = new SffDataPlaneLocator2Builder();
 
-        ovsOptionsBuilder.setLocalIp(SfcOvsUtil.convertStringToIpAddress(OVSDB_OPTION_LOCAL_IP_VALUE));
-        ovsOptionsBuilder.setRemoteIp(SfcOvsUtil.convertStringToIpAddress(OVSDB_OPTION_REMOTE_IP_VALUE));
-        ovsOptionsBuilder.setDstPort(PortNumber.getDefaultInstance(OVSDB_OPTION_DST_PORT_VALUE));
+        ovsOptionsBuilder.setLocalIp(OVSDB_OPTION_LOCAL_IP_VALUE);
+        ovsOptionsBuilder.setRemoteIp(OVSDB_OPTION_REMOTE_IP_VALUE);
+        ovsOptionsBuilder.setDstPort(OVSDB_OPTION_DST_PORT_VALUE);
         ovsOptionsBuilder.setKey(OVSDB_OPTION_KEY);
         ovsOptionsBuilder.setNsp(OVSDB_OPTION_NSP);
         ovsOptionsBuilder.setNsi(OVSDB_OPTION_NSI);
@@ -426,7 +425,7 @@ public class SfcSffToOvsMappingAPITest {
         Assert.assertEquals(sffDataPlaneLocator.getName(), renderedServicePathName + "-vxlan-" + hopNumberFrom + "to" + hopNumberTo);
         Assert.assertEquals(sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class).getOvsOptions().getNsi(), serviceIndex.toString());
         Assert.assertEquals(sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class).getOvsOptions().getNsp(), pathId.toString());
-        Assert.assertEquals(sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class).getOvsOptions().getLocalIp().getIpv4Address().getValue(), ipAddress);
+        Assert.assertEquals(sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class).getOvsOptions().getLocalIp(), ipAddress);
     }
 
     @Test

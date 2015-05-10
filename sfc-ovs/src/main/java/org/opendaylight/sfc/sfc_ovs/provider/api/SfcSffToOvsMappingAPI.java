@@ -170,7 +170,7 @@ public class SfcSffToOvsMappingAPI {
         if (ovsOptions.getLocalIp() != null) {
             OptionsBuilder optionsLocalIpBuilder = new OptionsBuilder();
             optionsLocalIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
-            optionsLocalIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getLocalIp()));
+            optionsLocalIpBuilder.setValue(ovsOptions.getLocalIp());
             options.add(optionsLocalIpBuilder.build());
         } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
@@ -179,7 +179,7 @@ public class SfcSffToOvsMappingAPI {
         if (ovsOptions.getRemoteIp() != null) {
             OptionsBuilder optionsDstIpBuilder = new OptionsBuilder();
             optionsDstIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
-            optionsDstIpBuilder.setValue(SfcOvsUtil.convertIpAddressToString(ovsOptions.getRemoteIp()));
+            optionsDstIpBuilder.setValue(ovsOptions.getRemoteIp());
             options.add(optionsDstIpBuilder.build());
         } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
@@ -188,7 +188,7 @@ public class SfcSffToOvsMappingAPI {
         if (ovsOptions.getDstPort() != null) {
             OptionsBuilder optionsDstPortBuilder = new OptionsBuilder();
             optionsDstPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
-            optionsDstPortBuilder.setValue(ovsOptions.getDstPort().getValue().toString());
+            optionsDstPortBuilder.setValue(ovsOptions.getDstPort());
             options.add(optionsDstPortBuilder.build());
         } else {
             LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
@@ -266,9 +266,16 @@ public class SfcSffToOvsMappingAPI {
 
         //build OVS Options for Vxlan tunnel
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
-        ovsOptionsBuilder.setLocalIp(ipAddress);
-        ovsOptionsBuilder.setRemoteIp(SfcOvsToSffMappingAPI.getOvsBridgeLocalIp(hopOvsdbBridgePairTo.ovsdbBridgeAugmentation));
-        ovsOptionsBuilder.setDstPort(SfcOvsUtil.NSH_VXLAN_TUNNEL_PORT);
+        String ipAddressString = null;
+        if (ipAddress.getIpv4Address() != null) {
+            ipAddressString = ipAddress.getIpv4Address().getValue();
+        } else if (ipAddress.getIpv6Address() != null) {
+            ipAddressString = ipAddress.getIpv6Address().getValue();
+        }
+        ovsOptionsBuilder.setLocalIp(ipAddressString);
+        ovsOptionsBuilder.setRemoteIp(SfcOvsToSffMappingAPI
+                .getOvsBridgeLocalIp(hopOvsdbBridgePairTo.ovsdbBridgeAugmentation).getValue().toString());
+        ovsOptionsBuilder.setDstPort(String.valueOf(SfcOvsUtil.NSH_VXLAN_TUNNEL_PORT));
         ovsOptionsBuilder.setNsp(renderedServicePath.getPathId().toString());
         ovsOptionsBuilder.setNsi(hopOvsdbBridgePairFrom.renderedServicePathHop.getServiceIndex().toString());
         ovsOptionsBuilder.setKey(renderedServicePath.getPathId().toString());

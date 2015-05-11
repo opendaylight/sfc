@@ -68,6 +68,7 @@
 
         <lispflowmapping.version>1.2.0-SNAPSHOT</lispflowmapping.version>
         <ovsdb.southbound.version>1.1.0-SNAPSHOT</ovsdb.southbound.version>
+        <l2switch.version>0.2.0-SNAPSHOT</l2switch.version>
 
         <!-- Supporting Libraries -->
         <feature.openflowplugin.version>0.1.0-SNAPSHOT</feature.openflowplugin.version>

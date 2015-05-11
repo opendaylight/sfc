@@ -9,12 +9,15 @@
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
 import com.google.common.base.Preconditions;
+
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.sff.ovs.mappings.OvsNodeToSffMapping;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This class has the APIs to map OVS Bridge to SFC Service Function Forwarder
@@ -83,7 +87,9 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
-            ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
+            if (ovsdbBridgeAugmentation.getDatapathId() != null) {
+                ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
+            }
             sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
             serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
@@ -98,6 +104,39 @@ public class SfcOvsToSffMappingAPI {
             LOG.debug("Not building Service Function Forwarder: passed Node parameter does not contain OvsdbBridgeAugmentation");
             return null;
         }
+    }
+
+    public static ServiceFunctionForwarder lookupServiceFunctionForwarderFromNode(Node node, ExecutorService executor) {
+        Preconditions.checkNotNull(node, "Cannot build Service Function Forwarder: OVS Node does not exist!");
+
+        OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+        if (ovsdbBridgeAugmentation != null){
+            OvsNodeToSffMapping mapping = SfcOvsUtil.getOvsToSffMapping(ovsdbBridgeAugmentation, executor);
+            if (mapping == null) {
+                LOG.debug("No mapping found for OVSDB Node {}", ovsdbBridgeAugmentation);
+                return null;
+            }
+            String sffName = mapping.getName();
+
+            ServiceFunctionForwarder serviceFunctionForwarder = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+
+            if (serviceFunctionForwarder == null) {
+                LOG.debug("No SFF found with name {}", sffName);
+                return null;
+            }
+            ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder =
+                    new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
+
+            //add OVS Node ref to SFF
+            SffOvsNodeAugmentationBuilder sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
+            OvsNodeBuilder ovsNodeBuilder = new OvsNodeBuilder();
+            ovsNodeBuilder.setNodeId(ovsdbBridgeAugmentation.getManagedBy());
+            sffOvsNodeAugmentationBuilder.setOvsNode(ovsNodeBuilder.build());
+            serviceFunctionForwarderBuilder.addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
+
+            return serviceFunctionForwarderBuilder.build();
+        }
+        return null;
     }
 
     /**
@@ -121,7 +160,9 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridge.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridge.getBridgeUuid());
-            ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridge.getDatapathId()));
+            if (ovsdbBridge.getDatapathId() != null) {
+                ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridge.getDatapathId()));
+            }
 
             //fill SffDataPlaneLocatorList with DP locators
             for (TerminationPoint terminationPoint : terminationPointList) {
@@ -238,6 +279,9 @@ public class SfcOvsToSffMappingAPI {
                         break;
                     case SfcOvsUtil.OVSDB_OPTION_NSI:
                         ovsOptionsBuilder.setNsi(option.getValue());
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_NSHC1:
+                        ovsOptionsBuilder.setNshc1(option.getValue());
                         break;
                 }
             }

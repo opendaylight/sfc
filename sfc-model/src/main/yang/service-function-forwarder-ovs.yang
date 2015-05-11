@@ -83,6 +83,36 @@ module service-function-forwarder-ovs {
     }
   }
 
+  container sff-ovs-mappings {
+
+    description "Container for keeping lists of mappings needed"
+      + "by the SFC-OVS renderer";
+
+    list ovs-node-to-sff-mapping {
+      description "List to keep mappings of OVS UUIDs + Bridge Name"
+        + "to Service Function Fowarders (SFFs). This is used to"
+        + "correlate OVS bridge events to SFFs";
+      config false;
+      key "uuid bridge-name";
+      leaf uuid {
+        description "Open vSwitch bridge UUID";
+        type yang:uuid;
+      }
+      leaf bridge-name {
+        description "Open vSwitch bridge name. In Openstack it is usually"
+          + "br-tun or br-int depending if it is used in the overlay or"
+          + "facing virtual machines respectively";
+        type string;
+      }
+      leaf name {
+        type string;
+        description
+          "The unique name of this service function forwarder, such
+           as SFF1";
+      }
+    }
+  }
+
   grouping options {
     container ovs-options {
       description "Port/Interface related optional input values";
@@ -105,6 +135,22 @@ module service-function-forwarder-ovs {
       leaf nsi {
         type string;
         description "NSH Starting Index";
+      }
+      leaf nshc1 {
+        type string;
+        description "NSH Context Header 1";
+      }
+      leaf nshc2 {
+        type string;
+        description "NSH Context Header 2";
+      }
+      leaf nshc3 {
+        type string;
+        description "NSH Context Header 3";
+      }
+      leaf nshc4 {
+        type string;
+        description "NSH Context Header 4";
       }
       leaf key {
         type string;

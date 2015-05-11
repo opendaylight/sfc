@@ -14,6 +14,7 @@ class Context(object):
     def __init__(self):
         self.rest_path_prefix = 'restInput'
         self.rest_path_sf   =  'RestConf-SFs-HttpPut.json'
+        self.rest_path_sfg  =  'RestConf-SFGs-HttpPut.json'
         self.rest_path_sfc  =  'RestConf-SFCs-HttpPut.json'
         self.rest_path_sff  =  'RestConf-SFFs-HttpPut.json'
         self.rest_path_sfp  =  'RestConf-SFPs-HttpPut.json'
@@ -21,6 +22,7 @@ class Context(object):
         self.rest_path_rsp  =  'RestConf-RSP-HttpPost.json'
 
         self.rest_url_sf    =  'config/service-function:service-functions/'
+        self.rest_url_sfg   =  'config/service-function-group:service-function-groups/'
         self.rest_url_sfc   =  'config/service-function-chain:service-function-chains/'
         self.rest_url_sff   =  'config/service-function-forwarder:service-function-forwarders/'
         self.rest_url_sfp   =  'config/service-function-path:service-function-paths/'
@@ -37,6 +39,7 @@ class Context(object):
         self.user           =  'admin'
         self.pw             =  'admin'
         self.batch_sf       =  False
+        self.batch_sfg      =  False
         self.batch_sfc      =  False
         self.batch_sff      =  False
         self.batch_sfp      =  False
@@ -102,6 +105,10 @@ def get_cmd_line(context):
                       dest='query_nodes',
                       action='store_true',
                       help='Query all Nodes connected to ODL')
+    opts.add_argument('--send-sfg', '-9',
+                      dest='send_sfg',
+                      action='store_true',
+                      help='Send an SFG REST JSON PUT message')
     opts.add_argument('--query-sfc', '-q',
                       dest='query_sfc',
                       action='store_true',
@@ -116,6 +123,10 @@ def get_cmd_line(context):
                       default=context.rest_path_sf,
                       dest='rest_path_sf',
                       help='Name of the SF REST JSON file, relative to configured prefix')
+    opts.add_argument('--rest-path-sfg', '-g',
+                      default=context.rest_path_sfg,
+                      dest='rest_path_sfg',
+                      help='Name of the SFG REST JSON file, relative to configured prefix')
     opts.add_argument('--rest-path-sfc', '-c',
                       default=context.rest_path_sfc,
                       dest='rest_path_sfc',
@@ -142,6 +153,7 @@ def get_cmd_line(context):
     context.http_server    =  args.http_server
     context.http_port      =  args.http_port
     context.rest_path_sf   =  os.path.join(args.rest_path_prefix, args.rest_path_sf)
+    context.rest_path_sfg  =  os.path.join(args.rest_path_prefix, args.rest_path_sfg)
     context.rest_path_sfc  =  os.path.join(args.rest_path_prefix, args.rest_path_sfc)
     context.rest_path_sff  =  os.path.join(args.rest_path_prefix, args.rest_path_sff)
     context.rest_path_sfp  =  os.path.join(args.rest_path_prefix, args.rest_path_sfp)
@@ -153,6 +165,7 @@ def get_cmd_line(context):
         context.interractive = False
         if args.send_all:
             context.batch_sf       =  True
+            context.batch_sfg      =  True
             context.batch_sfc      =  True
             context.batch_sff      =  True
             context.batch_sfp      =  True
@@ -160,6 +173,7 @@ def get_cmd_line(context):
             context.batch_acl      =  True
         else:
             context.batch_sf       =  args.send_sf
+            context.batch_sfg      =  args.send_sfg
             context.batch_sfc      =  args.send_sfc
             context.batch_sff      =  args.send_sff
             context.batch_sfp      =  args.send_sfp
@@ -236,6 +250,8 @@ def batch(context):
     # If send-all was set, then each of these needs to be sent, in order
     if context.batch_sf:
         send_rest(context, PUT, context.rest_url_sf,  context.rest_path_sf)
+    if context.batch_sfg:
+        send_rest(context, PUT, context.rest_url_sfg,  context.rest_path_sfg)
     if context.batch_sff:
         send_rest(context, PUT, context.rest_url_sff, context.rest_path_sff)
     if context.batch_sfc:
@@ -249,6 +265,7 @@ def batch(context):
 
     if context.batch_query:
         send_rest(context, GET, context.rest_url_sf)
+        send_rest(context, GET, context.rest_url_sfg)
         send_rest(context, GET, context.rest_url_sff)
         send_rest(context, GET, context.rest_url_sfc)
         send_rest(context, GET, context.rest_url_sfp)
@@ -272,6 +289,7 @@ def CLI(context):
         print '7) Send all ordered: (SF, SFF, SFC, SFP, RSP, ACL)'
         print '8) Query all: (SF, SFF, SFC, SFP, RSP, ACL)'
         print '9) Query Nodes'
+        print '10) Send SFG REST'
 
         option = raw_input('=> ')
 
@@ -307,6 +325,8 @@ def CLI(context):
             send_rest(context, GET, context.rest_url_acl)
         elif option == '9':
             send_rest(context, GET, context.rest_url_nodes)
+        elif option == '10':
+            send_rest(context, PUT, context.rest_url_sfg, context.rest_url_sfg)
         elif option != '0':
             print 'ERROR: Invalid option %s' % (option)
 

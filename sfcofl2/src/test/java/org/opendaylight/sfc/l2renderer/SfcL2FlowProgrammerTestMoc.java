@@ -37,6 +37,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         configureNextHopTableMatchAnyMethodIndex,
         configureTransportEgressTableMatchAnyMethodIndex,
         configureGroupMethodIndex,
+        configureGroupNextHopFlow,
 
         MAX_INDEX;
     }
@@ -260,5 +261,11 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             List<GroupBucketInfo> bucketInfos,
             final boolean isAddGroup) {
         incrementMethodCalled(MethodIndeces.configureGroupMethodIndex);
+    }
+
+    @Override
+    public void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId,
+            String groupName, boolean isAddFlow) {
+        incrementMethodCalled(MethodIndeces.configureGroupNextHopFlow);
     }
 }

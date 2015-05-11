@@ -46,7 +46,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -993,11 +997,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class).child(Group.class, gk).build();
         Group group = gb.build();
         LOG.debug("about to write group to data store \nID: {}\nGroup: {}", groupIID, group);
-//        if (changeType == ChangeType.ADD) {
-//            if (!SfcDataStoreAPI.writePutTransactionAPI(groupIID, group, LogicalDatastoreType.CONFIGURATION)) {
-//                LOG.warn("Failed to write group to data store");
-//            }
-//        } else
         if (isAdd) {
             if (!SfcDataStoreAPI.writeMergeTransactionAPI(groupIID, group, LogicalDatastoreType.CONFIGURATION)) {
                 LOG.warn("Failed to write group to data store");
@@ -1075,4 +1074,116 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private short getTableId(short tableIndex) {
         return (short) (tableBase + tableIndex);
     }
+
+    @Override
+    public void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId, String groupName, boolean isAddFlow) {
+        ConfigureGroupNextHopFlowThread configureNextHopFlowThread =
+                new ConfigureGroupNextHopFlowThread(sffNodeName, sfpId, srcMac, groupId, groupName, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureNextHopFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+
+    }
+
+    private class ConfigureGroupNextHopFlowThread implements Runnable {
+        String sffNodeName;
+        long sfpId;
+        String srcMac;
+        long groupId;
+        String groupName;
+        boolean isAddFlow;
+
+        public ConfigureGroupNextHopFlowThread(
+                final String sffNodeName, final long sfpId, final String srcMac, final long groupId, final String groupName, final boolean isAddFlow) {
+            super();
+            this.sffNodeName = sffNodeName;
+            this.sfpId = sfpId;
+            this.srcMac = srcMac;
+            this.groupId = groupId;
+            this.groupName = groupName;
+            this.isAddFlow = isAddFlow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureGroupNextHopFlow sffName [{}] sfpId [{}] srcMac [{}] groupId[{}]",
+                        this.sffNodeName, this.sfpId, this.srcMac, this.groupId);
+
+                int flowPriority = FLOW_PRIORITY_NEXT_HOP;
+
+                //
+                // Create the matching criteria
+                MatchBuilder match = new MatchBuilder();
+
+                // Match on the either the metadata sfpId or the NSH NSP and NSI
+                SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(sfpId), METADATA_MASK_SFP_MATCH);
+
+                // match on the src mac
+                if(srcMac != null) {
+                    SfcOpenflowUtils.addMatchSrcMac(match, srcMac);
+                } else {
+                    // If the srcMac is null, then the packet is entering SFC and we dont know
+                    // from where. Make it a lower priority, and only match on the pathId
+                    flowPriority -= 10;
+                }
+
+                //
+                // Create the Actions
+                List<Action> actionList = new ArrayList<Action>();
+
+                GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+                groupActionBuilder.setGroupId(groupId);
+                groupActionBuilder.setGroup(groupName);
+
+                GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
+                groupActionCaseBuilder.setGroupAction(groupActionBuilder.build());
+
+                ActionBuilder actionBuilder = new ActionBuilder();
+                actionBuilder.setAction(groupActionCaseBuilder.build());
+                actionBuilder.setOrder(0);
+                actionBuilder.setKey(new ActionKey(0));
+                Action groupAction = actionBuilder.build();
+
+                actionList.add(groupAction);
+
+                // Create an Apply Action
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                aab.setAction(actionList);
+
+                // Wrap our Apply Action in an Instruction
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                ib.setKey(new InstructionKey(0));
+                ib.setOrder(0);
+
+                // Put our Instruction in a list of Instructions
+                InstructionsBuilder isb = new InstructionsBuilder();
+                List<Instruction> instructions = new ArrayList<Instruction>();
+                instructions.add(ib.build());
+                isb.setInstruction(instructions);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder nextHopFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_NEXT_HOP,
+                                flowPriority,
+                                "nextHop",
+                                match,
+                                isb);
+                LOG.debug("writing group next hop flow: \n{}", nextHopFlow);
+                if (isAddFlow) {
+                    writeFlowToConfig(sffNodeName, nextHopFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, nextHopFlow);
+                }
+            } catch (Exception e) {
+                LOG.error("ConfigureNextHopFlow writer caught an Exception: ", e);
+            }
+        }
+    }
+
 }

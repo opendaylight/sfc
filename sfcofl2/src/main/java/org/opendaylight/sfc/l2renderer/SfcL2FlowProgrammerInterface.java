@@ -57,6 +57,9 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureNextHopFlow(
             final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow);
 
+    public void configureGroupNextHopFlow(
+            final String sffNodeName, final long sfpId, final String srcMac, final long groupId, final String groupName, final boolean isAddFlow);
+
     public void configureVxlanGpeNextHopFlow(
             final String sffNodeName, final String dstIp, final long nsp, final short nsi, final boolean isAddFlow);
 

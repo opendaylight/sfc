@@ -21,6 +21,9 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,9 +58,29 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
         registerAsDataChangeListener();
     }
 
+    private void createOvsdbNodeAndTp(ServiceFunctionForwarder serviceFunctionForwarder,
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList) {
+
+        OvsdbBridgeAugmentation ovsdbBridge =
+                SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder, opendaylightSfc.getExecutor());
+
+        if (ovsdbBridge != null) {
+            LOG.debug("Creating OVSDB infrastructre: {}", serviceFunctionForwarder.toString());
+
+            //put Bridge
+            SfcOvsUtil.putOvsdbBridge(ovsdbBridge, opendaylightSfc.getExecutor());
+
+            //put Termination Points
+            SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
+                    sffDataPlaneLocatorList, opendaylightSfc.getExecutor());
+        }
+    }
+
     @Override
     public void onDataChanged(
             final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        Map<String, List<SffDataPlaneLocator>> sffDplMap = new HashMap<>();
+        Map<String, ServiceFunctionForwarder> sffMap = new HashMap<>();
 
         printTraceStart(LOG);
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -65,26 +88,39 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
         // SFF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
+        /*
+         * The objects in the notification come separately -- data plane, SFFs, etc.
+         * We create mappings of the objects we care about (SffDataPlaneLocator and
+         * ServiceFunctionForwarder)
+         */
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
 
+            if (entry.getValue() instanceof SffDataPlaneLocator) {
+                SffDataPlaneLocator sffDataPlaneLocator = (SffDataPlaneLocator)entry.getValue();
+                String sffName = entry.getKey().
+                        firstKeyOf(ServiceFunctionForwarder.class, ServiceFunctionForwarderKey.class).getName();
+                List<SffDataPlaneLocator> sffDplList = sffDplMap.get(sffName);
+                if (sffDplList == null) {
+                    sffDplList = new ArrayList<SffDataPlaneLocator>();
+                    sffDplMap.put(sffName, sffDplList);
+                }
+                sffDplList.add(sffDataPlaneLocator);
+                if (sffMap.containsKey(sffName)) {
+                    createOvsdbNodeAndTp(sffMap.get(sffName), sffDplList);
+                }
+            }
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
 
-                //build OvsdbBridge
-                OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder);
-
-                if (ovsdbBridge != null) {
-                    //put Bridge
-                    SfcOvsUtil.putOvsdbBridge(ovsdbBridge, opendaylightSfc.getExecutor());
-
-                    //put Termination Points
-                    SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
-                            serviceFunctionForwarder.getSffDataPlaneLocator(), opendaylightSfc.getExecutor());
+                if (sffDplMap.containsKey(serviceFunctionForwarder.getName())) {
+                    createOvsdbNodeAndTp(serviceFunctionForwarder, sffDplMap.get(serviceFunctionForwarder.getName()));
+                } else {
+                    sffMap.put(serviceFunctionForwarder.getName(), serviceFunctionForwarder);
                 }
             }
         }
+
 
         // SFF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
@@ -96,7 +132,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
                 //build OvsdbBridge
                 OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder);
+                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
 
                 if (ovsdbBridge != null) {
                     //put Bridge

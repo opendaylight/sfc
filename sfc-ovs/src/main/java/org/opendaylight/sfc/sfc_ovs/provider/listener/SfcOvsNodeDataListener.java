@@ -29,7 +29,11 @@ import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsToSffMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNode;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -63,7 +67,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
         setDataBroker(opendaylightSfc.getDataProvider());
         setInstanceIdentifier(OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-        registerAsDataChangeListener();
+        //registerAsDataChangeListener();
     }
 
 
@@ -84,9 +88,27 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                 LOG.debug("\nCreated OVS Node: {}", createdNode.toString());
 
                 ServiceFunctionForwarder serviceFunctionForwarder =
-                        SfcOvsToSffMappingAPI.buildServiceFunctionForwarderFromNode(createdNode);
+                        SfcOvsToSffMappingAPI.lookupServiceFunctionForwarderFromNode(createdNode, opendaylightSfc.getExecutor());
 
                 if (serviceFunctionForwarder != null) {
+                    /*
+                     * We need to update the OVS Node augmentation with
+                     * the connection information from the notification
+                     */
+                    OvsdbBridgeAugmentation ovsdbBridgeAugmentation = createdNode.getAugmentation(OvsdbBridgeAugmentation.class);
+                    if (ovsdbBridgeAugmentation == null) {
+                        continue;
+                    }
+                    SffOvsNodeAugmentation sffOvsNodeAugmentation =
+                            serviceFunctionForwarder.getAugmentation(SffOvsNodeAugmentation.class);
+                    if (sffOvsNodeAugmentation != null) {
+                        OvsNodeBuilder ovsNodeBuilder = new OvsNodeBuilder();
+                        ovsNodeBuilder.setNodeId(ovsdbBridgeAugmentation.getManagedBy());
+                        OvsNode serviceForwarderOvsNode = sffOvsNodeAugmentation.getOvsNode();
+                    }
+
+                    ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
+
                     SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
                     LOG.info("Created new Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }

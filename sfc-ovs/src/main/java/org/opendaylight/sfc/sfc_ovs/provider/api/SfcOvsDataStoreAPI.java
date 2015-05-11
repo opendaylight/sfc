@@ -21,11 +21,14 @@ package org.opendaylight.sfc.sfc_ovs.provider.api;
 import java.util.concurrent.Callable;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.sff.ovs.mappings.OvsNodeToSffMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -39,7 +42,8 @@ public class SfcOvsDataStoreAPI implements Callable {
     public enum Method {
         READ_OVSDB_BRIDGE, PUT_OVSDB_BRIDGE,
         PUT_OVSDB_TERMINATION_POINT, DELETE_OVSDB_TERMINATION_POINT,
-        DELETE_OVSDB_NODE, READ_OVSDB_NODE_BY_IP
+        DELETE_OVSDB_NODE, READ_OVSDB_NODE_BY_IP, READ_OVSDB_NODE_BY_REF,
+        FIND_SFF_FROM_OVSDB_NODE
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
@@ -112,6 +116,21 @@ public class SfcOvsDataStoreAPI implements Callable {
                     LOG.error("Cannot call readOvsdbNodeByIp, passed method argument " +
                             "is not instance of String: {}", methodParameters[0].toString());
                 }
+                break;
+            case READ_OVSDB_NODE_BY_REF:
+                try {
+                    result = readOvsdbNodeByRef((OvsdbNodeRef)methodParameters[0]);
+                } catch (ClassCastException e) {
+                    LOG.error("Cannot call readOvsdbNodeByIp, passed method argument " +
+                            "is not instance of OvsdbNodeRef: {}", methodParameters[0]);
+                }
+            case FIND_SFF_FROM_OVSDB_NODE:
+                try {
+                    result = findSffFromOvsdbNode((InstanceIdentifier<OvsNodeToSffMapping>)methodParameters[0]);
+                } catch (ClassCastException e) {
+                    LOG.error("Cannot call findSffFromOvsdbNode, passed method argument " +
+                            "is not instance of foo: {}", methodParameters[0]);
+                }
         }
 
         return result;
@@ -120,7 +139,7 @@ public class SfcOvsDataStoreAPI implements Callable {
     private boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge) {
         Preconditions.checkNotNull(ovsdbBridge, "Cannot PUT new OVS Bridge into OVS configuration store, OvsdbBridgeAugmentation is null.");
 
-        return SfcDataStoreAPI.writePutTransactionAPI(
+        return SfcDataStoreAPI.writeMergeTransactionAPI(
                 SfcOvsUtil.buildOvsdbBridgeIID(ovsdbBridge), ovsdbBridge, LogicalDatastoreType.CONFIGURATION);
     }
 
@@ -134,7 +153,7 @@ public class SfcOvsDataStoreAPI implements Callable {
         Preconditions.checkNotNull(ovsdbTerminationPoint,
                 "Cannot PUT Termination Point into OVS configuration store, OvsdbTerminationPointAugmentation is null.");
 
-        return SfcDataStoreAPI.writePutTransactionAPI(
+        return SfcDataStoreAPI.writeMergeTransactionAPI(
                 SfcOvsUtil.buildOvsdbTerminationPointAugmentationIID(ovsdbBridge, ovsdbTerminationPoint),
                 ovsdbTerminationPoint, LogicalDatastoreType.CONFIGURATION
         );
@@ -175,5 +194,20 @@ public class SfcOvsDataStoreAPI implements Callable {
                 "Cannot READ OVS Bridge from OVS operational store, InstanceIdentifier<OvsdbBridgeAugmentation> is null.");
 
         return SfcDataStoreAPI.readTransactionAPI(bridgeIID, LogicalDatastoreType.OPERATIONAL);
+    }
+
+    private Node readOvsdbNodeByRef(OvsdbNodeRef nodeRef) {
+        Preconditions.checkNotNull(nodeRef,
+                "Cannot READ OVS Node from OVSDB operational store, nodeRef is null.");
+        InstanceIdentifier<Node> bridgeIID = (InstanceIdentifier<Node>)nodeRef.getValue();
+
+        return SfcDataStoreAPI.readTransactionAPI(bridgeIID, LogicalDatastoreType.OPERATIONAL);
+    }
+
+    private OvsNodeToSffMapping findSffFromOvsdbNode(InstanceIdentifier<OvsNodeToSffMapping> nodeToSffIid) {
+        Preconditions.checkNotNull(nodeToSffIid,
+                "Cannot READ SFF Mapping from OVS operational store, nodeToSffIid is null.");
+
+        return SfcDataStoreAPI.readTransactionAPI(nodeToSffIid, LogicalDatastoreType.OPERATIONAL);
     }
 }

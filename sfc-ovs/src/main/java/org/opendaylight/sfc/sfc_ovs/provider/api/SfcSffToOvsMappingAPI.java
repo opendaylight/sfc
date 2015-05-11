@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -30,7 +31,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.ControllerEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.ControllerEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.OptionsBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -39,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This class has the APIs to map SFC Service Function Forwarder to OVS Bridge
@@ -55,6 +60,7 @@ public class SfcSffToOvsMappingAPI {
 
     private static final String VXLAN = "-vxlan-";
     private static final String TO = "to";
+    private static final String OF_PORT = "6653";
 
     /**
      * Builds OvsdbBridgeAugmentation from ServiceFunctionForwarder object. Built augmentation is intended to be written
@@ -64,7 +70,7 @@ public class SfcSffToOvsMappingAPI {
      * @param serviceFunctionForwarder ServiceFunctionForwarder Object
      * @return OvsdbBridgeAugmentation Object
      */
-    public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(ServiceFunctionForwarder serviceFunctionForwarder) {
+    public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
         Preconditions.checkNotNull(serviceFunctionForwarder);
 
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
@@ -94,17 +100,34 @@ public class SfcSffToOvsMappingAPI {
 
             if (serviceForwarderOvsNode != null) {
                 ovsdbBridgeBuilder.setManagedBy(serviceForwarderOvsNode.getNodeId());
+                OvsdbNodeAugmentation ovsdbNodeAugmentation =
+                        SfcOvsUtil.getOvsdbNodeAugmentation(serviceForwarderOvsNode.getNodeId(), executor);
+                if (ovsdbNodeAugmentation != null) {
+                    ovsdbBridgeBuilder.setControllerEntry(getControllerEntries(ovsdbNodeAugmentation));
+                }
+
             } else {
-                LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
-                return null;
+                LOG.info("Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
             }
 
         } else {
-            LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
-            return null;
+            LOG.info("Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
         }
 
         return ovsdbBridgeBuilder.build();
+    }
+
+    private static List<ControllerEntry> getControllerEntries(OvsdbNodeAugmentation connection) {
+        ControllerEntryBuilder controllerBuilder = new ControllerEntryBuilder();
+        List<ControllerEntry> result = new ArrayList<ControllerEntry>();
+        if (connection.getConnectionInfo().getLocalIp() != null) {
+            String localIp = String.valueOf(connection.getConnectionInfo().getLocalIp().getValue());
+            String targetString = "tcp:" + localIp + ":" + OF_PORT;
+            controllerBuilder.setTarget(new Uri(targetString));
+            result.add(controllerBuilder.build());
+        }
+
+        return result;
     }
 
     /**

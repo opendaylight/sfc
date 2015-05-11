@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_01376c4f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2Renderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-05-11T19:49:22Z",
+      "side": 1,
+      "message": "since this class i a singletone it might be that you will encounter concurrency issues in having Sfcl2ProviderUtil as  statefull (keeping the maps members in it).\nyou might have 2 threads when the first is updating the map when the other is resetting it.\ni think it will be better to recreate it on each invocation of SfcL2SfgDataListener and SfcL2RspProcessor",
+      "revId": "d34456392f5014636c176e22dd25f41bb8d00fa2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_814a9cc3",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/sfg/SfcL2SfgDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-05-11T19:49:22Z",
+      "side": 1,
+      "message": "utils should be reset here",
+      "revId": "d34456392f5014636c176e22dd25f41bb8d00fa2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

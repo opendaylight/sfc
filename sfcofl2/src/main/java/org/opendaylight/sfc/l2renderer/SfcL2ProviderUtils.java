@@ -26,22 +26,23 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcL2Utils {
+public class SfcL2ProviderUtils implements SfcL2ProviderUtilsInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcL2Utils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2ProviderUtils.class);
     // each time onDataChanged() is called, store the SFs and SFFs internally
     // so we dont have to query the DataStore repeatedly for the same thing
-    private static Map<String, ServiceFunction> serviceFunctions =
-            new HashMap<String, ServiceFunction>();
-    private static Map<String, ServiceFunctionGroup> serviceFunctionGroups =
-            new HashMap<String, ServiceFunctionGroup>();
-    private static Map<String, ServiceFunctionForwarder> serviceFunctionFowarders =
-            new HashMap<String, ServiceFunctionForwarder>();
+    private Map<String, ServiceFunction> serviceFunctions;
+    private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
+    private Map<String, ServiceFunctionForwarder> serviceFunctionFowarders;
 
     // This class cant be initialized
-    private SfcL2Utils() {}
+    public SfcL2ProviderUtils() {
+        serviceFunctions = new HashMap<String, ServiceFunction>();
+        serviceFunctionGroups = new HashMap<String, ServiceFunctionGroup>();
+        serviceFunctionFowarders = new HashMap<String, ServiceFunctionForwarder>();
+    }
 
-    public static void resetCache() {
+    public void resetCache() {
         serviceFunctions.clear();
         serviceFunctionGroups.clear();
         serviceFunctionFowarders.clear();
@@ -54,7 +55,7 @@ public class SfcL2Utils {
      * @param dplName - The name of the DPL to look for
      * @return SffDataPlaneLocator or null if not found
      */
-    public static SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, String dplName) {
+    public SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, String dplName) {
         SffDataPlaneLocator sffDpl = null;
 
         List<SffDataPlaneLocator> sffDataPlanelocatorList = sff.getSffDataPlaneLocator();
@@ -75,7 +76,7 @@ public class SfcL2Utils {
      * @param dplName - The name of the DPL to look for
      * @return SffDataPlaneLocator or null if not found
      */
-    public static SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf) {
+    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf) {
         // TODO how to tell which SF DPL to use if it has more than one?
         List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
         return sfDataPlanelocatorList.get(0);
@@ -88,7 +89,7 @@ public class SfcL2Utils {
      * @param sfName - The name of the DPL to look for
      * @return SffSfDataPlaneLocator or null if not found
      */
-    public static SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, String sfName) {
+    public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, String sfName) {
         SffSfDataPlaneLocator sffSfDpl = null;
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
@@ -101,7 +102,7 @@ public class SfcL2Utils {
         return sffSfDpl;
     }
 
-    public static ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, String sfName) {
+    public ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, String sfName) {
         ServiceFunctionDictionary sffSfDict = null;
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
@@ -114,7 +115,7 @@ public class SfcL2Utils {
         return sffSfDict;
     }
 
-    public static String getSfDplMac(SfDataPlaneLocator sfDpl) {
+    public String getSfDplMac(SfDataPlaneLocator sfDpl) {
         String sfMac = null;
 
         LocatorType sffLocatorType = sfDpl.getLocatorType();
@@ -131,7 +132,7 @@ public class SfcL2Utils {
     }
 
 
-    public static String getDictPortInfoPort(final ServiceFunctionDictionary dict) {
+    public String getDictPortInfoPort(final ServiceFunctionDictionary dict) {
         OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
         if(ofsPort == null) {
@@ -143,7 +144,7 @@ public class SfcL2Utils {
         return ofsPort.getPortId();
     }
 
-    public static OfsPort getSffPortInfoFromSffSfDict(final ServiceFunctionDictionary sffSfDict) {
+    public OfsPort getSffPortInfoFromSffSfDict(final ServiceFunctionDictionary sffSfDict) {
         if(sffSfDict == null) {
             return null;
         }
@@ -156,7 +157,7 @@ public class SfcL2Utils {
         return ofsSffSfDict.getOfsPort();
     }
 
-    public static OfsPort getSffPortInfoFromDpl(final SffDataPlaneLocator sffDpl) {
+    public OfsPort getSffPortInfoFromDpl(final SffDataPlaneLocator sffDpl) {
         if(sffDpl == null) {
             return null;
         }
@@ -170,7 +171,7 @@ public class SfcL2Utils {
         return ofsDpl.getOfsPort();
     }
 
-    public static String getDplPortInfoPort(final SffDataPlaneLocator dpl) {
+    public String getDplPortInfoPort(final SffDataPlaneLocator dpl) {
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
         if(ofsPort == null) {
@@ -182,7 +183,7 @@ public class SfcL2Utils {
         return ofsPort.getPortId();
     }
 
-    public static String getDplPortInfoMac(final SffDataPlaneLocator dpl) {
+    public String getDplPortInfoMac(final SffDataPlaneLocator dpl) {
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
         if(ofsPort == null) {
@@ -197,8 +198,8 @@ public class SfcL2Utils {
     }
 
 
-    public static String getDictPortInfoMac(final ServiceFunctionDictionary dict) {
-        OfsPort ofsPort = SfcL2Utils.getSffPortInfoFromSffSfDict(dict);
+    public String getDictPortInfoMac(final ServiceFunctionDictionary dict) {
+        OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
         if(ofsPort == null) {
             return null;
@@ -211,12 +212,12 @@ public class SfcL2Utils {
         return ofsPort.getMacAddress().getValue();
     }
 
-    public static String getSffOpenFlowNodeName(final String sffName) {
+    public String getSffOpenFlowNodeName(final String sffName) {
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName);
         return getSffOpenFlowNodeName(sff);
     }
 
-    public static String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
+    public String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
         if(sff == null) {
             return null;
         }
@@ -243,7 +244,7 @@ public class SfcL2Utils {
      * @param sfName - The SF Name to search for
      * @return - The ServiceFunction object, or null if not found
      */
-    public static ServiceFunction getServiceFunction(final String sfName) {
+    public ServiceFunction getServiceFunction(final String sfName) {
         ServiceFunction sf = serviceFunctions.get(sfName);
         if(sf == null) {
             sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfName);
@@ -264,7 +265,7 @@ public class SfcL2Utils {
      * @param sffName - The SFF Name to search for
      * @return The ServiceFunctionForwarder object, or null if not found
      */
-    public static ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName) {
+    public ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName) {
         ServiceFunctionForwarder sff = serviceFunctionFowarders.get(sffName);
         if(sff == null) {
             sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
@@ -276,7 +277,7 @@ public class SfcL2Utils {
         return sff;
     }
 
-    public static ServiceFunctionGroup getServiceFunctionGroup(final String sfgName) {
+    public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName) {
         ServiceFunctionGroup sfg = serviceFunctionGroups.get(sfgName);
         if (sfg == null) {
             sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(sfgName);

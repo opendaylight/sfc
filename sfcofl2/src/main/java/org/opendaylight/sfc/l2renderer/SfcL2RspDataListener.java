@@ -35,11 +35,14 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
     private SfcL2RspProcessor sfcL2RspProcessor;
 
-    public SfcL2RspDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
+    public SfcL2RspDataListener(
+            DataBroker dataBroker,
+            SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
+            SfcL2ProviderUtilsInterface sfcL2ProviderUtils) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
-        this.sfcL2RspProcessor = new SfcL2RspProcessor(sfcL2FlowProgrammer);
+        this.sfcL2RspProcessor = new SfcL2RspProcessor(sfcL2FlowProgrammer, sfcL2ProviderUtils);
     }
 
     @Override

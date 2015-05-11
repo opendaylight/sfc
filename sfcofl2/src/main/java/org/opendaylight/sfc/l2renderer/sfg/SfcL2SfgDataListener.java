@@ -19,7 +19,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
 import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.SfcL2Utils;
+import org.opendaylight.sfc.l2renderer.SfcL2ProviderUtilsInterface;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -51,11 +51,15 @@ import org.slf4j.LoggerFactory;
 public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
 
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
+    private SfcL2ProviderUtilsInterface sfcL2ProviderUtils;
+
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2SfgDataListener.class);
 
-    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer) {
+    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer, SfcL2ProviderUtilsInterface sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
+        this.sfcL2ProviderUtils = sfcL2ProviderUtils;
+
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.SFG_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
@@ -126,8 +130,8 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
             int index = 0;
             for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
                 sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfcServiceFunction.getName());
-                ServiceFunctionDictionary sffSfDict = SfcL2Utils.getSffSfDictionary(sff, sfcServiceFunction.getName());
-                String outPort = SfcL2Utils.getDictPortInfoPort(sffSfDict);
+                ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sff, sfcServiceFunction.getName());
+                String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sffSfDict);
                 bucketsInfo.add(buildBucket(sf, outPort, index));
                 index++;
             }
@@ -183,6 +187,6 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
 
     private String getSffOpenFlowNodeName(final String sffName) {
         ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
-        return SfcL2Utils.getSffOpenFlowNodeName(sff);
+        return sfcL2ProviderUtils.getSffOpenFlowNodeName(sff);
      }
 }

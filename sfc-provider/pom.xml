@@ -224,6 +224,11 @@
             <artifactId>yang-data-api</artifactId>
             <version>${yangtools.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.l2switch.hosttracker</groupId>
+            <artifactId>hosttracker-model</artifactId>
+            <version>${l2switch.version}</version>
+        </dependency>
     </dependencies>
 
 

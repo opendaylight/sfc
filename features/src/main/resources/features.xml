@@ -22,6 +22,7 @@
     <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
     <!--<repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>-->
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.l2switch/features-l2switch/${l2switch.version}/xml/features</repository>
 
     <feature name='odl-sfc-core' version='${project.version}' description='OpenDaylight :: sfc :: Core'>
         <feature version='${project.version}'>odl-sfc-provider</feature>
@@ -70,6 +71,7 @@
         <feature version="${mdsal.version}">odl-restconf</feature>
         <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
+        <feature version='${l2switch.version}'>odl-l2switch-hosttracker</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/${project.version}/xml/config-sff</configfile>

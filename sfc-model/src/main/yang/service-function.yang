@@ -65,6 +65,11 @@ module service-function {
       description
           "The name of the service function.";
     }
+    leaf tenant-id {
+      type string;
+      description
+        "This SF was created for a specific tenant-id";
+    }
     leaf type {
       type sfc-sft:service-function-type;
       mandatory true;

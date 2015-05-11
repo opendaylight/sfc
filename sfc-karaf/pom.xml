@@ -142,6 +142,14 @@
         <scope>runtime</scope>
     </dependency>
     <dependency>
+        <groupId>org.opendaylight.l2switch</groupId>
+        <artifactId>features-l2switch</artifactId>
+        <version>${l2switch.version}</version>
+        <classifier>features</classifier>
+        <type>xml</type>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>

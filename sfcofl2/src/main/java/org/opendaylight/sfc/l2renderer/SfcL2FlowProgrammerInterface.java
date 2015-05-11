@@ -41,15 +41,15 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
     //
-    // Configure Table 1, Ingress
+    // Configure Table 1, Path Mapper
     //
-    public void configureMacIngressFlow(final String sffNodeName, final String mac, long pathId, boolean isSf, final boolean isAddFlow);
+    public void configureMacPathMapperFlow(final String sffNodeName, final String mac, long pathId, boolean isSf, final boolean isAddFlow);
 
-    public void configureMplsIngressFlow(final String sffNodeName, final long label, long pathId, boolean isSf, final boolean isAddFlow);
+    public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf, final boolean isAddFlow);
 
-    public void configureVlanIngressFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf, final boolean isAddFlow);
+    public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf, final boolean isAddFlow);
 
-    public void configureVxlanGpeIngressFlow(final String sffNodeName, long nsp, short nsi, long pathId, final boolean isAddFlow);
+    public void configureVxlanGpePathMapperFlow(final String sffNodeName, long nsp, short nsi, long pathId, final boolean isAddFlow);
 
     //
     // Table 2, NextHop
@@ -103,12 +103,11 @@ public interface SfcL2FlowProgrammerInterface {
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // If doDrop == False
     //      TransportIngress MatchAny will go to Ingress
-    //      Ingress          MatchAny will go to Acl
-    //      Acl              MatchAny will go to NextHop
+    //      PathMapper       MatchAny will go to NextHop
     //      NextHop          MatchAny will go to TransportEgress
     //
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
-    public void configureIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
+    public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
 

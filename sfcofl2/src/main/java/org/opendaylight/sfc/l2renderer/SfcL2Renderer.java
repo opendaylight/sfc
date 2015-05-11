@@ -29,14 +29,15 @@ public class SfcL2Renderer implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer = null;
     SfcL2RspDataListener openflowRspDataListener = null;
-    private SfcL2SfgDataListener sfcL2SfgDataListener = null;
+    SfcL2SfgDataListener sfcL2SfgDataListener = null;
 
     public SfcL2Renderer(DataBroker dataBroker) {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
         this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl();
-        this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer);
-        this.sfcL2SfgDataListener = new SfcL2SfgDataListener(dataBroker, sfcL2FlowProgrammer);
+        SfcL2ProviderUtilsInterface sfcL2ProviderUtils = new SfcL2ProviderUtils();
+        this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils);
+        this.sfcL2SfgDataListener = new SfcL2SfgDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils);
 
         LOG.info("SfcL2Renderer successfully started the SfcL2Renderer plugin");
     }

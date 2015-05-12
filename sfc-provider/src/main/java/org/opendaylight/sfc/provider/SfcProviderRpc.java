@@ -370,7 +370,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
     @Override
     public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(ReadRspFirstHopBySftListInput input) {
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
-        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSftList());
+        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(), input.getSftList());
         ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;
         if (renderedServicePathFirstHop != null) {
             ReadRspFirstHopBySftListOutputBuilder readRspFirstHopBySftListOutputBuilder = new ReadRspFirstHopBySftListOutputBuilder();

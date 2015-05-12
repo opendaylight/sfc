@@ -42,13 +42,15 @@ import org.slf4j.LoggerFactory;
 public abstract class SfcL2AbstractProviderUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2AbstractProviderUtils.class);
 
-    abstract public void resetCache();
+    abstract public void addRsp(long rspId);
 
-    abstract public ServiceFunction getServiceFunction(final String sfName);
+    abstract public void removeRsp(long rspId);
 
-    abstract public ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName);
+    abstract public ServiceFunction getServiceFunction(final String sfName, long rspId);
 
-    abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName);
+    abstract public ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName, long rspId);
+
+    abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
     /**
      * Return a named SffDataPlaneLocator
@@ -213,8 +215,8 @@ public abstract class SfcL2AbstractProviderUtils {
         return ofsPort.getMacAddress().getValue();
     }
 
-    public String getSffOpenFlowNodeName(final String sffName) {
-        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName);
+    public String getSffOpenFlowNodeName(final String sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
         return getSffOpenFlowNodeName(sff);
     }
 

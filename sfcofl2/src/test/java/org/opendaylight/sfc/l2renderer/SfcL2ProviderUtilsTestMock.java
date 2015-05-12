@@ -34,6 +34,14 @@ public class SfcL2ProviderUtilsTestMock extends SfcL2AbstractProviderUtils {
         serviceFunctionGroups.put(sfgName, sfg);
     }
 
+    // Only needed for multi-threading, empty for now
+    public void addRsp(long rspId) {
+    }
+
+    // Only needed for multi-threading, empty for now
+    public void removeRsp(long rspId) {
+    }
+
     public void resetCache() {
         LOG.info("SfcL2ProviderUtilsTestMock resetCache");
         serviceFunctions.clear();
@@ -41,15 +49,15 @@ public class SfcL2ProviderUtilsTestMock extends SfcL2AbstractProviderUtils {
         serviceFunctionForwarders.clear();
     }
 
-    public ServiceFunction getServiceFunction(String sfName) {
+    public ServiceFunction getServiceFunction(String sfName, long pathId) {
         return serviceFunctions.get(sfName);
     }
 
-    public ServiceFunctionForwarder getServiceFunctionForwarder(String sffName) {
+    public ServiceFunctionForwarder getServiceFunctionForwarder(String sffName, long pathId) {
         return serviceFunctionForwarders.get(sffName);
     }
 
-    public ServiceFunctionGroup getServiceFunctionGroup(String sfgName) {
+    public ServiceFunctionGroup getServiceFunctionGroup(String sfgName, long pathId) {
         return serviceFunctionGroups.get(sfgName);
     }
 

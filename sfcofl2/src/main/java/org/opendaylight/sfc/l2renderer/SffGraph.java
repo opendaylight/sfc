@@ -153,7 +153,7 @@ public class SffGraph {
         Map<String, SffDataPlaneLocators> sffToDpls = pathIdToSffDataPlaneLocators.get(pathId);
         if(sffToDpls == null) {
             if(!createEntry) {
-                LOG.warn("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]", sffName, pathId);
+                LOG.debug("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]", sffName, pathId);
 
                 return null;
             }
@@ -187,7 +187,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if(sffDpl == null) {
-            LOG.warn("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
             return null;
         }
 
@@ -198,7 +198,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if(sffDpl == null) {
-            LOG.warn("SffGraph getSffEgressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffEgressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
             return null;
         }
 
@@ -214,7 +214,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if(sffDpl == null) {
-            LOG.warn("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
             return null;
         }
 

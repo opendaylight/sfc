@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
@@ -75,6 +76,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     private static final int MAX_STARTING_INDEX = 255;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static SfcServiceFunctionSchedulerAPI defaultScheduler;
+
     static final Comparator<SfcServiceFunction> SF_ORDER =
             new Comparator<SfcServiceFunction>() {
                 public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
@@ -89,18 +92,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 }
             };
 
-    private SfcServiceFunctionSchedulerAPI scheduler;
-
-    private void initServiceFunctionScheduler()
-    {
-        java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
-
-        try {
-            serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI
-                    .readEnabledServiceFunctionScheduleTypeEntryExecutor().getType();
-        } catch (Exception e) {
-            serviceFunctionSchedulerType = Random.class;
-        }
+    private static SfcServiceFunctionSchedulerAPI getServiceFunctionScheduler(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
+        SfcServiceFunctionSchedulerAPI scheduler;
 
         if (serviceFunctionSchedulerType == RoundRobin.class) {
             scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
@@ -113,7 +106,21 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         } else {
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         }
+        return scheduler;
+    }
 
+    private void initDefaultServiceFunctionScheduler()
+    {
+        java.lang.Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
+
+        try {
+            serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI
+                    .readEnabledServiceFunctionScheduleTypeEntryExecutor().getType();
+        } catch (Exception e) {
+            serviceFunctionSchedulerType = Random.class;
+        }
+
+        defaultScheduler = getServiceFunctionScheduler(serviceFunctionSchedulerType);
         LOG.info("Selected SF Schdedule Type: {}",  serviceFunctionSchedulerType);
     }
 
@@ -132,12 +139,12 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     SfcProviderRenderedPathAPI(Object[] params, String m) {
         super(params, m);
-        initServiceFunctionScheduler();
+        initDefaultServiceFunctionScheduler();
     }
 
     SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
-        initServiceFunctionScheduler();
+        initDefaultServiceFunctionScheduler();
     }
 
 
@@ -171,11 +178,10 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         this.createRenderedServicePathEntry(serviceFunctionPath);
     }*/
 
-    public static RenderedServicePath createRenderedServicePathEntryExecutor(ServiceFunctionPath serviceFunctionPath,
-                                                                             CreateRenderedPathInput createRenderedPathInput) {
+    public static RenderedServicePath createRenderedServicePathEntryExecutor(ServiceFunctionPath serviceFunctionPath, CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
         RenderedServicePath ret = null;
-        Object[] servicePathObj = {serviceFunctionPath, createRenderedPathInput};
-        Class[] servicePathClass = {ServiceFunctionPath.class, CreateRenderedPathInput.class};
+        Object[] servicePathObj = {serviceFunctionPath, createRenderedPathInput, scheduler};
+        Class[] servicePathClass = {ServiceFunctionPath.class, CreateRenderedPathInput.class, SfcServiceFunctionSchedulerAPI.class};
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = SfcProviderRenderedPathAPI
                 .getCreateRenderedServicePathEntryAPI(servicePathObj, servicePathClass);
         Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
@@ -212,15 +218,15 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Creates a RSP and all the associated operational state based on the
-     * given service function path
+     * given service function path and scheduler
      *
      * <p>
      * @param createdServiceFunctionPath Service Function Path
-     * @return Created RSP or null
+     * @param createRenderedPathInput CreateRenderedPathInput object
+     * @param scheduler SfcServiceFunctionSchedulerAPI object
+     * @return RenderedServicePath Created RSP or null
      */
-    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
-                                                                        CreateRenderedPathInput createRenderedPathInput) {
-
+    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath, CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
         RenderedServicePath renderedServicePath;
 
         boolean rspSuccessful = false;
@@ -228,9 +234,13 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         boolean addPathToSfStateSuccessful = false;
         boolean addPathtoSfpStateSuccessful = false;
 
+        if (scheduler == null) {//Fall back to defaultScheduler
+            scheduler = defaultScheduler;
+        }
+
         // Create RSP
         if ((renderedServicePath = SfcProviderRenderedPathAPI
-                .createRenderedServicePathEntryExecutor(createdServiceFunctionPath, createRenderedPathInput)) != null) {
+                .createRenderedServicePathEntryExecutor(createdServiceFunctionPath, createRenderedPathInput, scheduler)) != null) {
             rspSuccessful = true;
 
         } else {
@@ -272,6 +282,19 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         return renderedServicePath;
+    }
+
+    /**
+     * Creates a RSP and all the associated operational state based on the
+     * given service function path
+     *
+     * <p>
+     * @param createdServiceFunctionPath Service Function Path
+     * @param createRenderedPathInput CreateRenderedPathInput object
+     * @return RenderedServicePath Created RSP or null
+     */
+    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath, CreateRenderedPathInput createRenderedPathInput) {
+        return createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput, defaultScheduler);
     }
 
     /**
@@ -434,14 +457,15 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Create a Rendered Path and all the associated operational state based on the
-     * given rendered service path
+     * given rendered service path and scheduler
      *
      * <p>
      * @param serviceFunctionPath RSP Object
-     * @return Nothing.
+     * @param createRenderedPathInput CreateRenderedPathInput object
+     * @param scheduler SfcServiceFunctionSchedulerAPI object
+     * @return RenderedServicePath
      */
-    protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath,
-                                                                  CreateRenderedPathInput createRenderedPathInput) {
+    protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath, CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
 
         printTraceStart(LOG);
 
@@ -522,6 +546,19 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+    /**
+     * Create a Rendered Path and all the associated operational state based on the
+     * given rendered service path
+     *
+     * <p>
+     * @param serviceFunctionPath RSP Object
+     * @param createRenderedPathInput CreateRenderedPathInput object
+     * @return RenderedServicePath
+     */
+    protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath, CreateRenderedPathInput createRenderedPathInput) {
+        return createRenderedServicePathEntry(serviceFunctionPath, createRenderedPathInput, defaultScheduler);
     }
 
     private List<String> getSfgNameList(ServiceFunctionChain serviceFunctionChain) {
@@ -883,7 +920,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionTypeList ServiceFunctionTypeIdentity list
      * @return RenderedServicePathFirstHop.
      */
-    public static RenderedServicePathFirstHop readRspFirstHopBySftList(List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
+    public static RenderedServicePathFirstHop readRspFirstHopBySftList(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType, List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
         int i;
         String serviceTypeName;
         Class serviceFunctionType = null;
@@ -893,8 +930,10 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         ServiceFunctionChain serviceFunctionChain = null;
         boolean ret = false;
         RenderedServicePathFirstHop firstHop = null;
+        SfcServiceFunctionSchedulerAPI scheduler;
 
         printTraceStart(LOG);
+        scheduler = getServiceFunctionScheduler(serviceFunctionSchedulerType);
 
         /* Build sfcName, pathName and ServiceFunction list */
         for (i = 0; i < serviceFunctionTypeList.size(); i++) {
@@ -953,7 +992,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
 
         renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
-                createRenderedPathInputBuilder.build());
+                createRenderedPathInputBuilder.build(), scheduler);
         if (renderedServicePath == null) {
             LOG.error("Failed to create RenderedServicePath for ServiceFunctionPath: {}", pathName);
             return null;

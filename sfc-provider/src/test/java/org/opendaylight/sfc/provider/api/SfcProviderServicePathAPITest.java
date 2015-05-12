@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -23,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
@@ -31,14 +34,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
 
@@ -106,7 +109,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
 
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(pathName).setKey(pathKey)
-        .setServiceChainName(sfcName);
+                .setServiceChainName(sfcName);
 
         ServiceFunctionPath path = pathBuilder.build();
 
@@ -128,4 +131,33 @@ public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", path2.getServiceChainName(), sfcName);
     }
 
+    @Test
+    public void testReadAllServiceFunctionPaths() throws Exception {
+        ServiceFunctionPaths serviceFunctionPaths;
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        ServiceFunctionPathsBuilder serviceFunctionPathsBuilder = new ServiceFunctionPathsBuilder();
+        String[] testValues = {"1", "Test Name", "Sfp Key"};
+
+        List<ServiceFunctionPath> sffList = new ArrayList<>();
+
+        //set all tested attributes
+        serviceFunctionPathBuilder.setPathId(Long.valueOf(testValues[0]))
+                .setServiceChainName(testValues[1])
+                .setKey(new ServiceFunctionPathKey(testValues[2]))
+                .setTransportType(VxlanGpe.class);
+        sffList.add(serviceFunctionPathBuilder.build());
+
+        serviceFunctionPathsBuilder.setServiceFunctionPath(sffList);
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
+                builder(ServiceFunctionPaths.class).build();
+        SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, serviceFunctionPathsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        serviceFunctionPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
+
+        assertNotNull("Must not be null", serviceFunctionPaths);
+        assertFalse("Must be false", serviceFunctionPaths.getServiceFunctionPath().isEmpty());
+        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getPathId(), Long.valueOf(testValues[0]));
+        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getServiceChainName(), testValues[1]);
+        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getKey().getName(), testValues[2]);
+        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getTransportType(), VxlanGpe.class);
+    }
 }

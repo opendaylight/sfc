@@ -86,6 +86,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     String sfName = getServiceFunctionByType(serviceFunctionType);
+                    LOG.info("sfName {} for serviceFunctionType {}", sfName, serviceFunctionType.getType().getSimpleName());
                     sfNameList.add(sfName);
                 } else {
                     LOG.error("Could not create path because there are no configured SFs of type: {}",

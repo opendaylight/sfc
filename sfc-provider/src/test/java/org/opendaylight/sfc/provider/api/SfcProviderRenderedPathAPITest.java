@@ -249,6 +249,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testReadRenderedServicePathFirstHop() throws ExecutionException, InterruptedException {
+        //TODO: fix this
+        //nasty workaround - this should be executed in after() block
+        /* Can't create RSP if we don't do these cleanups, don't know why */
+        SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[1]);
+        SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor("unittest-fw-1");
+        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
+
+        final String rspName = "unittest-rsp-XXX";
         ServiceFunctionPath serviceFunctionPath =
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
@@ -258,10 +266,11 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         RenderedServicePath revRenderedServicePath = null;
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(rspName);
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
         try {
             renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assertNotNull("Must be not null", renderedServicePath);
@@ -300,7 +309,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertEquals("sftList size should be 5", sftList.size(), 5);
         RenderedServicePathFirstHop firstHop = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

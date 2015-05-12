@@ -8,20 +8,13 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfDataPlaneLocator1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfDataPlaneLocator1Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
@@ -36,6 +29,13 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -157,18 +157,18 @@ public class SffExporterTest {
 
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorBuilder.setName(SffTestValues.SFF_DATA_PLANE_LOCATOR_NAME.getValue());
-        sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator1.class, this.buildSffDataPlaneLocator1());
+        sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorBridgeAugmentation.class, this.buildSffDataPlaneLocator1());
         sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());
 
         return sffDataPlaneLocatorList;
     }
 
-    private SffDataPlaneLocator1 buildSffDataPlaneLocator1() {
+    private SffOvsLocatorBridgeAugmentation buildSffDataPlaneLocator1() {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         ovsBridgeBuilder.setBridgeName(SffTestValues.SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME.getValue());
         ovsBridgeBuilder.setUuid(new Uuid(SffTestValues.SFF_DATA_PLANE_LOCATOR_UUID.getValue()));
 
-        SffDataPlaneLocator1Builder sffDataPlaneLocator1Builder = new SffDataPlaneLocator1Builder();
+        SffOvsLocatorBridgeAugmentationBuilder sffDataPlaneLocator1Builder = new SffOvsLocatorBridgeAugmentationBuilder();
         sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
 
         return sffDataPlaneLocator1Builder.build();
@@ -188,19 +188,19 @@ public class SffExporterTest {
 
     private SffSfDataPlaneLocator buildSffSfDataPlaneLocator() {
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder.addAugmentation(SffSfDataPlaneLocator1.class, this.buildSffSfDataPlaneLocator1());
+        sffSfDataPlaneLocatorBuilder.addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfDataPlaneLocator1());
 
         return sffSfDataPlaneLocatorBuilder.build();
     }
 
-    private SffSfDataPlaneLocator1 buildSffSfDataPlaneLocator1() {
+    private SffSfOvsLocatorBridgeAugmentation buildSffSfDataPlaneLocator1() {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         ovsBridgeBuilder.setBridgeName(SffTestValues.SF_DATA_PLANE_LOCATOR_BRIDGE_NAME.getValue());
 
-        SffSfDataPlaneLocator1Builder sffSfDataPlaneLocator1Builder = new SffSfDataPlaneLocator1Builder();
-        sffSfDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
+        SffSfOvsLocatorBridgeAugmentationBuilder sffSfOvsLocatorBridgeAugmentationBuilder = new SffSfOvsLocatorBridgeAugmentationBuilder();
+        sffSfOvsLocatorBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
-        return sffSfDataPlaneLocator1Builder.build();
+        return sffSfOvsLocatorBridgeAugmentationBuilder.build();
     }
 }
 

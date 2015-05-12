@@ -135,13 +135,13 @@ public class SfcOvsToSffMappingAPI {
                     if (dataPlaneLocator != null) {
                         sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocator);
                     }
-                    SffDataPlaneLocator1Builder sffDataPlaneLocator1Builder = new SffDataPlaneLocator1Builder();
+                    SffOvsLocatorBridgeAugmentationBuilder sffDataPlaneLocator1Builder = new SffOvsLocatorBridgeAugmentationBuilder();
                     sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
-                    sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator1.class, sffDataPlaneLocator1Builder.build());
+                    sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorBridgeAugmentation.class, sffDataPlaneLocator1Builder.build());
 
-                    SffDataPlaneLocator2Builder sffDataPlaneLocatorOptionsBuilder = new SffDataPlaneLocator2Builder();
+                    SffOvsLocatorOptionsAugmentationBuilder sffDataPlaneLocatorOptionsBuilder = new SffOvsLocatorOptionsAugmentationBuilder();
                     sffDataPlaneLocatorOptionsBuilder.setOvsOptions(buildOvsOptionsFromTerminationPoint(terminationPointAugmentation));
-                    sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator2.class, sffDataPlaneLocatorOptionsBuilder.build());
+                    sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class, sffDataPlaneLocatorOptionsBuilder.build());
 
                     sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());
                 }
@@ -260,6 +260,7 @@ public class SfcOvsToSffMappingAPI {
     public static String getServiceForwarderNameFromNode(Node node) {
         Preconditions.checkNotNull(node);
 
+        LOG.error("Node id is: {}", node.getNodeId().getValue());
         return node.getNodeId().getValue();
     }
 

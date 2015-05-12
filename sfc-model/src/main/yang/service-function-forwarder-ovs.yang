@@ -161,6 +161,7 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
 
+    ext:augment-identifier "sff-ovs-locator-bridge-augmentation";
     uses bridge;
   }
 
@@ -168,6 +169,7 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
 
+    ext:augment-identifier "sff-ovs-locator-options-augmentation";
     uses options;
   }
 
@@ -176,6 +178,7 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-dictionary/"
         + "sfc-sff:sff-sf-data-plane-locator" {
 
+    ext:augment-identifier "sff-sf-ovs-locator-bridge-augmentation";
     uses bridge;
   }
 
@@ -184,6 +187,7 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-dictionary/"
         + "sfc-sff:sff-sf-data-plane-locator" {
 
+    ext:augment-identifier "sff-sf-ovs-locator-options-augmentation";
     uses options;
   }
 

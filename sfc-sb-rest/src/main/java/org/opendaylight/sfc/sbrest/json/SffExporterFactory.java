@@ -11,8 +11,8 @@ package org.opendaylight.sfc.sbrest.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfDataPlaneLocator1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.ovs.bridge.ExternalIds;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -151,11 +151,11 @@ class SffExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSffDataPlaneLocatorOvsBridgeObjectNode(SffDataPlaneLocator sffDataPlaneLocator) {
-        if (sffDataPlaneLocator == null || sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator1.class) == null) {
+        if (sffDataPlaneLocator == null || sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class) == null) {
             return null;
         }
 
-        SffDataPlaneLocator1 sffDataPlaneLocator1 = sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator1.class);
+        SffOvsLocatorBridgeAugmentation sffDataPlaneLocator1 = sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class);
 
         if (sffDataPlaneLocator1 != null) {
             return this.getOvsBridgeObjectNode(sffDataPlaneLocator1.getOvsBridge());
@@ -227,11 +227,11 @@ class SffExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSffSfDataPlaneLocatorOvsBridgeObjectNode(SffSfDataPlaneLocator sffSfDataPlaneLocator) {
-        if (sffSfDataPlaneLocator == null || sffSfDataPlaneLocator.getAugmentation(SffSfDataPlaneLocator1.class) == null) {
+        if (sffSfDataPlaneLocator == null || sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class) == null) {
             return null;
         }
 
-        SffSfDataPlaneLocator1 sffSfDataPlaneLocator1 = sffSfDataPlaneLocator.getAugmentation(SffSfDataPlaneLocator1.class);
+        SffSfOvsLocatorBridgeAugmentation sffSfDataPlaneLocator1 = sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class);
 
         if (sffSfDataPlaneLocator1 != null) {
             return this.getOvsBridgeObjectNode(sffSfDataPlaneLocator1.getOvsBridge());

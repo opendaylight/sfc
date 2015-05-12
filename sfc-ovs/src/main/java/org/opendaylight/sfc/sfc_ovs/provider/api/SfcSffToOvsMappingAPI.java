@@ -12,8 +12,8 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator2;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffDataPlaneLocator2Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
@@ -164,7 +164,7 @@ public class SfcSffToOvsMappingAPI {
         Preconditions.checkNotNull(sffDataPlaneLocator, "Cannot gather SffDataPlaneLocator Options, sffDataPlaneLocator is null.");
         List<Options> options = new ArrayList<>();
 
-        SffDataPlaneLocator2 sffDataPlaneLocatorOvsOptions = sffDataPlaneLocator.getAugmentation(SffDataPlaneLocator2.class);
+        SffOvsLocatorOptionsAugmentation sffDataPlaneLocatorOvsOptions = sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
         OvsOptions ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();
 
         if (ovsOptions.getLocalIp() != null) {
@@ -281,9 +281,9 @@ public class SfcSffToOvsMappingAPI {
         ovsOptionsBuilder.setKey(renderedServicePath.getPathId().toString());
 
         //add OVS Options augmentation to SffDataPlaneLocator
-        SffDataPlaneLocator2Builder sffDataPlaneLocator2Builder = new SffDataPlaneLocator2Builder();
+        SffOvsLocatorOptionsAugmentationBuilder sffDataPlaneLocator2Builder = new SffOvsLocatorOptionsAugmentationBuilder();
         sffDataPlaneLocator2Builder.setOvsOptions(ovsOptionsBuilder.build());
-        sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator2.class, sffDataPlaneLocator2Builder.build());
+        sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class, sffDataPlaneLocator2Builder.build());
 
         return sffDataPlaneLocatorBuilder.build();
     }

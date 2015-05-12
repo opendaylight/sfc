@@ -55,7 +55,7 @@ public class OpendaylightSfc implements AutoCloseable {
 
     private static final long SHUTDOWN_TIME = 5;
     private static final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("ServiceFunctionChaining-%d")
+            .setNameFormat("SFC-%d")
             .setDaemon(false)
             .build();
 

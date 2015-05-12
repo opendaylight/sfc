@@ -1,0 +1,22 @@
+{
+  "service-function-chains": {
+    "service-function-chain": [
+      {
+        "name": "sfc-chain-mpls",
+        "symmetric": true,
+        "sfc-service-function": [
+          {
+            "name": "hdr-enrich-abstract1",
+            "type": "service-function-type:http-header-enrichment"
+          },
+          {
+            "name": "firewall-abstract1",
+            "type": "service-function-type:firewall"
+          }
+        ]
+      }
+
+    ]
+  }
+}
+

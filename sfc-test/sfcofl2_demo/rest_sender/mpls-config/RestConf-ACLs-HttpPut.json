@@ -1,0 +1,41 @@
+{
+  "access-lists": {
+    "access-list": [
+      {
+        "acl-name": "acl-http",
+        "access-list-entries": [
+          {
+            "rule-name": "subscriber-uplink",
+            "matches": {
+              "absolute": {
+                "active": true
+              },
+              "destination-port-range": {
+                "lower-port": 80,
+                "upper-port": 80
+              },
+              "ip-protocol": 6,
+              "source-ipv4-address": "10.0.0.1/32"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "sfc-path1"
+            }
+          },
+          {
+            "rule-name": "subscriber-downlink",
+            "matches": {
+              "absolute": {
+                "active": true
+              },
+              "ip-protocol": 6,
+              "destination-ipv4-address": "10.0.0.1/32"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "sfc-path1-Reverse"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

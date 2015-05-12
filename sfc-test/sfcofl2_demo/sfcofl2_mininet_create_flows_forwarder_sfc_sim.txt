@@ -1,0 +1,13 @@
+# Here you can edit the flows bound to SF when they are running as loop-backs.
+
+sudo ovs-vsctl set bridge sff1-node protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
+sudo ovs-vsctl set bridge sff2-node protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
+
+# Using a switch instead of a SF1 to test. It does a simple loop-back
+sudo ovs-ofctl -O Openflow13 add-flow sff1-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=set_field:b2:73:9d:9e:17:dd->eth_dst,set_field:00:00:08:01:02:01->eth_src,in_port"
+sudo ovs-ofctl -O Openflow13  add-flow sff1-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=set_field:b2:73:9d:9e:17:dd->eth_dst,set_field:00:00:08:01:02:01->eth_src,in_port"
+
+# Using a switch instead of a SF2 to test. It does a simple loop-back
+sudo ovs-ofctl -O Openflow13 add-flow sff2-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=set_field:c6:17:16:dc:9d:35->eth_dst,set_field:00:00:08:01:03:01->eth_src,in_port"
+sudo ovs-ofctl -O Openflow13  add-flow sff2-node "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=set_field:c6:17:16:dc:9d:35->eth_dst,set_field:00:00:08:01:03:01->eth_src,in_port"
+

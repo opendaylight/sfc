@@ -241,8 +241,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RenderedServicePath revRenderedServicePath;
         CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
         RpcResult <CreateRenderedPathOutput> rpcResult;
-        boolean ret = false;
-        createRenderedPathOutputBuilder.setResult(ret);
+        String ret = null;
 
         createdServiceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor
                 (createRenderedPathInput.getParentServiceFunctionPath());
@@ -251,7 +250,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
             renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState
                     (createdServiceFunctionPath, createRenderedPathInput);
             if (renderedServicePath != null) {
-                ret = true;
+                ret = renderedServicePath.getName();
                 createRenderedPathOutputBuilder.setResult(ret);
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
 

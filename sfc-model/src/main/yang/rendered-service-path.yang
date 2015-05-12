@@ -250,7 +250,7 @@ module rendered-service-path {
     }
     output {
       leaf result {
-        type boolean;
+        type string;
       }
     }
   }

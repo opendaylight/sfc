@@ -249,8 +249,8 @@ module rendered-service-path {
       }
     }
     output {
-      leaf result {
-        type boolean;
+      leaf name {
+        type string;
       }
     }
   }

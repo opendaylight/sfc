@@ -8,6 +8,7 @@ module rendered-service-path {
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
   import service-function-type {prefix sfc-sft; }
+  import service-function-scheduler-type {prefix sfc-sfst;}
   import service-function-metadata {prefix sfc-md; }
   import service-function-forwarder {prefix sfc-sff; }
   import service-locator {prefix sfc-sl;}
@@ -315,6 +316,10 @@ module rendered-service-path {
       "Read all the necessary information for the first hop of a
       Rendered Service Path by ServiceFunctionTypeIdentity list";
     input {
+      leaf sfst {
+        description "Service function scheduler type for RSP";
+        type sfc-sfst:service-function-scheduler-type;
+      }
       leaf-list sft-list {
         description "List of service function type";
         type sfc-sft:service-function-type;

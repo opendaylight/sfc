@@ -81,11 +81,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String SFC_NAME = "unittest-chain-1";
     private static final String SFP_NAME = "unittest-sfp-1";
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
+    private static final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
     private String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
     private String[][] TO_SFF_NAMES =
             {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
     private String[] SFF_LOCATOR_IP =
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
+    private List<ServiceFunction> sfList = new ArrayList<>();
+    private static final String rspName = "unittest-rsp-1";
     private DataBroker dataBroker;
     private ExecutorService executor;
     private OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
@@ -93,7 +96,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private ServiceFunctionPathBuilder serviceFunctionPathBuilder;
     private RenderedServicePath testRenderedServicePath;
     private SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI;
-    private List<ServiceFunction> sfList = new ArrayList<>();
     private Object[] params;
 
     @Before
@@ -111,7 +113,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         Thread.sleep(1000); // Wait for real delete
 
         // Create Service Functions
-        final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.length];
         final IpAddress[] locatorIpAddress = new IpAddress[sfNames.length];
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames.length];
@@ -263,15 +264,28 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
+        /* Can't create RSP if we don't do these cleanups, don't know why */
+        SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(SFP_NAME);
+        SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(serviceFunctionPath);
+        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
+        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(rspName);
+        for (int i = 0; i < SFF_NAMES.length; i++) {
+            SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[i]);
+        }
+        for (int i = 0; i < sfNames.length; i++) {
+            SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfNames[i]);
+        }
+
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;
         RenderedServicePath revRenderedServicePath = null;
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(rspName);
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
         try {
             renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assertNotNull("Must be not null", renderedServicePath);
@@ -310,7 +324,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertEquals("sftList size should be 5", sftList.size(), 5);
         RenderedServicePathFirstHop firstHop = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(sftList);
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -322,8 +336,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathHopList() throws ExecutionException, InterruptedException {
-        final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
-        List<String> sfNameList = Arrays.asList(sfNames);
+        final String[] tmpSfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
+        List<String> sfNameList = Arrays.asList(tmpSfNames);
         final int startingIndex = 255;
 
         Object[] parameters = {};
@@ -359,8 +373,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[1]);
         SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor("unittest-fw-1");
         SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
-
-        final String rspName = "unittest-rsp";
 
         ServiceFunctionPath serviceFunctionPath =
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);

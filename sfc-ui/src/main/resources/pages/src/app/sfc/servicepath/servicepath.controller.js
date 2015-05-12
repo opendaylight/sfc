@@ -281,15 +281,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.rpcCreateRsp = function (sfp) {
       RenderedServicePathSvc.executeRpcOperation({input: {'parent-service-function-path': sfp['name']}}, 'create-rendered-path', null, function (result) {
-        if (angular.isDefined(result) && result['result'] === true) {
-          var modalBody = $scope.$eval('"SFC_RENDERED_PATH_MODAL_CREATE_RPC_SUCCESS_BODY" | translate') + ": <b>'" + sfp['name'] + "'</b>.";
+        if (angular.isDefined(result) && result['name'] != null) {
+          var modalBody = $scope.$eval('"SFC_RENDERED_PATH_MODAL_CREATE_RPC_SUCCESS_BODY" | translate') + ": <b>'" + result['name'] + "'</b>.";
 
           ModalInfoSvc.open({
             "head": $scope.$eval('"SFC_RENDERED_PATH_MODAL_CREATE_RPC_SUCCESS_HEAD" | translate'),
             "body": modalBody
           });
         }
-        else if (angular.isDefined(result) && angular.isDefined(result['response'])) {
+        else {
           ModalErrorSvc.open({
             head: $scope.$eval('"SFC_RENDERED_PATH_MODAL_CREATE_RPC_FAIL_HEAD" | translate'),
             rpcError: result['response'] || ''

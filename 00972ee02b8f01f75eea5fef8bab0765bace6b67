@@ -16,6 +16,24 @@
       "revId": "00972ee02b8f01f75eea5fef8bab0765bace6b67",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_ccb1bb90",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-12T06:10:20Z",
+      "side": 1,
+      "message": "Thanks for the info. I ended up completely refactoring this Unit Test. Its still not using Mockito, but much better now. I\u0027ll look into trying to incorporate Mockito.",
+      "parentUuid": "3aa0d159_9593c4f9",
+      "revId": "00972ee02b8f01f75eea5fef8bab0765bace6b67",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

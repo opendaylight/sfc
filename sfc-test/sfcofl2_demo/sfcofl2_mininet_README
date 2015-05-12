@@ -1,0 +1,31 @@
+Test MPLS:
+
+- Run ODL controller
+- Run mininet:
+    cd path/to/sfc/sfc-test/sfcofl2
+    sudo python sfcofl2_mininet.py -I $CONTROLLER_IP -L --demo-mode mpls
+- Config ODL and send flows:
+    python rest_sender.py --prefix path/to/mpls-config
+-Check flows
+    ovs-ofctl .... dump-flows
+- Return to mininet:
+    server1 -m SimpleHTTPServer 80 &
+    client1 wget -O - server1
+
+Test VLAN:
+
+- Run ODL controller
+- Run mininet:
+    cd path/to/sfc/sfc-test/sfcofl2
+    sudo python sfcofl2_mininet.py -I $CONTROLLER_IP -L --demo-mode vlan
+- Config ODL and send flows:
+    python rest_sender.py --prefix path/to/vlan-config
+-Check flows
+    ovs-ofctl .... dump-flows
+- Return to mininet:
+    server1 -m SimpleHTTPServer 80 &
+    client1 wget -O - server1
+
+We can add the flags --file-gws-vlan, --file-gws-mpls, --file-sf-nodes to change the files where the flows are defined.
+
+Once we want to try with "real" SF, do not use -L flag. In that moment, it is possible to add the flag --operation-mode vlan or no-vlan to set a vlan between SFFs and SFs.

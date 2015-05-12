@@ -1,0 +1,13 @@
+{
+   "service-function-paths": {
+     "service-function-path": [
+       {
+         "name": "sfc-path-mpls",
+         "service-chain-name": "sfc-chain-mpls",
+         "transport-type": "service-locator:mpls",
+         "symmetric": true
+       }
+     ]
+   }
+}
+

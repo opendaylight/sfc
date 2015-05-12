@@ -1,0 +1,104 @@
+{
+  "service-function-forwarders": {
+    "service-function-forwarder": [
+      {
+        "name": "sff1",
+        "service-node": "openflow:1",
+        "sff-data-plane-locator": [
+          {
+            "name": "ulSff1Ingress",
+            "data-plane-locator":
+            {
+                "mpls-label": 1,
+                "transport": "service-locator:mpls"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "3",
+                "mac-address": "22:22:22:22:22:22"
+            }
+          },
+          {
+            "name": "ulSff1ToSff2",
+            "data-plane-locator":
+            {
+                "mpls-label": 2,
+                "transport": "service-locator:mpls"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "2",
+                "mac-address": "33:33:33:33:33:33"
+            }
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "name": "sf1",
+            "type": "service-function-type:http-header-enrichment",
+            "sff-sf-data-plane-locator":
+            {
+                "vlan-id": 1000,
+                "mac": "11:11:11:11:11:11",
+                "transport": "service-locator:mac"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "1",
+                "mac-address": "11:11:11:11:11:11"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sff2",
+        "service-node": "openflow:2",
+        "sff-data-plane-locator": [
+          {
+            "name": "ulSff2Ingress",
+            "data-plane-locator":
+            {
+                "mpls-label": 2,
+                "transport": "service-locator:mpls"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "2",
+                "mac-address": "66:66:66:66:66:66"
+            }
+          },
+          {
+            "name": "ulSff2Egress",
+            "data-plane-locator":
+            {
+                "mpls-label": 3,
+                "transport": "service-locator:mpls"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "3",
+                "mac-address": "55:55:55:55:55:55"
+            }
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "name": "sf2",
+            "type": "service-function-type:firewall",
+            "sff-sf-data-plane-locator":
+            {
+                "vlan-id": 2000,
+                "mac": "44:44:44:44:44:44",
+                "transport": "service-locator:mac"
+            },
+            "service-function-forwarder-ofs:ofs-port":
+            {
+                "port-id" : "1",
+                "mac-address": "44:44:44:44:44:44"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "input": {
+      "name": "sfc-path1",
+      "parent-service-function-path": "sfc-path1",
+      "symmetric": true
+  }
+}

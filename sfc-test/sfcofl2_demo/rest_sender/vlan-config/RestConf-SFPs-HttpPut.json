@@ -1,0 +1,13 @@
+{
+   "service-function-paths": {
+     "service-function-path": [
+       {
+         "name": "sfc-path1",
+         "service-chain-name": "sfc-chain1",
+         "transport-type": "service-locator:mac",
+         "symmetric": true
+       }
+     ]
+   }
+}
+

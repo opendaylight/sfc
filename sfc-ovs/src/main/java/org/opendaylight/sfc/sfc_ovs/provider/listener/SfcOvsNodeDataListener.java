@@ -17,12 +17,6 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Map;
-import java.util.Set;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
@@ -43,15 +37,14 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.Set;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
-
-/*    public static final InstanceIdentifier<OvsdbNodeAugmentation>  OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER =
-            InstanceIdentifier
-                    .create(NetworkTopology.class)
-                    .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                    .child(Node.class)
-                    .augmentation(OvsdbNodeAugmentation.class);*/
 
     public static final InstanceIdentifier<Node> OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER = InstanceIdentifier
             .create(NetworkTopology.class)
@@ -75,19 +68,27 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
+            if( entry.getValue() instanceof  Node)
+            {
+                Node originalNode = (Node) entry.getValue();
+                LOG.error("\nOriginal Node: {}", originalNode.toString());
+            }
+        }
+
         // NODE CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
 
             if (entry.getValue() instanceof Node) {
                 Node createdNode = (Node) entry.getValue();
-                LOG.debug("\nCreated OVS Node: {}", createdNode.toString());
+                LOG.error("\nCreated OVS Node: {}", createdNode.toString());
 
                 ServiceFunctionForwarder serviceFunctionForwarder =
                         SfcOvsToSffMappingAPI.buildServiceFunctionForwarderFromNode(createdNode);
 
-                if (serviceFunctionForwarder != null) {
-                    SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
+                if ((serviceFunctionForwarder != null) &&
+                        SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(serviceFunctionForwarder)) {
                     LOG.info("Created new Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }
@@ -99,13 +100,13 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
             if ((entry.getValue() instanceof Node)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 Node updatedNode = (Node) entry.getValue();
-                LOG.debug("\nModified OVS Node : {}", updatedNode.toString());
+                LOG.error("\nModified OVS Node : {}", updatedNode.toString());
 
                 ServiceFunctionForwarder serviceFunctionForwarder =
                         SfcOvsToSffMappingAPI.buildServiceFunctionForwarderFromNode(updatedNode);
 
-                if (serviceFunctionForwarder != null) {
-                    SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
+                if ((serviceFunctionForwarder != null) &&
+                    SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder)) {
                     LOG.info("Updated Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }
@@ -118,32 +119,35 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
             if (dataObject instanceof Node) {
                 Node deletedNode = (Node) dataObject;
-                LOG.debug("\nDeleted OVS Node: {}", deletedNode.toString());
+                LOG.error("\nDeleted OVS Node: {}", deletedNode.toString());
 
                 String sffName = SfcOvsToSffMappingAPI.getServiceForwarderNameFromNode(deletedNode);
-                SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(sffName);
-                LOG.info("Deleted Service Function Forwarder: {}", sffName);
+                if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(sffName)) {
+                    LOG.info("Deleted Service Function Forwarder: {}", sffName);
+                }
 
             } else if (dataObject instanceof OvsdbBridgeAugmentation) {
                 OvsdbBridgeAugmentation deletedBridge = (OvsdbBridgeAugmentation) dataObject;
-                LOG.debug("\nDeleted OVS Bridge: {}", deletedBridge.toString());
+                LOG.error("\nDeleted OVS Bridge: {}", deletedBridge.toString());
                 KeyedInstanceIdentifier keyedInstanceIdentifier = (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(Node.class);
                 if (keyedInstanceIdentifier != null) {
                     NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
                     String nodeId = nodeKey.getNodeId().getValue();
-                    SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeId);
-                    LOG.info("Deleted Service Function Forwarder: {}", nodeId);
+                    if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeId)) {
+                        LOG.info("Deleted Service Function Forwarder: {}", nodeId);
+                    }
                 }
 
             } else if (dataObject instanceof OvsdbTerminationPointAugmentation) {
                 OvsdbTerminationPointAugmentation deletedTerminationPoint = (OvsdbTerminationPointAugmentation) dataObject;
-                LOG.debug("\nDeleted OVS Termination Point: {}", deletedTerminationPoint.toString());
+                LOG.error("\nDeleted OVS Termination Point: {}", deletedTerminationPoint.toString());
                 KeyedInstanceIdentifier keyedInstanceIdentifier = (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(Node.class);
                 if (keyedInstanceIdentifier != null) {
                     NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
                     String nodeId = nodeKey.getNodeId().getValue();
-                    SfcProviderServiceForwarderAPI.deleteSffDataPlaneLocatorExecutor(nodeId, deletedTerminationPoint.getName());
-                    LOG.info("Deleted SFF DataPlane locator: {}", deletedTerminationPoint.getName());
+                    if (SfcProviderServiceForwarderAPI.deleteSffDataPlaneLocatorExecutor(nodeId, deletedTerminationPoint.getName())) {
+                        LOG.info("Deleted SFF DataPlane locator: {}", deletedTerminationPoint.getName());
+                    }
                 }
             }
         }

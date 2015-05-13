@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3aa0d159_333993a4",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1966
+      },
+      "writtenOn": "2015-05-13T06:24:14Z",
+      "side": 1,
+      "message": "Good point! I changed it.Thanks for catching this!",
+      "parentUuid": "3aa0d159_18dfd60e",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3aa0d159_38e2d2d5",
         "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSfEntryDataListener.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2015-05-13T02:27:29Z",
       "side": 1,
       "message": "Why not to listen SF DELETION and SF UPDATE?",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_5363ffb0",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1966
+      },
+      "writtenOn": "2015-05-13T06:24:14Z",
+      "side": 1,
+      "message": "This is existing code that I refactored with the move to the config subsystem. I do agree that SF deletion and update should be handled here as well.",
+      "parentUuid": "3aa0d159_38e2d2d5",
       "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "3aa0d159_b373637f",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSffDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1966
+      },
+      "writtenOn": "2015-05-13T06:24:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3aa0d159_1806f686",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3aa0d159_98f9a682",
         "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSffDataListener.java",
         "patchSetId": 2
@@ -64,6 +118,24 @@
       "writtenOn": "2015-05-13T02:27:29Z",
       "side": 1,
       "message": "it\u0027s SFF CREATION, it also should listen SFF DELETION and SFF UPDATE.",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_d3f5cfcb",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSffDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1966
+      },
+      "writtenOn": "2015-05-13T06:24:14Z",
+      "side": 1,
+      "message": "Similarly to SfDataListener, this is existing code that was refactored while moving to config subsystem. I do agree that update and delete should also be handled here.",
+      "parentUuid": "3aa0d159_98f9a682",
       "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -150,6 +150,83 @@ public class SfcL2RspProcessor {
         LOG.debug("configureSffEgressForGroup srcSff [{}] dstSff [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSfg(), entry.getPathId(), entry.getServiceIndex());
 
+        DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
+
+        ServiceFunctionForwarder sffSrc = sfcL2ProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
+        SffDataPlaneLocator sffSrcEgressDpl = null;
+        ServiceFunctionGroup sfg = sfcL2ProviderUtils.getServiceFunctionGroup(entry.getSfg(), entry.getPathId());
+        List<SfcServiceFunction> sfs = sfg.getSfcServiceFunction();
+
+        if(entry.getDstSff().equals(SffGraph.EGRESS)) {
+            sffSrcEgressDpl =
+                    sfcL2ProviderUtils.getSffDataPlaneLocator(sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+
+            for (SfcServiceFunction sfcServiceFunction : sfs) {
+                ServiceFunction sfDst = sfcL2ProviderUtils.getServiceFunction(sfcServiceFunction.getName(), entry.getPathId());
+                SfDataPlaneLocator sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst);
+                // Configure the SF-SFF-GW NextHop, we dont have the GW mac, leaving it blank
+                configureSffNextHopFlow(entry.getSrcSff(),
+                        sfDstDpl,
+                        (SffDataPlaneLocator) null,
+                        entry.getPathId(),
+                        entry.getServiceIndex());
+            }
+
+            // Configure the SFF-Egress Transport Egress
+            configureSffTransportEgressFlow(
+                    entry.getSrcSff(),
+                    sffSrcEgressDpl,
+                    null,
+                    sffGraph.getPathEgressDpl(entry.getPathId()),
+                    entry.getPathId(),
+                    entry.getServiceIndex());
+
+            // Nothing else to be done for the egress tables
+            return;
+        }
+
+        ServiceFunctionForwarder sffDst = sfcL2ProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
+        if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
+            // Configure the GW-SFF-SF NextHop using sfDpl
+            //configureSffNextHopFlow(entry.getDstSff(), (SffDataPlaneLocator) null, sfDstDpl, entry.getPathId(), entry.getServiceIndex());
+            configureGroupNextHopFlow(entry.getDstSff(), (SffDataPlaneLocator) null, sfg.getGroupId(), sfg.getName(), entry.getPathId(), entry.getServiceIndex());
+        } else {
+            sffSrcEgressDpl =
+                    sfcL2ProviderUtils.getSffDataPlaneLocator(sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+            // Configure the SFF-SFF-SF NextHop using sfDpl
+            configureGroupNextHopFlow(entry.getDstSff(), sffSrcEgressDpl, sfg.getGroupId(), sfg.getName(), entry.getPathId(), entry.getServiceIndex());
+        }
+
+        if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
+            // Nothing else to be done for the egress tables
+            return;
+        }
+
+        SffDataPlaneLocator sffDstIngressDpl =
+                sfcL2ProviderUtils.getSffDataPlaneLocator(sffDst, sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
+
+        for (SfcServiceFunction sfcServiceFunction : sfs) {
+            // TODO what if there is more than one SF in the dict?
+            ServiceFunction sfSrc = sfcL2ProviderUtils.getServiceFunction(sfcServiceFunction.getName(), entry.getPathId());
+            SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc);
+
+            // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
+            configureSffNextHopFlow(entry.getSrcSff(),
+                                    sfSrcDpl,
+                                    sffDstIngressDpl,
+                                    entry.getPathId(),
+                                    entry.getServiceIndex());
+
+        }
+
+        // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
+        configureSffTransportEgressFlow(
+                entry.getSrcSff(),
+                sffSrcEgressDpl,
+                sffDstIngressDpl,
+                dstHopIngressDpl,
+                entry.getPathId(),
+                entry.getServiceIndex());
 
     }
 
@@ -508,6 +585,25 @@ public class SfcL2RspProcessor {
         }
     }
 
+    private void configureGroupNextHopFlow(final String sffName, SffDataPlaneLocator srcSffDpl, long groupId, String groupName,
+            final long pathId, final short serviceIndex) {
+        DataPlaneLocator srcDpl = null;
+        // currently support only mac
+        String srcMac = null;
+        if (srcSffDpl != null) {
+            srcDpl = srcSffDpl.getDataPlaneLocator();
+            srcMac = sfcL2ProviderUtils.getDplPortInfoMac(srcSffDpl);
+        }
+        String sffNodeName = sfcL2ProviderUtils.getSffOpenFlowNodeName(sffName, pathId);
+        if(sffNodeName == null) {
+            throw new RuntimeException(
+                    "configureSffNextHopFlow SFF [" + sffName + "] does not exist");
+        }
+
+        this.sfcL2FlowProgrammer.configureGroupNextHopFlow(sffName, pathId, srcMac, groupId, groupName, addFlow);
+    }
+
+    // TODO I think isSf can be removed from this one, and just pass true to the final signature
     // Simple pass-through method that calculates the srcOfsPort
     // and srcMac from the srcSffSfDict, and the dstMac from the dstDpl
     private void configureSffTransportEgressFlow(final String sffName,

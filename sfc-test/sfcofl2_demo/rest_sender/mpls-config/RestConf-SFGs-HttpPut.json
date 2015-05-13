@@ -1,0 +1,32 @@
+{
+	"service-function-groups": {
+    	"service-function-group": [
+	        {
+                "name": "SFG-http-header-enrichment",
+                "groupId": 1,
+                "algorithm": "alg1",
+                "type": "service-function-type:http-header-enrichment",
+                "ip-mgmt-address": "10.3.1.104",
+                "rest-uri": "",
+                "sfc-service-function": [
+                    {
+                        "name": "sf1"
+                    }
+                ]
+	        },
+	        {
+                "name": "SFG-firewall",
+                "groupId": 2,
+                "algorithm": "alg1",
+                "type": "service-function-type:firewall",
+                "ip-mgmt-address": "10.3.1.104",
+                "rest-uri": "",
+                "sfc-service-function": [
+                    {
+                        "name": "sf2"
+                    }
+                ]
+	        }
+        ]
+	}
+}

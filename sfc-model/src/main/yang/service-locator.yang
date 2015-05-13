@@ -152,6 +152,15 @@ module service-locator {
     }
   }
 
+  grouping other-locator {
+    description
+      "Other locator";
+    leaf other-name {
+      type string;
+      description "A other or undefined locator";
+    }
+  }
+
   grouping data-plane-locator {
     description
       "This group presents data-plane locator
@@ -172,6 +181,9 @@ module service-locator {
       }
       case mpls {
         uses mpls-locator;
+      }
+      case other {
+        uses other-locator;
       }
       description "The collection of all possible data-plane
         locators. Only one can be chosen";

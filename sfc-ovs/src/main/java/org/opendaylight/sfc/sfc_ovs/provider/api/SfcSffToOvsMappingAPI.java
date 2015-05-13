@@ -131,7 +131,11 @@ public class SfcSffToOvsMappingAPI {
 
             ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());
             ovsdbTerminationPointBuilder.setInterfaceType(getDataPlaneLocatorInterfaceType(sffDataPlaneLocator.getDataPlaneLocator()));
-            ovsdbTerminationPointBuilder.setOptions(getSffDataPlaneLocatorOptions(sffDataPlaneLocator));
+
+            List<Options> optionsList = getSffDataPlaneLocatorOptions(sffDataPlaneLocator);
+            if (!optionsList.isEmpty()) {
+                ovsdbTerminationPointBuilder.setOptions(optionsList);
+            }
             ovsdbTerminationPointList.add(ovsdbTerminationPointBuilder.build());
         }
 
@@ -160,65 +164,79 @@ public class SfcSffToOvsMappingAPI {
         return options;
     }
 
+    /**
+     * Get SFF dataplane Locator options such as remote_ip and local_ip.
+     * <p>
+     * Returns the list of all options associated with a data plane locator. The caller needs
+     * to check array is empty and only then add to the associated builder object.
+     * <p>
+     *
+     * @param sffDataPlaneLocator SffDataPlaneLocator
+     * @return List&lt;Options&gt; if there are any or null otherwise
+     */
     private static List<Options> getSffDataPlaneLocatorOptions(SffDataPlaneLocator sffDataPlaneLocator) {
         Preconditions.checkNotNull(sffDataPlaneLocator, "Cannot gather SffDataPlaneLocator Options, sffDataPlaneLocator is null.");
         List<Options> options = new ArrayList<>();
+        OvsOptions ovsOptions = null;
 
         SffOvsLocatorOptionsAugmentation sffDataPlaneLocatorOvsOptions = sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
-        OvsOptions ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();
+        if (sffDataPlaneLocatorOvsOptions != null) {
 
-        if (ovsOptions.getLocalIp() != null) {
-            OptionsBuilder optionsLocalIpBuilder = new OptionsBuilder();
-            optionsLocalIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
-            optionsLocalIpBuilder.setValue(ovsOptions.getLocalIp());
-            options.add(optionsLocalIpBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
-        }
+            ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();
 
-        if (ovsOptions.getRemoteIp() != null) {
-            OptionsBuilder optionsDstIpBuilder = new OptionsBuilder();
-            optionsDstIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
-            optionsDstIpBuilder.setValue(ovsOptions.getRemoteIp());
-            options.add(optionsDstIpBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
-        }
+            if (ovsOptions.getLocalIp() != null) {
+                OptionsBuilder optionsLocalIpBuilder = new OptionsBuilder();
+                optionsLocalIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+                optionsLocalIpBuilder.setValue(ovsOptions.getLocalIp());
+                options.add(optionsLocalIpBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+            }
 
-        if (ovsOptions.getDstPort() != null) {
-            OptionsBuilder optionsDstPortBuilder = new OptionsBuilder();
-            optionsDstPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
-            optionsDstPortBuilder.setValue(ovsOptions.getDstPort());
-            options.add(optionsDstPortBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
-        }
+            if (ovsOptions.getRemoteIp() != null) {
+                OptionsBuilder optionsDstIpBuilder = new OptionsBuilder();
+                optionsDstIpBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
+                optionsDstIpBuilder.setValue(ovsOptions.getRemoteIp());
+                options.add(optionsDstIpBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
+            }
 
-        if (ovsOptions.getKey() != null) {
-            OptionsBuilder optionsKeyBuilder = new OptionsBuilder();
-            optionsKeyBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_KEY);
-            optionsKeyBuilder.setValue(ovsOptions.getKey());
-            options.add(optionsKeyBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_KEY);
-        }
+            if (ovsOptions.getDstPort() != null) {
+                OptionsBuilder optionsDstPortBuilder = new OptionsBuilder();
+                optionsDstPortBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
+                optionsDstPortBuilder.setValue(ovsOptions.getDstPort());
+                options.add(optionsDstPortBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
+            }
 
-        if (ovsOptions.getNsp() != null) {
-            OptionsBuilder optionsNspBuilder = new OptionsBuilder();
-            optionsNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSP);
-            optionsNspBuilder.setValue(ovsOptions.getNsp());
-            options.add(optionsNspBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSP);
-        }
+            if (ovsOptions.getKey() != null) {
+                OptionsBuilder optionsKeyBuilder = new OptionsBuilder();
+                optionsKeyBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_KEY);
+                optionsKeyBuilder.setValue(ovsOptions.getKey());
+                options.add(optionsKeyBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_KEY);
+            }
 
-        if (ovsOptions.getNsi() != null) {
-            OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
-            optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSI);
-            optionsNsiBuilder.setValue(ovsOptions.getNsi());
-            options.add(optionsNsiBuilder.build());
-        } else {
-            LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
+            if (ovsOptions.getNsp() != null) {
+                OptionsBuilder optionsNspBuilder = new OptionsBuilder();
+                optionsNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSP);
+                optionsNspBuilder.setValue(ovsOptions.getNsp());
+                options.add(optionsNspBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSP);
+            }
+
+            if (ovsOptions.getNsi() != null) {
+                OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+                optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSI);
+                optionsNsiBuilder.setValue(ovsOptions.getNsi());
+                options.add(optionsNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
+            }
         }
 
         return options;

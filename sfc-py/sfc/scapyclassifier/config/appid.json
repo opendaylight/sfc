@@ -1,0 +1,31 @@
+{
+  "application-id-dictionary": {
+    "application-id": [
+      {
+        "applicationName": "HTTP",
+        "class-id": 3,
+        "selector-id": 80
+      },
+      {
+        "applicationName": "SSH",
+        "class-id": 3,
+        "selector-id": 22
+      },
+      {
+        "applicationName": "Server1",
+        "class-id": 6,
+        "selector-id": 1
+      },
+      {
+        "applicationName": "Server2",
+        "class-id": 6,
+        "selector-id": 2
+      },
+      {
+        "applicationName": "Server3",
+        "class-id": 6,
+        "selector-id": 3
+      }
+    ]
+  }
+}

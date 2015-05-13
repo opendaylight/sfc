@@ -1,0 +1,16 @@
+{
+    "class-id-dictionary": {
+      [
+      {
+        "name": "IANA-L4",
+        "id": 3,
+        "description": "The IANA layer 4 (L4) well-known port number is exported in the Selector ID."
+      },
+      {
+        "name": "USER-Defined",
+        "id": 6,
+        "description": "The Selector ID represents Defined applications defined by the user (using CLI, GUI, etc.)"
+      }
+      ]
+    }
+}

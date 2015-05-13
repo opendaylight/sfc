@@ -1,0 +1,58 @@
+If you want to use python3, you have  install scapy with python3 support first
+from https://pypi.python.org/pypi/scapy-python3/0.11
+
+
+scapyNSH:
+Tested topology is the following:
+Each Client / Server / SF1 / SF2 are VMs
+The test host machine is Debian Testing with Kernel 3.16
+OVS + NSH is taken from Pritesh'fork of OVS:
+https://github.com/priteshk/ovs.git (branch nsh-v8)
+
+OVS Configuration for each VxLAN port :
+ovs-vsctl add-port br0 vxlan-$1 -- set interface vxlan-$1 type=vxlan
+      options:local_ip=192.168.66.1 options:remote_ip=192.168.$vxlanip
+      options:key=flow options:dst_port=6633 options:nsp=flow options:nsi=flow
+
+Each SF uses a VxLAN connected to OVS :
+#ip link add vxlan0 type vxlan id 0x1337 dstport 6633
+                                remote 192.168.66.1 dev eth1
+#ip link set vxlan0 up
+
+           ______________
+ Client ---|  OVS + NSH |---- Server
+           --------------
+               |     |
+              SF1   SF2
+
+ Open flow rules are the following :
+ - Packet classification, NSH encapsulation & send this packet to SF1
+ tcp,in_port={PORT_OF_CLIENT},tp_dst=8080
+         actions=set_tunnel:0x1337,set_nsp:42,set_nsi:255,output:{PORT_OF_SF1}
+ - NSP/NSI matcher, and forward to the next SF
+ nsp=42,nsi=254 actions=output:{PORT_OF_SF2}
+ - End of path, send the packet to the egress port.
+   Note that this port is not a VxLAN port.
+ priority=1,nsp=42 actions=output:{PORT_OF_SERVER}
+
+
+scapyClassifierL7:
+
+the L7 classifier may be as the 1st classifier or as a 2nd classifier
+As the 1st classifier, it has 2 legs, as below:
+
+Client---[ Class L7 ]---[  SFF  ]---Server
+
+Input : Raw Packets
+Output: NSH/VXLAN
+
+As a 2nd classifier, it may have 1 or 2 legs
+
+Client---[    SFF    ]-----Server
+           |(|)
+         Classifier
+
+Input:  NSH
+Output: NSH
+
+

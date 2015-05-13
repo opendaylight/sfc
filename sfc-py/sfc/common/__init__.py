@@ -1,1 +1,1 @@
-from . import classifier, launcher, services, sfc_globals  # noqa
+from . import classifier, nfqclassifier, launcher, services, sfc_globals  # noqa

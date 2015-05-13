@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Matches1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.SfcAction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
@@ -71,6 +72,7 @@ class AclExporter extends AbstractExporter implements Exporter {
     public static final String _DENY = "deny";
     public static final String _SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH = "service-function-acl:rendered-service-path";
     public static final String _MATCH_COUNTER = "match-counter";
+    public static final String _ACE_APPLICATIONIDS = "service-function-acl:application-id";
 
     public static final String ACE_IP = "AceIp";
     public static final String ACE_ETH = "AceEth";
@@ -184,6 +186,18 @@ class AclExporter extends AbstractExporter implements Exporter {
                         matchesNode.put(_SOURCE_MAC_ADDRESS_MASK, aceEth.getSourceMacAddressMask().getValue());
                     }
                     break;
+            }
+        }
+
+        Matches1 matches1 = matches.getAugmentation(Matches1.class);
+        if (matches1 != null) {
+            List<String> appIds = matches1.getApplicationId();
+
+            if (appIds != null) {
+                ArrayNode an = matchesNode.putArray(_ACE_APPLICATIONIDS);
+                for (String appId : appIds) {
+                    an.add(appId);
+                }
             }
         }
 

@@ -25,7 +25,7 @@ import sfc  # noqa
 __package__ = 'sfc'
 
 
-from sfc.common import classifier
+from sfc.common import classifier, nfqclassifier, scapyclassifier
 from sfc.cli import xe_cli, xr_cli, ovs_cli
 from sfc.common import sfc_globals as _sfc_globals
 from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
@@ -45,7 +45,7 @@ plane implementation (sff_thread.py)
 
 app = flask.Flask(__name__)
 logger = logging.getLogger(__file__)
-nfq_classifier = classifier.NfqClassifier()
+classifier = classifier.Classifier()
 sfc_globals = _sfc_globals.sfc_globals
 
 
@@ -282,12 +282,12 @@ def check_and_start_sf_thread(sf_name):
                     start_sf(sf_name, "0.0.0.0", sf_port, sf_type)
 
 
-def check_nfq_classifier_state():
+def check_classifier_state():
     """
     Check if the NFQ classifier is running, log an error and abort otherwise
     """
-    if not nfq_classifier.nfq_running():
-        logger.warning('Classifier is not running: ignoring ACL')
+    if not classifier.is_running():
+        logger.warning('Classifier %s is not running: ignoring ACL', str(classifier))
         flask.abort(500)
 
 
@@ -299,14 +299,14 @@ def page_not_found(e):
 @app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
            methods=['PUT', 'POST'])
 def apply_acl(acl_name):
-    check_nfq_classifier_state()
+    check_classifier_state()
 
     if not flask.request.json:
         logger.error('Received ACL is empty, aborting ...')
         flask.abort(400)
 
     try:
-        nfq_classifier.process_acl(flask.request.get_json())
+        classifier.process_acl(flask.request.get_json())
     except:
         return '', 500
 
@@ -316,12 +316,12 @@ def apply_acl(acl_name):
 @app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
            methods=['DELETE'])
 def remove_acl(acl_name):
-    check_nfq_classifier_state()
+    check_classifier_state()
 
     acl_data = {'access-list': [{'access-list-entries': [{'delete': True}],
                                  'acl-name': acl_name}]}
 
-    nfq_classifier.process_acl(acl_data)
+    classifier.process_acl(acl_data)
     return '', 204
 
 
@@ -388,8 +388,8 @@ def delete_path(rsp_name):
         local_data_plane_path.pop(sfp_id, None)
         local_path.pop(rsp_name, None)
 
-        if nfq_classifier.nfq_running():
-            nfq_classifier.remove_rsp(rsp_name)
+        if classifier.is_running():
+            classifier.remove_rsp(rsp_name)
 
     except KeyError:
         logger.error(not_found_msg)
@@ -773,6 +773,7 @@ def auto_sff_name():
 
 
 def main():
+    global classifier
     """Create a CLI parser for the SFC Agent and execute appropriate actions"""
     #: default values
     agent_port = 5000
@@ -788,10 +789,11 @@ def main():
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
                                             "--sff-os=<agent os>"
-                                            " --agent-port=<agent listening port>"
+                                            "--agent-port=<agent listening port>"
+                                            "--send-ipfix"
                                             "\n\nnote:\n"
                                             "root privileges are required "
-                                            "if `--nfq-class` flag is used"))
+                                            "if `--nfq-class` flag is used or if --cl7-class flag is used"))
 
     parser.add_argument('--odl-get-sff', action='store_true',
                         help='Get SFF from ODL')
@@ -801,6 +803,9 @@ def main():
 
     parser.add_argument('--nfq-class', action='store_true',
                         help='Flag to use NFQ Classifier')
+
+    parser.add_argument('--cl7-class', action='store_true',
+                        help='Flag to use scapy L7 Classifier')
 
     parser.add_argument('-r', '--rest', action='store_true',
                         help='Flag to use REST')
@@ -821,6 +826,9 @@ def main():
 
     parser.add_argument('--agent-port', type=int,
                         help='Set SFC Agent port. Default is %s' % agent_port)
+
+    parser.add_argument('--send-ipfix', action='store_true',
+                        help='Send IPFix application-ids from scapy L7 Classifier')
 
     #: parse CMD arguments ----------------------------------------------------
     args = parser.parse_args()
@@ -866,7 +874,14 @@ def main():
             auto_sff_name()
 
         if args.nfq_class:
+            classifier = nfqclassifier.NfqClassifier()
             classifier.start_classifier()
+
+        if args.cl7_class:
+            classifier = scapyclassifier.ScapyClassifier()
+            classifier.start_classifier()
+            if args.send_ipfix:
+                classifier.send_ipfixconf()
 
         if args.rest:
             app.run(port=agent_port,

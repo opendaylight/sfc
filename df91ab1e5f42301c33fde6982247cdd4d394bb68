@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_18dfd60e",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-13T02:27:29Z",
+      "side": 1,
+      "message": "Maybe setDataStoreType(LogicalDatastoreType.CONFIGURATION) is more appropriate here because the below APIs use LogicalDatastoreType.CONFIGURATION instead of LogicalDatastoreType.OPERATIONAL.",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_38e2d2d5",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-13T02:27:29Z",
+      "side": 1,
+      "message": "Why not to listen SF DELETION and SF UPDATE?",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_1806f686",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSffDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-13T02:27:29Z",
+      "side": 1,
+      "message": "setDataStoreType(LogicalDatastoreType.CONFIGURATION) is better",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_98f9a682",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfc_lisp/provider/listener/SfcLispSffDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-13T02:27:29Z",
+      "side": 1,
+      "message": "it\u0027s SFF CREATION, it also should listen SFF DELETION and SFF UPDATE.",
+      "revId": "df91ab1e5f42301c33fde6982247cdd4d394bb68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

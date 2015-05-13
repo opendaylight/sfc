@@ -690,6 +690,8 @@ public class SfcL2RspProcessor {
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
         if(sffDplList.size() == 1) {
             // Nothing to be done here
+            sffGraph.setSffIngressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
+            sffGraph.setSffEgressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
             return true;
         }
 

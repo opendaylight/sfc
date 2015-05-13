@@ -71,6 +71,8 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                  * references in the SFF/SF operational trees
                  */
 
+                LOG.debug("{}: SFF {} deletion",
+                        Thread.currentThread().getStackTrace()[1], serviceFunctionForwarder.getName());
                 String sffName = serviceFunctionForwarder.getName();
                 List<String> rspList = new ArrayList<>();
                 List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
@@ -100,13 +102,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
             if( entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder createdServiceFunctionForwarder =
                         (ServiceFunctionForwarder) entry.getValue();
-                Object[] serviceForwarderObj = {createdServiceFunctionForwarder};
-                Class[] serviceForwarderClass = {ServiceFunctionForwarder.class};
+                LOG.debug("{}: SFF {} create",
+                        Thread.currentThread().getStackTrace()[1], createdServiceFunctionForwarder.getName());
 
-                //Send to SB REST
-                //SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
-                //        .getCheckServiceForwarderAPI(serviceForwarderObj, serviceForwarderClass);
-                //ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
             }
         }
 
@@ -124,8 +122,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener  {
                  */
 
                 String sffName = serviceFunctionForwarder.getName();
+                LOG.debug("{}: SFF {} update",
+                        Thread.currentThread().getStackTrace()[1], sffName);
                 List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
-                //SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName);
                 List<String> rspList = new ArrayList<>();
                 if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
                     if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName)) {

@@ -135,7 +135,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
-                child(ServiceFunctionForwarder.class, sff.getKey()).toInstance();
+                child(ServiceFunctionForwarder.class, sff.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
 

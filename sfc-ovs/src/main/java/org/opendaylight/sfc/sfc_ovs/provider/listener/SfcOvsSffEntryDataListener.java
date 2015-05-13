@@ -69,7 +69,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
+                LOG.error("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
 
                 //build OvsdbBridge
                 OvsdbBridgeAugmentation ovsdbBridge =
@@ -92,7 +92,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
             if ((entry.getValue() instanceof ServiceFunctionForwarder)
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
+                LOG.error("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
 
                 //build OvsdbBridge
                 OvsdbBridgeAugmentation ovsdbBridge =

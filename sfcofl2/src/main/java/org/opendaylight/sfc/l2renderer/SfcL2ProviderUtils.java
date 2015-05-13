@@ -1,5 +1,6 @@
 package org.opendaylight.sfc.l2renderer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +23,9 @@ public class SfcL2ProviderUtils extends SfcL2AbstractProviderUtils {
         private Map<String, ServiceFunctionForwarder> serviceFunctionFowarders;
 
         public RspContext() {
-            serviceFunctions = new HashMap<String, ServiceFunction>();
-            serviceFunctionGroups = new HashMap<String, ServiceFunctionGroup>();
-            serviceFunctionFowarders = new HashMap<String, ServiceFunctionForwarder>();
+            serviceFunctions = Collections.synchronizedMap(new HashMap<String, ServiceFunction>());
+            serviceFunctionGroups = Collections.synchronizedMap(new HashMap<String, ServiceFunctionGroup>());
+            serviceFunctionFowarders = Collections.synchronizedMap(new HashMap<String, ServiceFunctionForwarder>());
         }
     }
     private Map<Long, RspContext> rspIdToContext;

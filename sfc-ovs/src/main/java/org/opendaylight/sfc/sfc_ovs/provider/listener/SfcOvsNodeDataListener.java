@@ -17,12 +17,6 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Map;
-import java.util.Set;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
@@ -42,6 +36,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Set;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
@@ -104,8 +104,8 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder serviceFunctionForwarder =
                         SfcOvsToSffMappingAPI.buildServiceFunctionForwarderFromNode(updatedNode);
 
-                if (serviceFunctionForwarder != null) {
-                    SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder);
+                if ((serviceFunctionForwarder != null) &&
+                    SfcProviderServiceForwarderAPI.updateServiceFunctionForwarderExecutor(serviceFunctionForwarder)) {
                     LOG.info("Updated Service Function Forwarder: {}", serviceFunctionForwarder.getName());
                 }
             }

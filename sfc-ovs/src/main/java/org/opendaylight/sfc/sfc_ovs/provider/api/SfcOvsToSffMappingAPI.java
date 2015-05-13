@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.OtherBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
@@ -83,7 +84,10 @@ public class SfcOvsToSffMappingAPI {
             OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
             ovsBridgeBuilder.setBridgeName(ovsdbBridgeAugmentation.getBridgeName().getValue());
             ovsBridgeBuilder.setUuid(ovsdbBridgeAugmentation.getBridgeUuid());
-            ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
+            DatapathId datapathId = ovsdbBridgeAugmentation.getDatapathId();
+            if (datapathId != null) {
+                ovsBridgeBuilder.setOpenflowNodeId(getOvsBridgeOpenflowNodeId(ovsdbBridgeAugmentation.getDatapathId()));
+            }
             sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
             serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
@@ -135,9 +139,9 @@ public class SfcOvsToSffMappingAPI {
                     if (dataPlaneLocator != null) {
                         sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocator);
                     }
-                    SffOvsLocatorBridgeAugmentationBuilder sffDataPlaneLocator1Builder = new SffOvsLocatorBridgeAugmentationBuilder();
-                    sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
-                    sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorBridgeAugmentation.class, sffDataPlaneLocator1Builder.build());
+                    SffOvsLocatorBridgeAugmentationBuilder sffOvsLocatorBridgeAugmentationBuilder = new SffOvsLocatorBridgeAugmentationBuilder();
+                    sffOvsLocatorBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
+                    sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorBridgeAugmentation.class, sffOvsLocatorBridgeAugmentationBuilder.build());
 
                     SffOvsLocatorOptionsAugmentationBuilder sffDataPlaneLocatorOptionsBuilder = new SffOvsLocatorOptionsAugmentationBuilder();
                     sffDataPlaneLocatorOptionsBuilder.setOvsOptions(buildOvsOptionsFromTerminationPoint(terminationPointAugmentation));
@@ -167,6 +171,10 @@ public class SfcOvsToSffMappingAPI {
         Preconditions.checkNotNull(terminationPoint);
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
+        // Default if nothing is specified
+        OtherBuilder otherBuilder = new OtherBuilder();
+        otherBuilder.setOtherName("Other");
+        dataPlaneLocatorBuilder.setLocatorType(otherBuilder.build());
 
         if (terminationPoint.getOptions() != null) {
             //set ip:port locator
@@ -177,6 +185,10 @@ public class SfcOvsToSffMappingAPI {
                     case SfcOvsUtil.OVSDB_OPTION_LOCAL_IP:
                         IpAddress localIp = SfcOvsUtil.convertStringToIpAddress(option.getValue());
                         ipBuilder.setIp(localIp);
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_REMOTE_IP:
+                        IpAddress remotelIp = SfcOvsUtil.convertStringToIpAddress(option.getValue());
+                        ipBuilder.setIp(remotelIp);
                         break;
                 }
             }

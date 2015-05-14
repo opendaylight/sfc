@@ -32,15 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This interface allows us to completely isolate the SfcL2RspProcessor and SfcL2SfgDataListener
- * from the sfc-provider-api and the controller data store, which makes it much easier to Unit
+ * This Abstract Base class allows us to completely isolate the
+ * SfcL2RspProcessor and SfcL2SfgDataListener from the sfc-provider-api
+ * and the controller data store, which makes it much easier to Unit
  * Test both classes.
  *
  * @author Brady Johnson
  *
  */
-public abstract class SfcL2AbstractProviderUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(SfcL2AbstractProviderUtils.class);
+public abstract class SfcL2BaseProviderUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(SfcL2BaseProviderUtils.class);
 
     abstract public void addRsp(long rspId);
 

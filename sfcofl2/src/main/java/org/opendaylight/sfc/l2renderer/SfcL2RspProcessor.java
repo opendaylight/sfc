@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class SfcL2RspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspProcessor.class);
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
-    private SfcL2AbstractProviderUtils sfcL2ProviderUtils;
+    private SfcL2BaseProviderUtils sfcL2ProviderUtils;
     private Map<String, Boolean> sffInitialized;
     private boolean addFlow;
     private int lastMplsLabel;
@@ -68,7 +68,7 @@ public class SfcL2RspProcessor {
 
     public SfcL2RspProcessor(
             SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
-            SfcL2AbstractProviderUtils sfcL2ProviderUtils) {
+            SfcL2BaseProviderUtils sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
         this.sffInitialized = new HashMap<String, Boolean>();
@@ -134,13 +134,13 @@ public class SfcL2RspProcessor {
                 if(!entry.getDstSff().equals(SffGraph.EGRESS)) {
                     initializeSff(entry.getDstSff(), entry.getPathId());
                 }
+
                 configureSffIngress(entry, sffGraph);
-                if(entry.getSf() != null) {
-                    configureSffEgress(entry, sffGraph);
-                } else if(entry.getSfg() != null){
-                    configureSffEgressForGroup(entry, sffGraph);
-                }
+                configureSffEgress(entry, sffGraph);
             }
+
+            LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
+
         } catch(RuntimeException e) {
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         }
@@ -325,6 +325,12 @@ public class SfcL2RspProcessor {
         LOG.debug("configureSffEgress srcSff [{}] dstSff [{}] sf [{}] pathId [{}] serviceIndex [{}]",
                 entry.getSrcSff(), entry.getDstSff(), entry.getSf(), entry.getPathId(), entry.getServiceIndex());
 
+        // SFGs
+        if(entry.getSfg() != null){
+            configureSffEgressForGroup(entry, sffGraph);
+            return;
+        }
+
         /* These are the SFFGraph entries and how the NextHops are calculated:
          * (retrieved with: grep addEntry karaf.log | awk -F "|" '{print $6}')
          *
@@ -437,6 +443,7 @@ public class SfcL2RspProcessor {
             LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true, true);
             this.sfcL2FlowProgrammer.configurePathMapperTableMatchAny(       sffNodeName, false, true);
+            this.sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(    sffNodeName, false, true);
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(          sffNodeName, false, true);
             this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(  sffNodeName, true, true);
 
@@ -626,8 +633,16 @@ public class SfcL2RspProcessor {
         }
         String srcMac = sfcL2ProviderUtils.getDictPortInfoMac(srcSffSfDict);
         String dstMac = sfcL2ProviderUtils.getSfDplMac(dstSfDpl);
+
+        ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(srcSffSfDict.getName(), pathId);
+        if(sf.isTcpProxy() != null && sf.isTcpProxy().booleanValue()) {
+            // If the SF is a TCP Proxy, we need this additional flow for the SF:
+            // - a flow that will also check for TCP Syn and do a PktIn
+            configureSffTransportEgressFlow(
+                    sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, true, false, true);
+        }
         configureSffTransportEgressFlow(
-                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, true, false);
+                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, true, false, false);
     }
 
     // Simple pass-through method that calculates the srcOfsPort
@@ -650,7 +665,7 @@ public class SfcL2RspProcessor {
         configureSffTransportEgressFlow(sffName,
                 srcDpl.getDataPlaneLocator(),
                 ((dstDpl == null) ? null : dstDpl.getDataPlaneLocator()),
-                hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, false, isLastServiceIndex);
+                hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, false, isLastServiceIndex, false);
     }
 
     // This version is only used by the previous 2 configureSffTransportEgressFlow() signatures
@@ -664,7 +679,8 @@ public class SfcL2RspProcessor {
                                                  long pathId,
                                                  short serviceIndex,
                                                  boolean isSf,
-                                                 boolean isLastServiceIndex) {
+                                                 boolean isLastServiceIndex,
+                                                 boolean doPktIn) {
         if(hopDpl == null) {
             throw new RuntimeException(
                     "configureSffTransportEgressFlow SFF [" + sffName + "] hopDpl is null");
@@ -692,23 +708,23 @@ public class SfcL2RspProcessor {
             Integer vlanTag = ((MacAddressLocator) hopLocatorType).getVlanId();
             if(vlanTag == null) {
                 this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(
-                        sffNodeName, srcMac, dstMac, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
+                        sffNodeName, srcMac, dstMac, srcOfsPort, pathId, isSf, isLastServiceIndex, doPktIn, this.addFlow);
             } else {
                 this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(
-                        sffNodeName, srcMac, dstMac, vlanTag, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
+                        sffNodeName, srcMac, dstMac, vlanTag, srcOfsPort, pathId, isSf, isLastServiceIndex, doPktIn, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) hopLocatorType).getMplsLabel();
             this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(
-                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
+                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPort, pathId, isSf, isLastServiceIndex, doPktIn, this.addFlow);
         } else if (implementedInterface.equals(Ip.class)) {
            //VxLAN-gpe, it is IP/UDP flow with VLAN tag
            if (hopDpl.getTransport().equals(VxlanGpe.class)) {
                 long nsp = pathId;
                 short nsi = serviceIndex;
                 this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(
-                        sffNodeName, nsp, nsi, srcOfsPort, isLastServiceIndex, this.addFlow);
+                        sffNodeName, nsp, nsi, srcOfsPort, isLastServiceIndex, doPktIn, this.addFlow);
                 if(isLastServiceIndex) {
                     this.sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(
                             sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString(), this.addFlow);

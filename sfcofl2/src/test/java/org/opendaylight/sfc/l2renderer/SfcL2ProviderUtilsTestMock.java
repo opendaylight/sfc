@@ -9,7 +9,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcL2ProviderUtilsTestMock extends SfcL2AbstractProviderUtils {
+public class SfcL2ProviderUtilsTestMock extends SfcL2BaseProviderUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2ProviderUtilsTestMock.class);
     private Map<String, ServiceFunction> serviceFunctions;
     private Map<String, ServiceFunctionGroup> serviceFunctionGroups;

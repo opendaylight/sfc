@@ -43,6 +43,15 @@ module sfc-l2renderer-impl {
         }
       }
 
+      container notification-service {
+        uses config:service-ref {
+          refine type {
+            mandatory true;
+            config:required-identity mdsal:binding-notification-service;
+          }
+        }
+      }
+
       container rpc-registry {
         uses config:service-ref {
           refine type {

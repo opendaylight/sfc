@@ -95,6 +95,10 @@ module service-function {
       type boolean;
       description "Whether this SF can process NSH headers";
     }
+    leaf tcp-proxy {
+      type boolean;
+      description "Whether this SF is a TCP proxy. Special handling is needed if it is.";
+    }
 
     list sf-data-plane-locator {
       description

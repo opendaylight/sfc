@@ -42,20 +42,32 @@ public class SfcL2RspProcessorTest {
     }
 
     private void assertMethodCallCount(SfcL2FlowProgrammerTestMoc.MethodIndeces methodIndex, int count) {
-        LOG.info("assertMethodCallCount [{}] comparing [{}] to expected count [{}]", methodIndex, flowProgrammerTestMoc.getMethodCalledCount(methodIndex), count);
-        assertTrue(flowProgrammerTestMoc.getMethodCalledCount(methodIndex) == count);
+        assertEquals(count, flowProgrammerTestMoc.getMethodCalledCount(methodIndex));
     }
 
     private void assertMatchAnyMethodsCalled() {
+        // Default values
+        assertMatchAnyMethodsCalled(2, 2, 2, 2, 2);
+    }
+
+    private void assertMatchAnyMethodsCalled(
+            int transportIngressCount, int pathMapperCount, int pathMapperAclCount, int nextHopCount, int transportEgressCount) {
         // Each of these is called once per SFF, and there are 2 SFFs
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex, 2);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex,
+                transportIngressCount);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperTableMatchAnyMethodIndex, 2);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperTableMatchAnyMethodIndex,
+                pathMapperCount);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopTableMatchAnyMethodIndex, 2);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex,
+                pathMapperAclCount);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportEgressTableMatchAnyMethodIndex, 2);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopTableMatchAnyMethodIndex,
+                nextHopCount);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportEgressTableMatchAnyMethodIndex,
+                transportEgressCount);
     }
 
     @Before
@@ -66,6 +78,10 @@ public class SfcL2RspProcessorTest {
         flowProgrammerTestMoc.resetCalledMethods();
         sfcUtilsTestMock.resetCache();
     }
+
+    // TODO tests to add:
+    //   - An SFF with > 1 SF
+    //   - An SF of type TCP Proxy
 
     @Test
     public void testVlanFlowCreation() {
@@ -82,7 +98,7 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 4);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 6);
         // TODO need to check that all the rest are 0
     }
 
@@ -106,7 +122,7 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 2);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 4);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureMplsTransportEgressFlowMethodIndex, 2);
     }
@@ -126,6 +142,28 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeNextHopFlowMethodIndex, 3);
         assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 4);
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 6);
+    }
+
+    @Test
+    public void testNshOneHopFlowCreation() {
+        LOG.info("SfcL2RspProcessorTest testNshOneHopFlowCreation");
+
+        List<Class<? extends ServiceFunctionTypeIdentity>> sfOneHopTypes;
+        sfOneHopTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();
+        sfOneHopTypes.add(Firewall.class);
+
+        RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
+        this.sfcL2RspProcessor.processRenderedServicePath(nshRsp, true);
+
+        assertMatchAnyMethodsCalled(1, 1, 1, 1, 1);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex, 2);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpePathMapperFlowMethodIndex, 0);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeNextHopFlowMethodIndex, 1);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 3);
     }
 }

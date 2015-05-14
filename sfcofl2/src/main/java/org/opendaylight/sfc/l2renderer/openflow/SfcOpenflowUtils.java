@@ -70,9 +70,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
@@ -123,6 +125,8 @@ public class SfcOpenflowUtils {
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
     public static final short IP_PROTOCOL_TCP = (short) 6;
     public static final short IP_PROTOCOL_UDP = (short) 17;
+    public static final int PKT_LENGTH_IP_HEADER = 20+14; // ether + IP header
+    public static final int TCP_FLAG_SYN = 0x0002;
 
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();
@@ -221,18 +225,49 @@ public class SfcOpenflowUtils {
         match.setEthernetMatch(mergeEthernetMatch(match, ethernetMatch));
     }
 
+    // If we call multiple IpMatch match methods, the MatchBuilder
+    // IpMatch object gets overwritten each time, when we actually
+    // want to set additional fields on the existing IpMatch object
+    private static IpMatch mergeIpMatch(MatchBuilder match, IpMatchBuilder ipMatchBuilder) {
+        IpMatch ipMatch = match.getIpMatch();
+        if(ipMatch == null) {
+            return ipMatchBuilder.build();
+        }
+
+        if(ipMatch.getIpDscp() != null) {
+            ipMatchBuilder.setIpDscp(ipMatch.getIpDscp());
+        }
+
+        if(ipMatch.getIpEcn() != null) {
+            ipMatchBuilder.setIpEcn(ipMatch.getIpEcn());
+        }
+
+        if(ipMatch.getIpProto() != null) {
+            ipMatchBuilder.setIpProto(ipMatch.getIpProto());
+        }
+
+        if(ipMatch.getIpProtocol() != null) {
+            ipMatchBuilder.setIpProtocol(ipMatch.getIpProtocol());
+        }
+
+        return ipMatchBuilder.build();
+    }
+
     public static void addMatchIpProtocol(MatchBuilder match, final short ipProtocol) {
         IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
         ipMatch.setIpProtocol((short) ipProtocol);
 
-        match.setIpMatch(ipMatch.build());
+        match.setIpMatch(mergeIpMatch(match, ipMatch));
     }
 
-    public static void addMatchDstUdpPort(MatchBuilder match, PortNumber port) {
-        UdpMatchBuilder udpMatch = new UdpMatchBuilder(); //UDP
-        udpMatch.setUdpDestinationPort(port);
+    public static void addMatchTcpSyn(MatchBuilder match) {
+        IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
+        ipMatch.setIpProtocol(IP_PROTOCOL_TCP);
+        match.setIpMatch(mergeIpMatch(match, ipMatch));
 
-        match.setLayer4Match(udpMatch.build());
+        TcpFlagMatchBuilder tcpFlagMatch = new TcpFlagMatchBuilder();
+        tcpFlagMatch.setTcpFlag(TCP_FLAG_SYN);
+        match.setTcpFlagMatch(tcpFlagMatch.build());
     }
 
     public static void addMatchDscp(MatchBuilder match, short dscpVal) {
@@ -242,7 +277,14 @@ public class SfcOpenflowUtils {
         Dscp dscp = new Dscp(dscpVal);
         ipMatch.setIpDscp(dscp);
 
-        match.setIpMatch(ipMatch.build());
+        match.setIpMatch(mergeIpMatch(match, ipMatch));
+    }
+
+    public static void addMatchDstUdpPort(MatchBuilder match, PortNumber port) {
+        UdpMatchBuilder udpMatch = new UdpMatchBuilder(); //UDP
+        udpMatch.setUdpDestinationPort(port);
+
+        match.setLayer4Match(udpMatch.build());
     }
 
     public static void addMatchMplsLabel(MatchBuilder match, long label) {
@@ -289,10 +331,18 @@ public class SfcOpenflowUtils {
         return ipMatchBuilder.build();
     }
 
+    public static void addMatchSrcIpv4(MatchBuilder match, String srcIpStr) {
+        addMatchSrcIpv4(match, new Ipv4Prefix(srcIpStr));
+    }
+
     public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Source(srcIp);
         match.setLayer3Match(mergeLayer3Match(match, ipv4match));
+    }
+
+    public static void addMatchDstIpv4(MatchBuilder match, String dstIpStr) {
+        addMatchDstIpv4(match, new Ipv4Prefix(dstIpStr));
     }
 
     public static void addMatchDstIpv4(MatchBuilder match, Ipv4Prefix dstIp) {

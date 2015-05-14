@@ -151,6 +151,7 @@ public class RspBuilder {
         String rspName = RSP_NAME_PREFIX + String.valueOf(RSP_NAME_INDEX++);
         RenderedServicePathBuilder rspBuilder = new RenderedServicePathBuilder();
         rspBuilder.setKey(new RenderedServicePathKey(rspName));
+        rspBuilder.setStartingIndex(new Short((short) 255));
         rspBuilder.setName(rspName);
         rspBuilder.setParentServiceFunctionPath(sfp.getName());
         rspBuilder.setPathId(RSP_PATHID_INDEX++);

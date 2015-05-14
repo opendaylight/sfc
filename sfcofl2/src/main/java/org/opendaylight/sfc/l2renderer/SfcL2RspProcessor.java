@@ -95,6 +95,7 @@ public class SfcL2RspProcessor {
             Iterator<RenderedServicePathHop> servicePathHopIter = rsp.getRenderedServicePathHop().iterator();
             String sfName = null;
             String sfgName = null;
+            short lastServiceIndex = rsp.getStartingIndex();
             while (servicePathHopIter.hasNext()) {
                 RenderedServicePathHop rspHop = servicePathHopIter.next();
                 String curSffName = rspHop.getServiceFunctionForwarder();
@@ -105,11 +106,12 @@ public class SfcL2RspProcessor {
                         rsp.getPathId(), rspHop.getHopNumber());
 
                 sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(), rspHop.getServiceIndex());
+                lastServiceIndex = rspHop.getServiceIndex();
                 prevSffName = curSffName;
             }
             // Add the final connection, which will be the RSP Egress
             // Using the previous sfName as the SrcSf
-            sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), (short)0);
+            sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), (short)(lastServiceIndex-1));
 
             //
             // Populate the SFF ingress and egress DPLs from the sffGraph
@@ -786,6 +788,8 @@ public class SfcL2RspProcessor {
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
         if(sffDplList.size() == 1) {
             // Nothing to be done here
+            sffGraph.setSffIngressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
+            sffGraph.setSffEgressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
             return true;
         }
 

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_bbc40760",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-14T17:24:41Z",
+      "side": 1,
+      "message": "rspSuccessful is the same test as if (renderedServicePath !\u003d null), why are you testing it again?",
+      "revId": "c0386b8579aa647c0880e8886840198c9310eff1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

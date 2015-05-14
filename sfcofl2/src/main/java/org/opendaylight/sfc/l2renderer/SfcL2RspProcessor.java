@@ -40,8 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MplsBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +181,8 @@ public class SfcL2RspProcessor {
                     null,
                     sffGraph.getPathEgressDpl(entry.getPathId()),
                     entry.getPathId(),
-                    entry.getServiceIndex());
+                    entry.getServiceIndex(),
+                    true);
 
             // Nothing else to be done for the egress tables
             return;
@@ -228,7 +229,8 @@ public class SfcL2RspProcessor {
                 sffDstIngressDpl,
                 dstHopIngressDpl,
                 entry.getPathId(),
-                entry.getServiceIndex());
+                entry.getServiceIndex(),
+                false);
 
     }
 
@@ -365,7 +367,8 @@ public class SfcL2RspProcessor {
                     null,
                     sffGraph.getPathEgressDpl(entry.getPathId()),
                     entry.getPathId(),
-                    entry.getServiceIndex());
+                    entry.getServiceIndex(),
+                    true);
 
             // Nothing else to be done for the egress tables
             return;
@@ -419,7 +422,8 @@ public class SfcL2RspProcessor {
                 sffDstIngressDpl,
                 dstHopIngressDpl,
                 entry.getPathId(),
-                entry.getServiceIndex());
+                entry.getServiceIndex(),
+                false);
     }
 
     private void initializeSff(final String sffName, final long pathId) {
@@ -589,11 +593,11 @@ public class SfcL2RspProcessor {
 
     private void configureGroupNextHopFlow(final String sffName, SffDataPlaneLocator srcSffDpl, long groupId, String groupName,
             final long pathId, final short serviceIndex) {
-        DataPlaneLocator srcDpl = null;
+        //DataPlaneLocator srcDpl = null;
         // currently support only mac
         String srcMac = null;
         if (srcSffDpl != null) {
-            srcDpl = srcSffDpl.getDataPlaneLocator();
+            //srcDpl = srcSffDpl.getDataPlaneLocator();
             srcMac = sfcL2ProviderUtils.getDplPortInfoMac(srcSffDpl);
         }
         String sffNodeName = sfcL2ProviderUtils.getSffOpenFlowNodeName(sffName, pathId);
@@ -605,7 +609,6 @@ public class SfcL2RspProcessor {
         this.sfcL2FlowProgrammer.configureGroupNextHopFlow(sffName, pathId, srcMac, groupId, groupName, addFlow);
     }
 
-    // TODO I think isSf can be removed from this one, and just pass true to the final signature
     // Simple pass-through method that calculates the srcOfsPort
     // and srcMac from the srcSffSfDict, and the dstMac from the dstDpl
     private void configureSffTransportEgressFlow(final String sffName,
@@ -624,7 +627,7 @@ public class SfcL2RspProcessor {
         String srcMac = sfcL2ProviderUtils.getDictPortInfoMac(srcSffSfDict);
         String dstMac = sfcL2ProviderUtils.getSfDplMac(dstSfDpl);
         configureSffTransportEgressFlow(
-                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, true);
+                sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, true, false);
     }
 
     // Simple pass-through method that calculates the srcOfsPort
@@ -634,7 +637,8 @@ public class SfcL2RspProcessor {
                                                  SffDataPlaneLocator dstDpl,
                                                  DataPlaneLocator hopDpl,
                                                  long pathId,
-                                                 short serviceIndex) {
+                                                 short serviceIndex,
+                                                 boolean isLastServiceIndex) {
         String srcOfsPortStr = sfcL2ProviderUtils.getDplPortInfoPort(srcDpl);
         if(srcOfsPortStr == null) {
             throw new RuntimeException(
@@ -646,7 +650,7 @@ public class SfcL2RspProcessor {
         configureSffTransportEgressFlow(sffName,
                 srcDpl.getDataPlaneLocator(),
                 ((dstDpl == null) ? null : dstDpl.getDataPlaneLocator()),
-                hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, false);
+                hopDpl, srcOfsPortStr, srcMac, dstMac, pathId, serviceIndex, false, isLastServiceIndex);
     }
 
     // This version is only used by the previous 2 configureSffTransportEgressFlow() signatures
@@ -659,7 +663,8 @@ public class SfcL2RspProcessor {
                                                  String dstMac,
                                                  long pathId,
                                                  short serviceIndex,
-                                                 boolean isSf) {
+                                                 boolean isSf,
+                                                 boolean isLastServiceIndex) {
         if(hopDpl == null) {
             throw new RuntimeException(
                     "configureSffTransportEgressFlow SFF [" + sffName + "] hopDpl is null");
@@ -687,23 +692,27 @@ public class SfcL2RspProcessor {
             Integer vlanTag = ((MacAddressLocator) hopLocatorType).getVlanId();
             if(vlanTag == null) {
                 this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(
-                        sffNodeName, srcMac, dstMac, srcOfsPort, pathId, isSf, this.addFlow);
+                        sffNodeName, srcMac, dstMac, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
             } else {
                 this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(
-                        sffNodeName, srcMac, dstMac, vlanTag, srcOfsPort, pathId, isSf, this.addFlow);
+                        sffNodeName, srcMac, dstMac, vlanTag, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) hopLocatorType).getMplsLabel();
             this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(
-                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPort, pathId, isSf, this.addFlow);
+                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPort, pathId, isSf, isLastServiceIndex, this.addFlow);
         } else if (implementedInterface.equals(Ip.class)) {
            //VxLAN-gpe, it is IP/UDP flow with VLAN tag
            if (hopDpl.getTransport().equals(VxlanGpe.class)) {
                 long nsp = pathId;
                 short nsi = serviceIndex;
                 this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(
-                        sffNodeName, nsp, nsi, srcOfsPort, this.addFlow);
+                        sffNodeName, nsp, nsi, srcOfsPort, isLastServiceIndex, this.addFlow);
+                if(isLastServiceIndex) {
+                    this.sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(
+                            sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString(), this.addFlow);
+                }
            }
         }
     }

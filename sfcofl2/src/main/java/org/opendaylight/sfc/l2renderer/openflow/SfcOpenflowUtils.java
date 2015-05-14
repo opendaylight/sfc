@@ -81,6 +81,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 // Import Nicira extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.DstChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1CaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegLoadNodesNodeGroupBucketsBucketActionsCaseBuilder;
@@ -101,12 +103,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.SrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.SrcChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc1CaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc2CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsiBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
@@ -223,7 +229,7 @@ public class SfcOpenflowUtils {
 
     public static void addMatchIpProtocol(MatchBuilder match, final short ipProtocol) {
         IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
-        ipMatch.setIpProtocol((short) ipProtocol);
+        ipMatch.setIpProtocol(ipProtocol);
 
         match.setIpMatch(ipMatch.build());
     }
@@ -254,7 +260,7 @@ public class SfcOpenflowUtils {
         match.setEthernetMatch(eth.build());
 
         ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
-        protomatch.setMplsLabel((long) label);
+        protomatch.setMplsLabel(label);
         match.setProtocolMatchFields(protomatch.build());
     }
 
@@ -334,22 +340,32 @@ public class SfcOpenflowUtils {
 
     public static void addMatchNshNsp(MatchBuilder match, long nsp) {
         NxAugMatchNodesNodeTableFlow am =
-                new NxAugMatchNodesNodeTableFlowBuilder()
+            new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsp(new NxmNxNspBuilder()
-                .setValue(nsp)
-                .build())
+                    .setValue(nsp)
+                    .build())
                 .build();
         addExtension(match, NxmNxNspKey.class, am);
     }
 
     public static void addMatchNshNsi(MatchBuilder match, short nsi) {
         NxAugMatchNodesNodeTableFlow am =
-                new NxAugMatchNodesNodeTableFlowBuilder()
+            new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsi(new NxmNxNsiBuilder()
-                .setNsi(nsi)
-                .build())
+                    .setNsi(nsi)
+                    .build())
                 .build();
         addExtension(match, NxmNxNsiKey.class, am);
+    }
+
+    public static void addMatchNshNsc1(MatchBuilder match, long nsc) {
+        NxAugMatchNodesNodeTableFlow am =
+            new NxAugMatchNodesNodeTableFlowBuilder()
+                .setNxmNxNshc1(new NxmNxNshc1Builder()
+                    .setValue(nsc)
+                    .build())
+                .build();
+        addExtension(match, NxmNxNshc1Key.class, am);
     }
 
 
@@ -666,6 +682,56 @@ public class SfcOpenflowUtils {
         ab.setAction(nxMoveRegAction(
                 new SrcNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(),
                 new DstNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(),
+                31,
+                false));
+
+        return ab.build();
+    }
+
+    public static Action createActionNxMoveNsc1(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(nxMoveRegAction(
+                new SrcNxNshc1CaseBuilder().setNxNshc1Dst(Boolean.TRUE).build(),
+                new DstNxNshc1CaseBuilder().setNxNshc1Dst(Boolean.TRUE).build(),
+                31,
+                false));
+
+        return ab.build();
+    }
+
+    public static Action createActionNxMoveNsc2(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(nxMoveRegAction(
+                new SrcNxNshc2CaseBuilder().setNxNshc2Dst(Boolean.TRUE).build(),
+                new DstNxNshc2CaseBuilder().setNxNshc2Dst(Boolean.TRUE).build(),
+                31,
+                false));
+
+        return ab.build();
+    }
+
+    // Used by NSH to move one of the NSH Context registers (NSC) to
+    // the Tunnel Id (VNID) Register. This is for the RSP NSH egress tunnel.
+    // GBP will set the Tunnel ID (VNID) in NSC2 and pass it along the
+    // chain, and in the last SFF, we will use it to set the VNID
+    // This will only work with this patch: https://git.opendaylight.org/gerrit/#/c/19478
+    public static Action createActionNxMoveNsc2ToTunIdRegister(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(nxMoveRegAction(
+                new SrcNxNshc2CaseBuilder().setNxNshc2Dst(Boolean.TRUE).build(),
+                new DstNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(),
+                31,
+                false));
+
+        return ab.build();
+    }
+
+    // This will only work with this patch: https://git.opendaylight.org/gerrit/#/c/19478
+    public static Action createActionNxMoveNsc1ToTunIpv4DstRegister(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(nxMoveRegAction(
+                new SrcNxNshc1CaseBuilder().setNxNshc1Dst(Boolean.TRUE).build(),
+                new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(),
                 31,
                 false));
 

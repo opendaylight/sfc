@@ -72,6 +72,7 @@ public interface SfcL2FlowProgrammerInterface {
             final long pathId,
             final boolean setDscp,
             final boolean isLastHop,
+            final boolean doPktIn,
             final boolean isAddFlow);
 
     public void configureVlanTransportEgressFlow(
@@ -83,6 +84,7 @@ public interface SfcL2FlowProgrammerInterface {
             final long pathId,
             final boolean setDscp,
             final boolean isLastHop,
+            final boolean doPktIn,
             final boolean isAddFlow);
 
     public void configureVxlanGpeTransportEgressFlow(
@@ -91,6 +93,7 @@ public interface SfcL2FlowProgrammerInterface {
             final short nshNsi,
             final String port,
             final boolean isLastHop,
+            final boolean doPktIn,
             final boolean isAddFlow);
 
     public void configureMplsTransportEgressFlow(
@@ -102,6 +105,7 @@ public interface SfcL2FlowProgrammerInterface {
             final long pathId,
             boolean setDscp,
             final boolean isLastHop,
+            final boolean doPktIn,
             final boolean isAddFlow);
 
     public void configureNshNscTransportEgressFlow(
@@ -115,11 +119,13 @@ public interface SfcL2FlowProgrammerInterface {
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // If doDrop == False
     //      TransportIngress MatchAny will go to Ingress
-    //      PathMapper       MatchAny will go to NextHop
+    //      PathMapper       MatchAny will go to PathMapperAcl
+    //      PathMapperAcl    MatchAny will go to NextHop
     //      NextHop          MatchAny will go to TransportEgress
     //
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
+    public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
 
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop,

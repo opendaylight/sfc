@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -72,24 +73,29 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     private static final int COOKIE_BIGINT_HEX_RADIX = 16;
     private static final long SHUTDOWN_TIME = 5;
+    private static final BigInteger TRANSPORT_EGRESS_COOKIE =
+            new BigInteger("BA5EBA11BA5EBA11", COOKIE_BIGINT_HEX_RADIX);
 
     // Which bits in the metadata field to set, Assuming 4095 PathId's
-    private static final BigInteger METADATA_MASK_SFP_MATCH     = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
+    private static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
-    private static final short TABLE_INDEX_INGRESS = 1;
-    private static final short TABLE_INDEX_NEXT_HOP = 2;
+    private static final short TABLE_INDEX_PATH_MAPPER = 1;
+    private static final short TABLE_INDEX_PATH_MAPPER_ACL = 2;
+    private static final short TABLE_INDEX_NEXT_HOP = 3;
     private static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
 
-    private static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 256;
-    private static final int FLOW_PRIORITY_INGRESS = 256;
-    private static final int FLOW_PRIORITY_NEXT_HOP = 256;
-    private static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 256;
+    private static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 250;
+    private static final int FLOW_PRIORITY_PATH_MAPPER = 350;
+    private static final int FLOW_PRIORITY_PATH_MAPPER_ACL = 450;
+    private static final int FLOW_PRIORITY_NEXT_HOP = 550;
+    private static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 650;
     private static final int FLOW_PRIORITY_MATCH_ANY = 5;
 
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
     private static final int QUEUE_SIZE = 50;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
+    private static final int PKTIN_IDLE_TIMEOUT = 60;
 
     private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
 
@@ -128,6 +134,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         this.tableBase = tableBase;
     }
 
+    public boolean compareClassificationTableCookie(FlowCookie cookie) {
+        return cookie.getValue().equals(TRANSPORT_EGRESS_COOKIE);
+    }
+
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // If doDrop == False
@@ -141,7 +151,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 new ConfigureTableMatchAnyThread(
                         sffNodeName,
                         getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
-                        getTableId(TABLE_INDEX_INGRESS),
+                        getTableId(TABLE_INDEX_PATH_MAPPER),
                         doDrop,
                         isAddFlow);
         try {
@@ -155,7 +165,22 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         ConfigureTableMatchAnyThread configureTableMatchAnyThread =
                 new ConfigureTableMatchAnyThread(
                         sffNodeName,
-                        getTableId(TABLE_INDEX_INGRESS),
+                        getTableId(TABLE_INDEX_PATH_MAPPER),
+                        getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
+                        doDrop,
+                        isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureTableMatchAnyThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow) {
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
                         getTableId(TABLE_INDEX_NEXT_HOP),
                         doDrop,
                         isAddFlow);
@@ -348,7 +373,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.etherType = etherType;
             this.isAddFlow = isAddFlow;
             this.ipProtocol = (short) -1;
-            this.nextTable = TABLE_INDEX_INGRESS;
+            this.nextTable = TABLE_INDEX_PATH_MAPPER;
         }
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
@@ -417,41 +442,45 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     // Configure Table 1, PathMapper
     //
     public void configureMacPathMapperFlow(final String sffNodeName, final String mac, long pathId, boolean isSf, final boolean isAddFlow) {
-        ConfigurePathMapperFlowThread configureIngressFlowThread = new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
-        configureIngressFlowThread.setMacAddress(mac);
+        ConfigurePathMapperFlowThread configurePathMapperFlowThread =
+                new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
+        configurePathMapperFlowThread.setMacAddress(mac);
         try {
-            threadPoolExecutorService.execute(configureIngressFlowThread);
+            threadPoolExecutorService.execute(configurePathMapperFlowThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
     public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf, final boolean isAddFlow) {
-        ConfigurePathMapperFlowThread configureIngressFlowThread = new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
-        configureIngressFlowThread.setMplsLabel(label);
+        ConfigurePathMapperFlowThread configurePathMapperFlowThread =
+                new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
+        configurePathMapperFlowThread.setMplsLabel(label);
         try {
-            threadPoolExecutorService.execute(configureIngressFlowThread);
+            threadPoolExecutorService.execute(configurePathMapperFlowThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
     public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf, final boolean isAddFlow) {
-        ConfigurePathMapperFlowThread configureIngressFlowThread = new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
-        configureIngressFlowThread.setVlanId(vlan);
+        ConfigurePathMapperFlowThread configurePathMapperFlowThread =
+                new ConfigurePathMapperFlowThread(sffNodeName, isSf, pathId, isAddFlow);
+        configurePathMapperFlowThread.setVlanId(vlan);
         try {
-            threadPoolExecutorService.execute(configureIngressFlowThread);
+            threadPoolExecutorService.execute(configurePathMapperFlowThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
     public void configureVxlanGpePathMapperFlow(final String sffNodeName, long nsp, short nsi, long pathId, final boolean isAddFlow) {
-        ConfigurePathMapperFlowThread configureIngressFlowThread = new ConfigurePathMapperFlowThread(sffNodeName, false, pathId, isAddFlow);
-        configureIngressFlowThread.setNsp(nsp);
-        configureIngressFlowThread.setNsi(nsi);
+        ConfigurePathMapperFlowThread configurePathMapperFlowThread =
+                new ConfigurePathMapperFlowThread(sffNodeName, false, pathId, isAddFlow);
+        configurePathMapperFlowThread.setNsp(nsp);
+        configurePathMapperFlowThread.setNsi(nsi);
         try {
-            threadPoolExecutorService.execute(configureIngressFlowThread);
+            threadPoolExecutorService.execute(configurePathMapperFlowThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
@@ -488,7 +517,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.debug("SfcProviderSffFlowWriter.configureIngressFlow sff [{}] pathId [{}] vlan [{}] mpls [{}] mac [{}]",
+                LOG.debug("SfcProviderSffFlowWriter.configurePathMapperFlow sff [{}] pathId [{}] vlan [{}] mpls [{}] mac [{}]",
                         this.sffNodeName, this.pathId, this.vlan, this.mplsLabel, this.macAddress);
 
                 MatchBuilder match = new MatchBuilder();
@@ -548,8 +577,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 // Create and configure the FlowBuilder
                 FlowBuilder ingressFlow =
                         SfcOpenflowUtils.createFlowBuilder(
-                                TABLE_INDEX_INGRESS,
-                                FLOW_PRIORITY_INGRESS,
+                                TABLE_INDEX_PATH_MAPPER,
+                                FLOW_PRIORITY_PATH_MAPPER,
                                 "nextHop",
                                 match,
                                 isb);
@@ -560,14 +589,107 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     removeFlowFromConfig(sffNodeName, ingressFlow);
                 }
             } catch (Exception e) {
-                LOG.error("ConfigureIngressFlow writer caught an Exception: ", e);
+                LOG.error("ConfigurePathMapperFlow writer caught an Exception: ", e);
             }
         }
     }
 
 
     //
-    // Table 2, NextHop
+    // Table 3, PathMapper ACL
+    //          This table is populated as a result of PktIn for TCP Proxy SFs.
+    //          The Src/Dst IP will be used to map the path ID
+    //
+    public void configurePathMapperAclFlow(
+            final String sffNodeName, final String pktSrcIpStr, final String pktDstIpStr, short pathId, boolean isAddFlow) {
+        ConfigurePathMapperAclFlowThread configurePathMapperAclFlowThread =
+                new ConfigurePathMapperAclFlowThread(sffNodeName, pktSrcIpStr, pktDstIpStr, pathId, isAddFlow);
+
+        try {
+            threadPoolExecutorService.execute(configurePathMapperAclFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigurePathMapperAclFlowThread implements Runnable {
+        String sffNodeName;
+        String srcIpStr;
+        String dstIpStr;
+        long pathId;
+        boolean isAddFlow;
+
+        public ConfigurePathMapperAclFlowThread(
+                final String sffNodeName, final String srcIpStr, final String dstIpStr, short pathId, boolean isAddFlow) {
+            this.sffNodeName = sffNodeName;
+            this.pathId = pathId;
+            this.srcIpStr = srcIpStr;
+            this.dstIpStr = dstIpStr;
+            this.isAddFlow = isAddFlow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.debug("SfcProviderSffFlowWriter.configurePathMapperAclFlow sff [{}] srcIp [{}] dstIp [{}] pathId [{}]",
+                        this.sffNodeName, this.srcIpStr, this.dstIpStr, this.pathId);
+
+                //
+                // Match on the Src and Dst IPs
+                MatchBuilder match = new MatchBuilder();
+                SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+                SfcOpenflowUtils.addMatchSrcIpv4(match, this.srcIpStr, 32);
+                SfcOpenflowUtils.addMatchDstIpv4(match, this.dstIpStr, 32);
+
+                //
+                // Set the PathId in the metadata and goto the TransportEgress table
+                int ibOrder = 0;
+                InstructionBuilder metadataIb = new InstructionBuilder();
+                metadataIb.setInstruction(SfcOpenflowUtils.createInstructionMetadata(
+                        ibOrder, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH));
+                metadataIb.setKey(new InstructionKey(ibOrder));
+                metadataIb.setOrder(ibOrder++);
+
+                GoToTableBuilder gotoNextHop = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_NEXT_HOP));
+                InstructionBuilder gotoNextHopIb = new InstructionBuilder();
+                gotoNextHopIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoNextHop.build()).build());
+                gotoNextHopIb.setKey(new InstructionKey(ibOrder));
+                gotoNextHopIb.setOrder(ibOrder++);
+
+                // Put our Instruction in a list of Instructions
+                List<Instruction> instructions = new ArrayList<Instruction>();
+                instructions.add(metadataIb.build());
+                instructions.add(gotoNextHopIb.build());
+
+                InstructionsBuilder isb = new InstructionsBuilder();
+                isb.setInstruction(instructions);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder ingressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_PATH_MAPPER_ACL,
+                                FLOW_PRIORITY_PATH_MAPPER_ACL,
+                                "nextHop",
+                                match,
+                                isb);
+                // Set an idle timeout on this flow
+                ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
+
+                if (isAddFlow) {
+                    writeFlowToConfig(sffNodeName, ingressFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, ingressFlow);
+                }
+
+            } catch (Exception e) {
+                LOG.error("configurePathMapperAclFlow writer caught an Exception: ", e);
+            }
+        }
+    }
+
+    //
+    // Table 4, NextHop
     //
     public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow) {
 
@@ -725,9 +847,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     //
     public void configureMacTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
-            String port, final long pathId, boolean setDscp, final boolean isLastHop, final boolean isAddFlow) {
+            final String port, final long pathId, final boolean setDscp,
+            final boolean isLastHop, final boolean doPktIn, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
                 new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
+        configureEgressTransportThread.setDoPktIn(doPktIn);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -738,10 +862,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     public void configureVlanTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
             final int dstVlan, String port, final long pathId, boolean setDscp,
-            final boolean isLastHop, final boolean isAddFlow) {
+            final boolean isLastHop, final boolean doPktIn, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
                 new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
         configureEgressTransportThread.setDstVlan(dstVlan);
+        configureEgressTransportThread.setDoPktIn(doPktIn);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -751,11 +876,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public void configureVxlanGpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, String port,
-            final boolean isLastHop, final boolean isAddFlow) {
+            final boolean isLastHop, final boolean doPktIn, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
                 new ConfigureTransportEgressThread(sffNodeName, null, null, port, nshNsp, false, isLastHop, isAddFlow);
         configureEgressTransportThread.setNshNsp(nshNsp);
         configureEgressTransportThread.setNshNsi(nshNsi);
+        configureEgressTransportThread.setDoPktIn(doPktIn);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -766,11 +892,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     public void configureMplsTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
             final long mplsLabel, String port, final long pathId, boolean setDscp,
-            final boolean isLastHop, final boolean isAddFlow) {
+            final boolean isLastHop, final boolean doPktIn, final boolean isAddFlow) {
 
         ConfigureTransportEgressThread configureEgressTransportThread =
                 new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
         configureEgressTransportThread.setMplsLabel(mplsLabel);
+        configureEgressTransportThread.setDoPktIn(doPktIn);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -790,6 +917,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         long pathId;
         boolean setDscp;
         boolean isLastHop;
+        boolean doPktIn;
         boolean isAddFlow;
 
         public ConfigureTransportEgressThread(
@@ -807,12 +935,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.pathId = pathId;
             this.setDscp = setDscp;
             this.isLastHop = isLastHop;
+            this.doPktIn = false;
             this.isAddFlow = isAddFlow;
         }
         public void setDstVlan(final int dstVlan) { this.dstVlan = dstVlan; }
         public void setNshNsp(final long nshNsp) { this.nshNsp = nshNsp; }
         public void setNshNsi(final short nshNsi) { this.nshNsi = nshNsi; }
         public void setMplsLabel(final long mplsLabel) { this.mplsLabel = mplsLabel; }
+        public void setDoPktIn(final boolean doPktIn) { this.doPktIn = doPktIn; }
 
         @Override
         public void run() {
@@ -850,6 +980,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 List<Action> actionList = new ArrayList<Action>();
 
                 // Set the macSrc, if present
+                if(this.doPktIn) {
+                    // Notice TCP SYN matching is only supported in OpenFlow 1.5
+                    SfcOpenflowUtils.addMatchTcpSyn(match);
+                    actionList.add(SfcOpenflowUtils.createActionPktIn(SfcOpenflowUtils.PKT_LENGTH_IP_HEADER, order++));
+                }
+
+                // Set the macSrc
                 if(this.srcMac != null) {
                     actionList.add(SfcOpenflowUtils.createActionSetDlSrc(this.srcMac, order++));
                 }
@@ -909,6 +1046,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                         SfcOpenflowUtils.createFlowBuilder(
                                 TABLE_INDEX_TRANSPORT_EGRESS,
                                 flowPriority,
+                                TRANSPORT_EGRESS_COOKIE,
                                 "default_egress_flow",
                                 match,
                                 isb);
@@ -1301,5 +1439,4 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             }
         }
     }
-
 }

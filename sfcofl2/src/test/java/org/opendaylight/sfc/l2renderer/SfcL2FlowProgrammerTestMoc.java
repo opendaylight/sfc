@@ -35,8 +35,10 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
 
         configureTransportIngressTableMatchAnyMethodIndex,
         configurePathMapperTableMatchAnyMethodIndex,
+        configurePathMapperAclTableMatchAnyMethodIndex,
         configureNextHopTableMatchAnyMethodIndex,
         configureTransportEgressTableMatchAnyMethodIndex,
+
         configureGroupMethodIndex,
         configureGroupNextHopFlow,
 
@@ -114,7 +116,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
 
     //---------------------------------------------
     //
-    //            Ingress methods
+    //            PathMapper methods
     //
     //---------------------------------------------
 
@@ -175,6 +177,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
+            boolean doPktIn,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureMacTransportEgressFlowMethodIndex);
     }
@@ -189,6 +192,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
+            boolean doPktIn,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureVlanTransportEgressFlowMethodIndex);
     }
@@ -200,6 +204,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             short nshNsi,
             String port,
             final boolean isLastHop,
+            final boolean doPktIn,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex);
     }
@@ -214,6 +219,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
+            boolean doPktIn,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureMplsTransportEgressFlowMethodIndex);
     }
@@ -248,6 +254,14 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             boolean doDrop,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configurePathMapperTableMatchAnyMethodIndex);
+    }
+
+    @Override
+    public void configurePathMapperAclTableMatchAny(
+            String sffNodeName,
+            boolean doDrop,
+            boolean isAddFlow) {
+        incrementMethodCalled(MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex);
     }
 
     @Override

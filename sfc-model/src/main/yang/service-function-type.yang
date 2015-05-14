@@ -84,6 +84,11 @@ module service-function-type {
     description "HTTP services that add HTTP headers for charging and adding subscriber metadata";
   }
 
+  identity tcp-proxy {
+    base "service-function-type-identity";
+    description "A TCP Proxy sets up a connection with the
+                 client and another one with the server.";
+  }
   identity Cisco-vASA {
     base "service-function-type-identity";
     description "Cisco vASA";

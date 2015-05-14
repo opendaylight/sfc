@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_5e7931fb",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerInterface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-14T20:58:02Z",
+      "side": 1,
+      "message": "There are absolutely no Javadocs in this file or most sfcolf2 files. It is very hard to review anything",
+      "revId": "1054a8e62dfe74273dfc6c1a1636e1f4bbfecf54",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_fe691d26",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-14T20:58:02Z",
+      "side": 1,
+      "message": "MY coding style is to avoid all these booleans that permeate sfcofl2. They are, for all purposes, used to demux 2+ functions that are bundled into 1.  \n\nCreating methods such as configureSffTransportEgressFlowLastServiceIndex() would make the code much more readable.\n\nThe way it is today you have to hunt and peck for all these booleans. We are out of time so I will approve it but we should really refactor it.\n\nIn SFC Provider we have different, explicit APIs for everything. Just by looking at a method name it is clear what it does.",
+      "revId": "1054a8e62dfe74273dfc6c1a1636e1f4bbfecf54",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_be739514",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcOpenflowUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-14T20:58:02Z",
+      "side": 1,
+      "message": "No Javadocs, booleans everywhere...",
+      "revId": "1054a8e62dfe74273dfc6c1a1636e1f4bbfecf54",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

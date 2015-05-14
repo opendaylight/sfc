@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2014 Ericsson Inc. and others.  All rights reserved.
- *
+ * Copyright (c) 2014 Ericsson Inc. and others. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- *
  */
 
 package org.opendaylight.sfc.l2renderer;
@@ -54,8 +52,8 @@ public interface SfcL2FlowProgrammerInterface {
     //
     // Table 2, NextHop
     //
-    public void configureNextHopFlow(
-            final String sffNodeName, final long sfpId, final String srcMac, final String dstMac, final boolean isAddFlow);
+    public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
+            final String dstMac, final boolean isAddFlow);
 
     public void configureGroupNextHopFlow(
             final String sffNodeName, final long sfpId, final String srcMac, final long groupId, final String groupName, final boolean isAddFlow);
@@ -73,6 +71,7 @@ public interface SfcL2FlowProgrammerInterface {
             final String port,
             final long pathId,
             final boolean setDscp,
+            final boolean isLastHop,
             final boolean isAddFlow);
 
     public void configureVlanTransportEgressFlow(
@@ -83,6 +82,7 @@ public interface SfcL2FlowProgrammerInterface {
             final String port,
             final long pathId,
             final boolean setDscp,
+            final boolean isLastHop,
             final boolean isAddFlow);
 
     public void configureVxlanGpeTransportEgressFlow(
@@ -90,6 +90,7 @@ public interface SfcL2FlowProgrammerInterface {
             final long nshNsp,
             final short nshNsi,
             final String port,
+            final boolean isLastHop,
             final boolean isAddFlow);
 
     public void configureMplsTransportEgressFlow(
@@ -100,6 +101,14 @@ public interface SfcL2FlowProgrammerInterface {
             final String port,
             final long pathId,
             boolean setDscp,
+            final boolean isLastHop,
+            final boolean isAddFlow);
+
+    public void configureNshNscTransportEgressFlow(
+            String sffNodeName,
+            final long nshNsp,
+            final short nshNsi,
+            String switchPort,
             final boolean isAddFlow);
 
     //
@@ -112,9 +121,12 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
-    public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop, final boolean isAddFlow);
+
+    public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop,
+            final boolean isAddFlow);
 
     // group configuration
-    public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName, final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
+    public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName,
+            final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
 
 }

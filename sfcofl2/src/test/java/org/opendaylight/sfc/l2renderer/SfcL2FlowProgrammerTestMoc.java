@@ -31,6 +31,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         configureVlanTransportEgressFlowMethodIndex,
         configureVxlanGpeTransportEgressFlowMethodIndex,
         configureMplsTransportEgressFlowMethodIndex,
+        configureNshNscTransportEgressFlowMethodIndex,
 
         configureTransportIngressTableMatchAnyMethodIndex,
         configurePathMapperTableMatchAnyMethodIndex,
@@ -173,6 +174,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             String port,
             long pathId,
             boolean setDscp,
+            final boolean isLastHop,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureMacTransportEgressFlowMethodIndex);
     }
@@ -186,6 +188,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             String port,
             long pathId,
             boolean setDscp,
+            final boolean isLastHop,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureVlanTransportEgressFlowMethodIndex);
     }
@@ -196,6 +199,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long nshNsp,
             short nshNsi,
             String port,
+            final boolean isLastHop,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex);
     }
@@ -209,8 +213,19 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             String port,
             long pathId,
             boolean setDscp,
+            final boolean isLastHop,
             boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureMplsTransportEgressFlowMethodIndex);
+    }
+
+    @Override
+    public void configureNshNscTransportEgressFlow(
+            String sffNodeName,
+            final long nshNsp,
+            final short nshNsi,
+            String switchPort,
+            final boolean isAddFlow) {
+        incrementMethodCalled(MethodIndeces.configureNshNscTransportEgressFlowMethodIndex);
     }
 
     //---------------------------------------------

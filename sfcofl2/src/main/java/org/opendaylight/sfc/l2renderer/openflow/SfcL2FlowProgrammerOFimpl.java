@@ -725,9 +725,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     //
     public void configureMacTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
-            String port, final long pathId, boolean setDscp, final boolean isAddFlow) {
+            String port, final long pathId, boolean setDscp, final boolean isLastHop, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
         } catch (Exception ex) {
@@ -737,9 +737,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, String port, final long pathId, boolean setDscp, final boolean isAddFlow) {
+            final int dstVlan, String port, final long pathId, boolean setDscp,
+            final boolean isLastHop, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
         configureEgressTransportThread.setDstVlan(dstVlan);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
@@ -749,9 +750,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     }
 
     public void configureVxlanGpeTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, String port, final boolean isAddFlow) {
+            final String sffNodeName, final long nshNsp, final short nshNsi, String port,
+            final boolean isLastHop, final boolean isAddFlow) {
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, null, null, port, nshNsp, false, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, null, null, port, nshNsp, false, isLastHop, isAddFlow);
         configureEgressTransportThread.setNshNsp(nshNsp);
         configureEgressTransportThread.setNshNsi(nshNsi);
         try {
@@ -763,10 +765,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public void configureMplsTransportEgressFlow(
             final String sffNodeName, final String srcMac, final String dstMac,
-            final long mplsLabel, String port, final long pathId, boolean setDscp, final boolean isAddFlow) {
+            final long mplsLabel, String port, final long pathId, boolean setDscp,
+            final boolean isLastHop, final boolean isAddFlow) {
 
         ConfigureTransportEgressThread configureEgressTransportThread =
-                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isAddFlow);
+                new ConfigureTransportEgressThread(sffNodeName, srcMac, dstMac, port, pathId, setDscp, isLastHop, isAddFlow);
         configureEgressTransportThread.setMplsLabel(mplsLabel);
         try {
             threadPoolExecutorService.execute(configureEgressTransportThread);
@@ -786,11 +789,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         String port;
         long pathId;
         boolean setDscp;
+        boolean isLastHop;
         boolean isAddFlow;
 
         public ConfigureTransportEgressThread(
                 final String sffNodeName, String srcMac, String dstMac, String port,
-                final long pathId, boolean setDscp, boolean isAddFlow) {
+                final long pathId, boolean setDscp, final boolean isLastHop, boolean isAddFlow) {
             super();
             this.sffNodeName = sffNodeName;
             this.srcMac = srcMac;
@@ -802,6 +806,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.port = port;
             this.pathId = pathId;
             this.setDscp = setDscp;
+            this.isLastHop = isLastHop;
             this.isAddFlow = isAddFlow;
         }
         public void setDstVlan(final int dstVlan) { this.dstVlan = dstVlan; }
@@ -817,15 +822,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
 
-                int order = 0;
-                List<Action> actionList = new ArrayList<Action>();
+                //
+                // Matches
                 MatchBuilder match = new MatchBuilder();
 
                 if (this.nshNsp >=0 && this.nshNsi >= 0) {
-                    // If its NSH, then we dont need the metadata
+                    // If its NSH, then we dont need the metadata, match on Nsp/Nsi instead
                     SfcOpenflowUtils.addMatchNshNsp(match, this.nshNsp);
                     SfcOpenflowUtils.addMatchNshNsi(match, this.nshNsi);
-                    actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
                 } else {
                     // Match on the metadata pathId
                     SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(this.pathId), METADATA_MASK_SFP_MATCH);
@@ -839,9 +843,35 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     flowPriority -= 10;
                 }
 
-                // Set the macSrc
+
+                //
+                // Actions
+                int order = 0;
+                List<Action> actionList = new ArrayList<Action>();
+
+                // Set the macSrc, if present
                 if(this.srcMac != null) {
                     actionList.add(SfcOpenflowUtils.createActionSetDlSrc(this.srcMac, order++));
+                }
+
+                // Nsh stuff, if present
+                if (this.nshNsp >=0 && this.nshNsi >= 0) {
+                    Action mvNsc1;
+                    Action mvNsc2;
+                    if(this.isLastHop) {
+                        // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId (Vnid)
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
+                        mvNsc1 = SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++);
+                        mvNsc2 = SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++);
+                    } else {
+                        // If its not the last hop, Copy/Move Nsc1/Nsc2 to the next hop
+                        mvNsc1 = SfcOpenflowUtils.createActionNxMoveNsc1(order++);
+                        mvNsc2 = SfcOpenflowUtils.createActionNxMoveNsc2(order++);
+                    }
+                    actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+                    actionList.add(mvNsc1);
+                    actionList.add(mvNsc2);
                 }
 
                 // Optionally write the DSCP with the pathId
@@ -896,6 +926,92 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             }
         }
     }
+
+    // For NSH, Return the packet to INPORT if the NSH Nsc1 Register is not present (==0)
+    // If it is present, it will be handled in ConfigureTransportEgressFlowThread()
+    // This flow will have a higher priority than the flow created in ConfigureTransportEgressFlowThread()
+    public void configureNshNscTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,String port, final boolean isAddFlow) {
+        // This is the last table, cant set next table AND doDrop should be false
+        ConfigureNshNscTransportEgressFlowThread configureNshNscTransportEgressFlowThread =
+                new ConfigureNshNscTransportEgressFlowThread(sffNodeName, nshNsp, nshNsi, port, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureNshNscTransportEgressFlowThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureNshNscTransportEgressFlowThread implements Runnable {
+        private String sffNodeName;
+        private final long nshNsp;
+        private final short nshNsi;
+        private String port;
+        private boolean isAddFlow;
+
+        public ConfigureNshNscTransportEgressFlowThread(
+                final String sffNodeName, final long nshNsp, final short nshNsi,String port, final boolean isAddFlow) {
+            this.sffNodeName = sffNodeName;
+            this.nshNsp = nshNsp;
+            this.nshNsi = nshNsi;
+            this.port = port;
+            this.isAddFlow = isAddFlow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureNshNscTransportEgressFlowThread, sff [{}]", this.sffNodeName);
+
+
+                //
+                // Match any
+                MatchBuilder match = new MatchBuilder();
+                SfcOpenflowUtils.addMatchNshNsp(match, this.nshNsp);
+                SfcOpenflowUtils.addMatchNshNsi(match, this.nshNsi);
+                SfcOpenflowUtils.addMatchNshNsc1(match, 0l);
+
+                //
+                // Create the actions
+                int order = 0;
+                Action outPortBuilder = SfcOpenflowUtils.createActionOutPort(this.port, order++);
+
+                List<Action> actionList = new ArrayList<Action>();
+                actionList.add(outPortBuilder);
+
+                // Create an Apply Action
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                aab.setAction(actionList);
+
+                // Wrap our Apply Action in an Instruction
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                ib.setOrder(0);
+                ib.setKey(new InstructionKey(0));
+
+                // Put our Instruction in a list of Instructions
+                InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder transportIngressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_TRANSPORT_EGRESS,
+                                FLOW_PRIORITY_TRANSPORT_EGRESS+10,
+                                "MatchAny",
+                                match,
+                                isb);
+
+                if (isAddFlow) {
+                    writeFlowToConfig(sffNodeName, transportIngressFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, transportIngressFlow);
+                }
+            } catch (Exception e) {
+                LOG.error("ConfigureNshNscTransportEgressFlowThread writer caught an Exception: ", e);
+            }
+        }
+    }
+
 
     @Override
     public void configureGroup(String sffNodeName, String openflowNodeId, String sfgName, long sfgId, int groupType,

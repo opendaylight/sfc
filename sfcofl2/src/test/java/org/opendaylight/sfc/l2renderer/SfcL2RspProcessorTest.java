@@ -47,11 +47,11 @@ public class SfcL2RspProcessorTest {
 
     private void assertMatchAnyMethodsCalled() {
         // Default values
-        assertMatchAnyMethodsCalled(2, 2, 2, 2);
+        assertMatchAnyMethodsCalled(2, 2, 2, 2, 2);
     }
 
     private void assertMatchAnyMethodsCalled(
-            int transportIngressCount, int pathMapperCount, int nextHopCount, int transportEgressCount) {
+            int transportIngressCount, int pathMapperCount, int pathMapperAclCount, int nextHopCount, int transportEgressCount) {
         // Each of these is called once per SFF, and there are 2 SFFs
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex,
@@ -59,6 +59,9 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperTableMatchAnyMethodIndex,
                 pathMapperCount);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex,
+                pathMapperAclCount);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopTableMatchAnyMethodIndex,
                 nextHopCount);
@@ -78,7 +81,7 @@ public class SfcL2RspProcessorTest {
 
     // TODO tests to add:
     //   - An SFF with > 1 SF
-    //   - An SF of type TCP Proxy
+    //   - An SF of type TCP Proxy and PktIn
 
     @Test
     public void testVlanFlowCreation() {
@@ -153,7 +156,7 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
         this.sfcL2RspProcessor.processRenderedServicePath(nshRsp, true);
 
-        assertMatchAnyMethodsCalled(1, 1, 1, 1);
+        assertMatchAnyMethodsCalled(1, 1, 1, 1, 1);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex, 2);
         assertMethodCallCount(

@@ -374,7 +374,6 @@
             <!--<feature>odl-restconf</feature>-->
             <!--<feature>odl-mdsal-apidocs</feature>-->
             <feature>odl-sfc-core</feature>
-            <feature>odl-sfc-test-consumer</feature>
             <feature>odl-sfc-ui</feature>
             <feature>odl-sfcofl2</feature>
             <feature>odl-sfc-sb-rest</feature>

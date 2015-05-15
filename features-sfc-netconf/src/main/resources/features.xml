@@ -15,16 +15,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
     <feature name='odl-sfc-netconf' version='${project.version}' description='OpenDaylight :: Netconf '>
-          <!--
-            Necessary TODO:
-            List all of the user consumable features you define in this feature file here.
-            Generally you would *not* list individual bundles here, but only features defined in *this* file.
-            It is useful to list them in the same order they occur in the file.
 
-            Examples:
-            <feature version='${project.version}'>odl-sfc-provider</feature>
-            <feature version='${project.version}'>odl-sfc-model</feature>
-        -->
+        <configfile finalname="etc/opendaylight/karaf/sfc-netconf-initial.xml">
+            mvn:org.opendaylight.sfc/sfc-netconf/${project.version}/xml/config
+        </configfile>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version='${mdsal.version}'>odl-mdsal-broker</feature>-->

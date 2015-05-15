@@ -16,6 +16,24 @@
       "revId": "c0386b8579aa647c0880e8886840198c9310eff1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_e1942246",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-05-15T00:01:01Z",
+      "side": 1,
+      "message": "This is for \u0027else\u0027 branch, that means  rspSuccessful is false or addPathToSffStateSuccessful is false, if RSP creation failed, this will be hit and throw NullPointerException.",
+      "parentUuid": "1a9dcd25_bbc40760",
+      "revId": "c0386b8579aa647c0880e8886840198c9310eff1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

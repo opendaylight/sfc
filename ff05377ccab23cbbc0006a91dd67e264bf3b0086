@@ -16,6 +16,24 @@
       "revId": "ff05377ccab23cbbc0006a91dd67e264bf3b0086",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_c461efd4",
+        "filename": "features-sfc-sb-rest/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 2138
+      },
+      "writtenOn": "2015-05-15T18:56:21Z",
+      "side": 1,
+      "message": "that\u0027s typo, thank you for catching this.. I\u0027ll will fix it immediately",
+      "parentUuid": "1a9dcd25_9568f4f6",
+      "revId": "ff05377ccab23cbbc0006a91dd67e264bf3b0086",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

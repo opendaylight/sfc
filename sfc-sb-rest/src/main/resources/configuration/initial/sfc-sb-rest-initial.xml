@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sbrest="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl">
+                        sbrest:sfc-sb-rest-provider-impl
+                    </type>
+                    <name>sfc-sb-rest-provider-impl</name>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                </module>
+            </modules>
+        </data>
+
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-sb-rest-provider:impl?module=sfc-sb-rest-provider-impl&amp;revision=2014-10-20</capability>
+    </required-capabilities>
+
+</snapshot>

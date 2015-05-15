@@ -32,6 +32,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
        <artifactId>sfc-provider</artifactId>
        <version>${project.version}</version>
     </dependency>
+   <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-sb-rest</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+   </dependency>
     <dependency>
        <groupId>${project.groupId}</groupId>
        <artifactId>sfc-sb-rest</artifactId>

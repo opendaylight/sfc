@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:consumer="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-test-consumer:impl">
+                        consumer:sfc-test-consumer-impl
+                    </type>
+                    <name>sfc-test-consumer-impl</name>
+
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-rpc-registry
+                        </type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
+                </module>
+            </modules>
+
+            <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <service>
+                    <type xmlns:consumer="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-test-consumer:impl">
+                        consumer:sfc-test-consumer
+                    </type>
+                    <instance>
+                        <name>sfc-test-consumer</name>
+                        <provider>/modules/module[type='sfc-test-consumer-impl'][name='sfc-test-consumer-impl']
+                        </provider>
+                    </instance>
+                </service>
+            </services>
+
+        </data>
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
+        <capability>
+            urn:opendaylight:params:xml:ns:yang:controller:config:sfc-test-consumer:impl?module=sfc-test-consumer-impl&amp;revision=2014-07-01
+        </capability>
+    </required-capabilities>
+
+</snapshot>

@@ -237,6 +237,42 @@ public class SfcSffToOvsMappingAPI {
             } else {
                 LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
             }
+
+            if (ovsOptions.getNshc1() != null) {
+                OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+                optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSHC1);
+                optionsNsiBuilder.setValue(ovsOptions.getNshc1());
+                options.add(optionsNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC1);
+            }
+
+            if (ovsOptions.getNshc2() != null) {
+                OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+                optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSHC2);
+                optionsNsiBuilder.setValue(ovsOptions.getNshc2());
+                options.add(optionsNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC2);
+            }
+
+            if (ovsOptions.getNshc3() != null) {
+                OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+                optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSHC3);
+                optionsNsiBuilder.setValue(ovsOptions.getNshc3());
+                options.add(optionsNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC3);
+            }
+
+            if (ovsOptions.getNshc4() != null) {
+                OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
+                optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSHC4);
+                optionsNsiBuilder.setValue(ovsOptions.getNshc4());
+                options.add(optionsNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC4);
+            }
         }
 
         return options;

@@ -78,6 +78,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static SfcServiceFunctionSchedulerAPI defaultScheduler;
 
+
     static final Comparator<SfcServiceFunction> SF_ORDER =
             new Comparator<SfcServiceFunction>() {
                 public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
@@ -109,7 +110,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return scheduler;
     }
 
-    private void initDefaultServiceFunctionScheduler()
+    private static void initDefaultServiceFunctionScheduler()
     {
         java.lang.Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
 
@@ -139,12 +140,12 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     SfcProviderRenderedPathAPI(Object[] params, String m) {
         super(params, m);
-        initDefaultServiceFunctionScheduler();
+        //initDefaultServiceFunctionScheduler();
     }
 
     SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
-        initDefaultServiceFunctionScheduler();
+        //initDefaultServiceFunctionScheduler();
     }
 
 
@@ -235,6 +236,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         boolean addPathtoSfpStateSuccessful = false;
 
         if (scheduler == null) {//Fall back to defaultScheduler
+            SfcProviderRenderedPathAPI.initDefaultServiceFunctionScheduler();
             scheduler = defaultScheduler;
         }
 
@@ -477,7 +479,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param scheduler SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath
      */
-    protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath, CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
+    protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath,
+                                                                  CreateRenderedPathInput createRenderedPathInput,
+                                                                  SfcServiceFunctionSchedulerAPI scheduler) {
 
         printTraceStart(LOG);
 
@@ -501,7 +505,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         // Descending order
         serviceIndex = MAX_STARTING_INDEX;
 
-        List<String> sfgNameList = getSfgNameList(serviceFunctionChain);
+        List<String> sfgNameList = SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChain);
         List<String> sfNameList = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex);
         if(sfNameList == null && sfgNameList == null) {
             LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFunctions() returned null list");
@@ -572,22 +576,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      */
     protected RenderedServicePath createRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath, CreateRenderedPathInput createRenderedPathInput) {
         return createRenderedServicePathEntry(serviceFunctionPath, createRenderedPathInput, defaultScheduler);
-    }
-
-    private List<String> getSfgNameList(ServiceFunctionChain serviceFunctionChain) {
-        List<String> ret = new ArrayList<String>();
-        List<SfcServiceFunction> sfcServiceFunction = serviceFunctionChain.getSfcServiceFunction();
-        LOG.debug("searching groups for chain {} which has the elements {}", serviceFunctionChain.getName(), serviceFunctionChain.getSfcServiceFunction());
-        for(SfcServiceFunction sf : sfcServiceFunction){
-            ServiceFunctionGroup sfg = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(sf.getType());
-            LOG.debug("look for service function group of type {} and found {}", sf.getType() , sfg);
-            if(sfg != null){
-                ret.add(sfg.getName());
-            } else {
-                return null;
-            }
-        }
-        return ret;
     }
 
     /**

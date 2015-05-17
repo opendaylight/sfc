@@ -15,17 +15,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
     <feature name='odl-sfc-ovs' version='${project.version}' description='OpenDaylight :: OpenvSwitch '>
-
-        <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">
-            mvn:org.opendaylight.sfc/sfc-ovs/${project.version}/xml/config
-        </configfile>
+        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
         <feature version='${project.version}'>odl-sfc-provider</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version='${mdsal.version}'>odl-mdsal-broker</feature>-->
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
-        <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-impl</feature>
-        <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ovs/${project.version}</bundle>        
+        <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">
+            mvn:org.opendaylight.sfc/sfc-ovs/${project.version}/xml/config
+        </configfile>
     </feature>
 
 </features>
-

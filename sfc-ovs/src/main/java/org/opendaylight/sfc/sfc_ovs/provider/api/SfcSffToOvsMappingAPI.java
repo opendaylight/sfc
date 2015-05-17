@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -33,12 +34,16 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.OptionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This class has the APIs to map SFC Service Function Forwarder to OVS Bridge
@@ -64,7 +69,7 @@ public class SfcSffToOvsMappingAPI {
      * @param serviceFunctionForwarder ServiceFunctionForwarder Object
      * @return OvsdbBridgeAugmentation Object
      */
-    public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(ServiceFunctionForwarder serviceFunctionForwarder) {
+    public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
         Preconditions.checkNotNull(serviceFunctionForwarder);
 
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
@@ -100,11 +105,52 @@ public class SfcSffToOvsMappingAPI {
             }
 
         } else {
-            LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
-            return null;
+            OvsdbNodeRef ovsdbNodeRef = lookupOvsdbNodeRefBySffDpl(serviceFunctionForwarder, executor);
+            if (ovsdbNodeRef == null) {
+                LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}", serviceFunctionForwarder.getName());
+                return null;
+            }
+            ovsdbBridgeBuilder.setManagedBy(ovsdbNodeRef);
         }
 
         return ovsdbBridgeBuilder.build();
+    }
+
+    public static OvsdbNodeRef lookupOvsdbNodeRefBySffDpl(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
+        List<SffDataPlaneLocator> sffDplList = serviceFunctionForwarder.getSffDataPlaneLocator();
+        IpAddress ip = null;
+        NodeId nodeId = null;
+
+        if (sffDplList == null) {
+            return null;
+        }
+
+        /*
+         * Go through the Data Plane Locators, looking for an IP-based
+         * locator. If we find one, use the IP address from that as the
+         * IP for the OVSDB manager connection.
+         */
+        for (SffDataPlaneLocator sffDpl: sffDplList) {
+            if ((sffDpl.getDataPlaneLocator() != null)
+                    && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
+                Class<? extends DataContainer> locatorType =
+                        sffDpl.getDataPlaneLocator().getLocatorType().getImplementedInterface();
+                if (locatorType.isAssignableFrom(Ip.class)) {
+                    Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
+                    ip = ipPortLocator.getIp();
+                }
+            }
+        }
+        if (ip == null) {
+            LOG.debug("Could not get IP address for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+        nodeId = SfcOvsUtil.getManagerNodeIdByIp(ip, executor);
+        if (nodeId != null) {
+            InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(nodeId);
+            return new OvsdbNodeRef(nodeIID);
+        }
+        return null;
     }
 
     /**

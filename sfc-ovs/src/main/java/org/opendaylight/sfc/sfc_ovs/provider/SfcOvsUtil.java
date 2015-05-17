@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
@@ -368,5 +369,30 @@ public class SfcOvsUtil {
                 methodParameters
         );
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, executor);
+    }
+
+    public static NodeId getManagerNodeIdByIp(IpAddress ip, ExecutorService executor) {
+        String ipAddressString = null;
+
+        if ((ip == null)
+                || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
+            LOG.warn("Invalid IP address");
+        }
+        if (ip.getIpv4Address() != null) {
+            ipAddressString = ip.getIpv4Address().getValue();
+        } else if (ip.getIpv6Address() != null) {
+            ipAddressString = ip.getIpv6Address().getValue();
+        }
+        Object[] methodParams = {ipAddressString};
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
+        Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, executor);
+
+        if (node != null && node.getNodeId() != null) {
+            return node.getNodeId();
+        } else {
+            LOG.warn("OVS Node for IP address {} does not exist!", methodParams[0]);
+            return null;
+        }
     }
 }

@@ -63,10 +63,10 @@ public abstract class SfcOvsAbstractDataListener implements DataChangeListener {
         return dataChangeListenerRegistration;
     }
 
-    public void registerAsDataChangeListener() {
+    public void registerAsDataChangeListener(DataBroker.DataChangeScope scope) {
         dataChangeListenerRegistration =
                 dataBroker.registerDataChangeListener(dataStoreType,
-                        instanceIdentifier, this, DataBroker.DataChangeScope.SUBTREE);
+                        instanceIdentifier, this, scope);
     }
 
     public void closeDataChangeListener() {

@@ -1,6 +1,7 @@
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
@@ -9,11 +10,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.*;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptionsBuilder;
@@ -25,12 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeInternal;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigsBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -44,6 +34,8 @@ import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Vladimir Lavor
@@ -82,6 +74,12 @@ public class SfcSffToOvsMappingAPITest {
     private SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder;
     private SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
     private SffOvsLocatorOptionsAugmentationBuilder sffOvsLocatorOptionsAugmentationBuilder;
+    private ExecutorService executor;
+
+    @Before
+    public void setup() throws Exception {
+        executor = Executors.newScheduledThreadPool(1);
+    }
 
     @Test
     public void SfcSffToOvsMappingAPITestObject() {
@@ -96,7 +94,7 @@ public class SfcSffToOvsMappingAPITest {
 
         //Sff is null
         try {
-            Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder);
+            Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder, executor);
         } catch (NullPointerException exception) {
             Assert.assertEquals("Must be equal",NullPointerException.class, exception.getClass());
         }
@@ -106,7 +104,7 @@ public class SfcSffToOvsMappingAPITest {
     public void buildOvsdbBridgeAugmentationTestWhereOvsBridgeAugmentationIsNull() throws Exception {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
 
-        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
+        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build(), executor);
 
         //ovsBridgeAugmentation is null
         Assert.assertEquals("Must be equal",ovsdbBridgeAugmentation, null);
@@ -123,7 +121,7 @@ public class SfcSffToOvsMappingAPITest {
 
         //OvsBridge is null
 
-        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
+        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build(), executor);
 
         Assert.assertEquals("Must be equal",ovsdbBridgeAugmentation, null);
 
@@ -143,7 +141,7 @@ public class SfcSffToOvsMappingAPITest {
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //OvsNode is null
-        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
+        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build(), executor);
 
         Assert.assertEquals("Must be equal",ovsdbBridgeAugmentation, null);
     }
@@ -163,7 +161,7 @@ public class SfcSffToOvsMappingAPITest {
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //OvsNode is null
-        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
+        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build(), executor);
 
         Assert.assertEquals("Must be equal",ovsdbBridgeAugmentation, null);
     }
@@ -192,7 +190,7 @@ public class SfcSffToOvsMappingAPITest {
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
         //buildOvsdbBridgeAugmentation test
-        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build());
+        ovsdbBridgeAugmentation = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "buildOvsdbBridgeAugmentation", serviceFunctionForwarderBuilder.build(), executor);
 
         Assert.assertEquals("Must be equal",ovsdbBridgeAugmentation.getBridgeName().getValue(), "Test Name");
     }

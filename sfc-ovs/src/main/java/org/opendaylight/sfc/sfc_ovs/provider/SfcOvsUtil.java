@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
@@ -33,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -368,5 +371,53 @@ public class SfcOvsUtil {
                 methodParameters
         );
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, executor);
+    }
+
+    public static NodeId getManagerNodeIdByIp(IpAddress ip, ExecutorService executor) {
+        String ipAddressString = null;
+
+        if ((ip == null)
+                || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
+            LOG.warn("Invalid IP address");
+        }
+        if (ip.getIpv4Address() != null) {
+            ipAddressString = ip.getIpv4Address().getValue();
+        } else if (ip.getIpv6Address() != null) {
+            ipAddressString = ip.getIpv6Address().getValue();
+        }
+        Object[] methodParams = {ipAddressString};
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
+        Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, executor);
+
+        if (node != null && node.getNodeId() != null) {
+            return node.getNodeId();
+        } else {
+            LOG.warn("OVS Node for IP address {} does not exist!", methodParams[0]);
+            return null;
+        }
+    }
+
+    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef, ExecutorService executor) {
+        Preconditions.checkNotNull(executor);
+        if(nodeRef.getValue().getTargetType().equals(Node.class)) {
+            Object[] methodParams = {nodeRef};
+            SfcOvsDataStoreAPI readOvsdbNode =
+                   new SfcOvsDataStoreAPI(
+                           SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
+                            methodParams
+                   );
+
+            Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
+
+            if (ovsdbNode != null) {
+                return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
+            } else {
+                LOG.warn("Could not find ovsdb-node for connection for {}",ovsdbNode);
+            }
+        } else {
+            LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
+        }
+        return null;
     }
 }

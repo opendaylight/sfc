@@ -56,7 +56,6 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
         setDataBroker(opendaylightSfc.getDataProvider());
         setInstanceIdentifier(OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-        registerAsDataChangeListener();
     }
 
 

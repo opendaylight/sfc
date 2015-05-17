@@ -24,6 +24,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import java.util.Map;
 import java.util.Set;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -52,7 +53,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
         setDataBroker(opendaylightSfc.getDataProvider());
         setInstanceIdentifier(SFF_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.CONFIGURATION);
-        registerAsDataChangeListener();
+        registerAsDataChangeListener(DataBroker.DataChangeScope.ONE);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
                 //build OvsdbBridge
                 OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder);
+                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder, opendaylightSfc.getExecutor());
 
                 if (ovsdbBridge != null) {
                     //put Bridge
@@ -96,7 +97,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
                 //build OvsdbBridge
                 OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder);
+                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
 
                 if (ovsdbBridge != null) {
                     //put Bridge

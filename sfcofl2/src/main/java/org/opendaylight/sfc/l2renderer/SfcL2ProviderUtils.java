@@ -12,7 +12,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 
-public class SfcL2ProviderUtils extends SfcL2AbstractProviderUtils {
+public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
 
     // Since this class can be called by multiple threads,
     // store these objects per RSP id to avoid collisions
@@ -31,7 +31,6 @@ public class SfcL2ProviderUtils extends SfcL2AbstractProviderUtils {
     }
     private Map<Long, RspContext> rspIdToContext;
 
-    // This class cant be initialized
     public SfcL2ProviderUtils() {
         rspIdToContext = new HashMap<Long, RspContext>();
     }

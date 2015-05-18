@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
@@ -47,11 +48,11 @@ public class SfcL2RspProcessorTest {
 
     private void assertMatchAnyMethodsCalled() {
         // Default values
-        assertMatchAnyMethodsCalled(2, 2, 2, 2);
+        assertMatchAnyMethodsCalled(2, 2, 2, 2, 2);
     }
 
     private void assertMatchAnyMethodsCalled(
-            int transportIngressCount, int pathMapperCount, int nextHopCount, int transportEgressCount) {
+            int transportIngressCount, int pathMapperCount, int pathMapperAclCount, int nextHopCount, int transportEgressCount) {
         // Each of these is called once per SFF, and there are 2 SFFs
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex,
@@ -59,6 +60,9 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperTableMatchAnyMethodIndex,
                 pathMapperCount);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex,
+                pathMapperAclCount);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopTableMatchAnyMethodIndex,
                 nextHopCount);
@@ -78,7 +82,7 @@ public class SfcL2RspProcessorTest {
 
     // TODO tests to add:
     //   - An SFF with > 1 SF
-    //   - An SF of type TCP Proxy
+    //   - An SF of type TCP Proxy and PktIn
 
     @Test
     public void testVlanFlowCreation() {
@@ -153,7 +157,7 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
         this.sfcL2RspProcessor.processRenderedServicePath(nshRsp, true);
 
-        assertMatchAnyMethodsCalled(1, 1, 1, 1);
+        assertMatchAnyMethodsCalled(1, 1, 1, 1, 1);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex, 2);
         assertMethodCallCount(
@@ -163,4 +167,29 @@ public class SfcL2RspProcessorTest {
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 2);
     }
+
+    @Test
+    public void testVlanTcpProxyFlowCreation() {
+        LOG.info("SfcL2RspProcessorTest testVlanTcpProxyFlowCreation");
+
+        List<Class<? extends ServiceFunctionTypeIdentity>> sfTcpProxyTypes;
+        sfTcpProxyTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();
+        sfTcpProxyTypes.add(TcpProxy.class);
+        sfTcpProxyTypes.add(TcpProxy.class);
+
+        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(sfTcpProxyTypes, Mac.class);
+        this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp, true);
+
+        assertMatchAnyMethodsCalled();
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportIngressFlowMethodIndex, 3);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanPathMapperFlowMethodIndex, 5);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
+        assertMethodCallCount(
+                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 4);
+        // TODO need to check that all the rest are 0
+    }
+
 }

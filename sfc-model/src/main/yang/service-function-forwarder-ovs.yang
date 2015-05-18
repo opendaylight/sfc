@@ -136,6 +136,22 @@ module service-function-forwarder-ovs {
         type string;
         description "NSH Starting Index";
       }
+      leaf nshc1 {
+        type string;
+        description "NSH Context Header 1";
+      }
+      leaf nshc2 {
+        type string;
+        description "NSH Context Header 2";
+      }
+      leaf nshc3 {
+        type string;
+        description "NSH Context Header 3";
+      }
+      leaf nshc4 {
+        type string;
+        description "NSH Context Header 4";
+      }
       leaf key {
         type string;
         description "Vxlan tunnel ID";

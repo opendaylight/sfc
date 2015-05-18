@@ -646,7 +646,7 @@
   "SFC_IPFIX_APPID_NAME": "Name",
   "SFC_IPFIX_APPID_GROUP": "Group",
   "SFC_IPFIX_APPID_CATEGORY": "Category",
-  "SFC_IPFIX_APPID_SUBCATEGORY": "Subcategoyy",
+  "SFC_IPFIX_APPID_SUBCATEGORY": "Subcategory",
   "SFC_IPFIX_APPID_DESC": "Description",
   "SFC_IPFIX_APPID_DELETE": "Delete this Application Ad",
   "SFC_IPFIX_APPID_EDIT": "Edit Application Id",

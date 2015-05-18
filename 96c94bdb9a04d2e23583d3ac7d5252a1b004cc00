@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_d8578c25",
+        "filename": "features-sfc-sb-rest/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-05-18T12:55:00Z",
+      "side": 1,
+      "message": "Another copy, this time with \u003ctype\u003exml\u003c/type\u003e \u003cclassifier\u003econfig\u003c/classifier\u003e is needed for sfc-sb-rest-initial.xml",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 17
+      },
+      "revId": "96c94bdb9a04d2e23583d3ac7d5252a1b004cc00",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

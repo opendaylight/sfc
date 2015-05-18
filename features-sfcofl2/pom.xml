@@ -44,6 +44,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <type>xml</type>
     </dependency>
     <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>features-sfc-ovs</artifactId>
+       <version>${project.version}</version>
+       <classifier>features</classifier>
+       <type>xml</type>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
       <version>${feature.test.version}</version>
@@ -52,6 +59,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
        <groupId>${project.groupId}</groupId>
        <artifactId>sfc-provider</artifactId>
+       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-ovs</artifactId>
        <version>${project.version}</version>
     </dependency>
     <dependency>

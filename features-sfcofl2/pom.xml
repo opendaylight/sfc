@@ -56,6 +56,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </dependency>
     <dependency>
        <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-ovs</artifactId>
+       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+       <groupId>${project.groupId}</groupId>
        <artifactId>sfcofl2</artifactId>
        <version>${project.version}</version>
        <type>xml</type>

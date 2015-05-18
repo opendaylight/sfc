@@ -29,6 +29,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
         <configfile finalname="etc/opendaylight/karaf/sfcofl2-initial.xml">mvn:org.opendaylight.sfc/sfcofl2/${project.version}/xml/config</configfile>
         <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version="${project.version}">odl-sfc-ovs</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version="${mdsal.version}">odl-mdsal-broker</feature>-->
         <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>

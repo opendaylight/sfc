@@ -7,6 +7,7 @@ import java.util.Map;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
@@ -82,6 +83,7 @@ public class SfcL2ProviderUtils extends SfcL2AbstractProviderUtils {
         if(sff == null) {
             sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
             if(sff != null) {
+                sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 rspContext.serviceFunctionFowarders.put(sffName, sff);
             }
         }

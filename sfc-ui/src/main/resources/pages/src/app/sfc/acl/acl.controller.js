@@ -133,6 +133,25 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.data['access-list-entries'].push({});
     }
 
+    Array.prototype.move = function(from, to) {
+        this.splice(to, 0, this.splice(from, 1)[0]);
+    };
+
+    $scope.sortableOptions = {
+      cursor: 'move',
+      tolerance: 'pointer',
+      start: function (e, ui) {
+        $(e.target).data("ui-sortable").floating = true;
+        $scope.oldIndex = ui.item.index();
+        console.log("oldIndex : " + $scope.oldIndex);
+      },
+      update: function (e, ui) {
+        console.log(ui);
+        console.log("newIndex : " + ui.item.index());
+        $scope.data['access-list-entries'].move($scope.oldIndex, ui.item.index());
+      }
+    };
+
     $scope.valueOfAceType = function (matches) {
       return SfcAclHelper.valueOfAceType(matches, $rootScope);  // IP. ethernet IPFIX
     };

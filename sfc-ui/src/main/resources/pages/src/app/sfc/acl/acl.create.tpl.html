@@ -26,8 +26,8 @@
 
     <div class="col-md-12 form-horizontal">
         <h3>{{'SFC_ACL_ACE' | translate}}</h3>
-
-        <div class="col-md-12 formElement"
+        <div ui-sortable="sortableOptions">
+        <div class="col-md-12 formElement has-feedback transition"
              ng-form="acl_entry_form_{{$index}}"
              ng-repeat="ace in data['access-list-entries'] track by $index"
              >
@@ -190,6 +190,7 @@
                                    reset-on="ace_type_change" not-reset-condition="{{aclConstants['ace-type'][2]}}"></acl-ipfix-matches>
 
             </div>
+        </div>
         </div>
     </div>
 

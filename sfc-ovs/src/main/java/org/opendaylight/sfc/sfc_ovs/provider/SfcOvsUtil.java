@@ -24,15 +24,30 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
+
+import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -43,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -201,6 +217,23 @@ public class SfcOvsUtil {
                         .create(NetworkTopology.class)
                         .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                         .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)))
+                        .augmentation(OvsdbBridgeAugmentation.class);
+
+        return bridgeEntryIID;
+    }
+
+    /**
+     * Create a {@link InstanceIdentifier<OvsdbBridgeAugmentation>} based on the Topology
+     * {@link NodeId}
+     * @param nodeId A topology {@link NodeId}
+     * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
+     */
+    public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(NodeId nodeId) {
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(nodeId))
                         .augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
@@ -372,5 +405,204 @@ public class SfcOvsUtil {
                 methodParameters
         );
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, executor);
+    }
+
+    public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(ServiceFunctionForwarder sff) {
+        String ofNodeId = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
+
+        if (ofNodeId != null) {
+            SffOvsBridgeAugmentationBuilder sffOvsBrAugBuilder;
+            OvsBridgeBuilder ovsBrBuilder;
+
+            //if augmentation exists, create builders based on existing data
+            SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+            if (sffOvsBrAug != null) {
+                sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder(sffOvsBrAug);
+
+                OvsBridge ovsBridge = sffOvsBrAug.getOvsBridge();
+                if (ovsBridge != null) {
+                    ovsBrBuilder = new OvsBridgeBuilder(ovsBridge);
+                } else {
+                    ovsBrBuilder = new OvsBridgeBuilder();
+                }
+
+            //if not, create empty builders
+            } else {
+                sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder();
+                ovsBrBuilder = new OvsBridgeBuilder();
+            }
+            ovsBrBuilder.setOpenflowNodeId(ofNodeId);
+            sffOvsBrAugBuilder.setOvsBridge(ovsBrBuilder.build());
+
+            ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder(sff);
+            sffBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBrAugBuilder.build());
+            return sffBuilder.build();
+        }
+
+        //if the OpenFlowNodeId does not exist, return the original SFF
+        else {
+            return sff;
+        }
+    }
+
+    /**
+     * This gets the OVSDB Manager Topology Node for the
+     * {@link ServiceFunctionForwarder}, using the IP address
+     * found in an IP based Data Plane Locator. If there isn't
+     * an IP based Data Plane Locator, then this will return null.
+     *
+     * @param serviceFunctionForwarder
+     * @param executor
+     * @return
+     */
+    public static Node lookupTopologyNode(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
+        List<SffDataPlaneLocator> sffDplList = serviceFunctionForwarder.getSffDataPlaneLocator();
+        IpAddress ip = null;
+
+        if (sffDplList == null) {
+            LOG.debug("No IP Data Plane Locator for Service Function Forwarder {}, ", serviceFunctionForwarder);
+            return null;
+        }
+
+        /*
+         * Go through the Data Plane Locators, looking for an IP-based
+         * locator. If we find one, use the IP address from that as the
+         * IP for the OVSDB manager connection.
+         */
+        for (SffDataPlaneLocator sffDpl: sffDplList) {
+            if ((sffDpl.getDataPlaneLocator() != null)
+                    && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
+                Class<? extends DataContainer> locatorType =
+                        sffDpl.getDataPlaneLocator().getLocatorType().getImplementedInterface();
+                if (locatorType.isAssignableFrom(Ip.class)) {
+                    Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
+                    ip = ipPortLocator.getIp();
+                }
+            }
+        }
+        if (ip == null) {
+            LOG.debug("Could not get IP address for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+        return SfcOvsUtil.getManagerNodeByIp(ip, executor);
+
+    }
+
+    public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {
+        Node managerNode = lookupTopologyNode(serviceFunctionForwarder, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        if (managerNode == null) {
+            LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+        SffOvsBridgeAugmentation serviceForwarderOvsBridgeAugmentation =
+                serviceFunctionForwarder.getAugmentation(SffOvsBridgeAugmentation.class);
+        if (serviceForwarderOvsBridgeAugmentation == null) {
+            LOG.warn("No SffOvsBridgeAugmentation for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+        OvsBridge serviceForwarderOvsBridge = serviceForwarderOvsBridgeAugmentation.getOvsBridge();
+
+        if (serviceForwarderOvsBridge == null) {
+            LOG.warn("No OvsBridge for SffOvsBridgeAugmentation in Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+
+        OvsdbBridgeAugmentationBuilder builder = new OvsdbBridgeAugmentationBuilder();
+        OvsdbNodeRef ovsdbNodeRef =  new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(managerNode.getNodeId()));
+        builder.setManagedBy(ovsdbNodeRef);
+        builder.setBridgeName(new OvsdbBridgeName(serviceForwarderOvsBridge.getBridgeName()));
+
+        NodeId nodeId = getManagedByNodeId(builder.build());
+        DatapathId datapathId = getOvsDataPathId(nodeId);
+        if (datapathId == null) {
+            LOG.warn("No DatapathId for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
+        Long macLong = getLongFromDpid(datapathId.getValue());
+        String nodeIdString = "openflow:" + String.valueOf(macLong);
+        if(StringUtils.countMatches(nodeIdString, ":") != 1) {
+            LOG.error("{} is not correct format for NodeId.",nodeIdString);
+            return null;
+        }
+        return nodeIdString;
+    }
+
+    private static DatapathId getOvsDataPathId(NodeId nodeId) {
+        Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(nodeId)};
+        SfcOvsDataStoreAPI readOvsdbBridge =
+                new SfcOvsDataStoreAPI(
+                        SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE,
+                        methodParams
+                );
+
+        OvsdbBridgeAugmentation readBridge =
+                (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(
+                        readOvsdbBridge, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+
+        if(readBridge == null) {
+            return null;
+        }
+        return readBridge.getDatapathId();
+    }
+
+    private static Long getLongFromDpid(String dpid) {
+        String HEX = "0x";
+        String[] addressInBytes = dpid.split(":");
+        Long address =
+                (Long.decode(HEX + addressInBytes[2]) << 40) |
+                        (Long.decode(HEX + addressInBytes[3]) << 32) |
+                        (Long.decode(HEX + addressInBytes[4]) << 24) |
+                        (Long.decode(HEX + addressInBytes[5]) << 16) |
+                        (Long.decode(HEX + addressInBytes[6]) << 8 ) |
+                        (Long.decode(HEX + addressInBytes[7]));
+        return address;
+    }
+
+    public static Node getManagerNodeByIp(IpAddress ip, ExecutorService executor) {
+        String ipAddressString = null;
+
+        if ((ip == null)
+                || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
+            LOG.warn("Invalid IP address");
+        }
+        if (ip.getIpv4Address() != null) {
+            ipAddressString = ip.getIpv4Address().getValue();
+        } else if (ip.getIpv6Address() != null) {
+            ipAddressString = ip.getIpv6Address().getValue();
+        }
+        Object[] methodParams = {ipAddressString};
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP, methodParams);
+        Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, executor);
+
+        if (node != null && node.getNodeId() != null) {
+            return node;
+        } else {
+            LOG.warn("OVS Node for IP address {} does not exist!", methodParams[0]);
+            return null;
+        }
+    }
+
+    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef, ExecutorService executor) {
+        Preconditions.checkNotNull(executor);
+        if(nodeRef.getValue().getTargetType().equals(Node.class)) {
+            Object[] methodParams = {nodeRef};
+            SfcOvsDataStoreAPI readOvsdbNode =
+                   new SfcOvsDataStoreAPI(
+                           SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
+                            methodParams
+                   );
+
+            Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
+
+            if (ovsdbNode != null) {
+                return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
+            } else {
+                LOG.warn("Could not find ovsdb-node for connection for {}",ovsdbNode);
+            }
+        } else {
+            LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
+        }
+        return null;
     }
 }

@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
 
-    <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
+        <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
 	<repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/${lisp.version}/xml/features</repository>
 
 	<feature name='odl-sfclisp' version='${project.version}' description='OpenDaylight :: sfclisp :: all'>

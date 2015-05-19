@@ -12,7 +12,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <parent>
         <artifactId>sfc-parent</artifactId>
         <groupId>org.opendaylight.sfc</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>features-sfc-sb-rest</artifactId>
     <packaging>jar</packaging>

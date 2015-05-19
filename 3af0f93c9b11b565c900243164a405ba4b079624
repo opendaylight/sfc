@@ -22,6 +22,30 @@
       "revId": "3af0f93c9b11b565c900243164a405ba4b079624",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_4de41b0d",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/lisp/Activator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1966
+      },
+      "writtenOn": "2015-05-19T01:37:52Z",
+      "side": 1,
+      "message": "No, it\u0027s not used. We kept it only as a reference as to how it was used before. I\u0027m taking it out in the next patch. Thanks!",
+      "parentUuid": "1a9dcd25_ae1d9a75",
+      "range": {
+        "startLine": 26,
+        "startChar": 13,
+        "endLine": 26,
+        "endChar": 22
+      },
+      "revId": "3af0f93c9b11b565c900243164a405ba4b079624",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -80,6 +80,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
     private static final String SFC_NAME = "unittest-chain-1";
     private static final String SFP_NAME = "unittest-sfp-1";
+    private static final String RSP_NAME = "unittest-rsp-1";
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
     private static final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
     private String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
@@ -88,7 +89,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private String[] SFF_LOCATOR_IP =
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
     private List<ServiceFunction> sfList = new ArrayList<>();
-    private static final String rspName = "unittest-rsp-1";
     private DataBroker dataBroker;
     private ExecutorService executor;
     private OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
@@ -256,6 +256,18 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
         executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+
+        /* Can't create RSP if we don't do these cleanups, don't know why */
+        SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(SFP_NAME);
+        SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(SFP_NAME);
+        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
+        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(RSP_NAME);
+        for (int i = 0; i < SFF_NAMES.length; i++) {
+            SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[i]);
+        }
+        for (int i = 0; i < sfNames.length; i++) {
+            SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfNames[i]);
+        }
     }
 
     @Test
@@ -264,24 +276,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
-        /* Can't create RSP if we don't do these cleanups, don't know why */
-        SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(SFP_NAME);
-        SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(serviceFunctionPath);
-        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(rspName);
-        for (int i = 0; i < SFF_NAMES.length; i++) {
-            SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[i]);
-        }
-        for (int i = 0; i < sfNames.length; i++) {
-            SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfNames[i]);
-        }
-
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;
         RenderedServicePath revRenderedServicePath = null;
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(rspName);
+        createRenderedPathInputBuilder.setName(RSP_NAME);
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
         try {
             renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
@@ -368,18 +368,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathAndState() throws ExecutionException, InterruptedException {
-        //TODO: fix this
-        //nasty workaround - this should be executed in after() block
-        SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[1]);
-        SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor("unittest-fw-1");
-        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
-
         ServiceFunctionPath serviceFunctionPath =
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(rspName);
+        createRenderedPathInputBuilder.setName(RSP_NAME);
 
         SfcProviderRenderedPathAPI.createRenderedServicePathAndState(
                 serviceFunctionPath, createRenderedPathInputBuilder.build());
@@ -387,15 +381,15 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         //check if SFF oper contains RSP
         List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(SFF_NAMES[1]);
         assertNotNull("Must be not null", sffServicePathList);
-        assertEquals(sffServicePathList.get(0).getName(), rspName);
+        assertEquals(sffServicePathList.get(0).getName(), RSP_NAME);
 
         //check if SF oper contains RSP
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionStateExecutor("unittest-fw-1");
-        assertEquals(sfServicePathList.get(0).getName(), rspName);
+        assertEquals(sfServicePathList.get(0).getName(), RSP_NAME);
 
         //check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathStateExecutor(SFP_NAME);
-        assertEquals(sfpRenderedServicePathList.get(0).getName(), rspName);
+        assertEquals(sfpRenderedServicePathList.get(0).getName(), RSP_NAME);
     }
 
     @Test
@@ -414,13 +408,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathEntryWhereSfNameListIsNull() throws Exception {
-        String serviceChainName = "unittest-chain-1";
         params = new Object[0];
         createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
 
-        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         //this method is called in scheduleServiceFunctions method which is called by scheduler
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceTypeAPI.class, "readServiceFunctionTypeExecutor")).toReturn(null);
@@ -433,13 +426,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathEntryWhereServicePathHopIsNull() throws Exception {
-        String serviceChainName = "unittest-chain-1";
         params = new Object[0];
         createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
 
-        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         //set list renderedServicePathHopArrayList to null
         PowerMockito.stub(PowerMockito.method(SfcProviderRenderedPathAPI.class, "createRenderedServicePathHopList")).toReturn(null);
@@ -453,39 +445,35 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathEntryPathInputNameAndTransportType() throws Exception {
-        String renderedPathInputName = "rpiName";
-        String serviceChainName = "unittest-chain-1";
         params = new Object[0];
         createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
         sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
 
-        createRenderedPathInputBuilder.setName(renderedPathInputName);
+        createRenderedPathInputBuilder.setName(RSP_NAME);
         serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
-        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
 
         assertNotNull("Must not be null", testRenderedServicePath);
-        assertEquals("Name must be equal", testRenderedServicePath.getName(), renderedPathInputName);
+        assertEquals("Name must be equal", testRenderedServicePath.getName(), RSP_NAME);
         assertEquals("Transport type class must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
     }
 
     @Test
     public void testCreateRenderedServicePathEntryWhereCreationOfRenderedServicePathFailed() throws Exception {
-        String renderedPathInputName = "rpiName";
-        String serviceChainName = "unittest-chain-1";
         params = new Object[0];
         createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
         sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
 
-        createRenderedPathInputBuilder.setName(renderedPathInputName);
+        createRenderedPathInputBuilder.setName(RSP_NAME);
         serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
-        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(false);
 
@@ -497,7 +485,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathEntry() throws Exception {
-        String serviceChainName = "unittest-chain-1";
         Long pathId = 1L;
         params = new Object[0];
         createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
@@ -506,13 +493,13 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
         serviceFunctionPathBuilder.setPathId(pathId);
-        serviceFunctionPathBuilder.setServiceChainName(serviceChainName);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
 
         assertNotNull("Must not be null", testRenderedServicePath);
-        assertEquals("Chain name must be equal", testRenderedServicePath.getServiceChainName(), serviceChainName);
+        assertEquals("Chain name must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);
         assertEquals("Transport type must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
         assertEquals("Key name must be equal", testRenderedServicePath.getKey().getName(), "key-Path-1");
         assertEquals("Name must be equal", testRenderedServicePath.getName(), "key-Path-1");

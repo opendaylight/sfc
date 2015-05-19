@@ -5,10 +5,11 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfclisp</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -24,7 +25,7 @@
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>mappingservice.api</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.sonatype.sisu</groupId>

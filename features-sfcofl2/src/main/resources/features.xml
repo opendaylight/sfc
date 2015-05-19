@@ -13,8 +13,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/0.1.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${feature.openflowplugin.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.sfc/features-sfc/0.1.0-SNAPSHOT/xml/features</repository>
-    <repository>mvn:org.opendaylight.sfc/features-sfc-ovs/0.1.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.sfc/features-sfc/0.2.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.sfc/features-sfc-ovs/0.2.0-SNAPSHOT/xml/features</repository>
     <feature name='odl-sfcofl2' version='${project.version}' description='OpenDaylight :: sfcofl2 '>
           <!--
             Necessary TODO:

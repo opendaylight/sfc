@@ -10,13 +10,13 @@
    <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
   </parent>
    <artifactId>features-sfclisp</artifactId>
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <lisp.version>1.2.0-SNAPSHOT</lisp.version>
+      <lisp.version>1.3.0-SNAPSHOT</lisp.version>
    </properties>
    <dependencies>
     <dependency>

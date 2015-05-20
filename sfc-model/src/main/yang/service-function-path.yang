@@ -113,6 +113,11 @@ module service-function-path {
         description
           "The name of the associated variable metadata";
       }
+      leaf tenant-id {
+        type string;
+        description
+          "This SFP was created for a specific tenant-id";
+      }
       list service-path-hop {
         key "hop-number";
         leaf hop-number {

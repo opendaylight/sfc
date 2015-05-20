@@ -249,33 +249,35 @@ public class LispUpdater implements ILispUpdater {
 
         // get rsp's acl
         AccessList acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
-        List<AccessListEntries> acesList = acl.getAccessListEntries();
+        if(acl != null){
+            List<AccessListEntries> acesList = acl.getAccessListEntries();
 
-        // for each of acl's aces get src/dst ips ...
-        for(AccessListEntries aces: acesList) {
-            Matches matches = aces.getMatches();
-            if (matches.getAceType() instanceof AceIp) {
-                AceIp ipMatch = (AceIp) matches.getAceType();
-                LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
+            // for each of acl's aces get src/dst ips ...
+            for(AccessListEntries aces: acesList) {
+                Matches matches = aces.getMatches();
+                if (matches.getAceType() instanceof AceIp) {
+                    AceIp ipMatch = (AceIp) matches.getAceType();
+                    LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
 
-                if (srcDst != null) {
-                    // ... find locator of dst eid ...
-                    IpAddress lastHop = findLastHop(LispUtil.toContainer(srcDst.getLcafSourceDestAddr().getDstAddress()
-                            .getPrimitiveAddress()));
-                    if (lastHop !=null) {
-                        hopIpList.add(lastHop);
-                        // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
-                        // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
-                        // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
-                        // exist, we overwrite it lower, thus this might require fixing.  XXX
-                        buildAndRegisterMapping(srcDst, hopIpList);
+                    if (srcDst != null) {
+                        // ... find locator of dst eid ...
+                        IpAddress lastHop = findLastHop(LispUtil.toContainer(srcDst.getLcafSourceDestAddr().getDstAddress()
+                                .getPrimitiveAddress()));
+                        if (lastHop !=null) {
+                            hopIpList.add(lastHop);
+                            // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
+                            // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
+                            // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
+                            // exist, we overwrite it lower, thus this might require fixing.  XXX
+                            buildAndRegisterMapping(srcDst, hopIpList);
+                        } else {
+                            LOG.debug("Couldn't find locator for src/dst eid: {}", srcDst);
+                        }
                     } else {
-                        LOG.debug("Couldn't find locator for src/dst eid: {}", srcDst);
+                        LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
                     }
-                } else {
-                    LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
-                }
 
+                }
             }
         }
     }
@@ -318,15 +320,17 @@ public class LispUpdater implements ILispUpdater {
     public void deletePath(RenderedServicePath rsp) {
         // get rsp's acl
         AccessList acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
-        List<AccessListEntries> acesList = acl.getAccessListEntries();
+        if(acl != null) {
+            List<AccessListEntries> acesList = acl.getAccessListEntries();
 
-        // for each of acl's aces get src/dst ips ...
-        for(AccessListEntries aces: acesList) {
-            Matches matches = aces.getMatches();
-            if (matches.getAceType() instanceof AceIp) {
-                AceIp ipMatch = (AceIp) matches.getAceType();
-                LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
-                removeMapping(srcDst);
+            // for each of acl's aces get src/dst ips ...
+            for(AccessListEntries aces: acesList) {
+                Matches matches = aces.getMatches();
+                if (matches.getAceType() instanceof AceIp) {
+                    AceIp ipMatch = (AceIp) matches.getAceType();
+                    LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
+                    removeMapping(srcDst);
+                }
             }
         }
     }
@@ -374,6 +378,14 @@ public class LispUpdater implements ILispUpdater {
     }
 
     private boolean shallowCompareAcls(AccessList acl1, AccessList acl2) {
+        if(acl1 != null && acl2 == null){
+            return false;
+        } else if(acl1 == null && acl2 != null){
+            return false;
+        } else if(acl1 == null && acl2 == null){
+            return true;
+        }
+
         if (!acl1.getAclName().equals(acl2.getAclName())) {
             return false;
         }

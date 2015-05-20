@@ -61,9 +61,12 @@ public class SfcLispUtil {
     public static AccessList getServiceFunctionAcl(String sfPathName) {
         ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(sfPathName);
         String classifierName = serviceFunctionPath.getClassifier();
-        ServiceFunctionClassifier classifier = SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(classifierName);
-        String aclName = classifier.getAccessList();
-        AccessList acl = SfcProviderAclAPI.readAccessListExecutor(aclName);
+        AccessList acl = null;
+        if(classifierName != null) {
+            ServiceFunctionClassifier classifier = SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(classifierName);
+            String aclName = classifier.getAccessList();
+            acl = SfcProviderAclAPI.readAccessListExecutor(aclName);
+        }
         return acl;
     }
 }

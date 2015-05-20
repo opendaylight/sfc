@@ -208,27 +208,27 @@ module service-function-forwarder-ovs {
   }
 
   rpc create-ovs-bridge {
-      description
-        "Creates OVS Bridge on specified OVS Node";
-      input {
-        leaf name {
-          type string;
-          description
-            "The name of OVS Bridge to be created";
-        }
+    description
+      "Creates OVS Bridge on specified OVS Node";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of OVS Bridge to be created";
+      }
 
-        container ovs-node {
-          description
+      container ovs-node {
+        description
           "Contains ip:port locator of the OVS Node,
           on which OVS Bridge is going to be created";
 
-          uses ovsdb-overlay:ip-port-locator;
-        }
-      }
-      output {
-        leaf result {
-          type boolean;
-        }
+        uses ovsdb-overlay:ip-port-locator;
       }
     }
+    output {
+      leaf result {
+        type boolean;
+      }
+    }
+  }
 }

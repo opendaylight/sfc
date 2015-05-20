@@ -421,6 +421,7 @@ class NfqClassifier(metaclass=Singleton):
             logger.debug('NFQ received a %s, marked "%d"', packet, mark)
 
             if rsp_id in self.rsp_2_sff:
+                packet.accept()
                 self.forward_packet(packet, rsp_id, ipv)
             else:
                 logger.warning('Dropping packet as it did\'t match any rule')

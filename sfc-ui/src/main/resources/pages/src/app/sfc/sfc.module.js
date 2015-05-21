@@ -369,17 +369,16 @@ define([
       }
     });
 
-   $stateProvider.state('main.sfc.servicefunction-statsvnbar', {
-      url: '/servicefunction-statsvnbar-:sfName',
+    $stateProvider.state('main.sfc.servicepath-vnbar', {
+      url: '/servicepath-vnbar-:sfp',
       access: access.public,
       views: {
         'sfc': {
-          templateUrl: 'src/app/sfc/servicefunction/servicefunction.vnbarstats.tpl.html',
+          templateUrl: 'src/app/sfc/servicepath/renderedservicepath/servicepath.vnbar.tpl.html',
           controller: 'serviceFunctionCreateCtrl'
         }
       }
     });
-
     $stateProvider.state('main.sfc.serviceforwarder-clone', {
       url: '/serviceforwarder-edit-:sff',
       access: access.public,
@@ -475,17 +474,6 @@ define([
         'sfc': {
           templateUrl: 'src/app/sfc/config/config.tpl.html',
           controller: 'configCtrl'
-        }
-      }
-    });
-
-    $stateProvider.state('main.sfc.servicevnbar', {
-      url: '/servicevnbar',
-      access: access.public,
-      views: {
-        'sfc': {
-          templateUrl: 'src/app/sfc/servicevnbar/servicevnbar.tpl.html',
-          controller: 'servicePathCtrl'
         }
       }
     });

@@ -1,6 +1,6 @@
 define(['app/sfc/sfc.module'], function (sfc) {
 
-  sfc.register.controller('renderedServicePathCtrl', function ($scope, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc,
+  sfc.register.controller('renderedServicePathCtrl', function ($scope, $state, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc,
                                                                RenderedServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc,
                                                                SfcClassifierStateSvc, ModalDeleteSvc, ModalErrorSvc, ngTableParams, $filter) {
     var thisCtrl = this;
@@ -46,6 +46,15 @@ define(['app/sfc/sfc.module'], function (sfc) {
           $scope.tableParams.reload();
         });
       });
+    };
+
+    $scope.vnbar = function vnbar(sfName) {
+        $state.transitionTo('main.sfc.servicepath-vnbar', {"sfName": sfName}, {
+          location: true,
+          inherit: true,
+          relative: $state.$current,
+          notify: true
+        });
     };
 
     $scope.fetchData();

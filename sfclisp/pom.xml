@@ -11,6 +11,10 @@
     <artifactId>sfclisp</artifactId>
     <packaging>bundle</packaging>
 
+    <properties>
+        <configFile>configuration/initial/sfc-lisp-initial.xml</configFile>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -99,6 +103,28 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/classes/${configFile}</file>
+                                    <type>xml</type>
+                                    <classifier>config</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler.version}</version>
@@ -113,13 +139,12 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${bundle.plugin.version}</version>
                 <extensions>true</extensions>
-                <configuration>
+<!--                 <configuration>
                     <instructions>
                         <Embed-Dependency>jersey</Embed-Dependency>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                        <Bundle-Activator>org.opendaylight.sfc.lisp.Activator</Bundle-Activator>
                     </instructions>
-                </configuration>
+                </configuration> -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -143,7 +168,78 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.opendaylight.yangtools</groupId>
+                <artifactId>yang-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>config</id>
+                        <goals>
+                            <goal>generate-sources</goal>
+                        </goals>
+                        <configuration>
+                            <codeGenerators>
+                                <generator>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
+                                    </codeGeneratorClass>
+                                    <!--outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir-->
+                                    <outputBaseDir>src/main/yang-gen-config</outputBaseDir>
+                                    <additionalConfiguration>
+                                        <namespaceToPackage1>
+                                            urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
+                                        </namespaceToPackage1>
+                                    </additionalConfiguration>
+                                </generator>
+                                <generator>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
+                                    </codeGeneratorClass>
+                                    <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
+                                </generator>
+                                <generator>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.yangtools.yang.unified.doc.generator.maven.DocumentationGeneratorImpl
+                                    </codeGeneratorClass>
+                                    <!--outputBaseDir>${project.build.directory}/site/models</outputBaseDir-->
+                                    <outputBaseDir>src/main/yang-gen-sal</outputBaseDir>
+                                </generator>
+                            </codeGenerators>
+                            <inspectDependencies>true</inspectDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.opendaylight.controller</groupId>
+                        <artifactId>yang-jmx-generator-plugin</artifactId>
+                        <!--version>0.2.5-SNAPSHOT</version-->
+                        <version>${config.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.opendaylight.yangtools</groupId>
+                        <artifactId>maven-sal-api-gen-plugin</artifactId>
+                        <version>${yangtools.version}</version>
+                        <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.osgi</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                        <version>${osgi.core.version}</version>
+                        <scope>compile</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.opendaylight.yangtools</groupId>
+              <artifactId>yang-maven-plugin</artifactId>
+              <version>${yangtools.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
     </build>
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>

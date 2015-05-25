@@ -1,26 +1,24 @@
 package org.opendaylight.sfc.sfc_ovs.provider.util;
 
-
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.TestCase.assertEquals;
 
 /**
  * @author Vladimir Lavor
@@ -33,7 +31,7 @@ import java.util.concurrent.Executors;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcOvsUtil.class)
 public class HopOvsdbBridgePairTest {
-    private static final String testString = "test string";
+    private static final String sff = "sff";
     private RenderedServicePathHopBuilder renderedServicePathHopBuilder;
     private OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder;
 
@@ -41,55 +39,50 @@ public class HopOvsdbBridgePairTest {
     public void constructorTest() throws Exception {
         renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        ovsdbBridgeAugmentationBuilder.setBridgeName(new OvsdbBridgeName(testString));
         HopOvsdbBridgePair hopOvsdbBridgePair = new HopOvsdbBridgePair(renderedServicePathHopBuilder.build(), ovsdbBridgeAugmentationBuilder.build());
 
-        // constructor test
-        Assert.assertEquals(hopOvsdbBridgePair.ovsdbBridgeAugmentation.getBridgeName().getValue(), "test string");
+        assertNotNull("Must be not null", hopOvsdbBridgePair.ovsdbBridgeAugmentation);
+        assertNotNull("Must be not null", hopOvsdbBridgePair.renderedServicePathHop);
     }
 
     @Test
-    public void buildHopOvsdbBridgePairReturnsEmptyList0() throws Exception {
+    public void buildHopOvsdbBridgePair_EmptyList0() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
 
-        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("5"));
-        renderedServicePathHopBuilder.setServiceFunctionForwarder("Sff");
+        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("5"))
+                .setServiceFunctionForwarder(sff);
         renderedServicePathHopList.add(renderedServicePathHopBuilder.build());
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopList);
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
 
-        PowerMockito.mockStatic(SfcOvsUtil.class);
-        Mockito.when(SfcOvsUtil.submitCallable(Mockito.any(SfcOvsDataStoreAPI.class), Mockito.any(ExecutorService.class))).thenReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(null);
 
-        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = Whitebox.invokeMethod(HopOvsdbBridgePair.class, "buildHopOvsdbBridgePairList", renderedServicePathBuilder.build(), executorService);
+        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = HopOvsdbBridgePair.buildHopOvsdbBridgePairList(renderedServicePathBuilder.build(), executorService);
 
-        //buildHopOvsdbBridgePair test
-        Assert.assertEquals(hopOvsdbBridgePairList.size(), 0);
+        assertEquals("Must be Equal", hopOvsdbBridgePairList, Collections.emptyList());
     }
 
     @Test
-    public void buildHopOvsdbBridgePairReturnsEmptyList1() throws Exception {
+    public void buildHopOvsdbBridgePair_EmptyList1() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
 
-        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("5"));
-        renderedServicePathHopBuilder.setServiceFunctionForwarder("Sff");
+        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("5"))
+                                     .setServiceFunctionForwarder(sff);
         renderedServicePathHopList.add(renderedServicePathHopBuilder.build());
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopList);
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
 
-        PowerMockito.mockStatic(SfcOvsUtil.class);
-        Mockito.when(SfcOvsUtil.submitCallable(Mockito.any(SfcOvsDataStoreAPI.class), Mockito.any(ExecutorService.class))).thenReturn(ovsdbBridgeAugmentationBuilder.build());
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(ovsdbBridgeAugmentationBuilder.build());
 
-        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = Whitebox.invokeMethod(HopOvsdbBridgePair.class, "buildHopOvsdbBridgePairList", renderedServicePathBuilder.build(), executorService);
+        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = HopOvsdbBridgePair.buildHopOvsdbBridgePairList(renderedServicePathBuilder.build(), executorService);
 
-        //buildHopOvsdbBridgePair test
-        Assert.assertEquals(hopOvsdbBridgePairList.size(), 0);
+        assertEquals("Must be equal", hopOvsdbBridgePairList, Collections.emptyList());
     }
 
     @Test
@@ -99,19 +92,17 @@ public class HopOvsdbBridgePairTest {
         renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
 
-        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("0"));
-        renderedServicePathHopBuilder.setServiceFunctionForwarder("Sff");
+        renderedServicePathHopBuilder.setHopNumber(Short.valueOf("0"))
+                .setServiceFunctionForwarder(sff);
         renderedServicePathHopList.add(renderedServicePathHopBuilder.build());
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopList);
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
 
-        PowerMockito.mockStatic(SfcOvsUtil.class);
-        Mockito.when(SfcOvsUtil.submitCallable(Mockito.any(SfcOvsDataStoreAPI.class), Mockito.any(ExecutorService.class))).thenReturn(ovsdbBridgeAugmentationBuilder.build());
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(ovsdbBridgeAugmentationBuilder.build());
 
-        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = Whitebox.invokeMethod(HopOvsdbBridgePair.class, "buildHopOvsdbBridgePairList", renderedServicePathBuilder.build(), executorService);
+        List<HopOvsdbBridgePair> hopOvsdbBridgePairList = HopOvsdbBridgePair.buildHopOvsdbBridgePairList(renderedServicePathBuilder.build(), executorService);
 
-        //buildHopOvsdbBridgePair test
-        Assert.assertEquals(hopOvsdbBridgePairList.size(), 1);
+        assertEquals(hopOvsdbBridgePairList.size(), 1);
     }
 }
 

@@ -15,6 +15,8 @@ import requests
 import ipaddress
 import threading
 import subprocess
+import queue
+from time import sleep
 
 from ..nsh.encode import build_nsh_header
 from ..common.sfc_globals import sfc_globals
@@ -59,6 +61,7 @@ IPv6 = 6
 NFQ_NUMBER = 2
 NFQ_AVAILABLE = False
 
+in_pckt_queue = queue.Queue()
 
 #: NetfilterQueue is available only on Linux as it cooperates with ip(6)tables
 if sys.platform.startswith('linux'):
@@ -354,19 +357,20 @@ class NfqClassifier(metaclass=Singleton):
 
         return rsp_id, ipv
 
-    def forward_packet(self, packet, rsp_id, ipv):
+    def forward_packet(self, packet):
         """
         Encapsulate given packet with NSH and forward it to SFF related with
         currently matched RSP
 
         :param packet: packet to process
         :type packet: `:class:netfilterqueue.Packet`
-        :param rsp_id: RSP identifier
-        :type rsp_id: int
-        :param ipv: IP version
-        :type ipv: int
+
 
         """
+
+        mark = packet.get_mark()
+        rsp_id, ipv = self._decompose_packet_mark(mark)
+        
         fwd_to = self.rsp_2_sff[rsp_id]['sff']
         next_protocol = ipv_2_next_protocol[ipv]
 
@@ -404,6 +408,10 @@ class NfqClassifier(metaclass=Singleton):
         nsh_packet = nsh_header + packet.get_payload()
 
         self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
+        sfc_globals.sent_packets += 1
+        logger.info('*** Packets- processed:"%d" sent:"%d" sf-received:"%d" received:"%d"', sfc_globals.processed_packets, 
+                    sfc_globals.sent_packets, sfc_globals.sf_received_packets, sfc_globals.received_packets )
+        sleep(0.00015) 
 
     def process_packet(self, packet):
         """
@@ -412,23 +420,53 @@ class NfqClassifier(metaclass=Singleton):
 
         :param packet: packet to process
         :type packet: `:class:netfilterqueue.Packet`
-
         """
+ 
         try:
             mark = packet.get_mark()
             rsp_id, ipv = self._decompose_packet_mark(mark)
 
-            logger.debug('NFQ received a %s, marked "%d"', packet, mark)
+            #logger.debug('NFQ received a %s, marked "%d"', packet, mark)
 
             if rsp_id in self.rsp_2_sff:
-                packet.accept()
-                self.forward_packet(packet, rsp_id, ipv)
+                #self.forward_packet(packet, rsp_id, ipv)
+                in_pckt_queue.put_nowait(packet)
+                packet.drop()
+                sfc_globals.processed_packets += 1
+                #logger.info('Processed packets "%d"', processed_packets)
             else:
                 logger.warning('Dropping packet as it did\'t match any rule')
                 packet.drop()
-
+                sfc_globals.dropped_packets += 1
+                logger.info('Dropped packets "%d"', sfc_globals.dropped_packets)
+                
         except:
             logger.exception('NFQ failed to receive a packet')
+
+    def packet_sender(self):
+        """
+        
+        Waiting for the packets  from in_packet_queue and forward them.
+
+        """
+        global in_pckt_queue
+        
+        if not NFQ_AVAILABLE:
+            logger.error('Classifier can\'t start\n\n'
+                         '*** NetfilterQueue not supported or installed ***\n')
+            return
+
+        try:
+            while True:
+                packet=in_pckt_queue.get(block=True)
+                self.forward_packet(packet)
+                in_pckt_queue.task_done() 
+        except:
+            msg = 'Reading from queue failed'
+            logger.info(msg)
+            logger.exception(msg)
+            raise
+
 
     def packet_collector(self):
         """
@@ -471,6 +509,10 @@ class NfqClassifier(metaclass=Singleton):
         nfq_thread = threading.Thread(target=self.packet_collector)
         nfq_thread.daemon = True
         nfq_thread.start()
+        
+        sending_thread = threading.Thread(target=self.packet_sender)
+        sending_thread.daemon = True
+        sending_thread.start()
 
     def parse_ace(self, ace_matches):
         """
@@ -771,6 +813,12 @@ def clear_classifier():
     """
     nfq_classifier = NfqClassifier()
 
+
+    
     if nfq_classifier.nfq_running():
         # TODO: logging exceptions ocures (sometimes) -> debug
         nfq_classifier.remove_all_rsps()
+        logger.info('******************Processed packets "%d"***************', sfc_globals.processed_packets)
+        logger.info('******************Sent packets "%d"***************', sfc_globals.sent_packets)
+        logger.info('******************SF received packets "%d"***************', sfc_globals.sf_received_packets)
+        logger.info('******************Received packets "%d"***************', sfc_globals.received_packets)

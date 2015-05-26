@@ -7,6 +7,7 @@
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 
+
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.1"
@@ -72,7 +73,13 @@ class SfcGlobals:
 
     odl_locator = LOCAL_ODL_LOCATOR
     odl_credentials = ('admin', 'admin')
-
+    
+    processed_packets = 0
+    dropped_packets = 0
+    sent_packets = 0
+    received_packets = 0
+    sf_received_packets = 0
+    
     def get_path(self):
         return self.path
 

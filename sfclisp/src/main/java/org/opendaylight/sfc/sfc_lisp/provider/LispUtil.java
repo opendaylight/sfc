@@ -292,10 +292,11 @@ public class LispUtil {
             HopBuilder hopBuilder = new HopBuilder();
             hopBuilder.setPrimitiveAddress(toPrimitive(hop));
             HopsBuilder hopsBuilder = new HopsBuilder();
+            hopsBuilder.setName("Hop " + teAddrBuilder.getHops().size());
             hopsBuilder.setHop(hopBuilder.build());
-            hopsBuilder.setLookup(true);
+            hopsBuilder.setLookup(false);
             hopsBuilder.setRLOCProbe(false);
-            hopsBuilder.setStrict(true);
+            hopsBuilder.setStrict(false);
             teAddrBuilder.getHops().add(hopsBuilder.build());
         }
 
@@ -329,15 +330,15 @@ public class LispUtil {
         }
     }
 
-    public static GetMappingInput buildGetMappingInput(LispAddressContainer eid) {
-        return new GetMappingInputBuilder().setLispAddressContainer(eid).setMaskLength((short)32).build();
+    public static GetMappingInput buildGetMappingInput(LispAddressContainer eid, short mask) {
+        return new GetMappingInputBuilder().setLispAddressContainer(eid).setMaskLength(mask).build();
     }
 
-    public static AddMappingInput buildAddMappingInput(LispAddressContainer eid, List<LispAddressContainer> locators) {
+    public static AddMappingInput buildAddMappingInput(LispAddressContainer eid, List<LispAddressContainer> locators, int mask) {
         AddMappingInputBuilder mib = new AddMappingInputBuilder();
 
         mib.setAction(Action.NoAction).setAuthoritative(true).setLispAddressContainer(eid)
-                .setLocatorRecord(buildLocatorRecords(locators)).setMapVersion((short) 0).setMaskLength((short) 0)
+                .setLocatorRecord(buildLocatorRecords(locators)).setMapVersion((short) 0).setMaskLength((short) mask)
                 .setRecordTtl(1440);
         return mib.build();
     }

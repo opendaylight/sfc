@@ -10,7 +10,9 @@ __status__ = "Tested with SFC-Karaf distribution as of 05/05/2015"
 ### NOTES:
 ### 1 Install vlan: sudo apt-get install vlan
 ### 2 Install openswitch version 2.2+. Visit https://github.com/mininet/mininet/wiki/Installing-new-version-of-Open-vSwitch
-### 3 This script reads 3 files : sfcofl2_mininet_create_flows_forwarder_sfc_sim.txt, sfcofl2_mininet_create_http_flows_gws_mpls.txt, sfcofl2_mininet_create_http_flows_gws_vlan.txt. The switches are populated with those flows, so edit the files to modify the rules. 
+### 3 This script reads 3 files : sfcofl2_mininet_create_flows_forwarder_sfc_sim.txt,
+###   sfcofl2_mininet_create_http_flows_gws_mpls.txt, sfcofl2_mininet_create_http_flows_gws_vlan.txt.
+###   The switches are populated with those flows, so edit the files to modify the rules. 
 
 from mininet.cli import CLI
 from mininet.node import Controller, Host, RemoteController, OVSController
@@ -39,7 +41,7 @@ else:
 # Constants
 MAX_CLIENTS  = 3
 MAX_SERVERS  = 2
-MAX_ELEMENTS = 7 # Care, it will affect MAC address
+MAX_ELEMENTS = 9 # Notice, changing this value will affect the MAC addresses
 VLAN_ID      = 1000
 
 #
@@ -99,9 +101,9 @@ class Context(object):
         self.remote_controller_ip   = '192.168.56.101'
         self.remote_controller_port = '6633'
         self.remote_controller_args = ''
-        self.remote_controller_name = 'c5'  
-                
-        self.sfcofl2_path_prefix   = '/home/rlm/workspace/mininet/current-version'        
+        self.remote_controller_name = 'c5'
+
+        self.sfcofl2_path_prefix   = '/home/rlm/workspace/mininet/current-version'
         self.sfcofl2_path_gws_vlan = 'sfcofl2_mininet_create_http_flows_gws_vlan.txt'
         self.sfcofl2_path_gws_mpls = 'sfcofl2_mininet_create_http_flows_gws_mpls.txt'
         self.sfcofl2_path_sf_nodes = 'sfcofl2_mininet_create_flows_forwarder_sfc_sim.txt'
@@ -140,11 +142,10 @@ def get_cmd_line_args(context):
                   help='Remote Controller port')
 
     # Switch
-    #TODO Implement if the number of SFFs and SFs can differ
-    """opts.add_argument('--switch-number', '-S',
+    opts.add_argument('--switch-number', '-S',
                   default=context.switch_number,
                   dest='switch_number',
-                  help='Number of OPF Switches') """
+                  help='Number of OPF Switches')
 
     opts.add_argument('--switch-protocol', '-T',
                   default=context.switch_args,
@@ -162,7 +163,7 @@ def get_cmd_line_args(context):
     opts.add_argument('--sf-number','-N',
                   default=context.sf_number,
                   dest='sf_number',
-                  help='Number of Service Functions')
+                  help='Total number of Service Functions')
 
     #Clients
     opts.add_argument('--clients-number', '-C',
@@ -171,11 +172,11 @@ def get_cmd_line_args(context):
                   help='Number of clients')
 
     #Servers
-    opts.add_argument('--servers-number', '-S',
+    opts.add_argument('--servers-number', '-R',
                   default=context.servers_number,
                   dest='servers_number',
                   help='Number of servers')
-                  
+
     #Files
     opts.add_argument('--prefix', '-X',
                       default=context.sfcofl2_path_prefix,
@@ -204,12 +205,10 @@ def get_cmd_line_args(context):
     context.sf_number        =  args.sf_number
     context.sf_loop          =  args.sf_loop
 
-
-    context.switch_number    =  context.sf_number
+    context.switch_number    =  args.switch_number
     context.switch_args      = 'protocols=' + args.switch_args
 
     context.clients_number   = args.clients_number
-
     context.servers_number   = args.servers_number
 
     context.demo_mode = args.demo_mode
@@ -218,14 +217,14 @@ def get_cmd_line_args(context):
     context.sfcofl2_path_gws_vlan = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_vlan)
     context.sfcofl2_path_gws_mpls = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_mpls)
     context.sfcofl2_path_sf_nodes = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_sf_nodes)
-    
+
     #### CHECK ARGUMENTS ####
 
     # Demo mode
     if (context.demo_mode != 'vlan') and (context.demo_mode != 'mpls'):
         print "Error: Demo mode is incorrect. Try with --demo-mode vlan or --demo-mode mpls"
         return False
-        
+
     # Operation mode
     if (context.operation_mode != 'vlan') and (context.operation_mode != 'no-vlan'):
         print "Error: Operation mode is incorrect. Try with --operation-mode vlan or --operation-mode no-vlan"
@@ -247,11 +246,14 @@ def get_cmd_line_args(context):
         return False
     #### If there should be 1 SF per switch, then match them ####
 
-    if int(context.switch_number ) > int(context.sf_number ):
-        context.sf_number     = context.switch_number
-    else:
-        context.switch_number = context.sf_number
-        
+    if int(context.switch_number) > int(context.sf_number):
+        print "Error: There must be at least one SF per SFF"
+        return False
+
+    if int(context.sf_number) % int(context.switch_number) != 0:
+        print "Error: The number of SFs must be a multiple of the number of SFFs"
+        return False
+
     # Files
     for path in [context.sfcofl2_path_gws_vlan, context.sfcofl2_path_gws_mpls, context.sfcofl2_path_sf_nodes]:
         if not os.path.exists(path):
@@ -265,7 +267,7 @@ def get_cmd_line_args(context):
         client_mac  = "{}{}".format("00:00:00:00:01:0", i+1)
         client_ip   = "{}{}".format("10.0.0.", i+1)
         context.clients.append(ServiceFunctionInfo(client_name, client_mac, client_ip))
-	
+
     # Servers
     for i in range(int(context.servers_number)):
         server_name = "{}{}".format("server", i+1)
@@ -292,7 +294,7 @@ def get_cmd_line_args(context):
                 context.service_functions.append(ServiceFunctionInfo(sf_name, sf_mac, sf_ip))
 
     # SFFs
-    ##### NOTE: This order is important. The Openflows switches have to be synchronized with the ODL configuration.  
+    ##### NOTE: This order is important. The Openflows switches have to be synchronized with the ODL configuration.
     for i in range(int(context.switch_number)):
         switch_name     = "{}{}".format("sff", i+1)
         switch_protocol = context.switch_args 
@@ -339,31 +341,33 @@ def create_topology(context):
 
     topo = Topo()
     h = ''
+    sfs_per_sff = int(context.sf_number) / int(context.switch_number)
 
 
     # Add the links SFFs - SFs
     for i in range(len(context.sf_forwarders)):
         print context.sf_forwarders[i].opts
         s = topo.addSwitch(context.sf_forwarders[i].name, opts=context.sf_forwarders[i].opts)
-        # Add the Loop switches instead of normal hosts
-        if not context.service_functions[i]:
-            h = topo.addSwitch(context.sf_forwarders[i].name+'-node', opts='')
-        # Add the SFs
-        else:
-            if context.service_functions[i].vlan_id_ == 0:
-                h = topo.addHost(context.service_functions[i].name,
-                         ip=context.service_functions[i].ip_,
-                         mac=context.service_functions[i].mac_)
-
+        for j in range(sfs_per_sff):
+            # Add the Loop switches instead of normal hosts
+            if not context.service_functions[j]:
+                h = topo.addSwitch('%s-node%d'%(context.sf_forwarders[i].name,j+1), opts='')
+            # Add the SFs
             else:
-                h = topo.addHost(context.service_functions[i].name,
-                         cls=VlanHost,
-                         vlan=context.service_functions[i].vlan_id_,
-                         ip=context.service_functions[i].ip_,
-                         mac=context.service_functions[i].mac_)
+                if context.service_functions[j].vlan_id_ == 0:
+                    h = topo.addHost(context.service_functions[j].name,
+                             ip=context.service_functions[j].ip_,
+                             mac=context.service_functions[j].mac_)
 
+                else:
+                    h = topo.addHost(context.service_functions[j].name,
+                             cls=VlanHost,
+                             vlan=context.service_functions[j].vlan_id_,
+                             ip=context.service_functions[j].ip_,
+                             mac=context.service_functions[j].mac_)
 
-        topo.addLink(node1=h, node2=s)
+            # Connect the SF to the SFF
+            topo.addLink(node1=h, node2=s)
 
     # Add the links between SFFs
     for i in range(len(context.sf_forwarders)-1):
@@ -410,7 +414,7 @@ def start_switches(context,network, odl_controller, local_controller):
 def dump_hosts(network):
     for host in network.hosts:
         print 'Host %s, IP %s, MAC %s, IFs %s' % (host.name, host.IP(), host.MAC(), host.intfNames())
-                
+
 # Insert flows into the switches
 def init_flows(context):
     #Gateways flows
@@ -424,7 +428,7 @@ def init_flows(context):
     if (context.sf_loop) and (os.path.exists(context.sfcofl2_path_sf_nodes)):
         print 'SF - NODES flows:'
         insert_flows(context.sfcofl2_path_sf_nodes)
-            
+
 def insert_flows(fileName):
     file = open(fileName,'r')
     for line in file.readlines():
@@ -465,7 +469,7 @@ def main():
 
     # Start the command line
     CLI(myNet)
-   
+
     cleanup()
 
 if __name__ == '__main__':

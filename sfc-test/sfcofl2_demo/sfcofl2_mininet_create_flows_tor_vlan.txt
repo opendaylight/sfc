@@ -1,0 +1,26 @@
+# Here you can edit the Top-of-Rack (tor) flows working in VLAN. 
+
+sudo ovs-vsctl set bridge tor1 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
+
+# Simple VLAN connectivity (this will be performed by OpenStack automatically)
+# This is for a symmetric RSP with 2 SFFs
+# VLAN 100 => GW1->SFF1
+# VLAN 101 => SFF1->SFF2
+# VLAN 102 => SFF2->GW2
+# VLAN 200 => GW2->SFF2
+# VLAN 201 => SFF2->SFF1
+# VLAN 202 => SFF1->GW1
+
+# These are the tor interfaces, from the mininet 'net' command
+# tor1 lo:  tor1-eth1:sff1-eth2 tor1-eth2:sff2-eth2 tor1-eth3:gw1-eth1 tor1-eth4:gw2-eth1
+
+
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=100,actions=output=1"
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=101,actions=output=2"
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=102,actions=output=4"
+
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=200,actions=output=2"
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=201,actions=output=1"
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=202,actions=output=3"
+
+sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=5,actions=drop"

@@ -18,7 +18,7 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.info.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -314,7 +314,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     }
 
     @Test
-    public void testReadRspFirstHopBySftList() throws ExecutionException, InterruptedException {
+    public void testCreateRenderedServicePath() throws ExecutionException, InterruptedException {
         List<Class<? extends ServiceFunctionTypeIdentity>> sftList = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();
         sftList.add(Firewall.class);
         sftList.add(Dpi.class);
@@ -322,16 +322,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         sftList.add(HttpHeaderEnrichment.class);
         sftList.add(Qos.class);
         assertEquals("sftList size should be 5", sftList.size(), 5);
-        RenderedServicePathFirstHop firstHop = null;
+        RenderedServicePath rsp = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
+            rsp = SfcProviderRenderedPathAPI.createRenderedServicePath(VxlanGpe.class, null, true, sftList);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        assertNotNull("Must be not null", firstHop);
-        LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
-        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
-        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+        assertNotNull("Must be not null", rsp);
+        LOG.debug("RSP created by createRenderedServicePath: {}", rsp.getName());
     }
 
     @Test

@@ -361,24 +361,46 @@ public class SfcProviderRpc implements ServiceFunctionService,
     }
 
     /**
-     * This methong reads all the necessary information for the first hop of a
-     * Rendered Service Path by ServiceFunctionTypeIdentity list.
+     * This method builds CreateRenderedServicePathOutputBuilder according to
+     * RenderedServicePath.
      * <p>
-     * @param input RPC input including a ServiceFunctionTypeIdentity list
-     * @return RPC output including a renderedServicePathFirstHop.
+     * @param builder CreateRenderedServicePathOutputBuilder to build
+     * @param renderedServicePath RenderedServicePath to be used to build builder
+     * @return none.
+     */
+    private void setCreateRenderedServicePathOutputBuilder(CreateRenderedServicePathOutputBuilder builder, RenderedServicePath renderedServicePath) {
+        builder.setName(renderedServicePath.getName());
+        builder.setParentServiceFunctionPath(renderedServicePath.getParentServiceFunctionPath());
+        builder.setTransportType(renderedServicePath.getTransportType());
+        builder.setContextMetadata(renderedServicePath.getContextMetadata());
+        builder.setVariableMetadata(renderedServicePath.getVariableMetadata());
+        builder.setTenantId(renderedServicePath.getTenantId());
+        builder.setRenderedServicePathHop(renderedServicePath.getRenderedServicePathHop());
+        builder.setServiceChainName(renderedServicePath.getServiceChainName());
+        builder.setStartingIndex(renderedServicePath.getStartingIndex());
+        builder.setPathId(renderedServicePath.getPathId());
+        builder.setServiceStatistics(renderedServicePath.getServiceStatistics());
+    }
+
+    /**
+     * This methong creates Rendered Service Path according to
+     * the given input parameters.
+     * <p>
+     * @param input RPC input including four parameters for RSP creation
+     * @return RPC output including the created RSP.
      */
     @Override
-    public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(ReadRspFirstHopBySftListInput input) {
-        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
-        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(), input.getSftList());
-        ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;
-        if (renderedServicePathFirstHop != null) {
-            ReadRspFirstHopBySftListOutputBuilder readRspFirstHopBySftListOutputBuilder = new ReadRspFirstHopBySftListOutputBuilder();
-            readRspFirstHopBySftListOutputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
-            readRspFirstHopBySftListOutput = readRspFirstHopBySftListOutputBuilder.build();
+    public Future<RpcResult<CreateRenderedServicePathOutput>> createRenderedServicePath(CreateRenderedServicePathInput input) {
+        RenderedServicePath renderedServicePath = null;
+        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePath(input.getTransportType(), input.getSfst(), input.isSymmetric(), input.getSftList());
+        CreateRenderedServicePathOutput createRenderedServicePathOutput = null;
+        if (renderedServicePath != null) {
+            CreateRenderedServicePathOutputBuilder createRenderedServicePathOutputBuilder = new CreateRenderedServicePathOutputBuilder();
+            setCreateRenderedServicePathOutputBuilder(createRenderedServicePathOutputBuilder, renderedServicePath);
+            createRenderedServicePathOutput = createRenderedServicePathOutputBuilder.build();
         }
 
-        RpcResultBuilder<ReadRspFirstHopBySftListOutput> rpcResultBuilder = RpcResultBuilder.success(readRspFirstHopBySftListOutput);
+        RpcResultBuilder<CreateRenderedServicePathOutput> rpcResultBuilder = RpcResultBuilder.success(createRenderedServicePathOutput);
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 

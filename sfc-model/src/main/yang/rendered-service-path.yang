@@ -58,6 +58,111 @@ module rendered-service-path {
   }
 
   // Rendered Service Path
+  grouping rendered-service-path-info {
+    leaf name {
+      type string;
+      description
+        "The name of this rendered function path. This is the same
+         name as the associated SFP";
+    }
+    leaf parent-service-function-path {
+      type string;
+      description
+        "Service Function Path from which this RSP was instantiated";
+
+    }
+    leaf transport-type {
+      type sfc-sl:sl-transport-type-def;
+      default "service-locator:vxlan-gpe";
+      description
+        "Transport type as set in the Parent Service Function Path";
+    }
+    leaf context-metadata {
+      type sfc-md:context-metadata-ref;
+      description
+        "The name of the associated context metadata";
+    }
+    leaf variable-metadata {
+      type sfc-md:variable-metadata-ref;
+      description
+        "The name of the associated variable metadata";
+    }
+    leaf tenant-id {
+      type string;
+      description
+        "This RSP was created for a specific tenant-id";
+    }
+    uses sfc-ss:service-statistics-group {
+      description "Global Rendered Service Path statistics";
+    }
+    list rendered-service-path-hop {
+      key "hop-number";
+      leaf hop-number {
+        type uint8;
+        description
+          "A Monotonically increasing number";
+      }
+      leaf service-function-name {
+        type string;
+        description
+          "Service Function name";
+      }
+      leaf service-function-group-name {
+        type string;
+        description
+          "Service Function group name";
+      }
+      leaf service-function-forwarder {
+        type string;
+        description
+          "Service Function Forwarder name";
+      }
+      leaf service-function-forwarder-locator {
+        type sfc-sff:service-function-forwarder-locator-ref;
+        description
+          "The name of the SFF data plane locator";
+      }
+      leaf service-index {
+        type uint8;
+        description
+          "Provides location within the service path.
+           Service index MUST be decremented by service functions
+           or proxy nodes after performing required services.  MAY
+           be used in conjunction with service path for path
+           selection.  Service Index is also valuable when
+           troubleshooting/reporting service paths.  In addition to
+           location within a path, SI can be used for loop
+           detection.";
+      }
+      ordered-by user;
+      description
+        "A list of service functions that compose the
+         service path";
+    }
+    leaf service-chain-name {
+      type string;
+      mandatory true;
+      description
+        "The Service Function Chain used as blueprint for this
+         path";
+    }
+    leaf starting-index {
+      type uint8;
+      description
+        "Starting service index";
+    }
+    leaf path-id {
+      type uint32 {
+        range "0..16777216";
+      }
+      description
+        "Identifies a service path.
+         Participating nodes MUST use this identifier for path
+         selection.  An administrator can use the service path
+         value for reporting and troubleshooting packets along
+         a specific path.";
+    }
+  }
 
   container rendered-service-paths {
     config false;
@@ -76,109 +181,7 @@ module rendered-service-path {
         "A list that holds operational data for all RSPs in the
          domain";
       key "name";
-      leaf name {
-        type string;
-        description
-          "The name of this rendered function path. This is the same
-           name as the associated SFP";
-      }
-      leaf parent-service-function-path {
-        type string;
-        description
-          "Service Function Path from which this RSP was instantiated";
-
-      }
-      leaf transport-type {
-        type sfc-sl:sl-transport-type-def;
-        default "service-locator:vxlan-gpe";
-        description
-          "Transport type as set in the Parent Service Function Path";
-      }
-      leaf context-metadata {
-        type sfc-md:context-metadata-ref;
-        description
-          "The name of the associated context metadata";
-      }
-      leaf variable-metadata {
-        type sfc-md:variable-metadata-ref;
-        description
-          "The name of the associated variable metadata";
-      }
-      leaf tenant-id {
-        type string;
-        description
-          "This RSP was created for a specific tenant-id";
-      }
-      uses sfc-ss:service-statistics-group {
-        description "Global Rendered Service Path statistics";
-      }
-      list rendered-service-path-hop {
-        key "hop-number";
-        leaf hop-number {
-          type uint8;
-          description
-            "A Monotonically increasing number";
-        }
-        leaf service-function-name {
-          type string;
-          description
-            "Service Function name";
-        }
-        leaf service-function-group-name {
-          type string;
-          description
-            "Service Function group name";
-        }
-        leaf service-function-forwarder {
-          type string;
-          description
-            "Service Function Forwarder name";
-        }
-        leaf service-function-forwarder-locator {
-          type sfc-sff:service-function-forwarder-locator-ref;
-          description
-            "The name of the SFF data plane locator";
-        }
-        leaf service-index {
-          type uint8;
-          description
-            "Provides location within the service path.
-             Service index MUST be decremented by service functions
-             or proxy nodes after performing required services.  MAY
-             be used in conjunction with service path for path
-             selection.  Service Index is also valuable when
-             troubleshooting/reporting service paths.  In addition to
-             location within a path, SI can be used for loop
-             detection.";
-        }
-        ordered-by user;
-        description
-          "A list of service functions that compose the
-           service path";
-      }
-      leaf service-chain-name {
-        type string;
-        mandatory true;
-        description
-          "The Service Function Chain used as blueprint for this
-           path";
-      }
-      leaf starting-index {
-        type uint8;
-        description
-          "Starting service index";
-      }
-      leaf path-id {
-        type uint32 {
-          range "0..16777216";
-        }
-        description
-          "Identifies a service path.
-           Participating nodes MUST use this identifier for path
-           selection.  An administrator can use the service path
-           value for reporting and troubleshooting packets along
-           a specific path.";
-      }
+      uses rendered-service-path-info;
     }
   }
 
@@ -290,7 +293,11 @@ module rendered-service-path {
            value for reporting and troubleshooting packets along
            a specific path.";
       }
-
+      leaf rsp-name {
+        type string;
+        description
+          "The name of this rendered service path";
+      }
       leaf transport-type {
         type sfc-sl:sl-transport-type-def;
       }
@@ -316,14 +323,31 @@ module rendered-service-path {
     }
   }
 
-  rpc read-rsp-first-hop-by-sft-list {
+  rpc create-rendered-service-path {
     description
-      "Read all the necessary information for the first hop of a
-      Rendered Service Path by ServiceFunctionTypeIdentity list";
+      "Create Rendered Service Path according to the given
+      encapsulation type, service function scheduler algorithm,
+      symmetric or asymmetric Rendered Service Path, abstract
+      service function chain described by ServiceFunctionTypeIdentity
+      list, it is an advanced version of create-rendered-path";
     input {
+      leaf transport-type {
+        type sfc-sl:sl-transport-type-def;
+        description
+          "Transport type as set in the Parent Service Function Path";
+      }
       leaf sfst {
         description "Service function scheduler type for RSP";
         type sfc-sfst:service-function-scheduler-type;
+      }
+      leaf symmetric {
+        type boolean;
+        default false;
+        description
+          "If the chain is symmetric we will create two service
+           paths, one ingress and another egress. Packets traverse
+           the egress service path in the reverse order of the
+           ingress path";
       }
       leaf-list sft-list {
         description "List of service function type";
@@ -331,8 +355,7 @@ module rendered-service-path {
       }
     }
     output {
-      uses rendered-service-path-first-hop-info;
+      uses rendered-service-path-info;
     }
   }
-
 }

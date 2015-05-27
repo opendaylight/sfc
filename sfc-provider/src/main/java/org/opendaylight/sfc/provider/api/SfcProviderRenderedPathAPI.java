@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -889,39 +890,18 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return renderedServicePathFirstHop;
     }
 
-    private static String getServiceTypeName(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
-        String serviceTypeName = null;
-
-        printTraceStart(LOG);
-        if (serviceFunctionType == Dpi.class) {
-            serviceTypeName = "dpi";
-        } else if (serviceFunctionType == Firewall.class) {
-            serviceTypeName = "firewall";
-        } else if (serviceFunctionType == HttpHeaderEnrichment.class) {
-            serviceTypeName = "http-header-enrichment";
-        } else if (serviceFunctionType == Ids.class) {
-            serviceTypeName = "ids";
-        } else if (serviceFunctionType == Napt44.class) {
-            serviceTypeName = "napt44";
-        } else if (serviceFunctionType == Qos.class) {
-            serviceTypeName = "qos";
-        } else {
-            LOG.error("Unknown ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
-        }
-        printTraceStop(LOG);
-        return serviceTypeName;
-    }
-
     /**
      * This method gets all necessary information for a system to construct
      * a NSH header and associated overlay packet to target the first
      * service hop of a Rendered Service Path by ServiceFunctionTypeIdentity
      * list
      * <p>
-     * @param serviceFunctionTypeList ServiceFunctionTypeIdentity list
+     * @param transportType Specify encapsulation type for RSP
+     * @param serviceFunctionSchedulerType Specify scheduler algorithm for RSP 
+     * @param serviceFunctionTypeList Specify ServiceFunctionType list for SFC
      * @return RenderedServicePathFirstHop.
      */
-    public static RenderedServicePathFirstHop readRspFirstHopBySftList(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType, List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
+    public static RenderedServicePathFirstHop readRspFirstHopBySftList(Class<? extends SlTransportType> transportType, Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType, List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
         int i;
         String serviceTypeName;
         Class serviceFunctionType = null;
@@ -936,14 +916,25 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         scheduler = getServiceFunctionScheduler(serviceFunctionSchedulerType);
 
+        /* Set transportType to VxlanGpe.class if the caller doesn't care this */
+        if (transportType == null) {
+            transportType = VxlanGpe.class;
+        }
+
         /* Build sfcName, pathName and ServiceFunction list */
+        sfcName = sfcName + "-" + transportType.getSimpleName();
+        pathName = pathName + "-" + transportType.getSimpleName();
+
+        sfcName = sfcName + "-" + serviceFunctionSchedulerType.getSimpleName();
+        pathName = pathName + "-" + serviceFunctionSchedulerType.getSimpleName();
+
         for (i = 0; i < serviceFunctionTypeList.size(); i++) {
             serviceFunctionType = serviceFunctionTypeList.get(i);
-            serviceTypeName = getServiceTypeName(serviceFunctionType);
-            if (serviceTypeName == null) {
-                LOG.error("Unknowed ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
+            if (serviceFunctionType == null) {
+                LOG.error("serviceFunctionType is null");
                 return null;
             }
+            serviceTypeName = serviceFunctionType.getSimpleName();
             sfcName = sfcName + "-" + serviceTypeName;
             pathName = pathName + "-" + serviceTypeName;
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
@@ -974,6 +965,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             /* Create ServiceFunctionPath pathName if it doesn't exist */
             ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
             pathBuilder.setName(pathName)
+                       .setTransportType(transportType)
                        .setServiceChainName(sfcName);
             serviceFunctionPath = pathBuilder.build();
             ret = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPath);

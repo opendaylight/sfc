@@ -321,6 +321,11 @@ module rendered-service-path {
       "Read all the necessary information for the first hop of a
       Rendered Service Path by ServiceFunctionTypeIdentity list";
     input {
+      leaf transport-type {
+        type sfc-sl:sl-transport-type-def;
+        description
+          "Transport type as set in the Parent Service Function Path";
+      }
       leaf sfst {
         description "Service function scheduler type for RSP";
         type sfc-sfst:service-function-scheduler-type;

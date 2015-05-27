@@ -324,7 +324,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertEquals("sftList size should be 5", sftList.size(), 5);
         RenderedServicePathFirstHop firstHop = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(VxlanGpe.class, null, sftList);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

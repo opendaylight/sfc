@@ -314,7 +314,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     }
 
     @Test
-    public void testReadRspFirstHopBySftList() throws ExecutionException, InterruptedException {
+    public void testCreateRspAdvanced() throws ExecutionException, InterruptedException {
         List<Class<? extends ServiceFunctionTypeIdentity>> sftList = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();
         sftList.add(Firewall.class);
         sftList.add(Dpi.class);
@@ -322,16 +322,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         sftList.add(HttpHeaderEnrichment.class);
         sftList.add(Qos.class);
         assertEquals("sftList size should be 5", sftList.size(), 5);
-        RenderedServicePathFirstHop firstHop = null;
+        RenderedServicePath rsp = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
+            rsp = SfcProviderRenderedPathAPI.createRspAdvanced(VxlanGpe.class, null, true, sftList);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        assertNotNull("Must be not null", firstHop);
-        LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
-        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
-        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+        assertNotNull("Must be not null", rsp);
+        LOG.debug("RSP created by createRspAdvanced: {}", rsp.getName());
     }
 
     @Test

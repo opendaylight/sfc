@@ -361,24 +361,24 @@ public class SfcProviderRpc implements ServiceFunctionService,
     }
 
     /**
-     * This methong reads all the necessary information for the first hop of a
-     * Rendered Service Path by ServiceFunctionTypeIdentity list.
+     * This methong creates Rendered Service Path according to
+     * the given input parameters.
      * <p>
-     * @param input RPC input including a ServiceFunctionTypeIdentity list
-     * @return RPC output including a renderedServicePathFirstHop.
+     * @param input RPC input including four parameters for RSP creation
+     * @return RPC output including the created RSP name.
      */
     @Override
-    public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(ReadRspFirstHopBySftListInput input) {
-        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
-        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(), input.getSftList());
-        ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;
-        if (renderedServicePathFirstHop != null) {
-            ReadRspFirstHopBySftListOutputBuilder readRspFirstHopBySftListOutputBuilder = new ReadRspFirstHopBySftListOutputBuilder();
-            readRspFirstHopBySftListOutputBuilder.setRenderedServicePathFirstHop(renderedServicePathFirstHop);
-            readRspFirstHopBySftListOutput = readRspFirstHopBySftListOutputBuilder.build();
+    public Future<RpcResult<CreateRspAdvancedOutput>> createRspAdvanced(CreateRspAdvancedInput input) {
+        RenderedServicePath renderedServicePath = null;
+        renderedServicePath = SfcProviderRenderedPathAPI.createRspAdvanced(input.getTransportType(), input.getSfst(), input.isSymmetric(), input.getSftList());
+        CreateRspAdvancedOutput createRspAdvancedOutput = null;
+        if (renderedServicePath != null) {
+            CreateRspAdvancedOutputBuilder createRspAdvancedOutputBuilder = new CreateRspAdvancedOutputBuilder();
+            createRspAdvancedOutputBuilder.setName(renderedServicePath.getName());
+            createRspAdvancedOutput = createRspAdvancedOutputBuilder.build();
         }
 
-        RpcResultBuilder<ReadRspFirstHopBySftListOutput> rpcResultBuilder = RpcResultBuilder.success(readRspFirstHopBySftListOutput);
+        RpcResultBuilder<CreateRspAdvancedOutput> rpcResultBuilder = RpcResultBuilder.success(createRspAdvancedOutput);
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 

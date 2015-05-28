@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_b7486a5c",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-28T12:13:43Z",
+      "side": 1,
+      "message": "Good catch! That line is actually commented out, but I\u0027ll just remove it anyways.",
+      "parentUuid": "1a9dcd25_9449acd2",
+      "revId": "455f9904e4e5c02e7c2e21c7a373ce26391046e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_b44628be",
         "filename": "pom.xml",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2015-05-28T10:57:46Z",
       "side": 1,
       "message": "you may want to double-check this -- are the models changing?",
+      "revId": "455f9904e4e5c02e7c2e21c7a373ce26391046e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_176fdec6",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-05-28T12:13:43Z",
+      "side": 1,
+      "message": "I dont know, that was automatically bumped by the \"Version-bump.sh\" script. I\u0027ll look into it.",
+      "parentUuid": "1a9dcd25_b44628be",
       "revId": "455f9904e4e5c02e7c2e21c7a373ce26391046e0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

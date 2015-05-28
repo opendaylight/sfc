@@ -6,8 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
@@ -40,11 +42,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 /**
  * @author Vladimir Lavor
@@ -82,7 +80,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executorService = opendaylightSfc.getExecutor();
@@ -297,7 +295,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         testIpAddress = SfcOvsUtil.convertIpAddressToString(ipAddress);
 
         //Ip v4
-        Assert.assertEquals("Must be equal", testIpAddress, ipAddress.getIpv4Address().getValue());
+        assertEquals("Must be equal", testIpAddress, ipAddress.getIpv4Address().getValue());
 
         //create Ip v6 address
         ipAddress = SfcOvsUtil.convertStringToIpAddress(ipv6Address);
@@ -305,28 +303,28 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         testIpAddress = SfcOvsUtil.convertIpAddressToString(ipAddress);
 
         //Ip v6
-        Assert.assertEquals("Must be equal", testIpAddress, ipAddress.getIpv6Address().getValue());
+        assertEquals("Must be equal", testIpAddress, ipAddress.getIpv6Address().getValue());
     }
 
     @Test
-    public void putAndDeleteOvsdbNode() {
-        nodeIID = createNodeIID();
+    public void testCreateAndDeleteOvsdbNode() {
+        //create node
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setNodeId(new NodeId(testNode))
+                .setKey(new NodeKey(new NodeId(testNode + 1)));
+        SfcDataStoreAPI.writePutTransactionAPI(createNodeIID(testNode + 1), nodeBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
-        result = SfcOvsUtil.putOvsdbBridge(createBridgeAugmentation(nodeIID), executorService);
-
-        assertNotNull("Must be not null", result);
-        assertTrue("Must be true", result);
-
-        result = SfcOvsUtil.deleteOvsdbNode(nodeIID, executorService);
+        //delete node only for sure)
+        result = SfcOvsUtil.deleteOvsdbNode(createNodeIID(testNode + 1), executorService);
 
         assertNotNull("Must be not null", result);
         assertTrue("Must be true", result);
     }
 
     @Test
-    public void putAndDeleteOvsdbTerminationPoint() {
+    public void testPutAndDeleteOvsdbTerminationPoint() {
         dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-        nodeIID = createNodeIID();
+        nodeIID = createNodeIID(testNode);
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorList = new ArrayList<>();
@@ -403,19 +401,19 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 VxlanGpe.class.getName());
     }
 
-    private InstanceIdentifier<Node> createNodeIID() {
+    private InstanceIdentifier<Node> createNodeIID(String key) {
         nodeIID = InstanceIdentifier
                 .create(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, new NodeKey(new NodeId(testNode)));
+                .child(Node.class, new NodeKey(new NodeId(key)));
 
         return nodeIID;
     }
 
-    private OvsdbBridgeAugmentation createBridgeAugmentation(InstanceIdentifier<?> IID) {
+    private OvsdbBridgeAugmentation createBridgeAugmentation(InstanceIdentifier<?> nodeIID) {
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
         ovsdbBridgeAugmentationBuilder.setBridgeName(new OvsdbBridgeName(testBridgeName))
-                .setManagedBy(new OvsdbNodeRef(IID));
+                .setManagedBy(new OvsdbNodeRef(nodeIID));
 
         return ovsdbBridgeAugmentationBuilder.build();
     }

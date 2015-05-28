@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_9449acd2",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-05-28T10:57:46Z",
+      "side": 1,
+      "message": "You might want to either remove this, or change it to match the value in your top-level pom.xml",
+      "revId": "455f9904e4e5c02e7c2e21c7a373ce26391046e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_b44628be",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-05-28T10:57:46Z",
+      "side": 1,
+      "message": "you may want to double-check this -- are the models changing?",
+      "revId": "455f9904e4e5c02e7c2e21c7a373ce26391046e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

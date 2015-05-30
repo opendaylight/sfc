@@ -307,7 +307,7 @@ public class LispUtil {
     public static Ip createLocator(LcafApplicationData applicationData) {
         IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(
                 applicationData.getLcafApplicationDataAddr().getIpTos()).getHostAddress()));
-        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getLcafApplicationDataAddr().getLocalPort())
+        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getLcafApplicationDataAddr().getLocalPortLow())
                 .build();
         return locatorType;
     }

@@ -235,57 +235,102 @@ public class LispUpdater implements ILispUpdater {
             }
 
             List<SffDataPlaneLocator> locators = sff.getSffDataPlaneLocator();
+
+            boolean found = false;
             for (SffDataPlaneLocator locator : locators) {
                 if (locator.getName().equals(locatorName)) {
                     DataPlaneLocator dpLocator = locator.getDataPlaneLocator();
                     LOG.debug("Found for SFF {} the locator {}", sffName, dpLocator);
                     if (dpLocator.getLocatorType() instanceof Ip) {
                         Ip sffLocator = (Ip) dpLocator.getLocatorType();
-                        hopIpList.add(sffLocator.getIp());
+                        // For now we do not support an SFF appearing twice on a TE path
+                        // and we only use one SFF locator
+                        if (sffLocator != null) {
+                            addIfNotInList(hopIpList, sffLocator.getIp());
+                            found = true;
+                            break;
+                        }
                     }
                 }
+            }
+            if (!found) {
+                LOG.debug("Couldn't find locator for SFF {}. Aborting!", sff);
+                return;
             }
         }
 
         // get rsp's acl
         AccessList acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
-        if(acl != null){
-            List<AccessListEntries> acesList = acl.getAccessListEntries();
+        if (acl == null) {
+            LOG.debug("ACL for RSP is null, can't register TE path with LISP!");
+            return;
+        }
 
-            // for each of acl's aces get src/dst ips ...
-            for(AccessListEntries aces: acesList) {
-                Matches matches = aces.getMatches();
-                if (matches.getAceType() instanceof AceIp) {
-                    AceIp ipMatch = (AceIp) matches.getAceType();
-                    LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
+        List<AccessListEntries> acesList = acl.getAccessListEntries();
 
-                    if (srcDst != null) {
-                        // ... find locator of dst eid ...
-                        IpAddress lastHop = findLastHop(LispUtil.toContainer(srcDst.getLcafSourceDestAddr().getDstAddress()
-                                .getPrimitiveAddress()));
-                        if (lastHop !=null) {
-                            hopIpList.add(lastHop);
-                            // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
-                            // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
-                            // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
-                            // exist, we overwrite it lower, thus this might require fixing.  XXX
-                            buildAndRegisterMapping(srcDst, hopIpList);
-                        } else {
-                            LOG.debug("Couldn't find locator for src/dst eid: {}", srcDst);
-                        }
-                    } else {
-                        LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
-                    }
+        // for each of acl's aces get src/dst ips ...
+        for (AccessListEntries aces: acesList) {
+            Matches matches = aces.getMatches();
+            if (matches.getAceType() instanceof AceIp) {
+                AceIp ipMatch = (AceIp) matches.getAceType();
+                LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
 
+                if (srcDst == null) {
+                    LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
+                    return;
                 }
+
+                // ... find locator of dst eid ...
+                IpAddress lastHop = findLastHop(LispUtil.toContainer(srcDst.getLcafSourceDestAddr().getDstAddress()
+                        .getPrimitiveAddress()), srcDst.getLcafSourceDestAddr().getDstMaskLength());
+                if (lastHop == null) {
+                    LOG.debug("Couldn't find locator for src/dst eid: {}", srcDst);
+                    return;
+                }
+
+                LOG.debug("Found last hop {}", lastHop);
+                if (isIpInList(hopIpList, lastHop)) {
+                    if (hopIpList.get(hopIpList.size()-1).equals(lastHop)) {
+                        LOG.debug("Last hop is already on the last position in the list of hops!");
+                    } else {
+                        LOG.debug("Last hop is already in the list of hops, but not last. Not supported!");
+                        return;
+                    }
+                } else {
+                    hopIpList.add(lastHop);
+                }
+                // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
+                // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
+                // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
+                // exist, we overwrite it lower, thus this might require fixing.  XXX
+                buildAndRegisterTeMapping(srcDst, hopIpList);
             }
         }
     }
 
+    private boolean isIpInList(List<IpAddress> ipList, IpAddress newIp) {
+        for (IpAddress ip : ipList) {
+            if (newIp.equals(ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean addIfNotInList(List<IpAddress> ipList, IpAddress newIp) {
+        if (newIp == null) {
+            return false;
+        }
+        if (!isIpInList(ipList, newIp)) {
+            ipList.add(newIp);
+            return true;
+        }
+        return false;
+    }
 
     @SuppressWarnings("unchecked")
-    private IpAddress findLastHop(LispAddressContainer eid) {
-        Object[] methodParameters = { eid };
+    private IpAddress findLastHop(LispAddressContainer eid, int mask) {
+        Object[] methodParameters = { eid, mask };
         List<EidToLocatorRecord> reply = (List<EidToLocatorRecord>) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
@@ -309,7 +354,7 @@ public class LispUpdater implements ILispUpdater {
         return null;
     }
 
-    private void buildAndRegisterMapping(LcafSourceDest eid, List<IpAddress> hopList) {
+    private void buildAndRegisterTeMapping(LcafSourceDest eid, List<IpAddress> hopList) {
         LispAddressContainer locatorPath = LispUtil.asLispContainer(LispUtil.buildTeLcaf(hopList));
         List<LispAddressContainer> locators = Arrays.asList(locatorPath);
         Object[] methodParameters = { LispUtil.asLispContainer(eid), locators };

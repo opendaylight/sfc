@@ -58,7 +58,8 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         case GET_MAPPING:
             try {
                 LispAddressContainer eid = (LispAddressContainer) methodParameters[0];
-                result = getLispMapping(eid);
+                int mask = (int) methodParameters[1];
+                result = getLispMapping(eid, (short) mask);
             } catch (ClassCastException e) {
                 LOG.error("Cannot call getLispMapping, passed argument is not an IpAddress object:{} ",
                         methodParameters[0]);
@@ -85,44 +86,44 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
             break;
         }
 
-
         return result;
     }
 
-    private Object getLispMapping(LispAddressContainer eid) {
+    private Object getLispMapping(LispAddressContainer eid, short mask) {
         Preconditions.checkNotNull(eid, "Cannot GET Mapping from LispFlowMapping, Mapping is null.");
         try {
-            Future<RpcResult<GetMappingOutput>> result = lfmService.getMapping(LispUtil.buildGetMappingInput(eid));
+            Future<RpcResult<GetMappingOutput>> result = lfmService.getMapping(LispUtil.buildGetMappingInput(eid, mask));
             GetMappingOutput output = result.get().getResult();
-
             return (Object) output.getEidToLocatorRecord();
         } catch (Exception e) {
-            LOG.warn("Failed to GET mapping for EID {}", eid);
+            LOG.warn("Failed to GET mapping for EID {}: {}", eid, e);
         }
         return null;
     }
 
     private boolean addLispMapping(LispAddressContainer eid, List<LispAddressContainer> locators) {
-        Preconditions.checkNotNull(eid, "Cannot ADD new Mapping to LISP configuration store, Eid is null.");
+        Preconditions.checkNotNull(eid, "Cannot ADD new Mapping to LISP configuration store, EID is null.");
         Preconditions.checkNotNull(locators, "Cannot ADD new Mapping to LISP configuration store, Locators is null.");
         try {
-            Future<RpcResult<Void>> result = lfmService.addMapping(LispUtil.buildAddMappingInput(eid, locators));
+            LOG.trace("ADD mapping with locators: {}", locators);
+            Future<RpcResult<Void>> result = lfmService.addMapping(LispUtil.buildAddMappingInput(eid, locators, 0));
             result.get().getResult();
             return true;
         } catch (Exception e) {
-            LOG.warn("Failed to ADD mapping for EID {}", eid);
+            LOG.warn("Failed to ADD mapping for EID {}: {}", eid, e);
         }
         return false;
     }
 
     private boolean removeLispMapping(LispAddressContainer eid) {
-        Preconditions.checkNotNull(eid, "Cannot REMOVE new Mapping to LISP configuration store, Eid is null.");
+        Preconditions.checkNotNull(eid, "Cannot REMOVE new Mapping to LISP configuration store, EID is null.");
         try {
+            LOG.trace("REMOVE mapping for EID: {}", eid);
             Future<RpcResult<Void>> result = lfmService.removeMapping(LispUtil.buildRemoveMappingInput(eid));
             result.get().getResult();
             return true;
         } catch (Exception e) {
-            LOG.warn("Failed to REMOVE mapping for EID {}", eid);
+            LOG.warn("Failed to REMOVE mapping for EID {} : {}", eid);
         }
         return false;
     }

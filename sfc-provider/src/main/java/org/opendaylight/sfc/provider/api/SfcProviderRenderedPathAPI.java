@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -502,11 +503,19 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
 
 
+
+        if(serviceFunctionPath.getServicePathHop() != null){
+            if(serviceFunctionPath.getServicePathHop().size() != serviceFunctionChain.getSfcServiceFunction().size()){
+                LOG.error("ServiceFunctionChain number of hops doesn't match expected types in chain");
+                return null;
+            }
+        }
         // Descending order
         serviceIndex = MAX_STARTING_INDEX;
 
-        List<String> sfgNameList = SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChain);
-        List<String> sfNameList = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex);
+        List<String> sfgNameList = getSfgNameList(serviceFunctionChain, serviceFunctionPath);
+
+        List<String> sfNameList = getSfNameList(serviceFunctionChain, serviceFunctionPath, serviceIndex, scheduler);
         if(sfNameList == null && sfgNameList == null) {
             LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFunctions() returned null list");
             return null;
@@ -562,6 +571,46 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                     Thread.currentThread().getStackTrace()[1], serviceFunctionPath.getName());
         }
         printTraceStop(LOG);
+        return ret;
+    }
+
+    private List<String> getSfNameList(ServiceFunctionChain serviceFunctionChain,
+            ServiceFunctionPath serviceFunctionPath, int serviceIndex, SfcServiceFunctionSchedulerAPI scheduler) {
+        List<String> ret = null;
+        if(serviceFunctionPath.getServicePathHop() != null){
+            ret = new ArrayList<String>();
+            for (ServicePathHop hop : serviceFunctionPath.getServicePathHop()) {
+                if(hop.getServiceFunctionName() != null){
+                    ret.add(hop.getServiceFunctionName());
+                } else {
+                    ret = null;
+                    break;
+                }
+            }
+        } else {
+            ret = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex);
+        }
+        return ret;
+
+    }
+
+    private List<String> getSfgNameList(ServiceFunctionChain serviceFunctionChain,
+            ServiceFunctionPath serviceFunctionPath) {
+        List<String> ret = null;
+        if(serviceFunctionPath.getServicePathHop() != null){
+            ret = new ArrayList<String>();
+            for (ServicePathHop hop : serviceFunctionPath.getServicePathHop()) {
+                if(hop.getServiceFunctionGroupName() != null){
+                    ret.add(hop.getServiceFunctionGroupName());
+                } else {
+                    ret = null;
+                    break;
+                }
+            }
+        } else {
+            ret = SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChain);
+
+        }
         return ret;
     }
 

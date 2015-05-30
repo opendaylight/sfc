@@ -42,9 +42,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -58,16 +62,24 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.xtq.ast.nodes.When;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcDataStoreAPI.class, SfcProviderServiceTypeAPI.class, SfcProviderRenderedPathAPI.class})
+@PrepareForTest({SfcDataStoreAPI.class, SfcProviderServiceTypeAPI.class, SfcProviderRenderedPathAPI.class, SfcProviderServiceFunctionGroupAPI.class})
 public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private static final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1", "196.168.55.2", "196.168.55.3",
@@ -201,30 +213,13 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
             executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
         }
 
-        //Create Service Function Chain
-        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
         for (int i = 0; i < SF_ABSTRACT_NAMES.length; i++) {
-            SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                    sfcSfBuilder.setName(SF_ABSTRACT_NAMES[i])
-                            .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES[i]))
-                            .setType(sfTypes[i])
-                            .build();
-            sfcServiceFunctionList.add(sfcServiceFunction);
+            sfcServiceFunctionList.add(buildSfcSF(SF_ABSTRACT_NAMES[i], sfTypes[i]));
         }
-        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey)
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(true);
 
-        Object[] parameters = {sfcBuilder.build()};
-        Class[] parameterTypes = {ServiceFunctionChain.class};
-
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(parameters, parameterTypes)).get();
-        Thread.sleep(1000); // Wait SFC is really crated
+        buildSfc(SFC_NAME, sfcServiceFunctionList);
 
         //Check if Service Function Chain was created
         Object[] parameters2 = {SFC_NAME};
@@ -247,6 +242,23 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertTrue("Must be true", ret);
 
         Thread.sleep(1000); // Wait they are really created
+    }
+
+    private List<SfcServiceFunction> buildSfc(String sfcName, List<SfcServiceFunction> sfcServiceFunctionList) throws InterruptedException, ExecutionException {
+        //Create Service Function Chain
+        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(sfcName);
+        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
+        sfcBuilder.setName(sfcName).setKey(sfcKey)
+                .setSfcServiceFunction(sfcServiceFunctionList)
+                .setSymmetric(true);
+
+        Object[] parameters = {sfcBuilder.build()};
+        Class[] parameterTypes = {ServiceFunctionChain.class};
+
+        executor.submit(SfcProviderServiceChainAPI
+                .getPut(parameters, parameterTypes)).get();
+        Thread.sleep(1000); // Wait SFC is really crated
+        return sfcServiceFunctionList;
     }
 
     @After
@@ -503,5 +515,135 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         assertEquals("Transport type must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
         assertEquals("Key name must be equal", testRenderedServicePath.getKey().getName(), "key-Path-1");
         assertEquals("Name must be equal", testRenderedServicePath.getName(), "key-Path-1");
+    }
+
+    @Test
+    public void createRenderedServicePathEntry__HopsAndChainSizeMismatch() throws Exception {
+        Long pathId = 1L;
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName("SFC-2");
+
+        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<SfcServiceFunction>();
+        buildSfc("SFC-2", sfcServiceFunctionList);
+
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        sphs.add(buildSFHop("SFF1", "unittest-fw-1", (short)0));
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+
+        SfcServiceFunctionLoadBalanceSchedulerAPI RandomMock = PowerMockito.mock(SfcServiceFunctionLoadBalanceSchedulerAPI.class);
+        RenderedServicePath rspRandom = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), RandomMock);
+        assertNull(rspRandom);
+    }
+
+    @Test
+    public void createRenderedServicePathEntryWithSFHops() throws Exception {
+        Long pathId = 1L;
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName("SFC-2");
+
+        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<SfcServiceFunction>();
+        sfcServiceFunctionList.add(buildSfcSF("AA", Dpi.class));
+        sfcServiceFunctionList.add(buildSfcSF("BB", Dpi.class));
+
+        buildSfc("SFC-2", sfcServiceFunctionList);
+
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        sphs.add(buildSFHop("SFF1", "unittest-fw-1", (short)0));
+        sphs.add(buildSFHop("SFF2", "unittest-dpi-1", (short)1));
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+
+        //using mocks instead a real instance in order to make sure that the algorithm is not used when there are specific hops defined
+        SfcServiceFunctionLoadBalanceSchedulerAPI LBMock = PowerMockito.mock(SfcServiceFunctionLoadBalanceSchedulerAPI.class);
+        RenderedServicePath rspLB = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), LBMock);
+
+        SfcServiceFunctionLoadBalanceSchedulerAPI RandomMock = PowerMockito.mock(SfcServiceFunctionLoadBalanceSchedulerAPI.class);
+        RenderedServicePath rspRandom = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), RandomMock);
+
+        List<RenderedServicePathHop> rsphs = rspLB.getRenderedServicePathHop();
+        assertEquals(2, rsphs.size());
+        assertEquals("unittest-fw-1", rsphs.get(0).getServiceFunctionName());
+        assertEquals("unittest-dpi-1", rsphs.get(1).getServiceFunctionName());
+
+        rsphs = rspRandom.getRenderedServicePathHop();
+        assertEquals(2, rsphs.size());
+        assertEquals("unittest-fw-1", rsphs.get(0).getServiceFunctionName());
+        assertEquals("unittest-dpi-1", rsphs.get(1).getServiceFunctionName());
+    }
+
+    @Test
+    public void createRenderedServicePathEntryWithSFGHops() throws Exception {
+        Long pathId = 1L;
+        params = new Object[0];
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName("SFC-2");
+
+        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<SfcServiceFunction>();
+        sfcServiceFunctionList.add(buildSfcSF("AA", Dpi.class));
+
+        buildSfc("SFC-2", sfcServiceFunctionList);
+
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        sphs.add(buildSFGHop("SFF1", "sfg-1", (short)0));
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+        List<org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction> sfList = new ArrayList<org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction>();
+        sfList.add(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder().setName("unittest-fw-1").build());
+
+        ServiceFunctionGroup mockSfg = mock(ServiceFunctionGroup.class);
+        PowerMockito.mockStatic(SfcProviderServiceFunctionGroupAPI.class);
+        doReturn(sfList).when(mockSfg).getSfcServiceFunction();
+        doReturn("sfg-1").when(mockSfg).getName();
+        when(SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor("sfg-1")).thenReturn(mockSfg);
+
+        //using mocks instead a real instance in order to make sure that the algorithm is not used when there are specific hops defined
+        SfcServiceFunctionLoadBalanceSchedulerAPI LBMock = PowerMockito.mock(SfcServiceFunctionLoadBalanceSchedulerAPI.class);
+        RenderedServicePath rspLB = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), LBMock);
+
+        List<RenderedServicePathHop> rsphs = rspLB.getRenderedServicePathHop();
+        assertEquals(1, rsphs.size());
+        assertEquals("sfg-1", rsphs.get(0).getServiceFunctionGroupName());
+
+    }
+
+    private SfcServiceFunction buildSfcSF(String SFName, Class<? extends ServiceFunctionTypeIdentity> sfType) {
+        SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
+        SfcServiceFunction sfcServiceFunction =
+                sfcSfBuilder.setName(SFName)
+                        .setKey(new SfcServiceFunctionKey(SFName))
+                        .setType(sfType)
+                        .build();
+        return sfcServiceFunction;
+    }
+
+    private ServicePathHop buildSFHop(String sffName, String sfName, short index){
+        ServicePathHopBuilder sphb = new ServicePathHopBuilder();
+        sphb.setHopNumber(index);
+        sphb.setServiceFunctionForwarder(sffName);
+        sphb.setServiceFunctionName(sfName);
+        return sphb.build();
+    }
+
+    private ServicePathHop buildSFGHop(String sffName, String sfgName, short index){
+        ServicePathHopBuilder sphb = new ServicePathHopBuilder();
+        sphb.setHopNumber(index);
+        sphb.setServiceFunctionForwarder(sffName);
+        sphb.setServiceFunctionGroupName(sfgName);
+        return sphb.build();
     }
 }

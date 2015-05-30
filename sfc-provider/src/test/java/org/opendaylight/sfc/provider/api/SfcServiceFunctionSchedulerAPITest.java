@@ -19,6 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -33,9 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -55,6 +59,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
     List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
     List<ServiceFunction> sfList = new ArrayList<>();
     ServiceFunctionChain sfChain;
+    private ServiceFunctionPath sfPath;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
@@ -129,6 +134,14 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
                 .setKey(new ServiceFunctionChainKey(sfcName))
                 .setSfcServiceFunction(sfcServiceFunctionList)
                 .build();
+
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(1l);
+        serviceFunctionPathBuilder.setServiceChainName(sfcName);
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+        sfPath = serviceFunctionPathBuilder.build();
 
         sfDPLList.add(SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan",
                 SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555),
@@ -246,7 +259,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         int serviceIndex = 255;
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         List<String> serviceFunctionNameArrayList =
-                scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+                scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
 
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
@@ -281,26 +294,26 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         /* First round */
-        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(0).getName());
 
-        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(1).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(1).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(1).getName());
 
-        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(2).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(2).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(2).getName());
 
         /* Second round */
-        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());

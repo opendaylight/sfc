@@ -13,7 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -30,6 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -44,18 +47,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
-public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataBrokerTest {
+public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedulerAPITest {
 
     DataBroker dataBroker;
     ExecutorService executor;
@@ -65,12 +67,15 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
     List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
     List<ServiceFunction> sfList = new ArrayList<>();
     ServiceFunctionChain sfChain;
+    private ServiceFunctionPath sfPath;
+    SfcServiceFunctionSchedulerAPI scheduler;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
+        scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
 
         /* Delete all the content in SFC data store before unit test */
         int maxTries = 10;
@@ -140,6 +145,14 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
                 .setKey(new ServiceFunctionChainKey(sfcName))
                 .setSfcServiceFunction(sfcServiceFunctionList)
                 .build();
+
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(1l);
+        serviceFunctionPathBuilder.setServiceChainName(sfcName);
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+        sfPath = serviceFunctionPathBuilder.build();
 
         sfDPLList.add(SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan",
                 SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555),
@@ -315,8 +328,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
-        SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
-        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex);
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         for (int i=0; i<3; i++){
@@ -350,4 +362,45 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataB
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), "simple_dpi_120");
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), "simple_nat_100");
     }
+
+    @Test
+    public void loadBalance__OverrideSingleHop() throws Exception {
+        Long pathId = 1L;
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
+
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        sphs.add(buildSFHop("SFF2", "hop-dpi", (short)1));
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+        ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
+
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, 1, sfp);
+        assertEquals("simple_fw_100", serviceFunctionNameArrayList.get(0));
+        assertEquals("hop-dpi", serviceFunctionNameArrayList.get(1));
+    }
+
+    @Test
+    public void loadBalance__OverrideAllHops() throws Exception {
+        Long pathId = 1L;
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+
+        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
+        serviceFunctionPathBuilder.setPathId(pathId);
+        serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
+
+        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        sphs.add(buildSFHop("SFF2", "hop-dpi-0", (short)0));
+        sphs.add(buildSFHop("SFF2", "hop-dpi-1", (short)1));
+        serviceFunctionPathBuilder.setServicePathHop(sphs);
+        ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
+
+        List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, 1, sfp);
+        assertEquals("hop-dpi-0", serviceFunctionNameArrayList.get(0));
+        assertEquals("hop-dpi-1", serviceFunctionNameArrayList.get(1));
+    }
+
+
 }

@@ -10,13 +10,14 @@ package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,10 +60,12 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         return sftServiceFunctionName.getName();
     }
 
-    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex, ServiceFunctionPath sfp) {
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
+        short index = 0;
+        Map<Short, String> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific
@@ -70,7 +73,11 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.info("ServiceFunction name: {}", sfcServiceFunction.getName());
-
+            String hopSf = sfpMapping.get(index++);
+            if(hopSf != null){
+                sfNameList.add(hopSf);
+                continue;
+            }
             /*
              * We iterate thorough the list of service function types and for each one we try to get
              * get a suitable Service Function. WE need to perform lots of checking to make sure

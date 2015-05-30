@@ -9,8 +9,12 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class defines the Generic API for SF scheduling.
@@ -32,5 +36,16 @@ public abstract class SfcServiceFunctionSchedulerAPI {
         this.sfcServiceFunctionSchedulerType = schedulerType;
     }
 
-    abstract public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex);
+    abstract public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex, ServiceFunctionPath sfp);
+
+    protected Map<Short, String> getSFPHopSfMapping(ServiceFunctionPath sfp){
+        Map<Short, String> ret = new HashMap<Short, String>();
+        List<ServicePathHop> hops = sfp.getServicePathHop();
+        if(hops != null){
+            for (ServicePathHop hop : hops) {
+                ret.put(hop.getHopNumber(), hop.getServiceFunctionName());
+            }
+        }
+        return ret;
+    }
 }

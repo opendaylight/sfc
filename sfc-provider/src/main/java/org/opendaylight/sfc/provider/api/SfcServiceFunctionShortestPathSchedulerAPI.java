@@ -10,6 +10,7 @@ package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
@@ -20,12 +21,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.sfc.provider.topology.SfcProviderGraph;
 import org.opendaylight.sfc.provider.topology.SfcProviderTopologyNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -201,13 +202,15 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * @param serviceIndex Not used currently
      * @return List&lt;String&gt; Service Function name list in the shortest path
      */
-    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex) {
+    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex, ServiceFunctionPath sfp) {
         String preSfName = null;
         String sfName = null;
         List<String> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
         SfcProviderGraph sfcProviderGraph = new SfcProviderGraph();
+        short index = 0;
+        Map<Short, String> sfpMapping = getSFPHopSfMapping(sfp);
 
         /* Build topology graph for all the nodes,
          * including every ServiceFunction and ServiceFunctionForwarder
@@ -218,7 +221,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
          * for each ServiceFunction type in sfcServiceFunctionList.
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
-            LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
+            LOG.debug("SF name: {}", sfcServiceFunction.getName());
+            String hopSf = sfpMapping.get(index++);
+            if(hopSf != null){
+                sfNameList.add(hopSf);
+                continue;
+            }
 
             ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {

@@ -506,7 +506,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         serviceIndex = MAX_STARTING_INDEX;
 
         List<String> sfgNameList = SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChain);
-        List<String> sfNameList = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex);
+        List<String> sfNameList = scheduler.scheduleServiceFunctions(serviceFunctionChain, serviceIndex, serviceFunctionPath);
         if(sfNameList == null && sfgNameList == null) {
             LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFunctions() returned null list");
             return null;

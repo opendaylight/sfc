@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_a941e63a",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-01T13:23:17Z",
+      "side": 1,
+      "message": "What is this number 7? It should be a static constant variable of some sort.",
+      "range": {
+        "startLine": 75,
+        "startChar": 29,
+        "endLine": 75,
+        "endChar": 30
+      },
+      "revId": "ed183df981eb94e8a9117b1088065b5f4759447f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_694bde59",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-01T13:23:17Z",
+      "side": 1,
+      "message": "Minor detail: \"Must not be null\". There are several similar throughout the file.",
+      "range": {
+        "startLine": 95,
+        "startChar": 23,
+        "endLine": 95,
+        "endChar": 39
+      },
+      "revId": "ed183df981eb94e8a9117b1088065b5f4759447f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_09749a97",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-01T13:23:17Z",
+      "side": 1,
+      "message": "Same comment as above about using a static constant.",
+      "range": {
+        "startLine": 244,
+        "startChar": 29,
+        "endLine": 244,
+        "endChar": 30
+      },
+      "revId": "ed183df981eb94e8a9117b1088065b5f4759447f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

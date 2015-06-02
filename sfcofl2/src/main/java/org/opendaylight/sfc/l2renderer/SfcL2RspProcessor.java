@@ -411,19 +411,25 @@ public class SfcL2RspProcessor {
             return;
         }
 
-        ServiceFunction sfSrc = sfcL2ProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId());
-        SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc, entry.getSrcSff());
+        SfDataPlaneLocator sfSrcDpl = null;
+        if(entry.getPrevSf() != null) {
+            sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(
+                    sfcL2ProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId()),
+                    entry.getSrcSff());
+        }
 
         SffDataPlaneLocator sffDstIngressDpl =
                 sfcL2ProviderUtils.getSffDataPlaneLocator(
                         sffDst, sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
 
         // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
-        configureSffNextHopFlow(entry.getSrcSff(),
-                                sfSrcDpl,
-                                sffDstIngressDpl,
-                                entry.getPathId(),
-                                entry.getServiceIndex());
+        if(sfSrcDpl != null) {
+            configureSffNextHopFlow(entry.getSrcSff(),
+                                    sfSrcDpl,
+                                    sffDstIngressDpl,
+                                    entry.getPathId(),
+                                    entry.getServiceIndex());
+        }
 
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
         configureSffTransportEgressFlow(

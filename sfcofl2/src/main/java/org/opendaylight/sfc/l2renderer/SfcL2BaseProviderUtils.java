@@ -81,10 +81,15 @@ public abstract class SfcL2BaseProviderUtils {
      * @param dplName - The name of the DPL to look for
      * @return SffDataPlaneLocator or null if not found
      */
-    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf) {
-        // TODO how to tell which SF DPL to use if it has more than one?
+    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final String sffName) {
         List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
-        return sfDataPlanelocatorList.get(0);
+        for (SfDataPlaneLocator sfDpl : sfDataPlanelocatorList) {
+            if(sfDpl.getServiceFunctionForwarder().equals(sffName)) {
+                return sfDpl;
+            }
+        }
+
+        return null;
     }
 
     /**

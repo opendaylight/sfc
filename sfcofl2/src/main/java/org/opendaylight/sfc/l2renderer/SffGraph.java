@@ -53,8 +53,14 @@ public class SffGraph {
         }
         @Override
         public String toString() {
-            return "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", sfg=" + sfg
-                    + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex + "]";
+            return "SffGraphEntry [srcSff=" + srcSff +
+                    ", dstSff=" + dstSff +
+                    ", sf=" + sf +
+                    ", prevSf=" + prevSf +
+                    ", sfg=" + sfg +
+                    ", pathId=" + pathId +
+                    ", serviceIndex=" + serviceIndex +
+                    "]";
         }
     }
 

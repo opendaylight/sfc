@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_d66c0a9f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-02T10:05:46Z",
+      "side": 1,
+      "message": "It shouldnt, since that will only happen when srcSff is Ingress, but I added the necessary protection anyways, just in case.",
+      "parentUuid": "1a9dcd25_d6e72a3f",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_762416af",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SffGraph.java",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_164cb241",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-02T10:05:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a9dcd25_762416af",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_b6513e10",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2015-06-02T09:49:58Z",
       "side": 1,
       "message": "?? what this should fix?",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_9638c2a1",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-02T10:05:46Z",
+      "side": 1,
+      "message": "I was testing with 3 SFFs and 9 SFs, and there were failures since the queue was full.",
+      "parentUuid": "1a9dcd25_b6513e10",
       "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

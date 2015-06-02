@@ -38,6 +38,8 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureMplsTransportIngressFlow(final String sffNodeName, final boolean isAddFlow);
 
+    public void configureArpTransportIngressFlow(final String sffNodeName, final String mac, final boolean isAddFlow);
+
     //
     // Configure Table 1, Path Mapper
     //
@@ -48,6 +50,7 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf, final boolean isAddFlow);
 
     public void configureVxlanGpePathMapperFlow(final String sffNodeName, long nsp, short nsi, long pathId, final boolean isAddFlow);
+
 
     //
     // Table 2, NextHop

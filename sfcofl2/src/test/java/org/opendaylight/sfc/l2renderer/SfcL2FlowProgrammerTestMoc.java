@@ -18,6 +18,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         configureVlanTransportIngressFlowMethodIndex,
         configureVxlanGpeTransportIngressFlowMethodIndex,
         configureMplsTransportIngressFlowMethodIndex,
+        configureArpTransportIngressFlowMethodIndex,
 
         configureMacPathMapperFlowMethodIndex,
         configureMplsPathMapperFlowMethodIndex,
@@ -296,5 +297,11 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     public void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId,
             String groupName, boolean isAddFlow) {
         incrementMethodCalled(MethodIndeces.configureGroupNextHopFlow);
+    }
+
+    @Override
+    public void configureArpTransportIngressFlow(String sffNodeName,
+            String mac, boolean isAddFlow) {
+        incrementMethodCalled(MethodIndeces.configureArpTransportIngressFlowMethodIndex);
     }
 }

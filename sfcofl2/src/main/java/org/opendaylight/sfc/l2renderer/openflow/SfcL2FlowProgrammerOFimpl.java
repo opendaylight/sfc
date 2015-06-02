@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
@@ -437,6 +438,74 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    //Thread to implement ARP messages
+    public void configureArpTransportIngressFlow(final String sffNodeName, final String mac, final boolean isAddFlow) {
+
+        ConfigureTransportArpIngressThread configureArpIngressTransportThread =
+                new ConfigureTransportArpIngressThread(sffNodeName, mac, isAddFlow);
+        try {
+            threadPoolExecutorService.execute(configureArpIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
+    private class ConfigureTransportArpIngressThread implements Runnable {
+        String sffNodeName;
+        String mac;
+        boolean isAddFlow;
+
+        public ConfigureTransportArpIngressThread(final String sffNodeName, final String mac, final boolean isAddFlow) {
+            this.sffNodeName = sffNodeName;
+            this.mac = mac;
+            this.isAddFlow = isAddFlow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                // Create the matching criteria
+                MatchBuilder match = new MatchBuilder();
+                SfcOpenflowUtils.addMatchEtherType(match, 0x0806);
+                SfcOpenflowUtils.addMatchArpRequest(match);
+
+                int order = 0;
+                List<Action> actionList = new ArrayList<Action>();
+                actionList.add(SfcOpenflowUtils.nxLoadArpOpAction(BigInteger.valueOf(2), order++));
+                actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++));
+
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                aab.setAction(actionList);
+
+                int ibOrder = 0;
+                InstructionBuilder actionsIb = new InstructionBuilder();
+                actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                actionsIb.setKey(new InstructionKey(ibOrder));
+                actionsIb.setOrder(ibOrder++);
+
+                // Put our Instruction in a list of Instructions
+                InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+
+                // Create and configure the FlowBuilder
+                FlowBuilder transportIngressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
+                                FLOW_PRIORITY_TRANSPORT_INGRESS,
+                                "ingress_Transport_Default_Flow",
+                                match,
+                                isb);
+
+                if (isAddFlow) {
+                    LOG.info("Ricky Flow programmer call. MAC: {}", mac);
+                    writeFlowToConfig(sffNodeName, transportIngressFlow);
+                } else {
+                    removeFlowFromConfig(sffNodeName, transportIngressFlow);
+                }
+            } catch (Exception e) {
+                LOG.error("ConfigureTransportArpIngress writer caught an Exception: ", e);
+            }
+        }
+    }
 
     //
     // Configure Table 1, PathMapper

@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_d6e72a3f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-06-02T09:49:58Z",
+      "side": 1,
+      "message": "this can lead to NPE for the first entry which has prevSf \u003d null",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_762416af",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-06-02T09:49:58Z",
+      "side": 1,
+      "message": "add the prevSf to the toString()",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_b6513e10",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-06-02T09:49:58Z",
+      "side": 1,
+      "message": "?? what this should fix?",
+      "revId": "e690cb800bcde2c2f4c6010952b0ddcf32c1ad5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

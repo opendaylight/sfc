@@ -93,7 +93,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final int FLOW_PRIORITY_MATCH_ANY = 5;
 
     private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
-    private static final int QUEUE_SIZE = 50;
+    private static final int QUEUE_SIZE = 100;
     private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
     private static final int PKTIN_IDLE_TIMEOUT = 60;
 

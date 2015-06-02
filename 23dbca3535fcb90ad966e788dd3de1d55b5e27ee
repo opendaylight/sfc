@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_f64906b8",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 508,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-02T11:51:30Z",
+      "side": 1,
+      "message": "This check isnt always valid. Its possible to do something like this:\n\nSFC \u003d [dpi, firewall, napt]\nSFP \u003d {... hops\u003d[hop\u003d2, SF\u003dsf2, SFF\u003dsff2]}\n\nThat is, in the SFP you can define the SF/SFF for just one hop, not all of them. In which case, the numSfcHops !\u003d numSfpHops, but its still a valid config.",
+      "range": {
+        "startLine": 508,
+        "startChar": 35,
+        "endLine": 508,
+        "endChar": 52
+      },
+      "revId": "23dbca3535fcb90ad966e788dd3de1d55b5e27ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_56d23ad3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 590,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-02T11:51:30Z",
+      "side": 1,
+      "message": "Looks like you\u0027re either using what\u0027s defined in the SFP or what\u0027s defined in the SFC, when actually a combination of both is allowed.",
+      "range": {
+        "startLine": 590,
+        "startChar": 10,
+        "endLine": 590,
+        "endChar": 14
+      },
+      "revId": "23dbca3535fcb90ad966e788dd3de1d55b5e27ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

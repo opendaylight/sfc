@@ -1,0 +1,23 @@
+{
+  "service-function-group": [
+    {
+      "name": "NAME",
+      "type": "TYPE",
+      "rest-uri": "REST_URI",
+      "ip-mgmt-address": "IP_MGMT_ADDRESS",
+      "algorithm": "ALGORITHM",
+
+      "service-function": [
+        {
+          "name": "SffName1"
+        },
+        {
+          "name": "SffName2"
+        },
+        {
+          "name": "SffName3"
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,14 @@
       "nsh-aware": NSH_AWARE,
       "sf-data-plane-locator": [
         {
+          "ip": "IP_V4_ADDRESS",
+          "port": PORT1,
+          "name": "SF_LOCATOR_NAME",
+          "service-function-forwarder": "SF_LOCATOR_SERVICE_FUNCTION_FORWARDER"
+        },
+        {
+          "ip": "IP_V6_ADDRESS",
+          "port": PORT2,
           "name": "SF_LOCATOR_NAME",
           "service-function-forwarder": "SF_LOCATOR_SERVICE_FUNCTION_FORWARDER"
         }

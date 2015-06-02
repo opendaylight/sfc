@@ -8,15 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -38,6 +29,15 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This class contains unit tests for SbRestRspTask
  *
@@ -54,9 +54,8 @@ public class SbRestRspTaskTest {
     private static final String RSP_NAME = "Dummy_RSP";
     private static final String SFF_NAME = "Dummy_SFF";
     private static final String REST_URI = "http://localhost:5000";
-
+    private final ObjectMapper mapper = new ObjectMapper();
     private ExecutorService executorService;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void init() {
@@ -73,8 +72,18 @@ public class SbRestRspTaskTest {
                 new SbRestRspTask(RestOperation.PUT, this.buildRenderedServicePath(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
-        assertTrue(jsonObject.equals(this.buildRenderedServicePathObjectNode()));
-        assertTrue(sbRestRspTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode()));
+        assertTrue("Must be true", sbRestRspTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
+    public void testSbRestRspTask1() throws IOException {
+        SbRestRspTask sbRestRspTask =
+                new SbRestRspTask(RestOperation.DELETE, this.buildRenderedServicePath(), executorService);
+
+        JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
+        assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode1()));
+        assertTrue("Must be true", sbRestRspTask.restUriList.get(0).contains(REST_URI));
     }
 
     @Test
@@ -87,10 +96,11 @@ public class SbRestRspTaskTest {
                 new SbRestRspTask(RestOperation.PUT, new RenderedServicePathBuilder().build(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
-        assertTrue(jsonObject.equals(this.buildRenderedServicePathTopNode()));
-        assertNull(sbRestRspTask.restUriList);
+        assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathTopNode()));
+        assertNull("Must be null", sbRestRspTask.restUriList);
     }
 
+    //build rendered service path, which is needed to create SbRestRspTask object
     private RenderedServicePath buildRenderedServicePath() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(RSP_NAME);
@@ -105,6 +115,7 @@ public class SbRestRspTaskTest {
         return renderedServicePathBuilder.build();
     }
 
+    //returns sff with name & rest uri
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);
@@ -134,6 +145,20 @@ public class SbRestRspTaskTest {
         return topNode;
     }
 
+    //returns object node with name only
+    private ObjectNode buildRenderedServicePathObjectNode1() {
+        ObjectNode topNode = mapper.createObjectNode();
+
+        ObjectNode rspNode = mapper.createObjectNode();
+        rspNode.put(RspExporterFactory._NAME, RSP_NAME);
+
+        ArrayNode rspArrayNode = mapper.createArrayNode();
+        rspArrayNode.add(rspNode);
+
+        topNode.put(RspExporterFactory._RENDERED_SERVICE_PATH, rspArrayNode);
+        return topNode;
+    }
+
     private ObjectNode buildRenderedServicePathTopNode() {
         ObjectNode topNode = mapper.createObjectNode();
 
@@ -145,5 +170,4 @@ public class SbRestRspTaskTest {
         topNode.put(RspExporterFactory._RENDERED_SERVICE_PATH, rspArrayNode);
         return topNode;
     }
-
 }

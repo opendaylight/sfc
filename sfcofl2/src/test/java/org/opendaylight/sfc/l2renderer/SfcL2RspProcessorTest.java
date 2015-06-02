@@ -183,6 +183,9 @@ public class SfcL2RspProcessorTest {
         assertMatchAnyMethodsCalled();
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportIngressFlowMethodIndex, 3);
+        // TODO Ricky, finish this
+        //assertMethodCallCount(
+        //        SfcL2FlowProgrammerTestMoc.MethodIndeces.configureArpTransportIngressFlowMethodIndex, 2);
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanPathMapperFlowMethodIndex, 5);
         assertMethodCallCount(

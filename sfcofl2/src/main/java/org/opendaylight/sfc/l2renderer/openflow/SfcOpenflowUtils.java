@@ -77,18 +77,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 
 // Import Nicira extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.DstChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpThaCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNsiCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNspCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpOpCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfEthDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegLoadNodesNodeGroupBucketsBucketActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegMoveNodesNodeGroupBucketsBucketActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder;
@@ -106,11 +110,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.SrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.SrcChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxArpShaCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNspCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc1CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc2CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNsiCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiKey;
@@ -133,10 +139,13 @@ public class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
+    public static final int ETHERTYPE_ARP = 0x0806;
     public static final short IP_PROTOCOL_TCP = (short) 6;
     public static final short IP_PROTOCOL_UDP = (short) 17;
     public static final int PKT_LENGTH_IP_HEADER = 20+14; // ether + IP header
     public static final int TCP_FLAG_SYN = 0x0002;
+    public static final int ARP_REQUEST = 1;
+    public static final int ARP_REPLY = 2;
 
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();
@@ -319,6 +328,12 @@ public class SfcOpenflowUtils {
         vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
 
         match.setVlanMatch(vlanMatchBuilder.build());
+    }
+
+    public static void addMatchArpRequest(MatchBuilder match){
+        ArpMatchBuilder arpmatch = new ArpMatchBuilder();
+        arpmatch.setArpOp(ARP_REQUEST);
+        match.setLayer3Match(arpmatch.build());
     }
 
     // If we call multiple Layer3 match methods, the MatchBuilder
@@ -811,6 +826,43 @@ public class SfcOpenflowUtils {
                 new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(),
                 31,
                 false));
+
+        return ab.build();
+    }
+
+    public static Action createActionNxLoadArpOpAction(int value, int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(
+                nxLoadRegAction(
+                        new DstOfArpOpCaseBuilder().setOfArpOp(Boolean.TRUE).build(),
+                        BigInteger.valueOf(value),
+                        15,
+                        false));
+
+        return ab.build();
+    }
+
+    // Used for ARP to move the Source HW Address (Sha) to the Target HW address (Tha)
+    public static Action createActionNxMoveArpShaToArpThaAction(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(
+                nxMoveRegAction(
+                        new SrcNxArpShaCaseBuilder().setNxArpSha(Boolean.TRUE).build(),
+                        new DstNxArpThaCaseBuilder().setNxArpTha(Boolean.TRUE).build(),
+                        47,
+                        false));
+
+        return ab.build();
+    }
+
+    public static Action createActionNxMoveEthSrcToEthDstAction(int order) {
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(
+                nxMoveRegAction(
+                        new SrcOfEthSrcCaseBuilder().setOfEthSrc(Boolean.TRUE).build(),
+                        new DstOfEthDstCaseBuilder().setOfEthDst(Boolean.TRUE).build(),
+                        47,
+                        false));
 
         return ab.build();
     }

@@ -300,6 +300,19 @@ public class SfcL2RspProcessor {
             }
         }
 
+        //ARP flows for TcpProxy type of SFFasd
+        ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
+        if(sf.getType() == TcpProxy.class){
+            ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sffDst, entry.getSf());
+            String sffMac = sfcL2ProviderUtils.getDictPortInfoMac(sffSfDict);
+            // If the SF is a TCP Proxy, then we need to reply to the ARP Request messages
+            if (sffMac != null){
+                this.sfcL2FlowProgrammer.configureArpTransportIngressFlow(
+                        sfcL2ProviderUtils.getSffOpenFlowNodeName(sffDstName, entry.getPathId()),
+                        sffMac,
+                        this.addFlow);
+            }
+        }
         // Configure the Service Chain Ingress flow(s)
         if(entry.getSrcSff().equals(SffGraph.INGRESS)) {
             // configure the SFF Transport Ingress Flow using the dstHopIngressDpl

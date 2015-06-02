@@ -1,16 +1,29 @@
 {
   "rendered-service-path": [
     {
+      "context-metadata": "CONTEXT_METADATA",
       "name": "NAME",
-      "parent-service-function-path": "PARENT_SERVICE_FUNCTION_PATH",
       "path-id": PATH_ID,
+      "parent-service-function-path": "PARENT_SERVICE_FUNCTION_PATH",
       "service-chain-name": "SERVICE_CHAIN_NAME",
       "starting-index": STARTING_INDEX,
       "rendered-service-path-hop": [
         {
-          "hop-number": HOP_NUMBER,
-          "service-function-name": "SERVICE_FUNCTION_NAME",
-          "service-function-forwarder": "SERVICE_FUNCTION_FORWARDER",
+          "hop-number": 1,
+          "service-function-forwarder": "SFF1",
+          "service-function-name": "SF1",
+          "service-index": SERVICE_INDEX
+        },
+        {
+          "hop-number": 2,
+          "service-function-forwarder": "SFF2",
+          "service-function-name": "SF2",
+          "service-index": SERVICE_INDEX
+        },
+        {
+          "hop-number": 3,
+          "service-function-forwarder": "SFF3",
+          "service-function-name": "SF3",
           "service-index": SERVICE_INDEX
         }
       ]

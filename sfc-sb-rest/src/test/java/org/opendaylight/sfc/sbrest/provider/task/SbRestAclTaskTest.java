@@ -67,25 +67,32 @@ public class SbRestAclTaskTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Before
+    //some mocked methods are prepared here
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
 
-        PowerMockito.mockStatic(SfcProviderAclAPI.class);
-        Mockito.when(SfcProviderAclAPI.readAccessListStateExecutor(ACL_NAME))
-                .thenReturn(this.buildAccessListState());
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListStateExecutor", String.class))
+                .toReturn(this.buildAccessListState());
 
-        PowerMockito.mockStatic(SfcProviderServiceClassifierAPI.class);
-        Mockito.when(SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(CLASSIFIER_NAME))
-                .thenReturn(this.buildServiceFunctionClassifier());
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifierExecutor", String.class))
+                .toReturn(this.buildServiceFunctionClassifier());
 
-        PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
-                .thenReturn(this.buildServiceFunctionForwarder());
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarderExecutor", String.class))
+                .toReturn(this.buildServiceFunctionForwarder());
     }
 
     @Test
     public void testSbRestAclTask() throws IOException {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
+
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
+        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
+    public void testSbRestAclTask1() throws IOException {
+        SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.DELETE, this.buildAccessList(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
@@ -140,6 +147,7 @@ public class SbRestAclTaskTest {
         assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
     }
 
+    //build access list
     private AccessList buildAccessList() {
         AccessListBuilder accessListBuilder = new AccessListBuilder();
         accessListBuilder.setAclName(ACL_NAME);
@@ -147,6 +155,7 @@ public class SbRestAclTaskTest {
         return accessListBuilder.build();
     }
 
+    //this method mocks readAccessListStateExecutor method
     private AccessListState buildAccessListState() {
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
         accessListStateBuilder.setAclName(ACL_NAME);
@@ -161,6 +170,7 @@ public class SbRestAclTaskTest {
         return accessListStateBuilder.build();
     }
 
+    //this method mocks readServiceClassifierExecutor method
     private ServiceFunctionClassifier buildServiceFunctionClassifier() {
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
         serviceFunctionClassifierBuilder.setName(CLASSIFIER_NAME);
@@ -175,6 +185,7 @@ public class SbRestAclTaskTest {
         return serviceFunctionClassifierBuilder.build();
     }
 
+    //this method mocks readServiceFunctionForwarderExecutor method
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);
@@ -195,5 +206,4 @@ public class SbRestAclTaskTest {
         topNode.put(AclExporterFactory._ACCESS_LIST, accessListArrayNode);
         return topNode;
     }
-
 }

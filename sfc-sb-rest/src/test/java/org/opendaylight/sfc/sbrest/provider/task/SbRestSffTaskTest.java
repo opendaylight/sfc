@@ -8,13 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -25,6 +18,13 @@ import org.opendaylight.sfc.sbrest.json.SffExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class contains unit tests for SbRestSffTask
@@ -41,7 +41,7 @@ public class SbRestSffTaskTest {
     private static final String REST_URI = "http://localhost:5000";
 
     private ExecutorService executorService;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void init() {
@@ -54,8 +54,18 @@ public class SbRestSffTaskTest {
                 new SbRestSffTask(RestOperation.PUT, this.buildServiceFunctionForwarder(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSffTask.jsonObject);
-        assertTrue(jsonObject.equals(this.buildServiceFunctionForwarderObjectNode()));
-        assertTrue(sbRestSffTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionForwarderObjectNode()));
+        assertTrue("Must be true", sbRestSffTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
+    public void testSbRestSffTask1() throws IOException {
+        SbRestSffTask sbRestSffTask =
+                new SbRestSffTask(RestOperation.DELETE, this.buildServiceFunctionForwarder(), executorService);
+
+        JsonNode jsonObject = mapper.readTree(sbRestSffTask.jsonObject);
+        assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionForwarderObjectNode1()));
+        assertTrue("Must be true", sbRestSffTask.restUriList.get(0).contains(REST_URI));
     }
 
     @Test
@@ -64,10 +74,11 @@ public class SbRestSffTaskTest {
                 new SbRestSffTask(RestOperation.PUT, new ServiceFunctionForwarderBuilder().build(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSffTask.jsonObject);
-        assertTrue(jsonObject.equals(this.buildServiceFunctionForwarderTopNode()));
-        assertNull(sbRestSffTask.restUriList);
+        assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionForwarderTopNode()));
+        assertNull("Must be null", sbRestSffTask.restUriList);
     }
 
+    //build service function forwarder, which is needed to create SbRestSffTask object
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);
@@ -76,12 +87,27 @@ public class SbRestSffTaskTest {
         return serviceFunctionForwarderBuilder.build();
     }
 
+    //returns object node with name & rest uri, uses FullTest.json
     private ObjectNode buildServiceFunctionForwarderObjectNode() {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sffNode = mapper.createObjectNode();
         sffNode.put(SffExporterFactory._NAME, SFF_NAME);
         sffNode.put(SffExporterFactory._REST_URI, REST_URI);
+
+        ArrayNode sffArrayNode = mapper.createArrayNode();
+        sffArrayNode.add(sffNode);
+
+        topNode.put(SffExporterFactory._SERVICE_FUNCTION_FORWARDER, sffArrayNode);
+        return topNode;
+    }
+
+    //returns object node with name only, uses NameOnly.json
+    private ObjectNode buildServiceFunctionForwarderObjectNode1() {
+        ObjectNode topNode = mapper.createObjectNode();
+
+        ObjectNode sffNode = mapper.createObjectNode();
+        sffNode.put(SffExporterFactory._NAME, SFF_NAME);
 
         ArrayNode sffArrayNode = mapper.createArrayNode();
         sffArrayNode.add(sffNode);
@@ -99,5 +125,4 @@ public class SbRestSffTaskTest {
         topNode.put(SffExporterFactory._SERVICE_FUNCTION_FORWARDER, sffArrayNode);
         return topNode;
     }
-
 }

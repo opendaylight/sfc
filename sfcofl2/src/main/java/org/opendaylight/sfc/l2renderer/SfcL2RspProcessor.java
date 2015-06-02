@@ -95,7 +95,9 @@ public class SfcL2RspProcessor {
             //
             Iterator<RenderedServicePathHop> servicePathHopIter = rsp.getRenderedServicePathHop().iterator();
             String sfName = null;
+            String prevSfName = null;
             String sfgName = null;
+            SffGraph.SffGraphEntry entry = null;
             short lastServiceIndex = rsp.getStartingIndex();
             while (servicePathHopIter.hasNext()) {
                 RenderedServicePathHop rspHop = servicePathHopIter.next();
@@ -106,13 +108,16 @@ public class SfcL2RspProcessor {
                 LOG.info("processRenderedServicePath pathId [{}] renderedServicePathHop [{}]",
                         rsp.getPathId(), rspHop.getHopNumber());
 
-                sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(), rspHop.getServiceIndex());
+                entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(), rspHop.getServiceIndex());
+                entry.setPrevSf(prevSfName);
                 lastServiceIndex = rspHop.getServiceIndex();
+                prevSfName = sfName;
                 prevSffName = curSffName;
             }
             // Add the final connection, which will be the RSP Egress
             // Using the previous sfName as the SrcSf
-            sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), (short)(lastServiceIndex-1));
+            entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), (short)(lastServiceIndex-1));
+            entry.setPrevSf(prevSfName);
 
             //
             // Populate the SFF ingress and egress DPLs from the sffGraph
@@ -129,7 +134,7 @@ public class SfcL2RspProcessor {
             //
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
             while (sffGraphIter.hasNext()) {
-                SffGraph.SffGraphEntry entry = sffGraphIter.next();
+                entry = sffGraphIter.next();
                 LOG.debug("build flows of entry: {}", entry);
 
                 if(!entry.getDstSff().equals(SffGraph.EGRESS)) {
@@ -166,7 +171,7 @@ public class SfcL2RspProcessor {
 
             for (SfcServiceFunction sfcServiceFunction : sfs) {
                 ServiceFunction sfDst = sfcL2ProviderUtils.getServiceFunction(sfcServiceFunction.getName(), entry.getPathId());
-                SfDataPlaneLocator sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst);
+                SfDataPlaneLocator sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst, entry.getSrcSff());
                 // Configure the SF-SFF-GW NextHop, we dont have the GW mac, leaving it blank
                 configureSffNextHopFlow(entry.getSrcSff(),
                         sfDstDpl,
@@ -210,9 +215,8 @@ public class SfcL2RspProcessor {
                 sfcL2ProviderUtils.getSffDataPlaneLocator(sffDst, sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
 
         for (SfcServiceFunction sfcServiceFunction : sfs) {
-            // TODO what if there is more than one SF in the dict?
             ServiceFunction sfSrc = sfcL2ProviderUtils.getServiceFunction(sfcServiceFunction.getName(), entry.getPathId());
-            SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc);
+            SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc, sffDst.getName());
 
             // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
             configureSffNextHopFlow(entry.getSrcSff(),
@@ -353,9 +357,11 @@ public class SfcL2RspProcessor {
         ServiceFunctionForwarder sffSrc = sfcL2ProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
         SffDataPlaneLocator sffSrcEgressDpl = null;
         ServiceFunction sfDst = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        SfDataPlaneLocator sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst);
+        SfDataPlaneLocator sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
 
         if(entry.getDstSff().equals(SffGraph.EGRESS)) {
+            // If dstSff is EGRESS, the SF is actually on the srcSff
+            sfDstDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfDst, entry.getSrcSff());
             sffSrcEgressDpl =
                     sfcL2ProviderUtils.getSffDataPlaneLocator(
                             sffSrc, sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
@@ -405,11 +411,8 @@ public class SfcL2RspProcessor {
             return;
         }
 
-        // TODO what if there is more than one SF in the dict?
-        ServiceFunction sfSrc =
-                sfcL2ProviderUtils.getServiceFunction(
-                        sffSrc.getServiceFunctionDictionary().get(0).getName(), entry.getPathId());
-        SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc);
+        ServiceFunction sfSrc = sfcL2ProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId());
+        SfDataPlaneLocator sfSrcDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sfSrc, entry.getSrcSff());
 
         SffDataPlaneLocator sffDstIngressDpl =
                 sfcL2ProviderUtils.getSffDataPlaneLocator(

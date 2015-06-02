@@ -19,6 +19,19 @@
           "name": "SF_DICTIONARY_NAME",
           "type": "SF_DICTIONARY_TYPE",
           "sff-sf-data-plane-locator": {
+            "ip": "IP_V4_ADDRESS",
+            "port": PORT1,
+            "service-function-forwarder-ovs:ovs-bridge": {
+              "bridge-name": "SF_DATA_PLANE_LOCATOR_BRIDGE_NAME"
+            }
+          }
+        },
+        {
+          "name": "SF_DICTIONARY_NAME",
+          "type": "SF_DICTIONARY_TYPE",
+          "sff-sf-data-plane-locator": {
+            "ip": "IP_V6_ADDRESS",
+            "port": PORT2,
             "service-function-forwarder-ovs:ovs-bridge": {
               "bridge-name": "SF_DATA_PLANE_LOCATOR_BRIDGE_NAME"
             }

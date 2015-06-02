@@ -8,13 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -22,8 +15,19 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -36,31 +40,10 @@ import static org.junit.Assert.*;
  */
 public class RspExporterTest {
 
-    public static final String FULL_JSON = "/RspJsonStrings/FullTest.json";
-    public static final String NAME_ONLY_JSON = "/RspJsonStrings/NameOnly.json";
+    private static final String FULL_JSON = "/RspJsonStrings/FullTest.json";
+    private static final String NAME_ONLY_JSON = "/RspJsonStrings/NameOnly.json";
 
-    public enum RspTestValues {
-        NAME("SFC1-PATH1"),
-        PARENT_SERVICE_FUNCTION_PATH("SFC1-PATH1"),
-        SERVICE_CHAIN_NAME("SFC1"),
-        STARTING_INDEX("255"),
-        PATH_ID("9"),
-        HOP_NUMBER("1"),
-        SERVICE_FUNCTION_NAME("SF1"),
-        SERVICE_FUNCTION_FORWARDER("SFF1"),
-        SERVICE_INDEX("255");
-
-        private String value;
-
-        RspTestValues(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-    }
-
+    //create string, that represents .json file
     private String gatherRenderedServicePathJsonStringFromFile(String testFileName) {
         String jsonString = null;
 
@@ -72,7 +55,7 @@ public class RspExporterTest {
         }
 
         for (RspTestValues rspTestValue : RspTestValues.values()) {
-            jsonString = jsonString.replaceAll("\\b" + rspTestValue.name() + "\\b", rspTestValue.getValue());
+            jsonString = jsonString != null ? jsonString.replaceAll("\\b" + rspTestValue.name() + "\\b", rspTestValue.getValue()) : null;
         }
 
         return jsonString;
@@ -108,6 +91,25 @@ public class RspExporterTest {
         assertTrue(testExportRspJson(NAME_ONLY_JSON, true));
     }
 
+    @Test
+    //put wrong parameter, illegal argument exception expected
+    public void testExportJsonException() throws Exception {
+        ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
+        RspExporter rspExporter = new RspExporter();
+
+        try {
+            rspExporter.exportJson(serviceFunctionGroupBuilder.build());
+        } catch (Exception exception) {
+            assertEquals("Must be true", exception.getClass(), IllegalArgumentException.class);
+        }
+
+        try {
+            rspExporter.exportJsonNameOnly(serviceFunctionGroupBuilder.build());
+        } catch (Exception exception) {
+            assertEquals("Must be true", exception.getClass(), IllegalArgumentException.class);
+        }
+    }
+
     private RenderedServicePath buildRenderedServicePathNameOnly() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(RspTestValues.NAME.getValue());
@@ -118,26 +120,62 @@ public class RspExporterTest {
     private RenderedServicePath buildRenderedServicePath() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
 
-        renderedServicePathBuilder.setName(RspTestValues.NAME.getValue());
-        renderedServicePathBuilder.setParentServiceFunctionPath(RspTestValues.PARENT_SERVICE_FUNCTION_PATH.getValue());
-        renderedServicePathBuilder.setPathId(Long.parseLong(RspTestValues.PATH_ID.getValue()));
-        renderedServicePathBuilder.setServiceChainName(RspTestValues.SERVICE_CHAIN_NAME.getValue());
-        renderedServicePathBuilder.setStartingIndex(Short.parseShort(RspTestValues.STARTING_INDEX.getValue()));
-        renderedServicePathBuilder.setRenderedServicePathHop(this.buildRenderedServicePathHops());
+        renderedServicePathBuilder.setName(RspTestValues.NAME.getValue())
+                .setContextMetadata(RspTestValues.CONTEXT_METADATA.getValue())
+                .setParentServiceFunctionPath(RspTestValues.PARENT_SERVICE_FUNCTION_PATH.getValue())
+                .setPathId(Long.parseLong(RspTestValues.PATH_ID.getValue()))
+                .setServiceChainName(RspTestValues.SERVICE_CHAIN_NAME.getValue())
+                .setStartingIndex(Short.parseShort(RspTestValues.STARTING_INDEX.getValue()))
+                .setRenderedServicePathHop(this.buildRenderedServicePathHops());
 
         return renderedServicePathBuilder.build();
     }
 
     private List<RenderedServicePathHop> buildRenderedServicePathHops() {
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
-        RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
-        renderedServicePathHopBuilder.setHopNumber(Short.parseShort(RspTestValues.HOP_NUMBER.getValue()));
-        renderedServicePathHopBuilder.setServiceFunctionName(RspTestValues.SERVICE_FUNCTION_NAME.getValue());
-        renderedServicePathHopBuilder.setServiceFunctionForwarder(RspTestValues.SERVICE_FUNCTION_FORWARDER.getValue());
-        renderedServicePathHopBuilder.setServiceIndex(Short.parseShort(RspTestValues.SERVICE_INDEX.getValue()));
+        for (int index = 1; index <= Integer.valueOf(RspTestValues.HOP_NUMBER.getValue()); index++) {
 
-        renderedServicePathHopList.add(renderedServicePathHopBuilder.build());
+            RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
+
+            renderedServicePathHopBuilder.setHopNumber((short) index)
+                    .setServiceFunctionName(RspTestValues.SERVICE_FUNCTION_NAME.getValue() + index)
+                    .setServiceFunctionForwarder(createServiceFunctionForwarder(index).getName())
+                    .setServiceIndex(Short.parseShort(RspTestValues.SERVICE_INDEX.getValue()));
+
+            renderedServicePathHopList.add(renderedServicePathHopBuilder.build());
+        }
+
         return renderedServicePathHopList;
+    }
+
+    private ServiceFunctionForwarder createServiceFunctionForwarder(int index) {
+        ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
+        serviceFunctionForwarderBuilder.setName(RspTestValues.SERVICE_FUNCTION_FORWARDER.getValue() + index);
+        return serviceFunctionForwarderBuilder.build();
+    }
+
+    public enum RspTestValues {
+        CONTEXT_METADATA("Context-metadata dummy"),
+        NAME("SFC1-PATH1"),
+        PARENT_SERVICE_FUNCTION_PATH("SFC1-PATH1"),
+        SERVICE_CHAIN_NAME("SFC1"),
+        STARTING_INDEX("255"),
+        PATH_ID("9"),
+        HOP_NUMBER("3"),
+        SERVICE_FUNCTION_NAME("SF"),
+        SERVICE_FUNCTION_FORWARDER("SFF"),
+        SERVICE_INDEX("255"),
+        DATA_PLANE_LOCATOR("DPL");
+
+        private final String value;
+
+        RspTestValues(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
     }
 }

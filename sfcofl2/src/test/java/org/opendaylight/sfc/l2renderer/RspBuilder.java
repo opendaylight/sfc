@@ -49,6 +49,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1Builder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1Builder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPortBuilder;
 
 public class RspBuilder {
 
@@ -63,6 +68,7 @@ public class RspBuilder {
     private static int VLAN_BASE = 1;
     private static int MPLS_BASE = 1;
     private static int VXLAN_UDP_PORT = 6633;
+    private static String SWITCH_PORT_STR = "1";
 
     private long RSP_PATHID_INDEX = 0;
     private int SF_NAME_INDEX = 0;
@@ -244,6 +250,17 @@ public class RspBuilder {
             dplBuilder.setTransport(transportType);
             sffDplBuilder.setDataPlaneLocator(dplBuilder.build());
 
+            // Augment the SFF DPL if its not VxLan
+            if(!transportType.equals(VxlanGpe.class)) {
+
+                SffDataPlaneLocator1Builder ofsSffDplBuilder = new SffDataPlaneLocator1Builder();
+                OfsPortBuilder ofsPortBuilder = new OfsPortBuilder();
+                ofsPortBuilder.setMacAddress(new MacAddress(getNextMacAddress()));
+                ofsPortBuilder.setPortId(SWITCH_PORT_STR);
+                ofsSffDplBuilder.setOfsPort(ofsPortBuilder.build());
+                sffDplBuilder.addAugmentation(SffDataPlaneLocator1.class, ofsSffDplBuilder.build());
+            }
+
             sffDpls.add(sffDplBuilder.build());
         }
 
@@ -255,7 +272,6 @@ public class RspBuilder {
         Class<? extends SlTransportType> sfTransportType =
                 (transportType.equals(VxlanGpe.class) ? transportType : Mac.class);
 
-        // TODO this needs to be an augmented SFF-OFS DPL
         SffSfDataPlaneLocatorBuilder sffSfDplBuilder = new SffSfDataPlaneLocatorBuilder();
         // TODO the vlanId needs to be the same as on the SF
         sffSfDplBuilder.setLocatorType(buildSfLocatorType(sfTransportType));
@@ -267,8 +283,19 @@ public class RspBuilder {
         sfDictBuilder.setSffSfDataPlaneLocator(sffSfDplBuilder.build());
         sfDictBuilder.setKey(new ServiceFunctionDictionaryKey(sf.getName()));
 
+        // Augment the dictionary with an OfsPortBuilder if its not VxLan
+        if(!transportType.equals(VxlanGpe.class)) {
+            ServiceFunctionDictionary1Builder ofsSfDictBuilder = new ServiceFunctionDictionary1Builder();
+            OfsPortBuilder ofsPortBuilder = new OfsPortBuilder();
+            ofsPortBuilder.setMacAddress(new MacAddress(getNextMacAddress()));
+            ofsPortBuilder.setPortId(SWITCH_PORT_STR);
+            ofsSfDictBuilder.setOfsPort(ofsPortBuilder.build());
+            sfDictBuilder.addAugmentation(ServiceFunctionDictionary1.class, ofsSfDictBuilder.build());
+        }
+
         List<ServiceFunctionDictionary> sfDictList = new ArrayList<ServiceFunctionDictionary>();
         sfDictList.add(sfDictBuilder.build());
+
         return sfDictList;
     }
 

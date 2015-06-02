@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -39,39 +41,10 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
  */
 public class SfExporterTest {
 
-    public static final String FULL_JSON = "/SfJsonStrings/FullTest.json";
-    public static final String NAME_ONLY_JSON = "/SfJsonStrings/NameOnly.json";
-
-    public enum SfTestValues {
-        NAME("SF1"),
-        TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi", Dpi.class),
-        REST_URI("http://localhost:5000/"),
-        IP_MGMT_ADDRESS("127.0.0.1"),
-        REQUEST_RECLASSIFICATION("true"),
-        NSH_AWARE("true"),
-        SF_LOCATOR_NAME("SF1-DP1"),
-        SF_LOCATOR_SERVICE_FUNCTION_FORWARDER("SFF1");
-
-        private String value;
-        private Class identity;
-
-        SfTestValues(String value) {
-            this.value = value;
-        }
-
-        SfTestValues(String value, Class identity) {
-            this.value = value;
-            this.identity = identity;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-
-        public Class getIdentity() {
-            return this.identity;
-        }
-    }
+    private static final String FULL_JSON = "/SfJsonStrings/FullTest.json";
+    private static final String NAME_ONLY_JSON = "/SfJsonStrings/NameOnly.json";
+    private ServiceFunctionGroupBuilder serviceFunctionGroupBuilder;
+    private SfExporter sfExporter;
 
     private String gatherServiceFunctionJsonStringFromFile(String testFileName) {
         String jsonString = null;
@@ -120,6 +93,30 @@ public class SfExporterTest {
         assertTrue(testExportSfJson(NAME_ONLY_JSON, true));
     }
 
+    @Test
+    public void testExportJsonException() throws Exception {
+        serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
+        sfExporter = new SfExporter();
+
+        try {
+            sfExporter.exportJson(serviceFunctionGroupBuilder.build());
+        } catch (Exception exception) {
+            assertEquals("Must be true", exception.getClass(), IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void testExportJsonNameOnlyException() throws Exception {
+        serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
+        sfExporter = new SfExporter();
+
+        try {
+            sfExporter.exportJsonNameOnly(serviceFunctionGroupBuilder.build());
+        } catch (Exception exception) {
+            assertEquals("Must be true", exception.getClass(), IllegalArgumentException.class);
+        }
+    }
+
     private ServiceFunction buildServiceFunctionNameOnly() {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SfTestValues.NAME.getValue());
@@ -151,4 +148,34 @@ public class SfExporterTest {
         return sfDataPlaneLocatorList;
     }
 
+    public enum SfTestValues {
+        NAME("SF1"),
+        TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi", Dpi.class),
+        REST_URI("http://localhost:5000/"),
+        IP_MGMT_ADDRESS("127.0.0.1"),
+        REQUEST_RECLASSIFICATION("true"),
+        NSH_AWARE("true"),
+        SF_LOCATOR_NAME("SF1-DP1"),
+        SF_LOCATOR_SERVICE_FUNCTION_FORWARDER("SFF1");
+
+        private String value;
+        private Class identity;
+
+        SfTestValues(String value) {
+            this.value = value;
+        }
+
+        SfTestValues(String value, Class identity) {
+            this.value = value;
+            this.identity = identity;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        public Class getIdentity() {
+            return this.identity;
+        }
+    }
 }

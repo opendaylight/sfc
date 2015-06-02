@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 
@@ -48,6 +51,8 @@ public class ExporterUtilTest {
     public static final String VXLAN_TRANSPORT_JSON = "/UtilJsonStrings/VxlanTransportTest.json";
     public static final String GRE_TRANSPORT_JSON = "/UtilJsonStrings/GreTransportTest.json";
     public static final String OTHER_TRANSPORT_JSON = "/UtilJsonStrings/OtherTransportTest.json";
+    public String ipV6 = "FF:FF:FF:FF:FF:FF:FF:FF";
+    public String result;
 
     public enum UtilTestValues {
         IP("10.0.0.1"),
@@ -148,6 +153,14 @@ public class ExporterUtilTest {
     @Test
     public void testExportUtilTransportJsonOther() throws IOException {
         assertTrue(testExportUtilTransportJson(ExporterUtil.OTHER, OTHER_TRANSPORT_JSON));
+    }
+
+    @Test
+    public void testConvertIpAddressIpV6() {
+        result = ExporterUtil.convertIpAddress(new IpAddress(new Ipv6Address(ipV6)));
+
+        assertNotNull("Must not be null", result);
+        assertEquals("Must be Equal", result, ipV6);
     }
 
     private DataPlaneLocator buildDataPlaneLocator(String locatorTypeName) {

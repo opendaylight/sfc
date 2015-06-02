@@ -93,6 +93,15 @@ public class SbRestAclTaskTest {
     }
 
     @Test
+    public void testSbRestAclTask1() throws IOException {
+        SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.DELETE, this.buildAccessList(), executorService);
+
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
+        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
     public void testSbRestAclTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
@@ -195,5 +204,4 @@ public class SbRestAclTaskTest {
         topNode.put(AclExporterFactory._ACCESS_LIST, accessListArrayNode);
         return topNode;
     }
-
 }

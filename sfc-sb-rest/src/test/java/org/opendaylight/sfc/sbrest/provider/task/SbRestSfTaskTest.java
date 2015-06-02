@@ -8,24 +8,23 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opendaylight.sfc.sbrest.json.SfExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class contains unit tests for SbRestSfTask
@@ -55,6 +54,15 @@ public class SbRestSfTaskTest {
 
         JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
         assertTrue(jsonObject.equals(this.buildServiceFunctionObjectNode()));
+        assertTrue(sbRestSfTask.restUriList.get(0).contains(REST_URI));
+    }
+
+    @Test
+    public void testSbRestSfTask1() throws IOException {
+        SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(), executorService);
+
+        JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
+        assertTrue(jsonObject.equals(buildServiceFunctionObjectNode1()));
         assertTrue(sbRestSfTask.restUriList.get(0).contains(REST_URI));
     }
 
@@ -89,6 +97,19 @@ public class SbRestSfTaskTest {
         return topNode;
     }
 
+    private ObjectNode buildServiceFunctionObjectNode1() {
+        ObjectNode topNode = mapper.createObjectNode();
+
+        ObjectNode sfNode = mapper.createObjectNode();
+        sfNode.put(SfExporterFactory._NAME, SF_NAME);
+
+        ArrayNode arrayNode = mapper.createArrayNode();
+        arrayNode.add(sfNode);
+
+        topNode.put(SfExporterFactory._SERVICE_FUNCTION, arrayNode);
+        return topNode;
+    }
+
     private ObjectNode buildServiceFunctionTopNode() {
         ObjectNode topNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
@@ -98,5 +119,4 @@ public class SbRestSfTaskTest {
         topNode.put(SfExporterFactory._SERVICE_FUNCTION, arrayNode);
         return topNode;
     }
-
 }

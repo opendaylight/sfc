@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -34,7 +35,9 @@ class SfgExporter extends AbstractExporter implements Exporter {
     private static final Logger LOG = LoggerFactory.getLogger(SfgExporter.class);
 
     public static final String _SERVICE_FUNCTION_GROUP = "service-function-group";
+    public static final String _SERVICE_FUNCTION = "service-function";
     public static final String _NAME = "name";
+    public static final String _KEY = "key";
     public static final String _TYPE = "type";
     public static final String _REST_URI = "rest-uri";
     public static final String _ALGORITHM = "algorithm";
@@ -61,6 +64,16 @@ class SfgExporter extends AbstractExporter implements Exporter {
                 sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getName().toLowerCase());
             }
 
+            //this should be revamped
+            if (sfg.getSfcServiceFunction() != null) {
+                ArrayNode sfArray = mapper.createArrayNode();
+                for(SfcServiceFunction entry : sfg.getSfcServiceFunction()) {
+                    ObjectNode o = mapper.createObjectNode();
+                    o.put(_NAME, entry.getName());
+                    sfArray.add(o);
+                }
+                sfgNode.putArray(_SERVICE_FUNCTION).addAll(sfArray);
+            }
 
             sfgArray.add(sfgNode);
             try {

@@ -75,6 +75,7 @@ class SfcGlobals:
     odl_credentials = ('admin', 'admin')
 
     processed_packets = 0
+    not_processed_packets = 0
     dropped_packets = 0
     sent_packets = 0
     sf_queued_packets = 0

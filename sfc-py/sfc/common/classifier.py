@@ -24,6 +24,7 @@ from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER,
                           VXLAN_NEXT_PROTO_NSH)
 
 
+
 __author__ = 'Martin Lauko, Dusan Madar'
 __email__ = "martin.lauko@pantheon.sk, madar.dusan@gmail.com"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
@@ -235,7 +236,7 @@ class NfqClassifier(metaclass=Singleton):
         self.nfq = None
 
         # socket used to forward NSH encapsulated packets
-        self.fwd_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.fwd_socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
 
         # identifiers of the currently processed RSP, set by process_acl()
         # these will be different for each processed ACL/ACE
@@ -373,12 +374,14 @@ class NfqClassifier(metaclass=Singleton):
         # logger.debug('NFQ received a %s, marked "%d"', packet, mark)
 
         if rsp_id not in self.rsp_2_sff:
+            not_processed_packets += 1
             return
 
         fwd_to = self.rsp_2_sff[rsp_id]['sff']
         next_protocol = ipv_2_next_protocol[ipv]
 
         transport = fwd_to['transport-type']
+        
         if 'vxlan' in transport:
             # NOTE
             # tunnel_id (0x0500) is hard-coded, will it be always the same?
@@ -410,16 +413,21 @@ class NfqClassifier(metaclass=Singleton):
 
         nsh_header = build_nsh_header(encap_header, base_header, ctx_header)
         nsh_packet = nsh_header + packet.get_payload()
-
-        self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
-        sfc_globals.sent_packets += 1
-        logger.debug('* Queued:"%d" sent:"%d sfq:"%d" sffq:"%d" sf_proc:"%d" sff_proc "%d"',
+        try:
+            logger.info('addr: "%s"  port:"%s"', fwd_to['ip'], fwd_to['port'])
+            self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
+            sfc_globals.sent_packets += 1
+            logger.debug('* Queued:"%d" sent:"%d sfq:"%d" sffq:"%d" sf_proc:"%d" sff_proc "%d"',
                     sfc_globals.processed_packets, sfc_globals.sent_packets,
                     sfc_globals.sf_queued_packets, sfc_globals.sff_queued_packets,
                     sfc_globals.sf_processed_packets, sfc_globals.sff_processed_packets)
-
-        sleep(0.00000001)  # not nice but this sending process needs to be slow down
-
+            sleep(0.00000001)  # not nice but this sending process needs to be slow down
+        except Exception as e:  
+            # msg = 'Excepton {} , {}'.format(e.message, e.args)
+            logger.info(e)
+            logger.exception(e)
+            # raise
+        
     def process_packet(self, packet):
         """
         Main NFQ callback for each classified packet.
@@ -452,6 +460,7 @@ class NfqClassifier(metaclass=Singleton):
         try:
             while True:
                 packet = in_pckt_queue.get(block=True)
+                logger.info('getting from queue ok')
                 self.forward_packet(packet)
                 in_pckt_queue.task_done()
         except:
@@ -814,3 +823,4 @@ def clear_classifier():
         logger.info('******************SFF processed packets "%d"***************', sfc_globals.sff_processed_packets)
         logger.info('******************SF queued packets "%d"***************', sfc_globals.sf_queued_packets)
         logger.info('******************SFf queued packets "%d"***************', sfc_globals.sff_queued_packets)
+        logger.info('******************Not processed packets "%d"***************', sfc_globals.not_processed_packets)

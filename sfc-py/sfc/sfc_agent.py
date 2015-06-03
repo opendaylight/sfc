@@ -115,6 +115,11 @@ def _ip_local_host(ip_addr):
                 for value in inet_addr_list:
                     if value['addr'] == ip_addr:
                         return True
+            if netifaces.AF_INET6 in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET6]
+                for value in inet_addr_list:
+                    if value['addr'] == ip_addr:
+                        return True
 
     return False
 
@@ -445,11 +450,11 @@ def create_sf(sfname):
         if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
             sf_port = data_plane_locator['port']
             _, sf_type = (local_sf_topo[sfname]['type']).split(':')
-
+            sf_ip = data_plane_locator['ip']
             # TODO: We need more checks to make sure IP in locator actually
             # corresponds to one of the existing interfaces in the system
-            start_sf(sfname, "0.0.0.0", sf_port, sf_type)
-
+            #start_sf(sfname, "0.0.0.0", sf_port, sf_type)
+            start_sf(sfname, sf_ip, sf_port, sf_type)
     return flask.jsonify({'sf': local_sf_topo[sfname]}), 201
 
 
@@ -503,8 +508,11 @@ def create_sff(sffname):
                 [0]
                 ['data-plane-locator']
                 ['port'])
-
-    start_sff(sffname, "0.0.0.0", sff_port)
+    sff_ip = (local_sff_topo[sffname]['sff-data-plane-locator']
+                [0]
+                ['data-plane-locator']
+                ['ip'])
+    start_sff(sffname, sff_ip, sff_port)
 
     return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201
 
@@ -758,6 +766,7 @@ def auto_sff_name():
                 inet_addr_list = addr_list_dict[netifaces.AF_INET]
 
                 for value in inet_addr_list:
+                    # logger.info('addr %s', value['addr'])
                     sff_name = find_sff_locator_by_ip(value['addr'])
                     if sff_name:
                         sfc_globals.set_my_sff_name(sff_name)
@@ -765,6 +774,18 @@ def auto_sff_name():
 
                         logger.info("Auto SFF name is: %s", sff_name)
                         return 0
+            if netifaces.AF_INET6 in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET6]
+
+                for value in inet_addr_list:
+                    # logger.info('addr %s', value['addr'])
+                    sff_name = find_sff_locator_by_ip(value['addr'])
+                    if sff_name:
+                        sfc_globals.set_my_sff_name(sff_name)
+                        sff_name = sfc_globals.get_my_sff_name()
+
+                        logger.info("Auto SFF name is: %s", sff_name)
+                        return 0                    
     else:
         logger.warn("Could not determine SFF name. This means ODL is not running"
                     " or there is no SFF with a data plane locator IP that matches"

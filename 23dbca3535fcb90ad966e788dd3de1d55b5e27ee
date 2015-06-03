@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a6a9dd7_1782b400",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 508,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-06-03T07:10:28Z",
+      "side": 1,
+      "message": "what\u0027s the point of defining SFC when its not mandatory to create a path that includes all its elements?\naccording to this definition we should have a single SFC that contains all types and generate different SFP\u0027s from it",
+      "parentUuid": "1a9dcd25_f64906b8",
+      "range": {
+        "startLine": 508,
+        "startChar": 35,
+        "endLine": 508,
+        "endChar": 52
+      },
+      "revId": "23dbca3535fcb90ad966e788dd3de1d55b5e27ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_56d23ad3",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2015-06-02T11:51:30Z",
       "side": 1,
       "message": "Looks like you\u0027re either using what\u0027s defined in the SFP or what\u0027s defined in the SFC, when actually a combination of both is allowed.",
+      "range": {
+        "startLine": 590,
+        "startChar": 10,
+        "endLine": 590,
+        "endChar": 14
+      },
+      "revId": "23dbca3535fcb90ad966e788dd3de1d55b5e27ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_3787b811",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 590,
+      "author": {
+        "id": 3511
+      },
+      "writtenOn": "2015-06-03T07:10:28Z",
+      "side": 1,
+      "message": "this might be related to my previous question. does it mean that SFP definition are overlay on top of the SFC and add specific instances to the hops?",
+      "parentUuid": "1a9dcd25_56d23ad3",
       "range": {
         "startLine": 590,
         "startChar": 10,

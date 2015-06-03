@@ -1,14 +1,14 @@
 ﻿# openssl-devel MUST BE INSTALLED as it is pip dependency
 
 # instal SSL
-apt-get install libssl-dev or  sudo apt-get install libssl-dev openssl 
+apt-get install libssl-dev or  sudo apt-get install libssl-dev openssl
 
 # precondition virtual env must be installed  :  “pip install virtualenv”
 
 # download and extract Python to /tmp
 wget https://www.python.org/ftp/python/3.4.3/Python-3.4.3.tgz --directory-prefix=/tmp
 tar -xvzf /tmp/Python-3.4.3.tgz -C /tmp
-#save current dir should be root of the Sfc project
+#save current dir should be root of the sfc-py project
 
 curpath="$PWD"
 cd /tmp/Python-3.4.3
@@ -18,7 +18,6 @@ sfc_random_suffix=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n
 sfc_py3_dir="/tmp/python3_$sfc_random_suffix"
 sfc_py3_executable="$sfc_py3_dir/bin/python3"
 sfc_py3_venv_dir="/tmp/sfc_venv_$sfc_random_suffix"
-
 
 # configure, compile and install Python 3.4
 ./configure --prefix=$sfc_py3_dir
@@ -33,21 +32,20 @@ source "$sfc_py3_venv_dir/bin/activate"
 
 
 # create SFC package
-# === TODO start ===
 
 # cd to sfc/sfc-py directory
-cd $curpath/sfc-py
-pwd 
+cd $curpath
+ 
 # 3. execute "sudo python3 setup.py sdist" to build the package
 python3 setup.py sdist
-# 4. check if the package 'sfc-0.1.0.tar.gz' was created in sfc/sfc-py/sfc/dist
+# 4. check if the package 'sfc-0.1.0.tar.gz' was created in sfc/sfc-py/dist
 
-file="$curpath/sfc-py/dist/sfc-0.1.0.tar.gz"
+file="$curpath/dist/sfc-0.1.0.tar.gz"
 if [ -s "$file" ]
 then
 	echo "Sfc Package created and has size greater than zero."
       # 5. publish the package on PyPI
-      # === TODO end ===
+      # === decided to do this step manually
 else
 	echo "Sfc Package not found."
 fi
@@ -56,6 +54,3 @@ fi
 # deactivate virtualenv, remove temporary stuff
 deactivate
 rm -rf $sfc_py3_dir $sfc_py3_venv_dir
-
-#Pypi registration 
-#Marcello Puskaj7727 msestak@cisco.com   - not registered yet

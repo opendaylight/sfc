@@ -512,6 +512,7 @@ def create_sff(sffname):
                 [0]
                 ['data-plane-locator']
                 ['ip'])
+    nfq_classifier.set_fwd_socket(sff_ip)
     start_sff(sffname, sff_ip, sff_port)
 
     return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201

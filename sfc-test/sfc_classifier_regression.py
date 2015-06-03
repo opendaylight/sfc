@@ -17,19 +17,21 @@ if __name__ == "__main__":
 
     acl_type_dict = {"IPV4": IETF_ACL_JSON_IPV4, "IPV6": IETF_ACL_JSON_IPV6, "MAC": IETF_ACL_JSON_MAC}
     sf_type_dict = {"IPV4": SERVICE_FUNCTIONS_JSON_IPV4, "IPV6": SERVICE_FUNCTIONS_JSON_IPV6,
-                     "MAC": SERVICE_FUNCTIONS_JSON_MAC}
+                     "MAC": SERVICE_FUNCTIONS_JSON_MAC, "IPV46": SERVICE_FUNCTIONS_JSON_IPV6,
+                     "IPV64": SERVICE_FUNCTIONS_JSON_IPV4}
     sff_type_dict = {"IPV4": SERVICE_FUNCTION_FORWARDERS_JSON_IPV4, "IPV6": SERVICE_FUNCTION_FORWARDERS_JSON_IPV6,
-                     "MAC": SERVICE_FUNCTION_FORWARDERS_JSON_MAC}
+                     "MAC": SERVICE_FUNCTION_FORWARDERS_JSON_MAC, "IPV46": SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6,
+                     "IPV64": SERVICE_FUNCTION_FORWARDERS_JSON_IPV6_4}
 
     parser = argparse.ArgumentParser(description='SFC Agent',
                                      usage=("\npython3.4 sfc_classifier_regression "
-                                            "--acl-type "))
+                                            "--acl-type --dptype"))
 
     parser.add_argument('--acl-type', choices=acl_type_dict.keys(),
                     help='Set ACL matches type [' + ' '.join(acl_type_dict.keys()) + ']',
                     required=True)
-    parser.add_argument('--dp-type', choices=acl_type_dict.keys(),
-                    help='Set data plane type [' + ' '.join(acl_type_dict.keys()) + ']',
+    parser.add_argument('--dp-type', choices=sf_type_dict.keys(),
+                    help='Set data plane type [' + ' '.join(sf_type_dict.keys()) + ']',
                     required=True)
     args = parser.parse_args()
 

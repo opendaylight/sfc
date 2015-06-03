@@ -22,6 +22,7 @@ from ..nsh.encode import build_nsh_header
 from ..common.sfc_globals import sfc_globals
 from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER,
                           VXLAN_NEXT_PROTO_NSH)
+from _socket import IPV6_V6ONLY
 
 
 
@@ -236,7 +237,7 @@ class NfqClassifier(metaclass=Singleton):
         self.nfq = None
 
         # socket used to forward NSH encapsulated packets
-        self.fwd_socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        self.fwd_socket = None
 
         # identifiers of the currently processed RSP, set by process_acl()
         # these will be different for each processed ACL/ACE
@@ -270,6 +271,39 @@ class NfqClassifier(metaclass=Singleton):
         ip = ipaddress.ip_address(ip)
 
         return ip.version
+
+    def set_fwd_socket(self, ip_adr):
+        """
+        Set classifier forward port base on the ip_adrr version provided
+
+        :param ip_adr: IP address
+        :type ip: str
+
+        """
+        ipver = self._get_current_ip_version(ip_adr)
+        #logger.info('IP version for classifier forward socket is :"%s"', ipver)
+        if ipver == 4:
+            adrr_family = socket.AF_INET
+        elif ipver == 6:
+            adrr_family = socket.AF_INET6     
+        else:
+           adrr_family = socket.AF_INET
+           
+        if self.fwd_socket != None:
+            self.fwd_socket.close()
+            
+        self.fwd_socket = socket.socket(adrr_family, socket.SOCK_DGRAM)
+        # res = self.fwd_socket.getsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY)
+        # logger.info('IPV6_V6ONLY set to :"%s"', res)
+        # self.fwd_socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        try:
+            self.fwd_socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        except (AttributeError, socket.error):
+            # Apparently, the socket option is not available in
+            # this machine's TCP stack
+            logger.info("Apparently, the socket option is not available in this machine's TCP stack")            
+            pass
+        
 
     def _get_rsp_by_name(self, rsp_name):
         """

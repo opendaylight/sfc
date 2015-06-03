@@ -68,7 +68,6 @@ public class SfcOvsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";
-    private static final String OVSDB_TERMINATION_POINT_PREFIX = "/terminationpoint/";
     public static final String OVSDB_OPTION_LOCAL_IP = "local_ip";
     public static final String OVSDB_OPTION_REMOTE_IP = "remote_ip";
     public static final String OVSDB_OPTION_DST_PORT = "dst_port";
@@ -276,7 +275,7 @@ public class SfcOvsUtil {
                 "Cannot build OvsdbTerminationPointAugmentation InstanceIdentifier, OvsdbBridgeAugmentation is null.");
 
         NodeId nodeId = getManagedByNodeId(ovsdbBridge);
-        String terminationPointId = nodeId.getValue() + OVSDB_TERMINATION_POINT_PREFIX + ovsdbTerminationPoint.getName();
+        String terminationPointId = ovsdbTerminationPoint.getName();
 
         InstanceIdentifier<OvsdbTerminationPointAugmentation> terminationPointIID =
                 InstanceIdentifier
@@ -306,7 +305,7 @@ public class SfcOvsUtil {
                         .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                         .child(Node.class, new NodeKey(new NodeId(sffName)))
                         .child(TerminationPoint.class, new TerminationPointKey(
-                                new TpId(sffName + OVSDB_TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName)));
+                                new TpId(sffDataPlaneLocatorName)));
 
         return terminationPointIID;
     }

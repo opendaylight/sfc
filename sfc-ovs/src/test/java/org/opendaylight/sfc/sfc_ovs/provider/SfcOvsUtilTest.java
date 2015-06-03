@@ -58,7 +58,6 @@ import static junit.framework.TestCase.assertTrue;
 @PrepareForTest(SfcOvsUtil.class)
 public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";   //copy of private String from SfcOvsUtil.class
-    private static final String OVSDB_TERMINATION_POINT_PREFIX = "/terminationpoint/";  //copy of private String from SfcOvsUtil.class
     private static final String ipv4Address = "170.0.0.1";
     private static final String ipv6Address = "0000:0000:0000:0000";
     private static final String testBridgeName = "Test bridge name";
@@ -262,14 +261,14 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", InstanceIdentifier.keyOf(terminationPointAugmentationIID.firstIdentifierOf(Node.class)).getNodeId().getValue(),
                 testNode + OVSDB_BRIDGE_PREFIX + testBridgeName);
         assertEquals("Must be equal", InstanceIdentifier.keyOf(terminationPointAugmentationIID.firstIdentifierOf(TerminationPoint.class)).getTpId().getValue(),
-                testNode + OVSDB_BRIDGE_PREFIX + testBridgeName + OVSDB_TERMINATION_POINT_PREFIX + testString);
+                testString);
     }
 
     @Test
     public void testBuildOvsdbTerminationPointIID_Strings() {
         InstanceIdentifier<TerminationPoint> terminationPointIID = SfcOvsUtil.buildOvsdbTerminationPointIID(testString, sffDataPlaneLocator);
 
-        Assert.assertEquals(InstanceIdentifier.keyOf(terminationPointIID).getTpId().getValue(), testString + OVSDB_TERMINATION_POINT_PREFIX + sffDataPlaneLocator);
+        Assert.assertEquals(InstanceIdentifier.keyOf(terminationPointIID).getTpId().getValue(), sffDataPlaneLocator);
     }
 
     @Test

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_a6dab815",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-03T22:34:36Z",
+      "side": 1,
+      "message": "The if and else if return the same thing. Is that an issue or we can a \u0027or\u0027?",
+      "revId": "e349cc1e5f8036fa7523e3e28cd073d26b3c0d62",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

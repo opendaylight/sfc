@@ -12,7 +12,10 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.node.attributes.ConnectionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -243,7 +246,9 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
         for (int i = 1; i <= numberOfNodes; i++) {
             OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
-
+            ConnectionInfoBuilder connectionInfoBuilder = new ConnectionInfoBuilder();
+            connectionInfoBuilder.setRemoteIp(new IpAddress(new Ipv4Address(partialIp + i)));
+            ovsdbNodeAugmentationBuilder.setConnectionInfo(connectionInfoBuilder.build());
             NodeBuilder nodeBuilder = new NodeBuilder();
             nodeBuilder.setNodeId(new NodeId(Integer.toString(i)))
                     .setTerminationPoint(createTerminationPointList())
@@ -302,14 +307,13 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
     private InstanceIdentifier<OvsdbTerminationPointAugmentation> createOvsdbTerminationPointIID(String sffName, String sffDataPlaneLocatorName) {
         String BRIDGE_PREFIX = "/bridge/";
-        String TERMINATION_POINT_PREFIX = "/terminationpoint/";
         return InstanceIdentifier
                 .create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(new NodeId(sffName + BRIDGE_PREFIX + bridgeName)))
                 .child(TerminationPoint.class, new TerminationPointKey(
-                        new TpId(sffName + BRIDGE_PREFIX + bridgeName + TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName)))
-                .augmentation(OvsdbTerminationPointAugmentation.class);
+                        new TpId(sffDataPlaneLocatorName)))
+                        .augmentation(OvsdbTerminationPointAugmentation.class);
 
     }
 }

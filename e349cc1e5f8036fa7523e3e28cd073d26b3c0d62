@@ -34,6 +34,24 @@
       "revId": "e349cc1e5f8036fa7523e3e28cd073d26b3c0d62",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_80d3d737",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-04T12:21:01Z",
+      "side": 1,
+      "message": "This patch fixes a blocking bug, and the Jenkins is now passing in master, so I would like to merge this patch and discuss the elseif/or issue as a separate patch. If we intend to handle IPv4 and IPv6 differently, then its easier as it is.",
+      "parentUuid": "9a6a9dd7_91eecc21",
+      "revId": "e349cc1e5f8036fa7523e3e28cd073d26b3c0d62",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

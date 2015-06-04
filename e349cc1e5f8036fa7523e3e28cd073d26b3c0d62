@@ -16,6 +16,24 @@
       "revId": "e349cc1e5f8036fa7523e3e28cd073d26b3c0d62",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_91eecc21",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-06-04T01:09:32Z",
+      "side": 1,
+      "message": "You *can* but I\u0027ve typically used this pattern when you want to do some different handling with IPv6. If its going to block this, I\u0027ll happily make the change.",
+      "parentUuid": "9a6a9dd7_a6dab815",
+      "revId": "e349cc1e5f8036fa7523e3e28cd073d26b3c0d62",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

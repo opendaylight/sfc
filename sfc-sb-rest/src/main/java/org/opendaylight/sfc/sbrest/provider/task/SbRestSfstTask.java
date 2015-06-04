@@ -35,7 +35,7 @@ public class SbRestSfstTask extends SbRestAbstractTask {
     protected void setRestUriList(DataObject dataObject) {
         ServiceFunctionSchedulerType obj = (ServiceFunctionSchedulerType) dataObject;
 
-        String restUri = SFST_REST_URI + obj.getName();
+        String restUri = "http://localhost:8181/"+SFST_REST_URI + obj.getName();
         this.restUriList = new ArrayList<>();
         this.restUriList.add(restUri);
         LOG.info("SF Schedule Type will be send to REST URI {}", restUri);

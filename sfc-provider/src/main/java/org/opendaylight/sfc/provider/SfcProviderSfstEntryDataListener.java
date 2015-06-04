@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.*;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSfstEntryDataListener implements DataChangeListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfstEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-
+    private static boolean isCreateTrue = false;
     /**
      * This method is called whenever there is change in a SF Schedule Type. Before doing any changes
      * it takes a global lock in order to ensure it is the only writer.
@@ -62,13 +63,41 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener  {
             if( entry.getValue() instanceof  ServiceFunctionSchedulerType) {
                 ServiceFunctionSchedulerType createdServiceFunctionSchedulerType =
                         (ServiceFunctionSchedulerType) entry.getValue();
-                Object[] serviceFunctionSchedulerTypeObj = {createdServiceFunctionSchedulerType};
-                Class[] serviceFunctionSchedulerTypeClass = {ServiceFunctionSchedulerType.class};
-
-                Future future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                        .getPut(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
+                LOG.debug("\n########## createdServiceFunctionSchedulerType {} {}",
+                        createdServiceFunctionSchedulerType.getType(), createdServiceFunctionSchedulerType.getName());
                 try {
-                    LOG.debug("getPut returns: {}", future.get());
+                    if (createdServiceFunctionSchedulerType.isEnabled() == true) {
+                        isCreateTrue = true;
+
+                        Object[] sfstObj = {};
+                        Class[] sfstClass = {};
+                        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
+                                .getReadAll(sfstObj, sfstClass);
+                        Future future = odlSfc.getExecutor().submit(sfcProviderScheduleTypeAPI);
+                        if(future.get()!=null) {
+                            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
+                                    (ServiceFunctionSchedulerTypes)future.get();
+                            List<ServiceFunctionSchedulerType> sfScheduleTypeList =
+                                    serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
+                            for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                                if (sfst.isEnabled() == true) {
+                                    if (!(sfst.getType().equals(createdServiceFunctionSchedulerType.getType()))) {
+                                        ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                                                                    .setName(sfst.getName())
+                                                                                    .setType(sfst.getType())
+                                                                                    .setEnabled(false).build();
+
+                                        Object[] sfstObjUpdate = {sfstUpdate};
+                                        Class[] sfstClassUpdate = {ServiceFunctionSchedulerType.class};
+                                        future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
+                                            .getPut(sfstObjUpdate, sfstClassUpdate));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                 } catch (InterruptedException e) {
                     LOG.warn("failed to ...." , e);
                 } catch (ExecutionException e) {
@@ -84,20 +113,8 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener  {
             if( dataObject instanceof  ServiceFunctionSchedulerType) {
                 ServiceFunctionSchedulerType origServiceFunctionSchedulerType =
                         (ServiceFunctionSchedulerType) dataObject;
-                Object[] serviceFunctionSchedulerTypeObj = {origServiceFunctionSchedulerType};
-                Class[] serviceFunctionSchedulerTypeClass = {ServiceFunctionSchedulerType.class};
-
-                // Todo: If try to delete a running schedule type, change the running schedule type to
-                // another one.
-                Future future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                        .getDelete(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
-                try {
-                    LOG.debug("getDelete returns: {}", future.get());
-                } catch (InterruptedException e) {
-                    LOG.warn("failed to ...." , e);
-                } catch (ExecutionException e) {
-                    LOG.warn("failed to ...." , e);
-                }
+                LOG.debug("\n########## deletedServiceFunctionSchedulerType {} {}",
+                        origServiceFunctionSchedulerType.getType(), origServiceFunctionSchedulerType.getName());
             }
         }
 
@@ -106,60 +123,49 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener  {
                 = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionSchedulerType) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
-
-                DataObject dataObject = dataOriginalDataObject.get(entry.getKey());
-                ServiceFunctionSchedulerType origServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) dataObject;
-                Object[] serviceFunctionSchedulerTypeObj = {origServiceFunctionSchedulerType};
-                Class[] serviceFunctionSchedulerTypeClass = {ServiceFunctionSchedulerType.class};
-
                 ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) entry.getValue();
+                LOG.debug("\n########## updatedServiceFunctionSchedulerType {} {}",
+                        updatedServiceFunctionSchedulerType.getType(), updatedServiceFunctionSchedulerType.getName());
 
-                // We only update SF Schedule type entry if enabled flag has  been changed
-                if (!updatedServiceFunctionSchedulerType.isEnabled() == true) {
-                    Object[] serviceFunctionSchedulerTypesObj = {};
-                    Class[] serviceFunctionSchedulerTypesClass = {};
-                    // We remove the original SF from SF type list
-                    Future future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                            .getReadAll(serviceFunctionSchedulerTypesObj, serviceFunctionSchedulerTypesClass));
-                    try {
-                        LOG.debug("getReadAll returns: {}", future.get());
-                        ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
-                                (ServiceFunctionSchedulerTypes)future.get();
-                        List<ServiceFunctionSchedulerType> sfScheduleTypeList =
-                                serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
-                        for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                            if (sfst.isEnabled() == true) {
-                                break;
+                try {
+                    if (isCreateTrue==false) {
+                        if (updatedServiceFunctionSchedulerType.isEnabled() == true) {
+                            Object[] sfstObj = {};
+                            Class[] sfstClass = {};
+                            SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
+                                    .getReadAll(sfstObj, sfstClass);
+                            Future future = odlSfc.getExecutor().submit(sfcProviderScheduleTypeAPI);
+                            if(future.get()!=null) {
+                                ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
+                                        (ServiceFunctionSchedulerTypes)future.get();
+                                List<ServiceFunctionSchedulerType> sfScheduleTypeList =
+                                        serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
+                                for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                                    if (sfst.isEnabled() == true) {
+                                        if (!(sfst.getType().equals(updatedServiceFunctionSchedulerType.getType()))) {
+                                            ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                                                                        .setName(sfst.getName())
+                                                                                        .setType(sfst.getType())
+                                                                                        .setEnabled(false).build();
+
+                                            Object[] serviceFunctionSchedulerTypeObj = {sfstUpdate};
+                                            Class[] serviceFunctionSchedulerTypeClass = {ServiceFunctionSchedulerType.class};
+                                            future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
+                                                .getPut(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
+                                            break;
+
+                                        }
+                                    }
+                                }
                             }
                         }
-                    } catch (InterruptedException e) {
-                        LOG.warn("failed to ...." , e);
-                    } catch (ExecutionException e) {
-                        LOG.warn("failed to ...." , e);
+                    } else if (isCreateTrue==true) {
+                        isCreateTrue=false;
                     }
-
-                    // We remove the original SF from SF type list
-                    future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                            .getDelete(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
-                    try {
-                        LOG.debug("getDeleteServiceFunctionFromServiceType returns: {}", future.get());
-                    } catch (InterruptedException e) {
-                        LOG.warn("failed to ...." , e);
-                    } catch (ExecutionException e) {
-                        LOG.warn("failed to ...." , e);
-                    }
-                    // We create a independent entry
-                    serviceFunctionSchedulerTypeObj[0] = updatedServiceFunctionSchedulerType;
-                    serviceFunctionSchedulerTypeClass[0] = ServiceFunctionSchedulerType.class;
-                    future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                            .getPut(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
-                    try {
-                        LOG.debug("getPut returns: {}", future.get());
-                    } catch (InterruptedException e) {
-                        LOG.warn("failed to ...." , e);
-                    } catch (ExecutionException e) {
-                        LOG.warn("failed to ...." , e);
-                    }
+                } catch (InterruptedException e) {
+                    LOG.warn("failed to ...." , e);
+                } catch (ExecutionException e) {
+                    LOG.warn("failed to ...." , e);
                 }
             }
         }

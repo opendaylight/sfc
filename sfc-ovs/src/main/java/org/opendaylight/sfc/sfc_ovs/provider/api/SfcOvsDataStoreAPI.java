@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
@@ -161,22 +162,26 @@ public class SfcOvsDataStoreAPI implements Callable {
         Preconditions.checkNotNull(ipAddress,
                 "Cannot READ Node for given ipAddress from OVS operational store, ipAddress is null.");
 
-        Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(), LogicalDatastoreType.OPERATIONAL);
+        Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(),
+                LogicalDatastoreType.OPERATIONAL);
         if (topology.getNode() != null) {
             for (Node node : topology.getNode()) {
-                if (node.getNodeId().getValue().contains(ipAddress)) {
-                    //we are looking for OvsdbNode (not OvsdbBridge or OvsdbTerminationPoint)
-                    OvsdbNodeAugmentation ovsdbNodeAugmentation = node.getAugmentation(OvsdbNodeAugmentation.class);
-                    if (ovsdbNodeAugmentation != null) {
+                OvsdbNodeAugmentation ovsdbNodeAug = node.getAugmentation(OvsdbNodeAugmentation.class);
+                if (ovsdbNodeAug != null && ovsdbNodeAug.getConnectionInfo() != null) {
+                    IpAddress connectionIp = ovsdbNodeAug.getConnectionInfo().getRemoteIp();
+                    if (connectionIp == null ) {
+                        return null;
+                    }
+                    if (connectionIp.getIpv4Address() != null && connectionIp.getIpv4Address().getValue().equals(ipAddress)) {
+                        return node;
+                    } else if (connectionIp.getIpv6Address() != null && connectionIp.getIpv6Address().getValue().equals(ipAddress)) {
                         return node;
                     }
                 }
             }
-
         } else {
             LOG.warn("Cannot READ Node for given ipAddress from OVS operational store, Topology does not contain any Node.");
         }
-
         return null;
     }
 

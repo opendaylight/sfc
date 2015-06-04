@@ -140,8 +140,8 @@ def start_service(service_name, service_ip, service_port, service_type):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-    logger.info('Starting %s serving as %s at %s:%s',
-                service_type.upper(), service_name, service_ip, service_port)
+    logger.info('Starting %s serving as %s at %s:%s, service type:%s ',
+                service_type.upper(), service_name, service_ip, service_port, service_type)
 
     service_class = find_service(service_type)
     service = service_class(loop)

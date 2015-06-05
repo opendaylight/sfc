@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPort;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
@@ -193,32 +194,54 @@ public abstract class SfcL2BaseProviderUtils {
     }
 
     public String getDplPortInfoMac(final SffDataPlaneLocator dpl) {
+        if(dpl == null) {
+            return null;
+        }
+
+        String macStr = null;
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
-        if(ofsPort == null) {
-            return null;
+        if(ofsPort != null) {
+            if(ofsPort.getMacAddress() != null) {
+                macStr =  ofsPort.getMacAddress().getValue();
+            }
         }
 
-        if(ofsPort.getMacAddress() == null) {
-            return null;
+        if(macStr == null) {
+            if(dpl.getDataPlaneLocator().getTransport()
+                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+                MacAddress mac = ((MacAddressLocator) dpl.getDataPlaneLocator().getLocatorType()).getMac();
+                if(mac != null) {
+                    macStr = mac.getValue();
+                }
+            }
         }
 
-        return ofsPort.getMacAddress().getValue();
+        return macStr;
     }
 
 
     public String getDictPortInfoMac(final ServiceFunctionDictionary dict) {
+        String macStr = null;
         OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
-        if(ofsPort == null) {
-            return null;
+        if(ofsPort != null) {
+            if(ofsPort.getMacAddress() != null) {
+                macStr =  ofsPort.getMacAddress().getValue();
+            }
         }
 
-        if(ofsPort.getMacAddress() == null) {
-            return null;
+        if(macStr == null) {
+            if(dict.getSffSfDataPlaneLocator().getTransport()
+                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+                MacAddress mac = ((MacAddressLocator) dict.getSffSfDataPlaneLocator().getLocatorType()).getMac();
+                if(mac != null) {
+                    macStr = mac.getValue();
+                }
+            }
         }
 
-        return ofsPort.getMacAddress().getValue();
+        return macStr;
     }
 
     public String getSffOpenFlowNodeName(final String sffName, long rspId) {

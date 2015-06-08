@@ -563,6 +563,7 @@ public class SfcOvsUtil {
         if ((ip == null)
                 || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
             LOG.warn("Invalid IP address");
+            return null;
         }
         if (ip.getIpv4Address() != null) {
             ipAddressString = ip.getIpv4Address().getValue();

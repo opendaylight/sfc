@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_b5b969eb",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadBalanceSchedulerAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-09T12:43:29Z",
+      "side": 1,
+      "message": "You can increment index here, so its not necessary to increment it separately on the next line.",
+      "range": {
+        "startLine": 102,
+        "startChar": 42,
+        "endLine": 102,
+        "endChar": 47
+      },
+      "revId": "515e4fe284e1845486afffebef068881c4d45987",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6a9dd7_75cbd172",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadBalanceSchedulerAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-06-09T12:43:29Z",
+      "side": 1,
+      "message": "What if the user puts an SF in the SFP that is not of the type in the SFC for this hop? I think we should add a simple check here, and either error or skip the SFP SF if its not of the same type.\n\nYou should add a unit test for this case, too.\n\nSame comment for all implementations.",
+      "range": {
+        "startLine": 105,
+        "startChar": 31,
+        "endLine": 105,
+        "endChar": 36
+      },
+      "revId": "515e4fe284e1845486afffebef068881c4d45987",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -368,23 +368,23 @@ def create_topology(context):
         print context.sf_forwarders[i].opts
         s = topo.addSwitch(context.sf_forwarders[i].name, opts=context.sf_forwarders[i].opts)
         for j in range(sfs_per_sff):
+            
+            sf_index = (i*int(sfs_per_sff))+j
             # Add the Loop switches instead of normal hosts
-            if not context.service_functions[j]:
+            if not context.service_functions[sf_index]:
                 h = topo.addSwitch('%s-node%d'%(context.sf_forwarders[i].name,j+1), opts='')
             # Add the SFs
             else:
-                if context.service_functions[j].vlan_id_ == 0:
-                    h = topo.addHost(context.service_functions[j].name,
-                             ip=context.service_functions[j].ip_,
-                             mac=context.service_functions[j].mac_)
-
+                if context.service_functions[sf_index].vlan_id_ == 0:
+                    h = topo.addHost(context.service_functions[sf_index].name,
+                        ip=context.service_functions[sf_index].ip_,
+                        mac=context.service_functions[sf_index].mac_)
                 else:
-                    h = topo.addHost(context.service_functions[j].name,
+                    h = topo.addHost(context.service_functions[sf_index].name,
                              cls=VlanHost,
-                             vlan=context.service_functions[j].vlan_id_,
-                             ip=context.service_functions[j].ip_,
-                             mac=context.service_functions[j].mac_)
-
+                             vlan=context.service_functions[sf_index].vlan_id_,
+                             ip=context.service_functions[sf_index].ip_,
+                             mac=context.service_functions[sf_index].mac_)
             # Connect the SF to the SFF
             topo.addLink(node1=h, node2=s)
 
@@ -463,6 +463,8 @@ def init_flows(context):
     if (context.topology_tor) and (os.path.exists(context.sfcofl2_path_tor)):
         print 'ToR flows:'
         insert_flows(context.sfcofl2_path_tor)
+    else:
+        print 'ToR file not found [%s]' % context.sfcofl2_path_tor
 
 def insert_flows(fileName):
     file = open(fileName,'r')
@@ -509,4 +511,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

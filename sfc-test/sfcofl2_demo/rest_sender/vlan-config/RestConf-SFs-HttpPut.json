@@ -3,13 +3,13 @@
     "service-function": [
       {
         "name": "sf1",
-        "type": "service-function-type:http-header-enrichment",
+        "type": "service-function-type:tcp-proxy",
         "nsh-aware": false,
         "ip-mgmt-address": "10.0.0.2",
         "sf-data-plane-locator": [
           {
             "name": "sff1",
-            "mac": "00:00:08:01:02:01",
+            "mac": "00:00:00:00:00:02",
             "vlan-id": 1000,
             "transport": "service-locator:mac",
             "service-function-forwarder": "sff1"
@@ -18,13 +18,13 @@
       },
       {
         "name": "sf2",
-        "type": "service-function-type:firewall",
+        "type": "service-function-type:tcp-proxy",
         "nsh-aware": false,
         "ip-mgmt-address": "10.0.0.3",
         "sf-data-plane-locator": [
           {
             "name": "sff2",
-            "mac": "00:00:08:01:03:01",
+            "mac": "00:00:00:00:00:03",
             "vlan-id": 2000,
             "transport": "service-locator:mac",
             "service-function-forwarder": "sff2"

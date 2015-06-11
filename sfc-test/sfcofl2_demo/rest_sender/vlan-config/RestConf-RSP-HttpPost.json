@@ -1,7 +1,23 @@
-{
-  "input": {
-      "name": "sfc-path1",
-      "parent-service-function-path": "sfc-path1",
-      "symmetric": true
+[
+  {
+    "input": {
+        "name": "sfc-path1",
+        "parent-service-function-path": "sfc-path1",
+        "symmetric": true
+    }
+  },
+  {
+    "input": {
+        "name": "sfc-path2",
+        "parent-service-function-path": "sfc-path2",
+        "symmetric": true
+    }
+  },
+  {
+    "input": {
+        "name": "sfc-path3",
+        "parent-service-function-path": "sfc-path3",
+        "symmetric": true
+    }
   }
-}
+]

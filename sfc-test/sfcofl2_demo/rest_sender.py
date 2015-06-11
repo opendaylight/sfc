@@ -1,5 +1,12 @@
 #! /usr/bin/env python
 
+__author__ = "Brady Johnson"
+__copyright__ = "Copyright(c) 2015, Ericsson, Inc."
+__license__ = "Eclipse Public License v1.0"
+__version__ = "0.2"
+__email__ = "brady.allen.johnson@ericsson.com"
+__status__ = "demo code"
+
 import os
 import time
 import requests
@@ -12,24 +19,24 @@ POST = 'POST'
 
 class Context(object):
     def __init__(self):
-        self.rest_path_prefix = 'restInput'
-        self.rest_path_sf   =  'RestConf-SFs-HttpPut.json'
-        self.rest_path_sfg  =  'RestConf-SFGs-HttpPut.json'
-        self.rest_path_sfc  =  'RestConf-SFCs-HttpPut.json'
-        self.rest_path_sff  =  'RestConf-SFFs-HttpPut.json'
-        self.rest_path_sfp  =  'RestConf-SFPs-HttpPut.json'
-        self.rest_path_acl  =  'RestConf-ACLs-HttpPut.json'
-        self.rest_path_rsp  =  'RestConf-RSP-HttpPost.json'
+        self.rest_path_prefix =  'restInput'
+        self.rest_path_sf     =  'RestConf-SFs-HttpPut.json'
+        self.rest_path_sf_sel =  'RestConf-SFselect-HttpPut.json'
+        self.rest_path_sfc    =  'RestConf-SFCs-HttpPut.json'
+        self.rest_path_sff    =  'RestConf-SFFs-HttpPut.json'
+        self.rest_path_sfp    =  'RestConf-SFPs-HttpPut.json'
+        self.rest_path_acl    =  'RestConf-ACLs-HttpPut.json'
+        self.rest_path_rsp    =  'RestConf-RSP-HttpPost.json'
 
-        self.rest_url_sf    =  'config/service-function:service-functions/'
-        self.rest_url_sfg   =  'config/service-function-group:service-function-groups/'
-        self.rest_url_sfc   =  'config/service-function-chain:service-function-chains/'
-        self.rest_url_sff   =  'config/service-function-forwarder:service-function-forwarders/'
-        self.rest_url_sfp   =  'config/service-function-path:service-function-paths/'
-        self.rest_url_rsp   =  'operational/rendered-service-path:rendered-service-paths/'
-        self.rest_url_rsp_rpc = 'operations/rendered-service-path:create-rendered-path'
-        self.rest_url_acl   =  'config/ietf-acl:access-lists/'
-        self.rest_url_nodes =  'operational/opendaylight-inventory:nodes/'
+        self.rest_url_sf      =  'config/service-function:service-functions/'
+        self.rest_url_sf_sel  =  'config/service-function-scheduler-type:service-function-scheduler-types/'
+        self.rest_url_sfc     =  'config/service-function-chain:service-function-chains/'
+        self.rest_url_sff     =  'config/service-function-forwarder:service-function-forwarders/'
+        self.rest_url_sfp     =  'config/service-function-path:service-function-paths/'
+        self.rest_url_rsp     =  'operational/rendered-service-path:rendered-service-paths/'
+        self.rest_url_rsp_rpc =  'operations/rendered-service-path:create-rendered-path'
+        self.rest_url_acl     =  'config/ietf-acl:access-lists/'
+        self.rest_url_nodes   =  'operational/opendaylight-inventory:nodes/'
 
         self.http_headers   =  {'Content-Type' : 'application/json', 'Cache-Control' : 'no-cache'}
         self.http_server    =  'localhost'
@@ -39,7 +46,7 @@ class Context(object):
         self.user           =  'admin'
         self.pw             =  'admin'
         self.batch_sf       =  False
-        self.batch_sfg      =  False
+        self.batch_sf_sel   =  False
         self.batch_sfc      =  False
         self.batch_sff      =  False
         self.batch_sfp      =  False
@@ -48,6 +55,37 @@ class Context(object):
         self.batch_query    =  False
         self.batch_nodes    =  False
 
+    def set_path_prefix_paths(self, path_prefix):
+        self.rest_path_prefix = path_prefix
+        self.rest_path_sf     =  os.path.join(self.rest_path_prefix, self.rest_path_sf)
+        self.rest_path_sf_sel =  os.path.join(self.rest_path_prefix, self.rest_path_sf_sel)
+        self.rest_path_sfc    =  os.path.join(self.rest_path_prefix, self.rest_path_sfc)
+        self.rest_path_sff    =  os.path.join(self.rest_path_prefix, self.rest_path_sff)
+        self.rest_path_sfp    =  os.path.join(self.rest_path_prefix, self.rest_path_sfp)
+        self.rest_path_acl    =  os.path.join(self.rest_path_prefix, self.rest_path_acl)
+        self.rest_path_rsp    =  os.path.join(self.rest_path_prefix, self.rest_path_rsp)
+
+class SfContext(object):
+    def __init__(self, sf_name=None, sff_name=None, mac=None, vlan=None):
+        self.sf_name = sf_name
+        self.sff_name = sff_name
+        self.mac = mac
+        self.vlan = vlan
+
+class SffSfContext(object):
+    def __init__(self, sf_name=None, mac=None, vlan=None, port=None):
+        self.sf_name = sf_name
+        self.mac = mac
+        self.vlan = vlan
+        self.port = port
+
+class SffContext(object):
+    def __init__(self, sff_name=None, mac=None, vlan=None, port=None, sff_sf_context_list=[]):
+        self.sff_name = sff_name
+        self.mac = mac
+        self.vlan = vlan
+        self.port = port
+        self.sff_sf_context_list = sff_sf_context_list
 
 def get_cmd_line(context):
     opts = argparse.ArgumentParser()
@@ -77,6 +115,10 @@ def get_cmd_line(context):
                       dest='send_sf',
                       action='store_true',
                       help='Send an SF REST JSON PUT message')
+    opts.add_argument('--send-sf-sel',
+                      dest='send_sf_sel',
+                      action='store_true',
+                      help='Send an SF Selection REST JSON PUT message')
     opts.add_argument('--send-sfc', '-2',
                       dest='send_sfc',
                       action='store_true',
@@ -105,10 +147,6 @@ def get_cmd_line(context):
                       dest='query_nodes',
                       action='store_true',
                       help='Query all Nodes connected to ODL')
-    opts.add_argument('--send-sfg', '-9',
-                      dest='send_sfg',
-                      action='store_true',
-                      help='Send an SFG REST JSON PUT message')
     opts.add_argument('--query-sfc', '-q',
                       dest='query_sfc',
                       action='store_true',
@@ -119,14 +157,14 @@ def get_cmd_line(context):
                       default=context.rest_path_prefix,
                       dest='rest_path_prefix',
                       help='Path prefix where the REST JSON files are located')
+    opts.add_argument('--rest-path-sf-sel',
+                      default=context.rest_path_sf_sel,
+                      dest='rest_path_sf_sel',
+                      help='Name of the SF Selection REST JSON file, relative to configured prefix')
     opts.add_argument('--rest-path-sf', '-n',
                       default=context.rest_path_sf,
                       dest='rest_path_sf',
                       help='Name of the SF REST JSON file, relative to configured prefix')
-    opts.add_argument('--rest-path-sfg', '-g',
-                      default=context.rest_path_sfg,
-                      dest='rest_path_sfg',
-                      help='Name of the SFG REST JSON file, relative to configured prefix')
     opts.add_argument('--rest-path-sfc', '-c',
                       default=context.rest_path_sfc,
                       dest='rest_path_sfc',
@@ -150,47 +188,44 @@ def get_cmd_line(context):
 
     args = opts.parse_args()
 
-    context.http_server    =  args.http_server
-    context.http_port      =  args.http_port
-    context.rest_path_sf   =  os.path.join(args.rest_path_prefix, args.rest_path_sf)
-    context.rest_path_sfg  =  os.path.join(args.rest_path_prefix, args.rest_path_sfg)
-    context.rest_path_sfc  =  os.path.join(args.rest_path_prefix, args.rest_path_sfc)
-    context.rest_path_sff  =  os.path.join(args.rest_path_prefix, args.rest_path_sff)
-    context.rest_path_sfp  =  os.path.join(args.rest_path_prefix, args.rest_path_sfp)
-    context.rest_path_acl  =  os.path.join(args.rest_path_prefix, args.rest_path_acl)
-    context.rest_path_rsp  =  os.path.join(args.rest_path_prefix, args.rest_path_rsp)
-    context.url_base       =  'http://%s:%s/restconf/' % (context.http_server, context.http_port)
+    context.http_server      = args.http_server
+    context.http_port        = args.http_port
+    context.url_base         = 'http://%s:%s/restconf/' % (context.http_server, context.http_port)
+
+    context.rest_path_prefix = args.rest_path_prefix
+    context.rest_path_sf     = args.rest_path_sf
+    context.rest_path_sf_sel = args.rest_path_sf_sel
+    context.rest_path_sfc    = args.rest_path_sfc
+    context.rest_path_sff    = args.rest_path_sff
+    context.rest_path_sfp    = args.rest_path_sfp
+    context.rest_path_acl    = args.rest_path_acl
+    context.rest_path_rsp    = args.rest_path_rsp
+    context.set_path_prefix_paths(context.rest_path_prefix)
+
+    for path in [context.rest_path_sf, context.rest_path_sfc, context.rest_path_sff, context.rest_path_sfp]:
+        print '\tUsing REST file: %s' % path
 
     if args.batch:
         context.interractive = False
         if args.send_all:
             context.batch_sf       =  True
-            context.batch_sfg      =  True
+            context.batch_sf_sel   =  True
             context.batch_sfc      =  True
             context.batch_sff      =  True
             context.batch_sfp      =  True
             context.batch_rsp      =  True
-            context.batch_acl      =  True
+            # For now, ACL is no longer used by SFCOFL2
+            #context.batch_acl      =  True
         else:
             context.batch_sf       =  args.send_sf
-            context.batch_sfg      =  args.send_sfg
+            context.batch_sf_sel   =  args.send_sf_sel
             context.batch_sfc      =  args.send_sfc
             context.batch_sff      =  args.send_sff
             context.batch_sfp      =  args.send_sfp
             context.batch_rsp      =  args.send_rsp
-            context.batch_acl      =  args.send_acl
+            #context.batch_acl      =  args.send_acl
             context.batch_query    =  args.query_sfc
             context.batch_nodes    =  args.query_nodes
-
-    # TODO we may not want to do this if the user only wants to send one message
-    # Check that each of the files exists
-    for path in [context.rest_path_sf, context.rest_path_sfc, context.rest_path_sff, context.rest_path_sfp]:
-        if not os.path.exists(path):
-            print 'ERROR REST JSON file does not exist: %s' % (path)
-            return False
-
-    for path in [context.rest_path_sf, context.rest_path_sfc, context.rest_path_sff, context.rest_path_sfp]:
-        print '\tUsing REST file: %s' % path
 
     return True
 
@@ -230,28 +265,53 @@ def send_rest(context, operation, rest_url, rest_file=None):
                 print 'ERROR trying to POST with empty REST file'
                 return
 
-            r = requests.post(url = complete_url,
-                              auth=(context.user, context.pw),
-                              data = json.dumps(json.load(open(rest_file, 'r'))),
-                              headers = context.http_headers)
-            print '\nHTTP POST %s\nresult: %s' % (rest_url, r.status_code)
+	    post_list = json.load(open(rest_file, 'r'))
+            if len(post_list) > 1:
+                # This allows for multiple RSPs to be sent from one JSON file
+                for entry in post_list:
+                    r = requests.post(url = complete_url,
+                                      auth=(context.user, context.pw),
+                                      data = json.dumps(entry),
+                                      headers = context.http_headers)
+                    print '\nHTTP POST %s\nresult: %s' % (rest_url, r.status_code)
+            else:
+                r = requests.post(url = complete_url,
+                                  auth=(context.user, context.pw),
+                                  data = json.dumps(post_list),
+                                  headers = context.http_headers)
+                print '\nHTTP POST %s\nresult: %s' % (rest_url, r.status_code)
 
         else:
             print 'ERROR: Invalid Operation: %s' % (operation)
 
-    except requests.exceptions.ConnectionError as e:
-        print 'ERROR connecting: %s' % (e)
+    except requests.exceptions.ConnectionError as ce:
+        print 'ERROR connecting: %s' % (ce)
+    except Exception as e:
+        print 'ERROR Exception: %s' % (e)
     except:
         print 'ERROR unkown exception raised'
 
+def validate_rest(context):
+    print ''
+    for path in [context.rest_path_sf,
+                 context.rest_path_sfc,
+                 context.rest_path_sff,
+                 context.rest_path_sfp,
+                 context.rest_path_rsp,
+                 context.rest_path_sf_sel]:
+        print 'Validating JSON file: %s' % path
+        try:
+            json.load(open(path, 'r'))
+        except ValueError as ve:
+            print '\tValidation error [%s]' % ve
 
 def batch(context):
     # The order of these if's is important
     # If send-all was set, then each of these needs to be sent, in order
+    if context.batch_sf_sel:
+        send_rest(context, PUT, context.rest_url_sf_sel,  context.rest_path_sf_sel)
     if context.batch_sf:
         send_rest(context, PUT, context.rest_url_sf,  context.rest_path_sf)
-    if context.batch_sfg:
-        send_rest(context, PUT, context.rest_url_sfg,  context.rest_path_sfg)
     if context.batch_sff:
         send_rest(context, PUT, context.rest_url_sff, context.rest_path_sff)
     if context.batch_sfc:
@@ -264,13 +324,14 @@ def batch(context):
         send_rest(context, PUT, context.rest_url_acl, context.rest_path_acl)
 
     if context.batch_query:
+        send_rest(context, GET, context.rest_url_sf_sel)
         send_rest(context, GET, context.rest_url_sf)
-        send_rest(context, GET, context.rest_url_sfg)
         send_rest(context, GET, context.rest_url_sff)
         send_rest(context, GET, context.rest_url_sfc)
         send_rest(context, GET, context.rest_url_sfp)
         send_rest(context, GET, context.rest_url_rsp)
-        send_rest(context, GET, context.rest_url_acl)
+        # For now, ACL is no longer used by SFCOFL2
+        #send_rest(context, GET, context.rest_url_acl)
     elif context.batch_nodes:
         send_rest(context, GET, context.rest_url_nodes)
 
@@ -279,17 +340,18 @@ def CLI(context):
     option = '1'
     while option != '0':
         print '\n\nChoose Option to perform:'
-        print '0) Quit'
-        print '1) Send SF REST'
-        print '2) Send SFC REST'
-        print '3) Send SFF REST'
-        print '4) Send SFP REST'
-        print '5) Send RSP REST'
-        print '6) Send ACL REST'
-        print '7) Send all ordered: (SF, SFF, SFC, SFP, RSP, ACL)'
-        print '8) Query all: (SF, SFF, SFC, SFP, RSP, ACL)'
-        print '9) Query Nodes'
-        print '10) Send SFG REST'
+        print ' 0) Quit'
+        print ' 1) Send SF REST'
+        print ' 2) Send SFC REST'
+        print ' 3) Send SFF REST'
+        print ' 4) Send SFP REST'
+        print ' 5) Send RSP REST'
+        print ' 6) Send ACL REST'
+        print ' 7) Send all ordered: (SFsel, SF, SFF, SFC, SFP, RSP)'
+        print ' 8) Query all: (SFsel, SF, SFF, SFC, SFP, RSP)'
+        print ' 9) Query Nodes'
+        print '10) Change config file path, currently [%s]' % (context.rest_path_prefix)
+        print '11) Validate config files JSON syntax'
 
         option = raw_input('=> ')
 
@@ -306,17 +368,20 @@ def CLI(context):
         elif option == '6':
             send_rest(context, PUT, context.rest_url_acl, context.rest_path_acl)
         elif option == '7':
+            send_rest(context, PUT, context.rest_url_sf_sel,  context.rest_path_sf_sel)
             send_rest(context, PUT, context.rest_url_sf,  context.rest_path_sf)
             send_rest(context, PUT, context.rest_url_sff, context.rest_path_sff)
             send_rest(context, PUT, context.rest_url_sfc, context.rest_path_sfc)
             send_rest(context, PUT, context.rest_url_sfp, context.rest_path_sfp)
             time.sleep(1);
             send_rest(context, POST, context.rest_url_rsp_rpc, context.rest_path_rsp)
+            # For now, ACL is no longer used by SFCOFL2
             # Need to wait until the SFC creates the RSP internally before sending the ACL
-            print 'Sleeping 2 seconds while RSP being created'
-            time.sleep(2);
-            send_rest(context, PUT, context.rest_url_acl, context.rest_path_acl)
+            #print 'Sleeping 2 seconds while RSP being created'
+            #time.sleep(2);
+            #send_rest(context, PUT, context.rest_url_acl, context.rest_path_acl)
         elif option == '8':
+            send_rest(context, GET, context.rest_url_sf_sel)
             send_rest(context, GET, context.rest_url_sf)
             send_rest(context, GET, context.rest_url_sff)
             send_rest(context, GET, context.rest_url_sfc)
@@ -326,7 +391,13 @@ def CLI(context):
         elif option == '9':
             send_rest(context, GET, context.rest_url_nodes)
         elif option == '10':
-            send_rest(context, PUT, context.rest_url_sfg, context.rest_url_sfg)
+            path_prefix = raw_input('Enter path => ')
+            if not os.path.exists(path_prefix):
+                print 'ERROR: path does not exist: [%s]' % (path_prefix)
+            else:
+                context.set_path_prefix_paths(path_prefix)
+        elif option == '11':
+            validate_rest(context)
         elif option != '0':
             print 'ERROR: Invalid option %s' % (option)
 

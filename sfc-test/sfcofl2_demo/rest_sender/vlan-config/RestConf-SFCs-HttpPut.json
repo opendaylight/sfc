@@ -7,11 +7,33 @@
         "sfc-service-function": [
           {
             "name": "hdr-enrich-abstract1",
-            "type": "service-function-type:http-header-enrichment"
+            "type": "service-function-type:tcp-proxy"
           },
           {
-            "name": "firewall-abstract1",
-            "type": "service-function-type:firewall"
+            "name": "hdr-enrich-abstract2",
+            "type": "service-function-type:tcp-proxy"
+          }
+        ]
+      },
+
+      {
+        "name": "sfc-chain2",
+        "symmetric": true,
+        "sfc-service-function": [
+          {
+            "name": "hdr-enrich-abstract1",
+            "type": "service-function-type:tcp-proxy"
+          }
+        ]
+      },
+
+      {
+        "name": "sfc-chain3",
+        "symmetric": true,
+        "sfc-service-function": [
+          {
+            "name": "hdr-enrich-abstract2",
+            "type": "service-function-type:tcp-proxy"
           }
         ]
       }

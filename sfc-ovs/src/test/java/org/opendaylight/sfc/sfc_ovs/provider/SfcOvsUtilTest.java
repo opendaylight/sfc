@@ -59,7 +59,7 @@ import static junit.framework.TestCase.assertTrue;
 public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";   //copy of private String from SfcOvsUtil.class
     private static final String ipv4Address = "170.0.0.1";
-    private static final String ipv6Address = "0000:0000:0000:0000";
+    private static final String ipv6Address = "::";
     private static final String testBridgeName = "Test bridge name";
     private static final String testNode = "Test node";
     private static final String testString = "Test string";

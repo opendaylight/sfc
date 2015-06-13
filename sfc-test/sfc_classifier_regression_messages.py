@@ -120,7 +120,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON_IPV4 = """
   }
 }"""
 
-SERVICE_FUNCTION_FORWARDERS_JSON_IPV6 = """
+SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6 = """
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
@@ -135,7 +135,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON_IPV6 = """
             },
             "data-plane-locator": {
               "port": 30001,
-              "ip": "::1",
+              "ip": "127.0.0.1",
               "transport": "service-locator:vxlan-gpe"
             }
           }
@@ -162,7 +162,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON_IPV6 = """
   }
 }"""
 
-SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6 = """
+
+SERVICE_FUNCTION_FORWARDERS_JSON_IPV6 = """
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
@@ -177,7 +178,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6 = """
             },
             "data-plane-locator": {
               "port": 30001,
-              "ip": "127.0.0.1",
+              "ip": "::1",
               "transport": "service-locator:vxlan-gpe"
             }
           }
@@ -234,7 +235,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON_IPV6_4 = """
                 "bridge-name": "br-int"
               },
               "port": 40001,
-              "ip": "127.0.0.1",
+              "ip": "172.0.0.1",
               "transport": "service-locator:vxlan-gpe"
             }
           }
@@ -314,7 +315,8 @@ SERVICE_PATH_JSON = """
         "name": "SFC1-SFP1",
         "service-chain-name": "SFC1",
         "path-id": 1,
-        "symmetric": false
+        "symmetric": false,
+        "context-metadata": "test_context_metadata"
       }
     ]
   }
@@ -506,16 +508,56 @@ SERVICE_CLASSIFIER_JSON = """
 
 
 METADATA_JSON = """
-{
-  "service-function-metadata": {
-    "context-metadata": [
-      {
-        "name": "test-metadata",
-        "context-header2": 2,
-        "context-header3": 3,
-        "context-header1": 1,
-        "context-header4": 4
-      }
-    ]
-  }
-}"""
+{"service-function-metadata": {
+        "context-metadata": [
+            {
+                "name": "test_context_metadata",
+                "context-header2": 11195,
+                "context-header4": 19933,
+                "context-header3": 15564,
+                "context-header1": 6826
+            },
+            {
+                "name": "test_context_metadata1",
+                "context-header2": 11195,
+                "context-header4": 19933,
+                "context-header3": 15564,
+                "context-header1": 6826
+            },
+            {
+                "name": "test-metadata",
+                "context-header2": 2,
+                "context-header3": 3,
+                "context-header1": 1,
+                "context-header4": 4
+            }
+        ],
+        "variable-metadata": [
+            {
+                "name": "test_variable_metadata",
+                "tlv-metadata": [
+                    {
+                        "tlv-class": 16,
+                        "tlv-type": 5,
+                        "tlv-data": "abcdefgh",
+                        "length": 2,
+                        "flags": "r1"
+                    }
+                ]
+            },
+            {
+                "name": "test_variable_metadata1",
+                "tlv-metadata": [
+                    {
+                        "tlv-class": 16,
+                        "tlv-type": 5,
+                        "tlv-data": "abcdefgh",
+                        "length": 2,
+                        "flags": "r1"
+                    }
+                ]
+            }
+        ]
+    }
+}
+"""

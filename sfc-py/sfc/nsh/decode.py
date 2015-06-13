@@ -138,6 +138,30 @@ def decode_contextheader(payload, context_header_values):
                     context_header_values.service_shared)
 
 
+def decode_ethheader(payload, eth_header_values):
+    """Decode the NSH context headers for a received packet"""
+    eth_header = payload[32:46]
+
+    _header_values = struct.unpack('!B B B B B B B B B B B B B B', eth_header)
+    eth_header_values.dmac0 = _header_values[0]
+    eth_header_values.dmac1 = _header_values[1]
+    eth_header_values.dmac2 = _header_values[2]
+    eth_header_values.dmac3 = _header_values[3]
+    eth_header_values.dmac4 = _header_values[4]
+    eth_header_values.dmac5 = _header_values[5]
+    eth_header_values.smac0 = _header_values[6]
+    eth_header_values.smac1 = _header_values[7]
+    eth_header_values.smac2 = _header_values[8]
+    eth_header_values.smac3 = _header_values[9]
+    eth_header_values.smac4 = _header_values[10]
+    eth_header_values.smac5 = _header_values[11]
+    eth_header_values.ethertype0 = _header_values[12]
+    eth_header_values.ethertype1 = _header_values[13]
+
+    if not __debug__:
+        logger.info('NSH ethernet Header Decode ...')
+        logger.info(binascii.hexlify(eth_header))
+
 # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # |Ver|1|C|R|R|R|R|R|R|   Length  |  MD-type=1    | Next Protocol |
@@ -154,6 +178,7 @@ def decode_contextheader(payload, context_header_values):
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # |                       Dest IP Address                         |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 
 def decode_trace_req(payload, trace_req_header_values):
     """Decode headers for a OAM Trace Req packet"""

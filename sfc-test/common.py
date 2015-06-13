@@ -72,7 +72,13 @@ def delete_configuration():
         print("=>Deleted all Service Function Paths \n")
     else:
         print("=>Failure to delete SFPs, response code = {} \n".format(r.status_code))
-
+        
+    r = s.delete(METADATA_URL, stream=False, auth=(USERNAME, PASSWORD))
+    if r.status_code == 200:
+        print("=>Deleted all metadata \n")
+    else:
+        print("=>Failure to delete metadata, response code = {} \n".format(r.status_code))
+        
     r = s.delete(IETF_ACL_URL, stream=False, auth=(USERNAME, PASSWORD))
     if r.status_code == 200:
         print("=>Deleted all Access Lists \n")

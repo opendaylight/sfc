@@ -17,15 +17,15 @@ if __name__ == "__main__":
 
     acl_type_dict = {"IPV4": IETF_ACL_JSON_IPV4, "IPV6": IETF_ACL_JSON_IPV6, "MAC": IETF_ACL_JSON_MAC}
     sf_type_dict = {"IPV4": SERVICE_FUNCTIONS_JSON_IPV4, "IPV6": SERVICE_FUNCTIONS_JSON_IPV6,
-                     "MAC": SERVICE_FUNCTIONS_JSON_MAC, "IPV46": SERVICE_FUNCTIONS_JSON_IPV6,
-                     "IPV64": SERVICE_FUNCTIONS_JSON_IPV4}
+                    "IPV64": SERVICE_FUNCTIONS_JSON_IPV4, "IPV46": SERVICE_FUNCTIONS_JSON_IPV6,
+                     "MAC": SERVICE_FUNCTIONS_JSON_MAC}
     sff_type_dict = {"IPV4": SERVICE_FUNCTION_FORWARDERS_JSON_IPV4, "IPV6": SERVICE_FUNCTION_FORWARDERS_JSON_IPV6,
-                     "MAC": SERVICE_FUNCTION_FORWARDERS_JSON_MAC, "IPV46": SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6,
-                     "IPV64": SERVICE_FUNCTION_FORWARDERS_JSON_IPV6_4}
+                     "IPV46": SERVICE_FUNCTION_FORWARDERS_JSON_IPV4_6, "IPV64": SERVICE_FUNCTION_FORWARDERS_JSON_IPV6_4,
+                     "MAC": SERVICE_FUNCTION_FORWARDERS_JSON_MAC}
 
     parser = argparse.ArgumentParser(description='SFC Agent',
                                      usage=("\npython3.4 sfc_classifier_regression "
-                                            "--acl-type --dptype"))
+                                            "--acl-type --dp-type"))
 
     parser.add_argument('--acl-type', choices=acl_type_dict.keys(),
                     help='Set ACL matches type [' + ' '.join(acl_type_dict.keys()) + ']',
@@ -38,6 +38,7 @@ if __name__ == "__main__":
     delete_configuration()
     put_and_check(SF_URL, sf_type_dict[args.dp_type], sf_type_dict[args.dp_type])
     check(SFT_URL, SERVICE_FUNCTION_TYPE_JSON, "Checking Service Function Type...")
+    put_and_check(METADATA_URL, METADATA_JSON, METADATA_JSON)
     put_and_check(SFF_URL, sff_type_dict[args.dp_type], sff_type_dict[args.dp_type])
     put_and_check(SFC_URL, SERVICE_CHAINS_JSON, SERVICE_CHAINS_JSON)
     put_and_check(SFP_URL, SERVICE_PATH_JSON, SERVICE_PATH_JSON)
@@ -47,4 +48,3 @@ if __name__ == "__main__":
     check(SF_OPER_URL, SERVICE_FUNCTION_OPER_JSON, "Checking SF Operational State...")
     put_and_check(IETF_ACL_URL, acl_type_dict[args.acl_type], acl_type_dict[args.acl_type])
     put_and_check(SCF_URL, SERVICE_CLASSIFIER_JSON, SERVICE_CLASSIFIER_JSON)
-    

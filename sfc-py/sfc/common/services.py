@@ -102,6 +102,7 @@ class BasicService(object):
         self.server_vxlan_values = VXLANGPE()
         self.server_base_values = BASEHEADER()
         self.server_ctx_values = CONTEXTHEADER()
+        self.server_eth_values = ETHHEADER()
         self.server_trace_values = TRACEREQHEADER()
 
         # MUST be set by EACH descendant class
@@ -131,6 +132,8 @@ class BasicService(object):
         nsh_decode.decode_baseheader(data, self.server_base_values)
         # decode NSH context headers
         nsh_decode.decode_contextheader(data, self.server_ctx_values)
+        # decode NSH eth headers
+        nsh_decode.decode_ethheader(data, self.server_eth_values)
         # decode common trace header
         if nsh_decode.is_trace_message(data):
             nsh_decode.decode_trace_req(data, self.server_trace_values)
@@ -145,7 +148,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.info('%s: Processing received packet(basicservice)', self.service_type)
+        # logger.debug('%s: Processing received packet(basicservice) service name :%s', 
+        # self.service_type, self.service_name)
 
         self._decode_headers(data)
 
@@ -431,7 +435,7 @@ class MySffServer(BasicService):
         :type addr: tuple (str, int)
 
         """
-        # logger.info("%s: Processing packet from: %s", self.service_type, addr)
+        # logger.debug("%s: mysff Processing packet from: %s", self.service_type, addr)
         address = ()
         rw_data = bytearray(data)
         self._decode_headers(data)

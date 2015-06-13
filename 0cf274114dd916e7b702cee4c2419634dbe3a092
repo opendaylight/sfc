@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_ff300e58",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/sfc_ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-06-13T01:17:36Z",
+      "side": 1,
+      "message": "Did you functionally test this?  The following gerrit removed these fields because they prevented proper operation when doing integration testing:\nhttps://git.opendaylight.org/gerrit/#/c/21820/\n\nWhat was the reason  these were added back in?",
+      "revId": "0cf274114dd916e7b702cee4c2419634dbe3a092",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

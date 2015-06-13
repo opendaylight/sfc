@@ -18,11 +18,12 @@ import subprocess
 import queue
 from time import sleep
 
-from ..nsh.encode import build_nsh_header
+from ..nsh.encode import build_nsh_eth_header
 from ..common.sfc_globals import sfc_globals
-from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER,
+from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER, ETHHEADER,
                           VXLAN_NEXT_PROTO_NSH)
 from _socket import IPV6_V6ONLY
+
 
 
 
@@ -405,7 +406,7 @@ class NfqClassifier(metaclass=Singleton):
 
         mark = packet.get_mark()
         rsp_id, ipv = self._decompose_packet_mark(mark)
-        # logger.debug('NFQ received a %s, marked "%d"', packet, mark)
+        logger.debug('NFQ received a %s, marked "%d"', packet, mark)
 
         if rsp_id not in self.rsp_2_sff:
             not_processed_packets += 1
@@ -439,13 +440,21 @@ class NfqClassifier(metaclass=Singleton):
                                  next_protocol=next_protocol)
 
         # NOTE
-        # so far metadata are not supported -> just sending an empty ctx_header
-        ctx_header = CONTEXTHEADER(network_shared=0,
+        # so far only context metadata are supported 
+        local_sfp_mtdt = sfc_globals.get_sfp_context_metadata()
+        if local_sfp_mtdt:
+            ctx_header = CONTEXTHEADER(network_shared=local_sfp_mtdt['context-header1'],
+                                   service_shared=local_sfp_mtdt['context-header2'],
+                                   network_platform=local_sfp_mtdt['context-header3'],
+                                   service_platform=local_sfp_mtdt['context-header4'])
+        else:
+            ctx_header = CONTEXTHEADER(network_shared=0,
                                    service_shared=0,
                                    network_platform=0,
                                    service_platform=0)
-
-        nsh_header = build_nsh_header(encap_header, base_header, ctx_header)
+        eth_header = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
+                                    0x08, 0x00)
+        nsh_header = build_nsh_eth_header(encap_header, base_header, ctx_header, eth_header)
         nsh_packet = nsh_header + packet.get_payload()
         try:
             logger.info('addr: "%s"  port:"%s"', fwd_to['ip'], fwd_to['port'])

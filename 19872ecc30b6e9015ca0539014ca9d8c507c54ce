@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_36ec98c7",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/RspExporterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:27:06Z",
+      "side": 1,
+      "message": "This is a very simple test that does not fully exercise the JSON. The RSP should have multiple hops and contain service-function-forwarder-locator",
+      "revId": "19872ecc30b6e9015ca0539014ca9d8c507c54ce",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_d6d0c4f9",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SfExporterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:27:06Z",
+      "side": 1,
+      "message": "The test should have a SF with more than one data plane locator. Ideally one with IPv4 and another with IPv6. Also, maybe I missed it, but in the method that builds dataplane locators I do not see the actual IP:port in them.",
+      "revId": "19872ecc30b6e9015ca0539014ca9d8c507c54ce",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_f6cdc05e",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SffExporterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:27:06Z",
+      "side": 1,
+      "message": "SFF needs to have a dictionary with more than one Service Functions, at least one with IPv4 and another with IPv6. \n\nSFF needs to have more than one data plane locator. At least one with IPv4 and another with IPv6.",
+      "revId": "19872ecc30b6e9015ca0539014ca9d8c507c54ce",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_56b6f4dd",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SfgExporterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:05:55Z",
+      "side": 1,
+      "message": "This test is not creating a list of service functions for the group. In for the test to be Service Functions need to exist and these Service Functions of the appropriate type need to be added to the group",
+      "revId": "7d6622886d71c12d84d099dff4f717b758afc188",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_16b07cdc",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SfstExporterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:05:55Z",
+      "side": 1,
+      "message": "This comment talks about groups but we are actually testing schedulers",
+      "revId": "7d6622886d71c12d84d099dff4f717b758afc188",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_36b578cd",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SfstExporterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:05:55Z",
+      "side": 1,
+      "message": "This does not look right. Scheduler types are from service-function-scheduler-type.yang and there are no Firewall related names.\n\nSome of the choices are:\n\n  identity random {\n    base \"service-function-scheduler-type-identity\";\n    description \"Random Scheduler.\";\n  }\n\n  identity round-robin {\n    base \"service-function-scheduler-type-identity\";\n    description \"Round Robin.\";\n  }\n\n  identity shortest-path {\n    base \"service-function-scheduler-type-identity\";\n    description \"Shortest Path.\";\n  }\n\n  identity load-balance {\n    base \"service-function-scheduler-type-identity\";\n    description \"Load Balance.\";\n  }\n\n  identity weighted-shortest-path {\n    base \"service-function-scheduler-type-identity\";\n    description \"Weighted Shortest Path.\";\n  }",
+      "revId": "7d6622886d71c12d84d099dff4f717b758afc188",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_76bbf0c4",
+        "filename": "sfc-sb-rest/src/test/resources/SfgJsonStrings/FullTest.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:05:55Z",
+      "side": 1,
+      "message": "Needs to have a list of Service Functions that are part of the group",
+      "revId": "7d6622886d71c12d84d099dff4f717b758afc188",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

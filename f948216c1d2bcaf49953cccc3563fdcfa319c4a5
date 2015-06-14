@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_b6d748ed",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T20:30:18Z",
+      "side": 1,
+      "message": "Hi,\n\nI understand more or less the purpose but the lack of proper Javadocs make this really hard to review. \n\nMaybe you should get a slot on a weekly meeting to explain your vision for the Network Topology tracker.",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

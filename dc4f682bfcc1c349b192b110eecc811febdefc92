@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_7609b094",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-14T23:27:22Z",
+      "side": 1,
+      "message": "I personally do not like this name. Soon we will be using a name like \"super-advanced rendered service path\". We need to find another name",
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -16,6 +16,98 @@
       "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_160cfc93",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-06-15T00:11:33Z",
+      "side": 1,
+      "message": "Is the intention that for multiple encap\u0027d chains, that separate RSPs are created with an SFF to SFF handoff ?",
+      "range": {
+        "startLine": 331,
+        "startChar": 0,
+        "endLine": 331,
+        "endChar": 27
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_3611f8ac",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-06-15T00:11:33Z",
+      "side": 1,
+      "message": "Is this effectively removing the need for SFC\u0027s and SFPs ? You request the transport, symmetric, and list of abstract types...",
+      "range": {
+        "startLine": 340,
+        "startChar": 6,
+        "endLine": 351,
+        "endChar": 43
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_d625240b",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-06-15T00:11:33Z",
+      "side": 1,
+      "message": "We shouldn\u0027t return Strings. Can this be the actual RSP ?",
+      "range": {
+        "startLine": 356,
+        "startChar": 7,
+        "endLine": 356,
+        "endChar": 20
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_f622a000",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 1030,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-06-15T00:11:33Z",
+      "side": 1,
+      "message": "Thanks Yi!",
+      "range": {
+        "startLine": 1030,
+        "startChar": 7,
+        "endLine": 1030,
+        "endChar": 34
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

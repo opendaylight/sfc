@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a7fa997_16e87c7b",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-15T02:55:42Z",
+      "side": 1,
+      "message": "This is for conveniently getting RSP name from the first hop.",
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_7609b094",
         "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
         "patchSetId": 5
@@ -42,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_36ed788c",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-15T02:55:42Z",
+      "side": 1,
+      "message": "Encapsulation type is only related with SFP and RSP, a chain can have different encapsulation types SFPs and RSPs.",
+      "parentUuid": "7a7fa997_160cfc93",
+      "range": {
+        "startLine": 331,
+        "startChar": 0,
+        "endLine": 331,
+        "endChar": 27
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_3611f8ac",
         "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
         "patchSetId": 5
@@ -53,6 +94,30 @@
       "writtenOn": "2015-06-15T00:11:33Z",
       "side": 1,
       "message": "Is this effectively removing the need for SFC\u0027s and SFPs ? You request the transport, symmetric, and list of abstract types...",
+      "range": {
+        "startLine": 340,
+        "startChar": 6,
+        "endLine": 351,
+        "endChar": 43
+      },
+      "revId": "dc4f682bfcc1c349b192b110eecc811febdefc92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_d601a43a",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-15T02:55:42Z",
+      "side": 1,
+      "message": "Yes, it is very difficult for GBP users to know SFC and SFP name, we\u0027d better let SFC RPC handle the details.",
+      "parentUuid": "7a7fa997_3611f8ac",
       "range": {
         "startLine": 340,
         "startChar": 6,

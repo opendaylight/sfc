@@ -16,6 +16,75 @@
       "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_24dd3071",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-17T20:42:49Z",
+      "side": 1,
+      "message": "When are these methods called? From where?",
+      "parentUuid": "7a7fa997_b6d748ed",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_24969095",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-17T20:42:49Z",
+      "side": 1,
+      "message": "Please break this into getTpIdByHostIpAddress and getTpIdByHostMacAddress. This is greatly simplify the for loop inside this method.\n\nA host can have only one TpiD?",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_e48f3874",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-17T20:42:49Z",
+      "side": 1,
+      "message": "When can this condition happen?",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_64f3280b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-17T20:42:49Z",
+      "side": 1,
+      "message": "Please break into separate methods for Mac and IP address.",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

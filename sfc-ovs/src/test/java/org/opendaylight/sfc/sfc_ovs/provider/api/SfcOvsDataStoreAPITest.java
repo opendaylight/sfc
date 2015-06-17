@@ -410,6 +410,4 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
         return topologyBuilder.build();
     }
-
-
 }

@@ -71,7 +71,6 @@ import static junit.framework.TestCase.*;
 @PrepareForTest(SfcOvsUtil.class)
 public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";   //copy of private String from SfcOvsUtil.class
-    private static final String OVSDB_TERMINATION_POINT_PREFIX = "/terminationpoint/";  //copy of private String from SfcOvsUtil.class
     private static final String ipv4Address = "170.0.0.1";
     private static final String ipv6Address = "::";
     private static final String testBridgeName = "Bridge Name";

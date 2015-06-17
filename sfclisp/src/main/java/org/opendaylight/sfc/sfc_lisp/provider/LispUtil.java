@@ -343,9 +343,10 @@ public class LispUtil {
         return mib.build();
     }
 
-    public static RemoveMappingInput buildRemoveMappingInput(LispAddressContainer eid) {
+    public static RemoveMappingInput buildRemoveMappingInput(LispAddressContainer eid, int mask) {
         RemoveMappingInputBuilder rmib = new RemoveMappingInputBuilder();
         rmib.setLispAddressContainer(eid);
+        rmib.setMaskLength((short)mask);
         return rmib.build();
     }
 }

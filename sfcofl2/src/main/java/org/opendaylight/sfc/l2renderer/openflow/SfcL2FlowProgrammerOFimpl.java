@@ -140,6 +140,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     }
 
     public boolean compareClassificationTableCookie(FlowCookie cookie) {
+        if(cookie == null) {
+            return false;
+        }
+
+        if(cookie.getValue() == null) {
+            return false;
+        }
+
         return cookie.getValue().equals(TRANSPORT_EGRESS_COOKIE);
     }
 

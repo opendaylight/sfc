@@ -64,7 +64,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // Make sure the PacketIn is due to our Classification table pktInAction
         if(!this.flowProgrammer.compareClassificationTableCookie(packetIn.getFlowCookie())) {
-            LOG.info("SfcIpv4PacketInHandler discarding packet by Flow Cookie");
+            LOG.debug("SfcIpv4PacketInHandler discarding packet by Flow Cookie");
             return;
         }
 
@@ -74,7 +74,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // Get the EtherType and check that its an IP packet
         if(getEtherType(rawPacket) != ETHERTYPE_IPV4) {
-            LOG.info("SfcIpv4PacketInHandler discarding NON-IPv4");
+            LOG.debug("SfcIpv4PacketInHandler discarding NON-IPv4");
             return;
         }
 
@@ -92,6 +92,15 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         }
 
         // Get the metadata
+        if(packetIn.getMatch() == null) {
+            LOG.error("SfcIpv4PacketInHandler Cant get packet flow match");
+            return;
+        }
+        if(packetIn.getMatch().getMetadata() == null) {
+            LOG.error("SfcIpv4PacketInHandler Cant get packet flow match metadata");
+            return;
+        }
+
         Metadata pktMatchMetadata = packetIn.getMatch().getMetadata();
         BigInteger metadata = pktMatchMetadata.getMetadata();
 

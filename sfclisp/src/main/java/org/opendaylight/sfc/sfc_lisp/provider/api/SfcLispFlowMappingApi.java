@@ -124,11 +124,11 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(eid, "Cannot REMOVE new Mapping to LISP configuration store, EID is null.");
         try {
             LOG.trace("REMOVE mapping for EID: {}", eid);
-            Future<RpcResult<Void>> result = lfmService.removeMapping(LispUtil.buildRemoveMappingInput(eid));
+            Future<RpcResult<Void>> result = lfmService.removeMapping(LispUtil.buildRemoveMappingInput(eid, 0));
             result.get().getResult();
             return true;
         } catch (Exception e) {
-            LOG.warn("Failed to REMOVE mapping for EID {} : {}", eid);
+            LOG.warn("Failed to REMOVE mapping for EID {} : {}", eid, e);
         }
         return false;
     }

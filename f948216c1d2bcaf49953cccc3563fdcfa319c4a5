@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_e7f17a96",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-18T01:43:32Z",
+      "side": 1,
+      "message": "I\u0027ll change sfcofl2 and the shortest path algorithm after this is merged. My concern is I\u0027m not sure if Brady and you\u0027d like to consider merging it :-)",
+      "parentUuid": "7a7fa997_24dd3071",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_24969095",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
         "patchSetId": 5
@@ -48,6 +66,24 @@
       "writtenOn": "2015-06-17T20:42:49Z",
       "side": 1,
       "message": "Please break this into getTpIdByHostIpAddress and getTpIdByHostMacAddress. This is greatly simplify the for loop inside this method.\n\nA host can have only one TpiD?",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_c709de96",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-18T01:43:32Z",
+      "side": 1,
+      "message": "No, getting TpId by MAC address will share most of code with getting TPId by Ip address, so only one API will be best. Moreover it is a private method, it isn\u0027t intended for other components.\n\nGenerally a host only has one TpId, if a VM has two network ports, it will have two IPs in most cases, so there will be two host nodes for this VM.\n\nI\u0027m not sure if a host can have multiple TpIds, I also didn\u0027t test such cases.",
+      "parentUuid": "7a7fa997_24969095",
       "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_67feca6d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-18T01:43:32Z",
+      "side": 1,
+      "message": "Just to ensure it isn\u0027t empty. I don\u0027t know when it is possibly empty.",
+      "parentUuid": "7a7fa997_e48f3874",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_64f3280b",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
         "patchSetId": 5
@@ -82,6 +136,24 @@
       "writtenOn": "2015-06-17T20:42:49Z",
       "side": 1,
       "message": "Please break into separate methods for Mac and IP address.",
+      "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_27f8d27b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-06-18T01:43:32Z",
+      "side": 1,
+      "message": "Yes, they are there. getOfPortByHostIp and getOfPortByHostMac are just behind it.",
+      "parentUuid": "7a7fa997_64f3280b",
       "revId": "f948216c1d2bcaf49953cccc3563fdcfa319c4a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

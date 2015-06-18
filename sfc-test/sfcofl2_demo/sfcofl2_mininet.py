@@ -1,11 +1,11 @@
-__author__ = "Brady Allen Johnson"
+__author__ = "Brady Johnson"
 __author__ = "Rodrigo Lopez Manrique"
 __copyright__ = "Copyright(c) 2015, Ericsson, Inc."
-__license__ = "New-style BSD"
+__license__ = "Eclipse Public License v1.0"
 __version__ = "0.2"
 __email__ = "brady.allen.johnson@ericsson.com"
 __email__ = "rodrigolopezmanrique@gmail.com"
-__status__ = "Tested with SFC-Karaf distribution as of 05/05/2015"
+__status__ = "demo code"
 
 ### NOTES:
 ### 1 Install vlan: sudo apt-get install vlan
@@ -25,6 +25,7 @@ from mininet.log import lg
 from mininet.log import setLogLevel, info
 
 from optparse import OptionParser
+from string import Template
 import argparse
 import apt
 import os
@@ -43,6 +44,14 @@ MAX_CLIENTS  = 3
 MAX_SERVERS  = 2
 MAX_ELEMENTS = 9 # Notice, changing this value will affect the MAC addresses
 VLAN_ID      = 1000
+MININET_NET_FILE = '/tmp/mininet_net.txt'
+LOOPBACK_FILE_PATTERN = '''
+sudo ovs-vsctl set bridge $NODE protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=move:NXM_OF_ETH_DST[0..31]->NXM_NX_REG0[],move:NXM_OF_ETH_DST[32..47]->NXM_NX_REG1[0..15],move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],move:NXM_NX_REG0[0..31]->NXM_OF_ETH_SRC[0..31],move:NXM_NX_REG1[0..15]->NXM_OF_ETH_SRC[32..47],in_port"
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=move:NXM_OF_ETH_DST[0..31]->NXM_NX_REG0[],move:NXM_OF_ETH_DST[32..47]->NXM_NX_REG1[0..15],move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],move:NXM_NX_REG0[0..31]->NXM_OF_ETH_SRC[0..31],move:NXM_NX_REG1[0..15]->NXM_OF_ETH_SRC[32..47],in_port"
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=1,actions=drop"
+'''
+
 
 #
 # Simple class that holds Service Function info
@@ -73,6 +82,7 @@ class Context(object):
         # Just setting default values
         self.service_functions = []
         self.sf_forwarders  = []
+        self.sf_loopbacks   = []
 
         self.clients = []
         self.clients_number = '1'
@@ -85,7 +95,7 @@ class Context(object):
         self.base_port = 1
         self.operation_mode = 'vlan'
         self.demo_mode  = 'vlan'
-	self.topology_tor = False
+        self.topology_tor = False
         self.tor_info = None
 
         self.gateway_client = 'gw1'
@@ -105,12 +115,9 @@ class Context(object):
         self.remote_controller_args = ''
         self.remote_controller_name = 'c5'
 
-        self.sfcofl2_path_prefix   = '/home/rlm/workspace/mininet/current-version'
+        self.sfcofl2_path_prefix   = './'
         self.sfcofl2_path_gws_vlan = 'sfcofl2_mininet_create_http_flows_gws_vlan.txt'
         self.sfcofl2_path_gws_mpls = 'sfcofl2_mininet_create_http_flows_gws_mpls.txt'
-        self.sfcofl2_path_sf_nodes = 'sfcofl2_mininet_create_flows_forwarder_sfc_sim.txt'
-        self.sfcofl2_path_tor      = 'sfcofl2_mininet_create_flows_tor_vlan.txt'
-
 
 #
 # Get the command line args
@@ -168,7 +175,7 @@ def get_cmd_line_args(context):
                   action = 'store_const',
                   const = True,
                   default=context.sf_loops,
-                  help='Active to create loops in service functions')
+                  help='Activate to create loops in service functions')
 
     opts.add_argument('--sf-number','-N',
                   default=context.sf_number,
@@ -201,14 +208,6 @@ def get_cmd_line_args(context):
                       default=context.sfcofl2_path_gws_mpls,
                       dest='sfcofl2_path_gws_mpls',
                       help='Name of the MPLS GATEWAYS FLOWS file, relative to configured prefix')
-    opts.add_argument('--file-sf-nodes','-s',
-                      default=context.sfcofl2_path_sf_nodes,
-                      dest='sfcofl2_path_sf_nodes',
-                      help='Name of the SERVICE FUNCTION NODES file, relative to configured prefix')
-    opts.add_argument('--file-tor','-u',
-                      default=context.sfcofl2_path_tor,
-                      dest='sfcofl2_path_tor',
-                      help='Name of the Top Of Rack (tor) flows file, relative to configured prefix')
 
     args = opts.parse_args()
 
@@ -231,8 +230,6 @@ def get_cmd_line_args(context):
 
     context.sfcofl2_path_gws_vlan = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_vlan)
     context.sfcofl2_path_gws_mpls = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_mpls)
-    context.sfcofl2_path_sf_nodes = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_sf_nodes)
-    context.sfcofl2_path_tor = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_tor)
 
     #### CHECK ARGUMENTS ####
 
@@ -271,7 +268,7 @@ def get_cmd_line_args(context):
         return False
 
     # Files
-    for path in [context.sfcofl2_path_gws_vlan, context.sfcofl2_path_gws_mpls, context.sfcofl2_path_sf_nodes]:
+    for path in [context.sfcofl2_path_gws_vlan, context.sfcofl2_path_gws_mpls]:
         if not os.path.exists(path):
             print 'WARNING: file does not exist: %s' % (path)
 
@@ -368,23 +365,27 @@ def create_topology(context):
         print context.sf_forwarders[i].opts
         s = topo.addSwitch(context.sf_forwarders[i].name, opts=context.sf_forwarders[i].opts)
         for j in range(sfs_per_sff):
-            
             sf_index = (i*int(sfs_per_sff))+j
-            # Add the Loop switches instead of normal hosts
+
             if not context.service_functions[sf_index]:
-                h = topo.addSwitch('%s-node%d'%(context.sf_forwarders[i].name,j+1), opts='')
-            # Add the SFs
+                # Add the Loop switches instead of normal hosts
+                sf_loopback_name = '%s-node%d' % (context.sf_forwarders[i].name,j+1)
+                context.sf_loopbacks.append(sf_loopback_name)
+                h = topo.addSwitch(sf_loopback_name, opts='')
             else:
+                # Add the SFs as normal hosts
                 if context.service_functions[sf_index].vlan_id_ == 0:
                     h = topo.addHost(context.service_functions[sf_index].name,
-                        ip=context.service_functions[sf_index].ip_,
-                        mac=context.service_functions[sf_index].mac_)
+                             ip=context.service_functions[sf_index].ip_,
+                             mac=context.service_functions[sf_index].mac_)
+
                 else:
                     h = topo.addHost(context.service_functions[sf_index].name,
                              cls=VlanHost,
                              vlan=context.service_functions[sf_index].vlan_id_,
                              ip=context.service_functions[sf_index].ip_,
                              mac=context.service_functions[sf_index].mac_)
+
             # Connect the SF to the SFF
             topo.addLink(node1=h, node2=s)
 
@@ -445,31 +446,60 @@ def dump_hosts(network):
     for host in network.hosts:
         print 'Host %s, IP %s, MAC %s, IFs %s' % (host.name, host.IP(), host.MAC(), host.intfNames())
 
+# Copied from mininet.util.py but I need the output to go to a file
+def dumpNodeConnections(nodes):
+    "Dump connections to/from nodes."
+
+    with open(MININET_NET_FILE, 'w+b') as outfile:
+        for node in nodes:
+            outfile.write( node.name )
+
+            for intf in node.intfList():
+                outfile.write( ' %s:' % intf )
+                if intf.link:
+                    intfs = [ intf.link.intf1, intf.link.intf2 ]
+                    intfs.remove( intf )
+                    outfile.write( str(intfs[ 0 ]) )
+                else:
+                    outfile.write( ' ' )
+
+            outfile.write( '\n' )
+
 # Insert flows into the switches
 def init_flows(context):
     #Gateways flows
-    if (context.demo_mode == 'vlan') and (os.path.exists(context.sfcofl2_path_gws_vlan)):
+    if (context.demo_mode == 'vlan'):
         print 'GWS - VLAN flows:'
-        insert_flows(context.sfcofl2_path_gws_vlan)
-    elif (context.demo_mode == 'mpls') and (os.path.exists(context.sfcofl2_path_gws_mpls)):
+        insert_flows_from_file(context.sfcofl2_path_gws_vlan)
+    elif (context.demo_mode == 'mpls'):
         print 'GWS - MPLS flows:'
-        insert_flows(context.sfcofl2_path_gws_mpls)
+        insert_flows_from_file(context.sfcofl2_path_gws_mpls)
+
     # SFs flows
-    if (context.sf_loop) and (os.path.exists(context.sfcofl2_path_sf_nodes)):
-        print 'SF - NODES flows:'
-        insert_flows(context.sfcofl2_path_sf_nodes)
+    if context.sf_loop:
+        print 'SF Loopback switch flows:'
+        for loopback_sf in context.sf_loopbacks:
+            loopback_template = Template(LOOPBACK_FILE_PATTERN)
+            insert_flows_by_cmd(loopback_template.substitute(NODE=loopback_sf))
 
     # ToR flows
-    if (context.topology_tor) and (os.path.exists(context.sfcofl2_path_tor)):
-        print 'ToR flows:'
-        insert_flows(context.sfcofl2_path_tor)
-    else:
-        print 'ToR file not found [%s]' % context.sfcofl2_path_tor
+    if context.topology_tor:
+        print 'ToR setup...'
+        insert_flows_by_cmd('sudo ovs-vsctl set bridge tor1 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13')
+        insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=5,actions=drop"')
 
-def insert_flows(fileName):
-    file = open(fileName,'r')
-    for line in file.readlines():
+# Load the flow commands from a file and execute them
+def insert_flows_from_file(fileName):
+    if not os.path.exists(fileName):
+        print 'Cant load flows from file, file does not exist %s' % fileName
+        return
+
+    with open(fileName,'r') as f:
+        for line in f.readlines():
             os.system(line)
+
+def insert_flows_by_cmd(flow_cmd):
+    os.system(flow_cmd)
 #
 # Main
 #
@@ -497,6 +527,9 @@ def main():
 
     dump_hosts(myNet)
 
+    # This will output the nodes port connections to MININET_NET_FILE
+    dumpNodeConnections(myNet.values())
+
     #start_gateways(myNet)
     start_switches(context, myNet, mySDNController, myLocalController)
 
@@ -511,3 +544,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

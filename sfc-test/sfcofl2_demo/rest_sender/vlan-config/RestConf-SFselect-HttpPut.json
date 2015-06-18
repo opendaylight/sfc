@@ -1,0 +1,11 @@
+{
+  "service-function-scheduler-types": {
+    "service-function-scheduler-type": [
+     {
+        "name": "round-robin",
+        "type": "service-function-scheduler-type:round-robin",
+        "enabled": true
+      }
+    ]
+  }
+}

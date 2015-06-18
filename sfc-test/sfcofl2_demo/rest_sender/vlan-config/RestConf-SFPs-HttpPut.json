@@ -6,7 +6,22 @@
          "service-chain-name": "sfc-chain1",
          "transport-type": "service-locator:mac",
          "symmetric": true
+       },
+
+       {
+         "name": "sfc-path2",
+         "service-chain-name": "sfc-chain2",
+         "transport-type": "service-locator:mac",
+         "symmetric": true
+       },
+
+       {
+         "name": "sfc-path3",
+         "service-chain-name": "sfc-chain3",
+         "transport-type": "service-locator:mac",
+         "symmetric": true
        }
+
      ]
    }
 }

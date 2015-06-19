@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_413a93ce",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/SfcOvsUtilTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-19T22:08:44Z",
+      "side": 1,
+      "message": "Please add IPv6 tests. There have been cases where IPv4 was working while IPv6 was broken.",
+      "parentUuid": "7a7fa997_ce0572c3",
+      "revId": "98ba666398ab5c312f3e153082367c5dfc50719f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_2e69868b",
         "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPITest.java",
         "patchSetId": 4

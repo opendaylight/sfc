@@ -17,7 +17,7 @@
  */
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
-
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import com.google.common.base.Preconditions;
@@ -50,9 +50,13 @@ public class SfcOvsDataStoreAPI implements Callable {
     private Method methodToCall;
     private Object[] methodParameters;
 
-    public SfcOvsDataStoreAPI(Method methodToCall, Object[] methodParameters) {
+    public SfcOvsDataStoreAPI(Method methodToCall, Object[] newMethodParameters) {
         this.methodToCall = methodToCall;
-        this.methodParameters = methodParameters;
+        if (newMethodParameters == null) {
+            this.methodParameters = null;
+        } else {
+            this.methodParameters = Arrays.copyOf(newMethodParameters, newMethodParameters.length);
+        }
     }
 
     @Override

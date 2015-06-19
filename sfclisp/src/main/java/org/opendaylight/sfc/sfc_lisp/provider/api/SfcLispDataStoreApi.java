@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sfc_lisp.provider.api;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -30,9 +31,13 @@ public class SfcLispDataStoreApi implements Callable<Object> {
     private Method methodToCall;
     private Object[] methodParameters;
 
-    public SfcLispDataStoreApi(Method methodToCall, Object[] methodParameters) {
+    public SfcLispDataStoreApi(Method methodToCall, Object[] newMethodParameters) {
         this.methodToCall = methodToCall;
-        this.methodParameters = methodParameters;
+        if (newMethodParameters == null) {
+            this.methodParameters = null;
+        } else {
+            this.methodParameters = Arrays.copyOf(newMethodParameters, newMethodParameters.length);
+        }
     }
 
     @Override

@@ -16,6 +16,7 @@
 package org.opendaylight.sfc.sfc_lisp.provider.api;
 
 import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -43,10 +44,14 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
     private Method methodToCall;
     private Object[] methodParameters;
 
-    public SfcLispFlowMappingApi(LfmMappingDatabaseService lfmService, Method methodToCall, Object[] methodParameters) {
+    public SfcLispFlowMappingApi(LfmMappingDatabaseService lfmService, Method methodToCall, Object[] newMethodParameters) {
         this.lfmService = lfmService;
         this.methodToCall = methodToCall;
-        this.methodParameters = methodParameters;
+        if (newMethodParameters == null) {
+            this.methodParameters= null;
+        } else {
+            this.methodParameters = Arrays.copyOf(newMethodParameters, newMethodParameters.length);
+        }
     }
 
     @SuppressWarnings("unchecked")

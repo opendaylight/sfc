@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_ce0572c3",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/SfcOvsUtilTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-19T16:41:18Z",
+      "side": 1,
+      "message": "Same comment as in the other patches. Please provide a descriptive comment of each test so folks do not need to waddle through the code to understand what each test does and its success criteria.\n\nI noticed some tests have comments but please be consistent with all of them and also success criteria.",
+      "revId": "98ba666398ab5c312f3e153082367c5dfc50719f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_2e69868b",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/sfc_ovs/provider/api/SfcOvsDataStoreAPITest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-19T16:41:18Z",
+      "side": 1,
+      "message": "Same comment as in the other patches. Please provide a descriptive comment of each test so folks do not need to waddle through the code to understand what each test does and its success criteria.",
+      "revId": "98ba666398ab5c312f3e153082367c5dfc50719f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

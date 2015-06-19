@@ -64,11 +64,14 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
         return this.name.compareTo(node.getName());
     }
 
-    public boolean equals(SfcProviderTopologyNode node) {
-        boolean flag = false;
-        if (this.name == node.getName()) {
-            flag = true;
+    public boolean equals(java.lang.Object obj) {
+        if (this == obj) {
+            return true;
         }
-        return flag;
+        if (!(obj instanceof SfcProviderTopologyNode)) {
+            return false;
+        }
+
+        return this.name == ((SfcProviderTopologyNode)obj).getName();
     }
 }

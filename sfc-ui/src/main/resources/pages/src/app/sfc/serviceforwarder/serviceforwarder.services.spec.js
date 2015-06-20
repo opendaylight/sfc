@@ -31,13 +31,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
             "sff-sf-data-plane-locator": {},
             "sff-interfaces": []
           }
-        ],
-        "connected-sff-dictionary": [
-          {
-            nonExistent: false,
-            "sff-sff-data-plane-locator": {},
-            "sff-interfaces": []
-          }
         ]
       };
       exampleData.sffInterfacesObjectArray = [
@@ -47,13 +40,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
       ];
       exampleData.sffInterfaceStringArray = ["sfi1", "sfi2", "sfi3"];
       exampleData.sffInterfaceString = "sfi1, sfi2, sfi3";
-      exampleData.sffInterfacesInSffObjectArray = [
-        {"sff-interface": "sfi1"},
-        {"sff-interface": "sfi2"},
-        {"sff-interface": "sfi3"}
-      ];
-      exampleData.sffInterfaceInSffStringArray = ["sfi1", "sfi2", "sfi3"];
-      exampleData.sffInterfaceInSffString = "sfi1, sfi2, sfi3";
       exampleData.sffDpLocatorObjectArray = [
         {"name": "dp1"},
         {"name": "dp2"},
@@ -65,29 +51,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         {"name": "sf2"},
         {"name": "sf3"}
       ];
-      exampleData.sffForwarderDictionaryObjectArray = [
-        {"name": "sff1"},
-        {"name": "sff2"},
-        {"name": "sff3"}
-      ];
       exampleData.sffFunctionDictionaryString = "sf1 sf2 sf3 ";
-      exampleData.sffForwarderDictionaryString = "sff1 sff2 sff3 ";
       exampleData.sfModelData = {"name": "sf1", "type": "dpi", "sf-data-plane-locator": [
-        {"name": "sfdp1", "ip": "10.0.0.1", "port": "8000", "service-function-forwarder": "sff1"},
-        {"name": "sfdp2"}
-      ]};
-      exampleData.sffModelData = {"name": "sff1", "ip-mgmt-address", "sff-data-plane-locator": [
         {"name": "sfdp1", "ip": "10.0.0.1", "port": "8000", "service-function-forwarder": "sff1"},
         {"name": "sfdp2"}
       ]};
       exampleData.sfs = [
         {"name": "sf1", "type": "dpi", "sf-data-plane-locator": [
-          {"name": "sfdp1", "ip": "10.0.0.1", "port": "8000", "service-function-forwarder": "sff1"},
-          {"name": "sfdp2"}
-        ]}
-      ];
-      exampleData.sffs = [
-        {"name": "sff1", "ip-mgmt-address": "10.0.0.1", "sff-data-plane-locator": [
           {"name": "sfdp1", "ip": "10.0.0.1", "port": "8000", "service-function-forwarder": "sff1"},
           {"name": "sfdp2"}
         ]}
@@ -180,45 +150,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(exampleData.data['service-function-dictionary']).toEqual([]);
         });
 
-        it("should create connected-sff-dictionary property and add empty SFF to SFF", function () {
-          exampleData.data = {};
-          expect(exampleData.data['connected-sff-dictionary']).toBeUndefined();
-          ServiceForwarderHelper.addForwarder(exampleData);
-          expect(exampleData.data['connected-sff-dictionary'].length).toBe(1);
-          expect(exampleData.data['connected-sff-dictionary']).toEqual([
-            {
-              nonExistent: false,
-              "sff-sff-data-plane-locator": {},
-              "sff-interfaces": []
-            }
-          ]);
-        });
-
-        it("should add empty SFF to connected-sff-dictionary of SFF", function () {
-          expect(exampleData.data['connected-sff-dictionary'].length).toBe(1);
-          ServiceForwarderHelper.addForwarder(exampleData);
-          expect(exampleData.data['connected-sff-dictionary'].length).toBe(2);
-          expect(exampleData.data['connected-sff-dictionary']).toEqual([
-            {
-              nonExistent: false,
-              "sff-sff-data-plane-locator": {},
-              "sff-interfaces": []
-            },
-            {
-              nonExistent: false,
-              "sff-sff-data-plane-locator": {},
-              "sff-interfaces": []
-            }
-          ]);
-        });
-
-        it("should remove SFF at given index from connected-sff-dictionary of SFF", function () {
-          expect(exampleData.data['connected-sff-dictionary'].length).toBe(1);
-          ServiceForwarderHelper.removeForwarder(0, exampleData);
-          expect(exampleData.data['connected-sff-dictionary'].length).toBe(0);
-          expect(exampleData.data['connected-sff-dictionary']).toEqual([]);
-        });
-
         it("should convert SFF interfaces object array to one string", function () {
           var string = ServiceForwarderHelper.sffInterfaceToString(exampleData.sffInterfacesObjectArray);
           expect(string).toEqual(exampleData.sffInterfaceString);
@@ -234,21 +165,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(objectArray).toEqual(exampleData.sffInterfacesObjectArray);
         });
 
-        it("should convert SFF interfaces in SFF object array to one string", function () {
-          var string = ServiceForwarderHelper.sffInterfaceInSffToString(exampleData.sffInterfacesInSffObjectArray);
-          expect(string).toEqual(exampleData.sffInterfaceInSffString);
-        });
-
-        it("should convert SFF interfaces in SFF object array to string array", function () {
-          var stringArray = ServiceForwarderHelper.sffInterfaceInSffToStringArray(exampleData.sffInterfacesInSffObjectArray);
-          expect(stringArray).toEqual(exampleData.sffInterfaceInSffStringArray);
-        });
-
-        it("should convert SFF interfaces in SFF string array to object array", function () {
-          var objectArray = ServiceForwarderHelper.sffInterfaceInSffToObjectArray(exampleData.sffInterfaceInSffStringArray);
-          expect(objectArray).toEqual(exampleData.sffInterfacesInSffObjectArray);
-        });
-
         it("should convert SFF DP locators to one string", function () {
           var string = ServiceForwarderHelper.sffDpLocatorToString(exampleData.sffDpLocatorObjectArray);
           expect(string).toEqual(exampleData.sffDpLocatorString);
@@ -259,11 +175,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(string).toEqual(exampleData.sffFunctionDictionaryString);
         });
 
-        it("should convert SFF forwarder dictionary object array to one string", function () {
-          var string = ServiceForwarderHelper.sffForwarderDictionaryToString(exampleData.sffForwarderDictionaryObjectArray);
-          expect(string).toEqual(exampleData.sffForwarderDictionaryString);
-        });
-
         it("should remove temporary properties from SF", function () {
           var sfPersisted = {"name": "sf_p"};
           var sfTemporary = {"name": "sf_t", nonExistent: true};
@@ -271,15 +182,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(sfPersisted).toEqual({"name": "sf_p"});
           ServiceForwarderHelper.removeTemporaryPropertiesFromSf(sfTemporary);
           expect(sfTemporary).toEqual({"name": "sf_t"});
-        });
-
-        it("should remove temporary properties from SFF", function () {
-          var sffPersisted = {"name": "sff_p"};
-          var sffTemporary = {"name": "sff_t", nonExistent: true};
-          ServiceForwarderHelper.removeTemporaryPropertiesFromSff(sffPersisted);
-          expect(sffPersisted).toEqual({"name": "sff_p"});
-          ServiceForwarderHelper.removeTemporaryPropertiesFromSff(sffTemporary);
-          expect(sffTemporary).toEqual({"name": "sff_t"});
         });
 
         it("should remove nonExistent SN from SFF", function () {
@@ -358,42 +260,6 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           ServiceForwarderHelper.sfUpdate(sf, scope);
           expect(ServiceForwarderHelper.sffInterfaceToStringArray).not.toHaveBeenCalled();
           expect(sf).toBeUndefined();
-        });
-
-        it("should supplement SFF model data with data required for Edit dialog", function () {
-          spyOn(ServiceForwarderHelper, 'sffInterfaceInSffToStringArray').andCallThrough();
-          var sff = {"name": "sff1", "sff-interfaces": [
-            {"sff-interface": "sfi1"},
-            {"sff-interface": "sfi2"}
-          ], "sff-sff-data-plane-locator": {"ip": "10.0.0.1", "port": "8000"}};
-          var sffInterfaces = sff['sff-interfaces'];
-          scope.sffs = exampleData.sffs;
-          scope.DpLocators = {};
-          scope.selectedDpLocator = {};
-          ServiceForwarderHelper.sffUpdate(sff, scope);
-          expect(ServiceForwarderHelper.sffInterfaceInSffToStringArray).toHaveBeenCalledWith(sffInterfaces);
-          expect(sff['sff-interfaces']).toEqual(["sfi1", "sfi2"]);
-          expect(sff.nonExistent).toBeFalsy();
-        });
-
-        it("should supplement SFF model data with data required for Edit dialog - testing inner else branch", function () {
-          spyOn(ServiceForwarderHelper, 'sffInterfaceInSffToStringArray').andCallThrough();
-          var sff = {"name": "sff1", "sff-interfaces": [
-            {"sff-interface": "sfi1"},
-            {"sff-interface": "sfi2"}
-          ], "sff-sff-data-plane-locator": {"ip": "10.0.0.1", "port": "8000"}};
-          var sffInterfaces = sff['sff-interfaces'];
-          ServiceForwarderHelper.sffUpdate(sff, scope);
-          expect(ServiceForwarderHelper.sffInterfaceInSffToStringArray).toHaveBeenCalledWith(sffInterfaces);
-          expect(sff.nonExistent).toBeTruthy();
-        });
-
-        it("should supplement SFF model data with data required for Edit dialog - testing outter else branch", function () {
-          spyOn(ServiceForwarderHelper, 'sffInterfaceInSffToStringArray').andCallThrough();
-          var sff;
-          ServiceForwarderHelper.sffUpdate(sff, scope);
-          expect(ServiceForwarderHelper.sffInterfaceInSffToStringArray).not.toHaveBeenCalled();
-          expect(sff).toBeUndefined();
         });
 
         it("should return proper options for select2", function () {

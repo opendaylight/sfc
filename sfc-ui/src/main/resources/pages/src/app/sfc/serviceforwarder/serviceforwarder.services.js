@@ -30,22 +30,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.data['service-function-dictionary'].splice(index, 1);
     };
 
-    svc.addForwarder = function ($scope) {
-      if (angular.isUndefined($scope.data['connected-sff-dictionary'])) {
-        $scope.data['connected-sff-dictionary'] = [];
-      }
-      $scope.data['connected-sff-dictionary'].push(
-        {
-          "nonExistent": false,
-          "sff-sff-data-plane-locator": {},
-          "sff-interfaces": []
-        });
-    };
-
-    svc.removeForwarder = function (index, $scope) {
-      $scope.data['connected-sff-dictionary'].splice(index, 1);
-    };
-
     svc.sffInterfaceToString = function (sffInterfaces) {
       var string = "";
       _.each(sffInterfaces, function (interf) {
@@ -62,31 +46,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return array;
     };
 
-    svc.sffInterfaceInSffToString = function (sffInterfaces) {
-      var string = "";
-      _.each(sffInterfaces, function (interf) {
-        string = string.concat(interf['sff-interface'] + ", ");
-      });
-      return string.slice(0, -2);
-    };
-
-    svc.sffInterfaceInSffToStringArray = function (sffInterfaces) {
-      var array = [];
-      _.each(sffInterfaces, function (interf) {
-        array.push(interf['sff-interface']);
-      });
-      return array;
-    };
-
     svc.sffInterfaceToObjectArray = function (sffInterfaces) {
-      var objectArray = [];
-      _.each(sffInterfaces, function (interf) {
-        objectArray.push({'sff-interface': interf});
-      });
-      return objectArray;
-    };
-
-    svc.sffInterfaceInSffToObjectArray = function (sffInterfaces) {
       var objectArray = [];
       _.each(sffInterfaces, function (interf) {
         objectArray.push({'sff-interface': interf});
@@ -110,23 +70,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return string;
     };
 
-    svc.sffForwarderDictionaryToString = function (sffForwarderDictionary) {
-      var string = "";
-      _.each(sffForwarderDictionary, function (sff) {
-        string = string.concat(sff.name + " ");
-      });
-      return string;
-    };
-
     svc.removeTemporaryPropertiesFromSf = function (sf) {
       if (angular.isDefined(sf.nonExistent)) {
         delete sf.nonExistent;
-      }
-    };
-
-    svc.removeTemporaryPropertiesFromSff = function (sff) {
-      if (angular.isDefined(sff.nonExistent)) {
-        delete sff.nonExistent;
       }
     };
 
@@ -160,15 +106,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         var sfModelData = _.findWhere($scope.sfs, {name: sf.name});
 
         sf.nonExistent = angular.isDefined(sfModelData) ? false : true;
-      }
-    };
-
-    svc.sffUpdate = function (sff, $scope) {
-      if (angular.isDefined(sff)) {
-        sff['sff-interfaces'] = svc.sffInterfaceInSffToStringArray(sff['sff-interfaces']);
-        var sffModelData = _.findWhere($scope.sffs, {name: sff.name});
-
-        sff.nonExistent = angular.isDefined(sffModelData) ? false : true;
       }
     };
 

@@ -34,7 +34,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       });
 
     $scope.sffInterfaceToString = ServiceForwarderHelper.sffInterfaceToString;
-    $scope.sffInterfaceInSffToString = ServiceForwarderHelper.sffInterfaceInSffToString;
 
     $scope.getLocatorTooltipText = function (locator) {
       return ServiceLocatorHelper.getLocatorTooltipText(locator, $scope);
@@ -50,7 +49,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         _.each($scope.sffs, function (sff) {
           sff['sff-data-plane-locator-string'] = ServiceForwarderHelper.sffDpLocatorToString(sff['sff-data-plane-locator']);
           sff['service-function-dictionary-string'] = ServiceForwarderHelper.sffFunctionDictionaryToString(sff['service-function-dictionary']);
-          sff['connected-sff-dictionary-string'] = ServiceForwarderHelper.sffForwarderDictionaryToString(sff['connected-sff-dictionary']);
         });
 
         $scope.tableParams.reload();
@@ -74,7 +72,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
     $scope.cloneSFF = function cloneSFF(sff) {
       delete sff['sff-data-plane-locator-string'];
       delete sff['service-function-dictionary-string'];
-      delete sff['connected-sff-dictionary-string'];
       sff['name'] = sff['name'] + "_copy";
       $state.transitionTo('main.sfc.serviceforwarder-clone', {sff: JSON.stringify(sff)}, {
         location: true,
@@ -158,13 +155,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
             "sff-sf-data-plane-locator": {},
             "sff-interfaces": []
           }
-        ],
-        "connected-sff-dictionary": [
-          {
-            "nonExistent": false,
-            "sff-sff-data-plane-locator": {},
-            "sff-interfaces": []
-          }
         ]
       };
     }
@@ -192,27 +182,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
           });
         }
       });
-
-      ServiceForwarderSvc.getArray(function (data) {
-        $scope.sffs = data;
-
-        if (angular.isDefined($stateParams.sff)) {
-          $scope.data = JSON.parse($stateParams.sff);
-          ServiceForwarderHelper.removeNonExistentSn($scope.data, $scope.sns);
-          _.each($scope.data['connected-sff-dictionary'], function (sff) {
-            ServiceForwarderHelper.sffUpdate(sff, $scope);
-          });
-        }
-        else if (angular.isDefined($stateParams.sffName)) {
-          ServiceForwarderSvc.getItem($stateParams.sffName, function (item) {
-            $scope.data = item;
-            ServiceForwarderHelper.removeNonExistentSn($scope.data, $scope.sns);
-            _.each($scope.data['connected-sff-dictionary'], function (sff) {
-              ServiceForwarderHelper.sffUpdate(sff, $scope);
-            });
-          });
-        }
-      });
     });
 
     $scope.addLocator = function () {
@@ -231,14 +200,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServiceForwarderHelper.removeFunction(index, $scope);
     };
 
-    $scope.addForwarder = function () {
-      ServiceForwarderHelper.addForwarder($scope);
-    };
-
-    $scope.removeForwarder = function (index) {
-      ServiceForwarderHelper.removeForwarder(index, $scope);
-    };
-
     $scope.sfChangeListener = function (choosenSf) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
     };
@@ -248,11 +209,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
       _.each($scope.data['service-function-dictionary'], function (sf) {
         sf['sff-interfaces'] = ServiceForwarderHelper.sffInterfaceToObjectArray(sf['sff-interfaces']);
         ServiceForwarderHelper.removeTemporaryPropertiesFromSf(sf);
-      });
-
-      _.each($scope.data['connected-sff-dictionary'], function (sff) {
-        sff['sff-interfaces'] = ServiceForwarderHelper.sffInterfaceInSffToObjectArray(sff['sff-interfaces']);
-        ServiceForwarderHelper.removeTemporaryPropertiesFromSff(sff);
       });
 
       ServiceForwarderSvc.putItem($scope.data, function () {

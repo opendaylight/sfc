@@ -711,16 +711,5 @@
   "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_BODY": "Service Function Schedule Algorithm is updated to:<br><br>",
   "SFC_CHAIN_MODAL_SCHED_TYPE_FAIL_HEAD": "Failed to update schedule type",
   "SFC_SF_STATS_LOCATION": "Statistics",
-
-  "SFC_FORWARDER_SFF_DICTIONARY": "Connected SFF dictionary",
-  "SFC_FORWARDER_CREATE_NONEXISTENT": "Enter yet nonexistent Service Function Forwarder",
-  "SFC_FORWARDER_REMOVE": "Remove this Service Function Forwarder",
-  "SFC_FORWARDER_NAME_IP": "Service Function Forwarder name / IP",
-  "SFC_FORWARDER_CREATE_SELECT_NAME": "Select a Service Function Forwarder",
-  "SFC_FORWARDER_FAILMODE": "Service Function Forwarder failmode",
-  "SFC_FORWARDER_CREATE_FAILMODE": "Select a failmode",
-  "SFC_FORWARDER_SFF_INTERFACES": "Service Function Forwarder interfaces",
-  "SFC_FORWARDER_SFF_CREATE_INTERFACES": "Type in interface name (multiple interfaces allowed)",
-
   "JSON_LAST_PROPERTY": "Stabile last property of this JSON, for nice merging"
 }

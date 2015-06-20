@@ -9,7 +9,7 @@
             <input type="text" class="form-control input-sm" ng-model="options['local-ip']"
                    id="local_ip_{{idSuffix}}" name="local_ip"
                    placeholder="{{'SFC_FORWARDER_OPTIONS_CREATE_LOCAL_IP' | translate}}"
-                   ip-address="{version:4, prefix:false}">
+                   >
         </div>
     </div>
 
@@ -22,7 +22,7 @@
             <input type="text" class="form-control input-sm" ng-model="options['remote-ip']"
                    id="remote_ip_{{idSuffix}}" name="remote_ip"
                    placeholder="{{'SFC_FORWARDER_OPTIONS_CREATE_REMOTE_IP' | translate}}"
-                   ip-address="{version:4, prefix:false}">
+                   >
         </div>
     </div>
 
@@ -48,7 +48,7 @@
             <input type="text" class="form-control input-sm" ng-model="options['key']"
                    id="key_{{idSuffix}}" name="key"
                    placeholder="{{'SFC_FORWARDER_OPTIONS_CREATE_TUN_KEY' | translate}}"
-                   uint64>
+                   >
         </div>
     </div>
 
@@ -61,7 +61,7 @@
             <input type="text" class="form-control input-sm" ng-model="options['nsp']"
                    id="nsp_{{idSuffix}}" name="nsp"
                    placeholder="{{'SFC_FORWARDER_OPTIONS_CREATE_NSP' | translate}}"
-                   number-range="{from:0, to: 16777215}">
+                   >
         </div>
     </div>
 
@@ -74,7 +74,7 @@
             <input type="text" class="form-control input-sm" ng-model="options['nsi']"
                    id="nsi_{{idSuffix}}" name="nsi"
                    placeholder="{{'SFC_FORWARDER_OPTIONS_CREATE_NSI' | translate}}"
-                   uint8>
+                   >
         </div>
     </div>
 

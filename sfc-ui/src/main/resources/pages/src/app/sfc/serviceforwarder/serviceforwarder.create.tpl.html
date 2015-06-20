@@ -65,6 +65,18 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="sfc_forwarder_ovs_bridge_name_{{idSuffix}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_FORWARDER_BRIDGE_NAME' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" ng-model="data['service-function-forwarder-ovs:ovs-bridge']['bridge-name']"
+                           placeholder="{{'SFC_FORWARDER_CREATE_BRIDGE_NAME' | translate}}"
+                           id="sfc_forwarder_ovs_bridge_name_{{idSuffix}}" name="ovs_bridge_name">
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

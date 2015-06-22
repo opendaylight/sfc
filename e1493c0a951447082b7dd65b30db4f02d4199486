@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_5a3cbc2f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-06-22T16:37:09Z",
+      "side": 1,
+      "message": "No, it is not. The static type is ServiceFunction, so there\u0027s no point in checking the dynamic type.  This isn\u0027t JavaScript. :)",
+      "revId": "e1493c0a951447082b7dd65b30db4f02d4199486",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

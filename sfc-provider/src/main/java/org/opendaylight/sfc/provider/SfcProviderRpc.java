@@ -138,10 +138,10 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 LOG.debug("Failed to readServiceFunction : {}",
                         e.getMessage());
             }
-            if (dataObject instanceof ServiceFunction) {
-                LOG.debug("readServiceFunction Success: {}",
-                        ((ServiceFunction) dataObject).getName());
-                ServiceFunction serviceFunction = (ServiceFunction) dataObject;
+            ServiceFunction serviceFunction = dataObject.get();
+            //TODO: It is necessary to check the type?
+            if (serviceFunction != null && serviceFunction instanceof ServiceFunction) {
+                LOG.debug("readServiceFunction Success: {}", serviceFunction.getName());
                 ReadServiceFunctionOutput readServiceFunctionOutput = null;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
                 outputBuilder.setName(serviceFunction.getName())

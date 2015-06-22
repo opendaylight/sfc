@@ -5,28 +5,46 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.provider.api;
+package org.opendaylight.sfc.provider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.SfcProviderRpc;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRenderedServicePathFirstHopInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRenderedServicePathFirstHopOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRspFirstHopBySftListInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -39,17 +57,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({OpendaylightSfc.class, SfcProviderServicePathAPI.class, SfcProviderRenderedPathAPI.class,
-        SfcProviderServiceClassifierAPI.class, SfcProviderServiceForwarderAPI.class, SfcProviderServiceFunctionAPI.class, RpcResultBuilder.class})
+@PrepareForTest({ OpendaylightSfc.class, SfcProviderServicePathAPI.class, SfcProviderRenderedPathAPI.class,
+        SfcProviderServiceClassifierAPI.class, SfcProviderServiceForwarderAPI.class,
+        SfcProviderServiceFunctionAPI.class, RpcResultBuilder.class, Futures.class })
 public class SfcProviderRpcTest {
 
     SfcProviderRpc sfcProviderRpc;
+
+    DataBroker dataBrokerMock;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
         OpendaylightSfc opendaylightSfcMock = mock(OpendaylightSfc.class);
         PowerMockito.mockStatic(OpendaylightSfc.class);
         when(OpendaylightSfc.getOpendaylightSfcObj()).thenReturn(opendaylightSfcMock);
+
+        dataBrokerMock = mock(DataBroker.class);
+        when(opendaylightSfcMock.getDataProvider()).thenReturn(dataBrokerMock);
+
         sfcProviderRpc = new SfcProviderRpc();
     }
 
@@ -60,24 +85,29 @@ public class SfcProviderRpcTest {
         ServiceFunctionPath serviceFunctionPathMock = mock(ServiceFunctionPath.class);
         PowerMockito.mockStatic(SfcProviderServicePathAPI.class);
         doReturn("crpiString1").when(createRenderedPathInputMock).getParentServiceFunctionPath();
-        when(SfcProviderServicePathAPI.readServiceFunctionPathExecutor("crpiString1")).thenReturn(serviceFunctionPathMock);
+        when(SfcProviderServicePathAPI.readServiceFunctionPathExecutor("crpiString1"))
+                .thenReturn(serviceFunctionPathMock);
 
         RenderedServicePath renderedServicePathMock = mock(RenderedServicePath.class);
         PowerMockito.mockStatic(SfcProviderRenderedPathAPI.class);
-        when(SfcProviderRenderedPathAPI.createRenderedServicePathAndState(eq(serviceFunctionPathMock), eq(createRenderedPathInputMock))).thenReturn(renderedServicePathMock);
+        when(SfcProviderRenderedPathAPI.createRenderedServicePathAndState(eq(serviceFunctionPathMock), eq(createRenderedPathInputMock)))
+                .thenReturn(renderedServicePathMock);
         doReturn("classifier1").when(serviceFunctionPathMock).getClassifier();
 
         ServiceFunctionClassifier serviceFunctionClassifier = mock(ServiceFunctionClassifier.class);
         PowerMockito.mockStatic(SfcProviderServiceClassifierAPI.class);
         doReturn("classifier1").when(serviceFunctionPathMock).getSymmetricClassifier();
-        when(SfcProviderServiceClassifierAPI.readServiceClassifierExecutor("classifier1")).thenReturn(serviceFunctionClassifier);
+        when(SfcProviderServiceClassifierAPI.readServiceClassifierExecutor("classifier1"))
+                .thenReturn(serviceFunctionClassifier);
 
         doReturn(true).when(serviceFunctionPathMock).isSymmetric();
 
-        when(SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePathMock)).thenReturn(renderedServicePathMock);
+        when(SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePathMock))
+                .thenReturn(renderedServicePathMock);
         doReturn("rspName1").when(renderedServicePathMock).getName();
 
-        assertEquals("RSP name has not been set correctly.", "rspName1", sfcProviderRpc.createRenderedPath(createRenderedPathInputMock).get().getResult().getName());
+        assertEquals("RSP name has not been set correctly.", "rspName1", sfcProviderRpc
+                .createRenderedPath(createRenderedPathInputMock).get().getResult().getName());
         PowerMockito.verifyStatic(Mockito.times(2));
         SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor("classifier1", "rspName1");
         PowerMockito.verifyStatic(Mockito.times(1));
@@ -85,7 +115,8 @@ public class SfcProviderRpcTest {
         PowerMockito.verifyStatic(Mockito.times(2));
         SfcProviderServiceClassifierAPI.readServiceClassifierExecutor("classifier1");
         PowerMockito.verifyStatic(Mockito.times(1));
-        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPathMock, createRenderedPathInputMock);
+        SfcProviderRenderedPathAPI
+                .createRenderedServicePathAndState(serviceFunctionPathMock, createRenderedPathInputMock);
         PowerMockito.verifyStatic(Mockito.times(1));
         SfcProviderServicePathAPI.readServiceFunctionPathExecutor("crpiString1");
     }
@@ -97,7 +128,8 @@ public class SfcProviderRpcTest {
         PowerMockito.mockStatic(SfcProviderRenderedPathAPI.class);
         RenderedServicePathFirstHop renderedServicePathFirstHopMock = mock(RenderedServicePathFirstHop.class);
         doReturn("rspFirstHop1").when(readRenderedServicePathFirstHopInputMock).getName();
-        when(SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop("rspFirstHop1")).thenReturn(renderedServicePathFirstHopMock);
+        when(SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop("rspFirstHop1"))
+                .thenReturn(renderedServicePathFirstHopMock);
         assertNotNull("RenderedServicePathFirstHop has not been set correctly.", sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInputMock));
         PowerMockito.verifyStatic(Mockito.times(1));
         SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop("rspFirstHop1");
@@ -123,9 +155,11 @@ public class SfcProviderRpcTest {
         DeleteRenderedPathInput deleteRenderedPathInput = mock(DeleteRenderedPathInput.class);
         doReturn("stringName1").when(deleteRenderedPathInput).getName();
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        when(SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor("stringName1")).thenReturn(true);
+        when(SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor("stringName1"))
+                .thenReturn(true);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        when(SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor("stringName1")).thenReturn(true);
+        when(SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor("stringName1"))
+                .thenReturn(true);
         PowerMockito.mockStatic(SfcProviderRenderedPathAPI.class);
         when(SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor("stringName1")).thenReturn(true);
         assertNotNull("DeleteRenderedPath has not run correctly.", sfcProviderRpc.deleteRenderedPath(deleteRenderedPathInput));
@@ -140,13 +174,43 @@ public class SfcProviderRpcTest {
     }
 
     @Test
+    public void getSfcProviderRpcTest() throws Exception {
+        assertNotNull(SfcProviderRpc.getSfcProviderRpc());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void readServiceFunctionTest() throws Exception {
+        ReadServiceFunctionInput inputMock = mock(ReadServiceFunctionInput.class);
+        doReturn("serviceFunctionName").when(inputMock).getName();
+
+        ReadOnlyTransaction readTxMock = mock(ReadOnlyTransaction.class);
+        doReturn(readTxMock).when(dataBrokerMock).newReadOnlyTransaction();
+
+        CheckedFuture<Optional<ServiceFunction>, ReadFailedException> checkedFutureMock = mock(CheckedFuture.class);
+        when(readTxMock.read(eq(LogicalDatastoreType.CONFIGURATION), any(InstanceIdentifier.class))).thenReturn(checkedFutureMock);
+
+        Optional<ServiceFunction> dataObjectMock = mock(Optional.class);
+        doReturn(dataObjectMock).when(checkedFutureMock).get();
+
+        ServiceFunction serviceFunctionMock = mock(ServiceFunction.class);
+        doReturn(serviceFunctionMock).when(dataObjectMock).get();
+
+        assertNotNull("Failed to read ServiceFunction", sfcProviderRpc.readServiceFunction(inputMock));
+
+        Mockito.verify(serviceFunctionMock, times(1)).getType();
+    }
+
+    @Test
     public void deleteRenderedPathElseTest() throws ExecutionException, InterruptedException {
         DeleteRenderedPathInput deleteRenderedPathInput = mock(DeleteRenderedPathInput.class);
         doReturn("stringName1").when(deleteRenderedPathInput).getName();
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        when(SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor("stringName1")).thenReturn(true);
+        when(SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor("stringName1"))
+                .thenReturn(true);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        when(SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor("stringName1")).thenReturn(true);
+        when(SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor("stringName1"))
+                .thenReturn(true);
         PowerMockito.mockStatic(SfcProviderRenderedPathAPI.class);
         when(SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor("stringName1")).thenReturn(false);
         assertNotNull("DeleteRenderedPath has not run correctly.", sfcProviderRpc.deleteRenderedPath(deleteRenderedPathInput));
@@ -157,5 +221,13 @@ public class SfcProviderRpcTest {
         SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor("stringName1");
         PowerMockito.verifyStatic();
         SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor("stringName1");
+    }
+
+    @Test
+    public void readRspFirstHopBySftListTest() throws Exception {
+        ReadRspFirstHopBySftListInput inputMock = mock(ReadRspFirstHopBySftListInput.class);
+        doReturn(ServiceFunctionSchedulerTypeIdentity.class).when(inputMock).getSfst();
+        doReturn(new ArrayList<ServiceFunctionTypeIdentity>()).when(inputMock).getSftList();
+        //TODO
     }
 }

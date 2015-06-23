@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_dd73e3af",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-06-23T10:04:22Z",
+      "side": 1,
+      "message": "Yes, if we do not access it like it, in datastore it occurs multiple true. You can test current algorithm type, because in fact it is not listened, so many errors are not seen.",
+      "parentUuid": "7a7fa997_da49a98c",
+      "range": {
+        "startLine": 83,
+        "startChar": 32,
+        "endLine": 84,
+        "endChar": 112
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_3a58dd55",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_7d688fba",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-06-23T10:04:22Z",
+      "side": 1,
+      "message": "The comment is the same with above.",
+      "parentUuid": "7a7fa997_3a58dd55",
+      "range": {
+        "startLine": 144,
+        "startChar": 35,
+        "endLine": 145,
+        "endChar": 116
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_fa31050c",
         "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfstTask.java",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2015-06-23T08:58:55Z",
       "side": 1,
       "message": "why is the Uri is hard-coded here?",
+      "range": {
+        "startLine": 38,
+        "startChar": 24,
+        "endLine": 38,
+        "endChar": 50
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_bd6e27c8",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfstTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-06-23T10:04:22Z",
+      "side": 1,
+      "message": "Because it should be the whole path of rest api, if not, it will report error. You can refer to the other parts.",
+      "parentUuid": "7a7fa997_fa31050c",
       "range": {
         "startLine": 38,
         "startChar": 24,

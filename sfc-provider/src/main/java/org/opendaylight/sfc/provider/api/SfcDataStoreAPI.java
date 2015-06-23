@@ -95,7 +95,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI
             (InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType)  {
         U ret = null;
-        ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = DATA_BROKER.newReadOnlyTransaction();
         Optional<U> optionalDataObject;
         CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
         try {

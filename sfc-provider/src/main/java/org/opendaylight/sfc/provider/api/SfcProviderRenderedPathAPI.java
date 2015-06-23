@@ -1018,8 +1018,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             }
         }
 
-        printTraceStop(LOG);
+
         firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName());
+        printTraceStop(LOG);
         return firstHop;
     }
 }

@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This the main SFC Provider class. It is instantiated from the SFCProviderModule class. <p>
@@ -54,7 +52,7 @@ public class OpendaylightSfc implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
 
     private static final long SHUTDOWN_TIME = 5;
-    private static final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
             .setNameFormat("SFC-%d")
             .setDaemon(false)
             .build();
@@ -101,28 +99,17 @@ public class OpendaylightSfc implements AutoCloseable {
     protected DataBroker dataProvider;
     protected BindingAwareBroker broker;
     private static OpendaylightSfc opendaylightSfcObj;
-    private final Lock lock = new ReentrantLock();
+
 
     /* Constructors */
     public OpendaylightSfc() {
 
-        executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE, threadFactory);
+        executor = Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE, THREAD_FACTORY);
         if (executor == null) {
                 LOG.error("Could you not create SFC Executors");
         }
         opendaylightSfcObj = this;
         LOG.info("Opendaylight Service Function Chaining Initialized");
-    }
-
-    public void getLock() {
-        while (!lock.tryLock()) {
-        }
-        return;
-    }
-
-    public void releaseLock() {
-        lock.unlock();
-        return;
     }
 
     /* Accessors */
@@ -159,8 +146,6 @@ public class OpendaylightSfc implements AutoCloseable {
         // When we close this service we need to shutdown our executor!
 
         if (dataProvider != null) {
-            final InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(
-                    ServiceFunctionChains.class).build();
 
             final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID = InstanceIdentifier.builder(
                     ServiceFunctionClassifiers.class).build();
@@ -171,18 +156,15 @@ public class OpendaylightSfc implements AutoCloseable {
             final InstanceIdentifier<ServiceFunctionGroups> SFG_IID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
                     .build();
 
-            final InstanceIdentifier<ServiceFunctionForwarders> SFF_IID = InstanceIdentifier.builder(
-                    ServiceFunctionForwarders.class).build();
-
             final InstanceIdentifier<ServiceFunctionPaths> SFP_IID = InstanceIdentifier.builder(
                     ServiceFunctionPaths.class).build();
 
-            final InstanceIdentifier<RenderedServicePaths> RSP_IID = InstanceIdentifier.builder(
+            final InstanceIdentifier<RenderedServicePaths> rspIid = InstanceIdentifier.builder(
                     RenderedServicePaths.class).build();
 
-            final InstanceIdentifier<AccessLists> ACL_IID = InstanceIdentifier.builder(AccessLists.class).build();
+            final InstanceIdentifier<AccessLists> aclIid = InstanceIdentifier.builder(AccessLists.class).build();
 
-            final InstanceIdentifier<ServiceFunctionSchedulerTypes> SFST_IID = InstanceIdentifier.builder(
+            final InstanceIdentifier<ServiceFunctionSchedulerTypes> sfstIid = InstanceIdentifier.builder(
                     ServiceFunctionSchedulerTypes.class).build();
 
             SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
@@ -192,9 +174,9 @@ public class OpendaylightSfc implements AutoCloseable {
             SfcDataStoreAPI.deleteTransactionAPI(SFG_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFP_IID, LogicalDatastoreType.CONFIGURATION);
-            SfcDataStoreAPI.deleteTransactionAPI(RSP_IID, LogicalDatastoreType.OPERATIONAL);
-            SfcDataStoreAPI.deleteTransactionAPI(ACL_IID, LogicalDatastoreType.CONFIGURATION);
-            SfcDataStoreAPI.deleteTransactionAPI(SFST_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(rspIid, LogicalDatastoreType.OPERATIONAL);
+            SfcDataStoreAPI.deleteTransactionAPI(aclIid, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(sfstIid, LogicalDatastoreType.CONFIGURATION);
 
             // When we close this service we need to shutdown our executor!
             executor.shutdown();

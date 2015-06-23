@@ -8,6 +8,7 @@
 
 import os
 import sys
+import platform
 import time
 import getopt
 import asyncio
@@ -405,8 +406,15 @@ def main(argv):
             continue
 
     loop = asyncio.get_event_loop()
-    for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]:
+    for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGABRT]:
         signal.signal(sig, handler)
+
+    # Can not install SIGHUP in Windows
+    if platform.system() in ["Linux", "Darwin"]:
+        signal.signal(signal.SIGHUP, handler)
+        signal.signal(signal.SIGQUIT, handler)
+
+
 
     # # create a raw socket
     # euid = os.geteuid()

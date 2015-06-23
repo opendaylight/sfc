@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_da49a98c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-06-23T08:58:55Z",
+      "side": 1,
+      "message": "Can this case occur?",
+      "range": {
+        "startLine": 83,
+        "startChar": 32,
+        "endLine": 84,
+        "endChar": 112
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_3a58dd55",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-06-23T08:58:55Z",
+      "side": 1,
+      "message": "can this case occur?",
+      "range": {
+        "startLine": 144,
+        "startChar": 35,
+        "endLine": 145,
+        "endChar": 116
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_fa31050c",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfstTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-06-23T08:58:55Z",
+      "side": 1,
+      "message": "why is the Uri is hard-coded here?",
+      "range": {
+        "startLine": 38,
+        "startChar": 24,
+        "endLine": 38,
+        "endChar": 50
+      },
+      "revId": "161bd9d98cf59e45f588b6ee62d63f46fc3c7a0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

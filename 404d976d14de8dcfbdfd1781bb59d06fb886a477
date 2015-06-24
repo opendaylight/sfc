@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_eeaaa3d3",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-06-24T17:09:32Z",
+      "side": 1,
+      "message": "What is the purpose of this line? It does not seem part of the this specific test.",
+      "revId": "404d976d14de8dcfbdfd1781bb59d06fb886a477",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

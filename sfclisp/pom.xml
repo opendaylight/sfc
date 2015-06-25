@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.1.0-Lithium</version>
+        <version>0.1.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfclisp</artifactId>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>mappingservice.api</artifactId>
-            <version>1.2.0-Lithium</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.sonatype.sisu</groupId>
@@ -213,7 +213,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <!--version>0.2.5-Lithium</version-->
+                        <!--version>0.2.6-SNAPSHOT</version-->
                         <version>${config.version}</version>
                     </dependency>
                     <dependency>

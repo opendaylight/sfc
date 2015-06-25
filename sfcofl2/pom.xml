@@ -6,14 +6,14 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.1.0-Lithium</version>
+        <version>0.1.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfcofl2</artifactId>
-    <version>0.1.0-Lithium</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
-        <openflowplugin.version>0.1.0-Lithium</openflowplugin.version>
+        <openflowplugin.version>0.1.1-SNAPSHOT</openflowplugin.version>
         <configfile>configuration/initial/sfcofl2-initial.xml</configfile>
     </properties>
 

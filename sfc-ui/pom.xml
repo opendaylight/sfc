@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.1.0-Lithium</version>
+        <version>0.1.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfc-ui</artifactId>
-    <version>0.1.0-Lithium</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
             <artifactId>dlux-web</artifactId>
-            <version>0.2.0-Lithium</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

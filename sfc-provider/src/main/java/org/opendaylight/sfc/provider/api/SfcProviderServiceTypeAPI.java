@@ -133,19 +133,11 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 ServiceFunctionTypeKey(serviceFunctionType);
         sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
+        sft = SfcDataStoreAPI.readTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION)
+        if (sft == null) {
 
-        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-        Optional<ServiceFunctionType> serviceFunctionTypeOptional = null;
-        try {
-            serviceFunctionTypeOptional = readTx
-                    .read(LogicalDatastoreType.CONFIGURATION, sftIID).get();
-        } catch (InterruptedException | ExecutionException e) {
             LOG.error("Could not read Service Function list for Type {} " +
                     "", serviceFunctionType);
-        }
-        if (serviceFunctionTypeOptional != null
-                && serviceFunctionTypeOptional.isPresent()) {
-            sft = serviceFunctionTypeOptional.get();
         }
         printTraceStop(LOG);
         return sft;

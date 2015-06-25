@@ -15,28 +15,29 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,25 +46,21 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
 
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionSchedulerAPITest.class);
-
-    List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
-    List<ServiceFunction> sfList = new ArrayList<>();
-    ServiceFunctionChain sfChain;
+    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private final List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
+    private final List<ServiceFunction> sfList = new ArrayList<>();
+    private ExecutorService executor;
+    private ServiceFunctionChain sfChain;
     private ServiceFunctionPath sfPath;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
+        DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
@@ -106,7 +103,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
             }
 
             maxTries--;
-            if (emptyFlag == true) {
+            if (emptyFlag) {
                 break;
             }
         }
@@ -114,20 +111,20 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         String sfcName = "unittest-sched-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("firewall")
-                                           .setKey(new SfcServiceFunctionKey("firewall"))
-                                           .setType(Firewall.class)
-                                           .build());
+                .setName("firewall")
+                .setKey(new SfcServiceFunctionKey("firewall"))
+                .setType(Firewall.class)
+                .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("dpi")
-                                           .setKey(new SfcServiceFunctionKey("dpi"))
-                                           .setType(Dpi.class)
-                                           .build());
+                .setName("dpi")
+                .setKey(new SfcServiceFunctionKey("dpi"))
+                .setType(Dpi.class)
+                .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("nat")
-                                           .setKey(new SfcServiceFunctionKey("nat"))
-                                           .setType(Napt44.class)
-                                           .build());
+                .setName("nat")
+                .setKey(new SfcServiceFunctionKey("nat"))
+                .setType(Napt44.class)
+                .build());
 
         sfChain = new ServiceFunctionChainBuilder()
                 .setName(sfcName)
@@ -139,7 +136,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
         serviceFunctionPathBuilder.setPathId(1l);
         serviceFunctionPathBuilder.setServiceChainName(sfcName);
-        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        List<ServicePathHop> sphs = new ArrayList<>();
         serviceFunctionPathBuilder.setServicePathHop(sphs);
         sfPath = serviceFunctionPathBuilder.build();
 
@@ -180,7 +177,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
                 (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
         Thread.sleep(1000); //Wait they are really created
 
-        for (ServiceFunction serviceFunction: sfList) {
+        for (ServiceFunction serviceFunction : sfList) {
             SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
         }
 
@@ -201,7 +198,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testBasicEnvSetup() throws ExecutionException, InterruptedException {
-        int maxTries = 10;
+        int maxTries;
         for (ServiceFunction serviceFunction : sfList) {
             maxTries = 10;
             ServiceFunction sf2 = null;
@@ -209,7 +206,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
                 Object[] parameters2 = {serviceFunction.getName()};
                 Class[] parameterTypes2 = {String.class};
                 Object result = executor.submit(SfcProviderServiceFunctionAPI
-                    .getRead(parameters2, parameterTypes2)).get();
+                        .getRead(parameters2, parameterTypes2)).get();
                 sf2 = (ServiceFunction) result;
                 maxTries--;
                 if (sf2 != null) {
@@ -269,12 +266,12 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         assertNotEquals("Must be not equal", serviceFunction.getType(), Dpi.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(1));
+                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(1));
         assertEquals("Must be equal", serviceFunction.getType(), Dpi.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Napt44.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(2));
+                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(2));
         assertEquals("Must be equal", serviceFunction.getType(), Napt44.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Firewall.class);
     }
@@ -318,5 +315,10 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0), sftFirewallList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(0).getName());
+
+        Class scheduleType = scheduler.getSfcServiceFunctionSchedulerType();
+
+        assertNotNull("Must be not null", scheduleType);
+        assertEquals("Must be equal", scheduleType.getSimpleName(), RoundRobin.class.getSimpleName());
     }
 }

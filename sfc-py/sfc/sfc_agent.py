@@ -115,6 +115,11 @@ def _ip_local_host(ip_addr):
                 for value in inet_addr_list:
                     if value['addr'] == ip_addr:
                         return True
+            if netifaces.AF_INET6 in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET6]
+                for value in inet_addr_list:
+                    if value['addr'] == ip_addr:
+                        return True
 
     return False
 
@@ -221,7 +226,7 @@ def build_data_plane_service_path(service_path):
     """
     sp_id = service_path['path-id']
     local_data_plane_path = sfc_globals.get_data_plane_path()
-
+    sfc_globals.set_sfp_parent_path(service_path['parent-service-function-path'])
     for service_hop in service_path['rendered-service-path-hop']:
         sh_index = service_hop['service-index']
         sh_sff = service_hop['service-function-forwarder']
@@ -326,55 +331,6 @@ def remove_acl(acl_name):
 
 
 @app.route('/operational/rendered-service-path:rendered-service-paths/'
-           'rendered-service-path/<rsp_name>', methods=['PUT', 'POST'])
-def create_path(rsp_name):
-    if not flask.request.json:
-        flask.abort(400)
-
-    local_path = sfc_globals.get_path()
-    local_sff_os = sfc_globals.get_sff_os()
-
-    if (not sfc_globals.get_my_sff_name()) and auto_sff_name():
-        logger.fatal("Could not determine my SFF name \n")
-        sys.exit(1)
-
-    # print json.dumps(sfpjson)
-    # sfpj_name = sfpjson["service-function-path"][0]['name']
-
-    local_path[rsp_name] = flask.request.get_json()["rendered-service-path"][0]
-    logger.info("Building Service Path for path: %s", rsp_name)
-
-    if not build_data_plane_service_path(local_path[rsp_name]):
-        # Testing XE cli processing module
-        if local_sff_os == 'XE':
-            logger.info("Provisioning %s XE SFF", local_sff_os)
-            xe_cli.process_xe_cli(sfc_globals.get_data_plane_path())
-
-        elif local_sff_os == 'XR':
-            logger.info("Provisioning %s XR SFF", local_sff_os)
-            print('local path : ', local_path)  # debug to see if receive metadata - will remove
-            xr_cli.process_xr_cli(sfc_globals.get_data_plane_path())
-
-        elif local_sff_os == 'OVS':
-            logger.info("Provisioning %s SFF", local_sff_os)
-            # process_ovs_cli(data_plane_path)
-            ovs_cli.process_ovs_sff__cli(sfc_globals.get_data_plane_path())
-
-        elif local_sff_os == "ODL":
-            logger.info("Provisioning %s SFF", local_sff_os)
-
-        # should never get here
-        else:
-            logger.error("Unknown SFF OS: %s", local_sff_os)
-            # json_string = json.dumps(data_plane_path)
-
-        return flask.jsonify(local_path), 201
-    else:
-        msg = "Could not build service path: {}".format(rsp_name)
-        return msg, 400
-
-
-@app.route('/operational/rendered-service-path:rendered-service-paths/'
            'rendered-service-path/<rsp_name>', methods=['DELETE'])
 def delete_path(rsp_name):
     status_code = 204
@@ -423,6 +379,28 @@ def create_paths():
     return flask.jsonify({'path': sfc_globals.path}), 201
 
 
+@app.route('/config/service-function-metadata:service-function-metadata/',
+           methods=['GET'])
+def get_odl_metadata():
+    logger.info("Requesting ODL for Metadata")
+    return flask.jsonify(sfc_globals.get_odl_metadata()())
+
+
+@app.route('/config/service-function-metadata:service-function-metadata/',
+           methods=['PUT', 'POST'])
+def set_odl_metadata():
+    logger.info("Received request for Metadata creation")
+    if not flask.request.json:
+        flask.abort(400)
+
+        metadata_json = flask.request.get_json()['service-function-metadata']
+
+        sfc_globals.reset_odl_metadata()
+        sfc_globals.set_odl_metadata(metadata_json)
+    else:
+        logger.warning("=>Failed to GET Metadata from ODL \n")
+
+
 @app.route('/operational/data-plane-path:data-plane-paths/',
            methods=['GET'])
 def get_data_plane_paths():
@@ -445,11 +423,11 @@ def create_sf(sfname):
         if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
             sf_port = data_plane_locator['port']
             _, sf_type = (local_sf_topo[sfname]['type']).split(':')
-
+            sf_ip = data_plane_locator['ip']
             # TODO: We need more checks to make sure IP in locator actually
             # corresponds to one of the existing interfaces in the system
-            start_sf(sfname, "0.0.0.0", sf_port, sf_type)
-
+            # start_sf(sfname, "0.0.0.0", sf_port, sf_type)
+            start_sf(sfname, sf_ip, sf_port, sf_type)
     return flask.jsonify({'sf': local_sf_topo[sfname]}), 201
 
 
@@ -499,12 +477,10 @@ def create_sff(sffname):
     local_sff_topo = sfc_globals.get_sff_topo()
 
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
-    sff_port = (local_sff_topo[sffname]['sff-data-plane-locator']
-                [0]
-                ['data-plane-locator']
-                ['port'])
-
-    start_sff(sffname, "0.0.0.0", sff_port)
+    sff_port = (local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port'])
+    sff_ip = (local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['ip'])
+    nfq_classifier.set_fwd_socket(sff_ip)
+    start_sff(sffname, sff_ip, sff_port)
 
     return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201
 
@@ -621,6 +597,84 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
         logger.warning("=>Failed to GET SFF from ODL \n")
 
 
+def get_metadata_from_odl(odl_ip_port):
+    """
+    Retrieves the metadata from ODL and update global
+    dictionary of metadata
+
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+
+    :return Nothing
+
+    """
+    try:
+        logger.info("Getting Metadata configured in ODL ...")
+        url = _sfc_globals.METADATA_URL
+        odl_sff_url = url.format(odl_ip_port)
+
+        s = requests.Session()
+        r = s.get(odl_sff_url, auth=sfc_globals.get_odl_credentials(),
+                  stream=False)
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
+        return
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
+        return
+
+    if r.ok:
+        r_json = r.json()
+        metadata_json = r_json['service-function-metadata']
+
+        sfc_globals.reset_odl_metadata()
+        sfc_globals.set_odl_metadata(metadata_json)
+    else:
+        logger.warning("=>Failed to GET Metadata from ODL \n")
+
+
+def get_sfp_from_odl(odl_ip_port):
+    """
+    Retrieves the sfp from ODL and update global
+    dictionary of sfp
+
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: str
+
+    :return Nothing
+
+    """
+    try:
+        logger.info("Getting SFP configured in ODL ...")
+        url = _sfc_globals.SFP_URL
+        odl_sfp_url = url.format(odl_ip_port)
+
+        s = requests.Session()
+        r = s.get(odl_sfp_url, auth=sfc_globals.get_odl_credentials(),
+                  stream=False)
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFPs from ODL. Error: {}'.format(e))
+        return
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFPs from ODL. Error: {}'.format(e))
+        return
+
+    if r.ok:
+        r_json = r.json()
+        sfp_json = r_json['service-function-paths']
+
+        sfc_globals.reset_sfp_topo()
+        local_sfp = sfc_globals.get_sfp_topo()
+        try:
+            for sfp in sfp_json['service-function-path']:
+                local_sfp[sfp['name']] = sfp
+            sfc_globals.set_sfp_topo(local_sfp)
+        except KeyError:
+            logger.info("=>No configured SFP in ODL \n")
+    else:
+        logger.warning("=>Failed to GET SFP from ODL \n")
+
+
 def get_sffs_from_odl(odl_ip_port):
     """
     Retrieves the list of configured SFFs from ODL and update global
@@ -650,7 +704,6 @@ def get_sffs_from_odl(odl_ip_port):
     if r.ok:
         r_json = r.json()
         sff_json = r_json['service-function-forwarders']
-
         sfc_globals.reset_sff_topo()
         local_sff_topo = sfc_globals.get_sff_topo()
         try:
@@ -700,6 +753,82 @@ def get_sf_from_odl(odl_ip_port, sf_name):
         return -1
 
 
+@app.route('/operational/rendered-service-path:rendered-service-paths/'
+           'rendered-service-path/<rsp_name>', methods=['PUT', 'POST'])
+def create_path(rsp_name):
+    if not flask.request.json:
+        flask.abort(400)
+
+    local_path = sfc_globals.get_path()
+    local_sff_os = sfc_globals.get_sff_os()
+
+    if (not sfc_globals.get_my_sff_name()) and auto_sff_name():
+        logger.fatal("Could not determine my SFF name \n")
+        sys.exit(1)
+    local_path[rsp_name] = flask.request.get_json()["rendered-service-path"][0]
+    logger.info("Building Service Path for path: %s", rsp_name)
+
+    if not build_data_plane_service_path(local_path[rsp_name]):
+        # Testing XE cli processing module
+        if local_sff_os == 'XE':
+            logger.info("Provisioning %s XE SFF", local_sff_os)
+            xe_cli.process_xe_cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == 'XR':
+            logger.info("Provisioning %s XR SFF", local_sff_os)
+            xr_cli.process_xr_cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == 'OVS':
+            logger.info("Provisioning %s SFF", local_sff_os)
+            # process_ovs_cli(data_plane_path)
+            ovs_cli.process_ovs_sff__cli(sfc_globals.get_data_plane_path())
+
+        elif local_sff_os == "ODL":
+            logger.info("Provisioning %s SFF", local_sff_os)
+
+        # should never get here
+        else:
+            logger.error("Unknown SFF OS: %s", local_sff_os)
+            # json_string = json.dumps(data_plane_path)
+        get_sfp_from_odl(sfc_globals.get_odl_locator())
+        get_metadata_from_odl(sfc_globals.get_odl_locator())
+        find_metadata()
+        return flask.jsonify(local_path), 201
+    else:
+        msg = "Could not build service path: {}".format(rsp_name)
+        return msg, 400
+
+
+def find_metadata():
+    """
+    Serach for a metadata in the stored dictionary based on the key
+    received in SFP
+    """
+    local_odl_metadata = sfc_globals.get_odl_metadata()
+    local_sfp = sfc_globals.get_sfp_topo()
+
+    local_parent_path = sfc_globals.get_sfp_parent_path()
+    if local_parent_path:
+        local_mtdt = local_sfp[local_parent_path]
+        context_mtdt = 'context-metadata'
+        variable_mtdt = 'variable-metadata'
+        if context_mtdt in local_mtdt.keys():
+            context_key = local_mtdt[context_mtdt]
+        if variable_mtdt in local_mtdt.keys():
+            variable_key = local_mtdt[variable_mtdt]
+        if context_key:
+            for mtdt in local_odl_metadata[context_mtdt]:
+                if mtdt['name'] == context_key:
+                    sfc_globals.sfp_context_metadata = mtdt
+                    logger.info("New context metadata for SFP: '%s'", local_parent_path)
+                    return
+        if variable_key:
+            for mtdt in local_odl_metadata[variable_mtdt]:
+                if mtdt['name'] == variable_key:
+                    sfc_globals.sfp_variable_metadata = mtdt
+                    logger.info("New variable metadata for SFP: '%s'", local_parent_path)
+
+
 def get_sff_from_odl(odl_ip_port, sff_name):
     """
     Retrieves a single configured SFF from ODL and update global dictionary of
@@ -723,13 +852,11 @@ def get_sff_from_odl(odl_ip_port, sff_name):
                   stream=False)
     except (requests.exceptions.ConnectionError,
             requests.exceptions.RequestException) as exc:
-        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}',
-                         sff_name, exc)
+        logger.exception('Can\'t get SFF "{}" from ODL. Error: {}', sff_name, exc)
         return -1
 
     if r.ok:
         r_json = r.json()
-
         local_sff_topo = sfc_globals.get_sff_topo()
         local_sff_topo[sff_name] = r_json['service-function-forwarder'][0]
         return 0
@@ -758,6 +885,19 @@ def auto_sff_name():
                 inet_addr_list = addr_list_dict[netifaces.AF_INET]
 
                 for value in inet_addr_list:
+                    # logger.info('addr %s', value['addr'])
+                    sff_name = find_sff_locator_by_ip(value['addr'])
+                    if sff_name:
+                        sfc_globals.set_my_sff_name(sff_name)
+                        sff_name = sfc_globals.get_my_sff_name()
+
+                        logger.info("Auto SFF name is: %s", sff_name)
+                        return 0
+            if netifaces.AF_INET6 in addr_list_dict:
+                inet_addr_list = addr_list_dict[netifaces.AF_INET6]
+
+                for value in inet_addr_list:
+                    # logger.info('addr %s', value['addr'])
                     sff_name = find_sff_locator_by_ip(value['addr'])
                     if sff_name:
                         sfc_globals.set_my_sff_name(sff_name)

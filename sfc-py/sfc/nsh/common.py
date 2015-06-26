@@ -25,7 +25,7 @@ which is responsible for composing a (raw) bytes representation of a header.
 
 
 #: constants
-PAYLOAD_START_INDEX = 32
+PAYLOAD_START_INDEX = 46
 
 NSH_TYPE1_DATA_PACKET = int('010000000000011000000001', 2)
 NSH_TYPE1_LEN = 0x6
@@ -46,6 +46,12 @@ IPV4_PACKET_ID = 54321
 IPV4_TTL = 255
 IPV4_TOS = 0
 IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
+
+
+IPV6_TRAFFIC_CLASS = 20
+IPV6_VERSION = 6
+IPV6_FLOW_LABEL = 54321
+IPV6_NEXT_HOP = 255
 
 #: UDP constants
 
@@ -214,7 +220,7 @@ class TRACEREQHEADER(Structure):
                     self.ip_4)
 
 
-class IPHEADER(Structure):
+class IP4HEADER(Structure):
     _fields_ = [
         ('ip_ihl', c_ubyte),
         ('ip_ver', c_ubyte),
@@ -257,6 +263,34 @@ class IPHEADER(Structure):
         #
         #     checksum = ~sum;
         # }
+
+    def set_ip_checksum(self, checksum):
+        self.ip_chksum = checksum
+
+
+class IP6HEADER(Structure):
+    _fields_ = [
+        ('ip_ver', c_ubyte),
+        ('ip_tc', c_ubyte),
+        ('ip_flow_lbl', c_uint),
+        ('ip_payload_len', c_ushort),
+        ('ip_next_header', c_ubyte),
+        ('ip_hop_lmt', c_ubyte),
+        ('ip_saddr1', c_uint),
+        ('ip_saddr2', c_uint),
+        ('ip_saddr3', c_uint),
+        ('ip_saddr4', c_uint),
+        ('ip_daddr1', c_uint),
+        ('ip_daddr2', c_uint),
+        ('ip_daddr3', c_uint),
+        ('ip_daddr4', c_uint)]
+
+    def build(self):
+        ipv6_ver_tc_fl = (IPV6_VERSION << 28) + (self.ip_tc << 20) + self.ip_flow_label
+        ip_header_pack = pack('!I H B B Q Q Q Q', ipv6_ver_tc_fl, self.ip_payloadlen,
+                              self.ip_next_header, self.ip_hop_lmt,
+                              self.ip_saddr1, self.ip_saddr2, self.ip_daddr1, self.ip_daddr2)
+        return ip_header_pack
 
     def set_ip_checksum(self, checksum):
         self.ip_chksum = checksum

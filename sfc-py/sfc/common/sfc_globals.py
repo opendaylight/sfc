@@ -53,6 +53,9 @@ SFF_SF_DATA_PLANE_LOCATOR_URL = ("http://{}/restconf/config/"
                                  "service-function-dictionary/{}/"
                                  "sff-sf-data-plane-locator/")
 
+METADATA_URL =  ("http://{}/restconf/config/"
+                 "service-function-metadata:"
+                 "service-function-metadata/")
 
 class SfcGlobals:
     """
@@ -69,12 +72,17 @@ class SfcGlobals:
     sf_threads = {}
     sff_threads = {}
     data_plane_path = {}
+    odl_metadata = {}
+    sfp_context_metadata = {}
+    sfp_variable_metadata = {}
+    sfp_topo = {}
     data_plane_control_port = 6000
-
+    sfp_parent_path = None
     odl_locator = LOCAL_ODL_LOCATOR
     odl_credentials = ('admin', 'admin')
 
     processed_packets = 0
+    not_processed_packets = 0
     dropped_packets = 0
     sent_packets = 0
     sf_queued_packets = 0
@@ -88,6 +96,15 @@ class SfcGlobals:
     def reset_path(self):
         self.path = {}
 
+    def get_sfp_parent_path(self):
+        return self.sfp_parent_path
+
+    def reset_sfp_parent_path(self):
+        self.sfp_parent_path = None
+        
+    def set_sfp_parent_path(self, parent_path):
+        self.sfp_parent_path = parent_path        
+        
     def get_sf_topo(self):
         return self.sf_topo
 
@@ -100,6 +117,36 @@ class SfcGlobals:
     def reset_sff_topo(self):
         self.sff_topo = {}
 
+    def get_odl_metadata(self):
+        return self.odl_metadata
+
+    def set_odl_metadata(self, metadata):
+        self.odl_metadata = metadata
+        
+    def reset_odl_metadata(self):
+        self.odl_metadata = {}
+        
+    def get_sfp_context_metadata(self):
+        return self.sfp_context_metadata
+
+    def reset_sfp_context_metadata(self):
+        self.sfp_context_metadata = {}
+
+    def get_sfp_variable_metadata(self):
+        return self.sfp_variable_metadata
+
+    def reset_sfp_variable_metadata(self):
+        self.sfp_variable_metadata = {}
+        
+    def get_sfp_topo(self):
+        return self.sfp_topo
+
+    def reset_sfp_topo(self):
+        self.sfp_topo = {}
+        
+    def set_sfp_topo(self, sfp_topo):
+        self.sfp_topo = sfp_topo
+        
     def get_sf_threads(self):
         return self.sf_threads
 

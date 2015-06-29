@@ -110,22 +110,18 @@
         <dependency>
             <groupId>org.opendaylight.yangtools.model</groupId>
             <artifactId>ietf-inet-types</artifactId>
-            <version>${ietf.model.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.yangtools.model</groupId>
             <artifactId>ietf-yang-types</artifactId>
-            <version>${ietf.model.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
-            <version>${config.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-config</artifactId>
-            <version>${mdsal.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

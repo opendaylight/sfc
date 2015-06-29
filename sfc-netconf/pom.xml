@@ -45,7 +45,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.version}</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>
@@ -65,27 +64,8 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler.version}</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <version>${bundle.plugin.version}</version>
-                <!--configuration>
-                    <instructions>
-                        <Export-Package>org.opendaylight.sfc.*;</Export-Package>
-                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                        <Bundle-Activator>org.opendaylight.ovsdb.plugin.internal.Activator</Bundle-Activator>
-                    </instructions>
-                </configuration-->
             </plugin>
             <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>

@@ -54,7 +54,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
         <groupId>org.opendaylight.controller.model</groupId>
         <artifactId>model-inventory</artifactId>
-        <version>${mdsal.version}</version>
     </dependency>
      <!-- dependency for opendaylight-karaf-empty for use by testing -->
     <dependency>

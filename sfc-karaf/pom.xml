@@ -64,7 +64,6 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>features-mdsal</artifactId>
-      <version>${mdsal.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>

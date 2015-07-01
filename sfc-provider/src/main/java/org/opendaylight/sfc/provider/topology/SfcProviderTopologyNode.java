@@ -75,4 +75,12 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
 
         return this.name == ((SfcProviderTopologyNode)obj).getName();
     }
+
+    public int hashCode() {
+        if (this.name == null) {
+            return 0;
+        }
+
+        return this.name.hashCode();
+    }
 }

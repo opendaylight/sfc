@@ -8,43 +8,55 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroupsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import static org.junit.Assert.*;
 
 public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTest {
 
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-
-    List<ServiceFunction> sfList = new ArrayList<>();
+    private static final String ALGORITHM = "algorithm";
+    private static final String SF_NAME = "sfName";
+    private static final String SFG_NAME = "sfgName";
+    private static final String IP_V4_ADDRESS = "192.168.10.1";
+    private static final String IP_V6_ADDRESS = "01:23:45:67:89:AB:CD:EF";
+    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private final List<ServiceFunction> sfList = new ArrayList<>();
+    private ExecutorService executor;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
+        DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
 
@@ -55,10 +67,6 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_102", Firewall.class, new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
     }
 
-    @After
-    public void after() {
-    }
-
     @Test
     public void testPutReadDeleteServiceFunctionGroupAlgorithm() throws ExecutionException, InterruptedException {
 
@@ -67,13 +75,13 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         ServiceFunctionGroupAlgorithm sfgAlg = SimpleTestEntityBuilder.buildServiceFunctionGroupAlgorithm(sfgAlgName);
 
         // Put:
-        Object[] params = { sfgAlg };
-        Class[] paramsTypes = { ServiceFunctionGroupAlgorithm.class };
+        Object[] params = {sfgAlg};
+        Class[] paramsTypes = {ServiceFunctionGroupAlgorithm.class};
         executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getPut(params, paramsTypes)).get();
 
         // Read:
-        Object[] params2 = { sfgAlgName };
-        Class[] paramsTypes2 = { String.class };
+        Object[] params2 = {sfgAlgName};
+        Class[] paramsTypes2 = {String.class};
         Object result = executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getRead(params2, paramsTypes2)).get();
         ServiceFunctionGroupAlgorithm sfgAlg2 = (ServiceFunctionGroupAlgorithm) result;
 
@@ -98,13 +106,13 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Put:
-        Object[] params = { sfg };
-        Class[] paramsTypes = { ServiceFunctionGroup.class };
+        Object[] params = {sfg};
+        Class[] paramsTypes = {ServiceFunctionGroup.class};
         executor.submit(SfcProviderServiceFunctionGroupAPI.getPut(params, paramsTypes)).get();
 
         // Read:
-        Object[] params2 = { sfgName };
-        Class[] paramsTypes2 = { String.class };
+        Object[] params2 = {sfgName};
+        Class[] paramsTypes2 = {String.class};
         Object result = executor.submit(SfcProviderServiceFunctionGroupAPI.getRead(params2, paramsTypes2)).get();
         ServiceFunctionGroup sfg2 = (ServiceFunctionGroup) result;
 
@@ -132,15 +140,136 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
 
         // Add Service Function:
         ServiceFunction sf = sfList.get(0);
-        Object[] params = { sfg.getName(), sf.getName() };
-        Class[] paramsTypes = { String.class, String.class };
+        Object[] params = {sfg.getName(), sf.getName()};
+        Class[] paramsTypes = {String.class, String.class};
         executor.submit(SfcProviderServiceFunctionGroupAPI.getAddSF(params, paramsTypes)).get();
 
         assertNotNull("Must be not null", sfg.getSfcServiceFunction().get(0));
-        assertEquals("Must be equal", sfg.getSfcServiceFunction().get(0), sf.getName());
 
         // Delete Service Function:
         executor.submit(SfcProviderServiceFunctionGroupAPI.getDelete(params, paramsTypes));
         assertNull("Must be null", sfg.getSfcServiceFunction().get(0));
+    }
+
+    /*
+     * Create two service function groups with different types, then read an delete them
+     */
+    @Test
+    public void testPutGetDeleteServiceFunctionGroup() {
+
+        //create service function groups, types firewall and dpi
+        ServiceFunctionGroupsBuilder serviceFunctionGroupsBuilder = new ServiceFunctionGroupsBuilder();
+        serviceFunctionGroupsBuilder.setServiceFunctionGroup(createServiceFunctionGroupList());
+
+        InstanceIdentifier<ServiceFunctionGroups> sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfgIID, serviceFunctionGroupsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+
+        assertTrue("Must be true", transactionSuccessful);
+
+        //get service function by type
+        ServiceFunctionGroup serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(Firewall.class);
+
+        assertNotNull("Must be not null", serviceFunctionGroup);
+        assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(), IP_V4_ADDRESS);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
+
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(Dpi.class);
+
+        assertNotNull("Must be not null", serviceFunctionGroup);
+        assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv6Address().getValue(), IP_V6_ADDRESS);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), Dpi.class);
+
+        //get service function group by name
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(SFG_NAME + 1);
+
+        assertNotNull("Must be not null", serviceFunctionGroup);
+        assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 1);
+        assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(), IP_V4_ADDRESS);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
+
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(SFG_NAME + 2);
+
+        assertNotNull("Must be not null", serviceFunctionGroup);
+        assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 2);
+        assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv6Address().getValue(), IP_V6_ADDRESS);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), Dpi.class);
+
+        //delete transaction
+        transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(sfgIID, LogicalDatastoreType.CONFIGURATION);
+
+        assertTrue("Must be true", transactionSuccessful);
+    }
+
+    @Test
+    public void testGetSfgNameList() {
+
+        //create service function groups, types firewall and dpi
+        ServiceFunctionGroupsBuilder serviceFunctionGroupsBuilder = new ServiceFunctionGroupsBuilder();
+        serviceFunctionGroupsBuilder.setServiceFunctionGroup(createServiceFunctionGroupList());
+
+        InstanceIdentifier<ServiceFunctionGroups> sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfgIID, serviceFunctionGroupsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+
+        assertTrue("Must be true", transactionSuccessful);
+
+        //create service function chain
+        ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
+        serviceFunctionChainBuilder.setSfcServiceFunction(createSfcServiceFunctionList());
+
+        List<String> sfgNameList = SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChainBuilder.build());
+
+        assertNotNull("Must be not null", sfgNameList);
+        assertEquals("Must be equal", sfgNameList.toString(), "[" + SFG_NAME + 1 + ", " + SFG_NAME + 2 + "]");
+    }
+
+    //create sfg list with two entries
+    private List<ServiceFunctionGroup> createServiceFunctionGroupList() {
+
+        List<ServiceFunctionGroup> serviceFunctionGroupList = new ArrayList<>();
+        ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
+
+        //ip v4 group
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 1)
+                .setKey(new ServiceFunctionGroupKey(SFG_NAME + 1))
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_V4_ADDRESS)))
+                .setAlgorithm(ALGORITHM + 1)
+                .setGroupId(100L)
+                .setType(Firewall.class);
+        serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
+
+        //ipv6 group
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 2)
+                .setKey(new ServiceFunctionGroupKey(SFG_NAME + 2))
+                .setIpMgmtAddress(new IpAddress(new Ipv6Address(IP_V6_ADDRESS)))
+                .setAlgorithm(ALGORITHM + 2)
+                .setGroupId(101L)
+                .setType(Dpi.class);
+        serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
+
+        return serviceFunctionGroupList;
+    }
+
+    //create sfc service function list
+    private List<SfcServiceFunction> createSfcServiceFunctionList() {
+
+        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+
+        //first entry
+        SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
+        sfcServiceFunctionBuilder.setName(SF_NAME + 1)
+                .setKey(new SfcServiceFunctionKey(SF_NAME + 1))
+                .setType(Firewall.class);
+        sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
+
+        //second entry
+        sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
+        sfcServiceFunctionBuilder.setName(SF_NAME + 2)
+                .setKey(new SfcServiceFunctionKey(SF_NAME + 2))
+                .setType(Dpi.class);
+        sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
+
+        return sfcServiceFunctionList;
     }
 }

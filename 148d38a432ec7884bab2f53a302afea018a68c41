@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_d25bb752",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-01T07:26:32Z",
+      "side": 1,
+      "message": "Why not use SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunction.getName()) ?\n\nIt is used in the code below already",
+      "revId": "148d38a432ec7884bab2f53a302afea018a68c41",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

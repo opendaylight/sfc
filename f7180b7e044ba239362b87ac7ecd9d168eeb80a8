@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_45535f17",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-01T07:46:20Z",
+      "side": 1,
+      "message": "Great to see some new coverage here.\n\nPLeaseadd IPv6 locators and data plane locators as well. Please make sure you use global as well as local IPv6 addresses.\n\nthanks,",
+      "revId": "f7180b7e044ba239362b87ac7ecd9d168eeb80a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

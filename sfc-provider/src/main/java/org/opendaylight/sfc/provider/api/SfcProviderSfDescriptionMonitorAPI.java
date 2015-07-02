@@ -37,10 +37,10 @@ public class SfcProviderSfDescriptionMonitorAPI{
     private static ConsumerContext sessionData;
 
     public SfcProviderSfDescriptionMonitorAPI() {
-            setSession();
+            setSessionHelper();
     }
 
-    protected void setSession()  {
+    private void setSessionHelper()  {
         printTraceStart(LOG);
         try {
             if(odlSfc.getBroker()!=null) {
@@ -53,6 +53,10 @@ public class SfcProviderSfDescriptionMonitorAPI{
             LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
+    }
+
+    protected void setSession()  {
+        setSessionHelper();
     }
 
     public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String mountpoint)  {

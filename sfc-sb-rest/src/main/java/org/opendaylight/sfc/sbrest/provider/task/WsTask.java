@@ -17,9 +17,9 @@ import java.net.ConnectException;
 
 public class WsTask implements Runnable {
 
-    protected final String APPLICATION_JSON = "application/json";
-    protected final String HTTP_ERROR_MSG = "Failed, HTTP error code : ";
-    protected final int HTTP_OK = 200;
+    protected static final String APPLICATION_JSON = "application/json";
+    protected static final String HTTP_ERROR_MSG = "Failed, HTTP error code : ";
+    protected static final int HTTP_OK = 200;
     private static final Logger LOG = LoggerFactory.getLogger(WsTask.class);
 
     String url;

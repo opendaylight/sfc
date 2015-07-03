@@ -94,9 +94,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 650;
     private static final int FLOW_PRIORITY_MATCH_ANY = 5;
 
-    private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
-    private static final int QUEUE_SIZE = 100;
-    private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
     private static final int PKTIN_IDLE_TIMEOUT = 60;
 
     private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
@@ -107,13 +104,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public SfcL2FlowProgrammerOFimpl() {
         this.tableBase = (short) 0;
-        this.threadPoolExecutorService =
-                new ThreadPoolExecutor(
-                        SCHEDULED_THREAD_POOL_SIZE,
-                        SCHEDULED_THREAD_POOL_SIZE,
-                        ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS,
-                        TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
+        // newSingleThreadExecutor()
+        //     Creates an Executor that uses a single worker
+        //     thread operating off an unbounded queue
+        this.threadPoolExecutorService = Executors.newSingleThreadExecutor();
     }
 
     // This method should only be called by SfcL2Renderer.close()
@@ -627,8 +621,10 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 MatchBuilder match = new MatchBuilder();
                 List<Action> actionList = new ArrayList<Action>();
                 int actionOrder = 0;
+                int flowPriority = FLOW_PRIORITY_PATH_MAPPER;
 
                 if(this.isSf) {
+                    flowPriority += 10;
                     SfcOpenflowUtils.addMatchDscp(match, (short) this.pathId);
                 }
 
@@ -682,7 +678,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder ingressFlow =
                         SfcOpenflowUtils.createFlowBuilder(
                                 TABLE_INDEX_PATH_MAPPER,
-                                FLOW_PRIORITY_PATH_MAPPER,
+                                flowPriority,
                                 "nextHop",
                                 match,
                                 isb);

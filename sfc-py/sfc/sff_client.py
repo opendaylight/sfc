@@ -19,8 +19,8 @@ import asyncio
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, parent_dir)
 import sfc  # noqa
-__package__ = 'sfc'
 
+__package__ = 'sfc'
 
 from sfc.nsh.decode import *  # noqa
 from sfc.nsh.encode import *  # noqa
@@ -354,12 +354,13 @@ def main(argv):
     try:
         logging.basicConfig(level=logging.INFO)
         opt, args = getopt.getopt(argv, "h",
-                                  ["help", "local-port=", "local-ip=", "remote-sff-ip=", "remote-sff-port=", "sfp-id=",
-                                   "sfp-index=", "trace-req", "num-trace-hops=", "encapsulate="])
+                                  ["help", "local-port=", "local-ip=", "dest-ip=", "dest-port=", "remote-sff-ip=",
+                                   "remote-sff-port=", "sfp-id=", "sfp-index=", "trace-req", "num-trace-hops=",
+                                   "encapsulate="])
     except getopt.GetoptError:
         print(
-            "sff_client --help | --remote-sff-ip | --remote-sff-port | --sfp-id | --sfp-index | "
-            "--trace-req | --num-trace-hops | --encapsulate")
+            "sff_client --help | --local-port | --local-ip | --dest-ip | --dest-port | --remote-sff-ip | "
+            "--remote-sff-port | --sfp-id | --sfp-index | --trace-req | --num-trace-hops | --encapsulate")
         sys.exit(2)
 
     for opt, arg in opt:
@@ -405,6 +406,14 @@ def main(argv):
             local_ip = arg
             continue
 
+        if opt == "--dest-port":
+            dest_port = int(arg)
+            continue
+
+        if opt == "--dest-ip":
+            dest_ip = arg
+            continue
+
     loop = asyncio.get_event_loop()
     for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGABRT]:
         signal.signal(sig, handler)
@@ -430,11 +439,11 @@ def main(argv):
     # # sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     # except socket.error as msg:
     # print("Socket could not be created. Error Code : {}".format(msg))
-    #         sys.exit()
+    # sys.exit()
     # else:
-    #     try:
-    #         sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-    #     except socket.error as msg:
+    # try:
+    # sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+    # except socket.error as msg:
     #         print("Socket could not be created. Error Code : {}".format(msg))
     #         sys.exit()
     #

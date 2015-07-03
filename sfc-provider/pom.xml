@@ -221,6 +221,11 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.l2switch.hosttracker</groupId>
+            <artifactId>hosttracker-model</artifactId>
+            <version>${l2switch.version}</version>
+        </dependency>
     </dependencies>
 
 

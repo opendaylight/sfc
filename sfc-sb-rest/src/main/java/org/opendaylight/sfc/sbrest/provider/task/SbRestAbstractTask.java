@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 abstract public class SbRestAbstractTask implements Runnable {
 
-    protected final int THREAD_POOL_SIZE = 50;
+    protected static final int THREAD_POOL_SIZE = 50;
     protected ExecutorService taskExecutor;
     protected ExecutorService odlExecutor;
 

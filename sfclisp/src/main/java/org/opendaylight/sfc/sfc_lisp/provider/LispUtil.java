@@ -179,7 +179,7 @@ public class LispUtil {
     }
 
     public static int getIpAfiFromString(String ip) {
-        if (ip.indexOf(":") == -1) {
+        if (ip.indexOf(':') == -1) {
             return 1;
         } else {
             return 2;

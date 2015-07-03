@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_944be72a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/util/SfcNetworkTopologyUtils.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-03T05:14:58Z",
+      "side": 1,
+      "message": "Please add Javadocs to all these methods",
+      "revId": "1a7d3d6481d2f0ec489245ea10b2e0eb4a600b16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

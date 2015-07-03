@@ -21,6 +21,42 @@ __status__ = "demo code"
 import subprocess
 import tempfile
 from string import Template
+import argparse
+
+#
+# Simple class that holds all of the client configurable parameters
+#
+class Context(object):
+    def __init__(self):
+        # Just setting default values
+        self.gw_ingress = 'gw1'
+        self.gw_egress  = 'gw2'
+
+#
+# Get the command line args
+#
+def get_cmd_line_args(context):
+
+    opts = argparse.ArgumentParser()
+
+    # Ingress GW
+    opts.add_argument('--gw-ingress', '-I',
+                  default=context.gw_ingress,
+                  dest='gw_ingress',
+                  help='Set the uplink ingress GW name, default gw1')
+
+    # Egress GW
+    opts.add_argument('--gw-egress', '-E',
+                  default=context.gw_egress,
+                  dest='gw_egress',
+                  help='Set the uplink egress GW name, default gw2')
+
+    args = opts.parse_args()
+
+    context.gw_ingress = args.gw_ingress
+    context.gw_egress  = args.gw_egress
+
+    return True
 
 #
 # Internal method to execute a system command and return the return_code and stdout as a str
@@ -94,7 +130,7 @@ def get_gw_egress_vlans(gw_name):
             if field.startswith('set_field:') and field.endswith('->vlan_vid'):
                 gw_vlan_list.append((int(field.split('set_field:')[1].split('->')[0])) & 0x00FF)
             elif field.startswith('mod_vlan_vid'):
-                gw_vlan_list.append((int(field.split('mod_vlan_vid:')[1])) & 0x00FF)
+                gw_vlan_list.append((int(field.split('mod_vlan_vid:')[1])))
     return gw_vlan_list
 
 def get_tor_port(sff_name):
@@ -114,17 +150,22 @@ def get_tor_port(sff_name):
     # TODO, what to do here?
     return '-1'
 
-def create_tor_vlan_flow(node, vlan, tor_port):
-    print 'Create tor flows for node [%s] : vlan [%s] => tor port [%s]' % (node, vlan, tor_port)
+def create_tor_vlan_flow(vlan, tor_port):
+    print 'Create tor flows : vlan [%s] => tor port [%s]' % (vlan, tor_port)
     flow_template = Template('sudo ovs-ofctl -O Openflow13 add-flow tor1 "table=0,priority=10,vlan_tci=0x1000/0x1000,dl_vlan=$VLAN,actions=output=$PORT"')
     (rc, tor_flow_str) = _execute_command(flow_template.substitute(VLAN=vlan, PORT=tor_port))
 
 def create_tor_vlan_flows(sff_name, sff_vlan_list, tor_port):
     for vlan in sff_vlan_list:
-        create_tor_vlan_flow(sff_name, vlan, tor_port)
+        create_tor_vlan_flow(vlan, tor_port)
 
 
 def main():
+    context = Context()
+    if not get_cmd_line_args(context):
+        print 'ERROR in command line args, exiting...'
+        return
+
     all_vlans = []
 
     # Create tor flows for the SFFs
@@ -143,7 +184,7 @@ def main():
     min_to_max_vlans = {}
     min_vlan = int(min(all_vlans))
     prev_vlan = min_vlan
-    for vlanStr in sorted(all_vlans):
+    for vlanStr in sorted(all_vlans , key=lambda x: int(x)):
         vlan = int(vlanStr)
         if (vlan - min_vlan) >= 100:
             min_to_max_vlans[min_vlan] = prev_vlan+1
@@ -151,12 +192,17 @@ def main():
         prev_vlan = vlan
     min_to_max_vlans[min_vlan] = prev_vlan+1
 
-    # Create the RSP egress flow to the egress GW
-    for gws in [('gw1','gw2'), ('gw2','gw1')]:
-        gw_egress_vlans = get_gw_egress_vlans(gws[0])
-        tor_port = get_tor_port(gws[1])
-        for vlan in gw_egress_vlans:
-            create_tor_vlan_flow(gws[1], min_to_max_vlans[vlan], tor_port)
+    # Create the RSP egress flows to the egress GW
+    is_uplink = True
+    uplink_egress_tor_port = get_tor_port(context.gw_egress)
+    downlink_egress_tor_port = get_tor_port(context.gw_ingress)
+    for (vlan_min, vlan_max) in sorted(min_to_max_vlans.iteritems()):
+        if is_uplink:
+            create_tor_vlan_flow(vlan_max, uplink_egress_tor_port)
+            is_uplink = False
+        else:
+            create_tor_vlan_flow(vlan_max, downlink_egress_tor_port)
+            is_uplink = True
 
 if __name__ == '__main__':
     main()

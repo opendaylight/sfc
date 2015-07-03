@@ -10,9 +10,6 @@ __status__ = "demo code"
 ### NOTES:
 ### 1 Install vlan: sudo apt-get install vlan
 ### 2 Install openswitch version 2.2+. Visit https://github.com/mininet/mininet/wiki/Installing-new-version-of-Open-vSwitch
-### 3 This script reads 3 files : sfcofl2_mininet_create_flows_forwarder_sfc_sim.txt,
-###   sfcofl2_mininet_create_http_flows_gws_mpls.txt, sfcofl2_mininet_create_http_flows_gws_vlan.txt.
-###   The switches are populated with those flows, so edit the files to modify the rules. 
 
 from mininet.cli import CLI
 from mininet.node import Controller, Host, RemoteController, OVSController
@@ -44,6 +41,7 @@ MAX_CLIENTS  = 3
 MAX_SERVERS  = 2
 MAX_ELEMENTS = 9 # Notice, changing this value will affect the MAC addresses
 VLAN_ID      = 1000
+MININET_DUMP_FILE = '/tmp/mininet_dump.txt'
 MININET_NET_FILE = '/tmp/mininet_net.txt'
 LOOPBACK_FILE_PATTERN = '''
 sudo ovs-vsctl set bridge $NODE protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
@@ -114,10 +112,6 @@ class Context(object):
         self.remote_controller_port = '6633'
         self.remote_controller_args = ''
         self.remote_controller_name = 'c5'
-
-        self.sfcofl2_path_prefix   = './'
-        self.sfcofl2_path_gws_vlan = 'sfcofl2_mininet_create_http_flows_gws_vlan.txt'
-        self.sfcofl2_path_gws_mpls = 'sfcofl2_mininet_create_http_flows_gws_mpls.txt'
 
 #
 # Get the command line args
@@ -194,21 +188,6 @@ def get_cmd_line_args(context):
                   dest='servers_number',
                   help='Number of servers')
 
-    #Files
-    opts.add_argument('--prefix', '-X',
-                      default=context.sfcofl2_path_prefix,
-                      dest='sfcofl2_path_prefix',
-                      help='Path prefix where the Flows files are located')
-
-    opts.add_argument('--file-gws-vlan', '-v',
-                      default=context.sfcofl2_path_gws_vlan,
-                      dest='sfcofl2_path_gws_vlan',
-                      help='Name of the VLAN GATEWAYS FLOWS file, relative to configured prefix')
-    opts.add_argument('--file-gws-mpls', '-m',
-                      default=context.sfcofl2_path_gws_mpls,
-                      dest='sfcofl2_path_gws_mpls',
-                      help='Name of the MPLS GATEWAYS FLOWS file, relative to configured prefix')
-
     args = opts.parse_args()
 
     context.remote_controller_ip    =  args.remote_controller_ip
@@ -227,9 +206,6 @@ def get_cmd_line_args(context):
     context.demo_mode = args.demo_mode
     context.operation_mode   =  args.operation_mode
     context.topology_tor     =  args.topology_tor
-
-    context.sfcofl2_path_gws_vlan = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_vlan)
-    context.sfcofl2_path_gws_mpls = os.path.join(args.sfcofl2_path_prefix,args.sfcofl2_path_gws_mpls)
 
     #### CHECK ARGUMENTS ####
 
@@ -266,11 +242,6 @@ def get_cmd_line_args(context):
     if int(context.sf_number) % int(context.switch_number) != 0:
         print "Error: The number of SFs must be a multiple of the number of SFFs"
         return False
-
-    # Files
-    for path in [context.sfcofl2_path_gws_vlan, context.sfcofl2_path_gws_mpls]:
-        if not os.path.exists(path):
-            print 'WARNING: file does not exist: %s' % (path)
 
     #### INITIALIZE ALL COMPONENTS ###
 
@@ -446,6 +417,14 @@ def dump_hosts(network):
     for host in network.hosts:
         print 'Host %s, IP %s, MAC %s, IFs %s' % (host.name, host.IP(), host.MAC(), host.intfNames())
 
+# Copied from mininet.cli.py but I need the output to go to a file
+def dumpNodes(nodes):
+    "Dump node info."
+
+    with open(MININET_DUMP_FILE, 'w+b') as outfile:
+        for node in nodes:
+            outfile.write( '%s\n' % repr( node ) )
+
 # Copied from mininet.util.py but I need the output to go to a file
 def dumpNodeConnections(nodes):
     "Dump connections to/from nodes."
@@ -467,13 +446,33 @@ def dumpNodeConnections(nodes):
 
 # Insert flows into the switches
 def init_flows(context):
-    #Gateways flows
-    if (context.demo_mode == 'vlan'):
-        print 'GWS - VLAN flows:'
-        insert_flows_from_file(context.sfcofl2_path_gws_vlan)
-    elif (context.demo_mode == 'mpls'):
-        print 'GWS - MPLS flows:'
-        insert_flows_from_file(context.sfcofl2_path_gws_mpls)
+
+    #Gateways initialization flows
+    insert_flows_by_cmd('sudo ovs-vsctl set bridge gw1 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13')
+    insert_flows_by_cmd('sudo ovs-vsctl set bridge gw2 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13')
+
+    # Gatway client flows
+    gw1_out_port = int(3)
+    for client in context.clients:
+        if (context.demo_mode == 'vlan'):
+            print 'GWS - VLAN client flows:'
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=1,vlan_tci=0x1000/0x1000,ip,nw_dst=%s,actions=strip_vlan,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+        elif (context.demo_mode == 'mpls'):
+            print 'GWS - MPLS client flows:'
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=1,mpls,nw_dst=%s,actions=pop_mpls=0x000b,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+        gw1_out_port += 1
+
+    # Gatway server flows
+    gw2_out_port = int(3)
+    for server in context.servers:
+        if (context.demo_mode == 'vlan'):
+            print 'GWS - VLAN server flows:'
+            insert_flows_by_cmd('sudo ovs-ofctl -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=1,vlan_tci=0x1000/0x1000,ip,nw_dst=%s,actions=strip_vlan,set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+        elif (context.demo_mode == 'mpls'):
+            print 'GWS - MPLS server flows:'
+            insert_flows_by_cmd('sudo ovs-ofctl -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=1,mpls,nw_dst=%s,actions=pop_mpls=0x000b,set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+        gw2_out_port += 1
+
 
     # SFs flows
     if context.sf_loop:
@@ -529,6 +528,8 @@ def main():
 
     # This will output the nodes port connections to MININET_NET_FILE
     dumpNodeConnections(myNet.values())
+    # This will output the nodes port connections to MININET_DUMP_FILE    
+    dumpNodes(myNet.values())
 
     #start_gateways(myNet)
     start_switches(context, myNet, mySDNController, myLocalController)

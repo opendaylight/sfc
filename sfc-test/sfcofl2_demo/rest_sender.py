@@ -299,11 +299,12 @@ def validate_rest(context):
                  context.rest_path_sfp,
                  context.rest_path_rsp,
                  context.rest_path_sf_sel]:
-        print 'Validating JSON file: %s' % path
-        try:
-            json.load(open(path, 'r'))
-        except ValueError as ve:
-            print '\tValidation error [%s]' % ve
+        if os.path.exists(path):
+            print 'Validating JSON file: %s' % path
+            try:
+                json.load(open(path, 'r'))
+            except ValueError as ve:
+                print '\tValidation error [%s]' % ve
 
 def batch(context):
     # The order of these if's is important

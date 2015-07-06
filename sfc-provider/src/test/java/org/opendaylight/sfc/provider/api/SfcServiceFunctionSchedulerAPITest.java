@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,10 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -59,7 +60,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
     private ServiceFunctionPath sfPath;
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
+    public void before() throws ExecutionException, InterruptedException, IllegalAccessException {
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
         executor = opendaylightSfc.getExecutor();
@@ -107,6 +108,10 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
                 break;
             }
         }
+
+        //before test, private static variable mapCountRoundRobin has to be restored to original state
+        Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class, new HashMap<>());
+
         LOG.debug("Empty SFC data store {} times: {}", 10 - maxTries, emptyFlag ? "Successful" : "Failed");
         String sfcName = "unittest-sched-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -320,5 +325,6 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
 
         assertNotNull("Must be not null", scheduleType);
         assertEquals("Must be equal", scheduleType.getSimpleName(), RoundRobin.class.getSimpleName());
+
     }
 }

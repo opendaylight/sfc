@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_add1f158",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceClassifierAPITest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-06T16:30:06Z",
+      "side": 1,
+      "message": "This  test seems exactly the same as the second test above. Can you please clarify?",
+      "revId": "10ed6cd3e294b40d5ac1ff7cf8218b2a822173a3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

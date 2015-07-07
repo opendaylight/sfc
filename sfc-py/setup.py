@@ -89,8 +89,10 @@ class CustomSfcInstall(install):
         # https://pypi.python.org/pypi/NetfilterQueue/0.3
         if sys.platform.startswith('linux'):
             parent_dir = os.path.dirname(os.path.abspath(__file__))
-            nfq_dir = os.path.join('nfq', 'NetfilterQueue-0.3.1-P3.3')
-
+            nfq_dir = os.path.join(parent_dir, 'nfq', 'NetfilterQueue-0.3.1-P3.3')
+            print('NetfilterQueue directory:\n', nfq_dir)
+            for f in os.listdir(parent_dir):
+                print("package item:", f)
             try:
                 if hasattr(sys, 'real_prefix'):
                     python = 'python'       # virtualenv install
@@ -106,7 +108,7 @@ class CustomSfcInstall(install):
 
 setup(
     name='sfc',
-    version='0.1.0',
+    version='0.1.31',
     keywords='sfc nsh nfq',
     description='Service Function Chaining',
     long_description=readme('README.rst'),
@@ -128,7 +130,7 @@ setup(
         'paramiko >= 1.15.2',
         'pytest >= 2.6.4',
         'requests >= 2.5.1',
-        'scapy-python3 >= 0.11',
+        'scapy-python3 >= 0.13',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

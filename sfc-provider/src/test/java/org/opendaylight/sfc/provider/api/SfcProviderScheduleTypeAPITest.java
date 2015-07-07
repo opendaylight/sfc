@@ -12,18 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -220,4 +221,58 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataBrokerTest {
             assertEquals("Must be equal", 0, 1);
         }
     }
+
+    @Test
+    public void testPutServiceFunctionScheduleType(){
+        Object[] params = {"hello"};
+        SfcProviderScheduleTypeAPILocal sfcProviderScheduleTypeAPILocal = new SfcProviderScheduleTypeAPILocal(params, "m");
+
+        Class sfSchedulerTypeId = ServiceFunctionSchedulerTypeIdentity.class;
+        Class roundRobin = RoundRobin.class;
+
+        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey = new
+                ServiceFunctionSchedulerTypeKey(roundRobin);
+
+        ServiceFunctionSchedulerTypeBuilder serviceFunctionSchedulerTypeBuilder = new ServiceFunctionSchedulerTypeBuilder();
+        serviceFunctionSchedulerTypeBuilder.setName("SFST1").setKey(new ServiceFunctionSchedulerTypeKey(roundRobin)).setEnabled(true).setType(roundRobin);
+        ServiceFunctionSchedulerType serviceFunctionSchedulerType = serviceFunctionSchedulerTypeBuilder.build();
+
+        InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID =
+                InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
+                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).toInstance();
+        SfcDataStoreAPI.writePutTransactionAPI(sfstIID, serviceFunctionSchedulerType, LogicalDatastoreType.CONFIGURATION);
+
+        assertTrue(sfcProviderScheduleTypeAPILocal.deleteServiceFunctionScheduleType(roundRobin));
+    }
+
+    @Test
+    public void testReadServiceFunctionScheduleType(){
+        Object[] params = {"hello"};
+        SfcProviderScheduleTypeAPILocal sfcProviderScheduleTypeAPILocal = new SfcProviderScheduleTypeAPILocal(params, "m");
+
+        Class roundRobin = RoundRobin.class;
+
+        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey = new
+                ServiceFunctionSchedulerTypeKey(roundRobin);
+
+        ServiceFunctionSchedulerTypeBuilder serviceFunctionSchedulerTypeBuilder = new ServiceFunctionSchedulerTypeBuilder();
+        serviceFunctionSchedulerTypeBuilder.setName("SFST1").setKey(new ServiceFunctionSchedulerTypeKey(roundRobin)).setEnabled(true).setType(roundRobin);
+        ServiceFunctionSchedulerType serviceFunctionSchedulerType = serviceFunctionSchedulerTypeBuilder.build();
+
+        InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID =
+                InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
+                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).toInstance();
+        SfcDataStoreAPI.writePutTransactionAPI(sfstIID, serviceFunctionSchedulerType, LogicalDatastoreType.CONFIGURATION);
+
+        ServiceFunctionSchedulerType serviceFunctionSchedulerType1 = sfcProviderScheduleTypeAPILocal.readServiceFunctionScheduleType(roundRobin);
+        assertEquals("Returned value has not been set correctly.", serviceFunctionSchedulerType, serviceFunctionSchedulerType1);
+    }
+
+    private class SfcProviderScheduleTypeAPILocal extends SfcProviderScheduleTypeAPI{
+
+        SfcProviderScheduleTypeAPILocal(Object[] params, String m) {
+            super(params, m);
+        }
+    }
+
 }

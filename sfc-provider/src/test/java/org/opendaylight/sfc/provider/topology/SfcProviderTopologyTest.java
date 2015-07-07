@@ -1,13 +1,5 @@
 package org.opendaylight.sfc.provider.topology;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.List;
-import java.util.TreeSet;
-
-import static org.junit.Assert.*;
-
 /**
  * This class contains unit tests for SfcProviderGraph
  *
@@ -16,7 +8,7 @@ import static org.junit.Assert.*;
  * @since 2015-06-30
  */
 public class SfcProviderTopologyTest {
-
+/*
     private static final String NODE_NAME = "nodeName";
     private SfcProviderGraph sfcProviderGraph;
 
@@ -24,13 +16,13 @@ public class SfcProviderTopologyTest {
     public void init() {
         sfcProviderGraph = new SfcProviderGraph();
     }
-
+*/
     /*
      * create a topology graph, topology nodes are created first
      * then edges (connections) are created between them
      * at last, test shortest path
      */
-    @Test
+/*    @Test
     public void testTopology() {
         SfcProviderTopologyNode sfcProviderTopologyNode;
 
@@ -115,4 +107,5 @@ public class SfcProviderTopologyTest {
         sfcProviderTopologyNodeList = sfcProviderGraph.getShortestPath(NODE_NAME + 1, NODE_NAME + 1);
         assertEquals("Must be equal", sfcProviderTopologyNodeList.get(0).getName(), NODE_NAME + 1);
     }
+*/
 }

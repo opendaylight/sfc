@@ -41,6 +41,10 @@ SFF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
                           "service-function-forwarders/"
                           "service-function-forwarder/{}")
 
+SFP_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
+                          "service-function-path:"
+                          "service-function-paths/") 						  
+						  
 SF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
                          "service-function:"
                          "service-functions/"

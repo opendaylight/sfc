@@ -13,38 +13,36 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry
-        .SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry
-        .SfDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions
-        .ServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .ServiceFunctionChainBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .ServiceFunctionChainKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .service.function.chain.SfcServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .service.function.chain.SfcServiceFunctionBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
-        .service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type
-        .IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +52,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
+
 
 public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
     public static final String[] LOCATOR_IP_ADDRESS =
@@ -272,6 +271,73 @@ public class SfcProviderServiceChainAPITest extends AbstractDataBrokerTest {
 
         assertNotNull("Must be not null", sfc2);
         assertEquals("Must be equal", sfc2, sfcArray[INDEX_TO_READ]);
+    }
+
+    @Test
+    public void testReadAllServiceFunctionChains(){
+        Object[] params = {"hello"};
+        SfcProviderServiceChainAPILocal sfcProviderServiceChainAPILocal = new SfcProviderServiceChainAPILocal(params, "m");
+
+        ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
+        ServiceFunctionChain serviceFunctionChain = serviceFunctionChainBuilder.setName("SFC1").setKey(new ServiceFunctionChainKey("SFC1")).build();
+
+        ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
+        List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
+        serviceFunctionChainList.add(serviceFunctionChain);
+        serviceFunctionChainsBuilder.setServiceFunctionChain(serviceFunctionChainList);
+        ServiceFunctionChains serviceFunctionChains = serviceFunctionChainsBuilder.build();
+
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
+                .builder(ServiceFunctionChains.class).toInstance();
+
+        SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, serviceFunctionChains, LogicalDatastoreType.CONFIGURATION);
+
+        ServiceFunctionChains returnedSfc = sfcProviderServiceChainAPILocal.readAllServiceFunctionChains();
+        assertNotNull("Returned variable is missing.", returnedSfc);
+    }
+
+    @Test
+    public void testDeletePathFromServiceFunctionChainState(){
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
+                ServiceFunctionChainStateKey("SFC1");
+        SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
+        sfcServicePathBuilder.setName("SP1").setKey(new SfcServicePathKey("SP1"));
+        SfcServicePath sfcServicePath = sfcServicePathBuilder.build();
+        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier
+                .builder(ServiceFunctionChainsState.class)
+                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
+                .child(SfcServicePath.class, new SfcServicePathKey("SP1")).build();
+
+        SfcDataStoreAPI.writePutTransactionAPI(sfcoIID, sfcServicePath, LogicalDatastoreType.OPERATIONAL);
+
+        assertTrue(SfcProviderServiceChainAPI.deletePathFromServiceFunctionChainState("SFC1", "SP1"));
+    }
+
+    @Test
+    public void testAddPathToServiceFunctionChainState(){
+        assertTrue(SfcProviderServiceChainAPI.addPathToServiceFunctionChainState("SFC1", "SP1"));
+    }
+
+    @Test
+    public void testGetServiceFunctionChainsRef(){
+        ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
+        ServiceFunctionChain serviceFunctionChain = serviceFunctionChainBuilder.setName("SFC1").setKey(new ServiceFunctionChainKey("SFC1")).build();
+
+        ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
+        List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
+        serviceFunctionChainList.add(serviceFunctionChain);
+        serviceFunctionChainsBuilder.setServiceFunctionChain(serviceFunctionChainList);
+        ServiceFunctionChains serviceFunctionChains = serviceFunctionChainsBuilder.build();
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, serviceFunctionChains, LogicalDatastoreType.CONFIGURATION);
+        assertNotNull(SfcProviderServiceChainAPI.getServiceFunctionChainsRef());
+    }
+
+    private class SfcProviderServiceChainAPILocal extends SfcProviderServiceChainAPI{
+
+        SfcProviderServiceChainAPILocal(Object[] params, String m) {
+            super(params, m);
+        }
     }
 
 }

@@ -923,6 +923,7 @@ def main():
     agent_port = 5000
     odl_auto_sff = False
     ovs_local_sff_cp_ip = '0.0.0.0'
+    debug_level = False
 
     #: setup parser -----------------------------------------------------------
     parser = argparse.ArgumentParser(description='SFC Agent',
@@ -930,6 +931,7 @@ def main():
                                             "--rest "
                                             "--nfq-class "
                                             "--odl-get-sff "
+                                            "--debug_level "
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
                                             "--sff-os=<agent os>"
@@ -952,6 +954,9 @@ def main():
 
     parser.add_argument('--sff-name',
                         help='Set SFF name')
+
+    parser.add_argument('--debug-level', action='store_true',
+                        help='Set logging level to DEBUG')
 
     parser.add_argument('--odl-ip-port',
                         help='Set ODL IP and port in form <IP>:<PORT>. '
@@ -986,6 +991,9 @@ def main():
     if args.sff_name is not None:
         sfc_globals.set_my_sff_name(args.sff_name)
 
+    if args.debug_level is not None:
+        debug_level = args.debug_level
+
     if args.sff_os is not None:
         sff_os = args.sff_os
 
@@ -999,6 +1007,11 @@ def main():
 
     #: execute actions --------------------------------------------------------
     try:
+        if debug_level:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+
         logger.info("====== STARTING SFC AGENT ======")
         logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
                     "appropriate action such as creating, deleting, updating  SFs, SFFs, "

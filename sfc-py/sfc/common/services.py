@@ -244,7 +244,7 @@ class BasicService(object):
         # logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
-            # logger.info('%s: Sending packets to %s', self.service_type, addr)
+            # logger.debug('%s: Sending packets to %s', self.service_type, addr)
             if nsh_decode.is_vxlan_nsh_legacy_message(data):
                 # Disregard source port of received packet and send packet back to 6633
                 addr_l = list(addr)
@@ -478,31 +478,31 @@ class MySffServer(BasicService):
                         # the next line replaces the currently-running process with the sudo
                         os.execlpe('sudo', *args)
 
-                        # Reinaldo note:
-                        # Unfortunately it has to be this way. Python has poor raw socket support in
-                        # MacOS.  What happens is that MacoS will _always_ include the IP header unless you use
-                        # socket option IP_HDRINCL
-                        # https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man4/ip.4.html
-                        #
-                        # But if you try to set this option at the Python level (instead of C level) it does not
-                        # work. the only way around is to create a raw socket of type UDP and leave the IP header
-                        # out when sending/building the packet.
-                        sock_raw = None
+                    # Reinaldo note:
+                    # Unfortunately it has to be this way. Python has poor raw socket support in
+                    # MacOS.  What happens is that MacoS will _always_ include the IP header unless you use
+                    # socket option IP_HDRINCL
+                    # https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man4/ip.4.html
+                    #
+                    # But if you try to set this option at the Python level (instead of C level) it does not
+                    # work. the only way around is to create a raw socket of type UDP and leave the IP header
+                    # out when sending/building the packet.
+                    sock_raw = None
 
-                        try:
-                            if platform.system() == "Darwin":
-                                # Assuming IPv4 packet for now. Move pointer forward
-                                inner_packet = rw_data[PAYLOAD_START_INDEX + IPV4_HEADER_LEN_BYTES:]
-                                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
-                            else:
-                                sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-                        except socket.error as msg:
-                            logger.error("Socket could not be created. Error Code : {}", msg)
-                            sys.exit()
+                    try:
+                        if platform.system() == "Darwin":
+                            # Assuming IPv4 packet for now. Move pointer forward
+                            inner_packet = rw_data[PAYLOAD_START_INDEX + IPV4_HEADER_LEN_BYTES:]
+                            sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
+                        else:
+                            sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+                    except socket.error as msg:
+                        logger.error("Socket could not be created. Error Code : {}", msg)
+                        sys.exit()
 
-                        bearing = self._get_packet_bearing(inner_packet)
-                        sock_raw.sendto(inner_packet, (bearing['d_addr'],
-                                                       bearing['d_port']))
+                    bearing = self._get_packet_bearing(inner_packet)
+                    sock_raw.sendto(inner_packet, (bearing['d_addr'],
+                                                   bearing['d_port']))
 
             # end processing as Service Index reaches zero (SI = 0)
             else:

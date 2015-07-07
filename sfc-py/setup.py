@@ -106,7 +106,7 @@ class CustomSfcInstall(install):
 
 setup(
     name='sfc',
-    version='0.1.0',
+    version='0.1.1',
     keywords='sfc nsh nfq',
     description='Service Function Chaining',
     long_description=readme('README.rst'),
@@ -128,7 +128,7 @@ setup(
         'paramiko >= 1.15.2',
         'pytest >= 2.6.4',
         'requests >= 2.5.1',
-        'scapy-python3 >= 0.11',
+        'scapy-python3 >= 0.13',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

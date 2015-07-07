@@ -1016,6 +1016,13 @@ public class SfcL2RspProcessor {
         while (sffGraphIter.hasNext()) {
             SffGraph.SffGraphEntry entry = sffGraphIter.next();
             LOG.debug("RspTransport entry: {}", entry);
+
+            if(entry.getSrcSff().equals(entry.getDstSff())) {
+                // It may be that multiple SFs are on the same SFF
+                // If so, we dont need to set the transports again
+                continue;
+            }
+
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rspTransport);
             if(isMpls) {

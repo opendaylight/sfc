@@ -37,8 +37,8 @@ else:
 
 
 # Constants
-MAX_CLIENTS  = 3
-MAX_SERVERS  = 2
+MAX_CLIENTS  = 10
+MAX_SERVERS  = 10
 MAX_ELEMENTS = 9 # Notice, changing this value will affect the MAC addresses
 VLAN_ID      = 1000
 MININET_DUMP_FILE = '/tmp/mininet_dump.txt'

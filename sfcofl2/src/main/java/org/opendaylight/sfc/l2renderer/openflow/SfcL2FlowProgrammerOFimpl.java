@@ -490,8 +490,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         @Override
         public void run() {
             try {
-                LOG.info("SfcProviderSffFlowWriter.ConfigureTransportArpIngressThread, sff [{}] mac [{}]",
-                        this.sffNodeName, this.mac);
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportArpIngressThread, sff [{}] mac [{}]",
+                          this.sffNodeName, this.mac);
 
                 // Create the matching criteria
                 MatchBuilder match = new MatchBuilder();

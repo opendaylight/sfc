@@ -179,6 +179,9 @@ def _get_rsp_and_vlan_mappings(context):
 
         # Expecting: priority=350,dl_vlan=101 actions=pop_vlan,write_metadata:0x1/0xffff,goto_table:3
         for flow in vlan_flows:
+            if len(flow) < 1:
+                continue
+
             space_fields = flow.split()
             if 'ip' in space_fields[0]:
                 # The matches that use 'ip' are for the SFs and not needed here
@@ -347,7 +350,7 @@ def set_client_rsp_mapping(context):
         # TODO assuming all RSPs are symmetric, and the next VLAN is offset by 100
         return_vlan = int(vlan)+100
         server_gw2_port = _get_gw_port('gw2', server_info[0])
-        (rc, result_str) = _execute_command('sudo ovs-ofctl  -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=%s,dl_type=0x0800,nw_proto=6,nw_src=%s,actions=push_vlan=0x8100,mod_vlan_vid=%d,mod_vlan_pcp=0,set_field=00:00:00:00:01:01->eth_dst,output=1"' % (server_gw2_port, server_info[1], return_vlan))
+        (rc, result_str) = _execute_command('sudo ovs-ofctl  -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=%s,dl_type=0x0800,nw_proto=6,nw_dst=%s,actions=push_vlan=0x8100,mod_vlan_vid=%d,mod_vlan_pcp=0,set_field=00:00:00:00:01:01->eth_dst,output=1"' % (server_gw2_port, client_info.ip, return_vlan))
         if rc != 0:
             print 'ERROR creating server flow in gw2 rc=%d' % rc
 

@@ -13,6 +13,7 @@ import logging
 import argparse
 import requests
 import netifaces
+import json
 
 from urllib.parse import urlparse
 
@@ -305,13 +306,17 @@ def page_not_found(e):
            methods=['PUT', 'POST'])
 def apply_acl(acl_name):
     check_nfq_classifier_state()
+    logger.info("Received request from ODL to create ACL ...")
 
     if not flask.request.json:
         logger.error('Received ACL is empty, aborting ...')
         flask.abort(400)
 
     try:
-        nfq_classifier.process_acl(flask.request.get_json())
+        r_json = flask.request.get_json()
+        with open("jsonputACL.txt", "w") as outfile:
+            json.dump(r_json, outfile)
+        nfq_classifier.process_acl(r_json)
     except:
         return '', 500
 
@@ -322,7 +327,7 @@ def apply_acl(acl_name):
            methods=['DELETE'])
 def remove_acl(acl_name):
     check_nfq_classifier_state()
-
+    logger.info("Received request from ODL to delete ACL ...")
     acl_data = {'access-list': [{'access-list-entries': [{'delete': True}],
                                  'acl-name': acl_name}]}
 
@@ -335,7 +340,7 @@ def remove_acl(acl_name):
 def delete_path(rsp_name):
     status_code = 204
     not_found_msg = 'RSP "%s" not found' % rsp_name
-
+    logger.info("Received request from ODL to delete RSP ...")
     local_path = sfc_globals.get_path()
     local_data_plane_path = sfc_globals.get_data_plane_path()
 
@@ -357,6 +362,7 @@ def delete_path(rsp_name):
 @app.route('/operational/rendered-service-path:rendered-service-paths/',
            methods=['GET'])
 def get_paths():
+    logger.info("Received request from ODL to send RSs ...")
     return flask.jsonify(sfc_globals.get_path())
 
 
@@ -369,7 +375,10 @@ def create_paths():
     # reset path data
     sfc_globals.reset_data_plane_path()
     local_path = sfc_globals.get_path()
-
+    logger.info("Received request from ODL to create RSPs ...")
+    r_json = flask.request.get_json()
+    with open("jsonputRSPs.txt", "w") as outfile:
+        json.dump(r_json, outfile)
     rsps = flask.request.json['rendered-service-paths']
     for path_item in rsps:
         local_path[path_item['name']] = path_item
@@ -392,18 +401,19 @@ def set_odl_metadata():
     logger.info("Received request for Metadata creation")
     if not flask.request.json:
         flask.abort(400)
-
-        metadata_json = flask.request.get_json()['service-function-metadata']
-
-        sfc_globals.reset_odl_metadata()
-        sfc_globals.set_odl_metadata(metadata_json)
-    else:
         logger.warning("=>Failed to GET Metadata from ODL \n")
+    r_json = flask.request.get_json()
+    with open("jsonputMDT.txt", "w") as outfile:
+        json.dump(r_json, outfile)
+    metadata_json = flask.request.get_json()['service-function-metadata']
+    sfc_globals.reset_odl_metadata()
+    sfc_globals.set_odl_metadata(metadata_json)
 
 
 @app.route('/operational/data-plane-path:data-plane-paths/',
            methods=['GET'])
 def get_data_plane_paths():
+    logger.info("Received request from ODL to send DPs ...")
     return flask.jsonify(sfc_globals.get_data_plane_path())
 
 
@@ -415,7 +425,11 @@ def create_sf(sfname):
     if not flask.request.json:
         flask.abort(400)
 
+    logger.info("Received request from ODL to create SF ...")
     local_sf_topo = sfc_globals.get_sf_topo()
+    r_json = flask.request.get_json()
+    with open("jsonputSF.txt", "w") as outfile:
+        json.dump(r_json, outfile)
     local_sf_topo[sfname] = flask.request.get_json()['service-function'][0]
     data_plane_locator_list = local_sf_topo[sfname]['sf-data-plane-locator']
 
@@ -439,7 +453,7 @@ def delete_sf(sfname):
     status_code = 204
     local_sf_topo = sfc_globals.get_sf_topo()
     local_sf_threads = sfc_globals.get_sf_threads()
-
+    logger.info("Received request from ODL to delete SF ...")
     try:
         if sfname in local_sf_threads.keys():
             stop_sf(sfname)
@@ -469,11 +483,14 @@ def create_sff(sffname):
     if not flask.request.json:
         flask.abort(400)
 
+    logger.info("Received request from ODL to create SFF ...")
     local_sff_threads = sfc_globals.get_sff_threads()
     if sffname in local_sff_threads.keys():
         stop_sff(sffname)
 
     r_json = flask.request.get_json()
+    with open("jsonputSFF.txt", "w") as outfile:
+            json.dump(r_json, outfile)
     local_sff_topo = sfc_globals.get_sff_topo()
 
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
@@ -499,7 +516,7 @@ def delete_sff(sffname):
     status_code = 204
     local_sff_topo = sfc_globals.get_sff_topo()
     local_sff_threads = sfc_globals.get_sff_threads()
-
+    logger.info("Received request from ODL to delete SFF ...")
     try:
         if sffname in local_sff_threads.keys():
             stop_sff(sffname)
@@ -520,6 +537,7 @@ def delete_sff(sffname):
 @app.route('/config/service-function-forwarder:service-function-forwarders/',
            methods=['GET'])
 def get_sffs():
+    logger.info("Received request from ODL to send SFFs ...")
     return flask.jsonify(sfc_globals.get_sff_topo())
 
 
@@ -528,7 +546,7 @@ def get_sffs():
 def get_sffs_threads():
     serialized_threads = {}
     local_sff_threads = sfc_globals.get_sff_threads()
-
+    logger.info("Received request from ODL to send SFFs topo ...")
     for key, value in local_sff_threads.items():
         if value['thread'].is_alive():
             serialized_threads[key] = {}
@@ -544,6 +562,10 @@ def create_sffs():
     if not flask.request.json:
         flask.abort(400)
 
+    logger.info("Received request from ODL to create SFFs ...")
+    r_json = flask.request.get_json()
+    with open("jsonputSFFs.txt", "w") as outfile:
+        json.dump(r_json, outfile)
     sffs = 'service-function-forwarders'
     local_sff_topo = {
         sffs: flask.request.json[sffs]
@@ -558,6 +580,7 @@ def delete_sffs():
     """
     Delete all SFFs, SFPs, RSPs
     """
+    logger.info("Received request from ODL to delete SFFs ...")
     # We always use accessors
     sfc_globals.reset_sff_topo()
     sfc_globals.reset_path()
@@ -588,6 +611,8 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
 
     if r.ok:
         r_json = r.json()
+        with open("jsongetSFF_DPL.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         sff_json = r_json['service-function-forwarders']
 
         local_sff_topo = sfc_globals.get_sff_topo()
@@ -625,6 +650,8 @@ def get_metadata_from_odl(odl_ip_port):
 
     if r.ok:
         r_json = r.json()
+        with open("jsongetMDT.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         metadata_json = r_json['service-function-metadata']
 
         sfc_globals.reset_odl_metadata()
@@ -646,7 +673,7 @@ def get_sfp_from_odl(odl_ip_port):
     """
     try:
         logger.info("Getting SFP configured in ODL ...")
-        url = _sfc_globals.SFP_URL
+        url = _sfc_globals.SFP_NAME_PARAMETER_URL
         odl_sfp_url = url.format(odl_ip_port)
 
         s = requests.Session()
@@ -661,6 +688,8 @@ def get_sfp_from_odl(odl_ip_port):
 
     if r.ok:
         r_json = r.json()
+        with open("jsongetSFP.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         sfp_json = r_json['service-function-paths']
 
         sfc_globals.reset_sfp_topo()
@@ -708,6 +737,8 @@ def get_sffs_from_odl(odl_ip_port):
 
     if r.ok:
         r_json = r.json()
+        with open("jsongetSFFs.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         sff_json = r_json['service-function-forwarders']
         sfc_globals.reset_sff_topo()
         local_sff_topo = sfc_globals.get_sff_topo()
@@ -749,7 +780,8 @@ def get_sf_from_odl(odl_ip_port, sf_name):
 
     if r.ok:
         r_json = r.json()
-
+        with open("jsongetSF.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         local_sf_topo = sfc_globals.get_sf_topo()
         local_sf_topo[sf_name] = r_json['service-function'][0]
         return 0
@@ -795,6 +827,7 @@ def create_path(rsp_name):
         else:
             logger.error("Unknown SFF OS: %s", local_sff_os)
             # json_string = json.dumps(data_plane_path)
+        logger.info("ODL locator %s ", sfc_globals.get_odl_locator())
         get_sfp_from_odl(sfc_globals.get_odl_locator())
         get_metadata_from_odl(sfc_globals.get_odl_locator())
         find_metadata()
@@ -819,15 +852,13 @@ def find_metadata():
         variable_mtdt = 'variable-metadata'
         if context_mtdt in local_mtdt.keys():
             context_key = local_mtdt[context_mtdt]
-        if variable_mtdt in local_mtdt.keys():
-            variable_key = local_mtdt[variable_mtdt]
-        if context_key:
             for mtdt in local_odl_metadata[context_mtdt]:
                 if mtdt['name'] == context_key:
                     sfc_globals.sfp_context_metadata = mtdt
                     logger.info("New context metadata for SFP: '%s'", local_parent_path)
                     return
-        if variable_key:
+        if variable_mtdt in local_mtdt.keys():
+            variable_key = local_mtdt[variable_mtdt]
             for mtdt in local_odl_metadata[variable_mtdt]:
                 if mtdt['name'] == variable_key:
                     sfc_globals.sfp_variable_metadata = mtdt
@@ -862,6 +893,8 @@ def get_sff_from_odl(odl_ip_port, sff_name):
 
     if r.ok:
         r_json = r.json()
+        with open("jsongetSFF.txt", "w") as outfile:
+            json.dump(r_json, outfile)
         local_sff_topo = sfc_globals.get_sff_topo()
         local_sff_topo[sff_name] = r_json['service-function-forwarder'][0]
         return 0
@@ -923,6 +956,7 @@ def main():
     agent_port = 5000
     odl_auto_sff = False
     ovs_local_sff_cp_ip = '0.0.0.0'
+    debug_level = False
 
     #: setup parser -----------------------------------------------------------
     parser = argparse.ArgumentParser(description='SFC Agent',
@@ -930,6 +964,7 @@ def main():
                                             "--rest "
                                             "--nfq-class "
                                             "--odl-get-sff "
+                                            "--debug_level "
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
                                             "--sff-os=<agent os>"
@@ -953,6 +988,9 @@ def main():
     parser.add_argument('--sff-name',
                         help='Set SFF name')
 
+    parser.add_argument('--debug-level', action='store_true',
+                        help='Set logging level to DEBUG')
+
     parser.add_argument('--odl-ip-port',
                         help='Set ODL IP and port in form <IP>:<PORT>. '
                              'Default is %s' % sfc_globals.get_odl_locator())
@@ -972,6 +1010,7 @@ def main():
 
     if args.odl_ip_port is not None:
         sfc_globals.set_odl_locator(args.odl_ip_port)
+        logger.info('ODL locator: %s', sfc_globals.get_odl_locator())
 
     if args.agent_port is not None:
         agent_port = args.agent_port
@@ -986,6 +1025,9 @@ def main():
     if args.sff_name is not None:
         sfc_globals.set_my_sff_name(args.sff_name)
 
+    if args.debug_level is not None:
+        debug_level = args.debug_level
+
     if args.sff_os is not None:
         sff_os = args.sff_os
 
@@ -999,6 +1041,11 @@ def main():
 
     #: execute actions --------------------------------------------------------
     try:
+        if debug_level:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+
         logger.info("====== STARTING SFC AGENT ======")
         logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
                     "appropriate action such as creating, deleting, updating  SFs, SFFs, "

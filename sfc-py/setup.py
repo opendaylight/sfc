@@ -7,7 +7,6 @@
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 
-import os
 import pip
 import sys
 import subprocess
@@ -88,25 +87,15 @@ class CustomSfcInstall(install):
         # PyPI has only a version for Python 2.x
         # https://pypi.python.org/pypi/NetfilterQueue/0.3
         if sys.platform.startswith('linux'):
-            parent_dir = os.path.dirname(os.path.abspath(__file__))
-            nfq_dir = os.path.join('nfq', 'NetfilterQueue-0.3.1-P3.3')
-
             try:
-                if hasattr(sys, 'real_prefix'):
-                    python = 'python'       # virtualenv install
-                else:
-                    python = 'python3.4'    # normal install
-
-                os.chdir(nfq_dir)
-                subprocess.check_call([python, 'setup.py', 'install'])
-                os.chdir(parent_dir)
+                subprocess.check_call(['pip3', 'install', 'NFQP3'])
             except Exception as exc:
                 print('*** Failed to install NetfilterQueue ***\n', exc)
 
 
 setup(
     name='sfc',
-    version='0.1.0',
+    version='0.1.32',
     keywords='sfc nsh nfq',
     description='Service Function Chaining',
     long_description=readme('README.rst'),
@@ -128,7 +117,7 @@ setup(
         'paramiko >= 1.15.2',
         'pytest >= 2.6.4',
         'requests >= 2.5.1',
-        'scapy-python3 >= 0.11',
+        'scapy-python3 >= 0.13',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

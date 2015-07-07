@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,14 +97,19 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     private static final String SF_SERVICE_PATH = "dummySFSP";
     private static final String RSP_NAME = "dummyRSP";
     private static final int PORT = 555;
-    private ExecutorService executor;
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static ExecutorService executor;
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static DataBroker dataBroker;
+    private static boolean setUpIsDone = false;
 
     @Before
     public void before() throws InterruptedException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
 
         //clear data store
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
@@ -116,16 +120,16 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         Thread.sleep(1000);
     }
 
-    @After
-    public void after() throws InterruptedException {
-        //clear data store
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        Thread.sleep(1000);
-    }
+//    @After
+//    public void after() throws InterruptedException {
+//        //clear data store
+//        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        Thread.sleep(1000);
+//    }
 
     @Test
     public void testCreateReadServiceFunction() throws ExecutionException, InterruptedException {

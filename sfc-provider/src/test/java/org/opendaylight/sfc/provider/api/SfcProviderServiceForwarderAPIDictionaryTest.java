@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -45,18 +44,22 @@ import static org.junit.Assert.*;
  */
 public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataBrokerTest {
 
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static DataBroker dataBroker;
+    private static ExecutorService executor;
+    private static OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
     String[] sffName = {"unittest-forwarder-1", "unittest-forwarder-2", "unittest-forwarder-3"};
     List<ServiceFunction> sfList = new ArrayList<>();
+    private static boolean setUpIsDone = false;
 
     @Before
     public void before() {
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.6")), 555);
         SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("kyiv-5.5.5.6:555-vxlan", dummyIp, "sff-kyiv", VxlanGpe.class);
@@ -69,10 +72,10 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataBr
                 new IpAddress(new Ipv4Address("192.168.100.113")), dummyLocator, Boolean.FALSE));
     }
 
-    @After
-    public void after() {
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-    }
+//    @After
+//    public void after() {
+//        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//    }
 
     @Test
     public void testUpdateDictionary() throws ExecutionException, InterruptedException {

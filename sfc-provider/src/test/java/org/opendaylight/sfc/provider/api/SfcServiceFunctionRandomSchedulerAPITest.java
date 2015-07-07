@@ -1,6 +1,5 @@
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -52,15 +51,20 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataBroker
     private static final String SFP_NAME = "sfpName";
     private static final String SFF_NAME = "sffName";
     private static final String SFG_NAME = "sfgName";
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-    private ExecutorService executor;
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static ExecutorService executor;
     private SfcServiceFunctionRandomSchedulerAPI scheduler;
+    private static boolean setUpIsDone = false;
+    private static DataBroker dataBroker;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
         scheduler = new SfcServiceFunctionRandomSchedulerAPI();
 
         //clear data store
@@ -72,14 +76,14 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataBroker
         Thread.sleep(1000);
     }
 
-    @After
-    public void after() {
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-    }
+//    @After
+//    public void after() {
+//        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//    }
 
     /*
      * returns service functions name list from service function chain

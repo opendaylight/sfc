@@ -50,15 +50,20 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTe
     private static final String SFG_NAME = "sfgName";
     private static final String IP_V4_ADDRESS = "192.168.10.1";
     private static final String IP_V6_ADDRESS = "01:23:45:67:89:AB:CD:EF";
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private final List<ServiceFunction> sfList = new ArrayList<>();
-    private ExecutorService executor;
+    private static ExecutorService executor;
+    private static DataBroker dataBroker;
+    private static boolean setUpIsDone = false;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
         SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan", dummyIp, "sff-moscow", VxlanGpe.class);

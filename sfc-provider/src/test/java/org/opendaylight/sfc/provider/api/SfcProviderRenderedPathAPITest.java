@@ -95,15 +95,19 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private final String[] SFF_LOCATOR_IP =
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
     private final List<ServiceFunction> sfList = new ArrayList<>();
-    private DataBroker dataBroker;
-    private ExecutorService executor;
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static DataBroker dataBroker;
+    private static ExecutorService executor;
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static boolean setUpIsDone = false;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
 
         /* Some unit tests can't delete all the objects, so clean up them first */
         executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
@@ -252,11 +256,11 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @After
     public void after() {
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
 
         /* Can't create RSP if we don't do these cleanups, don't know why */
         SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(SFP_NAME);

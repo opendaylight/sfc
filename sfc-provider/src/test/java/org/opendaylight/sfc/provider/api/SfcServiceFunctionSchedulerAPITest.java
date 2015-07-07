@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -52,18 +51,23 @@ import static org.junit.Assert.*;
 public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionSchedulerAPITest.class);
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private final List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
     private final List<ServiceFunction> sfList = new ArrayList<>();
-    private ExecutorService executor;
+    private static ExecutorService executor;
     private ServiceFunctionChain sfChain;
     private ServiceFunctionPath sfPath;
+    private static DataBroker dataBroker;
+    private static boolean setUpIsDone = false;
 
     @Before
     public void before() throws ExecutionException, InterruptedException, IllegalAccessException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+            executor = opendaylightSfc.getExecutor();
+        }
+        setUpIsDone = true;
 
         /* Delete all the content in SFC data store before unit test */
         int maxTries = 10;
@@ -193,13 +197,13 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         Thread.sleep(1000); //Wait it is really created
     }
 
-    @After
-    public void after() {
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-    }
+//    @After
+//    public void after() {
+//        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+//    }
 
     @Test
     public void testBasicEnvSetup() throws ExecutionException, InterruptedException {
@@ -327,4 +331,5 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", scheduleType.getSimpleName(), RoundRobin.class.getSimpleName());
 
     }
+
 }

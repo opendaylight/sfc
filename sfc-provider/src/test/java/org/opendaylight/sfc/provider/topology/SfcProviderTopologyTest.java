@@ -115,4 +115,5 @@ public class SfcProviderTopologyTest {
         sfcProviderTopologyNodeList = sfcProviderGraph.getShortestPath(NODE_NAME + 1, NODE_NAME + 1);
         assertEquals("Must be equal", sfcProviderTopologyNodeList.get(0).getName(), NODE_NAME + 1);
     }
+
 }

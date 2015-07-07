@@ -60,12 +60,18 @@ public class SfcProviderAclAPITest extends AbstractDataBrokerTest {
     private static final String[] IP_V4_ADDRESS = {"192.168.1.", "10.66.20."};
     private static final String[] IP_PREFIX = {"/16", "/32", "/48"};
     private static final String[] IP_V6_ADDRESS = {"12:34:56:78:90:AB:AD:E", "12:34:56:78:90:AB:AD:E"};
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private static DataBroker dataBroker;
+    private static boolean setUpIsDone = false;
 
     @Before
     public void init() {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+
+        if(setUpIsDone == false){
+            dataBroker = getDataBroker();
+            opendaylightSfc.setDataProvider(dataBroker);
+        }
+        setUpIsDone = true;
     }
 
     @Test

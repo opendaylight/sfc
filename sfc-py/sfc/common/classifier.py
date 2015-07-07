@@ -294,6 +294,7 @@ class NfqClassifier(metaclass=Singleton):
             self.fwd_socket.close()
             
         self.fwd_socket = socket.socket(adrr_family, socket.SOCK_DGRAM)
+        logger.debug("Forward socket created in classifier with IP %s", ip_adr)
         # res = self.fwd_socket.getsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY)
         # logger.info('IPV6_V6ONLY set to :"%s"', res)
         # self.fwd_socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
@@ -457,6 +458,8 @@ class NfqClassifier(metaclass=Singleton):
         nsh_packet = nsh_header + packet.get_payload()
         try:
             logger.info('addr: "%s"  port:"%s"', fwd_to['ip'], fwd_to['port'])
+            logger.debug('* Sending packet to IP: "%s", port: "%d", nsp: "%d", nsi: "%d", next_protocol(base_header): "%s", next_protocol(encap_header): "%s"',
+                fwd_to['ip'], fwd_to['port'], rsp_id, fwd_to['starting-index'], next_protocol, VXLAN_NEXT_PROTO_NSH)        
             self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
             sfc_globals.sent_packets += 1
             logger.debug('* Queued:"%d" sent:"%d sfq:"%d" sffq:"%d" sf_proc:"%d" sff_proc "%d"',
@@ -848,6 +851,7 @@ def start_classifier():
     nfq_classifier = NfqClassifier()
 
     nfq_classifier.collect_packets()
+    logger.info('******************Classifier started "***************')
 
 
 def clear_classifier():
@@ -859,10 +863,11 @@ def clear_classifier():
     if nfq_classifier.nfq_running():
         # TODO: logging exceptions ocures (sometimes) -> debug
         nfq_classifier.remove_all_rsps()
-        logger.info('******************Processed packets "%d"***************', sfc_globals.processed_packets)
-        logger.info('******************Sent packets "%d"***************', sfc_globals.sent_packets)
-        logger.info('******************SF processed packets "%d"***************', sfc_globals.sf_processed_packets)
-        logger.info('******************SFF processed packets "%d"***************', sfc_globals.sff_processed_packets)
-        logger.info('******************SF queued packets "%d"***************', sfc_globals.sf_queued_packets)
-        logger.info('******************SFf queued packets "%d"***************', sfc_globals.sff_queued_packets)
-        logger.info('******************Not processed packets "%d"***************', sfc_globals.not_processed_packets)
+        logger.debug('******************Processed packets "%d"***************', sfc_globals.processed_packets)
+        logger.debug('******************Sent packets "%d"***************', sfc_globals.sent_packets)
+        
+    logger.debug('******************SF processed packets "%d"***************', sfc_globals.sf_processed_packets)
+    logger.debug('******************SFF processed packets "%d"***************', sfc_globals.sff_processed_packets)
+    logger.debug('******************SF queued packets "%d"***************', sfc_globals.sf_queued_packets)
+    logger.debug('******************SFf queued packets "%d"***************', sfc_globals.sff_queued_packets)
+    logger.debug('******************Not processed packets "%d"***************', sfc_globals.not_processed_packets)

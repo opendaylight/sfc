@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-VERSION = "0.3"  # Remember to change README.rst when version changes.
+VERSION = "0.1"  # Remember to change README.rst when version changes.
 
 try:
     # Use Cython
@@ -23,13 +23,13 @@ except ImportError:
 setup(
     cmdclass=cmd,
     ext_modules=[ext],
-    name="NetfilterQueue",
+    name="NFQP3",
     version=VERSION,
     license="BSD",
     author="Matthew Fox",
     author_email="matthew@kerkhofftech.ca",
     url="https://github.com/kti/python-netfilterqueue",
-    description="Python bindings for libnetfilter_queue",
+    description="Python bindings for libnetfilter_queue pached for Python3",
     long_description=open("README.rst").read(),
     download_url="http://pypi.python.org/packages/source/N/NetfilterQueue/NetfilterQueue-%s.tar.gz" % VERSION,
     classifiers=[
@@ -41,6 +41,6 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Telecommunications Industry",
         "Programming Language :: Cython",
-        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
     ]
 )

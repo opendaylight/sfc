@@ -28,7 +28,9 @@ which is responsible for composing a (raw) bytes representation of a header.
 
 # Inner Packet
 
-PAYLOAD_START_INDEX = 46
+PAYLOAD_START_INDEX_NSH_TYPE3 = 46
+PAYLOAD_START_INDEX_NSH_TYPE2 = 46
+PAYLOAD_START_INDEX_NSH_TYPE1 = 32
 
 # VXLAN constants
 

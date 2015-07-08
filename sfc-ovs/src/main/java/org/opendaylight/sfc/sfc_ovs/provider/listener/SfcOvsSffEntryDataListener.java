@@ -23,6 +23,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -71,19 +72,8 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
-
-                //build OvsdbBridge
-                OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(serviceFunctionForwarder, opendaylightSfc.getExecutor());
-
-                if (ovsdbBridge != null) {
-                    //put Bridge
-                    SfcOvsUtil.putOvsdbBridge(ovsdbBridge, opendaylightSfc.getExecutor());
-
-                    //put Termination Points
-                    SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
-                            serviceFunctionForwarder.getSffDataPlaneLocator(), opendaylightSfc.getExecutor());
-                }
+                // add augmentations for serviceFunctionForwarder
+                addOvsdbAugmentations(serviceFunctionForwarder, opendaylightSfc.getExecutor());
             }
         }
 
@@ -94,19 +84,8 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     && (!dataCreatedObject.containsKey(entry.getKey()))) {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
-
-                //build OvsdbBridge
-                OvsdbBridgeAugmentation ovsdbBridge =
-                        SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
-
-                if (ovsdbBridge != null) {
-                    //put Bridge
-                    SfcOvsUtil.putOvsdbBridge(ovsdbBridge, opendaylightSfc.getExecutor());
-
-                    //put Termination Points
-                    SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge,
-                            updatedServiceFunctionForwarder.getSffDataPlaneLocator(), opendaylightSfc.getExecutor());
-                }
+                // rewrite augmentations for serviceFunctionForwarder
+                addOvsdbAugmentations(updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
             }
         }
 
@@ -146,5 +125,22 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
             }
         }
         printTraceStop(LOG);
+    }
+
+    /**
+     * @param sff ServiceFunctionForwarder Object
+     * @param executor ExecutorService Object
+     */
+    static void addOvsdbAugmentations(ServiceFunctionForwarder sff, ExecutorService executor) {
+
+        OvsdbBridgeAugmentation ovsdbBridge = SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(sff, executor);
+
+        if (ovsdbBridge != null) {
+            // put Bridge
+            SfcOvsUtil.putOvsdbBridge(ovsdbBridge, executor);
+
+            // put Termination Points
+            SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator(), executor);
+        }
     }
 }

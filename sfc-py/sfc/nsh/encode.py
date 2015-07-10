@@ -234,7 +234,7 @@ def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
     ip_daddr = socket.inet_aton(dest_ip)
     ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
 
-    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+    ip_header = IP4HEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
                          ip_saddr, ip_daddr)
 
     checksum = compute_internet_checksum(ip_header.build())

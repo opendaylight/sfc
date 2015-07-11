@@ -27,10 +27,10 @@ which is responsible for composing a (raw) bytes representation of a header.
 #: constants
 PAYLOAD_START_INDEX = 46
 
-NSH_TYPE1_DATA_PACKET = int('010000000000011000000001', 2)
+NSH_TYPE1_DATA_PACKET = int('000000000000011000000001', 2)
 NSH_TYPE1_LEN = 0x6
 NSH_MD_TYPE1 = 0x1
-NSH_VERSION1 = int('01', 2)
+NSH_VERSION1 = int('00', 2)
 NSH_NEXT_PROTO_IPV4 = int('00000001', 2)
 NSH_NEXT_PROTO_OAM = int('00000100', 2)
 NSH_NEXT_PROTO_ETH = int('00000011', 2)
@@ -83,7 +83,34 @@ class VXLANGPE(Structure):
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
+
     def __init__(self, flags=int('00001100', 2), reserved=0, next_protocol=VXLAN_NEXT_PROTO_NSH,
+                 vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.flags = int('00001000', 2)
+        self.reserved = reserved
+        # self.next_protocol = next_protocol
+        self.next_protocol = 0
+        self.vni = vni
+        self.reserved2 = reserved2
+
+    def build(self):
+        return pack('!B H B I',
+                    self.flags,
+                    self.reserved,
+                    self.next_protocol,
+                    (self.vni << 8) + self.reserved2)
+
+
+class VXLAN(Structure):
+    _fields_ = [('flags', c_ubyte),
+                ('reserved', c_uint, 16),
+                ('next_protocol', c_uint, 8),
+                ('vni', c_uint, 24),
+                ('reserved2', c_uint, 8)]
+
+
+    def __init__(self, flags=int('00001000', 2), reserved=0, next_protocol=0,
                  vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flags = flags

@@ -241,6 +241,11 @@ class BasicService(object):
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
             # logger.info('%s: Sending packets to %s', self.service_type, addr)
+            if nsh_decode.is_vxlan_nsh_legacy_message(data):
+                # Disregard source port of received packet and send packet back to 6633
+                addr_l = list(addr)
+                addr_l[1] = 6633
+                addr = tuple(addr_l)
             self.transport.sendto(rw_data, addr)
         elif nsh_decode.is_trace_message(data):
             # Add SF information to packet

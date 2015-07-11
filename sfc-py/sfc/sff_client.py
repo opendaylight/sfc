@@ -518,6 +518,22 @@ def main(argv):
                                                int(remote_sff_port), dest_ip, dest_port)
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
+        elif encapsulate == 'gpe-nsh-ethernet-legacy':
+
+            vxlan_header_values = VXLAN()
+            base_header_values = BASEHEADER(service_path=int(sfp_id), service_index=int(sfp_index),
+                                            proto=NSH_NEXT_PROTO_ETH)
+            ctx_values = CONTEXTHEADER()
+
+            ethernet_header_values = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
+                                               0x08, 0x00)
+
+            udpclient = MyVxlanGpeNshEthClient(loop, 'VXLAN/NSH/Ethernet', ethernet_header_values,
+                                               vxlan_header_values, base_header_values,
+                                               ctx_values, remote_sff_ip,
+                                               int(remote_sff_port), dest_ip, dest_port)
+            start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
+
         else:
             print("encapsulate must be specified, e.g. vxlan or gre")
 

@@ -62,8 +62,8 @@ VXLAN_NEXT_PROTO_NSH = int('00000100', 2)
 
 
 #: NSH OAM Constants
-NSH_TYPE1_OAM_PACKET = int('01100000000001100000000100000100', 2)
-OAM_VERSION_AND_FLAG = int('01100000', 2)
+NSH_TYPE1_OAM_PACKET = int('00100000000001100000000100000100', 2)
+OAM_VERSION_AND_FLAG = int('00100000', 2)
 OAM_FLAG_AND_RESERVED = int('10000000', 2)
 OAM_TRACE_REQ_TYPE = int('00000001', 2)
 OAM_TRACE_RESP_TYPE = int('00000010', 2)
@@ -82,7 +82,6 @@ class VXLANGPE(Structure):
                 ('next_protocol', c_uint, 8),
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
-
 
     def __init__(self, flags=int('00001100', 2), reserved=0, next_protocol=VXLAN_NEXT_PROTO_NSH,
                  vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):
@@ -103,12 +102,14 @@ class VXLANGPE(Structure):
 
 
 class VXLAN(Structure):
+    """ A class for Legacy packets with the following format:
+        IP + UDP + VXLAN (rfc7348) + NSH + ...
+    """
     _fields_ = [('flags', c_ubyte),
                 ('reserved', c_uint, 16),
                 ('next_protocol', c_uint, 8),
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
-
 
     def __init__(self, flags=int('00001000', 2), reserved=0, next_protocol=0,
                  vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):

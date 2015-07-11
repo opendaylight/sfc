@@ -78,8 +78,7 @@ SERVICE_FUNCTIONS_JSON = """
       }
     ]
   }
-}
-"""
+}"""
 
 SERVICE_CHAINS_JSON = """
 {

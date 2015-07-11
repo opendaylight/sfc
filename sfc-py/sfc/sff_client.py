@@ -518,7 +518,7 @@ def main(argv):
                                                int(remote_sff_port), dest_ip, dest_port)
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
-        elif encapsulate == 'gpe-nsh-ethernet-legacy':
+        elif encapsulate == 'vxlan-nsh-ethernet-legacy':
 
             vxlan_header_values = VXLAN()
             base_header_values = BASEHEADER(service_path=int(sfp_id), service_index=int(sfp_index),

@@ -250,6 +250,7 @@ class BasicService(object):
                 addr_l = list(addr)
                 addr_l[1] = 6633
                 addr = tuple(addr_l)
+
             self.transport.sendto(rw_data, addr)
         elif nsh_decode.is_trace_message(data):
             # Add SF information to packet

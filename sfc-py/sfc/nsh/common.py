@@ -57,7 +57,6 @@ IPV4_TTL = 255
 IPV4_TOS = 0
 IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
 
-
 IPV6_TRAFFIC_CLASS = 20
 IPV6_VERSION = 6
 IPV6_FLOW_LABEL = 54321
@@ -198,7 +197,7 @@ class BASEHEADER(Structure):
                 ('service_index', c_uint, 8)]
 
     def __init__(self, service_path=1, service_index=255, version=NSH_VERSION1, flags=NSH_FLAG_ZERO,
-                 length=NSH_TYPE1_LEN, md_type=NSH_MD_TYPE1, proto=NSH_NEXT_PROTO_IPV4, *args, **kwargs):
+                 length=NSH_TYPE1_LEN, md_type=NSH_MD_TYPE1, proto=NSH_NEXT_PROTO_ETH, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.version = version
         self.flags = flags
@@ -295,8 +294,8 @@ class IP4HEADER(Structure):
         # if( count > 0 )
         # sum += * (unsigned char *) addr;
         #
-        #         /*  Fold 32-bit sum to 16 bits */
-        #     while (sum>>16)
+        # /*  Fold 32-bit sum to 16 bits */
+        # while (sum>>16)
         #         sum = (sum & 0xffff) + (sum >> 16);
         #
         #     checksum = ~sum;
@@ -362,3 +361,18 @@ class PSEUDO_UDPHEADER(Structure):
         p_udp_header_pack = pack('!I I B B H', self.src_ip, self.dest_ip,
                                  self.zeroes, self.protocol, self.length)
         return p_udp_header_pack
+
+
+class InnerHeader():
+    """Essential Information to build inner packet"""
+
+    def __init__(self, inner_src_ip="192.168.0.1", inner_dest_ip="192.168.0.2", inner_src_port="10000",
+                 inner_dest_port="20000", inner_protocol=17, *args,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.inner_src_ip = inner_src_ip
+        self.inner_dest_ip = inner_dest_ip
+        self.inner_src_port = inner_src_port
+        self.inner_dest_port = inner_dest_port
+        self.inner_protocol = inner_protocol
+        self.data = "test".encode('utf-8')

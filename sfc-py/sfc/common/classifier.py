@@ -304,7 +304,6 @@ class NfqClassifier(metaclass=Singleton):
             # this machine's TCP stack
             logger.info("Apparently, the socket option is not available in this machine's TCP stack")            
             pass
-        
 
     def _get_rsp_by_name(self, rsp_name):
         """

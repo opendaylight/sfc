@@ -753,7 +753,7 @@ public class SfcL2RspProcessor {
                         sffNodeName, nsp, nsi, srcOfsPort, isLastServiceIndex, doPktIn, this.addFlow);
                 if(isLastServiceIndex) {
                     this.sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(
-                            sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString(), this.addFlow);
+                            sffNodeName, nsp, nsi, OutputPortValues.LOCAL.toString(), this.addFlow);
                 }
            }
         }

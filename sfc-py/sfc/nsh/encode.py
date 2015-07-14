@@ -9,6 +9,7 @@
 import struct
 import socket
 import ipaddress
+import logging
 
 from .common import *  # noqa
 
@@ -76,6 +77,8 @@ Provides function to encode vxlan-gpe|GRE + NSH Base + Context Headers
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 """
+
+logger = logging.getLogger(__file__)
 
 
 def build_header(*headers):
@@ -306,3 +309,18 @@ def compute_internet_checksum(data):
         checksum = (checksum & 0xFFFF) + (checksum >> 16)
     checksum = ~checksum & 0xffff
     return checksum
+
+
+def process_context_headers(ctx1=0, ctx2=0, ctx3=0, ctx4=0):
+    context_headers = []
+    for ctx in [ctx1, ctx2, ctx3, ctx4]:
+        try:
+            ipaddr = ipaddress.IPv4Address(ctx)
+            context_headers.append(int(ipaddr))
+        except ValueError:
+            try:
+                context_headers.append((int(ctx) & 0xFFFFFFFF))
+            except ValueError:
+                logger.error("Context header %d can not be represented as an integer", ctx)
+
+    return context_headers

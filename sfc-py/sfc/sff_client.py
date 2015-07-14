@@ -136,7 +136,7 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
     Class for VXLAN_GPE + NSH + Ethernet + IP
     """
     def __init__(self, loop, ethernet_values, encapsulate_header_values, base_header_values,
-                 ctx_header_values, remote_sff_ip, remote_sff_port, inner_dest_ip, inner_dest_port,
+                 ctx_header_values, remote_sff_ip, remote_sff_port, inner_header,
                  encapsulate_type='VXLAN-GPE/NSH/Ethernet'):
         super().__init__()
         self.transport = None
@@ -147,8 +147,7 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
         self.ctx_header_values = ctx_header_values
         self.remote_sff_ip = remote_sff_ip
         self.remote_sff_port = remote_sff_port
-        self.inner_dest_ip = inner_dest_ip
-        self.inner_dest_port = inner_dest_port
+        self.inner_header = inner_header
         self.encapsulate_type = encapsulate_type
 
     def alarm_handler(self, signum=None, frame=None):
@@ -164,8 +163,9 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
                                       self.ethernet_values)
         # packet = build_vxlan_header(self.encapsulate_header_values,
         # self.ethernet_values)
-        udp_inner_packet = build_udp_packet("172.20.33.195", self.inner_dest_ip, self.inner_dest_port,
-                                            self.remote_sff_port, "test".encode('utf-8'))
+        udp_inner_packet = build_udp_packet(self.inner_header.inner_src_ip, self.inner_header.inner_dest_ip,
+                                            self.inner_header.inner_src_port,
+                                            self.inner_header.inner_dest_port, "test".encode('utf-8'))
         gpe_nsh_ethernet_packet = packet + udp_inner_packet
         logger.debug("Ethernet dump: ", binascii.hexlify(gpe_nsh_ethernet_packet))
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
@@ -443,6 +443,7 @@ def main(argv):
     inner_src_port = 10000
     inner_dest_port = 20000
     encapsulate = 'gpe-nsh-ipv4'  # make vxlan-gpe encapsulation default
+    ctx1 = ctx2 = ctx3 = ctx4 = 0
 
     try:
         logging.basicConfig(level=logging.INFO)
@@ -450,11 +451,11 @@ def main(argv):
                                   ["help", "local-port=", "local-ip=", "inner-src-ip=", "inner-dest-ip=",
                                    "inner-src-port=", "inner-dest-port=", "remote-sff-ip=",
                                    "remote-sff-port=", "sfp-id=", "sfp-index=", "trace-req", "num-trace-hops=",
-                                   "encapsulate="])
+                                   "encapsulate=", "ctx1=", "ctx2=", "ctx3=", "ctx4="])
     except getopt.GetoptError:
         print(
             "sff_client --help | --local-port | --local-ip | --inner-src-ip | --inner-dest-ip | --inner-src-port | "
-            "--inner-dest-port | --remote-sff-ip | "
+            "--inner-dest-port | --remote-sff-ip | --ctx1 | --ctx2 | --ctx3 | --ctx4"
             "--remote-sff-port | --sfp-id | --sfp-index | --trace-req | --num-trace-hops | --encapsulate")
         sys.exit(2)
 
@@ -517,6 +518,22 @@ def main(argv):
             inner_src_ip = arg
             continue
 
+        if opt == "--ctx1":
+            ctx1 = arg
+            continue
+
+        if opt == "--ctx2":
+            ctx2 = arg
+            continue
+
+        if opt == "--ctx3":
+            ctx3 = arg
+            continue
+
+        if opt == "--ctx4":
+            ctx4 = arg
+            continue
+
     loop = asyncio.get_event_loop()
     for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGABRT]:
         signal.signal(sig, handler)
@@ -576,7 +593,10 @@ def main(argv):
         # Common initializations for all encapsulations types
         base_header_values = BASEHEADER(service_path=int(sfp_id), service_index=int(sfp_index),
                                         proto=NSH_NEXT_PROTO_ETH)
-        ctx_values = CONTEXTHEADER()
+
+        context_headers = process_context_headers(ctx1, ctx2, ctx3, ctx4)
+
+        ctx_values = CONTEXTHEADER(context_headers[0], context_headers[1], context_headers[2], context_headers[3])
         inner_header = InnerHeader(inner_src_ip, inner_dest_ip, inner_src_port, inner_dest_port)
 
         if encapsulate == 'gpe-nsh-ipv4':

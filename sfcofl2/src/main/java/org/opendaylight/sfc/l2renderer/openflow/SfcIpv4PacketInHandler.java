@@ -123,12 +123,14 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // Configure the uplink packet
         if(ulPathId >= 0) {
-            this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktSrcIpStr, pktDstIpStr, ulPathId, true);
+            this.flowProgrammer.setFlowRspId(new Long(ulPathId));
+            this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktSrcIpStr, pktDstIpStr, ulPathId);
         }
 
         // Configure the downlink packet
         if(dlPathId >= 0) {
-            this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktDstIpStr, pktSrcIpStr, dlPathId, true);
+            this.flowProgrammer.setFlowRspId(new Long(dlPathId));
+            this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktDstIpStr, pktSrcIpStr, dlPathId);
         }
     }
 

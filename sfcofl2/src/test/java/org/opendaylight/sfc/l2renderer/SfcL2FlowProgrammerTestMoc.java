@@ -89,6 +89,14 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     public void setTableBase(short tableBase) {
     }
 
+    @Override
+    public void setFlowRspId(final Long rspId) {
+    }
+
+    @Override
+    public void deleteRspFlows(final Long rspId) {
+    }
+
     //---------------------------------------------
     //
     //            Transport Ingress methods
@@ -96,22 +104,22 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     //---------------------------------------------
 
     @Override
-    public void configureIpv4TransportIngressFlow(String sffNodeName, boolean isAddFlow) {
+    public void configureIpv4TransportIngressFlow(String sffNodeName) {
         incrementMethodCalled(MethodIndeces.configureIpv4TransportIngressFlowMethodIndex);
     }
 
     @Override
-    public void configureVlanTransportIngressFlow(String sffNodeName, boolean isAddFlow) {
+    public void configureVlanTransportIngressFlow(String sffNodeName) {
         incrementMethodCalled(MethodIndeces.configureVlanTransportIngressFlowMethodIndex);
     }
 
     @Override
-    public void configureVxlanGpeTransportIngressFlow(String sffNodeName, boolean isAddFlow) {
+    public void configureVxlanGpeTransportIngressFlow(String sffNodeName) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex);
     }
 
     @Override
-    public void configureMplsTransportIngressFlow(String sffNodeName, boolean isAddFlow) {
+    public void configureMplsTransportIngressFlow(String sffNodeName) {
         incrementMethodCalled(MethodIndeces.configureMplsTransportIngressFlowMethodIndex);
     }
 
@@ -123,25 +131,25 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
 
     @Override
     public void configureMacPathMapperFlow(
-            String sffNodeName, String mac, long pathId, boolean isSf, boolean isAddFlow) {
+            String sffNodeName, String mac, long pathId, boolean isSf) {
         incrementMethodCalled(MethodIndeces.configureMacPathMapperFlowMethodIndex);
     }
 
     @Override
     public void configureMplsPathMapperFlow(
-            String sffNodeName, long label, long pathId, boolean isSf, boolean isAddFlow) {
+            String sffNodeName, long label, long pathId, boolean isSf) {
         incrementMethodCalled(MethodIndeces.configureMplsPathMapperFlowMethodIndex);
     }
 
     @Override
     public void configureVlanPathMapperFlow(
-            String sffNodeName, int vlan, long pathId, boolean isSf, boolean isAddFlow) {
+            String sffNodeName, int vlan, long pathId, boolean isSf) {
         incrementMethodCalled(MethodIndeces.configureVlanPathMapperFlowMethodIndex);
     }
 
     @Override
     public void configureVxlanGpePathMapperFlow(
-            String sffNodeName, long nsp, short nsi, long pathId, boolean isAddFlow) {
+            String sffNodeName, long nsp, short nsi, long pathId) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpePathMapperFlowMethodIndex);
     }
 
@@ -153,13 +161,13 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
 
     @Override
     public void configureNextHopFlow(
-            String sffNodeName, long sfpId, String srcMac, String dstMac, boolean isAddFlow) {
+            String sffNodeName, long sfpId, String srcMac, String dstMac) {
         incrementMethodCalled(MethodIndeces.configureNextHopFlowMethodIndex);
     }
 
     @Override
     public void configureVxlanGpeNextHopFlow(
-            String sffNodeName, String dstIp, long nsp, short nsi, boolean isAddFlow) {
+            String sffNodeName, String dstIp, long nsp, short nsi) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpeNextHopFlowMethodIndex);
     }
 
@@ -178,8 +186,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
-            boolean doPktIn,
-            boolean isAddFlow) {
+            boolean doPktIn) {
         incrementMethodCalled(MethodIndeces.configureMacTransportEgressFlowMethodIndex);
     }
 
@@ -193,8 +200,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
-            boolean doPktIn,
-            boolean isAddFlow) {
+            boolean doPktIn) {
         incrementMethodCalled(MethodIndeces.configureVlanTransportEgressFlowMethodIndex);
     }
 
@@ -205,8 +211,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             short nshNsi,
             String port,
             final boolean isLastHop,
-            final boolean doPktIn,
-            boolean isAddFlow) {
+            final boolean doPktIn) {
         incrementMethodCalled(MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex);
     }
 
@@ -220,8 +225,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             long pathId,
             boolean setDscp,
             final boolean isLastHop,
-            boolean doPktIn,
-            boolean isAddFlow) {
+            boolean doPktIn) {
         incrementMethodCalled(MethodIndeces.configureMplsTransportEgressFlowMethodIndex);
     }
 
@@ -230,8 +234,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
             String sffNodeName,
             final long nshNsp,
             final short nshNsi,
-            String switchPort,
-            final boolean isAddFlow) {
+            String switchPort) {
         incrementMethodCalled(MethodIndeces.configureNshNscTransportEgressFlowMethodIndex);
     }
 
@@ -244,40 +247,35 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     @Override
     public void configureTransportIngressTableMatchAny(
             String sffNodeName,
-            boolean doDrop,
-            boolean isAddFlow) {
+            boolean doDrop) {
         incrementMethodCalled(MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex);
     }
 
     @Override
     public void configurePathMapperTableMatchAny(
             String sffNodeName,
-            boolean doDrop,
-            boolean isAddFlow) {
+            boolean doDrop) {
         incrementMethodCalled(MethodIndeces.configurePathMapperTableMatchAnyMethodIndex);
     }
 
     @Override
     public void configurePathMapperAclTableMatchAny(
             String sffNodeName,
-            boolean doDrop,
-            boolean isAddFlow) {
+            boolean doDrop) {
         incrementMethodCalled(MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex);
     }
 
     @Override
     public void configureNextHopTableMatchAny(
             String sffNodeName,
-            boolean doDrop,
-            boolean isAddFlow) {
+            boolean doDrop) {
         incrementMethodCalled(MethodIndeces.configureNextHopTableMatchAnyMethodIndex);
     }
 
     @Override
     public void configureTransportEgressTableMatchAny(
             String sffNodeName,
-            boolean doDrop,
-            boolean isAddFlow) {
+            boolean doDrop) {
         incrementMethodCalled(MethodIndeces.configureTransportEgressTableMatchAnyMethodIndex);
     }
 
@@ -294,14 +292,12 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     }
 
     @Override
-    public void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId,
-            String groupName, boolean isAddFlow) {
+    public void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId, String groupName) {
         incrementMethodCalled(MethodIndeces.configureGroupNextHopFlow);
     }
 
     @Override
-    public void configureArpTransportIngressFlow(String sffNodeName,
-            String mac, boolean isAddFlow) {
+    public void configureArpTransportIngressFlow(String sffNodeName, String mac) {
         incrementMethodCalled(MethodIndeces.configureArpTransportIngressFlowMethodIndex);
     }
 }

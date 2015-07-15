@@ -58,7 +58,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
                 LOG.info("SfcL2RspDataListener.onDataChanged create RSP {}", ((RenderedServicePath) entry.getValue()).getName());
-                this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue(), true);
+                this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue());
             }
         }
 
@@ -67,7 +67,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof RenderedServicePath && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
                 LOG.info("SfcL2RspDataListener.onDataChanged update RSP {}", ((RenderedServicePath) entry.getValue()).getName());
-                this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue(), true);
+                // Currently RSP updates are not supported
             }
         }
 
@@ -77,7 +77,7 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
             DataObject dataObject = change.getOriginalData().get(instanceIdentifier);
             if (dataObject instanceof RenderedServicePath) {
                 LOG.info("SfcL2RspDataListener.onDataChanged delete RSP");
-                this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) dataObject, false);
+                this.sfcL2RspProcessor.deleteRenderedServicePath((RenderedServicePath) dataObject);
             }
         }
     }

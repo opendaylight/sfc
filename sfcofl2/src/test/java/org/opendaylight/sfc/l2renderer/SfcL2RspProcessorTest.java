@@ -89,7 +89,7 @@ public class SfcL2RspProcessorTest {
         LOG.info("SfcL2RspProcessorTest testVlanFlowCreation");
 
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mac.class);
-        this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp, true);
+        this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp);
 
         assertMatchAnyMethodsCalled();
         assertMethodCallCount(
@@ -108,7 +108,7 @@ public class SfcL2RspProcessorTest {
         LOG.info("SfcL2RspProcessorTest testMplsFlowCreation");
 
         RenderedServicePath mplsRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mpls.class);
-        this.sfcL2RspProcessor.processRenderedServicePath(mplsRsp, true);
+        this.sfcL2RspProcessor.processRenderedServicePath(mplsRsp);
 
         assertMatchAnyMethodsCalled();
         // The calls to teh VLAN methods are for the packets sent between SFF-SF
@@ -133,7 +133,7 @@ public class SfcL2RspProcessorTest {
         LOG.info("SfcL2RspProcessorTest testNshFlowCreation");
 
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, VxlanGpe.class);
-        this.sfcL2RspProcessor.processRenderedServicePath(nshRsp, true);
+        this.sfcL2RspProcessor.processRenderedServicePath(nshRsp);
 
         assertMatchAnyMethodsCalled();
         assertMethodCallCount(
@@ -155,7 +155,7 @@ public class SfcL2RspProcessorTest {
         sfOneHopTypes.add(Firewall.class);
 
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
-        this.sfcL2RspProcessor.processRenderedServicePath(nshRsp, true);
+        this.sfcL2RspProcessor.processRenderedServicePath(nshRsp);
 
         assertMatchAnyMethodsCalled(1, 1, 1, 1, 1);
         assertMethodCallCount(
@@ -178,7 +178,7 @@ public class SfcL2RspProcessorTest {
         sfTcpProxyTypes.add(TcpProxy.class);
 
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(sfTcpProxyTypes, Mac.class);
-        this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp, true);
+        this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp);
 
         assertMatchAnyMethodsCalled();
         assertMethodCallCount(

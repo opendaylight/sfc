@@ -234,7 +234,7 @@ RENDERED_SERVICE_PATH_RPC_REQ = """
 RENDERED_SERVICE_PATH_RPC_RESP = """
 {
   "output": {
-    "name": "SFC1-SFP1-Path-1"
+    "result": true
   }
 }"""
 
@@ -244,7 +244,7 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
   "rendered-service-paths": {
     "rendered-service-path": [
       {
-        "name": "SFC1-SFP1-Path-1",
+        "name": "SFC1-SFP1",
         "parent-service-function-path": "SFC1-SFP1",
         "service-chain-name": "SFC1",
         "starting-index": 255,

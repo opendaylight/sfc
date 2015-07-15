@@ -19,7 +19,6 @@ __version__ = "0.5"
 __email__ = "rapenno@gmail.com, jguichar@cisco.com"
 __status__ = "alpha"
 
-
 """
 Provides function to encode vxlan-gpe|GRE + NSH Base + Context Headers
 
@@ -234,8 +233,8 @@ def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
     ip_daddr = socket.inet_aton(dest_ip)
     ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
 
-    ip_header = IPHEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
-                         ip_saddr, ip_daddr)
+    ip_header = IP4HEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0,
+                          ip_saddr, ip_daddr)
 
     checksum = compute_internet_checksum(ip_header.build())
     ip_header.set_ip_checksum(checksum)
@@ -271,7 +270,6 @@ def build_udp_header(src_port, dest_port, ip_header, data):
 
 
 def build_udp_packet(src_ip, dest_ip, src_port, dest_port, data):
-
     """
     data needs to encoded as Python bytes. In the case of strings
     this means a bytearray of an UTF-8 encoding

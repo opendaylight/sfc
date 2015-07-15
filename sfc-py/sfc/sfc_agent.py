@@ -632,7 +632,6 @@ def get_sffs_from_odl(odl_ip_port):
     :return Nothing
 
     """
-
     try:
         logger.info("Getting SFFs configured in ODL ...")
         url = _sfc_globals.SFF_PARAMETER_URL
@@ -641,15 +640,11 @@ def get_sffs_from_odl(odl_ip_port):
         s = requests.Session()
         r = s.get(odl_sff_url, auth=sfc_globals.get_odl_credentials(),
                   stream=False)
-    except requests.ConnectionError as e:
-        logger.warning("Not able to get SFFs from ODL: {}".format(e.args[0]))
+    except requests.exceptions.ConnectionError as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
         return
-    except ConnectionRefusedError as e:     # noqa
-        logger.warning("Not able to get SFFs from ODL: {}".format(e.args[0]))
-        return
-    except OSError as e:
-        for i in enumerate(e.args):
-            logger.warning('Not able to get SFFs from ODL. Error: {}'.format((i[1].args[1])))
+    except requests.exceptions.RequestException as e:
+        logger.exception('Can\'t get SFFs from ODL. Error: {}'.format(e))
         return
 
     if r.ok:

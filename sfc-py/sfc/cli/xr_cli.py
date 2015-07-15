@@ -5,16 +5,8 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-
+import paramiko
 from ..common.sfc_globals import sfc_globals
-import logging
-
-logger = logging.getLogger(__name__)
-
-try:
-    import paramiko
-except ImportError:
-    logger.error("Could not import paramiko module")
 
 
 __author__ = "Jim Guichard"

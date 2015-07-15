@@ -18,8 +18,8 @@ import asyncio
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, parent_dir)
 import sfc  # noqa
-
 __package__ = 'sfc'
+
 
 from sfc.nsh.decode import *  # noqa
 from sfc.nsh.encode import *  # noqa
@@ -65,21 +65,19 @@ class MyNshBaseClass:
 
 class MyVxlanGpeNshIpClient(MyNshBaseClass):
     def __init__(self, loop, encapsulate_type, encapsulate_header_values, base_header_values, ctx_header_values,
-                 remote_sff_ip, remote_sff_port, dest_ip, dest_port):
+                 dest_addr, dest_port):
         super().__init__()
         self.transport = None
         self.loop = loop
         self.encapsulate_header_values = encapsulate_header_values
         self.base_header_values = base_header_values
         self.ctx_header_values = ctx_header_values
-        self.remote_sff_ip = remote_sff_ip
-        self.remote_sff_port = remote_sff_port
-        self.dest_ip = dest_ip
+        self.dest_addr = dest_addr
         self.dest_port = dest_port
         self.encapsulate_type = encapsulate_type
 
     def alarm_handler(self, signum=None, frame=None):
-        logger.error("No response from %s:%d", self.remote_sff_ip, self.remote_sff_port)
+        logger.error("No response from %s:%d", self.dest_addr, self.dest_port)
         sys.exit(1)
 
     def connection_made(self, transport):
@@ -88,15 +86,14 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
         packet = build_nsh_header(self.encapsulate_header_values,
                                   self.base_header_values,
                                   self.ctx_header_values)
-        udp_packet = build_udp_packet(self.remote_sff_ip, self.dest_ip, self.dest_port, self.remote_sff_port,
-                                      "test".encode('utf-8'))
-        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
+        udp_packet = build_udp_packet(self.dest_addr, "10.0.1.1", 10000, self.dest_port, "test".encode('utf-8'))
+        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
         logger.debug("Packet dump: %s", binascii.hexlify(packet))
         # Send the packet
         signal.signal(signal.SIGALRM, self.alarm_handler)
         signal.alarm(2)
         try:
-            self.transport.sendto(packet + udp_packet, (self.remote_sff_ip, self.remote_sff_port))
+            self.transport.sendto(packet + udp_packet, (self.dest_addr, self.dest_port))
         except socket.error as msg:
             print('Failed to send packet. Error Code : ' + str(msg))
             sys.exit()
@@ -127,7 +124,7 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
 
 class MyVxlanGpeNshEthClient(MyNshBaseClass):
     def __init__(self, loop, encapsulate_type, ethernet_values, encapsulate_header_values, base_header_values,
-                 ctx_header_values, remote_sff_ip, remote_sff_port, dest_ip, dest_port):
+                 ctx_header_values, dest_addr, dest_port):
         super().__init__()
         self.transport = None
         self.loop = loop
@@ -135,14 +132,12 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
         self.encapsulate_header_values = encapsulate_header_values
         self.base_header_values = base_header_values
         self.ctx_header_values = ctx_header_values
-        self.remote_sff_ip = remote_sff_ip
-        self.remote_sff_port = remote_sff_port
-        self.dest_ip = dest_ip
+        self.dest_addr = dest_addr
         self.dest_port = dest_port
         self.encapsulate_type = encapsulate_type
 
     def alarm_handler(self, signum=None, frame=None):
-        logger.error("No response from %s:%d", self.remote_sff_ip, self.remote_sff_port)
+        logger.error("No response from %s:%d", self.dest_addr, self.dest_port)
         sys.exit(1)
 
     def connection_made(self, transport):
@@ -154,16 +149,15 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
                                       self.ethernet_values)
         # packet = build_vxlan_header(self.encapsulate_header_values,
         # self.ethernet_values)
-        udp_inner_packet = build_udp_packet("172.20.33.195", self.dest_ip, self.dest_port, self.remote_sff_port,
-                                            "test".encode('utf-8'))
+        udp_inner_packet = build_udp_packet("172.20.33.195", "10.0.1.1", 10000, self.dest_port, "test".encode('utf-8'))
         gpe_nsh_ethernet_packet = packet + udp_inner_packet
         logger.debug("Ethernet dump: ", binascii.hexlify(gpe_nsh_ethernet_packet))
-        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
+        logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.dest_addr, self.dest_port))
         # Send the packet
         signal.signal(signal.SIGALRM, self.alarm_handler)
         signal.alarm(2)
         try:
-            self.transport.sendto(gpe_nsh_ethernet_packet, (self.remote_sff_ip, self.remote_sff_port))
+            self.transport.sendto(gpe_nsh_ethernet_packet, (self.dest_addr, self.dest_port))
         except socket.error as msg:
             print('Failed to send packet. Error Code : ' + str(msg))
             sys.exit()
@@ -207,7 +201,7 @@ class MyGreNshEthClient:
         self.server_base_values = BASEHEADER()
         self.server_ctx_values = CONTEXTHEADER()
         self.dest_addr = dest_addr
-        # self.remote_sff_port = remote_sff_port
+        # self.dest_port = dest_port
         self.encapsulate_type = encapsulate_type
 
     def send_gre_nsh(self):
@@ -301,7 +295,7 @@ class MyTraceClient:
                                         self.base_header_values,
                                         self.ctx_header_values,
                                         self.trace_req_header_values)
-        # logger.info("Sending Trace packet to: %s", remote_sff_ip)
+        # logger.info("Sending Trace packet to: %s", dest_addr)
         self.transport.sendto(packet, dest_addr)
 
     def set_transport(self, transport):
@@ -315,7 +309,7 @@ def start_client(loop, myaddr, dest_addr, udpclient):
     loop.run_until_complete(listen)
     # transport = loop.run_until_complete(listen)[0]
     # udpclient.set_transport(transport)
-    # udpclient.send_packet(remote_sff_ip)
+    # udpclient.send_packet(dest_addr)
     loop.run_forever()
     loop.close()
 
@@ -354,20 +348,17 @@ def main(argv):
     sfp_index = 3
     trace_req = False
     num_trace_hops = 254
-    dest_ip = "127.0.0.1"
-    dest_port = 80
     encapsulate = 'gpe-nsh-ipv4'  # make vxlan-gpe encapsulation default
 
     try:
         logging.basicConfig(level=logging.INFO)
         opt, args = getopt.getopt(argv, "h",
-                                  ["help", "local-port=", "local-ip=", "dest-ip=", "dest-port=", "remote-sff-ip=",
-                                   "remote-sff-port=", "sfp-id=", "sfp-index=", "trace-req", "num-trace-hops=",
-                                   "encapsulate="])
+                                  ["help", "local-port=", "local-ip=", "remote-sff-ip=", "remote-sff-port=", "sfp-id=",
+                                   "sfp-index=", "trace-req", "num-trace-hops=", "encapsulate="])
     except getopt.GetoptError:
         print(
-            "sff_client --help | --local-port | --local-ip | --dest-ip | --dest-port | --remote-sff-ip | "
-            "--remote-sff-port | --sfp-id | --sfp-index | --trace-req | --num-trace-hops | --encapsulate")
+            "sff_client --help | --remote-sff-ip | --remote-sff-port | --sfp-id | --sfp-index | "
+            "--trace-req | --num-trace-hops | --encapsulate")
         sys.exit(2)
 
     for opt, arg in opt:
@@ -413,14 +404,6 @@ def main(argv):
             local_ip = arg
             continue
 
-        if opt == "--dest-port":
-            dest_port = int(arg)
-            continue
-
-        if opt == "--dest-ip":
-            dest_ip = arg
-            continue
-
     loop = asyncio.get_event_loop()
     for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]:
         signal.signal(sig, handler)
@@ -441,12 +424,12 @@ def main(argv):
     # # sock_raw.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     # except socket.error as msg:
     # print("Socket could not be created. Error Code : {}".format(msg))
-    # sys.exit()
+    #         sys.exit()
     # else:
-    # try:
-    # sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-    # except socket.error as msg:
-    # print("Socket could not be created. Error Code : {}".format(msg))
+    #     try:
+    #         sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+    #     except socket.error as msg:
+    #         print("Socket could not be created. Error Code : {}".format(msg))
     #         sys.exit()
     #
     # udp_packet = build_udp_packet("", "100.0.3.2", 10000, 4790, "test".encode('utf-8'))
@@ -509,7 +492,7 @@ def main(argv):
             udpclient = MyVxlanGpeNshEthClient(loop, 'VXLAN-GPE/NSH/Ethernet', ethernet_header_values,
                                                vxlan_header_values, base_header_values,
                                                ctx_values, remote_sff_ip,
-                                               int(remote_sff_port), dest_ip, dest_port)
+                                               int(remote_sff_port))
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
         else:

@@ -23,6 +23,8 @@ This module provides function to decode VXLAN GPE packets. Given a reference to
 the beginning of the UDL payload, it decodes the appropriate header and store
 values in the passed variable.
 
+   VXLAN
+
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -31,6 +33,17 @@ values in the passed variable.
    |                VXLAN Network Identifier (VNI) |   Reserved    |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+   VXLAN-GPE
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |R|R|Ver|I|P|R|O|       Reserved                |Next Protocol  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                VXLAN Network Identifier (VNI) |   Reserved    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   NSH-BASE
 
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -258,6 +271,13 @@ def is_oam_message(data):
 
 def is_data_message(data):
     if int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:11], byteorder='big', signed='false') == NSH_TYPE1_DATA_PACKET:
+        return True
+    else:
+        return False
+
+
+def is_vxlan_nsh_legacy_message(data):
+    if int.from_bytes(data[VXLAN_START_OFFSET:4], byteorder='big', signed='false') == VXLAN_RFC7348_HEADER:
         return True
     else:
         return False

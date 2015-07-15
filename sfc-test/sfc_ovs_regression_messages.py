@@ -5,76 +5,31 @@ __version__ = "0.1"
 __email__ = "andrej.kincel@gmail.com"
 __status__ = "Tested with SFC-Karaf distribution as of 04/14/2015"
 
-SERVICE_FUNCTION_FORWARDERS_JSON = """
-{
-  "service-function-forwarders": {
-    "service-function-forwarder": [
-      {
-        "name": "SFF2",
-        "sff-data-plane-locator": [
-          {
-            "name": "sff2-dp1",
-            "service-function-forwarder-ovs:ovs-bridge": {},
-            "data-plane-locator": {
-              "transport": "service-locator:vxlan-gpe",
-              "port": 6633,
-              "ip": "192.168.1.27"
-            },
-            "service-function-forwarder-ovs:ovs-options": {
-              "nshc1": "flow",
-              "nsp": "flow",
-              "key": "flow",
-              "remote-ip": "flow",
-              "nsi": "flow",
-              "nshc2": "flow",
-              "nshc3": "flow",
-              "dst-port": "6633",
-              "nshc4": "flow"
-            }
-          }
-        ],
-        "service-function-forwarder-ovs:ovs-bridge": {
-          "bridge-name": "br2"
-        },
-        "service-function-dictionary": [
-          {
-            "name": "firewall-2",
-            "type": "service-function-type:firewall",
-            "sff-sf-data-plane-locator": {
-              "service-function-forwarder-ovs:ovs-bridge": {},
-              "transport": "service-locator:vxlan-gpe",
-              "port": 6633,
-              "ip": "192.168.1.13"
-            }
-          }
-        ],
-        "ip-mgmt-address": "192.168.1.27",
-        "service-node": ""
-      }
-    ]
-  }
-}
-"""
-
 SERVICE_FUNCTIONS_JSON = """
 {
   "service-functions": {
     "service-function": [
       {
-        "name": "firewall-2",
+        "name": "sf2",
+        "type": "service-function-type:dpi",
         "sf-data-plane-locator": [
           {
-            "name": "firewall-2-dp1",
-            "ip": "192.168.1.13",
-            "port": 6633,
-            "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF2"
+            "name": "dp2",
+            "service-function-forwarder": "ovsdb://10.0.2.6:57567/bridge/br2",
+            "transport": "service-locator:vxlan-gpe"
           }
-        ],
-        "rest-uri": "http://192.168.1.13:5000",
-        "nsh-aware": true,
-        "ip-mgmt-address": "192.168.1.13",
-        "type": "service-function-type:firewall"
+        ]
+      },
+      {
+        "name": "sf1",
+        "type": "service-function-type:firewall",
+        "sf-data-plane-locator": [
+          {
+            "name": "dp1",
+            "service-function-forwarder": "ovsdb://10.0.2.6:57567/bridge/br1",
+            "transport": "service-locator:vxlan-gpe"
+          }
+        ]
       }
     ]
   }
@@ -85,72 +40,23 @@ SERVICE_CHAINS_JSON = """
   "service-function-chains": {
     "service-function-chain": [
       {
-        "name": "Chain-1",
+        "name": "ovs",
         "sfc-service-function": [
           {
             "name": "firewall",
             "order": 0,
             "type": "service-function-type:firewall"
-          }
-        ]
-      }
-    ]
-  }
-}
-"""
-
-SERVICE_PATH_JSON = """
-{
-  "service-function-paths": {
-    "service-function-path": [
-      {
-        "name": "Chain-1-Path-1",
-        "service-chain-name": "Chain-1"
-      }
-    ]
-  }
-}"""
-
-RENDERED_SERVICE_PATH_RPC_REQ = """
-{
-  "input": {
-    "parent-service-function-path": "Chain-1-Path-1"
-  }
-}"""
-
-
-RENDERED_SERVICE_PATH_RPC_RESP = """
-{
-  "output": {
-    "name": "Chain-1-Path-1-Path-1"
-  }
-}"""
-
-RENDERED_SERVICE_PATH_RESP_JSON = """
-{
-  "rendered-service-paths": {
-    "rendered-service-path": [
-      {
-        "name": "Chain-1-Path-1-Path-1",
-        "parent-service-function-path": "Chain-1-Path-1",
-        "transport-type": "service-locator:vxlan-gpe",
-        "path-id": 1,
-        "service-chain-name": "Chain-1",
-        "starting-index": 255,
-        "rendered-service-path-hop": [
+          },
           {
-            "hop-number": 0,
-            "service-index": 255,
-            "service-function-forwarder-locator": "sff2-dp1",
-            "service-function-name": "firewall-2",
-            "service-function-forwarder": "SFF2"
+            "name": "dpi",
+            "order": 1,
+            "type": "service-function-type:dpi"
           }
         ]
       }
     ]
   }
 }"""
-
 
 SERVICE_FORWARDER_OVS_RPC_REQ_1 = """
 {
@@ -181,7 +87,65 @@ SERVICE_FORWARDER_OVS_RPC_RESP = """
   }
 }"""
 
+SERVICE_PATH_JSON = """
+{
+  "service-function-paths": {
+    "service-function-path": [
+      {
+        "name": "ovs-sfp",
+        "service-chain-name": "ovs",
+        "path-id": 1,
+        "symmetric": false
+      }
+    ]
+  }
+}"""
 
+RENDERED_SERVICE_PATH_RPC_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "ovs-sfp"
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RPC_RESP = """
+{
+  "output": {
+    "result": true
+  }
+}"""
+
+RENDERED_SERVICE_PATH_RESP_JSON = """
+{
+  "rendered-service-paths": {
+    "rendered-service-path": [
+      {
+        "name": "ovs-sfp-Path-1",
+        "starting-index": 255,
+        "transport-type": "service-locator:vxlan-gpe",
+        "rendered-service-path-hop": [
+          {
+            "hop-number": 0,
+            "service-function-forwarder": "ovsdb://10.0.2.6:57567/bridge/br1",
+            "service-function-forwarder-locator": "br1",
+            "service-function-name": "sf1",
+            "service-index": 255
+          },
+          {
+            "hop-number": 1,
+            "service-function-forwarder": "ovsdb://10.0.2.6:57567/bridge/br2",
+            "service-function-forwarder-locator": "br2",
+            "service-function-name": "sf2",
+            "service-index": 254
+          }
+        ],
+        "path-id": 1,
+        "parent-service-function-path": "ovs-sfp",
+        "service-chain-name": "ovs"
+      }
+    ]
+  }
+}"""
 
 SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
 {
@@ -239,12 +203,18 @@ SERVICE_FUNCTION_TYPE_JSON = """
         "type": "service-function-type:firewall",
         "sft-service-function-name": [
           {
-            "name": "firewall-2"
+            "name": "sf1"
+          }
+        ]
+      },
+      {
+        "type": "service-function-type:dpi",
+        "sft-service-function-name": [
+          {
+            "name": "sf2"
           }
         ]
       }
     ]
   }
-}
-
-"""
+}"""

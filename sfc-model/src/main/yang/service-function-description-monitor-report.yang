@@ -15,6 +15,14 @@ module service-function-description-monitor-report {
     }
 
     grouping SF-description {
+        leaf mgt-ip-addr {
+            type inet:ip-address;
+            description "Management IP";
+        }
+        leaf type {
+            type string;
+            description "SF type";
+        }
         leaf number-of-dataports {
             type uint32;
             description "Number of dataports";

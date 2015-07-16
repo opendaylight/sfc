@@ -20,10 +20,15 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionDescriptionMonitorReportService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.concurrent.Future;
@@ -35,6 +40,11 @@ public class SfcProviderSfDescriptionMonitorAPI{
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static ConsumerContext sessionData;
+    private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
+            InstanceIdentifier
+            .create(NetworkTopology.class)
+            .child(Topology.class,
+                   new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     public SfcProviderSfDescriptionMonitorAPI() {
             setSessionHelper();
@@ -59,40 +69,69 @@ public class SfcProviderSfDescriptionMonitorAPI{
         setSessionHelper();
     }
 
-    public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String mountpoint)  {
+    public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String nodeName)  {
+        GetSFDescriptionOutput ret = null;
         printTraceStart(LOG);
         try {
-            Future<RpcResult<GetSFDescriptionOutput>> result = getSfDescriptionMonitorService(mountpoint).getSFDescription();
-            return result.get().getResult();
+            ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
+            if (service != null) {
+                Future<RpcResult<GetSFDescriptionOutput>> result = service.getSFDescription();
+                RpcResult<GetSFDescriptionOutput> output = result.get();
+                if (output.isSuccessful()) {
+                    ret = output.getResult();
+                    LOG.info("getSFDescription() successfully.");
+                }
+                else {
+                    LOG.error("getSFDescription() failed.");
+                }
+            }
         } catch (Exception e) {
             LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
-        return null;
+        return ret;
     }
 
-    public GetSFMonitoringInfoOutput getSFMonitorInfoFromNetconf(String mountpoint)  {
+    public GetSFMonitoringInfoOutput getSFMonitorInfoFromNetconf(String nodeName)  {
+        GetSFMonitoringInfoOutput ret = null;
         printTraceStart(LOG);
         try {
-            Future<RpcResult<GetSFMonitoringInfoOutput>> result = getSfDescriptionMonitorService(mountpoint).getSFMonitoringInfo();
-            return result.get().getResult();
+            ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
+            if (service != null) {
+                Future<RpcResult<GetSFMonitoringInfoOutput>> result = service.getSFMonitoringInfo();
+                RpcResult<GetSFMonitoringInfoOutput> output = result.get();
+                if (output.isSuccessful()) {
+                    ret = output.getResult();
+                    LOG.info("getSFMonitoringInfo() succeeded.");
+                }
+                else {
+                    LOG.error("getSFMonitoringInfo() failed.");
+                }
+            }
         } catch (Exception e) {
             LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
-        return null;
+        return ret;
     }
 
-    private ServiceFunctionDescriptionMonitorReportService getSfDescriptionMonitorService(String mountpoint) {
-        NodeId nodeId = new NodeId(mountpoint);
-        InstanceIdentifier<?> path = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId)).toInstance();
+    private ServiceFunctionDescriptionMonitorReportService getSfDescriptionMonitorService(String nodeName) {
+        InstanceIdentifier<?> nodeIID = NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeName)));
         MountPointService mountService = SfcNetconfDataProvider.GetNetconfDataProvider().getMountService();
-        Preconditions.checkState(mountService != null, "Mount service is null");
-        Optional<MountPoint> mountPoint = mountService.getMountPoint(path);
-        Preconditions.checkState(mountPoint.isPresent(), "Mount point {} does not exists",mountPoint);
+        if (mountService == null) {
+            LOG.error("Mount service is null");
+            return null;
+        }
+        Optional<MountPoint> mountPoint = mountService.getMountPoint(nodeIID);
+        if (!mountPoint.isPresent()) {
+            LOG.error("Mount point for node {} doesn't exist", nodeName);
+            return null;
+        }
         final Optional<RpcConsumerRegistry> service = mountPoint.get().getService(RpcConsumerRegistry.class);
-        Preconditions.checkState(service.isPresent());
+        if (!service.isPresent()) {
+            LOG.error("Failed to get RpcService for node {}", nodeName);
+            return null;
+        }
         return service.get().getRpcService(ServiceFunctionDescriptionMonitorReportService.class);
     }
 

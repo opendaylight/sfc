@@ -992,13 +992,31 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      */
     protected boolean putServiceFunctionDescription(ServiceFunction serviceFunction) {
         boolean ret = false;
-        printTraceStart(LOG);
+        SfcSfDescMonBuilder sfDescMonBuilder = null;
         SfcSfDescMon sfDescMon = null;
         ServiceFunctionState dataSfcStateObject;
+        printTraceStart(LOG);
+
         try {
             if (ODL_SFC.getDataProvider() != null) {
-                //get mount point
-                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
+                /**
+                 * Service Function name is netconf topology node ID
+                 * if it supports netconf. So it is netconf mount point.
+                 */
+                String mountpoint = serviceFunction.getName();
+
+                //Get sf description information from netconf
+                GetSFDescriptionOutput sfDescInfoOutput = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
+                if(sfDescInfoOutput == null) {
+                    LOG.warn("getSFDescriptionInfoFromNetconf returns null at mount point {}", mountpoint);
+                    return false;
+                }
+
+                DescriptionInfo descInfo = new DescriptionInfoBuilder(sfDescInfoOutput.getDescriptionInfo()).build();
+                LOG.info("DescriptionInfo of SF {}: type: {}, mgt-ip-addr: {}", mountpoint, descInfo.getType(), descInfo.getMgtIpAddr().getIpv4Address().getValue());
+                sfDescMonBuilder = new SfcSfDescMonBuilder()
+                    .setDescriptionInfo(descInfo);
+
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
                     new ServiceFunctionStateKey(serviceFunction.getName());
@@ -1008,36 +1026,23 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         .build();
 
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
-                //get sf description information from netconf
-                GetSFDescriptionOutput sfDescInfoOutput = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
-                if(sfDescInfoOutput == null) {
-                    return false;
-                }
 
-                DescriptionInfo descInfo = new DescriptionInfoBuilder(sfDescInfoOutput.getDescriptionInfo()).build();
                 //build the service function capbility and utilization
-                if(dataSfcStateObject!=null) {
-                    if(dataSfcStateObject.getAugmentation(ServiceFunctionState1.class)!=null) {
-                        ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                if (dataSfcStateObject != null) {
+                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                    if (sf1Temp != null) {
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(sfDescMonTemp.getMonitoringInfo())
-                            .setDescriptionInfo(descInfo).build();
-                    } else {
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setDescriptionInfo(descInfo).build();
+                        sfDescMonBuilder.setMonitoringInfo(sfDescMonTemp.getMonitoringInfo());
                     }
-                }  else {
-                    sfDescMon = new SfcSfDescMonBuilder()
-                        .setDescriptionInfo(descInfo).build();
                 }
+                sfDescMon = sfDescMonBuilder.build();
 
                 ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey)
                     .addAugmentation(ServiceFunctionState1.class,sfState1).build();
 
-                if(dataSfcStateObject!=null) {
+                if (dataSfcStateObject != null) {
                     ret = mergeServiceFunctionState(serviceFunctionState);
                 } else {
                     ret = putServiceFunctionState(serviceFunctionState);
@@ -1063,13 +1068,29 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
      */
     protected boolean putServiceFunctionMonitor(ServiceFunction serviceFunction) {
         boolean ret = false;
-        printTraceStart(LOG);
+        SfcSfDescMonBuilder sfDescMonBuilder = null;
         SfcSfDescMon sfDescMon = null;
         ServiceFunctionState dataSfcStateObject;
+        printTraceStart(LOG);
         try {
             if (ODL_SFC.getDataProvider() != null) {
-                //get mount point
-                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
+                /**
+                 * Service Function name is netconf topology node ID
+                 * if it supports netconf. So it is netconf mount point.
+                 */
+                String mountpoint = serviceFunction.getName();
+
+                //get sf monitor data from netconf
+                GetSFMonitoringInfoOutput sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
+                if(sfMonInfoMap == null) {
+                    LOG.warn("getSFMonitorInfoFromNetconf returns null at mount point {}", mountpoint);
+                    return false;
+                }
+                MonitoringInfo monInfo = new MonitoringInfoBuilder(sfMonInfoMap.getMonitoringInfo()).build();
+                LOG.info("MonitoringInfo of SF {}: CPU utilization: {}, Memory utilization: {}", mountpoint, monInfo.getResourceUtilization().getCPUUtilization(), monInfo.getResourceUtilization().getMemoryUtilization());
+                sfDescMonBuilder = new SfcSfDescMonBuilder()
+                    .setMonitoringInfo(monInfo);
+
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
                     new ServiceFunctionStateKey(serviceFunction.getName());
@@ -1079,29 +1100,16 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         .build();
 
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
-                //get sf monitor data from netconf
-                GetSFMonitoringInfoOutput sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
-                if(sfMonInfoMap == null) {
-                    return false;
-                }
-                MonitoringInfo monInfo = new MonitoringInfoBuilder(sfMonInfoMap.getMonitoringInfo()).build();
 
                 //build the service function capbility and utilization
-                if(dataSfcStateObject!=null) {
-                    if(dataSfcStateObject.getAugmentation(ServiceFunctionState1.class)!=null) {
-                        ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                if (dataSfcStateObject != null) {
+                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                    if (sf1Temp != null) {
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(monInfo)
-                            .setDescriptionInfo(sfDescMonTemp.getDescriptionInfo()).build();
-                    } else {
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(monInfo).build();
+                        sfDescMonBuilder.setDescriptionInfo(sfDescMonTemp.getDescriptionInfo());
                     }
-                } else {
-                    sfDescMon = new SfcSfDescMonBuilder()
-                        .setMonitoringInfo(monInfo).build();
                 }
+                sfDescMon = sfDescMonBuilder.build();
 
                 ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()

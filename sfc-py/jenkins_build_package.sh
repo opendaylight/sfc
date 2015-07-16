@@ -11,8 +11,8 @@ tar -xvzf /tmp/Python-3.4.3.tgz -C /tmp
 #save current dir should be root of the sfc-py project
 
 curpath="$PWD"
-USR="WreaRpseGninPo"
-PSW="jSEfdcPpsYR0a4Y2s3"
+USR="rapenno"
+PSW="SfcpY0423"
 
 cd /tmp/Python-3.4.3
 
@@ -48,7 +48,7 @@ cd $curpath
 python3 setup.py sdist
 # 4. check if the package 'sfc-0.1.359.tar.gz' was created in sfc/sfc-py/dist
 
-file="$curpath/dist/sfc-0.1.359.tar.gz"
+file="$curpath/dist/sfc-0.1.36.tar.gz"
 if [ -s "$file" ]
 then
 	echo "Sfc Package created and has size greater than zero."

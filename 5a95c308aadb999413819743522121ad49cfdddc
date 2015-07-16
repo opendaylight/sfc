@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_9d1c4e79",
+        "filename": "sfc-py/jenkins_build_package.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-07-16T15:20:28Z",
+      "side": 1,
+      "message": "This is a really, really bad idea. You are posting your credentials online for all to see. Can we come up with a solution where you don\u0027t expose your credentials on the internet?",
+      "revId": "5a95c308aadb999413819743522121ad49cfdddc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

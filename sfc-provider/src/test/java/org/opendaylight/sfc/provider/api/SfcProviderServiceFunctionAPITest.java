@@ -550,11 +550,17 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
 
         boolean result = SfcProviderServiceFunctionAPI.putServiceFunctionDescriptionExecutor(serviceFunctionBuilder.build());
 
-        assertTrue("Must be true", result);
+        /* It must be false if there isn't a corresponding netconf
+         * mount point exisiting, this is an expected result.
+         */
+        assertFalse("Must be false", result);
 
         result = SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(serviceFunctionBuilder.build());
 
-        assertTrue("Must be true", result);
+        /* It must be false if there isn't a corresponding netconf
+         * mount point exisiting, this is an expected result.
+         */
+        assertFalse("Must be false", result);
     }
 
     //write or remove service function

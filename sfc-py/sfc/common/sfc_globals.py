@@ -24,6 +24,7 @@ ODL_PORT = 8181
 ODL_IP = 'localhost'
 LOCAL_ODL_LOCATOR = "{ip}:{port}".format(ip=ODL_IP, port=ODL_PORT)
 base_url = "http://{odl}/restconf/config/".format(odl=LOCAL_ODL_LOCATOR)
+NSH_type = 'vxlan-nsh-ethernet-legacy'
 
 SF_URL = base_url + "service-function:service-functions/"
 SFC_URL = base_url + "service-function-chain:service-function-chains/"
@@ -93,6 +94,7 @@ class SfcGlobals:
     sf_processed_packets = 0
     sff_queued_packets = 0
     sff_processed_packets = 0
+    NSH_type = 3
 
     def get_path(self):
         return self.path
@@ -162,6 +164,12 @@ class SfcGlobals:
 
     def get_my_sff_name(self):
         return self.my_sff_name
+
+    def set_NSH_type(self, new_NSH_type):
+        self.NSH_type = new_NSH_type
+
+    def get_NSH_type(self):
+        return self.NSH_type
 
     def set_sff_os(self, new_sff_os):
         self.sff_os = new_sff_os

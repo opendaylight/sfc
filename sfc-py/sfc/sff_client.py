@@ -233,7 +233,7 @@ class MyVxlanNshEthClient(MyNshBaseClass):
                                       self.ctx_header_values,
                                       self.ethernet_values)
 
-        # VXLAN header is now built as part of nsh_eth heder
+        # VXLAN header is now built as part of nsh_eth header
         # packet = build_vxlan_header(self.encapsulate_header_values,
         # self.ethernet_values)
         udp_inner_packet = build_udp_packet(self.inner_header.inner_src_ip, self.inner_header.inner_dest_ip,
@@ -600,6 +600,7 @@ def main(argv):
         inner_header = InnerHeader(inner_src_ip, inner_dest_ip, inner_src_port, inner_dest_port)
 
         if encapsulate == 'gpe-nsh-ipv4':
+            # NSH type !
             vxlan_header_values = VXLANGPE()
             #  override encap type
             base_header_values.next_protocol = NSH_NEXT_PROTO_IPV4
@@ -619,7 +620,7 @@ def main(argv):
             greclient.send_gre_nsh()
 
         elif encapsulate == 'gpe-nsh-ethernet':
-
+            # NSH type 3
             vxlan_header_values = VXLANGPE()
 
             ethernet_header_values = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
@@ -632,7 +633,7 @@ def main(argv):
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
         elif encapsulate == 'vxlan-nsh-ethernet-legacy':
-
+            # NSH type 3
             vxlan_header_values = VXLAN()
 
             ethernet_header_values = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,

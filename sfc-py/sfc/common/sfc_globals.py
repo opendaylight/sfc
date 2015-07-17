@@ -69,7 +69,10 @@ class SfcGlobals:
     sff_os = "ODL"
     my_sff_name = None
     sff_os_set = {"OVS", "XE", "XR"}
-
+    NSH_TYPE_1 = '1'
+    NSH_TYPE_2 = '2'
+    NSH_TYPE_3 = '3'
+    
     path = {}
     sf_topo = {}
     sff_topo = {}
@@ -93,6 +96,8 @@ class SfcGlobals:
     sf_processed_packets = 0
     sff_queued_packets = 0
     sff_processed_packets = 0
+    NSH_type = NSH_TYPE_3
+    legacy_vxlan = False
 
     def get_path(self):
         return self.path
@@ -162,6 +167,18 @@ class SfcGlobals:
 
     def get_my_sff_name(self):
         return self.my_sff_name
+
+    def set_NSH_type(self, new_NSH_type):
+        self.NSH_type = new_NSH_type
+
+    def get_NSH_type(self):
+        return self.NSH_type
+
+    def set_legacy_vxlan(self, new_legacy_vxlan):
+        self.legacy_vxlan = new_legacy_vxlan
+
+    def get_legacy_vxlan(self):
+        return self.legacy_vxlan
 
     def set_sff_os(self, new_sff_os):
         self.sff_os = new_sff_os

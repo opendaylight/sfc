@@ -25,7 +25,6 @@ import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
@@ -425,7 +424,7 @@ public class SfcOvsUtil {
                     ovsBrBuilder = new OvsBridgeBuilder();
                 }
 
-            //if not, create empty builders
+                //if not, create empty builders
             } else {
                 sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder();
                 ovsBrBuilder = new OvsBridgeBuilder();
@@ -518,12 +517,8 @@ public class SfcOvsUtil {
             return null;
         }
         Long macLong = getLongFromDpid(datapathId.getValue());
-        String nodeIdString = "openflow:" + String.valueOf(macLong);
-        if(StringUtils.countMatches(nodeIdString, ":") != 1) {
-            LOG.error("{} is not correct format for NodeId.",nodeIdString);
-            return null;
-        }
-        return nodeIdString;
+
+        return "openflow:" + String.valueOf(macLong);
     }
 
     private static DatapathId getOvsDataPathId(NodeId nodeId) {
@@ -563,6 +558,7 @@ public class SfcOvsUtil {
         if ((ip == null)
                 || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
             LOG.warn("Invalid IP address");
+            return null;
         }
         if (ip.getIpv4Address() != null) {
             ipAddressString = ip.getIpv4Address().getValue();
@@ -587,10 +583,10 @@ public class SfcOvsUtil {
         if(nodeRef.getValue().getTargetType().equals(Node.class)) {
             Object[] methodParams = {nodeRef};
             SfcOvsDataStoreAPI readOvsdbNode =
-                   new SfcOvsDataStoreAPI(
-                           SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
+                    new SfcOvsDataStoreAPI(
+                            SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
                             methodParams
-                   );
+                    );
 
             Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
 

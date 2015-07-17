@@ -27,7 +27,12 @@ which is responsible for composing a (raw) bytes representation of a header.
 
 # Inner Packet
 
-PAYLOAD_START_INDEX = 46
+# NSH type 1  (ENCAP+BASE+CTX)  size = 8 + 8 + 16 = 32
+PAYLOAD_START_INDEX_NSH_TYPE1 = 32
+# NSH type 2  (ENCAP+BASE+CTX)  size = 8 + 8 + 16 = 32
+PAYLOAD_START_INDEX_NSH_TYPE2 = 32
+# NSH type 2  (ENCAP+BASE+CTX+ETH)  size = 8 + 8 + 16 + 14 = 46
+PAYLOAD_START_INDEX_NSH_TYPE3 = 46
 
 # VXLAN constants
 
@@ -38,6 +43,7 @@ VXLAN_START_OFFSET = 0
 # NSH constants
 
 NSH_TYPE1_DATA_PACKET = int('000000000000011000000001', 2)
+# the lenght of NSH itself, without encapsulation heeder in 4 byte words = 8 bytes BASE + 16 bytes
 NSH_TYPE1_LEN = 0x6
 NSH_MD_TYPE1 = 0x1
 NSH_VERSION1 = int('00', 2)
@@ -92,6 +98,8 @@ class VXLANGPE(Structure):
                 ('vni', c_uint, 24),
                 ('reserved2', c_uint, 8)]
 
+    header_size = 8
+
     def __init__(self, flags=int('00001100', 2), reserved=0, next_protocol=VXLAN_NEXT_PROTO_NSH,
                  vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -129,6 +137,8 @@ class VXLAN(Structure):
         self.vni = vni
         self.reserved2 = reserved2
 
+    header_size = 8
+
     def build(self):
         return pack('!B H B I',
                     self.flags,
@@ -144,6 +154,8 @@ class GREHEADER(Structure):
                 ('protocol_type', c_uint, 16),
                 ('checksum', c_uint, 16),
                 ('reserved1', c_uint, 16)]
+
+    header_size = 8
 
     def build(self):
         return pack('!H H H H',
@@ -168,6 +180,8 @@ class ETHHEADER(Structure):
                 ('smac5', c_ubyte),
                 ('ethertype0', c_ubyte),
                 ('ethertype1', c_ubyte)]
+
+    header_size = 14
 
     def build(self):
         return pack('!B B B B B B B B B B B B B B',
@@ -207,6 +221,8 @@ class BASEHEADER(Structure):
         self.service_path = service_path
         self.service_index = service_index
 
+    header_size = 8
+
     def build(self):
         return pack('!H B B I',
                     (self.version << 14) + (self.flags << 6) + self.length,
@@ -220,6 +236,8 @@ class CONTEXTHEADER(Structure):
                 ('network_shared', c_uint),
                 ('service_platform', c_uint),
                 ('service_shared', c_uint)]
+
+    header_size = 16
 
     def __init__(self, network_platform=0x00, network_shared=0x00, service_platform=0x00, service_shared=0x00, *args,
                  **kwargs):
@@ -246,6 +264,8 @@ class TRACEREQHEADER(Structure):
                 ('ip_3', c_uint),
                 ('ip_4', c_uint)]
 
+    header_size = 20
+
     def build(self):
         return pack('!B B H I I I I',
                     self.oam_type,
@@ -270,6 +290,8 @@ class IP4HEADER(Structure):
         ('ip_chksum', c_ushort),
         ('ip_saddr', c_uint),
         ('ip_daddr', c_uint)]
+
+    header_size = 20
 
     def build(self):
         ip_header_pack = pack('!B B H H H B B H I I', IPV4_IHL_VER, self.ip_tos, self.ip_tot_len, self.ip_id,
@@ -322,11 +344,14 @@ class IP6HEADER(Structure):
         ('ip_daddr3', c_uint),
         ('ip_daddr4', c_uint)]
 
+    header_size = 40
+
     def build(self):
         ipv6_ver_tc_fl = (IPV6_VERSION << 28) + (self.ip_tc << 20) + self.ip_flow_label
-        ip_header_pack = pack('!I H B B Q Q Q Q', ipv6_ver_tc_fl, self.ip_payloadlen,
+        ip_header_pack = pack('!I H B B I I I I I I I I', ipv6_ver_tc_fl, self.ip_payloadlen,
                               self.ip_next_header, self.ip_hop_lmt,
-                              self.ip_saddr1, self.ip_saddr2, self.ip_daddr1, self.ip_daddr2)
+                              self.ip_saddr1, self.ip_saddr2, self.ip_saddr3, self.ip_saddr4,
+                              self.ip_daddr1, self.ip_daddr2, self.ip_daddr3, self.ip_daddr4)
         return ip_header_pack
 
     def set_ip_checksum(self, checksum):
@@ -339,6 +364,8 @@ class UDPHEADER(Structure):
         ('udp_dport', c_ushort),
         ('udp_len', c_ushort),
         ('udp_sum', c_ushort)]
+
+    header_size = 8
 
     def build(self):
         udp_header_pack = pack('!H H H H', self.udp_sport, self.udp_dport, self.udp_len,

@@ -18,7 +18,7 @@ import subprocess
 import queue
 from time import sleep
 
-from ..nsh.encode import build_nsh_eth_header
+from ..nsh.encode import build_nsh_eth_header, build_nsh_header
 from ..common.sfc_globals import sfc_globals
 from ..nsh.common import (VXLANGPE, GREHEADER, BASEHEADER, CONTEXTHEADER, ETHHEADER,
                           VXLAN_NEXT_PROTO_NSH)
@@ -332,6 +332,7 @@ class NfqClassifier(metaclass=Singleton):
         :return dict
 
         """
+        logger.info('Fetching firts hop from ODL ....')
         odl_locator = sfc_globals.get_odl_locator()
         url = ('http://{odl}/restconf/operations/rendered-service-path:'
                'read-rendered-service-path-first-hop'.format(odl=odl_locator))
@@ -362,8 +363,10 @@ class NfqClassifier(metaclass=Singleton):
             for errors in rsp_json['errors'].values():
                 for e in errors:
                     logger.error('%s (%s)', e['error-message'], e['error-tag'])
-
             raise
+
+        with open("jsongetRSP-FP.txt", "w") as outfile:
+            json.dump(rsp_json, outfile)
 
         return rsp_json['output']['rendered-service-path-first-hop']
 
@@ -416,15 +419,15 @@ class NfqClassifier(metaclass=Singleton):
         next_protocol = ipv_2_next_protocol[ipv]
 
         transport = fwd_to['transport-type']
-        
-        if 'vxlan' in transport:
+
+        if 'vxlan-gpe' in transport:
             # NOTE
             # tunnel_id (0x0500) is hard-coded, will it be always the same?
             encap_header = VXLANGPE(vni=0x0500,
                                     reserved=0,
                                     reserved2=64,
                                     next_protocol=VXLAN_NEXT_PROTO_NSH,
-                                    flags=int('00000100', 2))
+                                    flags=int('00001100', 2))
         elif 'gre' in transport:
             encap_header = GREHEADER(reserved1=0,
                                      c=int('0', 2),
@@ -432,12 +435,21 @@ class NfqClassifier(metaclass=Singleton):
                                      version=int('000', 2),
                                      reserved0=int('000000000000', 2),
                                      checksum=int('0000000000000000', 2))
+        elif 'vxlan' in transport:
+            # NOTE
+            # tunnel_id (0x0500) is hard-coded, will it be always the same?
+            encap_header = VXLAN(vni=0x0500,
+                                    reserved=0,
+                                    reserved2=64,
+                                    next_protocol=0,
+                                    flags=int('00001000', 2))                
         else:
             raise ValueError('Unsupported transport type "%s"', transport)
 
         base_header = BASEHEADER(service_path=rsp_id,
                                  service_index=fwd_to['starting-index'],
                                  next_protocol=next_protocol)
+
 
         # NOTE
         # so far only context metadata are supported 
@@ -454,13 +466,20 @@ class NfqClassifier(metaclass=Singleton):
                                    service_platform=0)
         eth_header = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
                                     0x08, 0x00)
-        nsh_header = build_nsh_eth_header(encap_header, base_header, ctx_header, eth_header)
+        if 3 == sfc_globals.get_NSH_type():
+            nsh_header = build_nsh_eth_header(encap_header, base_header, ctx_header, eth_header)
+        else:
+            nsh_header = build_nsh_header(encap_header, base_header, ctx_header)
+
         nsh_packet = nsh_header + packet.get_payload()
+        
         try:
             logger.info('addr: "%s"  port:"%s"', fwd_to['ip'], fwd_to['port'])
             logger.debug('* Sending packet to IP: "%s", port: "%d", nsp: "%d", nsi: "%d", next_protocol(base_header): "%s", next_protocol(encap_header): "%s"',
-                fwd_to['ip'], fwd_to['port'], rsp_id, fwd_to['starting-index'], next_protocol, VXLAN_NEXT_PROTO_NSH)        
+                fwd_to['ip'], fwd_to['port'], rsp_id, fwd_to['starting-index'], next_protocol, VXLAN_NEXT_PROTO_NSH)
+        
             self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
+
             sfc_globals.sent_packets += 1
             logger.debug('* Queued:"%d" sent:"%d sfq:"%d" sffq:"%d" sf_proc:"%d" sff_proc "%d"',
                     sfc_globals.processed_packets, sfc_globals.sent_packets,
@@ -577,7 +596,7 @@ class NfqClassifier(metaclass=Singleton):
         """
         ipv = None
         ace_rule_cmd = ['-I', self.rsp_chain]
-
+        logger.info('Parsing ACE...')
         if 'ip-protocol' in ace_matches:
             protocols = ace_2_iptables['protocols']['type']
             protocol_flag = ace_2_iptables['protocols']['flag']
@@ -728,8 +747,9 @@ class NfqClassifier(metaclass=Singleton):
         :type sff_data: dict
 
         """
+        logger.info('Creating RSP')
         self.register_rsp()
-
+        
         if self.rsp_id not in self.rsp_2_sff:
             self.rsp_2_sff[self.rsp_id] = {'name': rsp_name}
 

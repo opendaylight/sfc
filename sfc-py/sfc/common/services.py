@@ -245,11 +245,11 @@ class BasicService(object):
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
             # logger.debug('%s: Sending packets to %s', self.service_type, addr)
-            if nsh_decode.is_vxlan_nsh_legacy_message(data):
-                # Disregard source port of received packet and send packet back to 6633
-                addr_l = list(addr)
-                addr_l[1] = 6633
-                addr = tuple(addr_l)
+            # if nsh_decode.is_vxlan_nsh_legacy_message(data):
+            # Disregard source port of received packet and send packet back to 6633
+            # addr_l = list(addr)
+            # addr_l[1] = 6633
+            # addr = tuple(addr_l)
 
             self.transport.sendto(rw_data, addr)
         elif nsh_decode.is_trace_message(data):
@@ -469,7 +469,11 @@ class MySffServer(BasicService):
                 #             self.server_base_values.service_index)
 
                 # Remove all SFC headers, leave only original packet
-                inner_packet = rw_data[PAYLOAD_START_INDEX:]
+                if sfc_globals.NSH_TYPE_3 == sfc_globals.get_NSH_type():
+                    payload_start_index = PAYLOAD_START_INDEX_NSH_TYPE3
+                else:
+                    payload_start_index = PAYLOAD_START_INDEX_NSH_TYPE1
+                inner_packet = rw_data[payload_start_index:]
                 if inner_packet:
                     euid = os.geteuid()
                     if euid != 0:
@@ -492,7 +496,7 @@ class MySffServer(BasicService):
                     try:
                         if platform.system() == "Darwin":
                             # Assuming IPv4 packet for now. Move pointer forward
-                            inner_packet = rw_data[PAYLOAD_START_INDEX + IPV4_HEADER_LEN_BYTES:]
+                            inner_packet = rw_data[payload_start_index + IPV4_HEADER_LEN_BYTES:]
                             sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
                         else:
                             sock_raw = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)

@@ -963,7 +963,9 @@ def main():
                                             "--rest "
                                             "--nfq-class "
                                             "--odl-get-sff "
-                                            "--debug_level "
+                                            "--debug-level "
+                                            "--NSH-type"
+                                            "--legacy-vxlan"
                                             "--ovs-sff-cp-ip <local SFF IP dataplane address> "
                                             "--odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>"
                                             "--sff-os=<agent os>"
@@ -994,11 +996,20 @@ def main():
                         help='Set ODL IP and port in form <IP>:<PORT>. '
                              'Default is %s' % sfc_globals.get_odl_locator())
 
+    parser.add_argument('--NSH-type',
+                        choices=['1', '3'],
+                        help='Set NSH type '
+                             'Default is %s' % sfc_globals.get_NSH_type())
+
+    parser.add_argument('--legacy-vxlan', action='store_true',
+                        help='Using Vxlan header instead of Vxlan-gpe')
+
     parser.add_argument('--ovs-sff-cp-ip',
                         help='Set local SFF Open vSwitch IP. '
                              'Default is %s' % ovs_local_sff_cp_ip)
 
-    parser.add_argument('--sff-os', choices=['XE', 'XR', 'OVS'],
+    parser.add_argument('--sff-os',
+                        choices=['XE', 'XR', 'OVS'],
                         help='Set SFF switch OS')
 
     parser.add_argument('--agent-port', type=int,
@@ -1024,6 +1035,14 @@ def main():
     if args.sff_name is not None:
         sfc_globals.set_my_sff_name(args.sff_name)
 
+    if args.NSH_type is not None:
+        sfc_globals.set_NSH_type(args.NSH_type)
+
+    if args.legacy_vxlan is not None:
+        sfc_globals.set_legacy_vxlan(True)
+    else:
+        sfc_globals.set_legacy_vxlan(False)
+
     if args.debug_level is not None:
         debug_level = args.debug_level
 
@@ -1041,9 +1060,9 @@ def main():
     #: execute actions --------------------------------------------------------
     try:
         if debug_level:
-            logger.setLevel(logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG)
         else:
-            logger.setLevel(logging.INFO)
+            logging.basicConfig(level=logging.INFO)
 
         logger.info("====== STARTING SFC AGENT ======")
         logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "

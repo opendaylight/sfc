@@ -437,23 +437,36 @@ public class SfcL2RspProcessor {
                         sffDst, sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
 
         // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
-        if(sfSrcDpl != null) {
-            configureSffNextHopFlow(entry.getSrcSff(),
-                                    sfSrcDpl,
-                                    sffDstIngressDpl,
-                                    entry.getPathId(),
-                                    entry.getServiceIndex());
-        }
+        if(entry.getSrcSff().equals(entry.getDstSff())) {
+            // If the next hop is on this SFF then go straight to the next SF
+            // Configure SF-SFF-SF NextHop on the same SFF
+            if(sfSrcDpl != null) {
+                configureSffNextHopFlow(entry.getSrcSff(),
+                                        sfSrcDpl,
+                                        sfDstDpl,
+                                        entry.getPathId(),
+                                        entry.getServiceIndex());
+            }
+        } else {
+            // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
+            if(sfSrcDpl != null) {
+                configureSffNextHopFlow(entry.getSrcSff(),
+                                        sfSrcDpl,
+                                        sffDstIngressDpl,
+                                        entry.getPathId(),
+                                        entry.getServiceIndex());
+            }
 
-        // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
-        configureSffTransportEgressFlow(
-                entry.getSrcSff(),
-                sffSrcEgressDpl,
-                sffDstIngressDpl,
-                dstHopIngressDpl,
-                entry.getPathId(),
-                entry.getServiceIndex(),
-                false);
+            // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
+            configureSffTransportEgressFlow(
+                    entry.getSrcSff(),
+                    sffSrcEgressDpl,
+                    sffDstIngressDpl,
+                    dstHopIngressDpl,
+                    entry.getPathId(),
+                    entry.getServiceIndex(),
+                    false);
+        }
     }
 
     private void initializeSff(final String sffName, final long pathId) {
@@ -585,6 +598,16 @@ public class SfcL2RspProcessor {
         String dstMac = sfcL2ProviderUtils.getDplPortInfoMac(dstSffDpl);
         DataPlaneLocator dstDpl = ((dstSffDpl == null) ? null : dstSffDpl.getDataPlaneLocator());
         configureSffNextHopFlow(sffName, srcSfDpl, dstDpl, srcMac, dstMac, pathId, serviceIndex);
+    }
+
+    private void configureSffNextHopFlow(final String sffName,
+                                         SfDataPlaneLocator srcSfDpl,
+                                         SfDataPlaneLocator dstSfDpl,
+                                         final long pathId,
+                                         final short serviceIndex) {
+        String srcMac = sfcL2ProviderUtils.getSfDplMac(srcSfDpl);
+        String dstMac = sfcL2ProviderUtils.getSfDplMac(dstSfDpl);
+        configureSffNextHopFlow(sffName, srcSfDpl, dstSfDpl, srcMac, dstMac, pathId, serviceIndex);
     }
 
     // This version is only used by the previous 2 configureSffNextHopFlow() signatures
@@ -1024,6 +1047,14 @@ public class SfcL2RspProcessor {
         while (sffGraphIter.hasNext()) {
             SffGraph.SffGraphEntry entry = sffGraphIter.next();
             LOG.debug("RspTransport entry: {}", entry);
+
+            if(entry.getSrcSff().equals(entry.getDstSff())) {
+                // It may be that multiple SFs are on the same SFF
+                // If so, we dont need to set the transports again
+                // Otherwise the SFF ingress DPL will be overwritten
+                continue;
+            }
+
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rspTransport);
             if(isMpls) {

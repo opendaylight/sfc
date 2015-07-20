@@ -55,8 +55,6 @@ class Context(object):
         self.batch_rsp      =  False
         self.batch_query    =  False
         self.batch_nodes    =  False
-        self.do_delete      =  False
-        self.delete_name    =  ''
 
     def set_path_prefix_paths(self, path_prefix):
         self.rest_path_prefix = path_prefix
@@ -146,10 +144,6 @@ def get_cmd_line(context):
                       dest='send_all',
                       action='store_true',
                       help='Send all (SF, SFF, SFC, SFP, RSP, ACL) REST JSON messages')
-    opts.add_argument('--delete-all', '-8',
-                      dest='delete_all',
-                      action='store_true',
-                      help='Delete all (SF, SFF, SFC, SFP, RSP, ACL) REST JSON messages')
     opts.add_argument('--query-nodes', '-9',
                       dest='query_nodes',
                       action='store_true',
@@ -158,14 +152,6 @@ def get_cmd_line(context):
                       dest='query_sfc',
                       action='store_true',
                       help='Query all SFC objects')
-    opts.add_argument('--do-delete', '-D',
-                      dest='do_delete',
-                      action='store_true',
-                      help='Delete one item as indicated by [send-sf, send-sff, send-sfc, send-sfp, or send-rsp]')
-    opts.add_argument('--name-to-delete', '-N',
-                      dest='delete_name',
-                      action='store_true',
-                      help='Name of the entry to Delete')
 
     # Paths to the rest JSON files
     opts.add_argument('--rest-path-prefix', '-prefix',
@@ -216,17 +202,13 @@ def get_cmd_line(context):
     context.rest_path_acl    = args.rest_path_acl
     context.rest_path_rsp    = args.rest_path_rsp
     context.set_path_prefix_paths(context.rest_path_prefix)
-    context.delete_name      = args.delete_name
 
     for path in [context.rest_path_sf, context.rest_path_sfc, context.rest_path_sff, context.rest_path_sfp]:
         print '\tUsing REST file: %s' % path
 
-    if args.delete_all or args.do_delete:
-        context.do_delete = True
-
     if args.batch:
         context.interractive = False
-        if args.send_all or args.delete_all:
+        if args.send_all:
             context.batch_sf       =  True
             context.batch_sf_sel   =  True
             context.batch_sfc      =  True
@@ -249,7 +231,7 @@ def get_cmd_line(context):
     return True
 
 
-def send_rest(context, operation, rest_url, rest_file=None, delete_name=None):
+def send_rest(context, operation, rest_url, rest_file=None):
     complete_url = '%s%s' % (context.url_base, rest_url)
 
     if rest_file:
@@ -299,18 +281,6 @@ def send_rest(context, operation, rest_url, rest_file=None, delete_name=None):
                                   data = json.dumps(post_list),
                                   headers = context.http_headers)
                 print '\nHTTP POST %s\nresult: %s' % (rest_url, r.status_code)
-        elif operation == DELETE:
-            delete_url = '%s/%s' % (complete_url, delete_name)
-            r = requests.delete(url = complete_url,
-                                headers = context.http_headers,
-                                auth=(context.user, context.pw))
-
-            print '\nHTTP DELETE %s\nresult: %s' % (rest_url, r.status_code)
-            #if len(r.text) > 1:
-            if r.status_code >= 200 and r.status_code <= 299:
-                print json.dumps(json.loads(r.text), indent=4, separators=(',', ': '))
-
-
         else:
             print 'ERROR: Invalid Operation: %s' % (operation)
 
@@ -381,10 +351,9 @@ def CLI(context):
         print ' 6) Send ACL REST'
         print ' 7) Send all ordered: (SFsel, SF, SFF, SFC, SFP, RSP)'
         print ' 8) Query all: (SFsel, SF, SFF, SFC, SFP, RSP)'
-        print ' 9) Delete all ordered: (RSP, SFP, SFC, SFF, SF)'
-        print '10) Query Nodes'
-        print '11) Change config file path, currently [%s]' % (context.rest_path_prefix)
-        print '12) Validate config files JSON syntax'
+        print ' 9) Query Nodes'
+        print '10) Change config file path, currently [%s]' % (context.rest_path_prefix)
+        print '11) Validate config files JSON syntax'
 
         option = raw_input('=> ')
 
@@ -422,21 +391,14 @@ def CLI(context):
             send_rest(context, GET, context.rest_url_rsp)
             send_rest(context, GET, context.rest_url_acl)
         elif option == '9':
-            # Delete all
-            send_rest(context, DELETE, context.rest_url_rsp_rpc, context.rest_path_rsp)
-            send_rest(context, DELETE, context.rest_url_sfp, context.rest_path_sfp)
-            send_rest(context, DELETE, context.rest_url_sfc, context.rest_path_sfc)
-            send_rest(context, DELETE, context.rest_url_sff, context.rest_path_sff)
-            send_rest(context, DELETE, context.rest_url_sf,  context.rest_path_sf)
-        elif option == '10':
             send_rest(context, GET, context.rest_url_nodes)
-        elif option == '11':
+        elif option == '10':
             path_prefix = raw_input('Enter path => ')
             if not os.path.exists(path_prefix):
                 print 'ERROR: path does not exist: [%s]' % (path_prefix)
             else:
                 context.set_path_prefix_paths(path_prefix)
-        elif option == '12':
+        elif option == '11':
             validate_rest(context)
         elif option != '0':
             print 'ERROR: Invalid option %s' % (option)

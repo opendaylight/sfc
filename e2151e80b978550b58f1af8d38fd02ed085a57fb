@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_6bd88553",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "Why delete all does not work?\n\nYou do not need to delete Service Function Type since deleting service function removes those.",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_ab9bfd70",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderScheduleTypeAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "I\u0027m concerned about this test. You are basically recoding the functionality found in \n\npublic static SfcProviderScheduleTypeAPI getPut(Object[] params, Class[] paramsTypes)\n\nI think it would be better to just use that API and the executor infrastructure.",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_4b8a691c",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderScheduleTypeAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "I\u0027m also concerned about this test. You are basically recoding the functionality found in\n\npublic static SfcProviderScheduleTypeAPI getRead(Object[] params, Class[] paramsTypes) {\n        return new SfcProviderScheduleTypeAPI(params, paramsTypes, \"readServiceFunctionScheduleType\");\n    }\n\nI think it would be better to just use that API and the executor infrastructure. If there is something wrong with the API let\u0027s fix it.",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_2b87ed10",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceChainAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "I suggest we fix this API and re-introduce this test. We should not remove this test. Same for test below. I noticed that the API does not use the datastore APIs.",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_6b940537",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "I do not think this test is correct. I think there are similar problems with some of the other tests. You do not need to create or delete the state path on the ServiceForwarderState list directly.\n\nBy creating and deleting a RSP that uses a SFF the state related to that SFF should be added or removed respectively. \n\nSo, what needs to be tested is that the path in the SFF state is added/removed automatically if a RSP is created or deleted.",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_0b9b1168",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:11:17Z",
+      "side": 1,
+      "message": "Why commented out?",
+      "revId": "e2151e80b978550b58f1af8d38fd02ed085a57fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

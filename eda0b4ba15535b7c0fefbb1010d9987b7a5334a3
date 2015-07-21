@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_91baf221",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-07-21T12:57:15Z",
+      "side": 1,
+      "message": "Should the provider be required to support netconf? Can/should this be put under a netconf \"renderer\" feature instead?",
+      "revId": "eda0b4ba15535b7c0fefbb1010d9987b7a5334a3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

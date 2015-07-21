@@ -18,7 +18,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
             "data-plane-locator": {
               "transport": "service-locator:vxlan-gpe",
               "port": 6633,
-              "ip": "192.168.1.27"
+              "ip": "10.0.2.7"
             },
             "service-function-forwarder-ovs:ovs-options": {
               "nshc1": "flow",
@@ -44,11 +44,11 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
               "service-function-forwarder-ovs:ovs-bridge": {},
               "transport": "service-locator:vxlan-gpe",
               "port": 6633,
-              "ip": "192.168.1.13"
+              "ip": "10.0.2.9"
             }
           }
         ],
-        "ip-mgmt-address": "192.168.1.27",
+        "ip-mgmt-address": "10.0.2.7",
         "service-node": ""
       }
     ]
@@ -65,15 +65,15 @@ SERVICE_FUNCTIONS_JSON = """
         "sf-data-plane-locator": [
           {
             "name": "firewall-2-dp1",
-            "ip": "192.168.1.13",
+            "ip": "10.0.2.9",
             "port": 6633,
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF2"
           }
         ],
-        "rest-uri": "http://192.168.1.13:5000",
+        "rest-uri": "http://10.0.2.9:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "192.168.1.13",
+        "ip-mgmt-address": "10.0.2.9",
         "type": "service-function-type:firewall"
       }
     ]

@@ -13,7 +13,8 @@ Instalation
 
 The installation has been tested on Ubuntu Linux.  
 
-1.- SFC needs to have Python 3.4 installed 
+1.- SFC needs to have Python 3.4 installed
+
 2.- openssl-devel MUST BE INSTALLED as it is pip dependency 
     sudo apt-get install libssl-dev openssl
     
@@ -40,7 +41,7 @@ python3 setup.py install
 Usage
 =======
  
-python3.4 sfc_agent --rest --nfq-class --odl-get-sff --ovs-sff-cp-ip <local SFF IP dataplane address> --odl-ip-port=<ODL REST IP:port> --sff-name=<my SFF name>--sff-os=<agent os> --agent-port=<agent listening port>
+python3.4 sfc_agent --rest --nfq-class ---odl-ip-port=<ODL REST IP:port> --auto-sff-name
 
 note:
 root privileges are required if `--nfq-class` flag is used

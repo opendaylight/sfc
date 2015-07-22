@@ -93,16 +93,16 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
         packet = build_nsh_header(self.encapsulate_header_values,
                                   self.base_header_values,
                                   self.ctx_header_values)
-        udp_packet = build_udp_packet(self.remote_sff_ip, self.inner_dest_ip, self.inner_dest_port,
-                                      self.remote_sff_port,
-                                      "test".encode('utf-8'))
+        udp_inner_packet = build_udp_packet(self.inner_header.inner_src_ip, self.inner_header.inner_dest_ip,
+                                            self.inner_header.inner_src_port,
+                                            self.inner_header.inner_dest_port, "test".encode('utf-8'))
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
         logger.debug("Packet dump: %s", binascii.hexlify(packet))
         # Send the packet
         signal.signal(signal.SIGALRM, self.alarm_handler)
         signal.alarm(2)
         try:
-            self.transport.sendto(packet + udp_packet, (self.remote_sff_ip, self.remote_sff_port))
+            self.transport.sendto(packet + udp_inner_packet, (self.remote_sff_ip, self.remote_sff_port))
         except socket.error as msg:
             print('Failed to send packet. Error Code : ' + str(msg))
             sys.exit()

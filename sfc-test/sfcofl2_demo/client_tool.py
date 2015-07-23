@@ -255,7 +255,7 @@ def _get_client_mappings(context):
         action_fields = fields[1].split(',')
         for action_field in action_fields:
             if action_field.startswith('set_field:') and action_field.endswith('->vlan_vid'):
-                vlan = str((int(action_field.split('set_field:')[1].split('->')[0])) & 0x00FF)
+                vlan = str((int(action_field.split('set_field:')[1].split('->')[0])) & 0x0FFF)
             elif action_field.startswith('mod_vlan_vid'):
                 # this is on older OVS versions
                 vlan = str(int(action_field.split('mod_vlan_vid:')[1]))

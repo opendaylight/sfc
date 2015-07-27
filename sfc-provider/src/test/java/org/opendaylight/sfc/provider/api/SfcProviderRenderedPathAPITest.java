@@ -8,14 +8,10 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -57,9 +53,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,13 +61,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcDataStoreAPI.class, SfcProviderServiceTypeAPI.class, SfcProviderRenderedPathAPI.class})
-public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
+public class SfcProviderRenderedPathAPITest extends AbstractDataStoreManager {
     private static final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1", "196.168.55.2", "196.168.55.3",
                     "196.168.55.4", "196.168.55.5"};
@@ -95,24 +85,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
     private final String[] SFF_LOCATOR_IP =
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
     private final List<ServiceFunction> sfList = new ArrayList<>();
-    private DataBroker dataBroker;
-    private ExecutorService executor;
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+    public void before() {
+        setOdlSfc();
+    }
 
-        /* Some unit tests can't delete all the objects, so clean up them first */
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        Thread.sleep(1000); // Wait for real delete
-
+    //auxiliary method
+    private void init() throws ExecutionException, InterruptedException {
         // Create Service Functions
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.length];
         final IpAddress[] locatorIpAddress = new IpAddress[sfNames.length];
@@ -250,27 +230,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         Thread.sleep(1000); // Wait they are really created
     }
 
-    @After
-    public void after() {
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-
-        /* Can't create RSP if we don't do these cleanups, don't know why */
-        SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(SFP_NAME);
-        SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(SFP_NAME);
-        SfcProviderServicePathAPI.deleteServicePathStateExecutor(SFP_NAME);
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(RSP_NAME);
-        for (int i = 0; i < SFF_NAMES.length; i++) {
-            SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(SFF_NAMES[i]);
-        }
-        for (int i = 0; i < sfNames.length; i++) {
-            SfcProviderServiceFunctionAPI.deleteServiceFunctionStateExecutor(sfNames[i]);
-        }
-    }
-
     @Test
     //test, whether scheduler type create right scheduler instance
     public void testGetServiceFunctionScheduler() throws Exception {
@@ -291,8 +250,9 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testReadRenderedServicePathFirstHop() throws ExecutionException, InterruptedException {
-        ServiceFunctionPath serviceFunctionPath =
-                SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
+        init();
+
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
@@ -334,7 +294,9 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testReadRspFirstHopBySftList() throws ExecutionException, InterruptedException {
-        List<Class<? extends ServiceFunctionTypeIdentity>> sftList = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();
+        init();
+
+        List<Class<? extends ServiceFunctionTypeIdentity>> sftList = new ArrayList<>();
         sftList.add(Firewall.class);
         sftList.add(Dpi.class);
         sftList.add(Napt44.class);
@@ -355,6 +317,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathHopList() throws ExecutionException, InterruptedException {
+        init();
+
         final String[] tmpSfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
         List<String> sfNameList = Arrays.asList(tmpSfNames);
         final int startingIndex = 255;
@@ -362,7 +326,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         Object[] parameters = {};
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(parameters, null);
 
-        List<RenderedServicePathHop> rspHopList = null;
+        List<RenderedServicePathHop> rspHopList;
 
         //sfNameList and sfgNameList null
         rspHopList = sfcProviderRenderedPathAPI.createRenderedServicePathHopList(null, null, startingIndex);
@@ -387,6 +351,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateRenderedServicePathAndState() throws ExecutionException, InterruptedException {
+        init();
+
         ServiceFunctionPath serviceFunctionPath =
                 SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
@@ -413,7 +379,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
 
     @Test
     /*
-     * there are null test cases of this method
+     * there are null test cases of this method using partial mock
      */
     public void testCreateRenderedServicePathEntryUnsuccessful() throws Exception {
         Object[] params = new Object[0];
@@ -430,13 +396,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         //SFC does not exist, should be null
         assertNull("Must be null", testRenderedServicePath);
 
-
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
 
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceTypeAPI.class, "readServiceFunctionTypeExecutor")).toReturn(null);
+        //PowerMockito.stub(PowerMockito.method(SfcProviderServiceTypeAPI.class, "readServiceFunctionTypeExecutor")).toReturn(null);
 
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
@@ -459,8 +424,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         RenderedServicePath testRenderedServicePath;
 
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
-
-        PowerMockito.stub(PowerMockito.method(SfcProviderRenderedPathAPI.class, "createRenderedServicePathHopList")).toReturn(null);
 
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
@@ -485,8 +448,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setTransportType(Mpls.class);
 
-        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(false);
-
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
 
@@ -498,6 +459,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractDataBrokerTest {
      * there is successful test with all attributes correctly set
      */
     public void testCreateRenderedServicePathEntrySuccessful() throws Exception {
+        init();
+
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();

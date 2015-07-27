@@ -1,12 +1,9 @@
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
@@ -31,8 +28,8 @@ import org.powermock.reflect.Whitebox;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,41 +40,17 @@ import static org.junit.Assert.assertTrue;
  * @version 0.1
  * @since 2015-06-29
  */
-public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataBrokerTest {
+public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataStoreManager {
 
     private static final String SFC_NAME = "sfcName";
     private static final String SF_NAME = "sfName";
     private static final String SFP_NAME = "sfpName";
     private static final String SFF_NAME = "sffName";
     private static final String SFG_NAME = "sfgName";
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-    private ExecutorService executor;
 
     @Before
-    public void before() throws InterruptedException, IllegalAccessException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
-
-        //clear data store
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        Thread.sleep(1000);
-
-        //before test, private static variable mapCountRoundRobin has to be restored to original state
-        Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class, new HashMap<>());
-    }
-
-    @After
-    public void after() {
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+    public void before() {
+        setOdlSfc();
     }
 
     /*
@@ -96,26 +69,30 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataBr
         serviceFunctions.add(SF_NAME + 3);
 
         assertNotNull("Must be not null", result);
-        assertTrue("Must be equal", result.containsAll(serviceFunctions));
+        assertTrue("Must be true", result.containsAll(serviceFunctions));
     }
 
     /*
      * from existing service function types, and service function is found and returned as a string
      */
     @Test
-    public void testServiceFunctionRoundRobinScheduler1() {
+    public void testServiceFunctionRoundRobinScheduler1() throws IllegalAccessException {
+
+        //before test, private static variable mapCountRoundRobin has to be restored to original state
+        Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class, new HashMap<>());
+
         SfcServiceFunctionRoundRobinSchedulerAPI scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
 
         //create empty path
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
         //no types are written, should return null
-        List<String> result;// = scheduler.scheduleServiceFunctions(createServiceFunctionChain(), 255, serviceFunctionPathBuilder.build());
+        List<String> result = scheduler.scheduleServiceFunctions(createServiceFunctionChain(), 255, serviceFunctionPathBuilder.build());
 
-        //assertNull("Must be null", result);
+        assertNull("Must be null", result);
 
         //write types
-        boolean transactionSuccessful = writeTypes();
+        boolean transactionSuccessful = writeTypes(true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -128,6 +105,11 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataBr
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result.containsAll(serviceFunctionTypes));
+
+        //remove types
+        transactionSuccessful = writeTypes(false);
+
+        assertTrue("Must be true", transactionSuccessful);
     }
 
     //create service function chain with three entries
@@ -196,8 +178,8 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataBr
         return serviceFunctionPathBuilder.build();
     }
 
-    //write types
-    private boolean writeTypes() {
+    //write or remove types
+    private boolean writeTypes(boolean write) {
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
 
@@ -220,6 +202,9 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataBr
 
         InstanceIdentifier<ServiceFunctionTypes> sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-        return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        if (write)
+            return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        else
+            return SfcDataStoreAPI.deleteTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
     }
 }

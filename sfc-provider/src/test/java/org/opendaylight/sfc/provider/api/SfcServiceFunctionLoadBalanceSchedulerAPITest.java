@@ -9,136 +9,87 @@
 package org.opendaylight.sfc.provider.api;
 
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMonBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMonBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedulerAPITest {
+public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataStoreManager {
 
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
 
-    List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
-    List<ServiceFunction> sfList = new ArrayList<>();
-    ServiceFunctionChain sfChain;
+    private final List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
+    private final List<ServiceFunction> sfList = new ArrayList<>();
+    private ServiceFunctionChain sfChain;
     private ServiceFunctionPath sfPath;
-    SfcServiceFunctionSchedulerAPI scheduler;
+    private SfcServiceFunctionSchedulerAPI scheduler;
 
     @Before
     public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+        setOdlSfc();
+
         scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
-
-        /* Delete all the content in SFC data store before unit test */
-        int maxTries = 10;
-        ServiceFunctionType serviceFunctionType;
-        List<SftServiceFunctionName> sftServiceFunctionNameList;
-        boolean emptyFlag = true;
-        while (maxTries > 0) {
-            emptyFlag = true;
-            executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-            executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-            executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-            executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-            executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-            Thread.sleep(1000); //Wait for real delete
-
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
-            if (serviceFunctionType != null) {
-                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-                if (sftServiceFunctionNameList.size() != 0) {
-                    emptyFlag = false;
-                }
-            }
-
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
-            if (serviceFunctionType != null) {
-                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-                if (sftServiceFunctionNameList.size() != 0) {
-                    emptyFlag = false;
-                }
-            }
-
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
-            if (serviceFunctionType != null) {
-                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-                if (sftServiceFunctionNameList.size() != 0) {
-                    emptyFlag = false;
-                }
-            }
-
-            maxTries--;
-            if (emptyFlag == true) {
-                break;
-            }
-        }
-        LOG.debug("Empty SFC data store {} times: {}", 10 - maxTries, emptyFlag ? "Successful" : "Failed");
+        int maxTries;
 
         String sfcName = "loadbalance-unittest-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("firewall")
-                                           .setKey(new SfcServiceFunctionKey("firewall"))
-                                           .setType(Firewall.class)
-                                           .build());
+                .setName("firewall")
+                .setKey(new SfcServiceFunctionKey("firewall"))
+                .setType(Firewall.class)
+                .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("dpi")
-                                           .setKey(new SfcServiceFunctionKey("dpi"))
-                                           .setType(Dpi.class)
-                                           .build());
+                .setName("dpi")
+                .setKey(new SfcServiceFunctionKey("dpi"))
+                .setType(Dpi.class)
+                .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder()
-                                           .setName("nat")
-                                           .setKey(new SfcServiceFunctionKey("nat"))
-                                           .setType(Napt44.class)
-                                           .build());
+                .setName("nat")
+                .setKey(new SfcServiceFunctionKey("nat"))
+                .setType(Napt44.class)
+                .build());
 
         sfChain = new ServiceFunctionChainBuilder()
                 .setName(sfcName)
@@ -150,7 +101,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey("key"));
         serviceFunctionPathBuilder.setPathId(1l);
         serviceFunctionPathBuilder.setServiceChainName(sfcName);
-        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
+        List<ServicePathHop> sphs = new ArrayList<>();
         serviceFunctionPathBuilder.setServicePathHop(sphs);
         sfPath = serviceFunctionPathBuilder.build();
 
@@ -192,7 +143,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         //Wait a while in order to ensure they are really created
         Thread.sleep(1000);
 
-        for (ServiceFunction serviceFunction: sfList) {
+        for (ServiceFunction serviceFunction : sfList) {
             SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
         }
 
@@ -204,7 +155,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
                 Object[] parameters2 = {serviceFunction.getName()};
                 Class[] parameterTypes2 = {String.class};
                 Object result = executor.submit(SfcProviderServiceFunctionAPI
-                    .getRead(parameters2, parameterTypes2)).get();
+                        .getRead(parameters2, parameterTypes2)).get();
                 sf2 = (ServiceFunction) result;
                 maxTries--;
                 if (sf2 != null) {
@@ -217,73 +168,65 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
 
         // set CPUUtilization for SF
         String sfNameFW = "simple_fw_";
-        for (int i=100; i<130; i=i+10){
-            String sCount = i+"";
+        for (int i = 100; i < 130; i = i + 10) {
+            String sCount = i + "";
             String sfName = sfNameFW.concat(sCount);
-            int cpuUtil = i+5;
+            int cpuUtil = i + 5;
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                                                .setCPUUtilization((long)cpuUtil).build();
+                    .setCPUUtilization((long) cpuUtil).build();
             MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                                         .setResourceUtilization(resrcUtil).build();
+                    .setResourceUtilization(resrcUtil).build();
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder()
-                                         .setMonitoringInfo(monInfo).build();
+                    .setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder()
-                                                 .setSfcSfDescMon(sfDescMon).build();
+                    .setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                                                            .setKey(serviceFunctionStateKey)
-                                                            .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                    .setKey(serviceFunctionStateKey)
+                    .addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
         String sfNameDPI = "simple_dpi_";
-        for (int i=100; i<130; i=i+10){
-            String sCount = i+"";
+        for (int i = 100; i < 130; i = i + 10) {
+            String sCount = i + "";
             String sfName = sfNameDPI.concat(sCount);
-            int cpuUtil = 190-i;
+            int cpuUtil = 190 - i;
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                                                .setCPUUtilization((long)cpuUtil).build();
+                    .setCPUUtilization((long) cpuUtil).build();
             MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                                         .setResourceUtilization(resrcUtil).build();
+                    .setResourceUtilization(resrcUtil).build();
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder()
-                                         .setMonitoringInfo(monInfo).build();
+                    .setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder()
-                                                 .setSfcSfDescMon(sfDescMon).build();
+                    .setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                                                            .setKey(serviceFunctionStateKey)
-                                                            .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                    .setKey(serviceFunctionStateKey)
+                    .addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
         String sfNameNAT = "simple_nat_";
-        for (int i=100; i<130; i=i+10){
-            String sCount = i+"";
+        for (int i = 100; i < 130; i = i + 10) {
+            String sCount = i + "";
             String sfName = sfNameNAT.concat(sCount);
 
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                                                .setCPUUtilization((long)(i-90)).build();
+                    .setCPUUtilization((long) (i - 90)).build();
             MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                                         .setResourceUtilization(resrcUtil).build();
+                    .setResourceUtilization(resrcUtil).build();
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder()
-                                         .setMonitoringInfo(monInfo).build();
+                    .setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder()
-                                                 .setSfcSfDescMon(sfDescMon).build();
+                    .setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                                                            .setKey(serviceFunctionStateKey)
-                                                            .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                    .setKey(serviceFunctionStateKey)
+                    .addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
-    }
-
-    @After
-    public void after() {
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     @Test
@@ -331,30 +274,30 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
-        for (int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             String sfFWName = sftFirewallList.get(i).getName();
             java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfFWName)
-                                            .getMonitoringInfo()
-                                            .getResourceUtilization()
-                                            .getCPUUtilization();
+                    .getMonitoringInfo()
+                    .getResourceUtilization()
+                    .getCPUUtilization();
             assertNotNull(cPUUtilization);
         }
 
-        for (int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             String sfDPIName = sftDpiList.get(i).getName();
             java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfDPIName)
-                                            .getMonitoringInfo()
-                                            .getResourceUtilization()
-                                            .getCPUUtilization();
+                    .getMonitoringInfo()
+                    .getResourceUtilization()
+                    .getCPUUtilization();
             assertNotNull(cPUUtilization);
         }
 
-        for (int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             String sfNATName = sftNapt44List.get(i).getName();
             java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfNATName)
-                                            .getMonitoringInfo()
-                                            .getResourceUtilization()
-                                            .getCPUUtilization();
+                    .getMonitoringInfo()
+                    .getResourceUtilization()
+                    .getCPUUtilization();
             assertNotNull(cPUUtilization);
         }
 
@@ -364,7 +307,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
     }
 
     @Test
-    public void loadBalance__OverrideSingleHop() throws Exception {
+    public void loadBalance__OverrideSingleHop() {
         Long pathId = 1L;
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
@@ -372,8 +315,8 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         serviceFunctionPathBuilder.setPathId(pathId);
         serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
 
-        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
-        sphs.add(buildSFHop("SFF2", "hop-dpi", (short)1));
+        List<ServicePathHop> sphs = new ArrayList<>();
+        sphs.add(buildSFHop("SFF2", "hop-dpi", (short) 1));
         serviceFunctionPathBuilder.setServicePathHop(sphs);
         ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
 
@@ -383,7 +326,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
     }
 
     @Test
-    public void loadBalance__OverrideAllHops() throws Exception {
+    public void loadBalance__OverrideAllHops() {
         Long pathId = 1L;
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
@@ -391,9 +334,9 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         serviceFunctionPathBuilder.setPathId(pathId);
         serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
 
-        List<ServicePathHop> sphs = new ArrayList<ServicePathHop>();
-        sphs.add(buildSFHop("SFF2", "hop-dpi-0", (short)0));
-        sphs.add(buildSFHop("SFF2", "hop-dpi-1", (short)1));
+        List<ServicePathHop> sphs = new ArrayList<>();
+        sphs.add(buildSFHop("SFF2", "hop-dpi-0", (short) 0));
+        sphs.add(buildSFHop("SFF2", "hop-dpi-1", (short) 1));
         serviceFunctionPathBuilder.setServicePathHop(sphs);
         ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
 
@@ -402,5 +345,12 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends BaseSfcSchedu
         assertEquals("hop-dpi-1", serviceFunctionNameArrayList.get(1));
     }
 
+    protected ServicePathHop buildSFHop(String sffName, String sfName, short index){
+        ServicePathHopBuilder sphb = new ServicePathHopBuilder();
+        sphb.setHopNumber(index);
+        sphb.setServiceFunctionForwarder(sffName);
+        sphb.setServiceFunctionName(sfName);
+        return sphb.build();
+    }
 
 }

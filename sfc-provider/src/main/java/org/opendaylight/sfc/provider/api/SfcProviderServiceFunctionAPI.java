@@ -537,7 +537,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         } catch (InterruptedException e) {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+            LOG.warn("failed to ....", e);
         }
         printTraceStop(LOG);
         return ret;
@@ -553,6 +553,31 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * This method puts a SF to data store.
+     * <p>
+     * @param sf Service Function
+     * @return true if SF was added, false otherwise
+     */
+    public static boolean putServiceFunctionExecutor(ServiceFunction sf) {
+        boolean ret =  false;
+        printTraceStart(LOG);
+
+        Object[] servicePathObj = {sf};
+        Class[] servicePathClass = {ServiceFunction.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getPut(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
         printTraceStop(LOG);
         return ret;
     }

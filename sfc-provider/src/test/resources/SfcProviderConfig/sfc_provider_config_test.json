@@ -1,0 +1,14 @@
+{
+  "bootstrap": {
+
+    "bootstrapDataDir": "sfc-provider/src/test/resources/SfcProviderConfig/",
+    "configDataUrl": "http://localhost:5000/restconf/config/",
+    "configDataMimeType": "application/json",
+    "files": [
+      { 
+        "name": "ipfix-class-id_test.json",
+        "urlpath": "ipfix-application-information:class-id-dictionary"
+      }
+    ]
+  }
+}

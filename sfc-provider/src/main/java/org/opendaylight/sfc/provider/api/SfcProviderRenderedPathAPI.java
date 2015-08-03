@@ -585,6 +585,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param renderedServicePath RSP object
      * @return Nothing
      */
+    @SfcReflection
     public RenderedServicePath createReverseRenderedServicePathEntry(RenderedServicePath renderedServicePath) {
 
 
@@ -1022,5 +1023,27 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName());
         printTraceStop(LOG);
         return firstHop;
+    }
+
+    /**
+     * This method gets all necessary information for a system to construct
+     * a NSH header and associated overlay packet to target the first
+     * service hop of a Rendered Service Path by ServiceFunctionTypeIdentity
+     * list
+     * <p>
+     * @param renderedServicePath RenderedServicePath Object
+     * @param pathId Symmetric Path Id
+     * @return true if symmetric path-id was set, otherwise false
+     */
+    public static boolean setSymmetricPathId(RenderedServicePath renderedServicePath, long pathId) {
+        RenderedServicePathKey renderedServicePathKey = new
+                RenderedServicePathKey(renderedServicePath.getName());
+        InstanceIdentifier<RenderedServicePath> rspIID;
+        rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
+                .child(RenderedServicePath.class, renderedServicePathKey)
+                .build();
+        RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder(renderedServicePath);
+        renderedServicePathBuilder.setSymmetricPathId(pathId);
+        return SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePathBuilder.build(), LogicalDatastoreType.OPERATIONAL);
     }
 }

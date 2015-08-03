@@ -251,15 +251,19 @@ public class SfcProviderRpc implements ServiceFunctionService,
                             createSymmetricRenderedServicePathAndState(renderedServicePath);
                     if (revRenderedServicePath == null) {
                         LOG.error("Failed to create symmetric service path: {}");
-                    } else if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
-                            SfcProviderServiceClassifierAPI
-                                    .readServiceClassifierExecutor
-                                            (createdServiceFunctionPath.getSymmetricClassifier()) != null) {
-                        SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
-                                (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
-
                     } else {
-                        LOG.warn("Symmetric Classifier not provided or does not exist");
+                        SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
+                        SfcProviderRenderedPathAPI.setSymmetricPathId(revRenderedServicePath, renderedServicePath.getPathId());
+                        if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
+                                SfcProviderServiceClassifierAPI
+                                        .readServiceClassifierExecutor
+                                                (createdServiceFunctionPath.getSymmetricClassifier()) != null) {
+                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
+                                    (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
+
+                        } else {
+                            LOG.warn("Symmetric Classifier not provided or does not exist");
+                        }
                     }
                 }
             } else {

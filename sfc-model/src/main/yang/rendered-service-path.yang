@@ -179,6 +179,13 @@ module rendered-service-path {
            value for reporting and troubleshooting packets along
            a specific path.";
       }
+      leaf symmetric-path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies the associated symmetric path, if any.";
+      }
     }
   }
 

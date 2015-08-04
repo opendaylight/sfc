@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider.bootstrap;
+package org.opendaylight.sfc.bootstrap;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -16,7 +16,6 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opendaylight.sfc.provider.SfcProviderAbstractRestAPI;
 import org.opendaylight.sfc.provider.config.SfcProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

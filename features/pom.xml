@@ -125,6 +125,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-bootstrap</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-model</artifactId>
         <version>${project.version}</version>
       </dependency>

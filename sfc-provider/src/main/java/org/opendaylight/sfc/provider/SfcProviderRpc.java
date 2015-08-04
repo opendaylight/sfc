@@ -91,6 +91,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
         if (dataBroker != null) {
 
+
             // Data PLane Locator
             List<SfDataPlaneLocator> sfDataPlaneLocatorList = input.getSfDataPlaneLocator();
 
@@ -102,11 +103,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
             InstanceIdentifier<ServiceFunction>  sfEntryIID =
                     InstanceIdentifier.builder(ServiceFunctions.class).
-                    child(ServiceFunction.class, sf.getKey()).toInstance();
+                            child(ServiceFunction.class, sf.getKey()).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    sfEntryIID, sf);
+                    sfEntryIID, sf, true);
             writeTx.commit();
 
         } else {
@@ -136,15 +137,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 LOG.debug("Failed to readServiceFunction : {}",
                         e.getMessage());
             }
-            if (dataObject instanceof ServiceFunction) {
-                LOG.debug("readServiceFunction Success: {}",
-                        ((ServiceFunction) dataObject).getName());
-                ServiceFunction serviceFunction = (ServiceFunction) dataObject;
+            if (dataObject != null && dataObject.isPresent()) {
+                ServiceFunction serviceFunction = dataObject.get();
+                LOG.debug("readServiceFunction Success: {}", serviceFunction.getName());
                 ReadServiceFunctionOutput readServiceFunctionOutput = null;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
                 outputBuilder.setName(serviceFunction.getName())
+                        .setType(serviceFunction.getType())
                         .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
-                        .setType(serviceFunction.getType());
+                        .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
                 readServiceFunctionOutput = outputBuilder.build();
                 printTraceStop(LOG);
                 return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>
@@ -174,7 +175,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
 
         if (!SfcDataStoreAPI.writeMergeTransactionAPI(OpendaylightSfc.SFC_IID, sfcs,
-                    LogicalDatastoreType.CONFIGURATION)) {
+                LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
@@ -318,7 +319,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
         renderedServicePathFirstHop =
-                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+                SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
 
         ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
         if (renderedServicePathFirstHop != null) {

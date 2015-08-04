@@ -2,9 +2,6 @@ package org.opendaylight.sfc.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
-import org.opendaylight.sfc.provider.api.SfcProviderAbstractAPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 
@@ -21,12 +18,12 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
 
-    private boolean executorSet = false;
+    //executor will be removed, when all tests using it will be reworked
+    private static boolean executorSet = false;
 
     protected DataBroker dataBroker;
-    protected ExecutorService executor;
+    protected static ExecutorService executor;
     protected final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderAbstractAPI.class);
 
     //initial sfc odl setup, executor is set only once, new data broker is created before every set, it ensures empty data store
     protected void setOdlSfc() {

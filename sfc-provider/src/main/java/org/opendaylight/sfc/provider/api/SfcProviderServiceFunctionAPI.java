@@ -24,15 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMonBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfoBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +54,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
-    private SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
 
     SfcProviderServiceFunctionAPI(Object[] params, String m) {
         super(params, m);
@@ -104,12 +95,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     }
     public static SfcProviderServiceFunctionAPI getAddPathToServiceFunctionState(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionAPI(params, paramsTypes, "addPathToServiceFunctionState");
-    }
-    public static SfcProviderServiceFunctionAPI getPutServiceFunctionDescriptionState(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putServiceFunctionDescription");
-    }
-    public static SfcProviderServiceFunctionAPI getPutServiceFunctionMonitorState(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionAPI(params, paramsTypes, "putServiceFunctionMonitor");
     }
     public static SfcProviderServiceFunctionAPI getReadServiceFunctionDescriptionMonitor(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceFunctionAPI(params, paramsTypes, "readServiceFunctionDescriptionMonitor");
@@ -582,7 +567,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected static boolean putServiceFunctionState(ServiceFunctionState sfState) {
+    public static boolean putServiceFunctionState(ServiceFunctionState sfState) {
         boolean ret;
         printTraceStart(LOG);
 
@@ -597,7 +582,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    protected static boolean mergeServiceFunctionState(ServiceFunctionState sfState) {
+    public static boolean mergeServiceFunctionState(ServiceFunctionState sfState) {
         boolean ret;
         printTraceStart(LOG);
 
@@ -1006,203 +991,4 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    /**
-     * put the service function description information gotten through netconf
-     * mountpoint into the OPERATIONAL datastore.
-     *
-     * <p>
-     * @param serviceFunction  SF Object
-     * @return true if SF description information was put into OPERATIONAL datastore
-     * false otherwise
-     */
-    protected boolean putServiceFunctionDescription(ServiceFunction serviceFunction) {
-        boolean ret = false;
-        printTraceStart(LOG);
-        SfcSfDescMon sfDescMon = null;
-        ServiceFunctionState dataSfcStateObject;
-        try {
-            if (ODL_SFC.getDataProvider() != null) {
-                //get mount point
-                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
-                //get ServiceFunctionState
-                ServiceFunctionStateKey serviceFunctionStateKey =
-                    new ServiceFunctionStateKey(serviceFunction.getName());
-                InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
-                        .builder(ServiceFunctionsState.class)
-                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                        .build();
-
-                dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
-                //get sf description information from netconf
-                GetSFDescriptionOutput sfDescInfoOutput = getSfDescMon.getSFDescriptionInfoFromNetconf(mountpoint);
-                if(sfDescInfoOutput == null) {
-                    return false;
-                }
-
-                DescriptionInfo descInfo = new DescriptionInfoBuilder(sfDescInfoOutput.getDescriptionInfo()).build();
-                //build the service function capbility and utilization
-                if(dataSfcStateObject!=null) {
-                    if(dataSfcStateObject.getAugmentation(ServiceFunctionState1.class)!=null) {
-                        ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
-                        SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(sfDescMonTemp.getMonitoringInfo())
-                            .setDescriptionInfo(descInfo).build();
-                    } else {
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setDescriptionInfo(descInfo).build();
-                    }
-                }  else {
-                    sfDescMon = new SfcSfDescMonBuilder()
-                        .setDescriptionInfo(descInfo).build();
-                }
-
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-                ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey)
-                    .addAugmentation(ServiceFunctionState1.class,sfState1).build();
-
-                if(dataSfcStateObject!=null) {
-                    ret = mergeServiceFunctionState(serviceFunctionState);
-                } else {
-                    ret = putServiceFunctionState(serviceFunctionState);
-                }
-            } else {
-                LOG.error("Data Provider is null.");
-            }
-        } catch (Exception e) {
-            LOG.warn("failed to ...." , e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * put the service function monitor information gotten through netconf
-     * mountpoint into the OPERATIONALdatastore.
-     *
-     * <p>
-     * @param serviceFunction  SF name
-     * @return true if SF's monitor information was put into OPERATIONAL datastore
-     * false otherwise
-     */
-    protected boolean putServiceFunctionMonitor(ServiceFunction serviceFunction) {
-        boolean ret = false;
-        printTraceStart(LOG);
-        SfcSfDescMon sfDescMon = null;
-        ServiceFunctionState dataSfcStateObject;
-        try {
-            if (ODL_SFC.getDataProvider() != null) {
-                //get mount point
-                String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
-                //get ServiceFunctionState
-                ServiceFunctionStateKey serviceFunctionStateKey =
-                    new ServiceFunctionStateKey(serviceFunction.getName());
-                InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
-                        .builder(ServiceFunctionsState.class)
-                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                        .build();
-
-                dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
-                //get sf monitor data from netconf
-                GetSFMonitoringInfoOutput sfMonInfoMap = getSfDescMon.getSFMonitorInfoFromNetconf(mountpoint);
-                if(sfMonInfoMap == null) {
-                    return false;
-                }
-                MonitoringInfo monInfo = new MonitoringInfoBuilder(sfMonInfoMap.getMonitoringInfo()).build();
-
-                //build the service function capbility and utilization
-                if(dataSfcStateObject!=null) {
-                    if(dataSfcStateObject.getAugmentation(ServiceFunctionState1.class)!=null) {
-                        ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
-                        SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(monInfo)
-                            .setDescriptionInfo(sfDescMonTemp.getDescriptionInfo()).build();
-                    } else {
-                        sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(monInfo).build();
-                    }
-                } else {
-                    sfDescMon = new SfcSfDescMonBuilder()
-                        .setMonitoringInfo(monInfo).build();
-                }
-
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-                ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey)
-                    .addAugmentation(ServiceFunctionState1.class,sfState1).build();
-
-                if(dataSfcStateObject!=null) {
-                    ret = mergeServiceFunctionState(serviceFunctionState);
-                } else {
-                    ret = putServiceFunctionState(serviceFunctionState);
-                }
-            } else {
-                LOG.error("Data Provider is null.");
-            }
-        } catch (Exception e) {
-            LOG.warn("failed to ...." , e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-     /**
-     * This method reads the Description information for a service function.
-     * <p>
-     * @param serviceFunction SF object
-     * @return true if SF description information was put into datastore, false otherwise
-     */
-    public static boolean putServiceFunctionDescriptionExecutor(ServiceFunction serviceFunction) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        Object[] servicePathObj = {serviceFunction};
-        Class[] servicePathClass = {ServiceFunction.class};
-        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
-                .getPutServiceFunctionDescriptionState(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
-        try {
-            ret = (boolean)future.get();
-            LOG.debug("getPutServiceFunctionDescriptionState: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
-        } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads the monitor information for a service function.
-     * <p>
-     * @param serviceFunction SF object
-     * @return true if SF's monitor information was put into datastore
-     * false otherwise
-     */
-    public static boolean putServiceFunctionMonitorExecutor(ServiceFunction serviceFunction) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        Object[] servicePathObj = {serviceFunction};
-        Class[] servicePathClass = {ServiceFunction.class};
-        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
-                .getPutServiceFunctionMonitorState(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getPutServiceFunctionMonitorState: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
-        } catch (ExecutionException e) {
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
 }

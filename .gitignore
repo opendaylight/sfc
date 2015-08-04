@@ -32,3 +32,4 @@ maven-eclipse.xml
 /target
 node_modules/
 coverage/
+.checkstyle

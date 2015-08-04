@@ -8,14 +8,10 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -53,8 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev14120
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfoBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.CapabilitiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidth;
@@ -70,20 +64,14 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SfcProviderSfDescriptionMonitorAPI.class)
-public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
+public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager {
 
     private static final String[] LOCATOR_IP_ADDRESS =
             {"196.168.55.1",
@@ -98,33 +86,10 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
     private static final String SF_SERVICE_PATH = "dummySFSP";
     private static final String RSP_NAME = "dummyRSP";
     private static final int PORT = 555;
-    private ExecutorService executor;
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
     @Before
-    public void before() throws InterruptedException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
-
-        //clear data store
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        Thread.sleep(1000);
-    }
-
-    @After
-    public void after() throws InterruptedException {
-        //clear data store
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        Thread.sleep(1000);
+    public void before() {
+        setOdlSfc();
     }
 
     @Test
@@ -286,11 +251,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
 
         Long[] data;
         data = new Long[10];
-        for(int i = 0; i < 10; i++){
-            data[i] = Long.parseLong(Integer.toString(i+1));
+        for (int i = 0; i < 10; i++) {
+            data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
-        PortBandwidth portBandwidth= new PortBandwidthBuilder()
+        PortBandwidth portBandwidth = new PortBandwidthBuilder()
                 .setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS[1]))
                 .setKey(portBandwidthKey)
                 .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
@@ -343,8 +308,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
 
         Long[] data;
         data = new Long[10];
-        for(int i = 0; i < 10; i++){
-            data[i] = Long.parseLong(Integer.toString(i+1));
+        for (int i = 0; i < 10; i++) {
+            data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
@@ -378,7 +343,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                 .setKey(serviceFunctionStateKey)
-                .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                .addAugmentation(ServiceFunctionState1.class, sfState1).build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         SfcSfDescMon readSfcSfDescMon =
                 SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor("unittest-fw-2");
@@ -482,7 +447,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         assertTrue("Must be true", transactionSuccessful);
 
         //second, create path and write it into data store
-        transactionSuccessful = (boolean)writeReturnPath(RSP_NAME + 1, SF_NAME + 1, true);
+        transactionSuccessful = (boolean) writeReturnPath(RSP_NAME + 1, SF_NAME + 1, true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -492,7 +457,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         assertTrue("Must be true", result);
 
         //now create another path, and put object as a parameter
-        RenderedServicePath renderedServicePath = (RenderedServicePath)writeReturnPath(RSP_NAME + 2, SF_NAME + 2, false);
+        RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME + 2, SF_NAME + 2, false);
 
         //add this path to service function, an object of service path is used
         result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionStateExecutor(renderedServicePath);
@@ -509,50 +474,6 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
         assertTrue("Must be true", result);
 
         result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(RSP_NAME + 2);
-
-        assertTrue("Must be true", result);
-    }
-
-    /*
-     * test, whether is possible to put service function monitor & description into service function
-     */
-    @Test
-    public void testPutServiceFunctionDescriptionAndMonitor() throws Exception {
-
-        //create description
-        org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.get.sf.description.output.DescriptionInfoBuilder descriptionInfoBuilder
-                = new org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.get.sf.description.output.DescriptionInfoBuilder();
-        GetSFDescriptionOutputBuilder getSFDescriptionOutputBuilder = new GetSFDescriptionOutputBuilder();
-
-        descriptionInfoBuilder.setNumberOfDataports(1L);
-        getSFDescriptionOutputBuilder.setDescriptionInfo(descriptionInfoBuilder.build());
-
-        //create monitor
-        org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.get.sf.monitoring.info.output.MonitoringInfoBuilder monitoringInfoBuilder
-                = new org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.get.sf.monitoring.info.output.MonitoringInfoBuilder();
-        GetSFMonitoringInfoOutputBuilder getSFMonitoringInfoOutputBuilder = new GetSFMonitoringInfoOutputBuilder();
-
-        getSFMonitoringInfoOutputBuilder.setMonitoringInfo(monitoringInfoBuilder.build());
-
-        //push service function state with augmentation into data store
-        boolean transactionSuccessful = writeServiceFunctionStateAugmentation();
-
-        assertTrue("Must be true", transactionSuccessful);
-
-        //build service function
-        ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(SF_NAME)
-                .setKey(new ServiceFunctionKey(SF_NAME))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])));
-
-        PowerMockito.stub(PowerMockito.method(SfcProviderSfDescriptionMonitorAPI.class, "getSFDescriptionInfoFromNetconf")).toReturn(getSFDescriptionOutputBuilder.build());
-        PowerMockito.stub(PowerMockito.method(SfcProviderSfDescriptionMonitorAPI.class, "getSFMonitorInfoFromNetconf")).toReturn(getSFMonitoringInfoOutputBuilder.build());
-
-        boolean result = SfcProviderServiceFunctionAPI.putServiceFunctionDescriptionExecutor(serviceFunctionBuilder.build());
-
-        assertTrue("Must be true", result);
-
-        result = SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(serviceFunctionBuilder.build());
 
         assertTrue("Must be true", result);
     }
@@ -635,32 +556,6 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataBrokerTest {
             return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
         else
             return SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
-    }
-
-    //write or remove service function state with augmentation
-    private boolean writeServiceFunctionStateAugmentation() {
-
-        MonitoringInfoBuilder monitoringInfoBuilder1 = new MonitoringInfoBuilder();
-        DescriptionInfoBuilder descriptionInfoBuilder1 = new DescriptionInfoBuilder();
-        SfcSfDescMonBuilder sfcSfDescMonBuilder = new SfcSfDescMonBuilder();
-        sfcSfDescMonBuilder.setMonitoringInfo(monitoringInfoBuilder1.build())
-                .setDescriptionInfo(descriptionInfoBuilder1.build());
-
-        ServiceFunctionState1Builder serviceFunctionState1Builder = new ServiceFunctionState1Builder();
-        serviceFunctionState1Builder.setSfcSfDescMon(sfcSfDescMonBuilder.build());
-
-        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
-        serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-                .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
-                .addAugmentation(ServiceFunctionState1.class, serviceFunctionState1Builder.build());
-
-        InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
-                .builder(ServiceFunctionsState.class)
-                .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
-                .build();
-
-
-        return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
     }
 
     //write path or write path and return path object

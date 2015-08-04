@@ -11,10 +11,8 @@ package org.opendaylight.sfc.provider.api;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
@@ -39,26 +37,21 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataBrokerTest {
+public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreManager {
 
     private static final String ALGORITHM = "algorithm";
     private static final String SF_NAME = "sfName";
     private static final String SFG_NAME = "sfgName";
     private static final String IP_V4_ADDRESS = "192.168.10.1";
     private static final String IP_V6_ADDRESS = "01:23:45:67:89:AB:CD:EF";
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private final List<ServiceFunction> sfList = new ArrayList<>();
-    private ExecutorService executor;
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
+    public void before() {
+        setOdlSfc();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
         SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan", dummyIp, "sff-moscow", VxlanGpe.class);

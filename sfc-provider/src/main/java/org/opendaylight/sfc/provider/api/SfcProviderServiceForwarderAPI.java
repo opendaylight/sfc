@@ -9,9 +9,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -351,27 +349,13 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * @return ServiceFunctionForwarders object
      */
     protected ServiceFunctionForwarders readAllServiceFunctionForwarders() {
-        ServiceFunctionForwarders sffs = null;
+        ServiceFunctionForwarders sffs;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
+                InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-        if (ODL_SFC.getDataProvider() != null) {
-            ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
-            Optional<ServiceFunctionForwarders> serviceFunctionForwardersDataObject;
-            try {
-                serviceFunctionForwardersDataObject = readTx.
-                        read(LogicalDatastoreType.CONFIGURATION, sffsIID).get();
-                if (serviceFunctionForwardersDataObject != null
-                        && serviceFunctionForwardersDataObject.isPresent()) {
-                    sffs = serviceFunctionForwardersDataObject.get();
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Could not read Service Function Forwarder " +
-                        "configuration data");
-            }
+        sffs = SfcDataStoreAPI.readTransactionAPI(sffsIID, LogicalDatastoreType.CONFIGURATION);
 
-        }
         printTraceStop(LOG);
         return sffs;
     }

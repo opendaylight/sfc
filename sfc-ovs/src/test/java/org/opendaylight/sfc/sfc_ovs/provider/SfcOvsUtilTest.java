@@ -3,7 +3,6 @@ package org.opendaylight.sfc.sfc_ovs.provider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -22,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.node.attributes.ConnectionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -43,9 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +66,6 @@ import static junit.framework.TestCase.*;
  * @since 2015-04-23
  */
 
-@SuppressWarnings("SameParameterValue")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SfcOvsUtil.class)
 public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";   //copy of private String from SfcOvsUtil.class
     private static final String ipv4Address = "170.0.0.1";
@@ -80,9 +75,9 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String sffDataPlaneLocator = "sffDataPlaneLocator test";
     private static final String testDataPath = "12:34:56:78:9A:BC:DE:F0";
     private static final String dplName = "sffdpl";
-    private static final String testIpAddress = "192.168.0.1";
+    private static final String testIpAddress = "170.0.0.1";
     private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private OpendaylightSfc opendaylightSfc;
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
@@ -90,13 +85,16 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @Before
     public void init() {
+        if (opendaylightSfc == null)
+            opendaylightSfc = new OpendaylightSfc();
+        if (executorService == null)
+            executorService = opendaylightSfc.getExecutor();
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
-        executorService = opendaylightSfc.getExecutor();
 
         //before starting test, node is created
         nodeIID = createNodeIID();
-        createOvsdbNode(LogicalDatastoreType.OPERATIONAL);
+        createOvsdbNode();
     }
 
     @After
@@ -357,8 +355,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()));
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(nodeBuilder.build());
-
         node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build(), executorService);
 
         //ip address assigned to data plane locator, we can recover it from node
@@ -388,12 +384,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         ovsBridgeBuilder.setBridgeName(testBridgeName);
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
-        //mock node id
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(testIpAddress));
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getManagedByNodeId")).toReturn(nodeBuilder.build().getNodeId());
-
-
         //create sff with all parameters
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()))
                 .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
@@ -410,28 +400,77 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     @Test
     //rest of the cases of this method are tested here
     public void testAugmentSffWithOpenFlowNodeId1() throws Exception {
-        final String ofNodeId = "openflow:170.0.0.1";
+        final String ofNodeId = "openflow:95075992133360";
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
+
+        //create and write node
+        OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
+        ovsdbNodeAugmentationBuilder.setConnectionInfo(new ConnectionInfoBuilder()
+                .setRemoteIp(new IpAddress(new Ipv4Address(testIpAddress))).build());
+
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setKey(new NodeKey(new NodeId("nodeId")))
+                .addAugmentation(OvsdbNodeAugmentation.class, ovsdbNodeAugmentationBuilder.build());
+
+        InstanceIdentifier<Node> nodeIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(new NodeId("nodeId")));
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        assertTrue("Must be true", transactionSuccessful);
 
         //create service function forwarder
         serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(testString))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(testIpAddress)));
 
-        //we do not need go through "getOpenFlowNodeIdForSff" here
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff")).toReturn(ofNodeId);
-
-        ServiceFunctionForwarder serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
+        ServiceFunctionForwarder serviceFunctionForwarder = serviceFunctionForwarderBuilder.build();
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
         assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName(), testString);
         assertEquals("Must be equal", serviceFunctionForwarder.getIpMgmtAddress().getIpv4Address().getValue(), testIpAddress);
 
+        //create and write ovs db bridge augmentation
+        OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
+        ovsdbBridgeAugmentationBuilder.setDatapathId(new DatapathId(testDataPath));
+
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
+                InstanceIdentifier
+                        .create(NetworkTopology.class)
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class, new NodeKey(new NodeId(testIpAddress + "/bridge/" + testBridgeName)))
+                        .augmentation(OvsdbBridgeAugmentation.class);
+
+        transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(bridgeEntryIID, ovsdbBridgeAugmentationBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //create sff data plane locator
+        IpBuilder ipBuilder = new IpBuilder();
+        ipBuilder.setIp(new IpAddress((new Ipv4Address(ipv4Address))))
+                .setPort(new PortNumber(5000));
+
+        DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
+        dataPlaneLocatorBuilder.setTransport(VxlanGpe.class)
+                .setLocatorType(ipBuilder.build());
+
+        List<SffDataPlaneLocator> sffDataPlaneLocators = new ArrayList<>();
+        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
+        sffDataPlaneLocatorBuilder.setName("sffLocator")
+                .setKey(new SffDataPlaneLocatorKey("sffLocator"))
+                .setDataPlaneLocator(dataPlaneLocatorBuilder.build());
+        sffDataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
+
         //set sff bridge augmentation
+        OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
+        ovsBridgeBuilder.setBridgeName(testBridgeName);
+
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
-        sffOvsBridgeAugmentationBuilder.setOvsBridge(null);
+        sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-                .setKey(new ServiceFunctionForwarderKey(testString));
+                .setKey(new ServiceFunctionForwarderKey(testString))
+                .setSffDataPlaneLocator(sffDataPlaneLocators);
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
@@ -476,9 +515,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         assertNull("Must be null", node);
 
-        //ipv6 address, mocked node
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(null);
-
         node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(ipv6Address)), executorService);
 
         assertNull("Must be null", node);
@@ -500,10 +536,17 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetManagerNodeByIpV6() {
 
         //build ipv6 node
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(ipv6Address));
+        OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
+        ovsdbNodeAugmentationBuilder.setConnectionInfo(new ConnectionInfoBuilder().setRemoteIp(new IpAddress(new Ipv6Address(ipv6Address))).build());
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(nodeBuilder.build());
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setNodeId(new NodeId(ipv6Address))
+                .addAugmentation(OvsdbNodeAugmentation.class, ovsdbNodeAugmentationBuilder.build());
+
+        InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(ipv6Address);
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        assertTrue("Must be true", transactionSuccessful);
 
         //ipv6 address
         Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(ipv6Address)), executorService);
@@ -525,11 +568,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     }
 
     @Test
-    //null test, does not using data store
+    //null test
     public void testGetOvsdbNodeAugmentationNull() {
-        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(nodeIID);
-
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(null);
+        InstanceIdentifier<Node> dummyIID = SfcOvsUtil.buildOvsdbNodeIID(new NodeId("dummmyID"));
+        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(dummyIID);
 
         OvsdbNodeAugmentation ovsdbNodeAugmentation = SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executorService);
 
@@ -552,12 +594,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      * there is first part of unsuccessful cases
      */
     public void getOpenFlowNodeIdForSffNullTests() {
-        NodeBuilder nodeBuilder = new NodeBuilder();
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
-
-        //we do not need go through "lookupTopologyNode" here
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "lookupTopologyNode")).toReturn(nodeBuilder.build());
 
         //serviceForwarderOvsBridgeAugmentation == null
         String result = SfcOvsUtil.getOpenFlowNodeIdForSff(serviceFunctionForwarderBuilder.build());
@@ -573,13 +611,16 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertNull("Must be null", result);
     }
 
+    /*
+     * auxiliary methods below
+     */
+
     @Test
         /*
      * core of this method is tested through "testAugmentSffWithOpenFlowNodeId"
      * there is second part of unsuccessful cases
      */
     public void getOpenFlowNodeIdForSffNullTests1() {
-        NodeBuilder nodeBuilder = new NodeBuilder();
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
@@ -589,10 +630,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
 
-        //we do not need go through "lookupTopologyNode" or "getManagedByNodeId" here
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "lookupTopologyNode")).toReturn(nodeBuilder.build());
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getManagedByNodeId")).toReturn(new NodeId(testString));
-
         //dataPathId == null
         String result = SfcOvsUtil.getOpenFlowNodeIdForSff(serviceFunctionForwarderBuilder.build());
 
@@ -600,10 +637,17 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     }
 
     /*
-     * auxiliary methods below
+     * create node IID
      */
+    private static InstanceIdentifier<Node> createNodeIID() {
+        return InstanceIdentifier
+                .create(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                .child(Node.class, new NodeKey(new NodeId(testIpAddress)));
 
-    private void createOvsdbNode(LogicalDatastoreType type) {
+    }
+
+    private void createOvsdbNode() {
         boolean isCreated;
 
         /*
@@ -618,7 +662,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 .addAugmentation(OvsdbBridgeAugmentation.class, createOvsdbBridgeAugmentation())
                 .setKey(new NodeKey(new NodeId(testIpAddress)));
         isCreated = SfcDataStoreAPI.writePutTransactionAPI(nodeIID,
-                nodeBuilder.build(), type);
+                nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
         if (isCreated)
             LOG.debug("Node has been successfully created");
         else
@@ -675,17 +719,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 .setManagedBy(new OvsdbNodeRef(nodeIID))
                 .setDatapathId(new DatapathId(testDataPath));
         return ovsdbBridgeAugmentationBuilder.build();
-    }
-
-    /*
-     * create node IID
-     */
-    private static InstanceIdentifier<Node> createNodeIID() {
-        return InstanceIdentifier
-                .create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, new NodeKey(new NodeId(testIpAddress)));
-
     }
 
     /*

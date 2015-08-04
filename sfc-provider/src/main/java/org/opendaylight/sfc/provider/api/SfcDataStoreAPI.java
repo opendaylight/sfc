@@ -11,7 +11,6 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -37,15 +36,13 @@ public class SfcDataStoreAPI {
     private SfcDataStoreAPI() {
     }
 
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
-    private static final DataBroker DATA_BROKER = ODL_SFC.getDataProvider();
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret = false;
+        boolean ret;
 
-        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
+        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
         writeTx.delete(logicalDatastoreType, deleteIID);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -63,7 +60,7 @@ public class SfcDataStoreAPI {
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
         boolean ret;
 
-        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
+        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -79,7 +76,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret;
-        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
+        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -95,7 +92,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI
             (InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType)  {
         U ret = null;
-        ReadOnlyTransaction readTx = DATA_BROKER.newReadOnlyTransaction();
+        ReadOnlyTransaction readTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newReadOnlyTransaction();
         Optional<U> optionalDataObject;
         CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
         try {
@@ -116,7 +113,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeSynchPutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
         boolean ret;
-        WriteTransaction writeTx = DATA_BROKER.newWriteOnlyTransaction();
+        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
         writeTx.commit();
         ret = true;

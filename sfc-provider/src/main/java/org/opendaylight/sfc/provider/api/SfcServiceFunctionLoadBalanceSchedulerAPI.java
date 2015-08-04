@@ -56,12 +56,6 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
                 continue;
             }
 
-            /* Update ServiceFunctionMonitor information */
-            ret = SfcProviderServiceFunctionAPI.putServiceFunctionMonitorExecutor(serviceFunction);
-            if (ret == false) {
-                LOG.error("Put monitor information to Data Store failed! serviceFunction: {}", sfName);
-            }
-
             /* Read ServiceFunctionMonitor information */
             SfcSfDescMon sfcSfDescMon = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfName);
             if (sfcSfDescMon == null) {

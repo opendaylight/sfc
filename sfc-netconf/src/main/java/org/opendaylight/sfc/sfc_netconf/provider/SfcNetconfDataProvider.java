@@ -5,7 +5,7 @@
 * terms of the Eclipse Public License v1.0 which accompanies this distribution,
 * and is available at http://www.eclipse.org/legal/epl-v10.html
 */
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.sfc_netconf.provider;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 

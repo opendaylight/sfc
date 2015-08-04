@@ -21,7 +21,14 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceForwarderAPI;
+import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
@@ -32,6 +39,13 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -40,12 +54,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
+    private static HashMap<String, Class<? extends ServiceFunctionTypeIdentity>> sftMap = new HashMap<String, Class<? extends ServiceFunctionTypeIdentity>>() {{
+        put("firewall", Firewall.class);
+        put("dpi", Dpi.class);
+        put("napt", Napt44.class);
+        put("http-header-enrichment", HttpHeaderEnrichment.class);
+        put("qos", Qos.class);
+        put("tcp-proxy", TcpProxy.class);
+    }};
+    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
 
     public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class)
@@ -59,6 +83,26 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
         registerAsDataChangeListener();
     }
 
+    private static boolean isServiceFunction(NetconfNode netconfNode) {
+        boolean ret = false;
+        List<String> capabilities =
+            netconfNode.getAvailableCapabilities().getAvailableCapability();
+        for (String cap : capabilities) {
+            if (cap.endsWith("service-function-description-monitor-report")) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    private static Class<? extends ServiceFunctionTypeIdentity> getServiceFunctionType(String type) {
+        if (sftMap.containsKey(type)) {
+            return sftMap.get(type);
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public void onDataChanged(
@@ -134,11 +178,38 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                             List<String> capabilities =
                                     nnode.getAvailableCapabilities().getAvailableCapability();
                             LOG.debug("Capabilities: {}", capabilities);
-                            if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(
-                                    SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetconf(nodeName, nnode))) {
-                                LOG.info("Successfully created SFF from Netconf node {}", nodeName);
-                            } else {
-                                LOG.error("Error creating SFF from Netconf node {}", nodeName);
+
+                            /* Identify it is SF or SFF */
+                            if (isServiceFunction(nnode)) { //SF
+                                DescriptionInfo descInfo = SfcNetconfServiceFunctionAPI.getServiceFunctionDescription(nodeName);
+                                String type = descInfo.getType();
+                                if ((type == null) || type.isEmpty()) {
+                                    LOG.error("SF type is empty");
+                                    break;
+                                }
+                                Class<? extends ServiceFunctionTypeIdentity> sfType = getServiceFunctionType(type);
+                                if (sfType == null) {
+                                    LOG.error("Invalid SF type {}", type);
+                                    break;
+                                }
+                                ServiceFunction sf = SfcNetconfServiceFunctionAPI.buildServiceFunctionFromNetconf(nodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
+                                if (SfcProviderServiceFunctionAPI.putServiceFunctionExecutor(sf)) {
+                                    LOG.info("Successfully created SF from Netconf node {}", nodeName);
+                                    SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, nodeName);
+                                    MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
+                                    if (monInfo != null) {
+                                        SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, nodeName);
+                                    }
+                                } else {
+                                    LOG.error("Failed to create SF from Netconf node {}", nodeName);
+                                }
+                            } else { //SFF
+                                ServiceFunctionForwarder sff = SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetconf(nodeName, nnode);
+                                if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(sff)) {
+                                    LOG.info("Successfully created SFF from Netconf node {}", nodeName);
+                                } else {
+                                    LOG.error("Failed to create SFF from Netconf node {}", nodeName);
+                                }
                             }
                             break;
                         }

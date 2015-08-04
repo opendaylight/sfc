@@ -15,6 +15,18 @@ module service-function-description-monitor-report {
     }
 
     grouping SF-description {
+        leaf data-plane-ip {
+            type inet:ip-address;
+            description "Data-plane IP address";
+        }
+        leaf data-plane-port {
+            type inet:port-number;
+            description "Data-plane port number";
+        }
+        leaf type {
+            type string;
+            description "SF type";
+        }
         leaf number-of-dataports {
             type uint32;
             description "Number of dataports";

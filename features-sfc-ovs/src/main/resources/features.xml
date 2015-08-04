@@ -19,7 +19,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">
             mvn:org.opendaylight.sfc/sfc-ovs/${project.version}/xml/config
         </configfile>
-        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version='${project.version}'>odl-sfc-provider-rest</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version='${mdsal.version}'>odl-mdsal-broker</feature>-->
         <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
@@ -28,4 +28,3 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </feature>
 
 </features>
-

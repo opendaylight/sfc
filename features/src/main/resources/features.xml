@@ -58,7 +58,7 @@
     </feature>
     -->
     <feature name='odl-sfc-ui' version='${project.version}' description='OpenDaylight :: sfc :: UI'>
-        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version='${project.version}'>odl-sfc-provider-rest</feature>
         <!--<feature version="${mdsal.version}">odl-restconf</feature>-->
         <feature>http</feature>
         <!--<feature version='${webconsole.version}'>webconsole</feature>-->
@@ -68,7 +68,6 @@
 
     <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-        <feature version="${mdsal.version}">odl-restconf</feature>
         <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
         <feature version='${project.version}'>odl-sfc-model</feature>
         <feature version='${l2switch.version}'>odl-l2switch-hosttracker</feature>
@@ -96,6 +95,11 @@
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
         <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
+    </feature>
+
+    <feature name='odl-sfc-provider-rest' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>
+      <feature version='${project.version}'>odl-sfc-provider</feature>
+      <feature version="${mdsal.version}">odl-restconf</feature>
     </feature>
 
     <feature name='odl-sfc-test-consumer' version='${project.version}' description='OpenDaylight :: sfc :: Test :: Consumer '>

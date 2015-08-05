@@ -4,11 +4,7 @@ module service-function-chain {
 
   prefix sfc-sfc;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
   import service-function-type {prefix sfc-sft;}
-
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -34,20 +30,21 @@ module service-function-chain {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
-    "Revised based on Opendaylight Project feedback";
+      "Revised based on Opendaylight Project feedback";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   grouping service-function-chain-grouping {
     list service-function-chain {
+      key "name";
       description
         "A list that holds all service function chains in the
          domain";
-      key "name";
       leaf name {
         type string;
         description
@@ -79,6 +76,9 @@ module service-function-chain {
         }
         leaf order {
           type uint8;
+          description
+            "A number that denotes the order of a service function
+             type in a chain";
         }
         ordered-by user;
         description
@@ -110,10 +110,10 @@ module service-function-chain {
   container service-function-chains-state {
     config false;
     list service-function-chain-state {
+      key "name";
       description
         "A list that contains operational service function
          chain state";
-      key "name";
       leaf name {
         type string;
         description

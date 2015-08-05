@@ -36,12 +36,13 @@ module service-locator {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
     "Changes based on Opendaylight Testing.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   // Locator definitions
@@ -192,6 +193,8 @@ module service-locator {
       type identityref {
         base sfc-sl:sl-transport-type;
       }
+      description
+        "The encapsulation used to carry NSH packets";
     }
   }
 }

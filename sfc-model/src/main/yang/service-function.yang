@@ -5,7 +5,6 @@ module service-function {
   prefix sfc-sf;
 
   import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
   import service-function-type {prefix sfc-sft;}
   import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
@@ -37,12 +36,13 @@ module service-function {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
-    "Changes based on Opendaylight Testing.";
+      "Changes based on Opendaylight Testing.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
 
@@ -78,8 +78,8 @@ module service-function {
          model";
     }
     leaf rest-uri {
-      description "URI of REST based management";
       type inet:uri;
+      description "URI of REST based management";
     }
     leaf ip-mgmt-address {
       type inet:ip-address;
@@ -87,9 +87,9 @@ module service-function {
         "The IP and port used to configure this service-function";
     }
     leaf request_reclassification {
+      type boolean;
       description "This leaf determines whether SF can request
         reclassification by the SFF";
-      type boolean;
     }
     leaf nsh-aware {
       type boolean;
@@ -97,9 +97,9 @@ module service-function {
     }
 
     list sf-data-plane-locator {
+      key "name";
       description
         "A network data-plane locator";
-      key "name";
       leaf name {
         type string;
         description
@@ -141,24 +141,24 @@ module service-function {
       SFC encapsulation.";
 
     list service-function {
+      key "name";
       description
         "This list holds configuration data for all service functions
          in the domain";
-      key "name";
       uses service-function-entry;
     }
   }
 
   container service-functions-state {
+    config false;
     description
       "This container hold operational state for all service
        functions";
-    config false;
     list service-function-state {
+      key "name";
       description
         "This list holds operational data for all service functions
          in the domain";
-      key "name";
       leaf name {
         type string;
         description

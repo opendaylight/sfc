@@ -4,12 +4,9 @@ module rendered-service-path {
 
   prefix sfc-rsp;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
   import service-function-type {prefix sfc-sft; }
   import service-function-scheduler-type {prefix sfc-sfst;}
-  import service-function-metadata {prefix sfc-md; }
+  import service-function-path-metadata {prefix sfc-md; }
   import service-function-forwarder {prefix sfc-sff; }
   import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
@@ -39,17 +36,18 @@ module rendered-service-path {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
       "Changes based on Opendaylight Testing and IETF SFC ml.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   typedef rendered-service-path-ref {
     type leafref {
-      path "/sfc-rsp:service-function-paths/" +
+      path "/sfc-rsp:rendered-service-paths/" +
         "sfc-rsp:rendered-service-path/sfc-rsp:name";
     }
     description
@@ -62,20 +60,13 @@ module rendered-service-path {
   container rendered-service-paths {
     config false;
     description
-      "The SFP provides a level of indirection
-       between the fully abstract notion of service chain as an
-       abstract sequence of functions to be delivered, and the
-       fully specified notion of exactly what SFF/SFs the packet
-       will visit when it actually traverses the network.  By
-       allowing the control components to specify the use of this
-       level of indirection, the deployment may choose the degree
-       of SFF/SF selection authority that is delegated to the
-       network";
+      "A container that holds the list of all Rendered Service Paths
+       in a SFC domain";
     list rendered-service-path {
+      key "name";
       description
         "A list that holds operational data for all RSPs in the
          domain";
-      key "name";
       leaf name {
         type string;
         description
@@ -85,14 +76,16 @@ module rendered-service-path {
       leaf parent-service-function-path {
         type string;
         description
-          "Service Function Path from which this RSP was instantiated";
+          "Service Function Path from which this RSP was
+           instantiated";
 
       }
       leaf transport-type {
         type sfc-sl:sl-transport-type-def;
-        default "service-locator:vxlan-gpe";
+        default "sfc-sl:vxlan-gpe";
         description
-          "Transport type as set in the Parent Service Function Path";
+          "Transport type as set in the Parent Service Function
+           Path";
       }
       leaf context-metadata {
         type sfc-md:context-metadata-ref;
@@ -204,7 +197,8 @@ module rendered-service-path {
       leaf result {
         type boolean;
         description
-          "Whether NSH traceroute for the requested path was successful";
+          "Whether NSH traceroute for the requested path was
+           successful";
       }
     }
   }
@@ -223,6 +217,9 @@ module rendered-service-path {
     output {
       leaf result {
         type boolean;
+        description
+          "True if Rendered Service Path was deleted, otherwise
+           false";
       }
     }
   }
@@ -239,7 +236,8 @@ module rendered-service-path {
       leaf parent-service-function-path {
         type string;
         description
-          "Service Function Path from which this RSP was instantiated";
+          "Service Function Path from which this RSP was
+           instantiated";
       }
       leaf symmetric {
         type boolean;
@@ -264,16 +262,21 @@ module rendered-service-path {
     output {
       leaf name {
         type string;
+        description "Name of the created Rendered Service Path";
       }
     }
   }
 
   grouping rendered-service-path-first-hop-info {
+    description
+      "This groups holds the the container that provides
+       information about the first hop in a rendered service
+       path";
     container rendered-service-path-first-hop {
       description
         "Provides all necessary information for a system to construct
-        a NSH header and associated overlay packet to target the first
-        service hop of a Rendered Service Path";
+         a NSH header and associated overlay packet to target the
+         first service hop of a Rendered Service Path";
       leaf starting-index {
         type uint8;
         description
@@ -297,9 +300,11 @@ module rendered-service-path {
            value for reporting and troubleshooting packets along
            a specific path.";
       }
-
       leaf transport-type {
         type sfc-sl:sl-transport-type-def;
+        description
+          "Defines the data-plane protocol used by the first
+           Service Function Forwarder";
       }
 
       uses sfc-sl:ip-port-locator;
@@ -329,12 +334,13 @@ module rendered-service-path {
       Rendered Service Path by ServiceFunctionTypeIdentity list";
     input {
       leaf sfst {
-        description "Service function scheduler type for RSP";
         type sfc-sfst:service-function-scheduler-type;
+        description "Service function scheduler type for RSP";
       }
       leaf-list sft-list {
-        description "List of service function type";
         type sfc-sft:service-function-type;
+        description "List of service function type";
+
       }
     }
     output {

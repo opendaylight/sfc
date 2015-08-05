@@ -42,6 +42,7 @@ module service-locator {
   revision 2014-07-01 {
     description
     "Changes based on Opendaylight Testing.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   // Locator definitions

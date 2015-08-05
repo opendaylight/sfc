@@ -45,6 +45,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Import-Package>org.json; version="[20090211.0.0,20090212.0.0)"</Import-Package>
                         <Export-Package>
                             org.opendaylight.yang.gen.v1.urn.cisco.*;
                             org.opendaylight.yang.gen.v1.urn.ericsson.*;

@@ -4,12 +4,8 @@ module service-function-path {
 
   prefix sfc-sfp;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
-  import service-function-metadata {prefix sfc-md; }
+  import service-function-path-metadata {prefix sfc-md; }
   import service-locator {prefix sfc-sl; }
-
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -35,12 +31,13 @@ module service-function-path {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
       "Changes based on Opendaylight Testing and IETF SFC ml.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   typedef service-function-path-ref {
@@ -67,10 +64,10 @@ module service-function-path {
        of SFF/SF selection authority that is delegated to the
        network";
     list service-function-path {
+      key "name";
       description
         "A list that holds configuration data for all SFPs in the
          domain";
-      key "name";
       leaf name {
         type string;
         description
@@ -79,7 +76,7 @@ module service-function-path {
 
       leaf transport-type {
         type sfc-sl:sl-transport-type-def;
-        default "service-locator:vxlan-gpe";
+        default "sfc-sl:vxlan-gpe";
         description
           "Transport type from service-locator.yang.";
       }
@@ -184,15 +181,15 @@ module service-function-path {
   }
 
   container service-function-paths-state {
+    config false;
     description
       "This container hold operational state for all service
        function paths";
-    config false;
     list service-function-path-state {
+      key "name";
       description
         "This list holds operational data for all service function
          paths in the domain";
-      key "name";
       leaf name {
         type string;
         description

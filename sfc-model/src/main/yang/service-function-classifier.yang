@@ -5,7 +5,7 @@ module service-function-classifier {
 
   prefix sfc-scf;
 
-  import ietf-acl {prefix "ietf-acl";}
+  // import ietf-acl {prefix "ietf-acl";}
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -16,7 +16,8 @@ module service-function-classifier {
 
   revision 2014-07-01 {
     description
-    "Revised based on Opendaylight Project feedback";
+      "Revised based on Opendaylight Project feedback";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   grouping attachment-point {
@@ -48,28 +49,28 @@ module service-function-classifier {
     "Classifier container which represents the ACL being applied,
      attachment point and the chain associated with that ACL.";
     list service-function-classifier {
+      key "name";
       description
         "A list that holds all service function classifiers";
-      key "name";
       leaf name {
         type string;
          description
          "Classification function name";
       }
       leaf access-list {
+        type string;
         description
           "The ACL name associated with this classifier";
-        type string;
       }
 
       list scl-service-function-forwarder {
+        key "name";
         description
           "The classifier will be attached to these SFFs";
-        key "name";
         leaf name {
-          description
-          "The classifier will be attached to this SFF";
           type string;
+          description
+            "The classifier will be attached to this SFF";
         }
         uses attachment-point {
           description "Classifier attachment point";
@@ -79,15 +80,15 @@ module service-function-classifier {
   }
 
   container service-function-classifiers-state {
+    config false;
     description
       "This container hold operational state for all service
        function classifiers";
-    config false;
     list service-function-classifier-state {
+      key "name";
       description
         "This list holds operational data for all service function
          classifiers in the domain";
-      key "name";
       leaf name {
         type string;
         description
@@ -101,7 +102,8 @@ module service-function-classifier {
             "The name of the Rendered Service Path";
         }
         description
-        "A list of all rendered service paths that use this classifier";
+        "A list of all rendered service paths that use this
+         classifier";
       }
     }
   }

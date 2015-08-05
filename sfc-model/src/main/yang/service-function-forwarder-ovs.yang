@@ -9,10 +9,6 @@ module service-function-forwarder-ovs {
     prefix "sfc-sff";
   }
 
-  import ietf-inet-types {
-    prefix "inet";
-  }
-
   import ietf-yang-types {
     prefix "yang";
     revision-date 2013-07-15;
@@ -33,40 +29,75 @@ module service-function-forwarder-ovs {
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
+  description
+    "This module contains a collection of YANG definitions used
+     to augment Service Function Forwarder configuration with
+     OpenvSwitch specific information.
+
+     Copyright (c) 2013 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.";
+
+     // RFC Ed.: replace XXXX with actual RFC number and remove this
+     // note.
+
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
+
   revision 2014-07-01 {
     description "Augmentation of SFF for OVS";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   grouping node {
+    description
+      "Groups that holds OVS node information";
     container ovs-node {
+      description
+        "This container holds OVS node information";
       leaf node-id {
-        description "Open vSwitch node id.";
         type ovsdb:ovsdb-node-ref;
+        description "Open vSwitch node id.";
       }
     }
   }
 
   grouping bridge {
+    description
+      "Groups OVS bridge information that is reused throughout
+       SFF augmentations";
     container ovs-bridge {
+      description
+        "This container holds OVS bridge information";
       leaf bridge-name {
-        description "Open vSwitch bridge name. In Openstack it is usually"
-          + "br-tun or br-int depending if it is used in the overlay or"
-          + "facing virtual machines respectively";
         type string;
+        description
+          "Open vSwitch bridge name. In Openstack it is usually"
+          + " br-tun or br-int depending if it is used in the"
+          + " overlay or facing virtual machines respectively";
       }
       leaf uuid {
-        description "Open vSwitch bridge UUID";
         type yang:uuid;
+        description "Open vSwitch bridge UUID";
       }
       leaf openflow-node-id {
-        description "Openflow node ID";
         type string;
+        description "Openflow node ID";
       }
       list external-ids {
+        key "name";
         description
           "The list of external ids associated with this
            bridge";
-        key "name";
         leaf name {
           type string;
           description
@@ -89,20 +120,21 @@ module service-function-forwarder-ovs {
       + "by the SFC-OVS renderer";
 
     list ovs-node-to-sff-mapping {
+      key "uuid bridge-name";
+      config false;
       description "List to keep mappings of OVS UUIDs + Bridge Name"
         + "to Service Function Fowarders (SFFs). This is used to"
         + "correlate OVS bridge events to SFFs";
-      config false;
-      key "uuid bridge-name";
       leaf uuid {
-        description "Open vSwitch bridge UUID";
         type yang:uuid;
+        description "Open vSwitch bridge UUID";
       }
       leaf bridge-name {
-        description "Open vSwitch bridge name. In Openstack it is usually"
-          + "br-tun or br-int depending if it is used in the overlay or"
-          + "facing virtual machines respectively";
         type string;
+        description
+          "Open vSwitch bridge name. In Openstack it is usually"
+          + " br-tun or br-int depending if it is used in the"
+          + " overlay or facing virtual machines respectively";
       }
       leaf name {
         type string;
@@ -114,6 +146,9 @@ module service-function-forwarder-ovs {
   }
 
   grouping options {
+    description
+      "Groups all OVS specific configuration options that are reused
+       throughout many SFF augmentations";
     container ovs-options {
       description "Port/Interface related optional input values";
       leaf local-ip {
@@ -122,11 +157,14 @@ module service-function-forwarder-ovs {
       }
       leaf remote-ip {
         type string;
-        description "Remote IP address, e.g. the remote Vxlan tunnel endpoint IP";
+        description
+          "Remote IP address, e.g. the remote Vxlan tunnel endpoint
+           IP";
       }
       leaf dst-port {
         type string;
-        description "Remote port, e.g. the remote Vxlan tunnel endpoint port";
+        description
+          "Remote port, e.g. the remote Vxlan tunnel endpoint port";
       }
       leaf nsp {
         type string;
@@ -161,14 +199,18 @@ module service-function-forwarder-ovs {
 
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/" {
-
+    description
+      "Augments the SFF definition with
+       OVS node specific information";
     ext:augment-identifier "sff-ovs-node-augmentation";
     uses node;
   }
 
   augment "/sfc-sff:service-function-forwarders/"
           + "sfc-sff:service-function-forwarder/" {
-
+    description
+      "Augments the SFF definition with
+       bridge specific information";
     ext:augment-identifier "sff-ovs-bridge-augmentation";
     uses bridge;
   }
@@ -176,7 +218,9 @@ module service-function-forwarder-ovs {
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
-
+    description
+      "Augments the SFF data plane locator with
+       bridge specific information";
     ext:augment-identifier "sff-ovs-locator-bridge-augmentation";
     uses bridge;
   }
@@ -184,7 +228,9 @@ module service-function-forwarder-ovs {
   augment "/sfc-sff:service-function-forwarders/"
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:sff-data-plane-locator" {
-
+    description
+      "Augments the SFF data plane locator with
+       options specific to OVS such as context headers";
     ext:augment-identifier "sff-ovs-locator-options-augmentation";
     uses options;
   }
@@ -193,7 +239,9 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-forwarder/"
         + "sfc-sff:service-function-dictionary/"
         + "sfc-sff:sff-sf-data-plane-locator" {
-
+    description
+      "Augments the data plane locator between SFF and SF with
+       bridge specific information";
     ext:augment-identifier "sff-sf-ovs-locator-bridge-augmentation";
     uses bridge;
   }
@@ -203,32 +251,38 @@ module service-function-forwarder-ovs {
         + "sfc-sff:service-function-dictionary/"
         + "sfc-sff:sff-sf-data-plane-locator" {
 
+    description
+      "Augments the data plane locator between SFF and SF with
+       options specific to OVS such as context headers";
     ext:augment-identifier "sff-sf-ovs-locator-options-augmentation";
     uses options;
   }
 
   rpc create-ovs-bridge {
-      description
-        "Creates OVS Bridge on specified OVS Node";
-      input {
-        leaf name {
-          type string;
-          description
-            "The name of OVS Bridge to be created";
-        }
-
-        container ovs-node {
-          description
-          "Contains ip:port locator of the OVS Node,
-          on which OVS Bridge is going to be created";
-
-          uses ovsdb-overlay:ip-port-locator;
-        }
+    description
+      "Creates OVS Bridge on specified OVS Node";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of OVS Bridge to be created";
       }
-      output {
-        leaf result {
-          type boolean;
-        }
+
+      container ovs-node {
+        description
+        "Contains ip:port locator of the OVS Node,
+        on which OVS Bridge is going to be created";
+
+        uses ovsdb-overlay:ip-port-locator;
       }
     }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if the OVS bridge was created, otherwise
+           false";
+      }
+    }
+  }
 }

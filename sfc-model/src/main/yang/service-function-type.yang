@@ -4,10 +4,6 @@ module service-function-type {
 
   prefix sfc-sft;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-
-
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -35,12 +31,13 @@ module service-function-type {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
     description
-    "Changes based on Opendaylight Testing.";
+      "Changes based on Opendaylight Testing.";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
 
@@ -81,7 +78,9 @@ module service-function-type {
 
   identity http-header-enrichment {
     base "service-function-type-identity";
-    description "HTTP services that add HTTP headers for charging and adding subscriber metadata";
+    description
+      "HTTP services that add HTTP headers for charging and adding
+       subscriber metadata";
   }
 
   identity tcp-proxy {

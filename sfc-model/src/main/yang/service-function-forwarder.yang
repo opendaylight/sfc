@@ -5,10 +5,6 @@ module service-function-forwarder {
   prefix sfc-sff;
 
   import ietf-inet-types        { prefix inet;}
-  import ietf-yang-types {
-    prefix "yang";
-    revision-date 2013-07-15;
-  }
   import service-locator        { prefix sfc-sl;  }
   import service-function-type  { prefix sfc-sft; }
   import service-statistics     { prefix sfc-ss;  }
@@ -37,12 +33,13 @@ module service-function-forwarder {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
-     // and remove this note.
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
 
   revision 2014-07-01 {
       description
       "Revision based on Opendaylight project feedback";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   // Failmode type definitions
@@ -77,7 +74,8 @@ module service-function-forwarder {
 
   typedef service-function-forwarder-locator-ref {
     type leafref {
-      path "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/"
+      path "/sfc-sff:service-function-forwarders/"
+          + "sfc-sff:service-function-forwarder/"
           + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
     }
     description
@@ -94,9 +92,9 @@ module service-function-forwarder {
        functions via information carried in the SFC encapsulation.
       ";
     list service-function-forwarder {
+      key "name";
       description
         "A list that holds configuration of all SFFs in the domain";
-      key "name";
       leaf name {
         type string;
         description
@@ -112,28 +110,31 @@ module service-function-forwarder {
       leaf ip-mgmt-address {
         type inet:ip-address;
         description
-          "The IP and port used to configure this service-function-forwarder";
+          "The IP and port used to configure this
+           service-function-forwarder";
       }
 
       leaf rest-uri {
-        description "URI of REST based management";
         type inet:uri;
+        description "URI of REST based management";
       }
 
       list sff-data-plane-locator {
+        key "name";
         description
           "A list of all data-plane-locators of this SFF.";
-        key "name";
         leaf name {
           type string;
           description
-            "A unique string that represents this data-plane-locator";
+            "A unique string that represents this
+             data-plane-locator";
         }
 
         container data-plane-locator {
           description
-            "This container holds configuration for the overlay data plane"
-          + "locator used by this SFF. This could be VXLAN, GRE, etc";
+            "This container holds configuration for the overlay data
+             plane locator used by this SFF. This could be VXLAN,
+             GRE, etc";
           uses sfc-sl:data-plane-locator;
         }
       }
@@ -153,8 +154,8 @@ module service-function-forwarder {
         }
         container sff-sf-data-plane-locator {
           description
-            "The SFF uses this data plane locator when sending packets to the"
-          + "associated service function";
+            "The SFF uses this data plane locator when sending
+             packets to the associated service function";
           uses sfc-sl:data-plane-locator;
         }
         list sff-interfaces {
@@ -166,8 +167,8 @@ module service-function-forwarder {
                SF";
           }
           description
-            "A list of interfaces on the SFF which are connected to this SF,"
-          + "usually one 1 or 2 elements";
+            "A list of interfaces on the SFF which are connected to
+             this SF, usually one 1 or 2 elements";
         }
         leaf failmode {
           type failmode-type;
@@ -189,8 +190,8 @@ module service-function-forwarder {
         }
         container sff-sff-data-plane-locator {
           description
-            "The SFF uses this data plane locator when sending packets to the
-             associated SFF";
+            "The SFF uses this data plane locator when sending
+             packets to the associated SFF";
           uses sfc-sl:data-plane-locator;
         }
         list sff-interfaces {
@@ -210,21 +211,22 @@ module service-function-forwarder {
              send packets to a connected SFF";
         }
         description
-          "A list of all Service Function Forwarders connected to this SFF";
+          "A list of all Service Function Forwarders connected to
+           this SFF";
       }
     }
   }
 
   container service-function-forwarders-state {
+    config false;
     description
       "This container hold operational state for all service
        function forwarders";
-    config false;
     list service-function-forwarder-state {
+      key "name";
       description
         "This list holds operational data for all service functions
          forwarders in the domain";
-      key "name";
       leaf name {
         type string;
         description

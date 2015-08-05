@@ -1,4 +1,4 @@
-module service-function-metadata {
+module service-function-path-metadata {
 
 
   namespace "urn:cisco:params:xml:ns:yang:sfc-md";

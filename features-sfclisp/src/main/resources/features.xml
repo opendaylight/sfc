@@ -8,11 +8,10 @@
 	<repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/${lisp.version}/xml/features</repository>
 
 	<feature name='odl-sfclisp' version='${project.version}' description='OpenDaylight :: sfclisp :: all'>
-		<feature version='${project.version}'>odl-sfc-provider</feature>
+		<feature version='${project.version}'>odl-sfc-provider-rest</feature>
         <feature version='${lisp.version}'>odl-lispflowmapping-mappingservice</feature>
         <feature version='${lisp.version}'>odl-lispflowmapping-southbound</feature>
         <bundle>mvn:org.opendaylight.sfc/sfclisp/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-lisp-initial.xml">mvn:org.opendaylight.sfc/sfclisp/${project.version}/xml/config</configfile>
 	</feature>
 </features>
-

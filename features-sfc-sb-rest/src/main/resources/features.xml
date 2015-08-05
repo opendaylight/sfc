@@ -14,7 +14,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
     <feature name='odl-sfc-sb-rest' version='${project.version}' description='OpenDaylight :: sfc-sb-rest '>
 
-        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version='${project.version}'>odl-sfc-provider-rest</feature>
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version="${mdsal.version}">odl-mdsal-broker</feature>-->
         <bundle>mvn:org.opendaylight.sfc/sfc-sb-rest/${project.version}</bundle>
@@ -24,4 +24,3 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </feature>
 
 </features>
-

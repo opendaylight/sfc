@@ -17,9 +17,9 @@ module service-function-scheduler-type {
 
   revision 2015-03-12 {
     description
-      "Initial version.";
-    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
+    "Initial version.";
   }
+
 
   // Service Function Scheduler Type
   identity service-function-scheduler-type-identity {
@@ -68,9 +68,9 @@ module service-function-scheduler-type {
 
   container service-function-scheduler-types {
     description
-      "A list of Service function scheduler types. For each type we
-       keep a list of service function scheduler names. Each name may
-       indicate the vendor of the scheduler";
+      "A list of Service function scheduler types. For each type we keep
+       a list of service function scheduler names. Each name may indicate
+       the vendor of the scheduler";
 
     list service-function-scheduler-type {
       key "type";

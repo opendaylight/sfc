@@ -637,15 +637,12 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 */
 
         revRenderedServicePathBuilder.setRenderedServicePathHop(revRenderedServicePathHopArrayList);
-        revRenderedServicePathBuilder.setSymmetricPathId(renderedServicePath.getPathId());
 
         InstanceIdentifier<RenderedServicePath> rspIID;
 
         rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, revRenderedServicePathKey)
                 .build();
-
-
 
         RenderedServicePath revRenderedServicePath = revRenderedServicePathBuilder.build();
 

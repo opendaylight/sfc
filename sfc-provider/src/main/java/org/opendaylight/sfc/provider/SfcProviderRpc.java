@@ -254,7 +254,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         LOG.error("Failed to create symmetric service path: {}");
                     } else {
                         SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
-                        SfcProviderRenderedPathAPI.setSymmetricPathId(revRenderedServicePath, renderedServicePath.getPathId());
                         if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
                                 SfcProviderServiceClassifierAPI
                                         .readServiceClassifierExecutor

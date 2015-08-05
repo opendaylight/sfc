@@ -10,6 +10,7 @@ package org.opendaylight.sfc.provider.bootstrap;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import org.json.JSONObject;
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.provider.config.SfcProviderConfig;
@@ -68,11 +69,16 @@ public class SfcProviderBootstrapRestAPITest {
             LOG.error("Failed to...", e);
         }
 
-        if (encoded != null)
-            configFile = new JSONObject(jsonConfigString);
+        try {
+            if (encoded != null)
+                configFile = new JSONObject(jsonConfigString);
+            if (configFile != null)
+                configFile = configFile.getJSONObject("bootstrap");
+        } catch (JSONException e) {
+            LOG.error("Failed to load JSON config files", e);
+            // Test should probably end right here
+        }
 
-        if (configFile != null)
-            configFile = configFile.getJSONObject("bootstrap");
 
         //first mock returns true when method tries to find json file (is does not exists), second puts created json as a result
         PowerMockito.stub(PowerMockito.method(SfcProviderConfig.class, "readConfigFile")).toReturn(true);

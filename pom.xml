@@ -244,6 +244,7 @@
                     <configuration>
                         <instructions>
                             <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                            <Import-Package>org.json; version="[20090211.0.0,20090212.0.0)"</Import-Package>
                         </instructions>
                         <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
                     </configuration>

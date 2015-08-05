@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module name="service-function-metadata"
+<module name="service-function-path-metadata"
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
         xmlns:sfc-md="urn:cisco:params:xml:ns:yang:sfc-md">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-md"/>

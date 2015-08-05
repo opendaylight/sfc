@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module name="service-function-type"
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
-        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
-        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
-        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sft"/>
   <prefix value="sfc-sft"/>
-  <import module="ietf-inet-types">
-    <prefix value="inet"/>
-  </import>
-  <import module="ietf-yang-types">
-    <prefix value="yang"/>
-  </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
   </organization>
@@ -42,6 +34,9 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Changes based on Opendaylight Testing.</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <identity name="service-function-type-identity">
     <description>
@@ -82,7 +77,15 @@ types are derived.</text>
   <identity name="http-header-enrichment">
     <base name="service-function-type-identity"/>
     <description>
-      <text>HTTP services that add HTTP headers for charging and adding subscriber metadata</text>
+      <text>HTTP services that add HTTP headers for charging and adding
+subscriber metadata</text>
+    </description>
+  </identity>
+  <identity name="tcp-proxy">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>A TCP Proxy sets up a connection with the
+client and another one with the server.</text>
     </description>
   </identity>
   <identity name="Cisco-vASA">

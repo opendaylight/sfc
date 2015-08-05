@@ -44,6 +44,9 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Changes based on Opendaylight Testing.</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <identity name="transport-type">
     <description>
@@ -146,14 +149,8 @@ registered transport types</text>
   </grouping>
   <grouping name="mpls-locator">
     <description>
-      <text>Data plane-locator: MPLS label and mac address</text>
+      <text>Data plane-locator: MPLS label</text>
     </description>
-    <leaf name="mac-address">
-      <type name="yang:mac-address"/>
-      <description>
-        <text>Data-plane MAC address</text>
-      </description>
-    </leaf>
     <leaf name="mpls-label">
       <type name="uint32">
         <range value="1..1048575"/>
@@ -172,6 +169,17 @@ function or method.</text>
       <type name="string"/>
       <description>
         <text>Function or method name</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="other-locator">
+    <description>
+      <text>Other locator</text>
+    </description>
+    <leaf name="other-name">
+      <type name="string"/>
+      <description>
+        <text>A other or undefined locator</text>
       </description>
     </leaf>
   </grouping>
@@ -197,6 +205,9 @@ information for service function elements in the domain</text>
       <case name="mpls">
         <uses name="mpls-locator"/>
       </case>
+      <case name="other">
+        <uses name="other-locator"/>
+      </case>
       <description>
         <text>The collection of all possible data-plane
 locators. Only one can be chosen</text>
@@ -206,6 +217,9 @@ locators. Only one can be chosen</text>
       <type name="identityref">
         <base name="sfc-sl:sl-transport-type"/>
       </type>
+      <description>
+        <text>The encapsulation used to carry NSH packets</text>
+      </description>
     </leaf>
   </grouping>
 </module>

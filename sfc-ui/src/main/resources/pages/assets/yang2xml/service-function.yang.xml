@@ -3,14 +3,13 @@
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
         xmlns:sfc-sf="urn:cisco:params:xml:ns:yang:sfc-sf"
         xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
-        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-ss="urn:cisco:params:xml:ns:yang:sfc-ss">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sf"/>
   <prefix value="sfc-sf"/>
   <import module="ietf-inet-types">
     <prefix value="inet"/>
-  </import>
-  <import module="ietf-yang-types">
-    <prefix value="yang"/>
   </import>
   <import module="service-function-type">
     <prefix value="sfc-sft"/>
@@ -51,6 +50,9 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Changes based on Opendaylight Testing.</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <typedef name="service-function-ref">
     <type name="leafref">
@@ -72,6 +74,12 @@ single service function</text>
         <text>The name of the service function.</text>
       </description>
     </leaf>
+    <leaf name="tenant-id">
+      <type name="string"/>
+      <description>
+        <text>This SF was created for a specific tenant-id</text>
+      </description>
+    </leaf>
     <leaf name="type">
       <type name="sfc-sft:service-function-type"/>
       <mandatory value="true"/>
@@ -81,10 +89,10 @@ model</text>
       </description>
     </leaf>
     <leaf name="rest-uri">
+      <type name="inet:uri"/>
       <description>
         <text>URI of REST based management</text>
       </description>
-      <type name="inet:uri"/>
     </leaf>
     <leaf name="ip-mgmt-address">
       <type name="inet:ip-address"/>
@@ -93,11 +101,11 @@ model</text>
       </description>
     </leaf>
     <leaf name="request_reclassification">
+      <type name="boolean"/>
       <description>
         <text>This leaf determines whether SF can request
 reclassification by the SFF</text>
       </description>
-      <type name="boolean"/>
     </leaf>
     <leaf name="nsh-aware">
       <type name="boolean"/>
@@ -106,10 +114,10 @@ reclassification by the SFF</text>
       </description>
     </leaf>
     <list name="sf-data-plane-locator">
+      <key value="name"/>
       <description>
         <text>A network data-plane locator</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -152,26 +160,26 @@ which case data forwarded to the service does not contain the
 SFC encapsulation.</text>
     </description>
     <list name="service-function">
+      <key value="name"/>
       <description>
         <text>This list holds configuration data for all service functions
 in the domain</text>
       </description>
-      <key value="name"/>
       <uses name="service-function-entry"/>
     </list>
   </container>
   <container name="service-functions-state">
+    <config value="false"/>
     <description>
       <text>This container hold operational state for all service
 functions</text>
     </description>
-    <config value="false"/>
     <list name="service-function-state">
+      <key value="name"/>
       <description>
         <text>This list holds operational data for all service functions
 in the domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>

@@ -2,20 +2,11 @@
 <module name="service-function-path"
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
         xmlns:sfc-sfp="urn:cisco:params:xml:ns:yang:sfc-sfp"
-        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
-        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+        xmlns:sfc-md="urn:cisco:params:xml:ns:yang:sfc-md"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sfp"/>
   <prefix value="sfc-sfp"/>
-  <import module="ietf-inet-types">
-    <prefix value="inet"/>
-  </import>
-  <import module="ietf-yang-types">
-    <prefix value="yang"/>
-  </import>
-  <import module="service-function">
-    <prefix value="sfc-sf"/>
-  </import>
-  <import module="service-function-metadata">
+  <import module="service-function-path-metadata">
     <prefix value="sfc-md"/>
   </import>
   <import module="service-locator">
@@ -48,6 +39,9 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Changes based on Opendaylight Testing and IETF SFC ml.</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <typedef name="service-function-path-ref">
     <type name="leafref">
@@ -71,11 +65,11 @@ of SFF/SF selection authority that is delegated to the
 network</text>
     </description>
     <list name="service-function-path">
+      <key value="name"/>
       <description>
         <text>A list that holds configuration data for all SFPs in the
 domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -84,7 +78,7 @@ domain</text>
       </leaf>
       <leaf name="transport-type">
         <type name="sfc-sl:sl-transport-type-def"/>
-        <default value="service-locator:vxlan-gpe"/>
+        <default value="sfc-sl:vxlan-gpe"/>
         <description>
           <text>Transport type from service-locator.yang.</text>
         </description>
@@ -121,6 +115,12 @@ ingress path</text>
         <type name="sfc-md:variable-metadata-ref"/>
         <description>
           <text>The name of the associated variable metadata</text>
+        </description>
+      </leaf>
+      <leaf name="tenant-id">
+        <type name="string"/>
+        <description>
+          <text>This SFP was created for a specific tenant-id</text>
         </description>
       </leaf>
       <list name="service-path-hop">
@@ -197,17 +197,17 @@ a specific path.</text>
     </list>
   </container>
   <container name="service-function-paths-state">
+    <config value="false"/>
     <description>
       <text>This container hold operational state for all service
 function paths</text>
     </description>
-    <config value="false"/>
     <list name="service-function-path-state">
+      <key value="name"/>
       <description>
         <text>This list holds operational data for all service function
 paths in the domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>

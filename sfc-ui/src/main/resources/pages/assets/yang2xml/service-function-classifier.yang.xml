@@ -5,9 +5,6 @@
   <yang-version value="1"/>
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-scf"/>
   <prefix value="sfc-scf"/>
-  <import module="ietf-acl">
-    <prefix value="ietf-acl"/>
-  </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
   </organization>
@@ -22,6 +19,9 @@ managing service classification functions.</text>
     <description>
       <text>Revised based on Opendaylight Project feedback</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <grouping name="attachment-point">
     <description>
@@ -56,10 +56,10 @@ attachment point types</text>
 attachment point and the chain associated with that ACL.</text>
     </description>
     <list name="service-function-classifier">
+      <key value="name"/>
       <description>
         <text>A list that holds all service function classifiers</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -67,28 +67,21 @@ attachment point and the chain associated with that ACL.</text>
         </description>
       </leaf>
       <leaf name="access-list">
+        <type name="string"/>
         <description>
           <text>The ACL name associated with this classifier</text>
         </description>
-        <type name="string"/>
-      </leaf>
-      <leaf name="rendered-service-path">
-        <description>
-          <text>The classifier will direct packets to the SFP
-specified here</text>
-        </description>
-        <type name="string"/>
       </leaf>
       <list name="scl-service-function-forwarder">
+        <key value="name"/>
         <description>
           <text>The classifier will be attached to these SFFs</text>
         </description>
-        <key value="name"/>
         <leaf name="name">
+          <type name="string"/>
           <description>
             <text>The classifier will be attached to this SFF</text>
           </description>
-          <type name="string"/>
         </leaf>
         <uses name="attachment-point">
           <description>
@@ -99,17 +92,17 @@ specified here</text>
     </list>
   </container>
   <container name="service-function-classifiers-state">
+    <config value="false"/>
     <description>
       <text>This container hold operational state for all service
 function classifiers</text>
     </description>
-    <config value="false"/>
     <list name="service-function-classifier-state">
+      <key value="name"/>
       <description>
         <text>This list holds operational data for all service function
 classifiers in the domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -125,7 +118,8 @@ classifiers in the domain</text>
           </description>
         </leaf>
         <description>
-          <text>A list of all rendered service paths that use this classifier</text>
+          <text>A list of all rendered service paths that use this
+classifier</text>
         </description>
       </list>
     </list>

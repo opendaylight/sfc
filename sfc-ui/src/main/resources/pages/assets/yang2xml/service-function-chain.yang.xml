@@ -2,19 +2,9 @@
 <module name="service-function-chain"
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
         xmlns:sfc-sfc="urn:cisco:params:xml:ns:yang:sfc-sfc"
-        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
-        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sfc"/>
   <prefix value="sfc-sfc"/>
-  <import module="ietf-inet-types">
-    <prefix value="inet"/>
-  </import>
-  <import module="ietf-yang-types">
-    <prefix value="yang"/>
-  </import>
-  <import module="service-function">
-    <prefix value="sfc-sf"/>
-  </import>
   <import module="service-function-type">
     <prefix value="sfc-sft"/>
   </import>
@@ -45,14 +35,17 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Revised based on Opendaylight Project feedback</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <grouping name="service-function-chain-grouping">
     <list name="service-function-chain">
+      <key value="name"/>
       <description>
         <text>A list that holds all service function chains in the
 domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -88,6 +81,10 @@ ingress-dpi. This is not the service function name</text>
         </leaf>
         <leaf name="order">
           <type name="uint8"/>
+          <description>
+            <text>A number that denotes the order of a service function
+type in a chain</text>
+          </description>
         </leaf>
         <ordered-by value="user"/>
         <description>
@@ -118,11 +115,11 @@ used as shorthand for service function chain.</text>
   <container name="service-function-chains-state">
     <config value="false"/>
     <list name="service-function-chain-state">
+      <key value="name"/>
       <description>
         <text>A list that contains operational service function
 chain state</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>

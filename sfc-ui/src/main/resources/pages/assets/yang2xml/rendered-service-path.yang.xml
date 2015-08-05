@@ -2,20 +2,21 @@
 <module name="rendered-service-path"
         xmlns="urn:ietf:params:xml:ns:yang:yin:1"
         xmlns:sfc-rsp="urn:cisco:params:xml:ns:yang:sfc-rsp"
-        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
-        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sfst="urn:intel:params:xml:ns:yang:sfc-sfst"
+        xmlns:sfc-md="urn:cisco:params:xml:ns:yang:sfc-md"
+        xmlns:sfc-sff="urn:cisco:params:xml:ns:yang:sfc-sff"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-ss="urn:cisco:params:xml:ns:yang:sfc-ss">
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-rsp"/>
   <prefix value="sfc-rsp"/>
-  <import module="ietf-inet-types">
-    <prefix value="inet"/>
+  <import module="service-function-type">
+    <prefix value="sfc-sft"/>
   </import>
-  <import module="ietf-yang-types">
-    <prefix value="yang"/>
+  <import module="service-function-scheduler-type">
+    <prefix value="sfc-sfst"/>
   </import>
-  <import module="service-function">
-    <prefix value="sfc-sf"/>
-  </import>
-  <import module="service-function-metadata">
+  <import module="service-function-path-metadata">
     <prefix value="sfc-md"/>
   </import>
   <import module="service-function-forwarder">
@@ -54,10 +55,13 @@ the RFC itself for full legal notices.</text>
     <description>
       <text>Changes based on Opendaylight Testing and IETF SFC ml.</text>
     </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
   </revision>
   <typedef name="rendered-service-path-ref">
     <type name="leafref">
-      <path value="/sfc-rsp:service-function-paths/sfc-rsp:rendered-service-path/sfc-rsp:name"/>
+      <path value="/sfc-rsp:rendered-service-paths/sfc-rsp:rendered-service-path/sfc-rsp:name"/>
     </type>
     <description>
       <text>This type is used by data models that need to reference
@@ -67,22 +71,15 @@ rendered service paths.</text>
   <container name="rendered-service-paths">
     <config value="false"/>
     <description>
-      <text>The SFP provides a level of indirection
-between the fully abstract notion of service chain as an
-abstract sequence of functions to be delivered, and the
-fully specified notion of exactly what SFF/SFs the packet
-will visit when it actually traverses the network.  By
-allowing the control components to specify the use of this
-level of indirection, the deployment may choose the degree
-of SFF/SF selection authority that is delegated to the
-network</text>
+      <text>A container that holds the list of all Rendered Service Paths
+in a SFC domain</text>
     </description>
     <list name="rendered-service-path">
+      <key value="name"/>
       <description>
         <text>A list that holds operational data for all RSPs in the
 domain</text>
       </description>
-      <key value="name"/>
       <leaf name="name">
         <type name="string"/>
         <description>
@@ -93,7 +90,16 @@ name as the associated SFP</text>
       <leaf name="parent-service-function-path">
         <type name="string"/>
         <description>
-          <text>Service Function Path from which this RSP was instantiated</text>
+          <text>Service Function Path from which this RSP was
+instantiated</text>
+        </description>
+      </leaf>
+      <leaf name="transport-type">
+        <type name="sfc-sl:sl-transport-type-def"/>
+        <default value="sfc-sl:vxlan-gpe"/>
+        <description>
+          <text>Transport type as set in the Parent Service Function
+Path</text>
         </description>
       </leaf>
       <leaf name="context-metadata">
@@ -106,6 +112,12 @@ name as the associated SFP</text>
         <type name="sfc-md:variable-metadata-ref"/>
         <description>
           <text>The name of the associated variable metadata</text>
+        </description>
+      </leaf>
+      <leaf name="tenant-id">
+        <type name="string"/>
+        <description>
+          <text>This RSP was created for a specific tenant-id</text>
         </description>
       </leaf>
       <uses name="sfc-ss:service-statistics-group">
@@ -190,6 +202,14 @@ value for reporting and troubleshooting packets along
 a specific path.</text>
         </description>
       </leaf>
+      <leaf name="symmetric-path-id">
+        <type name="uint32">
+          <range value="0..16777216"/>
+        </type>
+        <description>
+          <text>Identifies the associated symmetric path, if any.</text>
+        </description>
+      </leaf>
     </list>
   </container>
   <rpc name="trace-rendered-service-path">
@@ -209,7 +229,8 @@ rendered service path</text>
       <leaf name="result">
         <type name="boolean"/>
         <description>
-          <text>Whether NSH traceroute for the requested path was successful</text>
+          <text>Whether NSH traceroute for the requested path was
+successful</text>
         </description>
       </leaf>
     </output>
@@ -229,6 +250,10 @@ rendered service path</text>
     <output>
       <leaf name="result">
         <type name="boolean"/>
+        <description>
+          <text>True if Rendered Service Path was deleted, otherwise
+false</text>
+        </description>
       </leaf>
     </output>
   </rpc>
@@ -246,7 +271,8 @@ rendered service path</text>
       <leaf name="parent-service-function-path">
         <type name="string"/>
         <description>
-          <text>Service Function Path from which this RSP was instantiated</text>
+          <text>Service Function Path from which this RSP was
+instantiated</text>
         </description>
       </leaf>
       <leaf name="symmetric">
@@ -273,17 +299,25 @@ ingress path</text>
       </leaf>
     </input>
     <output>
-      <leaf name="result">
-        <type name="boolean"/>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>Name of the created Rendered Service Path</text>
+        </description>
       </leaf>
     </output>
   </rpc>
   <grouping name="rendered-service-path-first-hop-info">
+    <description>
+      <text>This groups holds the the container that provides
+information about the first hop in a rendered service
+path</text>
+    </description>
     <container name="rendered-service-path-first-hop">
       <description>
         <text>Provides all necessary information for a system to construct
-a NSH header and associated overlay packet to target the first
-service hop of a Rendered Service Path</text>
+a NSH header and associated overlay packet to target the
+first service hop of a Rendered Service Path</text>
       </description>
       <leaf name="starting-index">
         <type name="uint8"/>
@@ -313,6 +347,10 @@ a specific path.</text>
       </leaf>
       <leaf name="transport-type">
         <type name="sfc-sl:sl-transport-type-def"/>
+        <description>
+          <text>Defines the data-plane protocol used by the first
+Service Function Forwarder</text>
+        </description>
       </leaf>
       <uses name="sfc-sl:ip-port-locator"/>
       <uses name="sfc-sl:mpls-locator"/>
@@ -330,6 +368,29 @@ Rendered Service Path</text>
           <text>The name of this rendered service path</text>
         </description>
       </leaf>
+    </input>
+    <output>
+      <uses name="rendered-service-path-first-hop-info"/>
+    </output>
+  </rpc>
+  <rpc name="read-rsp-first-hop-by-sft-list">
+    <description>
+      <text>Read all the necessary information for the first hop of a
+Rendered Service Path by ServiceFunctionTypeIdentity list</text>
+    </description>
+    <input>
+      <leaf name="sfst">
+        <type name="sfc-sfst:service-function-scheduler-type"/>
+        <description>
+          <text>Service function scheduler type for RSP</text>
+        </description>
+      </leaf>
+      <leaf-list name="sft-list">
+        <type name="sfc-sft:service-function-type"/>
+        <description>
+          <text>List of service function type</text>
+        </description>
+      </leaf-list>
     </input>
     <output>
       <uses name="rendered-service-path-first-hop-info"/>

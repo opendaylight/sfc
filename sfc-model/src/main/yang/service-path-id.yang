@@ -1,0 +1,232 @@
+module service-path-id {
+
+  namespace "urn:cisco:params:xml:ns:yang:service-path-id";
+
+  prefix sfc-spid;
+
+  organization "Cisco Systems, Inc.";
+  contact "Reinaldo Penno <repenno@cisco.com>";
+
+
+  description
+    "This module contains a collection of YANG definitions to
+     manage Service Path Ids.
+
+     It allows user to reserve bands of path-ids, associated
+     path-ids to tenants and the implementation of several
+     algorithms for symmetric path id generation.
+
+     Copyright (c) 2013 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.";
+
+     // RFC Ed.: replace XXXX with actual RFC number and remove this
+     // note.
+
+     // RFC Ed.: update the date below with the date of RFC
+     // publication and remove this note.
+
+  revision 2015-08-04 {
+    description
+      "Initial Revisions";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
+  }
+
+  typedef path-id-ref {
+    type leafref {
+      path "/sfc-spid:service-path-ids/" +
+        "sfc-spid:service-path-id/sfc-spid:path-id";
+    }
+    description
+      "This type is used by data models that need to reference
+       a specific service path id.";
+  }
+
+  // Service Path Id
+
+  typedef path-id-state {
+    type enumeration {
+      enum available {
+        value 1;
+        description
+          "Path-id is available";
+      }
+      enum allocated {
+        value 2;
+        description
+          "Path-id has been allocated for use";
+      }
+      enum reserved {
+        value 3;
+        description
+          "Path-d has been reserved";
+      }
+    }
+    description
+      "Determines the state of the path-id";
+  }
+
+  container service-path-ids {
+    config false;
+    description
+      "A container that holds the list of all Rendered Service Paths
+       in a SFC domain";
+    list service-path-id {
+      key "path-id";
+      description
+        "A list that holds all service path ids";
+      leaf parent-service-function-path {
+        type string;
+        description
+          "Service Function Path from which this RSP was
+           instantiated";
+      }
+      leaf state {
+        type path-id-state;
+        description
+          "Defines whether the path-id is available, allocated
+           or reserved";
+      }
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
+      }
+      leaf symmetric-path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies the associated symmetric path, if any.";
+      }
+      leaf tenant-id {
+        type string;
+        description
+          "Tenant associated with this path-id";
+      }
+    }
+  }
+
+  rpc delete-path-id {
+    description
+      "Delete a Path Id";
+    input {
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if Rendered Service Path Id was deleted, otherwise
+           false";
+      }
+    }
+  }
+
+  rpc allocate-path-id {
+    description
+      "Allocate a path-id";
+    input {
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if Rendered Service Path Id was deleted, otherwise
+           false";
+      }
+    }
+  }
+
+  rpc reserve-path-id-range {
+    description
+      "Reserve a path-id range";
+    input {
+      leaf path-id-start {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Start of the path-id range";
+      }
+      leaf path-id-end {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "End of the path-id range";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if Rendered Service Path Id was deleted, otherwise
+           false";
+      }
+    }
+  }
+
+  rpc read-path-id {
+    description
+      "Read all the necessary information for the first hop of a
+      Rendered Service Path";
+    input {
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
+      }
+    }
+    output {
+      leaf state {
+        type path-id-state;
+        description
+          "Defines whether the path-id is available, allocated
+           or reserved";
+      }
+    }
+  }
+}

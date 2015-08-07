@@ -80,6 +80,16 @@ module service-path-id {
     description
       "A container that holds the list of all Rendered Service Paths
        in a SFC domain";
+    leaf current-path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+    }
+    leaf generation-algorithm {
+       type uint8;
+       description
+         "The algorithm used to generate path-ids";
+    }
     list service-path-id {
       key "path-id";
       description
@@ -87,8 +97,7 @@ module service-path-id {
       leaf parent-service-function-path {
         type string;
         description
-          "Service Function Path from which this RSP was
-           instantiated";
+          "Service Function Path name";
       }
       leaf state {
         type path-id-state;
@@ -118,6 +127,23 @@ module service-path-id {
         type string;
         description
           "Tenant associated with this path-id";
+      }
+    }
+
+    list service-path-id-allocated {
+      key "path-id";
+      description
+        "A list that holds allocated service path ids";
+      leaf path-id {
+        type uint32 {
+          range "0..16777216";
+        }
+        description
+          "Identifies a service path.
+           Participating nodes MUST use this identifier for path
+           selection.  An administrator can use the service path
+           value for reporting and troubleshooting packets along
+           a specific path.";
       }
     }
   }

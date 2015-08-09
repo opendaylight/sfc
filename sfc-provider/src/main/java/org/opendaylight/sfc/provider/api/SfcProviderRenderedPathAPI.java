@@ -192,7 +192,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         } catch (InterruptedException e) {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+            LOG.warn(FAILED_TO_STR, e);
         }
         return ret;
     }
@@ -485,7 +485,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
         printTraceStart(LOG);
 
-        long pathId;
+        long pathId = -1;
         int serviceIndex;
         RenderedServicePath ret = null;
         ServiceFunctionChain serviceFunctionChain;
@@ -519,9 +519,24 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         //Build the service function path so it can be committed to datastore
-        pathId = (serviceFunctionPath.getPathId() != null)  ?
+/*        pathId = (serviceFunctionPath.getPathId() != null)  ?
                         serviceFunctionPath.getPathId() :
-                        numCreatedPathIncrementGet();
+                        numCreatedPathIncrementGet();*/
+
+        if (serviceFunctionPath.getPathId() == null) {
+            pathId = SfcServicePathId.check_and_allocate_pathid();
+        } else {
+            pathId = SfcServicePathId.check_and_allocate_pathid(serviceFunctionPath.getPathId());
+        }
+
+        if (pathId == -1) {
+            LOG.error("{}: Failed to allocate path-id: {}",
+                    Thread.currentThread().getStackTrace()[1], pathId);
+            return null;
+        }
+
+
+
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopArrayList);
         if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty())  {
             renderedServicePathBuilder.setName(serviceFunctionPath.getName() + "-Path-" + pathId);
@@ -590,12 +605,17 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
 
         RenderedServicePath ret = null;
-        long pathId = numCreatedPathIncrementGet();
         String revPathName;
         short revServiceHop;
-        //int numServiceHops = renderedServicePath.getRenderedServicePathHop().size();
         List<RenderedServicePathHop> revRenderedServicePathHopArrayList = new ArrayList<>();
+        //long pathId = numCreatedPathIncrementGet();
+        long pathId = SfcServicePathId.check_and_allocate_symmetric_pathid(renderedServicePath.getPathId());
         printTraceStart(LOG);
+
+        if (pathId == -1) {
+            LOG.error("{}: Failed to allocate symmetric path Id for Path Id: {}",
+                    Thread.currentThread().getStackTrace()[1], renderedServicePath.getPathId());
+        }
 
         RenderedServicePathBuilder revRenderedServicePathBuilder = new RenderedServicePathBuilder(renderedServicePath);
         revRenderedServicePathBuilder.setPathId(pathId);
@@ -635,7 +655,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             revRenderedServicePathHopArrayList.set(revServiceHop, revRenderedServicePathHopBuilder.build());
         }
 */
-
         revRenderedServicePathBuilder.setRenderedServicePathHop(revRenderedServicePathHopArrayList);
         revRenderedServicePathBuilder.setSymmetricPathId(renderedServicePath.getPathId());
 
@@ -644,8 +663,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, revRenderedServicePathKey)
                 .build();
-
-
 
         RenderedServicePath revRenderedServicePath = revRenderedServicePathBuilder.build();
 
@@ -772,7 +789,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * This function deletes a RSP from the datastore
+     * This method deletes a RSP from the datastore and frees the Path ID
      * <p>
      * @param renderedServicePathName RSP name
      * @return Nothing.
@@ -780,22 +797,32 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     public static boolean deleteRenderedServicePath(String renderedServicePathName) {
         boolean ret = false;
         printTraceStart(LOG);
+        long pathId = -1;
         RenderedServicePathKey  renderedServicePathKey = new RenderedServicePathKey(renderedServicePathName);
         InstanceIdentifier<RenderedServicePath> rspEntryIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, renderedServicePathKey).build();
 
-        if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, LogicalDatastoreType.OPERATIONAL)) {
-            ret = true;
+        RenderedServicePath renderedServicePath = SfcDataStoreAPI.readTransactionAPI(rspEntryIID, LogicalDatastoreType.OPERATIONAL);
+        if (renderedServicePath != null) {
+            pathId = renderedServicePath.getPathId();
+            if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, LogicalDatastoreType.OPERATIONAL)) {
+                ret = true;
+                // Free pathId
+                SfcServicePathId.free_pathid(pathId);
+            } else {
+                LOG.error("{}: Failed to delete RSP: {}", Thread.currentThread().getStackTrace()[1],
+                        renderedServicePathName);
+            }
         } else {
-            LOG.error("{}: Failed to delete RSP: {}", Thread.currentThread().getStackTrace()[1],
-                    renderedServicePathName);
+            ret = true;
         }
         printTraceStop(LOG);
         return ret;
     }
 
     /**
-     * This function deletes a RSP from the datastore
+     * This method is an executor wrapper around a method that
+     * deletes a RSP from the datastore
      * <p>
      * @param renderedServicePathName RSP name
      * @return Nothing.

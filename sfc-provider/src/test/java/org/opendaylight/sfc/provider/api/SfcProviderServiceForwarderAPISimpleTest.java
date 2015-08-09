@@ -410,6 +410,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         assertTrue(sfcProviderServiceForwarderAPI.deleteServiceFunctionFromForwarder(serviceFunction));
     }
 
+    //TODO: RSP has no ID.
     private RenderedServicePath createRenderedServicePath(String pathName, String sffName, short pathKey) {
 
         //create rendered service path and write to data store

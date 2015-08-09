@@ -165,6 +165,7 @@ module rendered-service-path {
         type uint32 {
           range "0..16777216";
         }
+        mandatory true;
         description
           "Identifies a service path.
            Participating nodes MUST use this identifier for path

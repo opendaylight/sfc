@@ -1118,7 +1118,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-  /**
+     /**
      * When a SFF is deleted we need to delete all SFPs from the
      * associated SFF operational state
      *

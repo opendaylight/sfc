@@ -243,6 +243,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * @param servicePathName Service Path Name
      * @return Nothing.
      */
+    @SfcReflection
     @SuppressWarnings("unused")
     public static boolean deleteServicePathStateExecutor(String servicePathName) {
 
@@ -275,6 +276,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
      * @param renderedPathName Rendered Path name
      * @return Nothing.
      */
+    @SfcReflection
     @SuppressWarnings("unused")
     public static boolean addRenderedPathToServicePathState(String servicePathName, String renderedPathName) {
 

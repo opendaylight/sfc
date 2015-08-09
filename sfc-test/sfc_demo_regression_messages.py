@@ -217,6 +217,20 @@ SERVICE_PATH_JSON = """
       {
         "name": "SFC1-SFP1",
         "service-chain-name": "SFC1",
+        "symmetric": true
+      }
+    ]
+  }
+}"""
+
+
+SERVICE_PATH2_JSON = """
+{
+  "service-function-paths": {
+    "service-function-path": [
+      {
+        "name": "SFC1-SFP1",
+        "service-chain-name": "SFC1",
         "path-id": 1,
         "symmetric": true
       }

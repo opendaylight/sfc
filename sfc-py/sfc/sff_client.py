@@ -245,7 +245,7 @@ class MyVxlanNshEthClient(MyNshBaseClass):
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
         # Send the packet
         signal.signal(signal.SIGALRM, self.alarm_handler)
-        signal.alarm(2)
+        signal.alarm(5)
         try:
             self.transport.sendto(gpe_nsh_ethernet_packet, (self.remote_sff_ip, self.remote_sff_port))
         except socket.error as msg:

@@ -69,11 +69,19 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         setOdlSfc();
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
+
+        long pathId = SfcServicePathId.check_and_allocate_pathid();
+
+        assertNotEquals("Must be not equal", pathId, -1);
+
         renderedServicePathBuilder.setName("RSP1")
-                .setKey(new RenderedServicePathKey("RSP1"));
+                .setKey(new RenderedServicePathKey("RSP1"))
+                .setPathId(pathId);
 
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
         renderedServicePathHopList.add(renderedServicePathHop);
+
+
 
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopList);
         InstanceIdentifier<RenderedServicePath> rspIID =
@@ -419,10 +427,16 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
                 .setServiceFunctionForwarder(sffName);
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
+
+        long pathId = SfcServicePathId.check_and_allocate_pathid();
+
+        assertNotEquals("Must be not equal", pathId, -1);
+
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(pathName)
                 .setKey(new RenderedServicePathKey(pathName))
-                .setRenderedServicePathHop(renderedServicePathHops);
+                .setRenderedServicePathHop(renderedServicePathHops)
+                .setPathId(pathId);
 
         InstanceIdentifier<RenderedServicePath> rspIID =
                 InstanceIdentifier.builder(RenderedServicePaths.class)

@@ -232,9 +232,14 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         ServiceFunction serviceFunction = serviceFunctionBuilder.build();
 
         //write rendered service path
+        long pathId = SfcServicePathId.check_and_allocate_pathid();
+
+        assertNotEquals("Must be not equal", pathId, -1);
+
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName("SP1")
-                .setKey(new RenderedServicePathKey("SP1"));
+                .setKey(new RenderedServicePathKey("SP1"))
+                .setPathId(pathId);
 
         InstanceIdentifier<RenderedServicePath> rspIID =
                 InstanceIdentifier.builder(RenderedServicePaths.class)

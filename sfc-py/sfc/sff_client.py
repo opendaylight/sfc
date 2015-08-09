@@ -245,7 +245,7 @@ class MyVxlanNshEthClient(MyNshBaseClass):
         logger.info("Sending %s packet to SFF: %s", self.encapsulate_type, (self.remote_sff_ip, self.remote_sff_port))
         # Send the packet
         signal.signal(signal.SIGALRM, self.alarm_handler)
-        signal.alarm(2)
+        signal.alarm(5)
         try:
             self.transport.sendto(gpe_nsh_ethernet_packet, (self.remote_sff_ip, self.remote_sff_port))
         except socket.error as msg:
@@ -264,16 +264,16 @@ class MyVxlanNshEthClient(MyNshBaseClass):
 
     @staticmethod
     def connection_refused(exc):
-        logger.error('Connection refused:', exc)
+        logger.error('Connection refused: %s', exc)
 
     def connection_lost(self, exc):
-        logger.error('closing transport', exc)
+        logger.error('closing transport: %s', exc)
         self.loop = asyncio.get_event_loop()
         self.loop.stop()
 
     @staticmethod
     def error_received(exc):
-        logger.error('Error received:', exc)
+        logger.error('Error received: %s', exc)
 
 
 # Client side code: Build NSH packet encapsulated in GRE & NSH.

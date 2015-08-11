@@ -164,6 +164,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         this.tableBase = tableBase;
     }
 
+    @Override
     public void setFlowRspId(Long rspId) {
         this.flowRspId = rspId;
     }
@@ -180,6 +181,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         return cookie.getValue().equals(TRANSPORT_EGRESS_COOKIE);
     }
 
+    @Override
     public void deleteRspFlows(final Long rspId) {
         List<FlowDetails> flowDetailsList = rspNameToFlowsMap.get(rspId);
         if(flowDetailsList == null) {
@@ -1135,22 +1137,18 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 // Nsh stuff, if present
                 if (this.nshNsp >=0 && this.nshNsi >= 0) {
-                    Action mvNsc1;
-                    Action mvNsc2;
                     if(this.isLastHop) {
                         // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId (Vnid)
                         actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
                         actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
-                        mvNsc1 = SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++);
-                        mvNsc2 = SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++);
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
                     } else {
                         // If its not the last hop, Copy/Move Nsc1/Nsc2 to the next hop
-                        mvNsc1 = SfcOpenflowUtils.createActionNxMoveNsc1(order++);
-                        mvNsc2 = SfcOpenflowUtils.createActionNxMoveNsc2(order++);
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
+                        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
                     }
-                    actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
-                    actionList.add(mvNsc1);
-                    actionList.add(mvNsc2);
                 }
 
                 // Optionally write the DSCP with the pathId

@@ -61,7 +61,6 @@ public class SfcProviderBootstrapRestAPITest {
         //create json file. File is slightly changed because original path in bootstrapDataDir does not exists
         Path providerPath = Paths.get(configOriginalPath);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderConfig.class, "readConfigFile")).toReturn(true);
         try {
             encoded = Files.readAllBytes(providerPath);
             jsonConfigString = new String(encoded, StandardCharsets.UTF_8);
@@ -69,6 +68,13 @@ public class SfcProviderBootstrapRestAPITest {
             LOG.error("Failed to...", e);
         }
 
+<<<<<<< HEAD
+        if (encoded != null)
+            configFile = new JSONObject(jsonConfigString);
+
+        if (configFile != null)
+            configFile = configFile.getJSONObject("bootstrap");
+=======
         try{
             if (encoded != null)
                 configFile = new JSONObject(jsonConfigString);
@@ -79,6 +85,7 @@ public class SfcProviderBootstrapRestAPITest {
         catch(Exception e){
             LOG.error("Failed due to the...", e);
         }
+>>>>>>> Change 24697 was joined with 23950
 
         //first mock returns true when method tries to find json file (is does not exists), second puts created json as a result
         PowerMockito.stub(PowerMockito.method(SfcProviderConfig.class, "readConfigFile")).toReturn(true);

@@ -312,6 +312,16 @@ def compute_internet_checksum(data):
 
 
 def process_context_headers(ctx1=0, ctx2=0, ctx3=0, ctx4=0):
+    """
+    Encode context header values in NSH header. The function
+    is smart enough that is one of the values is an IP address
+    it will properly convert to a integer and encode it properly
+    :param ctx1: NSH context header 1
+    :param ctx2: NSH context header 2
+    :param ctx3: NSH context header 3
+    :param ctx4: NSH context header 4
+    :return: Array of encoded headers
+    """
     context_headers = []
     for ctx in [ctx1, ctx2, ctx3, ctx4]:
         try:

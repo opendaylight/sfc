@@ -9,155 +9,268 @@
 package org.opendaylight.sfc.provider.api;
 
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.ServiceFunctionPathStateKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Gre;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-public class SfcProviderServicePathAPITest extends AbstractDataBrokerTest {
+/**
+ * This class contains unit tests for class SfcProviderServicePathAPI
+ *
+ * @author Vladimir Lavor vladimir.lavor@pantheon.sk
+ * @version 0.1
+ * @since 2015-07-29
+ */
 
-    DataBroker dataBroker;
-    ExecutorService executor;
-    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
 
-    List<ServiceFunction> sfList = new ArrayList<>();
+    private List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
-        dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
-
-        Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
-        SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("moscow-5.5.5.5:555-vxlan", dummyIp, "sff-moscow", VxlanGpe.class);
-
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_101", Firewall.class,
-                new IpAddress(new Ipv4Address("192.168.100.101")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_102", Firewall.class,
-                new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("simple_fw_103", Firewall.class,
-                new IpAddress(new Ipv4Address("192.168.100.103")), dummyLocator, Boolean.FALSE));
+    public void before() {
+        setOdlSfc();
     }
 
-    @After
-    public void after() {
-        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
-    }
-
+    // test if service path has any constraints
     @Test
-    public void testCreatePathWithNamesOnly() throws ExecutionException, InterruptedException {
+    public void testIsDefaultServicePath() {
 
-        String sfcName = "unittest-sfp-chain-1";
-        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(sfcName);
+        //add path hop list
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setServicePathHop(new ArrayList<ServicePathHop>());
+        boolean result = SfcProviderServicePathAPI.isDefaultServicePath(serviceFunctionPathBuilder.build());
+        assertFalse("Must be false", result);
 
-        String pathName = "unittest-sfp-path-1";
-        ServiceFunctionPathKey pathKey = new ServiceFunctionPathKey(pathName);
+        //set transport type
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
+        result = SfcProviderServicePathAPI.isDefaultServicePath(serviceFunctionPathBuilder.build());
+        assertFalse("Must be false", result);
 
-        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+        //set starting index
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setStartingIndex((short) 255);
+        result = SfcProviderServicePathAPI.isDefaultServicePath(serviceFunctionPathBuilder.build());
+        assertFalse("Must be false", result);
 
-        for (ServiceFunction serviceFunction : sfList) {
+        //set path id
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setPathId(1L);
+        result = SfcProviderServicePathAPI.isDefaultServicePath(serviceFunctionPathBuilder.build());
+        assertFalse("Must be false", result);
 
-            SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                    sfcServiceFunctionBuilder.setName(serviceFunction.getName())
-                            .setKey(new SfcServiceFunctionKey(serviceFunction.getName()))
-                            .setType(serviceFunction.getType())
-                            .build();
-            sfcServiceFunctionList.add(sfcServiceFunction);
-        }
-        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(sfcName).setKey(sfcKey)
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(false);
-
-        Object[] sfcParameters = {sfcBuilder.build()};
-        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
-
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(sfcParameters, sfcParameterTypes)).get();
-
-        ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
-        pathBuilder.setName(pathName).setKey(pathKey)
-                .setServiceChainName(sfcName);
-
-        ServiceFunctionPath path = pathBuilder.build();
-
-        Object[] pathParameters = {path};
-        Class[] pathParameterTypes = {ServiceFunctionPath.class};
-
-        Object result1 = executor.submit(SfcProviderServicePathAPI
-                .getPut(pathParameters, pathParameterTypes)).get();
-        boolean ret = (boolean) result1;
-
-        Object[] pathParameters2 = {pathName};
-        Class[] pathParameterTypes2 = {String.class};
-        Object result2 = executor.submit(SfcProviderServicePathAPI
-                .getRead(pathParameters2, pathParameterTypes2)).get();
-
-        ServiceFunctionPath path2 = (ServiceFunctionPath) result2;
-
-        assertNotNull("Must be not null", path2);
-        assertEquals("Must be equal", path2.getServiceChainName(), sfcName);
+        //nothing is set
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        result = SfcProviderServicePathAPI.isDefaultServicePath(serviceFunctionPathBuilder.build());
+        assertTrue("Must be true", result);
     }
 
+    //add and read service function path state
+    @Test
+    public void testReadAndDeleteServicePathState() {
+        String sfpKey = "sfpKey";
+        String rspKey = "rspKey";
+
+        //create rendered service path list with one entry
+        List<SfpRenderedServicePath> renderedServicePaths = new ArrayList<>();
+        SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
+        sfpRenderedServicePathBuilder.setKey(new SfpRenderedServicePathKey(rspKey));
+        renderedServicePaths.add(sfpRenderedServicePathBuilder.build());
+
+        //create service path state
+        ServiceFunctionPathStateBuilder serviceFunctionPathStateBuilder = new ServiceFunctionPathStateBuilder();
+        serviceFunctionPathStateBuilder.setKey(new ServiceFunctionPathStateKey(sfpKey))
+                .setSfpRenderedServicePath(renderedServicePaths);
+
+        InstanceIdentifier<ServiceFunctionPathState> sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
+                .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(sfpKey)).build();
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfpIID,
+                serviceFunctionPathStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //read service path state
+        List<SfpRenderedServicePath> sfpList = SfcProviderServicePathAPI.readServicePathStateExecutor(sfpKey);
+
+        assertNotNull("Must not be null", sfpList);
+        assertEquals("Must be equal", sfpList.get(0).getName(), rspKey);
+
+        //delete service path state
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathStateExecutor(sfpKey);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //try to read again, must be null
+        sfpList = SfcProviderServicePathAPI.readServicePathStateExecutor(sfpKey);
+
+        assertNull("Must be null", sfpList);
+    }
+
+    //create service function path state and put rendered service path into it
+    @Test
+    public void testAddRenderedPathToServicePathState() {
+        String sfpKey = "sfpKey";
+        String rspKey = "rspKey";
+
+        //create service path state
+        ServiceFunctionPathStateBuilder serviceFunctionPathStateBuilder = new ServiceFunctionPathStateBuilder();
+        serviceFunctionPathStateBuilder.setName(sfpKey)
+                .setKey(new ServiceFunctionPathStateKey(sfpKey));
+
+        boolean transactionSuccessful = SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor(serviceFunctionPathStateBuilder.build().getName(), rspKey);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //check if path is already added
+        List<SfpRenderedServicePath> sfpList = SfcProviderServicePathAPI.readServicePathState(sfpKey);
+        assertNotNull("Must be not null", sfpList);
+        assertEquals("Must be equal", sfpList.get(0).getName(), rspKey);
+    }
+
+    //put service function path into data store, read it and remove
+    @Test
+    public void testPutReadDeleteServiceFunctionPath() {
+        String testClassifier = "classifier";
+        String sfpName = "sfpName";
+
+        //put service function path
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setName(sfpName)
+                .setKey(new ServiceFunctionPathKey(sfpName))
+                .setClassifier(testClassifier);
+
+        boolean transactionSuccessful = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPathBuilder.build());
+        assertTrue("Must be true", transactionSuccessful);
+
+        //read service function path
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(sfpName);
+        assertNotNull("Must not be null", serviceFunctionPath);
+        assertEquals("Must be equal", serviceFunctionPath.getClassifier(), testClassifier);
+
+        //delete service function path
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServiceFunctionPathExecutor(sfpName);
+        assertTrue("Must be true", transactionSuccessful);
+    }
+
+    //put service function paths, read all, delete all
     @Test
     public void testReadAllServiceFunctionPaths() throws Exception {
-        ServiceFunctionPaths serviceFunctionPaths;
+        String sfpName = "SFP";
+
+        //create service function paths
+        List<ServiceFunctionPath> serviceFunctionPaths = new ArrayList<>();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        ServiceFunctionPathsBuilder serviceFunctionPathsBuilder = new ServiceFunctionPathsBuilder();
-        String[] testValues = {"1", "Test Name", "Sfp Key"};
-
-        List<ServiceFunctionPath> sffList = new ArrayList<>();
-
-        //set all tested attributes
-        serviceFunctionPathBuilder.setPathId(Long.valueOf(testValues[0]))
-                .setServiceChainName(testValues[1])
-                .setKey(new ServiceFunctionPathKey(testValues[2]))
+        serviceFunctionPathBuilder.setName(sfpName + 1)
+                .setKey(new ServiceFunctionPathKey(sfpName + 1))
                 .setTransportType(VxlanGpe.class);
-        sffList.add(serviceFunctionPathBuilder.build());
+        serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
-        serviceFunctionPathsBuilder.setServiceFunctionPath(sffList);
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
-                builder(ServiceFunctionPaths.class).build();
-        SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, serviceFunctionPathsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-        serviceFunctionPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
+        serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        serviceFunctionPathBuilder.setName(sfpName + 2)
+                .setKey(new ServiceFunctionPathKey(sfpName + 2))
+                .setTransportType(Gre.class);
+        serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
-        assertNotNull("Must not be null", serviceFunctionPaths);
-        assertFalse("Must be false", serviceFunctionPaths.getServiceFunctionPath().isEmpty());
-        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getPathId(), Long.valueOf(testValues[0]));
-        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getServiceChainName(), testValues[1]);
-        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getKey().getName(), testValues[2]);
-        assertEquals("Must be equal", serviceFunctionPaths.getServiceFunctionPath().get(0).getTransportType(), VxlanGpe.class);
+        ServiceFunctionPathsBuilder serviceFunctionPathsBuilder = new ServiceFunctionPathsBuilder();
+        serviceFunctionPathsBuilder.setServiceFunctionPath(serviceFunctionPaths);
+        ServiceFunctionPaths writtenPaths = serviceFunctionPathsBuilder.build();
+
+        //put all paths
+        boolean transactionSuccessful = SfcProviderServicePathAPI.putServiceFunctionPathsExecutor(writtenPaths);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //read all paths
+        ServiceFunctionPaths getPaths = SfcProviderServicePathAPI.readAllServiceFunctionPathsExecutor();
+        assertNotNull("Must not be null", getPaths);
+        assertTrue("Must be true", getPaths.equals(writtenPaths));
+
+        transactionSuccessful = SfcProviderServicePathAPI.deleteAllServiceFunctionPathsExecutor();
+        assertTrue("Must be true", transactionSuccessful);
+    }
+
+
+    @Test
+    public void testDeleteServicePathContainingFunction() {
+
+        //create service function
+        ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
+        serviceFunctionBuilder.setName("SF1")
+                .setKey(new ServiceFunctionKey("SF1"));
+        ServiceFunction serviceFunction = serviceFunctionBuilder.build();
+
+        //write rendered service path
+        RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
+        renderedServicePathBuilder.setName("SP1")
+                .setKey(new RenderedServicePathKey("SP1"));
+
+        InstanceIdentifier<RenderedServicePath> rspIID =
+                InstanceIdentifier.builder(RenderedServicePaths.class)
+                        .child(RenderedServicePath.class, new RenderedServicePathKey("SP1"))
+                        .build();
+
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //create service function state
+        List<SfServicePath> sfServicePathList = new ArrayList<>();
+        SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
+        sfServicePathBuilder.setName("SP1")
+                .setKey(new SfServicePathKey("SP1"));
+        sfServicePathList.add(sfServicePathBuilder.build());
+
+        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
+        serviceFunctionStateBuilder.setName("SF1")
+                .setKey(new ServiceFunctionStateKey("SF1"))
+                .setSfServicePath(sfServicePathList);
+        ServiceFunctionState serviceFunctionState = serviceFunctionStateBuilder.build();
+
+        ServiceFunctionStateKey serviceFunctionStateKey =
+                new ServiceFunctionStateKey("SF1");
+        InstanceIdentifier<ServiceFunctionState> sfStateIID =
+                InstanceIdentifier.builder(ServiceFunctionsState.class)
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .build();
+
+        transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfStateIID,
+                serviceFunctionState, LogicalDatastoreType.OPERATIONAL);
+        assertTrue("Must be true", transactionSuccessful);
+
+        //delete path
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathContainingFunctionExecutor(serviceFunction);
+        assertTrue("Must be true", transactionSuccessful);
     }
 }

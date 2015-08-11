@@ -37,7 +37,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 /**
  * This class has the APIs to operate on the ServiceFunctionPath
  * datastore.
- * <p>
+ * <p/>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -46,8 +46,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
  * @see org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener
- * <p>
- * @since       2014-06-30
+ * <p/>
+ * @since 2014-06-30
  */
 public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
@@ -64,11 +64,12 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServicePathAPI getPut(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putServiceFunctionPath");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readServiceFunctionPath");
     }
-    @SuppressWarnings("unused")
+
     public static SfcProviderServicePathAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServiceFunctionPath");
     }
@@ -77,57 +78,67 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServicePathAPI getPutAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "putAllServiceFunctionPaths");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getReadAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readAllServiceFunctionPaths");
     }
+
     @SuppressWarnings("unused")
     public static SfcProviderServicePathAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteAllServiceFunctionPaths");
     }
-    public static  SfcProviderServicePathAPI getDeleteServicePathContainingFunction (Object[] params, Class[] paramsTypes) {
+
+    public static SfcProviderServicePathAPI getDeleteServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathContainingFunction");
     }
+
     @SuppressWarnings("unused")
-    public static  SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain (Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getDeleteServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathInstantiatedFromChain");
     }
-    public static  SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
+
+    public static SfcProviderServicePathAPI getCreateServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "createServiceFunctionPathEntry");
     }
 
     @SuppressWarnings("unused")
-    public static  SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getUpdateServicePathInstantiatedFromChain(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathInstantiatedFromChain");
     }
 
-    public static  SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
+    public static SfcProviderServicePathAPI getUpdateServicePathContainingFunction(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "updateServicePathContainingFunction");
     }
+
     public static SfcProviderServicePathAPI getCheckServicePathAPI(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "checkServiceFunctionPath");
     }
+
     public static SfcProviderServicePathAPI getAddRenderedPathToServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "addRenderedPathToServicePathState");
     }
+
     public static SfcProviderServicePathAPI getDeleteServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "deleteServicePathState");
     }
+
     public static SfcProviderServicePathAPI getReadServicePathStateExecutor(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServicePathAPI(params, paramsTypes, "readServicePathState");
     }
 
     /**
      * This function checks if the Service Path has any constraints
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param serviceFunctionPath Service Path object
      * @return List of RSP name objects
      */
-    public static boolean isDefaultServicePath (ServiceFunctionPath serviceFunctionPath) {
+    public static boolean isDefaultServicePath(ServiceFunctionPath serviceFunctionPath) {
         boolean ret = true;
         if ((serviceFunctionPath.getServicePathHop() != null) || (serviceFunctionPath.getTransportType() != null)
-            || (serviceFunctionPath.getStartingIndex() != null) || (serviceFunctionPath.getPathId() != null)) {
+                || (serviceFunctionPath.getStartingIndex() != null) || (serviceFunctionPath.getPathId() != null)) {
             ret = false;
         }
         return ret;
@@ -135,13 +146,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * API to read the Service Function Path operational state
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param servicePathName Service Path Name
      * @return List of RSP name objects
      */
     @SuppressWarnings("unused")
-    public static List<SfpRenderedServicePath> readServicePathState(String servicePathName) {
+    protected static List<SfpRenderedServicePath> readServicePathState(String servicePathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
@@ -150,7 +162,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
 
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).toInstance();
+                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).build();
 
         ServiceFunctionPathState serviceFunctionPathState = SfcDataStoreAPI.readTransactionAPI(sfpIID,
                 LogicalDatastoreType.OPERATIONAL);
@@ -164,8 +176,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Wrapper API to read the Service Function Path operational state
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param servicePathName Service Path Name
      * @return Nothing.
      */
@@ -184,10 +197,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             ret = (List<SfpRenderedServicePath>) future.get();
             LOG.debug("getReadServicePathStateExecutor: {}", ret);
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -195,13 +206,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Wrapper API to delete the Service Function Path operational state
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param servicePathName Service Path Name
      * @return Nothing.
      */
     @SuppressWarnings("unused")
-    public static boolean deleteServicePathState(String servicePathName) {
+    protected static boolean deleteServicePathState(String servicePathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
@@ -210,7 +222,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
 
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).toInstance();
+                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL)) {
             ret = true;
@@ -225,8 +237,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Wrapper API to delete the Service Function Path operational state
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param servicePathName Service Path Name
      * @return Nothing.
      */
@@ -236,7 +249,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         boolean ret = true;
 
-        // SFF deletion is a critical event. If a SFF is deleted we delete all associated SFPs
         Object[] servicePathObj = {servicePathName};
         Class[] servicePathClass = {String.class};
 
@@ -246,10 +258,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServicePathStateExecutor: {}", ret);
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -259,13 +269,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     /**
      * We iterate through all service paths that use this service function and if
      * necessary, remove them.
-     * <p>
-     * @param servicePathName Service Function Path name
+     * <p/>
+     *
+     * @param servicePathName  Service Function Path name
      * @param renderedPathName Rendered Path name
      * @return Nothing.
      */
     @SuppressWarnings("unused")
-    public static boolean addRenderedPathToServicePathState (String servicePathName, String renderedPathName) {
+    public static boolean addRenderedPathToServicePathState(String servicePathName, String renderedPathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<SfpRenderedServicePath> rspIID;
@@ -279,7 +290,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
         rspIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
                 .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
-                .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).toInstance();
+                .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, sfpRenderedServicePathBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL)) {
@@ -295,13 +306,14 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     /**
      * We iterate through all service paths that use this service function and if
      * necessary, remove them.
-     * <p>
-     * @param servicePathName Service Function Path name
+     * <p/>
+     *
+     * @param servicePathName  Service Function Path name
      * @param renderedPathName Rendered Path name
      * @return Nothing.
      */
     @SuppressWarnings("unused")
-    public static boolean addRenderedPathToServicePathStateExecutor (String servicePathName, String renderedPathName) {
+    public static boolean addRenderedPathToServicePathStateExecutor(String servicePathName, String renderedPathName) {
 
         printTraceStart(LOG);
         boolean ret = true;
@@ -312,32 +324,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             ret = (boolean) future.get();
             LOG.debug("getAddRenderedPathToServicePathStateExecutor returns: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-
-    @SuppressWarnings("unused")
-    protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
-        boolean ret = false;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionPath> sfpEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).
-                        child(ServiceFunctionPath.class, sfp.getKey()).toInstance();
-
-        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfpEntryIID, sfp, LogicalDatastoreType.CONFIGURATION)) {
-            LOG.debug("Created Service Function Path: {}", sfp.getName());
-            ret = true;
-        } else {
-            LOG.error("Failed to create Service Function Path: {}", sfp.getName());
-        }
-
         printTraceStop(LOG);
         return ret;
     }
@@ -345,8 +334,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     /**
      * This method creates a ServiceFunctionPath by Executor, it includes
      * Executor creation and response management
+     * <p/>
+     * <p/>
      *
-     * <p>
      * @param sfp a ServiceFunctionPath object
      * @return true if sfp is created, false otherwise
      */
@@ -359,11 +349,9 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         try {
             Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getPut(sfcParameters, sfcParameterTypes)).get();
-            ret = (boolean)result;
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+            ret = (boolean) result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -371,7 +359,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * This function reads a SFP from the datastore
-     * <p>
+     * <p/>
+     *
      * @param serviceFunctionPathName RSP name
      * @return Nothing.
      */
@@ -390,7 +379,8 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method reads the operational state for a service function.
-     * <p>
+     * <p/>
+     *
      * @param serviceFunctionName SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      * this service function, null otherwise
@@ -403,35 +393,30 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         Class[] servicePathClass = {String.class};
         SfcProviderServicePathAPI sfcProviderServicePathAPI = SfcProviderServicePathAPI
                 .getRead(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServicePathAPI);
         try {
             ret = (ServiceFunctionPath) future.get();
             LOG.debug("readServiceFunctionPathExecutor: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
-        } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("failed to ....", e);
         }
         printTraceStop(LOG);
         return ret;
     }
 
-
-
     /**
      * This function deletes a SFP from the datastore
-     * <p>
+     * <p/>
+     *
      * @param serviceFunctionPathName SFP name
      * @return Nothing.
      */
-    @SfcReflection
-    @SuppressWarnings("unused")
     public static boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                .child(ServiceFunctionPath.class, serviceFunctionPathKey).toInstance();
+                .child(ServiceFunctionPath.class, serviceFunctionPathKey).build();
 
         if (!SfcDataStoreAPI.deleteTransactionAPI(sfpEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to delete SFP: {}", serviceFunctionPathName);
@@ -442,16 +427,47 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    @SuppressWarnings("unused")
-    protected boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
+    /**
+     * This function deletes a SFP from the datastore
+     * <p/>
+     *
+     * @param serviceFunctionPathName SFP name
+     * @return Nothing.
+     */
+    public static boolean deleteServiceFunctionPathExecutor(String serviceFunctionPathName) {
         boolean ret = false;
+        Object[] sfcParameters = {serviceFunctionPathName};
+        Class[] sfcParameterTypes = {String.class};
+
         printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getDelete(sfcParameters, sfcParameterTypes)).get();
+            ret = (boolean) result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
 
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
-                builder(ServiceFunctionPaths.class).toInstance();
+    /**
+     * This function put service function paths to the datastore
+     * <p/>
+     *
+     * @param serviceFunctionPaths SFP name
+     * @return Nothing.
+     */
+    public static boolean putServiceFunctionPathsExecutor(ServiceFunctionPaths serviceFunctionPaths) {
+        boolean ret = false;
+        Object[] sfcParameters = {serviceFunctionPaths};
+        Class[] sfcParameterTypes = {ServiceFunctionPaths.class};
 
-        if (SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, sfps, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
+        printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getPutAll(sfcParameters, sfcParameterTypes)).get();
+            ret = (boolean) result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -461,7 +477,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
     public static ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
 
         sfps = SfcDataStoreAPI.readTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -469,16 +485,45 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         return sfps;
     }
 
-    @SuppressWarnings("unused")
-    protected boolean deleteAllServiceFunctionPaths() {
-        boolean ret = false;
+    /**
+     * This function read service function paths from the datastore
+     * <p/>
+     *
+     * @return Nothing.
+     */
+    public static ServiceFunctionPaths readAllServiceFunctionPathsExecutor() {
+        ServiceFunctionPaths ret = null;
+        Object[] sfcParameters = {};
+        Class[] sfcParameterTypes = {};
+
         printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getReadAll(sfcParameters, sfcParameterTypes)).get();
+            ret = (ServiceFunctionPaths) result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
 
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).toInstance();
+    /**
+     * This function read service function paths from the datastore
+     * <p/>
+     *
+     * @return Nothing.
+     */
+    public static boolean deleteAllServiceFunctionPathsExecutor() {
+        boolean ret = false;
+        Object[] sfcParameters = {};
+        Class[] sfcParameterTypes = {};
 
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
+        printTraceStart(LOG);
+        try {
+            Object result = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI.getDeleteAll(sfcParameters, sfcParameterTypes)).get();
+            ret = (boolean) result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
@@ -486,11 +531,13 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
 
     /**
      * Check a SFF for consistency after datastore creation
-     * <p>
+     * <p/>
+     *
      * @param serviceFunctionPath SFP object
-     * @param operation HttpMethod
+     * @param operation           HttpMethod
      * @return Nothing
      */
+    //calls non-existing method
     public static boolean checkServiceFunctionPathExecutor(ServiceFunctionPath serviceFunctionPath, String operation) {
 
         printTraceStart(LOG);
@@ -501,7 +548,7 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 .readRenderedServicePath(serviceFunctionPath.getName());
         if (renderedServicePath == null) {
             LOG.error("Failed to find RSP:  {}", serviceFunctionPath.getName());
-            return ret;
+            return false;
         }
         Object[] renderedPathObj = {renderedServicePath, operation};
         Class[] renderedPathClass = {RenderedServicePath.class, String.class};
@@ -510,23 +557,22 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             ret = (boolean) future.get();
             LOG.debug("getCheckServicePathAPI returns: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
     }
 
-
     /**
      * Check a SFF for consistency after datastore creation
-     * <p>
+     * <p/>
+     *
      * @param renderedServicePath RSP object
-     * @param operation HttpMethod
+     * @param operation           HttpMethod
      * @return Nothing
      */
+    //calls non-existing method
     public static boolean checkServiceFunctionPathExecutor(RenderedServicePath renderedServicePath, String operation) {
 
         printTraceStart(LOG);
@@ -539,26 +585,101 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         try {
             ret = (boolean) future.get();
             LOG.debug("getCheckServicePathAPI returns: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn(FAILED_TO_STR, e);
         }
         printTraceStop(LOG);
         return ret;
     }
 
+    /**
+     * We iterate through all service paths that use this service function and if
+     * necessary, remove them.
+     * <p/>
+     *
+     * @param serviceFunction Service Function Object
+     * @return Nothing.
+     */
+    @SuppressWarnings("unused")
+    public static boolean deleteServicePathContainingFunctionExecutor(ServiceFunction serviceFunction) {
+
+        printTraceStart(LOG);
+        boolean ret = true;
+        Object[] functionParams = {serviceFunction};
+        Class[] functionParamsTypes = {ServiceFunction.class};
+        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI
+                .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getDeleteServicePathContainingFunction returns: {}", future.get());
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn(FAILED_TO_STR, e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    @SuppressWarnings("unused")
+    protected boolean putServiceFunctionPath(ServiceFunctionPath sfp) {
+        boolean ret = false;
+        printTraceStart(LOG);
+
+        InstanceIdentifier<ServiceFunctionPath> sfpEntryIID =
+                InstanceIdentifier.builder(ServiceFunctionPaths.class).
+                        child(ServiceFunctionPath.class, sfp.getKey()).build();
+
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfpEntryIID, sfp, LogicalDatastoreType.CONFIGURATION)) {
+            LOG.debug("Created Service Function Path: {}", sfp.getName());
+            ret = true;
+        } else {
+            LOG.error("Failed to create Service Function Path: {}", sfp.getName());
+        }
+
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    @SuppressWarnings("unused")
+    protected boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
+        boolean ret = false;
+        printTraceStart(LOG);
+
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.
+                builder(ServiceFunctionPaths.class).build();
+
+        if (SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, sfps, LogicalDatastoreType.CONFIGURATION)) {
+            ret = true;
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    @SuppressWarnings("unused")
+    protected boolean deleteAllServiceFunctionPaths() {
+        boolean ret = false;
+        printTraceStart(LOG);
+
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
+                InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION)) {
+            ret = true;
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
 
     /**
      * We iterate through all service paths that use this service function and if
      * necessary, remove them. Additionally, since we are delete the RSP, we also
-     * <p>
+     * <p/>
+     *
      * @param serviceFunction Service Function Object
      * @return Nothing.
      */
     @SuppressWarnings("unused")
     @SfcReflection
-    public boolean deleteServicePathContainingFunction (ServiceFunction serviceFunction) {
+    public boolean deleteServicePathContainingFunction(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
         boolean ret = true;
@@ -571,11 +692,11 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
                 String rspName = sfServicePath.getName();
                 if (SfcProviderRenderedPathAPI.readRenderedServicePath(rspName) != null) {
                     if (SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName)) {
-                        ret = ret && true;
+                        ret = true;
                     } else {
                         LOG.error("Failed to delete Path {} from Service Function {} state",
                                 rspName, serviceFunction.getName());
-                        ret = ret && false;
+                        ret = false;
                     }
                 } else {
                     LOG.debug("{}: SFP {} already deleted by another thread or client",
@@ -585,34 +706,6 @@ public class SfcProviderServicePathAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.debug("Could not find Service function Paths using Service Function: {} ",
                     serviceFunction.getName());
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * We iterate through all service paths that use this service function and if
-     * necessary, remove them.
-     * <p>
-     * @param serviceFunction Service Function Object
-     * @return Nothing.
-     */
-    @SuppressWarnings("unused")
-    public static boolean deleteServicePathContainingFunctionExecutor (ServiceFunction serviceFunction) {
-
-        printTraceStart(LOG);
-        boolean ret = true;
-        Object[] functionParams = {serviceFunction};
-        Class[] functionParamsTypes = {ServiceFunction.class};
-        Future future = ODL_SFC.getExecutor().submit(SfcProviderServicePathAPI
-                .getDeleteServicePathContainingFunction(functionParams, functionParamsTypes));
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteServicePathContainingFunction returns: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
         }
         printTraceStop(LOG);
         return ret;

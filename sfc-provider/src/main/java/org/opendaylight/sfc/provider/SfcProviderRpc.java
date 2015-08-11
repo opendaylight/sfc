@@ -28,8 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
@@ -93,6 +91,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
         if (dataBroker != null) {
 
+
             // Data PLane Locator
             List<SfDataPlaneLocator> sfDataPlaneLocatorList = input.getSfDataPlaneLocator();
 
@@ -104,11 +103,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
 
             InstanceIdentifier<ServiceFunction>  sfEntryIID =
                     InstanceIdentifier.builder(ServiceFunctions.class).
-                    child(ServiceFunction.class, sf.getKey()).toInstance();
+                            child(ServiceFunction.class, sf.getKey()).toInstance();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    sfEntryIID, sf);
+                    sfEntryIID, sf, true);
             writeTx.commit();
 
         } else {
@@ -138,15 +137,15 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 LOG.debug("Failed to readServiceFunction : {}",
                         e.getMessage());
             }
-            if (dataObject instanceof ServiceFunction) {
-                LOG.debug("readServiceFunction Success: {}",
-                        ((ServiceFunction) dataObject).getName());
-                ServiceFunction serviceFunction = (ServiceFunction) dataObject;
+            if (dataObject != null && dataObject.isPresent()) {
+                ServiceFunction serviceFunction = dataObject.get();
+                LOG.debug("readServiceFunction Success: {}", serviceFunction.getName());
                 ReadServiceFunctionOutput readServiceFunctionOutput = null;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
                 outputBuilder.setName(serviceFunction.getName())
+                        .setType(serviceFunction.getType())
                         .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
-                        .setType(serviceFunction.getType());
+                        .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
                 readServiceFunctionOutput = outputBuilder.build();
                 printTraceStop(LOG);
                 return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>
@@ -169,52 +168,43 @@ public class SfcProviderRpc implements ServiceFunctionService,
     @Override
     public Future<RpcResult<Void>> putServiceFunctionChains(PutServiceFunctionChainsInput input) {
         printTraceStart(LOG);
-        ServiceFunctionChainsBuilder builder = new ServiceFunctionChainsBuilder();
-        builder = builder.setServiceFunctionChain(input.getServiceFunctionChain());
-        ServiceFunctionChains sfcs = builder.build();
+        ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
+        serviceFunctionChainsBuilder = serviceFunctionChainsBuilder
+                .setServiceFunctionChain(input.getServiceFunctionChain());
+        ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
 
-        if (dataBroker != null) {
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
-                    OpendaylightSfc.SFC_IID, sfcs, true);
-            writeTx.commit();
-        } else {
-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(OpendaylightSfc.SFC_IID, sfcs,
+                LogicalDatastoreType.CONFIGURATION)) {
+            LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }
         return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true,
                 Collections.<RpcError>emptySet()));
     }
 
+    @SuppressWarnings("unused")
     private ServiceFunctionChain findServiceFunctionChain(String name) {
         ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
-        InstanceIdentifier<ServiceFunctionChain> iid =
+        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier =
                 InstanceIdentifier.builder(ServiceFunctionChains.class)
                         .child(ServiceFunctionChain.class, key)
-                        .toInstance();
+                        .build();
 
-        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-        Optional<ServiceFunctionChain> dataObject = null;
-        try {
-            dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, iid).get();
-            if (dataObject != null) {
-                return dataObject.get();
-            } else {
-                LOG.error("\nFailed to findServiceFunctionChain");
-                return null;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("\nFailed to findServiceFunctionChain: {}", e.getMessage());
-            return null;
+        ServiceFunctionChain serviceFunctionChain = SfcDataStoreAPI
+                .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
+        if (serviceFunctionChain == null) {
+            LOG.error("Failed to find Service Function Chain: {}", name);
         }
+        return serviceFunctionChain;
     }
 
     private List<ServicePathHop> findInstancesByType(Class<? extends ServiceFunctionTypeIdentity> sfType) {
-        List<ServicePathHop> ret = new ArrayList<>();
 
+        List<ServicePathHop> ret = new ArrayList<>();
         SfcSftMapper mapper = new SfcSftMapper(odlSfc);
         List<ServiceFunction> sfList = mapper.getSfList(sfType);
         short hopCount = 0;
-        for(ServiceFunction sf : sfList){
+        for (ServiceFunction sf : sfList) {
             ServicePathHopBuilder builder = new ServicePathHopBuilder();
             ret.add(builder.setHopNumber(hopCount)
                     .setServiceFunctionName(sf.getName())
@@ -224,13 +214,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
             hopCount++;
         }
         return ret;
-    }
-
-    private ServiceFunctionPaths buildServiceFunctionPaths(List<ServiceFunctionPath> list) {
-
-        ServiceFunctionPathsBuilder builder = new ServiceFunctionPathsBuilder();
-        builder.setServiceFunctionPath(list);
-        return builder.build();
     }
 
     @Override
@@ -318,9 +301,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
                             .withError(ErrorType.APPLICATION, message);
         }
 
-
         return Futures.immediateFuture(rpcResultBuilder.build());
-
     }
 
     /**
@@ -338,7 +319,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
         renderedServicePathFirstHop =
-                            SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
+                SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(input.getName());
 
         ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
         if (renderedServicePathFirstHop != null) {
@@ -361,7 +342,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
     }
 
     /**
-     * This methong reads all the necessary information for the first hop of a
+     * This method reads all the necessary information for the first hop of a
      * Rendered Service Path by ServiceFunctionTypeIdentity list.
      * <p>
      * @param input RPC input including a ServiceFunctionTypeIdentity list
@@ -386,5 +367,4 @@ public class SfcProviderRpc implements ServiceFunctionService,
     public Future<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(TraceRenderedServicePathInput input) {
         return null;
     }
-
 }

@@ -264,16 +264,16 @@ class MyVxlanNshEthClient(MyNshBaseClass):
 
     @staticmethod
     def connection_refused(exc):
-        logger.error('Connection refused:', exc)
+        logger.error('Connection refused: %s', exc)
 
     def connection_lost(self, exc):
-        logger.error('closing transport', exc)
+        logger.error('closing transport: %s', exc)
         self.loop = asyncio.get_event_loop()
         self.loop.stop()
 
     @staticmethod
     def error_received(exc):
-        logger.error('Error received:', exc)
+        logger.error('Error received: %s', exc)
 
 
 # Client side code: Build NSH packet encapsulated in GRE & NSH.
@@ -465,9 +465,13 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sff_client --remote-sff-ip=<IP address of remote SFF> --remote-sff-port=<UDP port of remote SFF> "
-                  "--sfp-id=<Service Function Path id> --sfp-index<SFP starting index> "
-                  "--encapsulate=<gpe-nsh-ethernet|gre|gpe-nsh-ipv4>")
+            print("sff_client \n --remote-sff-ip=<IP address of remote SFF> \n "
+                  "--remote-sff-port=<UDP port of remote SFF> \n "
+                  "--sfp-id=<Service Function Path id> \n --sfp-index<SFP starting index> \n "
+                  "--encapsulate=<gpe-nsh-ethernet|gre|gpe-nsh-ipv4|vxlan-nsh-ethernet-legacy> \n "
+                  "--inner-src-ip=<source IP of inner packet> \n --inner-dest-ip=<destination IP of inner packet> \n "
+                  "--ctx1=<context header 1> \n --ctx2=<context header 2> \n --ctx3=<context header 3> \n "
+                  "--ctx4=<context header 4> \n --local-port=<source port> \n --local-ip=<source IP> ")
             sys.exit()
 
         if opt == "--remote-sff-ip":

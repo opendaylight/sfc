@@ -93,6 +93,9 @@ NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET = NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_O
 
 
 class VXLANGPE(Structure):
+    """
+    Represents a VXLAN-GPE header
+    """
     _fields_ = [('flags', c_ubyte),
                 ('reserved', c_uint, 16),
                 ('next_protocol', c_uint, 8),
@@ -203,6 +206,9 @@ class ETHHEADER(Structure):
 
 
 class BASEHEADER(Structure):
+    """
+    Represent a NSH base header
+    """
     _fields_ = [('version', c_ushort, 2),
                 ('flags', c_ushort, 8),
                 ('length', c_ushort, 6),
@@ -360,6 +366,9 @@ class IP6HEADER(Structure):
 
 
 class UDPHEADER(Structure):
+    """
+    Represents a UDP header
+    """
     _fields_ = [
         ('udp_sport', c_ushort),
         ('udp_dport', c_ushort),
@@ -392,7 +401,11 @@ class PSEUDO_UDPHEADER(Structure):
 
 
 class InnerHeader():
-    """Essential Information to build inner packet"""
+    """
+    Essential Information to build inner packet.
+
+    We provide defaults so function is friendly.
+    """
 
     def __init__(self, inner_src_ip="192.168.0.1", inner_dest_ip="192.168.0.2", inner_src_port="10000",
                  inner_dest_port="20000", inner_protocol=17, *args,

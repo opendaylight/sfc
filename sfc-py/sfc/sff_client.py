@@ -70,7 +70,7 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
     Class for VXLAN_GPE + NSH + IP
     """
     def __init__(self, loop, encapsulate_header_values, base_header_values, ctx_header_values,
-                 remote_sff_ip, remote_sff_port, inner_dest_ip, inner_dest_port, encapsulate_type='VXLAN-GPE/NSH/IPv4'):
+                 remote_sff_ip, remote_sff_port, inner_header, encapsulate_type='VXLAN-GPE/NSH/IPv4'):
         super().__init__()
         self.transport = None
         self.loop = loop
@@ -79,8 +79,7 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
         self.ctx_header_values = ctx_header_values
         self.remote_sff_ip = remote_sff_ip
         self.remote_sff_port = remote_sff_port
-        self.inner_dest_ip = inner_dest_ip
-        self.inner_dest_port = inner_dest_port
+        self.inner_header = inner_header
         self.encapsulate_type = encapsulate_type
 
     def alarm_handler(self, signum=None, frame=None):
@@ -204,7 +203,8 @@ class MyVxlanGpeNshEthClient(MyNshBaseClass):
 
 class MyVxlanNshEthClient(MyNshBaseClass):
     """
-    Class for VXLAN + NSH + Ethernet + IP
+    Class for VXLAN + NSH + Ethernet + IP. Used when sending
+    packet to OpenvsWitch with nsh-v8 patch
     """
     def __init__(self, loop, ethernet_values, encapsulate_header_values, base_header_values,
                  ctx_header_values, remote_sff_ip, remote_sff_port, inner_header,
@@ -264,21 +264,24 @@ class MyVxlanNshEthClient(MyNshBaseClass):
 
     @staticmethod
     def connection_refused(exc):
-        logger.error('Connection refused:', exc)
+        logger.error('Connection refused: %s', exc)
 
     def connection_lost(self, exc):
-        logger.error('closing transport', exc)
+        logger.error('closing transport: %s', exc)
         self.loop = asyncio.get_event_loop()
         self.loop.stop()
 
     @staticmethod
     def error_received(exc):
-        logger.error('Error received:', exc)
+        logger.error('Error received: %s', exc)
 
 
 # Client side code: Build NSH packet encapsulated in GRE & NSH.
 
 class MyGreNshEthClient:
+    """
+    This most likely does not work since it has not been tested in quite awhile
+    """
     def __init__(self, loop, encapsulate_type, encapsulate_header_values, base_header_values, ctx_header_values,
                  dest_addr, dest_port):
         self.transport = None
@@ -465,9 +468,13 @@ def main(argv):
             continue
 
         if opt in ('-h', '--help'):
-            print("sff_client --remote-sff-ip=<IP address of remote SFF> --remote-sff-port=<UDP port of remote SFF> "
-                  "--sfp-id=<Service Function Path id> --sfp-index<SFP starting index> "
-                  "--encapsulate=<gpe-nsh-ethernet|gre|gpe-nsh-ipv4>")
+            print("sff_client \n --remote-sff-ip=<IP address of remote SFF> \n "
+                  "--remote-sff-port=<UDP port of remote SFF> \n "
+                  "--sfp-id=<Service Function Path id> \n --sfp-index<SFP starting index> \n "
+                  "--encapsulate=<gpe-nsh-ethernet|gre|gpe-nsh-ipv4|vxlan-nsh-ethernet-legacy> \n "
+                  "--inner-src-ip=<source IP of inner packet> \n --inner-dest-ip=<destination IP of inner packet> \n "
+                  "--ctx1=<context header 1> \n --ctx2=<context header 2> \n --ctx3=<context header 3> \n "
+                  "--ctx4=<context header 4> \n --local-port=<source port> \n --local-ip=<source IP> ")
             sys.exit()
 
         if opt == "--remote-sff-ip":
@@ -600,13 +607,13 @@ def main(argv):
         inner_header = InnerHeader(inner_src_ip, inner_dest_ip, inner_src_port, inner_dest_port)
 
         if encapsulate == 'gpe-nsh-ipv4':
-            # NSH type !
+            # NSH type 1
             vxlan_header_values = VXLANGPE()
             #  override encap type
             base_header_values.next_protocol = NSH_NEXT_PROTO_IPV4
 
             udpclient = MyVxlanGpeNshIpClient(loop, vxlan_header_values, base_header_values,
-                                              ctx_values, remote_sff_ip, int(remote_sff_port))
+                                              ctx_values, remote_sff_ip, int(remote_sff_port), inner_header)
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
         elif encapsulate == 'gre-nsh-ethernet':
@@ -629,7 +636,7 @@ def main(argv):
             udpclient = MyVxlanGpeNshEthClient(loop, ethernet_header_values,
                                                vxlan_header_values, base_header_values,
                                                ctx_values, remote_sff_ip,
-                                               int(remote_sff_port), inner_dest_ip, inner_dest_port)
+                                               int(remote_sff_port), inner_header)
             start_client(loop, (local_ip, local_port), (remote_sff_ip, remote_sff_port), udpclient)
 
         elif encapsulate == 'vxlan-nsh-ethernet-legacy':

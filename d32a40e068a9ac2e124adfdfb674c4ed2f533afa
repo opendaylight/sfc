@@ -22,6 +22,30 @@
       "revId": "d32a40e068a9ac2e124adfdfb674c4ed2f533afa",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ef8cfa81",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-08-11T23:39:04Z",
+      "side": 0,
+      "message": "Sorry, I just saw that that is indeed intentional",
+      "parentUuid": "3a79b1b5_efb5da31",
+      "range": {
+        "startLine": 1151,
+        "startChar": 52,
+        "endLine": 1151,
+        "endChar": 83
+      },
+      "revId": "d32a40e068a9ac2e124adfdfb674c4ed2f533afa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

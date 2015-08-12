@@ -331,10 +331,6 @@
        <artifactId>southbound-impl</artifactId>
        <version>${ovsdb.southbound.version}</version>
     </dependency>
-    <dependency>
-        <groupId>org.opendaylight.controller.model</groupId>
-        <artifactId>model-inventory</artifactId>
-    </dependency>
    </dependencies>
    <build>
       <resources>

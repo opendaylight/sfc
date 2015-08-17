@@ -34,6 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1Builder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,6 +153,14 @@ public class SfcOvsToSffMappingAPI {
                     if (ovsOptions != null) {
                         sffDataPlaneLocatorOptionsBuilder.setOvsOptions(buildOvsOptionsFromTerminationPoint(terminationPointAugmentation));
                         sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class, sffDataPlaneLocatorOptionsBuilder.build());
+                    }
+                    Long ofPort = terminationPointAugmentation.getOfport();
+                    if (ofPort != null) {
+                        SffDataPlaneLocator1Builder ofsSffDplBuilder = new SffDataPlaneLocator1Builder();
+                        OfsPortBuilder ofsPortBuilder = new OfsPortBuilder();
+                        ofsPortBuilder.setPortId(ofPort.toString());
+                        ofsSffDplBuilder.setOfsPort(ofsPortBuilder.build());
+                        sffDataPlaneLocatorBuilder.addAugmentation(SffDataPlaneLocator1.class, ofsSffDplBuilder.build());
                     }
 
                     sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());

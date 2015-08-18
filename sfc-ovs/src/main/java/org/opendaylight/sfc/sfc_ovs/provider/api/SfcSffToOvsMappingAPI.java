@@ -273,6 +273,42 @@ public class SfcSffToOvsMappingAPI {
                 LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
             }
 
+            if (ovsOptions.getInNsp() != null) {
+                OptionsBuilder optionsInNspBuilder = new OptionsBuilder();
+                optionsInNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_IN_NSP);
+                optionsInNspBuilder.setValue(ovsOptions.getInNsp());
+                options.add(optionsInNspBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_IN_NSP);
+            }
+
+            if (ovsOptions.getInNsi() != null) {
+                OptionsBuilder optionsInNsiBuilder = new OptionsBuilder();
+                optionsInNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_IN_NSI);
+                optionsInNsiBuilder.setValue(ovsOptions.getInNsi());
+                options.add(optionsInNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_IN_NSI);
+            }
+
+            if (ovsOptions.getOutNsp() != null) {
+                OptionsBuilder optionsOutNspBuilder = new OptionsBuilder();
+                optionsOutNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_OUT_NSP);
+                optionsOutNspBuilder.setValue(ovsOptions.getOutNsp());
+                options.add(optionsOutNspBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_OUT_NSP);
+            }
+
+            if (ovsOptions.getOutNsi() != null) {
+                OptionsBuilder optionsOutNsiBuilder = new OptionsBuilder();
+                optionsOutNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_OUT_NSI);
+                optionsOutNsiBuilder.setValue(ovsOptions.getOutNsi());
+                options.add(optionsOutNsiBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_OUT_NSI);
+            }
+
             if (ovsOptions.getNshc1() != null) {
                 OptionsBuilder optionsNsiBuilder = new OptionsBuilder();
                 optionsNsiBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_NSHC1);

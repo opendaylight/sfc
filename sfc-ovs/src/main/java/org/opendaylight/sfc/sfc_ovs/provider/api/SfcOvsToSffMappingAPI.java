@@ -265,6 +265,22 @@ public class SfcOvsToSffMappingAPI {
                         ovsOptionsBuilder.setNsi(option.getValue());
                         options = true;
                         break;
+                    case SfcOvsUtil.OVSDB_OPTION_IN_NSP:
+                        ovsOptionsBuilder.setInNsp(option.getValue());
+                        options = true;
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_IN_NSI:
+                        ovsOptionsBuilder.setInNsi(option.getValue());
+                        options = true;
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_OUT_NSP:
+                        ovsOptionsBuilder.setOutNsp(option.getValue());
+                        options = true;
+                        break;
+                    case SfcOvsUtil.OVSDB_OPTION_OUT_NSI:
+                        ovsOptionsBuilder.setOutNsi(option.getValue());
+                        options = true;
+                        break;
                 }
             }
         } else {

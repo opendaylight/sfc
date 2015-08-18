@@ -72,6 +72,10 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_DST_PORT = "dst_port";
     public static final String OVSDB_OPTION_NSP = "nsp";
     public static final String OVSDB_OPTION_NSI = "nsi";
+    public static final String OVSDB_OPTION_IN_NSP = "in_nsp";
+    public static final String OVSDB_OPTION_IN_NSI = "in_nsi";
+    public static final String OVSDB_OPTION_OUT_NSP = "out_nsp";
+    public static final String OVSDB_OPTION_OUT_NSI = "out_nsi";
     public static final String OVSDB_OPTION_NSHC1 = "nshc1";
     public static final String OVSDB_OPTION_NSHC2 = "nshc2";
     public static final String OVSDB_OPTION_NSHC3 = "nshc3";

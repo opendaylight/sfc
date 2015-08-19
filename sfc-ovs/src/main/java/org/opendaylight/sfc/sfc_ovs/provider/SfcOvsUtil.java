@@ -78,6 +78,10 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_NSHC4 = "nshc4";
     public static final String OVSDB_OPTION_KEY = "key";
     public static final String OVSDB_OPTION_VALUE_FLOW = "flow";
+    public static final String DPL_NAME_DPDK = "Dpdk";
+    public static final String DPL_NAME_DPDKVHOST = "Dpdkvhost";
+    public static final String DPL_NAME_DPDKVHOSTUSER = "Dpdkvhostuser";
+    public static final String DPL_NAME_INTERNAL = "Internal";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
     /**

@@ -15,7 +15,7 @@ import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
 import org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispRspEntryDataListener;
 import org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispSfEntryDataListener;
 import org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispSffDataListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mapping.database.rev150314.LfmMappingDatabaseService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150820.MappingserviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class SfcLispModule extends org.opendaylight.controller.config.yang.confi
     @Override
     public java.lang.AutoCloseable createInstance() {
         final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-        LfmMappingDatabaseService lfmService = getRpcRegistryDependency().getRpcService(LfmMappingDatabaseService.class);
+        MappingserviceService lfmService = getRpcRegistryDependency().getRpcService(MappingserviceService.class);
         final LispUpdater lispUpdater = new LispUpdater(lfmService);
 
         // listeners

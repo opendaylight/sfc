@@ -26,11 +26,11 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
-    <dependency>
+<!--     <dependency>
       <groupId>org.opendaylight.lispflowmapping</groupId>
       <artifactId>mappingservice.implementation</artifactId>
       <version>${lispflowmapping.version}</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.opendaylight.lispflowmapping</groupId>
       <artifactId>mappingservice.southbound</artifactId>

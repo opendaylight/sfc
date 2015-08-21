@@ -6,10 +6,12 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.bootstrap;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
+
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

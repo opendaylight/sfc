@@ -18,6 +18,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
         <!--<feature version="${mdsal.version}">odl-mdsal-broker</feature>-->
         <bundle>mvn:org.opendaylight.sfc/sfc-sb-rest/${project.version}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/${jersey.version}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/${jersey.version}</bundle>
+        <bundle>wrap:mvn:org.json/json/${org.json.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
+        <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-sb-rest-initial.xml">
             mvn:org.opendaylight.sfc/sfc-sb-rest/${project.version}/xml/config
         </configfile>

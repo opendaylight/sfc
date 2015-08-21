@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider.bootstrap;
+package org.opendaylight.sfc.bootstrap;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import org.json.JSONObject;

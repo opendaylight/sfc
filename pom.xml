@@ -146,6 +146,7 @@
         <module>features-sfc-netconf</module>
         <module>features</module>
         <module>sfc-karaf</module>
+        <module>sfc-bootstrap</module>
     </modules>
 
     <dependencies>

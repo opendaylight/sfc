@@ -8,12 +8,11 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import com.google.common.base.Optional;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +24,17 @@ import java.util.concurrent.Future;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
+
+
 /**
  * This class defines the APIs to operate on the ServiceFunctionScheduleTypes
  * datastore.
  *
  * @author Johnson Li (johnson.li@intel.com)
- * @author Vladimir Lavor (vladimir.lavor@pantheon.sk)
  * @version 0.1
  * @since 2015-03-20
  */
@@ -38,6 +42,7 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScheduleTypeAPI.class);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final String FAILED_TO_STR = "failed to ...";
 
     SfcProviderScheduleTypeAPI(Object[] params, String m) {
         super(params, m);
@@ -63,123 +68,22 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         return new SfcProviderScheduleTypeAPI(params, paramsTypes, "readAllServiceFunctionScheduleTypes");
     }
 
-    /**
-     * This method puts service function schedule type.
-     * <p/>
-     *
-     * @return True if ST was put, false otherwise
-     */
-    public static boolean putServiceFunctionScheduleTypeExecutor(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
-        printTraceStart(LOG);
+    protected boolean putServiceFunctionScheduleType(ServiceFunctionSchedulerType sfst) {
         boolean ret = false;
-        Object[] servicePathObj = {serviceFunctionSchedulerType};
-        Class[] servicePathClass = {ServiceFunctionSchedulerType.class};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getPut(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteServiceFunctionState: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method deletes service function schedule type.
-     * <p/>
-     *
-     * @return True if ST was deleted, false otherwise
-     */
-    public static boolean deleteServiceFunctionScheduleTypeExecutor(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
-        printTraceStart(LOG);
-        boolean ret = false;
-        Object[] servicePathObj = {serviceFunctionSchedulerType};
-        Class[] servicePathClass = {serviceFunctionSchedulerType.getClass()};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getDelete(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteServiceFunctionState: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads service function schedule type.
-     * <p/>
-     *
-     * @return If ST was read successfully, returns that ST
-     */
-    public static ServiceFunctionSchedulerType readServiceFunctionScheduleTypeExecutor(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
-        printTraceStart(LOG);
-        ServiceFunctionSchedulerType ret = null;
-        Object[] servicePathObj = {serviceFunctionSchedulerType};
-        Class[] servicePathClass = {serviceFunctionSchedulerType.getClass()};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getRead(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
-        try {
-            ret = (ServiceFunctionSchedulerType) future.get();
-            LOG.debug("getDeleteServiceFunctionState: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    public static ServiceFunctionSchedulerType readEnabledServiceFunctionScheduleTypeEntryExecutor() {
-        ServiceFunctionSchedulerType ret = null;
-        Object[] sfstObj = {};
-        Class[] sfstClass = {};
-
-        printTraceStart(LOG);
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getReadAll(sfstObj, sfstClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
-        try {
-            LOG.debug("getReadAll returns: {}", future.get());
-            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
-                    (ServiceFunctionSchedulerTypes) future.get();
-            List<ServiceFunctionSchedulerType> sfScheduleTypeList =
-                    serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
-            for (ServiceFunctionSchedulerType serviceFunctionSchedulerType : sfScheduleTypeList) {
-                if (serviceFunctionSchedulerType.isEnabled()) {
-                    ret = serviceFunctionSchedulerType;
-                    break;
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    protected boolean putServiceFunctionScheduleType(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
-        boolean ret;
         printTraceStart(LOG);
 
-        InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
-                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
+        if (dataBroker != null) {
+            InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID =
+                    InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
+                    .child(ServiceFunctionSchedulerType.class, sfst.getKey()).toInstance();
 
-        ret = SfcDataStoreAPI.writePutTransactionAPI(sfstEntryIID, serviceFunctionSchedulerType,
-                LogicalDatastoreType.CONFIGURATION);
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    sfstEntryIID, sfst, true);
+            writeTx.commit();
+
+            ret = true;
+        }
 
         printTraceStop(LOG);
         return ret;
@@ -194,7 +98,7 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
                 ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerType);
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID =
                 InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
-                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).build();
+                .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).toInstance();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfstIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
@@ -207,33 +111,85 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
     }
 
     protected ServiceFunctionSchedulerType readServiceFunctionScheduleType(
-            Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerTypeIdentity) {
+            Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
         printTraceStart(LOG);
-        ServiceFunctionSchedulerType serviceFunctionSchedulerType;
+        ServiceFunctionSchedulerType sfst = null;
 
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID;
         ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey = new
-                ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerTypeIdentity);
-
+                ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerType);
         sfstIID = InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
                 .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).build();
 
-        serviceFunctionSchedulerType = SfcDataStoreAPI.readTransactionAPI(sfstIID, LogicalDatastoreType.CONFIGURATION);
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        Optional<ServiceFunctionSchedulerType> serviceFunctionSchedulerTypeOptional = null;
+        try {
+            serviceFunctionSchedulerTypeOptional = readTx
+                    .read(LogicalDatastoreType.CONFIGURATION, sfstIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read Service Function Schedule Type {} " + "", serviceFunctionSchedulerType);
+        }
+        if (serviceFunctionSchedulerTypeOptional != null
+                && serviceFunctionSchedulerTypeOptional.isPresent()) {
+            sfst = serviceFunctionSchedulerTypeOptional.get();
+        }
 
         printTraceStop(LOG);
-        return serviceFunctionSchedulerType;
+        return sfst;
     }
 
     protected ServiceFunctionSchedulerTypes readAllServiceFunctionScheduleTypes() {
-        ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes;
+        ServiceFunctionSchedulerTypes sfsts = null;
         printTraceStart(LOG);
 
-        InstanceIdentifier<ServiceFunctionSchedulerTypes> schedulerTypesIID =
-                InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).build();
+        InstanceIdentifier<ServiceFunctionSchedulerTypes> sfstsIID =
+                InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).toInstance();
 
-        serviceFunctionSchedulerTypes = SfcDataStoreAPI.readTransactionAPI(schedulerTypesIID, LogicalDatastoreType.CONFIGURATION);
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        Optional<ServiceFunctionSchedulerTypes> serviceFunctionSchedulerTypesOptional;
+        try {
+            serviceFunctionSchedulerTypesOptional = readTx
+                    .read(LogicalDatastoreType.CONFIGURATION, sfstsIID).get();
+            if (serviceFunctionSchedulerTypesOptional != null
+                    && serviceFunctionSchedulerTypesOptional.isPresent()) {
+                sfsts = serviceFunctionSchedulerTypesOptional.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read All Service Function Schedule Types");
+        }
 
         printTraceStop(LOG);
-        return serviceFunctionSchedulerTypes;
+        return sfsts;
+    }
+
+    public static ServiceFunctionSchedulerType readEnabledServiceFunctionScheduleTypeEntryExecutor() {
+        ServiceFunctionSchedulerType ret = null;
+        Object[] sfstObj = {};
+        Class[] sfstClass = {};
+
+        printTraceStart(LOG);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
+                .getReadAll(sfstObj, sfstClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
+        try {
+            LOG.debug("getReadAll returns: {}", future.get());
+            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
+                    (ServiceFunctionSchedulerTypes)future.get();
+            List<ServiceFunctionSchedulerType> sfScheduleTypeList =
+                    serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
+            for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                if (sfst.isEnabled() == true) {
+                    ret = sfst;
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+
+        printTraceStop(LOG);
+        return ret;
     }
 }

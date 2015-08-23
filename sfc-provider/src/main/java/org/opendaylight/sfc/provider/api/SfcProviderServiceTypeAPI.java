@@ -8,7 +8,13 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
@@ -32,7 +38,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 /**
  * This class has the APIs to operate on the ServiceFunctionType
  * datastore.
- * <p/>
+ * <p>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -41,7 +47,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
  * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
- * <p/>
+ * <p>
  * @since 2014-06-30
  */
 public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
@@ -65,7 +71,6 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
     public static SfcProviderServiceTypeAPI getRead(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "readServiceFunctionType");
     }
-
     public static SfcProviderServiceTypeAPI getDelete(Object[] params, Class[] paramsTypes) {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionType");
     }
@@ -94,29 +99,62 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionTypeEntry");
     }
 
-    public static boolean putServiceFunctionTypeExecutor(ServiceFunctionType sft) {
-
-        printTraceStart(LOG);
+    protected boolean putServiceFunctionType(ServiceFunctionType sft) {
         boolean ret = false;
-        Object[] serviceTypeObj = {sft};
-        Class[] serviceTypeClass = {ServiceFunctionType.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
-                .getPut(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
+        printTraceStart(LOG);
+        if (dataBroker != null) {
+
+            InstanceIdentifier<ServiceFunctionType> sftEntryIID =
+                    InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                    .child(ServiceFunctionType.class, sft.getKey()).toInstance();
+
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION,
+                    sftEntryIID, sft, true);
+            writeTx.commit();
+
+            ret = true;
         }
         printTraceStop(LOG);
         return ret;
     }
 
     /**
+     * This method is used to retrieve a Service Function Type from the DataStore
+     * <p>
+     * @param serviceFunctionType Service Function Type abstract class
+     * @return Service Function Type Object which contains a list of SF of this type
+     */
+    protected ServiceFunctionType readServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+        printTraceStart(LOG);
+        ServiceFunctionType sft = null;
+        InstanceIdentifier<ServiceFunctionType> sftIID;
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new
+                ServiceFunctionTypeKey(serviceFunctionType);
+        sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
+
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        Optional<ServiceFunctionType> serviceFunctionTypeOptional = null;
+        try {
+            serviceFunctionTypeOptional = readTx
+                    .read(LogicalDatastoreType.CONFIGURATION, sftIID).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read Service Function list for Type {} " +
+                    "", serviceFunctionType);
+        }
+        if (serviceFunctionTypeOptional != null
+                && serviceFunctionTypeOptional.isPresent()) {
+            sft = serviceFunctionTypeOptional.get();
+        }
+        printTraceStop(LOG);
+        return sft;
+    }
+
+
+    /**
      * This method reads the operational state for a service function.
-     * <p/>
-     *
+     * <p>
      * @param serviceFunctionTypeIdentity SF name
      * @return A ServiceFunctionType object
      */
@@ -128,12 +166,14 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         Class[] serviceTypeClass = {Class.class};
         SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
                 .getRead(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
         try {
             ret = (ServiceFunctionType) future.get();
             LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -145,75 +185,23 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         Class[] serviceTypeClass = {ServiceFunction.class};
         SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
                 .getDeleteServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
         try {
             ret = (boolean) future.get();
             LOG.debug("getDeleteServiceFunctionTypeEntry: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
         }
         return ret;
     }
 
-    public static boolean createServiceFunctionTypeEntryExecutor(ServiceFunction serviceFunction) {
-        boolean ret = false;
-        Object[] serviceTypeObj = {serviceFunction};
-        Class[] serviceTypeClass = {ServiceFunction.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
-                .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        }
-        return ret;
-    }
-
-    protected boolean putServiceFunctionType(ServiceFunctionType sft) {
-        boolean ret;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionType> sftEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                        .child(ServiceFunctionType.class, sft.getKey()).build();
-
-        ret = SfcDataStoreAPI.writePutTransactionAPI(sftEntryIID, sft, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method is used to retrieve a Service Function Type from the DataStore
-     * <p/>
-     *
-     * @param serviceFunctionType Service Function Type abstract class
-     * @return Service Function Type Object which contains a list of SF of this type
-     */
-    protected ServiceFunctionType readServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
-        printTraceStart(LOG);
-        ServiceFunctionType sft;
-        InstanceIdentifier<ServiceFunctionType> sftIID;
-        ServiceFunctionTypeKey serviceFunctionTypeKey = new
-                ServiceFunctionTypeKey(serviceFunctionType);
-        sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
-        sft = SfcDataStoreAPI.readTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
-        if (sft == null) {
-            LOG.error("Could not read Service Function list for Type {} " +
-                    "", serviceFunctionType);
-        }
-        printTraceStop(LOG);
-        return sft;
-    }
 
     /**
      * This method is used to delete a Service Function entry from the
      * Service Function Type list
-     * <p/>
-     *
+     * <p>
      * @param serviceFunction Service Function object
      * @return Service Function Type Object
      */
@@ -251,13 +239,13 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+
     /**
      * This method is used to delete all Service Function names under a
      * Service Function Type list. It basically removes the list of all service
      * functions of a given type. The Service Functions themselves are not touched
      * by this function.
-     * <p/>
-     *
+     * <p>
      * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object
      */
@@ -270,7 +258,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
                 ServiceFunctionTypeKey(serviceFunctionType);
         InstanceIdentifier<ServiceFunctionType> sftEntryIID =
                 InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                        .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
+                .child(ServiceFunctionType.class, serviceFunctionTypeKey).toInstance();
         if (SfcDataStoreAPI.deleteTransactionAPI(sftEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
@@ -281,13 +269,17 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
     }
 
     protected boolean putAllServiceFunctionTypes(ServiceFunctionTypes sfts) {
-        boolean ret;
+        boolean ret = false;
         printTraceStart(LOG);
+        if (dataBroker != null) {
 
-        InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-        ret = SfcDataStoreAPI.writePutTransactionAPI(sftsIID, sfts, LogicalDatastoreType.CONFIGURATION);
-
+            InstanceIdentifier<ServiceFunctionTypes> sftsIID =
+                    InstanceIdentifier.builder(ServiceFunctionTypes.class).toInstance();
+            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sftsIID, sfts);
+            writeTx.commit();
+            ret = true;
+        }
         printTraceStop(LOG);
         return ret;
     }
@@ -295,17 +287,28 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
     /**
      * This method reads and returns an object with all Service Function Types
      * present in the Data Store
-     * <p/>
-     *
+     * <p>
      * @return Nothing.
      */
     protected ServiceFunctionTypes readAllServiceFunctionTypes() {
-        ServiceFunctionTypes sfts;
+        ServiceFunctionTypes sfts = null;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
+                InstanceIdentifier.builder(ServiceFunctionTypes.class).toInstance();
 
-        sfts = SfcDataStoreAPI.readTransactionAPI(sftsIID, LogicalDatastoreType.CONFIGURATION);
+
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+        Optional<ServiceFunctionTypes> serviceFunctionTypesDataObject;
+        try {
+            serviceFunctionTypesDataObject = readTx
+                    .read(LogicalDatastoreType.CONFIGURATION, sftsIID).get();
+            if (serviceFunctionTypesDataObject != null
+                    && serviceFunctionTypesDataObject.isPresent()) {
+                sfts = serviceFunctionTypesDataObject.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Could not read All Service Function Types");
+        }
 
         printTraceStop(LOG);
         return sfts;
@@ -313,27 +316,52 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
     /**
      * Delete all Service Function Types from data store
-     * <p/>
-     *
+     * <p>
      * @return Nothing.
      */
     protected boolean deleteAllServiceFunctionTypes() {
-        boolean ret;
+        boolean ret = false;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-
-        ret = SfcDataStoreAPI.deleteTransactionAPI(sftsIID, LogicalDatastoreType.CONFIGURATION);
-
+                InstanceIdentifier.builder(ServiceFunctionTypes.class).toInstance();
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.delete(LogicalDatastoreType.CONFIGURATION,
+                sftsIID);
+        SfcDataStoreCallback sfcDataStoreCallback = new SfcDataStoreCallback();
+        CheckedFuture<Void,TransactionCommitFailedException> submitFuture = writeTx.submit();
+        Futures.addCallback(submitFuture, sfcDataStoreCallback);
+        if (sfcDataStoreCallback.getTransactioSuccessful()) {
+            ret = true;
+        } else {
+            LOG.error("Could not delete all Service Function Types");
+        }
         printTraceStop(LOG);
+        return ret;
+    }
+
+
+    public static boolean createServiceFunctionTypeEntryExecutor(ServiceFunction serviceFunction) {
+        boolean ret = false;
+        Object[] serviceTypeObj = {serviceFunction};
+        Class[] serviceTypeClass = {ServiceFunction.class};
+        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI
+                .getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        } catch (ExecutionException e) {
+            LOG.warn(FAILED_TO_STR , e);
+        }
         return ret;
     }
 
     /**
      * This method creates a Service function Type entry from a Service
      * Function.
-     * <p/>
-     *
+     * <p>
      * @param serviceFunction Service Function Object
      * @return Nothing.
      */

@@ -8,9 +8,12 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
@@ -42,23 +45,69 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager {
+public class SfcServiceFunctionSchedulerAPITest extends AbstractDataBrokerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionSchedulerAPITest.class);
+    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private final List<SfDataPlaneLocator> sfDPLList = new ArrayList<>();
     private final List<ServiceFunction> sfList = new ArrayList<>();
+    private ExecutorService executor;
     private ServiceFunctionChain sfChain;
     private ServiceFunctionPath sfPath;
 
     @Before
     public void before() throws ExecutionException, InterruptedException, IllegalAccessException {
-        setOdlSfc();
+        DataBroker dataBroker = getDataBroker();
+        opendaylightSfc.setDataProvider(dataBroker);
+        executor = opendaylightSfc.getExecutor();
 
+        /* Delete all the content in SFC data store before unit test */
         int maxTries = 10;
+        ServiceFunctionType serviceFunctionType;
+        List<SftServiceFunctionName> sftServiceFunctionNameList;
         boolean emptyFlag = true;
+        while (maxTries > 0) {
+            emptyFlag = true;
+            executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+            executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+            executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+            executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+            executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+            Thread.sleep(1000); //Wait for real delete
+
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
+            if (serviceFunctionType != null) {
+                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                if (sftServiceFunctionNameList.size() != 0) {
+                    emptyFlag = false;
+                }
+            }
+
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
+            if (serviceFunctionType != null) {
+                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                if (sftServiceFunctionNameList.size() != 0) {
+                    emptyFlag = false;
+                }
+            }
+
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
+            if (serviceFunctionType != null) {
+                sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                if (sftServiceFunctionNameList.size() != 0) {
+                    emptyFlag = false;
+                }
+            }
+
+            maxTries--;
+            if (emptyFlag) {
+                break;
+            }
+        }
 
         //before test, private static variable mapCountRoundRobin has to be restored to original state
         Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class, new HashMap<>());
@@ -142,6 +191,14 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         executor.submit(SfcProviderServiceChainAPI
                 .getPut(sfcParameters, sfcParameterTypes)).get();
         Thread.sleep(1000); //Wait it is really created
+    }
+
+    @After
+    public void after() {
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     @Test
@@ -270,5 +327,4 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         assertEquals("Must be equal", scheduleType.getSimpleName(), RoundRobin.class.getSimpleName());
 
     }
-
 }

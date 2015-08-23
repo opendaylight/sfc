@@ -10,25 +10,37 @@ package org.opendaylight.sfc.provider.api;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
-public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
+public class SfcProviderScheduleTypeAPITest extends AbstractDataBrokerTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScheduleTypeAPITest.class);
+    DataBroker dataBroker;
+    ExecutorService executor;
+    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
     @Before
     public void before() {
-        setOdlSfc();
+        dataBroker = getDataBroker();
+        opendaylightSfc.setDataProvider(dataBroker);
+        executor = opendaylightSfc.getExecutor();
     }
 
     /* Cannot pass at the moment, will fix later on
@@ -136,19 +148,32 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         Object[] parameters2 = {sfstBuilder2.build()};
         Class[] parameterTypes = {ServiceFunctionSchedulerType.class};
 
-        executor.submit(SfcProviderScheduleTypeAPI
-                .getPut(parameters1, parameterTypes)).get();
-        executor.submit(SfcProviderScheduleTypeAPI
-                .getPut(parameters2, parameterTypes)).get();
+        try {
+            executor.submit(SfcProviderScheduleTypeAPI
+                    .getPut(parameters1, parameterTypes)).get();
+            executor.submit(SfcProviderScheduleTypeAPI
+                    .getPut(parameters2, parameterTypes)).get();
+        } catch (ExecutionException ee) {
+            /* Fail this case since Exception is caught */
+            assertEquals("Must be equal", 0, 1);
+        } catch (InterruptedException ie) {
+            assertEquals("Must be equal", 0, 1);
+        }
 
         Object[] parameters = {};
         Class[] parameterTypes2 = {};
-
-        Object result = executor.submit(SfcProviderScheduleTypeAPI
-                .getReadAll(parameters, parameterTypes2)).get();
-        ServiceFunctionSchedulerTypes sfsts = (ServiceFunctionSchedulerTypes) result;
-        List<ServiceFunctionSchedulerType> sfstList = sfsts.getServiceFunctionSchedulerType();
-        assertEquals("Must be equal", sfstList.size(), 2);
+        try {
+            Object result = executor.submit(SfcProviderScheduleTypeAPI
+                    .getReadAll(parameters, parameterTypes2)).get();
+            ServiceFunctionSchedulerTypes sfsts = (ServiceFunctionSchedulerTypes) result;
+            List<ServiceFunctionSchedulerType> sfstList = sfsts.getServiceFunctionSchedulerType();
+            assertEquals("Must be equal", sfstList.size(), 2);
+        } catch (ExecutionException ee) {
+            /* Fail this case since Exception is caught */
+            assertEquals("Must be equal", 0, 1);
+        } catch (InterruptedException ie) {
+            assertEquals("Must be equal", 0, 1);
+        }
     }
 
     @Test
@@ -170,43 +195,29 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         Object[] parameters2 = {sfstBuilder2.build()};
         Class[] parameterTypes = {ServiceFunctionSchedulerType.class};
 
+        try {
+            executor.submit(SfcProviderScheduleTypeAPI
+                    .getPut(parameters1, parameterTypes)).get();
+            executor.submit(SfcProviderScheduleTypeAPI
+                    .getPut(parameters2, parameterTypes)).get();
+        } catch (ExecutionException ee) {
+            /* Fail this case since Exception is caught */
+            assertEquals("Must be equal", 0, 1);
+        } catch (InterruptedException ie) {
+            assertEquals("Must be equal", 0, 1);
+        }
 
-        executor.submit(SfcProviderScheduleTypeAPI
-                .getPut(parameters1, parameterTypes)).get();
-        executor.submit(SfcProviderScheduleTypeAPI
-                .getPut(parameters2, parameterTypes)).get();
+        try {
+            Object result = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntryExecutor();
+            ServiceFunctionSchedulerType sfst = (ServiceFunctionSchedulerType) result;
 
-        Object result = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntryExecutor();
-        ServiceFunctionSchedulerType sfst = (ServiceFunctionSchedulerType) result;
-
-        assertNotNull("Must be not null", sfst);
-        assertEquals("Must be equal", sfst.getName(), name1);
-        assertEquals("Must be equal", sfst.getType(), type1);
-        assertEquals("Must be equal", sfst.isEnabled(), true);
-    }
-
-    @Test
-    public void testPutServiceFunctionScheduleType() {
-        //build service function scheduler type
-        ServiceFunctionSchedulerTypeBuilder serviceFunctionSchedulerTypeBuilder = new ServiceFunctionSchedulerTypeBuilder();
-        serviceFunctionSchedulerTypeBuilder.setName("SFST")
-                .setKey(new ServiceFunctionSchedulerTypeKey(RoundRobin.class))
-                .setEnabled(true)
-                .setType(RoundRobin.class);
-
-        //write service function scheduler type
-        boolean transactionSuccessful = SfcProviderScheduleTypeAPI.putServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerTypeBuilder.build());
-        assertTrue("Must be true", transactionSuccessful);
-
-        //read written service function scheduler type
-        ServiceFunctionSchedulerType serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI.readServiceFunctionScheduleTypeExecutor(RoundRobin.class);
-        assertNotNull("Must not be null", serviceFunctionSchedulerType);
-        assertEquals("Must be equal", serviceFunctionSchedulerType.getName(), "SFST");
-        assertEquals("Must be equal", serviceFunctionSchedulerType.getType(), RoundRobin.class);
-        assertTrue("Must be equal", serviceFunctionSchedulerType.isEnabled());
-
-        //remove service function scheduler type
-        transactionSuccessful = SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleTypeExecutor(RoundRobin.class);
-        assertTrue("Must be true", transactionSuccessful);
+            assertNotNull("Must be not null", sfst);
+            assertEquals("Must be equal", sfst.getName(), name1);
+            assertEquals("Must be equal", sfst.getType(), type1);
+            assertEquals("Must be equal", sfst.isEnabled(), true);
+        } catch (Exception e) {
+            /* Fail this case since Exception is caught */
+            assertEquals("Must be equal", 0, 1);
+        }
     }
 }

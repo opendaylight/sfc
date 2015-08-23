@@ -9,7 +9,9 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -349,13 +351,27 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
      * @return ServiceFunctionForwarders object
      */
     protected ServiceFunctionForwarders readAllServiceFunctionForwarders() {
-        ServiceFunctionForwarders sffs;
+        ServiceFunctionForwarders sffs = null;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
+                InstanceIdentifier.builder(ServiceFunctionForwarders.class).toInstance();
 
-        sffs = SfcDataStoreAPI.readTransactionAPI(sffsIID, LogicalDatastoreType.CONFIGURATION);
+        if (ODL_SFC.getDataProvider() != null) {
+            ReadOnlyTransaction readTx = ODL_SFC.getDataProvider().newReadOnlyTransaction();
+            Optional<ServiceFunctionForwarders> serviceFunctionForwardersDataObject;
+            try {
+                serviceFunctionForwardersDataObject = readTx.
+                        read(LogicalDatastoreType.CONFIGURATION, sffsIID).get();
+                if (serviceFunctionForwardersDataObject != null
+                        && serviceFunctionForwardersDataObject.isPresent()) {
+                    sffs = serviceFunctionForwardersDataObject.get();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Could not read Service Function Forwarder " +
+                        "configuration data");
+            }
 
+        }
         printTraceStop(LOG);
         return sffs;
     }
@@ -525,8 +541,8 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
                     new ServiceFunctionForwarderStateKey(renderedServicePathHop.getServiceFunctionForwarder());
             InstanceIdentifier<SffServicePath> sfStateIID =
                     InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
-                            .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
-                            .child(SffServicePath.class, sffServicePathKey).build();
+                    .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
+                    .child(SffServicePath.class, sffServicePathKey).build();
             serviceFunctionForwarderStateBuilder.setName(renderedServicePathHop.getServiceFunctionForwarder());
 
             if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sffServicePathBuilder.build(),
@@ -1118,7 +1134,7 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    /**
+  /**
      * When a SFF is deleted we need to delete all SFPs from the
      * associated SFF operational state
      *

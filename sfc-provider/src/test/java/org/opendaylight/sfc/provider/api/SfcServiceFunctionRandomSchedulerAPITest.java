@@ -1,17 +1,12 @@
-/*
- * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
-
 package org.opendaylight.sfc.provider.api;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
@@ -38,6 +33,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
 
@@ -48,19 +45,40 @@ import static org.junit.Assert.*;
  * @version 0.1
  * @since 2015-06-30
  */
-public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreManager {
+public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataBrokerTest {
 
     private static final String SFC_NAME = "sfcName";
     private static final String SF_NAME = "sfName";
     private static final String SFP_NAME = "sfpName";
     private static final String SFF_NAME = "sffName";
     private static final String SFG_NAME = "sfgName";
+    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private ExecutorService executor;
     private SfcServiceFunctionRandomSchedulerAPI scheduler;
 
     @Before
-    public void before() {
-        setOdlSfc();
+    public void before() throws ExecutionException, InterruptedException {
+        DataBroker dataBroker = getDataBroker();
+        opendaylightSfc.setDataProvider(dataBroker);
+        executor = opendaylightSfc.getExecutor();
         scheduler = new SfcServiceFunctionRandomSchedulerAPI();
+
+        //clear data store
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        Thread.sleep(1000);
+    }
+
+    @After
+    public void after() {
+        executor.submit(SfcProviderServicePathAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceChainAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceTypeAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceFunctionAPI.getDeleteAll(new Object[]{}, new Class[]{}));
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     /*
@@ -96,7 +114,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
         assertNull("Must be null", result);
 
         //write types
-        boolean transactionSuccessful = writeTypes(true);
+        boolean transactionSuccessful = writeTypes();
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -106,11 +124,11 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
         assertTrue("Must be true", result.contains(null));
 
         //write functions of all types
-        transactionSuccessful = writeServiceFunction("Firewall", true);
+        transactionSuccessful = writeServiceFunction("Firewall");
         assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = writeServiceFunction("Dpi", true);
+        transactionSuccessful = writeServiceFunction("Dpi");
         assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = writeServiceFunction("Qos", true);
+        transactionSuccessful = writeServiceFunction("Qos");
         assertTrue("Must be true", transactionSuccessful);
 
         result = scheduler.scheduleServiceFunctions(createServiceFunctionChain(), 255, serviceFunctionPathBuilder.build());
@@ -123,16 +141,6 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result.containsAll(serviceFunctionTypes));
-
-        //remove functions and types
-        transactionSuccessful = writeServiceFunction("Firewall", false);
-        assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = writeServiceFunction("Dpi", false);
-        assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = writeServiceFunction("Qos", false);
-        assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = writeTypes(false);
-        assertTrue("Must be true", transactionSuccessful);
     }
 
     //create service function chain with three entries
@@ -202,7 +210,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
     }
 
     //write types
-    private boolean writeTypes(boolean write) {
+    private boolean writeTypes() {
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
 
@@ -225,24 +233,17 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         InstanceIdentifier<ServiceFunctionTypes> sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-        if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-        else
-            return SfcDataStoreAPI.deleteTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
+        return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(), LogicalDatastoreType.CONFIGURATION);
     }
 
     //write service function
-    private boolean writeServiceFunction(String sfType, boolean write) {
+    private boolean writeServiceFunction(String sfType) {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SF_NAME + sfType)
                 .setKey(new ServiceFunctionKey(SF_NAME + sfType))
                 .setType(Firewall.class);
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, new ServiceFunctionKey(SF_NAME + sfType)).build();
-
-        if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-        else
-            return SfcDataStoreAPI.deleteTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
+        return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(), LogicalDatastoreType.CONFIGURATION);
     }
 }

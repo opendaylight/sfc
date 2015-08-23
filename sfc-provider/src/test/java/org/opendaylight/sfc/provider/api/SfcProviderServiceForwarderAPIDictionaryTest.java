@@ -8,9 +8,12 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
@@ -32,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.*;
@@ -39,14 +43,20 @@ import static org.junit.Assert.*;
 /**
  * Tests for dictionary operations on SFFs
  */
-public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataStoreManager {
+public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataBrokerTest {
 
-    private String[] sffName = {"unittest-forwarder-1", "unittest-forwarder-2", "unittest-forwarder-3"};
-    private List<ServiceFunction> sfList = new ArrayList<>();
+    DataBroker dataBroker;
+    ExecutorService executor;
+    OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+
+    String[] sffName = {"unittest-forwarder-1", "unittest-forwarder-2", "unittest-forwarder-3"};
+    List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before
     public void before() {
-        setOdlSfc();
+        dataBroker = getDataBroker();
+        opendaylightSfc.setDataProvider(dataBroker);
+        executor = opendaylightSfc.getExecutor();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.6")), 555);
         SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("kyiv-5.5.5.6:555-vxlan", dummyIp, "sff-kyiv", VxlanGpe.class);
@@ -57,6 +67,11 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
                 new IpAddress(new Ipv4Address("192.168.100.112")), dummyLocator, Boolean.FALSE));
         sfList.add(SimpleTestEntityBuilder.buildServiceFunction("dict_fw_103", Firewall.class,
                 new IpAddress(new Ipv4Address("192.168.100.113")), dummyLocator, Boolean.FALSE));
+    }
+
+    @After
+    public void after() {
+        executor.submit(SfcProviderServiceForwarderAPI.getDeleteAll(new Object[]{}, new Class[]{}));
     }
 
     @Test
@@ -157,6 +172,5 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         assertThat("Must contain first dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(firstDictEntry));
         assertThat("Must contain new dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(newDictEntry));
     }
-
 
 }

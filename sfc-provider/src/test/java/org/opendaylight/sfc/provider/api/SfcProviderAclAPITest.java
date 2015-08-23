@@ -1,17 +1,12 @@
-/*
- * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
-
 package org.opendaylight.sfc.provider.api;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessListsState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
@@ -36,6 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRangeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.timerange.AbsoluteBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +48,24 @@ import static junit.framework.TestCase.*;
  * @since 2015-06-19
  */
 
-public class SfcProviderAclAPITest extends AbstractDataStoreManager {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SfcDataStoreAPI.class)
+public class SfcProviderAclAPITest extends AbstractDataBrokerTest {
 
-    private final String ACL_NAME = "aclName";
-    private final String CLASSIFIER_NAME = "classifier";
-    private final String[] IP_V4_ADDRESS = {"192.168.1.", "10.66.20."};
-    private final String[] IP_PREFIX = {"/16", "/32", "/48"};
-    private final String[] IP_V6_ADDRESS = {"12:34:56:78:90:AB:AD:E", "12:34:56:78:90:AB:AD:E"};
+    private static final String ACL_NAME = "aclName";
+    private static final String ACL_STATE_NAME = "aclStateName";
+    private static final String ACE_RULE_NAME = "aceRule";
+    private static final String INPUT_INTERFACE = "interface-";
+    private static final String CLASSIFIER_NAME = "classifier";
+    private static final String[] IP_V4_ADDRESS = {"192.168.1.", "10.66.20."};
+    private static final String[] IP_PREFIX = {"/16", "/32", "/48"};
+    private static final String[] IP_V6_ADDRESS = {"12:34:56:78:90:AB:AD:E", "12:34:56:78:90:AB:AD:E"};
+    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 
     @Before
     public void init() {
-        setOdlSfc();
+        DataBroker dataBroker = getDataBroker();
+        opendaylightSfc.setDataProvider(dataBroker);
     }
 
     @Test
@@ -115,7 +120,6 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     public void testReadAccessListState() throws Exception {
 
         //create Access List state and IID, then write transaction to data store
-        String ACL_STATE_NAME = "aclStateName";
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
         accessListStateBuilder.setAclName(ACL_STATE_NAME)
                 .setKey(new AccessListStateKey(ACL_STATE_NAME))
@@ -155,6 +159,19 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         result = SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(ACL_NAME, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
+
+        //test unsuccessful transactions
+        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(false);
+
+        result = SfcProviderAclAPI.addClassifierToAccessListStateExecutor(ACL_NAME, CLASSIFIER_NAME);
+
+        assertFalse("Must be false", result);
+
+        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "deleteTransactionAPI")).toReturn(false);
+
+        result = SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(ACL_NAME, CLASSIFIER_NAME);
+
+        assertFalse("Must be false", result);
     }
 
     //create classifier list
@@ -170,7 +187,6 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
     //create entries for access list
     private List<AccessListEntries> createAccessListEntries() {
-        String ACE_RULE_NAME = "aceRule";
         List<AccessListEntries> accessListEntriesList = new ArrayList<>();
 
         for (int i = 1; i <= 4; i++) {
@@ -220,7 +236,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
             }
 
             MatchesBuilder matchesBuilder = new MatchesBuilder();
-            matchesBuilder.setInputInterface("interface-" + i)
+            matchesBuilder.setInputInterface(INPUT_INTERFACE + i)
                     .setAceType(aceIpBuilder.build());
 
             //set matches and actions for ipv6

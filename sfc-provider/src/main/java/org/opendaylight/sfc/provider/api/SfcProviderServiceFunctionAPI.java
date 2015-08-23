@@ -295,7 +295,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Class[] serviceFunctionNameClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
                 .getReadServiceFunctionDescriptionMonitor(serviceFunctionNameObj, serviceFunctionNameClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (SfcSfDescMon) future.get();
             LOG.debug("getReadServiceFunctionDescriptionMonitor: {}", future.get());
@@ -537,7 +537,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         } catch (InterruptedException e) {
             LOG.warn("failed to ...." , e);
         } catch (ExecutionException e) {
-            LOG.warn("failed to ....", e);
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -553,31 +553,6 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method puts a SF to data store.
-     * <p>
-     * @param sf Service Function
-     * @return true if SF was added, false otherwise
-     */
-    public static boolean putServiceFunctionExecutor(ServiceFunction sf) {
-        boolean ret =  false;
-        printTraceStart(LOG);
-
-        Object[] servicePathObj = {sf};
-        Class[] servicePathClass = {ServiceFunction.class};
-        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
-                .getPut(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ...." , e);
-        }
         printTraceStop(LOG);
         return ret;
     }
@@ -721,7 +696,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         ServiceFunctions sfs = null;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctions> sfsIID =
-                InstanceIdentifier.builder(ServiceFunctions.class).build();
+                InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
 
         sfs = SfcDataStoreAPI.readTransactionAPI(sfsIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -1026,7 +1001,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
-                        new ServiceFunctionStateKey(serviceFunction.getName());
+                    new ServiceFunctionStateKey(serviceFunction.getName());
                 InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
                         .builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
@@ -1046,21 +1021,21 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                         sfDescMon = new SfcSfDescMonBuilder()
-                                .setMonitoringInfo(sfDescMonTemp.getMonitoringInfo())
-                                .setDescriptionInfo(descInfo).build();
+                            .setMonitoringInfo(sfDescMonTemp.getMonitoringInfo())
+                            .setDescriptionInfo(descInfo).build();
                     } else {
                         sfDescMon = new SfcSfDescMonBuilder()
-                                .setDescriptionInfo(descInfo).build();
+                            .setDescriptionInfo(descInfo).build();
                     }
                 }  else {
                     sfDescMon = new SfcSfDescMonBuilder()
-                            .setDescriptionInfo(descInfo).build();
+                        .setDescriptionInfo(descInfo).build();
                 }
 
                 ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                        .setKey(serviceFunctionStateKey)
-                        .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                    .setKey(serviceFunctionStateKey)
+                    .addAugmentation(ServiceFunctionState1.class,sfState1).build();
 
                 if(dataSfcStateObject!=null) {
                     ret = mergeServiceFunctionState(serviceFunctionState);
@@ -1097,7 +1072,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                 String mountpoint = serviceFunction.getIpMgmtAddress().getIpv4Address().getValue();
                 //get ServiceFunctionState
                 ServiceFunctionStateKey serviceFunctionStateKey =
-                        new ServiceFunctionStateKey(serviceFunction.getName());
+                    new ServiceFunctionStateKey(serviceFunction.getName());
                 InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
                         .builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
@@ -1117,21 +1092,21 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
                         ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                         sfDescMon = new SfcSfDescMonBuilder()
-                                .setMonitoringInfo(monInfo)
-                                .setDescriptionInfo(sfDescMonTemp.getDescriptionInfo()).build();
+                            .setMonitoringInfo(monInfo)
+                            .setDescriptionInfo(sfDescMonTemp.getDescriptionInfo()).build();
                     } else {
                         sfDescMon = new SfcSfDescMonBuilder()
-                                .setMonitoringInfo(monInfo).build();
+                            .setMonitoringInfo(monInfo).build();
                     }
                 } else {
                     sfDescMon = new SfcSfDescMonBuilder()
-                            .setMonitoringInfo(monInfo).build();
+                        .setMonitoringInfo(monInfo).build();
                 }
 
                 ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                        .setKey(serviceFunctionStateKey)
-                        .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+                    .setKey(serviceFunctionStateKey)
+                    .addAugmentation(ServiceFunctionState1.class,sfState1).build();
 
                 if(dataSfcStateObject!=null) {
                     ret = mergeServiceFunctionState(serviceFunctionState);
@@ -1148,7 +1123,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    /**
+     /**
      * This method reads the Description information for a service function.
      * <p>
      * @param serviceFunction SF object

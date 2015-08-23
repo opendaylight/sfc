@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.1.1-Lithium-SR1</version>
+        <version>0.1.2-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
     <artifactId>sfc-ovs</artifactId>
-    <version>0.1.1-Lithium-SR1</version>
+    <version>0.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -132,7 +132,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <!--version>0.2.6-Lithium-SR1</version-->
+                        <!--version>0.2.7-SNAPSHOT</version-->
                         <version>${config.version}</version>
                     </dependency>
                     <dependency>

@@ -73,8 +73,6 @@
         <feature version='${l2switch.version}'>odl-l2switch-hosttracker</feature>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
-        <bundle>mvn:ch.qos.logback/logback-core/${logback.version}</bundle>
-        <bundle>mvn:ch.qos.logback/logback-classic/${logback.version}</bundle>
     </feature>
 
     <feature name='odl-sfc-bootstrap' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>

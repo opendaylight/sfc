@@ -22,7 +22,6 @@ import org.opendaylight.sfc.provider.SfcProviderSfcEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfgEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener;
-import org.opendaylight.sfc.provider.logback.SfcProviderLogbackLoader;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
@@ -65,8 +64,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
      */
     @Override
     public java.lang.AutoCloseable createInstance() {
-
-        SfcProviderLogbackLoader.loadSfcLogbackConfiguration();
 
         final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
 

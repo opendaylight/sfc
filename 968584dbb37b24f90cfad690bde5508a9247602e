@@ -16,6 +16,24 @@
       "revId": "968584dbb37b24f90cfad690bde5508a9247602e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d0dbb6eb",
+        "filename": "features/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2015-08-24T22:00:13Z",
+      "side": 1,
+      "message": "Because they aren\u0027t *used* in any of the features defined here... so the dependency is merely wasteful and causes overinclusion downstream.",
+      "parentUuid": "3a79b1b5_7f939ca3",
+      "revId": "968584dbb37b24f90cfad690bde5508a9247602e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

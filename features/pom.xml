@@ -44,13 +44,14 @@
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-restconf</artifactId>
+      <version>${restconf.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-netconf-connector</artifactId>
       <classifier>features</classifier>
       <type>xml</type>
@@ -76,6 +77,11 @@
       Put dependencies for bundles directly referenced in your features.xml file.
       For every <bundle> reference in your features.xml file, you need a corresponding dependency here.
     -->
+   <dependency>
+       <groupId>org.opendaylight.netconf</groupId>
+       <artifactId>sal-rest-docgen</artifactId>
+       <version>${restconf.version}</version>
+   </dependency>
 
     <!--
       Put dependencies for configfiles directly referenced in your features.xml file.

@@ -44,13 +44,14 @@
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-restconf</artifactId>
+      <version>${restconf.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-netconf-connector</artifactId>
       <classifier>features</classifier>
       <type>xml</type>

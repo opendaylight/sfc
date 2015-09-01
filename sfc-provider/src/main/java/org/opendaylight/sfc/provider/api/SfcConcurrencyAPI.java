@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SfcConcurrencyAPI {
 
     private static final Lock SFC_LOCK = new ReentrantLock();
+    private static final Lock SFC_PATHID_LOCK = new ReentrantLock();
     private static final Logger LOG = LoggerFactory.getLogger(SfcConcurrencyAPI.class);
 
     public static boolean getLock() {
@@ -42,4 +43,21 @@ public class SfcConcurrencyAPI {
         SFC_LOCK.unlock();
         return;
     }
+
+    public static boolean getPathIdLock() {
+        try {
+            if (SFC_PATHID_LOCK.tryLock(2000, TimeUnit.MILLISECONDS)) {
+                return true;
+            }
+        } catch (InterruptedException e) {
+            LOG.error("Failed to Acquire Lock");
+        }
+        return false;
+    }
+
+    public static void releasePathIdLock() {
+        SFC_PATHID_LOCK.unlock();
+        return;
+    }
+
 }

@@ -23,6 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeInternal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdk;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdkvhost;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdkvhostuser;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.OtherBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -189,7 +193,19 @@ public class SfcOvsToSffMappingAPI {
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
         // Default if nothing is specified
         OtherBuilder otherBuilder = new OtherBuilder();
-        otherBuilder.setOtherName("Other");
+
+        LOG.info("XXXXX teminaltionPoint's interface type: {}", terminationPoint.getInterfaceType());
+        if (terminationPoint.getInterfaceType() == InterfaceTypeDpdk.class) {
+                otherBuilder.setOtherName(SfcOvsUtil.DPL_NAME_DPDK);
+        } else if (terminationPoint.getInterfaceType() == InterfaceTypeDpdkvhostuser.class) {
+                otherBuilder.setOtherName(SfcOvsUtil.DPL_NAME_DPDKVHOSTUSER);
+        } else if (terminationPoint.getInterfaceType() == InterfaceTypeDpdkvhost.class) {
+                otherBuilder.setOtherName(SfcOvsUtil.DPL_NAME_DPDKVHOST);
+        } else if (terminationPoint.getInterfaceType() == InterfaceTypeInternal.class) {
+                otherBuilder.setOtherName(SfcOvsUtil.DPL_NAME_INTERNAL);
+        } else {
+                otherBuilder.setOtherName("Other");
+        }
         dataPlaneLocatorBuilder.setLocatorType(otherBuilder.build());
 
         if (terminationPoint.getOptions() != null) {

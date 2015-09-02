@@ -237,7 +237,7 @@
                         <scope>compile</scope>
                     </dependency>
                     <dependency>
-                        <groupId>org.opendaylight.yangtools</groupId>
+                        <groupId>org.opendaylight.mdsal</groupId>
                         <artifactId>maven-sal-api-gen-plugin</artifactId>
                         <version>${yangtools.version}</version>
                         <scope>compile</scope>

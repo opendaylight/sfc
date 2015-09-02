@@ -115,8 +115,8 @@
         <configfile finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml">mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}/xml/config</configfile>
     </feature>
     <feature name='odl-sfc-model' version='${project.version}' description='OpenDaylight :: sfc :: Model'>
-        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-models</feature>
         <feature version='${ovsdb.southbound.version}'>odl-ovsdb-southbound-api</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-model/${project.version}</bundle>
     </feature>

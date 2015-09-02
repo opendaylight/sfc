@@ -90,8 +90,9 @@ public class SfcServicePathId {
             } finally {
                 SfcConcurrencyAPI.releasePathIdLock();
             }
+        } else {
+            return -1;
         }
-        return -1;
     }
 
 
@@ -114,8 +115,9 @@ public class SfcServicePathId {
             } finally {
                 SfcConcurrencyAPI.releasePathIdLock();
             }
+        } else {
+            return -1;
         }
-        return -1;
     }
 
     /**
@@ -136,8 +138,9 @@ public class SfcServicePathId {
             } finally {
                 SfcConcurrencyAPI.releasePathIdLock();
             }
+        } else {
+            return -1;
         }
-        return -1;
     }
 
     /**
@@ -196,7 +199,6 @@ public class SfcServicePathId {
         servicePathIdBuilder.setPathIdBitarray(pathIdBitArray | (1L << (Long.SIZE - bitEntry)));
         servicePathIdBuilder.setKey(servicePathIdKey);
 
-
         return SfcDataStoreAPI.
                 writeMergeTransactionAPI(spIID, servicePathIdBuilder.build(), LogicalDatastoreType.OPERATIONAL);
     }
@@ -230,62 +232,10 @@ public class SfcServicePathId {
 
                 return SfcDataStoreAPI.
                         writeMergeTransactionAPI(spIID, servicePathIdBuilder.build(), LogicalDatastoreType.OPERATIONAL);
-
             } finally {
                 SfcConcurrencyAPI.releasePathIdLock();
             }
         }
         return false;
     }
-
-    /**
-     * Algorithmic Symmetric Path-ID allocation
-     *
-     * Flip High order bit
-     *
-     * <p>
-     * @param  pathid Forward Path Id
-     * @return True if available, otherwise false.
-     */
-    public static boolean allocate_symmetric_pathid_flip(long pathid) {
-        if (SfcConcurrencyAPI.getPathIdLock()) {
-            try {
-
-                long symmetric_id = pathid ^ (1 << 23);
-
-                ServicePathIdKey servicePathIdKey = new
-                        ServicePathIdKey(symmetric_id / Long.SIZE);
-
-                /* Entry into the bitarray */
-                long bitEntry = symmetric_id % Long.SIZE;
-
-                long pathIdBitArray = 0;
-
-                InstanceIdentifier<ServicePathId> spIID;
-                spIID = InstanceIdentifier.builder(ServicePathIds.class)
-                        .child(ServicePathId.class, servicePathIdKey)
-                        .build();
-                ServicePathId servicePathId = SfcDataStoreAPI.
-                        readTransactionAPI(spIID, LogicalDatastoreType.OPERATIONAL);
-
-
-                if (servicePathId != null) {
-                    pathIdBitArray = (servicePathId.getPathIdBitarray() != null) ? servicePathId.getPathIdBitarray() : 0;
-                }
-
-                ServicePathIdBuilder servicePathIdBuilder = new ServicePathIdBuilder();
-
-                servicePathIdBuilder.setPathIdBitarray(pathIdBitArray | (1L << (Long.SIZE - bitEntry)));
-                servicePathIdBuilder.setKey(servicePathIdKey);
-
-                return SfcDataStoreAPI.
-                        writeMergeTransactionAPI(spIID, servicePathIdBuilder.build(), LogicalDatastoreType.OPERATIONAL);
-            } finally {
-                SfcConcurrencyAPI.releasePathIdLock();
-            }
-        }
-        return false;
-    }
-
-
 }

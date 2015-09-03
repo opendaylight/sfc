@@ -412,7 +412,10 @@ def main(argv):
     Example:
     python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
       --encapsulate gpe-nsh-ipv4
-    python3.4 sff_client.py --remote-sff-ip 10.0.1.4 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255
+
+    python3.4 sff_client.py --remote-sff-ip 192.168.1.27 --local-port 6633 --remote-sff-port 4790 --sfp-id 3
+    --sfp-index 255 --encapsulate vxlan-nsh-ethernet-legacy --inner-src-ip 192.168.0.1 --inner-dest-ip 192.168.1.13
+    --inner-src-port 10000 --inner-dest-port 20000 --ctx1 192.168.1.7
 
     Trace Example:
     python3.4 sff_client.py --remote-sff-ip 10.0.1.41 --remote-sff-port 4789 --sfp-id 1 --sfp-index 255 \
@@ -447,6 +450,8 @@ def main(argv):
     inner_dest_port = 20000
     encapsulate = 'gpe-nsh-ipv4'  # make vxlan-gpe encapsulation default
     ctx1 = ctx2 = ctx3 = ctx4 = 0
+    inner_src_eth_list = [0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc]
+    inner_dest_eth_list = [0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58]
 
     try:
         logging.basicConfig(level=logging.INFO)
@@ -454,12 +459,14 @@ def main(argv):
                                   ["help", "local-port=", "local-ip=", "inner-src-ip=", "inner-dest-ip=",
                                    "inner-src-port=", "inner-dest-port=", "remote-sff-ip=",
                                    "remote-sff-port=", "sfp-id=", "sfp-index=", "trace-req", "num-trace-hops=",
-                                   "encapsulate=", "ctx1=", "ctx2=", "ctx3=", "ctx4="])
+                                   "encapsulate=", "ctx1=", "ctx2=", "ctx3=", "ctx4=", "inner-src-eth=",
+                                   "inner-dest-eth="])
     except getopt.GetoptError:
         print(
             "sff_client --help | --local-port | --local-ip | --inner-src-ip | --inner-dest-ip | --inner-src-port | "
             "--inner-dest-port | --remote-sff-ip | --ctx1 | --ctx2 | --ctx3 | --ctx4"
-            "--remote-sff-port | --sfp-id | --sfp-index | --trace-req | --num-trace-hops | --encapsulate")
+            "--remote-sff-port | --sfp-id | --sfp-index | --trace-req | --num-trace-hops | --encapsulate"
+            "--inner-src-eth | --inner-dest-eth")
         sys.exit(2)
 
     for opt, arg in opt:
@@ -474,8 +481,29 @@ def main(argv):
                   "--encapsulate=<gpe-nsh-ethernet|gre|gpe-nsh-ipv4|vxlan-nsh-ethernet-legacy> \n "
                   "--inner-src-ip=<source IP of inner packet> \n --inner-dest-ip=<destination IP of inner packet> \n "
                   "--ctx1=<context header 1> \n --ctx2=<context header 2> \n --ctx3=<context header 3> \n "
-                  "--ctx4=<context header 4> \n --local-port=<source port> \n --local-ip=<source IP> ")
+                  "--ctx4=<context header 4> \n --local-port=<source port> \n --local-ip=<source IP> \n"
+                  "--inner-src-eth=<inner src ethernet address> \n --inner-dest-eth=<inner dest ethernet address>")
             sys.exit()
+
+        if opt == "--inner-src-eth":
+            inner_src_eth_list = arg.split(':')
+            if len(inner_src_eth_list) == ETHERNET_ADDR_SIZE:
+                for i, val in enumerate(inner_src_eth_list):
+                    inner_src_eth_list[i] = int(val, 16)
+            else:
+                logger.error("Ethernet address must be in the form aa:bb:cc:dd:ee:ff")
+                sys.exit(2)
+            continue
+
+        if opt == "--inner-dest-eth":
+            inner_dest_eth_list = arg.split(':')
+            if len(inner_dest_eth_list) == ETHERNET_ADDR_SIZE:
+                for i, val in enumerate(inner_dest_eth_list):
+                    inner_dest_eth_list[i] = int(val, 16)
+            else:
+                logger.error("Ethernet address must be in the form aa:bb:cc:dd:ee:ff")
+                sys.exit(2)
+            continue
 
         if opt == "--remote-sff-ip":
             remote_sff_ip = arg
@@ -630,7 +658,10 @@ def main(argv):
             # NSH type 3
             vxlan_header_values = VXLANGPE()
 
-            ethernet_header_values = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
+            ethernet_header_values = ETHHEADER(inner_src_eth_list[0], inner_src_eth_list[1], inner_src_eth_list[2],
+                                               inner_src_eth_list[3], inner_src_eth_list[4], inner_src_eth_list[5],
+                                               inner_dest_eth_list[0], inner_dest_eth_list[1], inner_dest_eth_list[2],
+                                               inner_dest_eth_list[3], inner_dest_eth_list[4], inner_dest_eth_list[5],
                                                0x08, 0x00)
 
             udpclient = MyVxlanGpeNshEthClient(loop, ethernet_header_values,
@@ -643,7 +674,10 @@ def main(argv):
             # NSH type 3
             vxlan_header_values = VXLAN()
 
-            ethernet_header_values = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
+            ethernet_header_values = ETHHEADER(inner_src_eth_list[0], inner_src_eth_list[1], inner_src_eth_list[2],
+                                               inner_src_eth_list[3], inner_src_eth_list[4], inner_src_eth_list[5],
+                                               inner_dest_eth_list[0], inner_dest_eth_list[1], inner_dest_eth_list[2],
+                                               inner_dest_eth_list[3], inner_dest_eth_list[4], inner_dest_eth_list[5],
                                                0x08, 0x00)
 
             udpclient = MyVxlanNshEthClient(loop, ethernet_header_values,

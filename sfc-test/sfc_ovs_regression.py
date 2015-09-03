@@ -1,9 +1,7 @@
-__author__ = "Andrej Kincel"
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __license__ = "New-style BSD"
 __version__ = "0.1"
-__email__ = "andrej.kincel@gmail.com"
 __email__ = "rapenno@gmail.com"
 __status__ = "Tested with SFC-Karaf distribution as of 04/14/2015"
 

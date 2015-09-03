@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_9c7222ac",
+        "filename": "sfc-py/sfc/sff_client.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-09-03T08:05:22Z",
+      "side": 1,
+      "message": "Should we also add the usage of the ether/mac addresses here?",
+      "range": {
+        "startLine": 416,
+        "startChar": 14,
+        "endLine": 416,
+        "endChar": 24
+      },
+      "revId": "aba9a5658670a8b7044557a08678463899659a75",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

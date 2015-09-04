@@ -450,16 +450,32 @@ def init_flows(context):
     #Gateways initialization flows
     insert_flows_by_cmd('sudo ovs-vsctl set bridge gw1 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13')
     insert_flows_by_cmd('sudo ovs-vsctl set bridge gw2 protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13')
+    # Match any drop flows in both GWs
+    insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=1,actions=drop"')
+    insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw2 "table=0,priority=1,actions=drop"')
 
     # Gatway client flows
     gw1_out_port = int(3)
     for client in context.clients:
         if (context.demo_mode == 'vlan'):
             print 'GWS - VLAN client flows:'
-            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=1,vlan_tci=0x1000/0x1000,ip,nw_dst=%s,actions=strip_vlan,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=30,in_port=1,vlan_tci=0x1000/0x1000,ip,nw_dst=%s,actions=strip_vlan,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+
+            # ARP flows
+            #   Arp Req and Rsp from the client
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=20,in_port=%d,arp,actions=output=2"' % (gw1_out_port))
+            #   Arp Req and Rsp to the client
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=20,in_port=2,arp,arp_tpa=%s,actions=set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+
+            # ICMP ping flows
+            #   ICMP from the client
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=%d,icmp,actions=output=2"' % (gw1_out_port))
+            #   ICMP to the client
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=2,icmp,nw_dst=%s,actions=set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+
         elif (context.demo_mode == 'mpls'):
             print 'GWS - MPLS client flows:'
-            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=1,mpls,nw_dst=%s,actions=pop_mpls=0x000b,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=30,in_port=1,mpls,nw_dst=%s,actions=pop_mpls=0x000b,set_field:%s->eth_dst,output=%d"' % (client.ip_, client.mac_, gw1_out_port))
         gw1_out_port += 1
 
     # Gatway server flows
@@ -468,9 +484,23 @@ def init_flows(context):
         if (context.demo_mode == 'vlan'):
             print 'GWS - VLAN server flows:'
             insert_flows_by_cmd('sudo ovs-ofctl -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=1,vlan_tci=0x1000/0x1000,ip,nw_dst=%s,actions=strip_vlan,set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+
+            # ARP flows
+            #   Arp Req and Rsp from the server
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=20,in_port=%d,arp,actions=output=2"' % (gw2_out_port))
+            #   Arp Req and Rsp to the server
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=20,in_port=2,arp,arp_tpa=%s,actions=set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+
+            # ICMP ping flows
+            #   ICMP from the server
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=%d,icmp,actions=output=2"' % (gw2_out_port))
+            #   ICMP to the server
+            insert_flows_by_cmd('sudo ovs-ofctl -O Openflow13 add-flow gw1 "table=0,priority=10,in_port=2,icmp,nw_dst=%s,actions=set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+
         elif (context.demo_mode == 'mpls'):
             print 'GWS - MPLS server flows:'
             insert_flows_by_cmd('sudo ovs-ofctl -O OpenFlow13 add-flow gw2 "table=0,priority=10,in_port=1,mpls,nw_dst=%s,actions=pop_mpls=0x000b,set_field:%s->eth_dst,output=%d"' % (server.ip_, server.mac_, gw2_out_port))
+
         gw2_out_port += 1
 
 

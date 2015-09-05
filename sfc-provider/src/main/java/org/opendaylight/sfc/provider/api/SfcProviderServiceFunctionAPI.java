@@ -534,7 +534,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
-                child(ServiceFunction.class, sf.getKey()).toInstance();
+                child(ServiceFunction.class, sf.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
@@ -692,7 +692,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     protected boolean putAllServiceFunctions(ServiceFunctions sfs) {
         boolean ret = false;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
         if (SfcDataStoreAPI.writeSynchPutTransactionAPI(sfsIID, sfs, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
@@ -701,6 +701,35 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
         return ret;
     }
+
+    /**
+     * This method creates an executor wrapper that adds the ServiceFunctions to
+     * the datastore
+     *
+     * <p>
+     * @param  serviceFunctions Object holding ServiceFunctions
+     * @return boolean is ServiceFunctions added to the datatore, false otherwise
+     */
+    public static boolean putAllServiceFunctionsExecutor(ServiceFunctions serviceFunctions) {
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctions};
+        Class[] servicePathClass = {ServiceFunctions.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getPutAll(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getPutAll: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
 
     protected ServiceFunctions readAllServiceFunctions() {
         ServiceFunctions sfs = null;

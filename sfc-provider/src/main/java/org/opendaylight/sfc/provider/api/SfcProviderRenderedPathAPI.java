@@ -8,9 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
@@ -38,14 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.*;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,6 +47,9 @@ import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 //import javax.ws.rs.HttpMethod;
 
@@ -188,7 +184,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
         try {
             ret = (RenderedServicePath) futureCreateRSP.get();
-            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", futureCreateRSP.get());
+            LOG.debug("createRenderedServicePathEntryExecutor: {}", ret);
         } catch (InterruptedException e) {
             LOG.warn(FAILED_TO_STR , e);
         } catch (ExecutionException e) {
@@ -379,9 +375,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
     /**
      * Given a list of Service Functions, create a RenderedServicePath Hop List
      *
-     * @param serviceFunctionNameList
-     * @param sfgNameList
-     * @param serviceIndex
+     * @param serviceFunctionNameList List of ServiceFunctions
+     * @param sfgNameList List of ServiceFunctionGroups
+     * @param serviceIndex Starting index
      * @return
      */
     protected List<RenderedServicePathHop> createRenderedServicePathHopList(List<String> serviceFunctionNameList, List<String> sfgNameList, int serviceIndex) {

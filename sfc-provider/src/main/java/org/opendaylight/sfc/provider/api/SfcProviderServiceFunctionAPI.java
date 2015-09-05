@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -128,11 +129,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.warn("readServiceFunctionState() Service Function {} has no operational state", serviceFunctionName);
         }
-
-
         printTraceStop(LOG);
         return ret;
-
     }
 
 
@@ -258,11 +256,8 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         } else {
             LOG.warn("readServiceFunctionDescriptionMonitor() Service Function {} has no operational state", serviceFunctionName);
         }
-
-
         printTraceStop(LOG);
         return ret;
-
     }
 
     /**
@@ -529,21 +524,27 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
     }
 
 
-    protected static boolean putServiceFunction(ServiceFunction sf) {
+    /**
+     * This method puts a SF to data store.
+     * <p>
+     * @param sf Service Function
+     * @return true if SF was added, false otherwise
+     */
+    public static boolean putServiceFunction(ServiceFunction sf) {
         boolean ret;
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
-                child(ServiceFunction.class, sf.getKey()).toInstance();
+                child(ServiceFunction.class, sf.getKey()).build();
 
-        ret = SfcDataStoreAPI.writePutTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
+        ret = SfcDataStoreAPI.writeMergeTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
         printTraceStop(LOG);
         return ret;
     }
 
     /**
-     * This method puts a SF to data store.
+     * Wrapper executor method adds a SF to the data store.
      * <p>
      * @param sf Service Function
      * @return true if SF was added, false otherwise
@@ -559,7 +560,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (boolean) future.get();
-            LOG.debug("getAddPathToServiceFunctionState: {}", future.get());
+            LOG.debug("putServiceFunctionExecutor: {}", ret);
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("failed to ...." , e);
         }
@@ -567,6 +568,12 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * Add ServiceFunctionState to datastore
+     * <p>
+     * @param sfState ServiceFunctionState Object
+     * @return true if state was added, false otherwise
+     */
     public static boolean putServiceFunctionState(ServiceFunctionState sfState) {
         boolean ret;
         printTraceStart(LOG);
@@ -677,7 +684,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, serviceFunctionKey).toInstance();
+                .child(ServiceFunction.class, serviceFunctionKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
@@ -688,12 +695,50 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method deletes a SF from the datastore
+     * <p>
+     * @param serviceFunctionName SF name
+     * @return true if SF was deleted, false otherwise
+     */
     @SuppressWarnings("unused")
+    public static boolean deleteServiceFunctionExecutor(String serviceFunctionName) {
+        boolean ret = false;
+        printTraceStart(LOG);
+        Object[] servicePathObj = {serviceFunctionName};
+        Class[] servicePathClass = {String.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getDelete(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getRead: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception", e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+
+    /**
+     * This method adds a ServiceFunctions Object (collection of SFs) to the data store
+     *
+     * <p>
+     * @param  sfs Object holding ServiceFunctions
+     * @return true is ServiceFunctions added to the datatore, false otherwise
+     */
+    @SuppressWarnings("unused")
+    @SfcReflection
     protected boolean putAllServiceFunctions(ServiceFunctions sfs) {
         boolean ret = false;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).toInstance();
-        if (SfcDataStoreAPI.writeSynchPutTransactionAPI(sfsIID, sfs, LogicalDatastoreType.CONFIGURATION)) {
+        //InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
+        if (SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfs, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
             LOG.error("Could not add all Service Functions: {}", sfs.toString());
@@ -701,6 +746,35 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStop(LOG);
         return ret;
     }
+
+    /**
+     * This method creates an executor wrapper that adds the ServiceFunctions to
+     * the datastore
+     *
+     * <p>
+     * @param  serviceFunctions Object holding ServiceFunctions
+     * @return true is ServiceFunctions added to the datatore, false otherwise
+     */
+    public static boolean putAllServiceFunctionsExecutor(ServiceFunctions serviceFunctions) {
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctions};
+        Class[] servicePathClass = {ServiceFunctions.class};
+        SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
+                .getPutAll(servicePathObj, servicePathClass);
+        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getPutAll: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
 
     protected ServiceFunctions readAllServiceFunctions() {
         ServiceFunctions sfs = null;

@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -325,18 +326,44 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
 
     /**
      * Put all Service Function Forwarders in the data store
-     * devices
+     *
      * <p>
      * @return true is all SFFs were created, false otherwise
      */
     protected boolean putAllServiceFunctionForwarders(ServiceFunctionForwarders sffs) {
-        boolean ret = false;
+        boolean ret;
         printTraceStart(LOG);
-        if (dataBroker != null) {
-            InstanceIdentifier<ServiceFunctionForwarders> sffsIID =
-                    InstanceIdentifier.builder(ServiceFunctionForwarders.class).build();
 
-            ret = SfcDataStoreAPI.writePutTransactionAPI(sffsIID, sffs, LogicalDatastoreType.CONFIGURATION);
+        ret = SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SFF_IID, sffs, LogicalDatastoreType.CONFIGURATION);
+
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
+     * Creates a wrapper executor around a method to add a ServiceFunctionForwarder
+     * object to into DataStore
+     *
+     * <p>
+     * @param serviceFunctionForwarders Service Function Forwarders Object
+     * @return Nothing.
+     */
+    public static boolean putAllServiceFunctionForwardersExecutor(ServiceFunctionForwarders serviceFunctionForwarders) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctionForwarders};
+        Class[] servicePathClass = {ServiceFunctionForwarders.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getPutAll(servicePathObj, servicePathClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("putAllServiceFunctionForwardersExecutor: {}", ret);
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;

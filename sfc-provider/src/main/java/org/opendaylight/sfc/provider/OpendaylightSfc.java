@@ -78,6 +78,9 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<RenderedServicePath> RSP_ENTRY_IID = InstanceIdentifier
             .builder(RenderedServicePaths.class).child(RenderedServicePath.class).build();
 
+    public static final InstanceIdentifier<ServiceFunctionSchedulerType> SFST_ENTRY_IID = InstanceIdentifier
+            .builder(ServiceFunctionSchedulerTypes.class).child(ServiceFunctionSchedulerType.class).build();
+
     public static final InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(
             ServiceFunctionChains.class).build();
 
@@ -90,8 +93,11 @@ public class OpendaylightSfc implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionForwarders> SFF_IID = InstanceIdentifier.builder(
             ServiceFunctionForwarders.class).build();
 
-    public static final InstanceIdentifier<ServiceFunctionSchedulerType> SFST_ENTRY_IID = InstanceIdentifier
-            .builder(ServiceFunctionSchedulerTypes.class).child(ServiceFunctionSchedulerType.class).build();
+    public static final InstanceIdentifier<ServiceFunctions> SF_IID = InstanceIdentifier
+            .builder(ServiceFunctions.class).build();
+
+    public static final InstanceIdentifier<ServiceFunctionPaths> SFP_IID = InstanceIdentifier
+            .builder(ServiceFunctionPaths.class).build();
 
     public static final int EXECUTOR_THREAD_POOL_SIZE = 100;
 
@@ -150,14 +156,8 @@ public class OpendaylightSfc implements AutoCloseable {
             final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID = InstanceIdentifier.builder(
                     ServiceFunctionClassifiers.class).build();
 
-            final InstanceIdentifier<ServiceFunctions> SF_IID = InstanceIdentifier.builder(ServiceFunctions.class)
-                    .build();
-
             final InstanceIdentifier<ServiceFunctionGroups> SFG_IID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
                     .build();
-
-            final InstanceIdentifier<ServiceFunctionPaths> SFP_IID = InstanceIdentifier.builder(
-                    ServiceFunctionPaths.class).build();
 
             final InstanceIdentifier<RenderedServicePaths> rspIid = InstanceIdentifier.builder(
                     RenderedServicePaths.class).build();

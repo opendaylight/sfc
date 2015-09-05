@@ -343,6 +343,35 @@ public class SfcProviderServiceForwarderAPI extends SfcProviderAbstractAPI {
     }
 
     /**
+     * Creates a wrapper executor around a method to add a ServiceFunctionForwarder
+     * object to into DataStore
+     *
+     * <p>
+     * @param serviceFunctionForwarders Service Function Forwarders Object
+     * @return Nothing.
+     */
+    public static boolean putAllServiceFunctionForwardersExecutor(ServiceFunctionForwarders serviceFunctionForwarders) {
+
+        printTraceStart(LOG);
+        boolean ret = false;
+        Object[] servicePathObj = {serviceFunctionForwarders};
+        Class[] servicePathClass = {ServiceFunctionForwarders.class};
+        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = SfcProviderServiceForwarderAPI
+                .getPutAll(servicePathObj, servicePathClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceForwarderAPI);
+        try {
+            ret = (boolean) future.get();
+            LOG.debug("getPut: {}", future.get());
+        } catch (InterruptedException e) {
+            LOG.warn("failed to ...." , e);
+        } catch (ExecutionException e) {
+            LOG.warn("failed to ...." , e);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
+    /**
      * Read all Service Function Forwarders
      * devices
      * <p>

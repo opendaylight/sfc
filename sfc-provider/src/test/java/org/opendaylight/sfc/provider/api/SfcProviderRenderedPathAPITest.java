@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -25,10 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.*;
 import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
@@ -49,7 +45,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         lbResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler", LoadBalance.class);
         rnResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler", Random.class);
         spResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler", ShortestPath.class);
-        rsResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler", Mockito.any());
+        rsResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler",
+                ServiceFunctionSchedulerTypeIdentity.class);
 
         assertEquals("Must be equal", rrResult.getClass(), SfcServiceFunctionRoundRobinSchedulerAPI.class);
         assertEquals("Must be equal", lbResult.getClass(), SfcServiceFunctionLoadBalanceSchedulerAPI.class);

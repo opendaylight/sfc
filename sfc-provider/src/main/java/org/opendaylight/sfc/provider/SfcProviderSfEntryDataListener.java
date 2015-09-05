@@ -63,7 +63,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
 
                 // SF ORIGINAL
                 Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
-
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
                     if (entry.getValue() instanceof ServiceFunction) {
                         ServiceFunction originalServiceFunction = (ServiceFunction) entry.getValue();
@@ -74,7 +73,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
 
                 // SF CREATION
                 Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
                     if (entry.getValue() instanceof ServiceFunction) {
                         ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
@@ -96,9 +94,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                             LOG.error("Failed to delete Service Function Type for SF: {}", originalServiceFunction.getName());
                         }
 
-                /* Before removing RSPs used by this Service Function, we need to remove all
-                 * references in the SFF/SF operational trees
-                 */
+                        /* Before removing RSPs used by this Service Function, we need to remove all
+                         * references in the SFF/SF operational trees
+                         */
                         String sfName = originalServiceFunction.getName();
                         List<String> rspList = SfcProviderServiceFunctionAPI.
                                 readServiceFunctionStateAsStringListExecutor(sfName);
@@ -116,14 +114,10 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                     }
                 }
 
-
                 // SF UPDATE
-                Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
-                        = change.getUpdatedData();
+                Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
                     if ((entry.getValue() instanceof ServiceFunction) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
-
-
                         DataObject dataObject = dataOriginalDataObject.get(entry.getKey());
                         ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
                         Object[] serviceFunctionObj = {originalServiceFunction};
@@ -152,9 +146,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                                     .getCreateServiceFunctionTypeEntry(serviceFunctionObj, serviceFunctionClass));
                         }
 
-                /* Before removing RSPs used by this Service Function, we need to remove all
-                 * references in the SFF/SF operational trees
-                 */
+                        /* Before removing RSPs used by this Service Function, we need to remove all
+                         * references in the SFF/SF operational trees
+                         */
                         String sfName = originalServiceFunction.getName();
                         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.
                                 readServiceFunctionStateExecutor(sfName);
@@ -172,9 +166,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                             }
                             SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
                         }
-                /* We do not update the SFF dictionary. Since the user configured it in the first place,
-                 * (s)he is also responsible for updating it.
-                 */
+                        /* We do not update the SFF dictionary. Since the user configured it in the first place,
+                         * (s)he is also responsible for updating it.
+                         */
                     }
                 }
             } finally {

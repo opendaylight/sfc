@@ -192,7 +192,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object which contains a list of SF of this type
      */
-    protected ServiceFunctionType readServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+    public static ServiceFunctionType readServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
         ServiceFunctionType sft;
         InstanceIdentifier<ServiceFunctionType> sftIID;
@@ -217,7 +217,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * @param serviceFunction Service Function object
      * @return Service Function Type Object
      */
-    public boolean deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
+    public static boolean deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
         boolean ret = false;
@@ -261,7 +261,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object
      */
-    public boolean deleteServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+    public static boolean deleteServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
         boolean ret = false;
 
@@ -337,7 +337,7 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
      * @param serviceFunction Service Function Object
      * @return Nothing.
      */
-    public boolean createServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
+    public static boolean createServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
 
         printTraceStart(LOG);
 
@@ -345,16 +345,6 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         Class<? extends ServiceFunctionTypeIdentity> sfkey = serviceFunction.getType();
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
 
-        //if (readAllServiceFunctionTypes() == null) {
-        //    InstanceIdentifier<ServiceFunctionTypes> sftIID;
-        //    sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-        //    ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        //    if (!SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(),
-        //            LogicalDatastoreType.CONFIGURATION)) {
-        //        LOG.error("Failed to create top level Service Function Type object");
-        //    }
-        //
-        //}
         //Build the instance identifier all the way down to the bottom child
 
         SftServiceFunctionNameKey sftServiceFunctionNameKey =
@@ -382,5 +372,33 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    /**
+     * This method reads a Service function Type entry from a Service
+     * Function.
+     * <p/>
+     *
+     * @param serviceFunction Service Function Object
+     * @return Nothing.
+     */
+    public static SftServiceFunctionName readServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
 
+        printTraceStart(LOG);
+
+        boolean ret = false;
+        Class<? extends ServiceFunctionTypeIdentity> sfkey = serviceFunction.getType();
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
+
+        //Build the instance identifier all the way down to the bottom child
+
+        SftServiceFunctionNameKey sftServiceFunctionNameKey =
+                new SftServiceFunctionNameKey(serviceFunction.getName());
+
+        InstanceIdentifier<SftServiceFunctionName> sftentryIID;
+        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                .child(ServiceFunctionType.class, serviceFunctionTypeKey)
+                .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
+
+        printTraceStop(LOG);
+        return (SfcDataStoreAPI.readTransactionAPI(sftentryIID, LogicalDatastoreType.CONFIGURATION));
+    }
 }

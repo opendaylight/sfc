@@ -534,7 +534,7 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class).
-                child(ServiceFunction.class, sf.getKey()).toInstance();
+                child(ServiceFunction.class, sf.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 

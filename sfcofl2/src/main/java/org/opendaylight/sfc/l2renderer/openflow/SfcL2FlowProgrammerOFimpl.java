@@ -217,12 +217,27 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     //
     @Override
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
-                new ConfigureTableMatchAnyThread(
-                        sffNodeName,
-                        getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
-                        getTableId(TABLE_INDEX_PATH_MAPPER),
-                        doDrop);
+        Runnable configureTableMatchAnyThread = null;
+        if(doDrop) {
+            // For the NSH demo, for now we want the MatchAny to output to normal => the kernel
+            /*
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyDropThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE));
+            */
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyOutputNormalThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE));
+        } else {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyGotoTableThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
+                            getTableId(TABLE_INDEX_PATH_MAPPER));
+        }
+
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -232,12 +247,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
-                new ConfigureTableMatchAnyThread(
-                        sffNodeName,
-                        getTableId(TABLE_INDEX_PATH_MAPPER),
-                        getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
-                        doDrop);
+        Runnable configureTableMatchAnyThread = null;
+        if(doDrop) {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyDropThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_PATH_MAPPER));
+        } else {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyGotoTableThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_PATH_MAPPER),
+                            getTableId(TABLE_INDEX_PATH_MAPPER_ACL));
+        }
+
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -247,12 +270,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
-                new ConfigureTableMatchAnyThread(
-                        sffNodeName,
-                        getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
-                        getTableId(TABLE_INDEX_NEXT_HOP),
-                        doDrop);
+        Runnable configureTableMatchAnyThread = null;
+        if(doDrop) {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyDropThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_PATH_MAPPER_ACL));
+        } else {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyGotoTableThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
+                            getTableId(TABLE_INDEX_NEXT_HOP));
+        }
+
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -262,12 +293,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
-                new ConfigureTableMatchAnyThread(
-                        sffNodeName,
-                        getTableId(TABLE_INDEX_NEXT_HOP),
-                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                        doDrop);
+        Runnable configureTableMatchAnyThread = null;
+        if(doDrop) {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyDropThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_NEXT_HOP));
+        } else {
+            configureTableMatchAnyThread =
+                    (Runnable) new ConfigureTableMatchAnyGotoTableThread(
+                            sffNodeName,
+                            getTableId(TABLE_INDEX_NEXT_HOP),
+                            getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
+        }
+
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -278,12 +317,18 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     @Override
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop) {
         // This is the last table, cant set next table AND doDrop should be false
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
-                new ConfigureTableMatchAnyThread(
+        /*
+        Runnable configureTableMatchAnyThread =
+                (Runnable) new ConfigureTableMatchAnyDropThread(
                         sffNodeName,
-                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                        (short) -1,
-                        doDrop);
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
+         */
+        // For the NSH demo, for now we want the MatchAny to output to normal => the kernel
+        Runnable configureTableMatchAnyThread =
+                (Runnable) new ConfigureTableMatchAnyOutputNormalThread(
+                        sffNodeName,
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
+
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -291,64 +336,181 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
-    private class ConfigureTableMatchAnyThread implements Runnable {
+
+    private class ConfigureTableMatchAnyDropThread implements Runnable {
         private String sffNodeName;
-        private boolean doDrop;
         private short tableId;
-        private short nextTableId;
         private Long rspId;
 
-        public ConfigureTableMatchAnyThread(final String sffNodeName, final short tableId, final short nextTableId,
-                final boolean doDrop) {
+        public ConfigureTableMatchAnyDropThread(
+                final String sffNodeName,
+                final short tableId) {
             this.sffNodeName = sffNodeName;
             this.tableId = tableId;
-            this.nextTableId = nextTableId;
-            this.doDrop = doDrop;
             this.rspId = flowRspId;
         }
 
         @Override
         public void run() {
             try {
-                LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}] doDrop {}",
-                        this.sffNodeName, this.tableId, this.nextTableId, this.doDrop);
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyDropThread, sff [{}] tableId [{}]",
+                        this.sffNodeName, this.tableId);
+
+                //
+                // Match any
+                MatchBuilder match = new MatchBuilder();
+
+                //
+                // Create the actions
+                int order = 0;
+
+                List<Action> actionList = new ArrayList<Action>();
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
+
+                // Add our drop action to a list
+                actionList.add(SfcOpenflowUtils.createActionDropPacket(order));
+
+                // Create an Apply Action
+                aab.setAction(actionList);
+
+                // Wrap our Apply Action in an Instruction
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setKey(new InstructionKey(order));
+                ib.setOrder(order++);
+                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+                List<Instruction> instructions = new ArrayList<Instruction>();
+                instructions.add(ib.build());
+
+                //
+                // Finish up the instructions
+                InstructionsBuilder isb = new InstructionsBuilder();
+                isb.setInstruction(instructions);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder transportIngressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                this.tableId,
+                                FLOW_PRIORITY_MATCH_ANY,
+                                "MatchAny",
+                                match,
+                                isb);
+
+                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+
+            } catch (Exception e) {
+                LOG.error("ConfigureTableMatchAnyDropThread writer caught an Exception: ", e);
+            }
+        }
+    }
+
+    private class ConfigureTableMatchAnyOutputNormalThread implements Runnable {
+        private String sffNodeName;
+        private short tableId;
+        private Long rspId;
+
+        public ConfigureTableMatchAnyOutputNormalThread(
+                final String sffNodeName,
+                final short tableId) {
+            this.sffNodeName = sffNodeName;
+            this.tableId = tableId;
+            this.rspId = flowRspId;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyOutputNormalThread, sff [{}] tableId [{}]",
+                        this.sffNodeName, this.tableId);
+
+                //
+                // Match any
+                MatchBuilder match = new MatchBuilder();
 
                 //
                 // Create the actions
                 List<Instruction> instructions = new ArrayList<Instruction>();
                 int order = 0;
 
-                if(this.doDrop) {
-                    List<Action> actionList = new ArrayList<Action>();
-                    ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                List<Action> actionList = new ArrayList<Action>();
+                ApplyActionsBuilder aab = new ApplyActionsBuilder();
 
-                    // Add our drop action to a list
-                    actionList.add(SfcOpenflowUtils.createActionDropPacket(0));
+                // Add our NormalOutput action to a list
+                actionList.add(SfcOpenflowUtils.createActionNormalOutput(order));
 
-                    // Create an Apply Action
-                    aab.setAction(actionList);
+                // Create an Apply Action
+                aab.setAction(actionList);
 
-                    // Wrap our Apply Action in an Instruction
-                    InstructionBuilder ib = new InstructionBuilder();
-                    ib.setKey(new InstructionKey(order));
-                    ib.setOrder(order++);
-                    ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-                    instructions.add(ib.build());
-                } else {
-                    //
-                    // Action, goto Ingress table
-                    GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(this.nextTableId);
+                // Wrap our Apply Action in an Instruction
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setKey(new InstructionKey(order));
+                ib.setOrder(order++);
+                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                instructions.add(ib.build());
 
-                    InstructionBuilder ib = new InstructionBuilder();
-                    ib.setKey(new InstructionKey(order));
-                    ib.setOrder(order++);
-                    ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
-                    instructions.add(ib.build());
-                }
+                //
+                // Finish up the instructions
+                InstructionsBuilder isb = new InstructionsBuilder();
+                isb.setInstruction(instructions);
+
+                //
+                // Create and configure the FlowBuilder
+                FlowBuilder transportIngressFlow =
+                        SfcOpenflowUtils.createFlowBuilder(
+                                this.tableId,
+                                FLOW_PRIORITY_MATCH_ANY,
+                                "MatchAny",
+                                match,
+                                isb);
+
+                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+
+            } catch (Exception e) {
+                LOG.error("ConfigureTableMatchAnyOutputNormalThread writer caught an Exception: ", e);
+            }
+        }
+    }
+
+    private class ConfigureTableMatchAnyGotoTableThread implements Runnable {
+        private String sffNodeName;
+        private short tableId;
+        private short nextTableId;
+        private Long rspId;
+
+        public ConfigureTableMatchAnyGotoTableThread(
+                final String sffNodeName,
+                final short tableId,
+                final short nextTableId) {
+            this.sffNodeName = sffNodeName;
+            this.tableId = tableId;
+            this.nextTableId = nextTableId;
+            this.rspId = flowRspId;
+        }
+
+        @Override
+        public void run() {
+            try {
+                LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}]",
+                        this.sffNodeName, this.tableId, this.nextTableId);
 
                 //
                 // Match any
                 MatchBuilder match = new MatchBuilder();
+
+                int order = 0;
+
+                //
+                // Action, goto Ingress table
+                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(this.nextTableId);
+
+                InstructionBuilder ib = new InstructionBuilder();
+                ib.setKey(new InstructionKey(order));
+                ib.setOrder(order++);
+                ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
+
+                List<Instruction> instructions = new ArrayList<Instruction>();
+                instructions.add(ib.build());
 
                 //
                 // Finish up the instructions
@@ -1248,10 +1410,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 //
                 // Create the actions
                 int order = 0;
-                Action outPortBuilder = SfcOpenflowUtils.createActionOutPort(this.port, order++);
 
                 List<Action> actionList = new ArrayList<Action>();
-                actionList.add(outPortBuilder);
+                // TODO this is a temporary change to output the packet to a non-vxlan port
+                //      Once the port is created via sfc-ovs, we will need to parameterize it
+                actionList.add(SfcOpenflowUtils.createActionOutPort(2, order++));
+                //actionList.add(SfcOpenflowUtils.createActionOutPort(this.port, order++));
 
                 // Create an Apply Action
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();

@@ -670,6 +670,18 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
+    public static Action createActionNormalOutput(int order) {
+        OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(30);
+        Uri value = new Uri(OutputPortValues.NORMAL.toString());
+        output.setOutputNodeConnector(value);
+
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+
+        return ab.build();
+    }
+
     public static Action createActionNxSetNsp(Long nsp, int order) {
         NxSetNspBuilder builder = new NxSetNspBuilder();
         if (nsp != null) {

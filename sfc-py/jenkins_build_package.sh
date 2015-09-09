@@ -50,7 +50,7 @@ cd $curpath
 python3 setup.py sdist
 # 4. check if the package 'sfc-0.1.365.tar.gz' was created in sfc/sfc-py/dist
 
-file="$curpath/dist/sfc-0.1.365.tar.gz"
+file="$curpath/dist/sfc-0.1.4.tar.gz"
 if [ -s "$file" ]
 then
 	echo "Sfc Package created and has size greater than zero."

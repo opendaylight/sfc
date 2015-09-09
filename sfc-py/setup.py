@@ -64,7 +64,7 @@ def readme(file):
 
 setup(
     name='sfc',
-    version='0.1.365',
+    version='0.1.4',
     keywords='sfc nsh nfq',
     description='Service Function Chaining',
     long_description=readme('README.rst'),

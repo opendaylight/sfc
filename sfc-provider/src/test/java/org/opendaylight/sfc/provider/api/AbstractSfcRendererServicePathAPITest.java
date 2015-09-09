@@ -74,7 +74,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
     protected static final String SFC_NAME = "unittest-chain-1";
     protected static final String SFP_NAME = "unittest-sfp-1";
     protected static final String RSP_NAME = "unittest-rsp-1";
-    protected static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractSfcRendererServicePathAPITest.class);
     protected static final String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
     protected final String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
     protected final String[][] TO_SFF_NAMES =

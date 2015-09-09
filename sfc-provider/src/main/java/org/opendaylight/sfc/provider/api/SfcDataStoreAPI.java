@@ -108,15 +108,4 @@ public class SfcDataStoreAPI {
         }
         return ret;
     }
-
-    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeSynchPutTransactionAPI
-            (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret;
-        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
-        writeTx.put(logicalDatastoreType, addIID, data, true);
-        writeTx.commit();
-        ret = true;
-        return ret;
-    }
-
 }

@@ -18,7 +18,6 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.SfcProviderRpc;
 import org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener;
-import org.opendaylight.sfc.provider.SfcProviderSfcEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfgEntryDataListener;
 import org.opendaylight.sfc.provider.SfcProviderSfpEntryDataListener;
@@ -93,12 +92,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
         final ListenerRegistration<DataChangeListener> sfgEntryDataChangeListenerRegistration =
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.SFG_ENTRY_IID, sfcProviderSfgEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
-
-        // ServiceFunctionChainEntry
-        SfcProviderSfcEntryDataListener sfcProviderSfcEntryDataListener = new SfcProviderSfcEntryDataListener();
-         final ListenerRegistration<DataChangeListener> sfcEntryDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                        OpendaylightSfc.SFC_ENTRY_IID, sfcProviderSfcEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
 
 
         //ServiceClassifierEntry

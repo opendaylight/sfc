@@ -81,13 +81,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.SF_ENTRY_IID, sfcProviderSfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
 
-        // ServiceFunctionGroup Entry
-        SfcProviderSfgEntryDataListener sfcProviderSfgEntryDataListener = new SfcProviderSfgEntryDataListener();
-        final ListenerRegistration<DataChangeListener> sfgEntryDataChangeListenerRegistration =
-                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                        OpendaylightSfc.SFG_ENTRY_IID, sfcProviderSfgEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
-
-
         //ServiceClassifierEntry
         SfcProviderScfEntryDataListener sfcProviderScfEntryDataListener = new SfcProviderScfEntryDataListener();
         final ListenerRegistration<DataChangeListener> scfEntryDataChangeListenerRegistration =
@@ -125,7 +118,6 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
             @Override
             public void close() {
                 sfEntryDataChangeListenerRegistration.close();
-                sfgEntryDataChangeListenerRegistration.close();
                 scfEntryDataChangeListenerRegistration.close();
                 sfpEntryDataChangeListenerRegistration.close();
                 sffDataChangeListenerRegistration.close();

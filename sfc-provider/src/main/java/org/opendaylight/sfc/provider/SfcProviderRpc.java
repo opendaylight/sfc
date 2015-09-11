@@ -16,7 +16,6 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.sfc.provider.api.*;
-import org.opendaylight.sfc.provider.util.SfcSftMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -29,9 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
@@ -40,7 +36,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -196,24 +191,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
             LOG.error("Failed to find Service Function Chain: {}", name);
         }
         return serviceFunctionChain;
-    }
-
-    private List<ServicePathHop> findInstancesByType(Class<? extends ServiceFunctionTypeIdentity> sfType) {
-
-        List<ServicePathHop> ret = new ArrayList<>();
-        SfcSftMapper mapper = new SfcSftMapper(odlSfc);
-        List<ServiceFunction> sfList = mapper.getSfList(sfType);
-        short hopCount = 0;
-        for (ServiceFunction sf : sfList) {
-            ServicePathHopBuilder builder = new ServicePathHopBuilder();
-            ret.add(builder.setHopNumber(hopCount)
-                    .setServiceFunctionName(sf.getName())
-                    .setServiceFunctionForwarder(sf.getSfDataPlaneLocator()
-                            .get(0).getServiceFunctionForwarder())
-                    .build());
-            hopCount++;
-        }
-        return ret;
     }
 
     @Override

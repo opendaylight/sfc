@@ -52,6 +52,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
             try {
 
                 // SFF ORIGINAL
+
                 Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
@@ -69,9 +70,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                     if (dataObject instanceof ServiceFunctionForwarder) {
                         ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
 
-                /* Before removing RSPs used by this Service Function, we need to remove all
-                 * references in the SFF/SF operational trees
-                 */
+                        /* Before removing RSPs used by this Service Function, we need to remove all
+                         * references in the SFF/SF operational trees
+                         */
 
                         LOG.debug("{}: SFF {} deletion",
                                 Thread.currentThread().getStackTrace()[1], serviceFunctionForwarder.getName());
@@ -97,6 +98,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                 }
 
                 // SFF CREATION
+
                 Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
@@ -118,9 +120,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
 
                         ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
 
-                /* Before removing RSPs used by this Service Function, we need to remove all
-                 * references in the SFF/SF operational trees
-                 */
+                        /* Before removing RSPs used by this Service Function, we need to remove all
+                         * references in the SFF/SF operational trees
+                         */
 
                         String sffName = serviceFunctionForwarder.getName();
                         LOG.debug("{}: SFF {} update",

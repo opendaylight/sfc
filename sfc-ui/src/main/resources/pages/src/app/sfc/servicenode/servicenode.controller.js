@@ -35,7 +35,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return sfObject = _.findWhere(sfs, {name: sfName});
   }
 
-  sfc.register.controller('serviceNodeCtrl', function ($scope, $rootScope, $state, ServiceFunctionSvc, ServiceForwarderSvc, ServiceNodeSvc, ServiceNodeTopologyBackend, ModalDeleteSvc) {
+  sfc.register.controller('serviceNodeCtrl', function ($scope, $rootScope, $state, ServiceFunctionSvc, ServiceForwarderSvc, ServiceNodeSvc, SfcServiceFunctionStateSvc, ServiceNodeTopologyBackend, ModalDeleteSvc) {
 
     $scope.deleteServiceNode = function deleteServiceNode(snName) {
       ModalDeleteSvc.open(snName, function (result) {
@@ -44,7 +44,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             //after delete refresh local service node array
             ServiceNodeSvc.getArray(function (data) {
               $scope.sns = data;
-              $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs);
+              $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs, $scope.sfstates);
             });
           });
         }
@@ -69,10 +69,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     function createGraphData() {
       if ($rootScope.experimental) {
-        $scope.snsGraph = ServiceNodeTopologyBackend.createGraphDataExperimentalSFF($scope.sns, $scope.sffs, $scope.sfs);
+        $scope.snsGraph = ServiceNodeTopologyBackend.createGraphDataExperimentalSFF($scope.sns, $scope.sffs, $scope.sfs, $scope.sfstates);
       }
       else {
-        $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs);
+        $scope.snsGraph = ServiceNodeTopologyBackend.createGraphData($scope.sns, $scope.sffs, $scope.sfs, $scope.sfstates);
       }
     }
 
@@ -89,7 +89,11 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         ServiceNodeSvc.getArray(function (data) {
           $scope.sns = data;
-          createGraphData();
+          
+          SfcServiceFunctionStateSvc.getOperationalArray(function (data) {
+            $scope.sfstates = data;
+            createGraphData();
+          });
         });
       });
     });

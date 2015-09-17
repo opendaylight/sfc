@@ -10,6 +10,11 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         return callback(exampleData.sfs);
       }
     };
+    serviceFunctionStateSvcMock = {
+      getArray: function (callback) {
+        return callback(exampleData.sfstates);
+      }
+    };
     serviceForwarderSvcMock = {
       getArray: function (callback) {
         callback(exampleData.sffs);
@@ -72,6 +77,47 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
       exampleData.sffs = [
         {"name": "sff1", "service-node": "sn1"}
       ];
+      exampleData.sfstates = [
+        {"name": "sf1", "sfc-sf-desc-mon":{
+          "description-info": {
+              "data-plane-ip": "10.0.0.1",
+              "data-plane-port":"5000",
+              "type": "dpi",
+              "number-of-dataports":1,
+              "capabilities": {
+                "supported-packet-rate":50,
+                "ports-bandwidth": {
+                  "port-bandwidth":[
+                    {
+                      "port-id":1,
+                      "ipaddress":"10.0.0.2"
+                    }
+                  ]
+                }
+              }
+            },
+            "monitoring-info":{
+              "liveness":true,
+              "resource-utilization": {
+                "CPU-utilization":45,
+                "SF-ports-bandwidth-utilization":{
+                  "port-bandwidth-utilization":[
+                    "port-id":1,
+                    "rx-packet":100,
+                    "tx-packet":200,
+                    "rx-bytes":800,
+                    "tx-bytes":1600,
+                    "rx-rate":55,
+                    "tx-rate":63,
+                    "rx-packet-rate":53,
+                    "tx-packet-rate":60
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ];
     });
 
     beforeEach(angular.mock.module('ui.router'));
@@ -118,6 +164,13 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(scope.sfs).toEqual(exampleData.sfs);
         });
 
+        it("should call get Service Function States", function () {
+          spyOn(serviceFunctionStateSvcMock, 'getArray').andCallThrough();
+          createServiceNodeCtrl();
+          expect(serviceFunctionStateSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
+          expect(scope.sfstates).toEqual(exampleData.sfstates);
+        });
+
         it("should call get Service Forwarders", function () {
           spyOn(serviceForwarderSvcMock, 'getArray').andCallThrough();
           createServiceNodeCtrl();
@@ -135,7 +188,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
         it("should call createGraphData", function () {
           spyOn(serviceNodeTopologyBackendMock, 'createGraphData').andCallThrough();
           createServiceNodeCtrl();
-          expect(serviceNodeTopologyBackendMock.createGraphData).toHaveBeenCalledWith(exampleData.sns, exampleData.sffs, exampleData.sfs);
+          expect(serviceNodeTopologyBackendMock.createGraphData).toHaveBeenCalledWith(exampleData.sns, exampleData.sffs, exampleData.sfs, exampleData.sfstates);
           expect(scope.snsGraph).toEqual(exampleData.snsGraph);
         });
 
@@ -150,7 +203,7 @@ define(['app/sfc/sfc.test.module.loader'], function (sfc) {
           expect(serviceNodeSvcMock.deleteItem).toHaveBeenCalledWith({name: "sn1"}, jasmine.any(Function));
           expect(serviceNodeSvcMock.getArray).toHaveBeenCalledWith(jasmine.any(Function));
           expect(scope.sns).toEqual([]);
-          expect(serviceNodeTopologyBackendMock.createGraphData).toHaveBeenCalledWith([], exampleData.sffs, exampleData.sfs);
+          expect(serviceNodeTopologyBackendMock.createGraphData).toHaveBeenCalledWith([], exampleData.sffs, exampleData.sfs, exampleData.sfstates);
           expect(scope.snsGraph).toEqual([]);
         });
 

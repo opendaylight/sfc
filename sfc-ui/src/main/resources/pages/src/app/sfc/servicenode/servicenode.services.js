@@ -3,7 +3,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.factory('ServiceNodeTopologyBackend', function ($rootScope) {
     var svc = {};
 
-    svc.createGraphData = function (nodeArray, sffs, sfs) {
+    svc.createGraphData = function (nodeArray, sffs, sfs, sfstates) {
       var graphData = [];
       //foreach service node
       _.each(nodeArray, function (sn) {
@@ -22,7 +22,31 @@ define(['app/sfc/sfc.module'], function (sfc) {
               $rootScope.$eval(('"SFC_TOOLTIP_FUNCTION" | translate')) + ":" + "</p>" +
               $rootScope.$eval(('"SFC_TOOLTIP_NAME" | translate')) + ": " + sf.name + "<br/>" +
               $rootScope.$eval(('"SFC_TOOLTIP_IP" | translate')) + ": " + sf['ip-mgmt-address'] + "<br/>" +
-              $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>";
+              $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>" +
+            $rootScope.$eval(('"SFC_TOOLTIP_PORTS_STATISTICS" | translate')) + ": [" + "<br/>";
+
+            if(_.findWhere(sfstates, {name: sf.name})){
+                var sfstate = _.clone(_.findWhere(sfstates, {name: sf.name}));
+                var resourceUtilization= sfstate['service-function-description-monitor:sfc-sf-desc-mon']['monitoring-info']['resource-utilization'];
+                var PortsBandwidthUtilization = resourceUtilization['SF-ports-bandwidth-utilization']['port-bandwidth-utilization'];
+                var porttoolhtml = [];
+                _.each(PortsBandwidthUtilization, function (port) {
+                  porttoolhtml = porttoolhtml + "{" + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_PORT_ID" | translate')) + ": " + port['port-id'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET" | translate')) + ": " + port['rx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET" | translate')) + ": " + port['tx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES" | translate')) + ": " + port['rx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES" | translate')) + ": " + port['tx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES_RATE" | translate')) + ": " + port['rx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES_RATE" | translate')) + ": " + port['tx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET_RATE" | translate')) + ": " + port['rx-packet-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET_RATE" | translate')) + ": " + port['tx-packet-rate'] + "%"+ "</br>" +
+                    "}" + "<br/>";
+                  });
+
+                sf.tooltipHtml = sf.tooltipHtml + porttoolhtml;
+            }
+            sf.tooltipHtml = sf.tooltipHtml + "]";
 
             //assign sfs to service function forwarders
             //first check if SFF is in SN SFFS list
@@ -82,7 +106,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return graphData;
     };
 
-    svc.createGraphDataExperimental = function (nodeArray, sffs, sfs) {
+    svc.createGraphDataExperimental = function (nodeArray, sffs, sfs, sfstates) {
       var graphData = [];
       //foreach service node
       _.each(nodeArray, function (sn) {
@@ -107,7 +131,31 @@ define(['app/sfc/sfc.module'], function (sfc) {
               $rootScope.$eval(('"SFC_TOOLTIP_FUNCTION" | translate')) + ":" + "</p>" +
               $rootScope.$eval(('"SFC_TOOLTIP_NAME" | translate')) + ": " + sf.name + "<br/>" +
               $rootScope.$eval(('"SFC_TOOLTIP_IP" | translate')) + ": " + sf['sff-sf-data-plane-locator']['ip'] + ":" + sf['sff-sf-data-plane-locator']['port'] + "<br/>" +
-              $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>";
+              $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>" +
+              $rootScope.$eval(('"SFC_TOOLTIP_PORTS_STATISTICS" | translate')) + ": [" + "<br/>";
+
+            if(_.findWhere(sfstates, {name: sf.name})){
+                var sfstate = _.clone(_.findWhere(sfstates, {name: sf.name}));
+                var resourceUtilization= sfstate['service-function-description-monitor:sfc-sf-desc-mon']['monitoring-info']['resource-utilization'];
+                var PortsBandwidthUtilization = resourceUtilization['SF-ports-bandwidth-utilization']['port-bandwidth-utilization'];
+                var porttoolhtml = [];
+                _.each(PortsBandwidthUtilization, function (port) {
+                  porttoolhtml = porttoolhtml + "{" + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_PORT_ID" | translate')) + ": " + port['port-id'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET" | translate')) + ": " + port['rx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET" | translate')) + ": " + port['tx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES" | translate')) + ": " + port['rx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES" | translate')) + ": " + port['tx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES_RATE" | translate')) + ": " + port['rx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES_RATE" | translate')) + ": " + port['tx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET_RATE" | translate')) + ": " + port['rx-packet-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET_RATE" | translate')) + ": " + port['tx-packet-rate'] + "%"+ "</br>" +
+                    "}" + "<br/>";
+                  });
+
+                sf.tooltipHtml = sf.tooltipHtml + porttoolhtml;
+            }
+            sf.tooltipHtml = sf.tooltipHtml + "]";
 
             sff.children.push(sf);
 
@@ -155,7 +203,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return graphData;
     };
 
-    svc.createGraphDataExperimentalSFF = function (nodeArray, sffs, sfs) {
+    svc.createGraphDataExperimentalSFF = function (nodeArray, sffs, sfs, sfstates) {
       var graphData = [];
 
       //foreach SFF
@@ -207,7 +255,31 @@ define(['app/sfc/sfc.module'], function (sfc) {
             $rootScope.$eval(('"SFC_TOOLTIP_FUNCTION" | translate')) + ":" + "</p>" +
             $rootScope.$eval(('"SFC_TOOLTIP_NAME" | translate')) + ": " + sf.name + "<br/>" +
             $rootScope.$eval(('"SFC_TOOLTIP_IP" | translate')) + ": " + sf['sff-sf-data-plane-locator']['ip'] + ":" + sf['sff-sf-data-plane-locator']['port'] + "<br/>" +
-            $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>";
+            $rootScope.$eval(('"SFC_TOOLTIP_TYPE" | translate')) + ": " + sf.type + "<br/>" +
+            $rootScope.$eval(('"SFC_TOOLTIP_PORTS_STATISTICS" | translate')) + ": [" + "<br/>";
+
+            if(_.findWhere(sfstates, {name: sf.name})){
+                var sfstate = _.clone(_.findWhere(sfstates, {name: sf.name}));
+                var resourceUtilization= sfstate['service-function-description-monitor:sfc-sf-desc-mon']['monitoring-info']['resource-utilization'];
+                var PortsBandwidthUtilization = resourceUtilization['SF-ports-bandwidth-utilization']['port-bandwidth-utilization'];
+                var porttoolhtml = [];
+                _.each(PortsBandwidthUtilization, function (port) {
+                  porttoolhtml = porttoolhtml + "{" + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_PORT_ID" | translate')) + ": " + port['port-id'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET" | translate')) + ": " + port['rx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET" | translate')) + ": " + port['tx-packet'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES" | translate')) + ": " + port['rx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES" | translate')) + ": " + port['tx-bytes'] + "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_BYTES_RATE" | translate')) + ": " + port['rx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_BYTES_RATE" | translate')) + ": " + port['tx-bytes-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_RX_PACKET_RATE" | translate')) + ": " + port['rx-packet-rate'] + "%"+ "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    $rootScope.$eval(('"SFC_TOOLTIP_TX_PACKET_RATE" | translate')) + ": " + port['tx-packet-rate'] + "%"+ "</br>" +
+                    "}" + "<br/>";
+                  });
+
+                sf.tooltipHtml = sf.tooltipHtml + porttoolhtml;
+            }
+            sf.tooltipHtml = sf.tooltipHtml + "]";
 
           tempSff.children.push(sf);
 

@@ -521,6 +521,54 @@ define(['angularAMD', 'app/sfc/sfc.test.module.loader'], function () {
 
       });
 
+      describe("Test ServiceFunctionStateSvc", function () {
+
+        var ServiceFunctionStateSvc;
+
+        beforeEach(angular.mock.inject(function (_ServiceFunctionStateSvc_) {
+          ServiceFunctionStateSvc = _ServiceFunctionStateSvc_;
+        }));
+
+        it("getArray - should return nested array from container with namespace stripped for type", angular.mock.inject(function () {
+          var mockToRespond = {
+            "service-function-states": {
+              "service-function-state": [
+                {
+                  "sfc-sf-desc-mon":{
+                    "monitoring-info":{
+                      "resource-utilization": {
+                        "SF-ports-bandwidth-utilization":{
+                          "port-bandwidth-utilization":[
+                            "port-id":1,
+                            "rx-packet":100,
+                            "tx-packet":200,
+                            "rx-bytes":800,
+                            "tx-bytes":1600,
+                            "rx-bytes-rate":55,
+                            "tx-bytes-rate":63,
+                            "rx-packet-rate":53,
+                            "tx-packet-rate":60
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          };
+
+          httpBackend.expectGET('http://localhost:8080/restconf/operational/service-function-state:service-functions-state').respond(mockToRespond);
+
+          ServiceFunctionStateSvc.getOperationalArray(function (sfstateArrayData) {
+            expect(sfstateArrayData).toEqual(mockToRespond["service-functions-state"]["service-function-state"]);
+          });
+
+          httpBackend.flush();
+        }));
+
+      });
+
     });
   });
 });

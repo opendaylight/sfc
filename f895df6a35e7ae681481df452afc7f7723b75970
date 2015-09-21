@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_d3dc5477",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/controller/config/yang/config/sfc_sb_rest_provider/impl/SfcSbRestProviderModule.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-09-21T01:09:07Z",
+      "side": 1,
+      "message": "Ok",
+      "parentUuid": "3a79b1b5_0830de54",
+      "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_a8368a50",
         "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfsTask.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2015-09-19T02:42:06Z",
       "side": 1,
       "message": "You hard coded this uri, please refer to ./sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSffTask.java to get it.",
+      "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_b38c3881",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfsTask.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-09-21T01:09:07Z",
+      "side": 1,
+      "message": "Ok, it needs to add a component \"rest url\" in Yang model.",
+      "parentUuid": "3a79b1b5_a8368a50",
       "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_33f828e5",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/json/SfsExporterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-09-21T01:09:07Z",
+      "side": 1,
+      "message": "Thanks for reminding.",
+      "parentUuid": "3a79b1b5_c8398642",
+      "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_684072a5",
         "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfsTaskTest.java",
         "patchSetId": 2
@@ -64,6 +118,24 @@
       "writtenOn": "2015-09-19T02:42:06Z",
       "side": 1,
       "message": "Change company and author to Intel and yourself.",
+      "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_13f3ac0b",
+        "filename": "sfc-sb-rest/src/test/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfsTaskTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-09-21T01:09:07Z",
+      "side": 1,
+      "message": "Ok, thanks for reminding.",
+      "parentUuid": "3a79b1b5_684072a5",
       "revId": "f895df6a35e7ae681481df452afc7f7723b75970",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

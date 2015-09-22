@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-switch-connection-provider"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflow-switch-connection-provider="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider"/>
+  <prefix value="openflow-switch-connection-provider"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>openflow-switch-connection-provider service definitions</text>
+  </description>
+  <revision date="2014-03-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflow-switch-connection-provider">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"/>
+  </identity>
+</module>

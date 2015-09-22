@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowjava-cof-api-config"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowjava-cof-api="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:openflow-switch-connection-provider="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config"/>
+  <prefix value="openflowjava-cof-api"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflow-switch-connection-provider">
+    <prefix value="openflow-switch-connection-provider"/>
+    <revision-date date="2014-03-28"/>
+  </import>
+  <description>
+    <text>Cisco extensions API in openflow library.</text>
+  </description>
+  <revision date="2014-10-08">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflowjava-extension-cisco-api">
+    <base name="config:module-type"/>
+    <config:provided-service name="cisco-extension-codec-registrator"/>
+    <config:java-name-prefix java-prefix="CiscoExtensionApiProvider"/>
+  </identity>
+  <identity name="cisco-extension-codec-registrator">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.openflowjava.cof.api.CiscoExtensionCodecRegistrator"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflowjava-extension-cisco-api">
+      <when condition="/config:modules/config:module/config:type = 'openflowjava-extension-cisco-api'"/>
+      <list name="openflow-switch-connection-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-switch-connection-provider:openflow-switch-connection-provider"/>
+          </refine>
+        </uses>
+      </list>
+    </case>
+  </augment>
+</module>

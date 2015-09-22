@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-instance"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:service="urn:cisco:params:xml:ns:yang:service-instance"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:endpoint="urn:cisco:params:xml:ns:yang:service-endpoint">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:service-instance"/>
+  <prefix value="service"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="service-endpoint">
+    <prefix value="endpoint"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module contains the definition of a service instance in
+I2SS. Each service type we define will augment this.
+</text>
+  </description>
+  <revision date="2014-04-10">
+    <description>
+      <text>eighth revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <typedef name="service-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Service Identifier</text>
+    </description>
+  </typedef>
+  <identity name="service-type">
+    <description>
+      <text>base identity for service type</text>
+    </description>
+  </identity>
+  <container name="service-instances">
+    <list name="service-instance">
+      <key value="service-id"/>
+      <leaf name="service-id">
+        <type name="service-id"/>
+        <mandatory value="true"/>
+        <description>
+          <text>unique identifier for this service instance</text>
+        </description>
+      </leaf>
+      <leaf name="service-type">
+        <type name="identityref">
+          <base name="service-type"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>type of this service</text>
+        </description>
+      </leaf>
+      <list name="endpoint">
+        <key value="endpoint-id"/>
+        <leaf name="endpoint-id">
+          <type name="endpoint:endpoint-id"/>
+          <description>
+            <text>ID assigned to this endpoint</text>
+          </description>
+        </leaf>
+        <uses name="endpoint:endpoint"/>
+        <description>
+          <text>list of endpoints for service</text>
+        </description>
+      </list>
+      <description>
+        <text>service instance</text>
+      </description>
+    </list>
+    <description>
+      <text>list of service instances</text>
+    </description>
+  </container>
+</module>

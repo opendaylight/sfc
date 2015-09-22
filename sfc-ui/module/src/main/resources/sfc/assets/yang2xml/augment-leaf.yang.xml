@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-leaf"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:auglf="ns:augment:leaf"
+        xmlns:yng="ns:yang">
+  <namespace uri="ns:augment:leaf"/>
+  <prefix value="auglf"/>
+  <import module="yang">
+    <prefix value="yng"/>
+    <revision-date date="2013-11-26"/>
+  </import>
+  <revision date="2013-11-26"/>
+  <augment target-node="/yng:cont">
+    <leaf name="lf2">
+      <type name="string"/>
+    </leaf>
+  </augment>
+</module>

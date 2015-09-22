@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-extension-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:niciraExt-cfg-impl="urn:opendaylight:params:xml:ns:yang:openflowplugin:cof:config:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflowplugin:cof:config:impl"/>
+  <prefix value="niciraExt-cfg-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflow-provider">
+    <prefix value="openflow-provider"/>
+    <revision-date date="2014-03-26"/>
+  </import>
+  <import module="cisco-extension">
+    <prefix value="ciscoExt-provider"/>
+  </import>
+  <description>
+    <text>openflow extension for cisco - config-impl</text>
+  </description>
+  <revision date="2014-10-10">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="cisco-extension-provider-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="ciscoExt-provider:cisco-extension-provider"/>
+    <config:java-name-prefix java-prefix="ConfigurableCiscoExtensionProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="cisco-extension-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'cisco-extension-provider-impl'"/>
+      <container name="openflow-plugin-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-provider:openflow-provider"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

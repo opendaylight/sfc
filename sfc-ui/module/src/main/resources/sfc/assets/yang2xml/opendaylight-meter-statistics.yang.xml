@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-meter-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:meterstat="urn:opendaylight:meter:statistics"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:flow-node="urn:opendaylight:flow:inventory"
+        xmlns:meter-types="urn:opendaylight:meter:types"
+        xmlns:tr="urn:opendaylight:flow:transaction">
+  <namespace uri="urn:opendaylight:meter:statistics"/>
+  <prefix value="meterstat"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="flow-node"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter-types"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <contact>
+    <text>Anilkumar Vishnoi
+Email: avishnoi@in.ibm.com</text>
+  </contact>
+  <revision date="2013-11-11">
+    <description>
+      <text>Initial revision of meter statistics service</text>
+    </description>
+  </revision>
+  <augment target-node="/inv:nodes/inv:node/flow-node:meter">
+    <ext:augment-identifier identifier="node-meter-statistics"/>
+    <container name="meter-statistics">
+      <uses name="meter-types:meter-statistics"/>
+    </container>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/flow-node:meter">
+    <ext:augment-identifier identifier="node-meter-config-stats"/>
+    <container name="meter-config-stats">
+      <uses name="meter-types:meter"/>
+    </container>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node">
+    <ext:augment-identifier identifier="node-meter-features"/>
+    <container name="meter-features">
+      <uses name="meter-types:meter-features-reply"/>
+    </container>
+  </augment>
+  <rpc name="get-all-meter-statistics">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="meter-types:meter-statistics-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-meter-statistics">
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="meter-id">
+        <type name="meter-types:meter-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="meter-types:meter-statistics-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-all-meter-config-statistics">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="meter-types:meter-config-stats-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-meter-features">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="meter-types:meter-features-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="meter-statistics-updated">
+    <uses name="inv:node"/>
+    <uses name="meter-types:meter-statistics-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+  <notification name="meter-config-stats-updated">
+    <uses name="inv:node"/>
+    <uses name="meter-types:meter-config-stats-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+  <notification name="meter-features-updated">
+    <uses name="inv:node"/>
+    <uses name="meter-types:meter-features-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+</module>

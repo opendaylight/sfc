@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="netty"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:netty="urn:opendaylight:params:xml:ns:yang:controller:netty"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:netty"/>
+  <prefix value="netty"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Milos Fabian &lt;milfabia@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the base YANG definitions for
+netty services.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-11-19">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="netty-threadgroup">
+    <description>
+      <text>Configuration wrapper around netty's threadgroup</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="io.netty.channel.EventLoopGroup"/>
+  </identity>
+  <identity name="netty-event-executor">
+    <description>
+      <text>Configuration wrapper around netty's event executor</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="io.netty.util.concurrent.EventExecutor"/>
+  </identity>
+  <identity name="netty-timer">
+    <description>
+      <text>Configuration wrapper around netty's timer</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="io.netty.util.Timer"/>
+  </identity>
+  <identity name="channel-factory">
+    <description>
+      <text>Configuration wrapper around netty's channel factory</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="io.netty.bootstrap.ChannelFactory"/>
+  </identity>
+</module>

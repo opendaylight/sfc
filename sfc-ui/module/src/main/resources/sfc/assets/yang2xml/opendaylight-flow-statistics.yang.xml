@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-flow-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flowstat="urn:opendaylight:flow:statistics"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:flow-types="urn:opendaylight:flow:types"
+        xmlns:stat-types="urn:opendaylight:model:statistics:types"
+        xmlns:table-types="urn:opendaylight:table:types"
+        xmlns:flow-node="urn:opendaylight:flow:inventory"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:opendaylight:flow:statistics"/>
+  <prefix value="flowstat"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow-types"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-statistics-types">
+    <prefix value="stat-types"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table-types"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="flow-node"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Initial revision of flow statistics service</text>
+    </description>
+  </revision>
+  <augment target-node="/inv:nodes/inv:node/flow-node:table/flow-node:flow">
+    <ext:augment-identifier identifier="flow-statistics-data"/>
+    <uses name="flow-statistics"/>
+  </augment>
+  <grouping name="flow-statistics">
+    <container name="flow-statistics">
+      <uses name="flow-types:flow"/>
+      <uses name="stat-types:generic-statistics"/>
+    </container>
+  </grouping>
+  <typedef name="flow-id">
+    <description>
+      <text>flow id</text>
+    </description>
+    <type name="inet:uri"/>
+  </typedef>
+  <grouping name="flow-and-statistics-map-list">
+    <description>
+      <text>List of flow and statistics map</text>
+    </description>
+    <list name="flow-and-statistics-map-list">
+      <key value="flow-id"/>
+      <leaf name="flow-id">
+        <type name="flow-id"/>
+      </leaf>
+      <uses name="flow-and-statistics-map"/>
+    </list>
+  </grouping>
+  <grouping name="flow-and-statistics-map">
+    <description>
+      <text>Mapping between flow and its statistics</text>
+    </description>
+    <uses name="flow-types:flow"/>
+    <uses name="stat-types:generic-statistics"/>
+  </grouping>
+  <rpc name="get-all-flows-statistics-from-all-flow-tables">
+    <description>
+      <text>Fetch statistics of all the flow present in all the flow tables of the switch</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="flow-and-statistics-map-list"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-all-flow-statistics-from-flow-table">
+    <description>
+      <text>Fetch statistics of all the flow present in the specific flow table of the switch</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="table-id">
+        <type name="table-types:table-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="flow-and-statistics-map-list"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-flow-statistics-from-flow-table">
+    <description>
+      <text>Fetch statistics of the specific flow present in the specific flow table of the switch</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <uses name="flow-types:flow"/>
+    </input>
+    <output>
+      <uses name="flow-and-statistics-map-list"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="flows-statistics-update">
+    <description>
+      <text>Flows statistics sent by switch</text>
+    </description>
+    <leaf name="moreReplies">
+      <type name="boolean"/>
+    </leaf>
+    <uses name="inv:node"/>
+    <uses name="flow-and-statistics-map-list"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <augment target-node="/inv:nodes/inv:node/flow-node:table">
+    <ext:augment-identifier identifier="aggregate-flow-statistics-data"/>
+    <uses name="aggregate-flow-statistics"/>
+  </augment>
+  <grouping name="aggregate-flow-statistics">
+    <container name="aggregate-flow-statistics">
+      <uses name="stat-types:aggregate-flow-statistics"/>
+    </container>
+  </grouping>
+  <rpc name="get-aggregate-flow-statistics-from-flow-table-for-all-flows">
+    <description>
+      <text>Fetch aggregate statistics for all the flows present in the specific flow table of the switch</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="table-id">
+        <type name="table-types:table-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="stat-types:aggregate-flow-statistics"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-aggregate-flow-statistics-from-flow-table-for-given-match">
+    <description>
+      <text>Fetch aggregate statistics for all the flow matches to the given match from the given table of the switch</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <uses name="flow-types:flow"/>
+    </input>
+    <output>
+      <uses name="stat-types:aggregate-flow-statistics"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="aggregate-flow-statistics-update">
+    <description>
+      <text>Aggregate flow statistics for a table, sent by switch</text>
+    </description>
+    <uses name="inv:node"/>
+    <uses name="stat-types:aggregate-flow-statistics"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+</module>

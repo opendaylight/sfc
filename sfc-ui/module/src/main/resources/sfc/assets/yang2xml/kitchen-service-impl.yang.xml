@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="kitchen-service-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:kitchen-service-impl="urn:opendaylight:params:xml:ns:yang:controller:config:kitchen-service:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:kitchen-service:impl"/>
+  <prefix value="kitchen-service-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+kitchen-service impl implementation.</text>
+  </description>
+  <revision date="2014-01-31">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="kitchen-service">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sample.kitchen.api.KitchenService"/>
+  </identity>
+  <identity name="kitchen-service-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="kitchen-service"/>
+    <config:java-name-prefix java-prefix="KitchenService"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="kitchen-service-impl">
+      <when condition="/config:modules/config:module/config:type = 'kitchen-service-impl'"/>
+      <container name="rpc-registry">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-rpc-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="kitchen-service-impl">
+      <when condition="/config:modules/config:module/config:type = 'kitchen-service-impl'"/>
+      <rpcx:rpc-context-instance context-type="make-scrambled-with-wheat-rpc"/>
+    </case>
+  </augment>
+  <identity name="make-scrambled-with-wheat-rpc"/>
+  <rpc name="make-scrambled-with-wheat">
+    <description>
+      <text>Shortcut JMX call to make breakfast with scrambled eggs and wheat toast for testing.</text>
+    </description>
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="make-scrambled-with-wheat-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="boolean"/>
+      </leaf>
+    </output>
+  </rpc>
+</module>

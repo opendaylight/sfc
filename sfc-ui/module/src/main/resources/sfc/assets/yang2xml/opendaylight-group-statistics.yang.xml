@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-group-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:groupstat="urn:opendaylight:group:statistics"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:group-types="urn:opendaylight:group:types"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:fni="urn:opendaylight:flow:inventory">
+  <namespace uri="urn:opendaylight:group:statistics"/>
+  <prefix value="groupstat"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-types">
+    <prefix value="group-types"/>
+    <revision-date date="2013-10-18"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="fni"/>
+  </import>
+  <contact>
+    <text>Anilkumar Vishnoi
+Email: avishnoi@in.ibm.com</text>
+  </contact>
+  <revision date="2013-11-11">
+    <description>
+      <text>Initial revision of group statistics service</text>
+    </description>
+  </revision>
+  <grouping name="group-statistics">
+    <container name="group-statistics">
+      <uses name="group-types:group-statistics"/>
+    </container>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node/fni:group">
+    <ext:augment-identifier identifier="node-group-statistics"/>
+    <uses name="group-statistics"/>
+  </augment>
+  <grouping name="group-desc">
+    <container name="group-desc">
+      <uses name="group-types:group"/>
+    </container>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node/fni:group">
+    <ext:augment-identifier identifier="node-group-desc-stats"/>
+    <uses name="group-desc"/>
+  </augment>
+  <grouping name="group-features">
+    <container name="group-features">
+      <uses name="group-types:group-features-reply"/>
+    </container>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node">
+    <ext:augment-identifier identifier="node-group-features"/>
+    <uses name="group-features"/>
+  </augment>
+  <rpc name="get-all-group-statistics">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="group-types:group-statistics-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-group-statistics">
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="group-id">
+        <type name="group-types:group-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="group-types:group-statistics-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-group-description">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="group-types:group-desc-stats-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-group-features">
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="group-types:group-features-reply"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="group-statistics-updated">
+    <uses name="inv:node"/>
+    <uses name="group-types:group-statistics-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+  <notification name="group-desc-stats-updated">
+    <uses name="inv:node"/>
+    <uses name="group-types:group-desc-stats-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+  <notification name="group-features-updated">
+    <uses name="inv:node"/>
+    <uses name="group-types:group-features-reply"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+</module>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="packet-processing"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flow="urn:opendaylight:packet:service"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:types="urn:opendaylight:l2:types"
+        xmlns:match-type="urn:opendaylight:model:match:types"
+        xmlns:table-type="urn:opendaylight:table:types"
+        xmlns:action-type="urn:opendaylight:action:types"
+        xmlns:flow-type="urn:opendaylight:flow:types">
+  <namespace uri="urn:opendaylight:packet:service"/>
+  <prefix value="flow"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-l2-types">
+    <prefix value="types"/>
+    <revision-date date="2013-08-27"/>
+  </import>
+  <import module="opendaylight-match-types">
+    <prefix value="match-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-action-types">
+    <prefix value="action-type"/>
+    <revision-date date="2013-11-12"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <revision date="2013-07-09">
+    <description>
+      <text></text>
+    </description>
+  </revision>
+  <typedef name="connection-cookie">
+    <type name="uint32"/>
+  </typedef>
+  <grouping name="raw-packet">
+    <leaf name="ingress">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+    <leaf name="payload">
+      <type name="binary"/>
+    </leaf>
+  </grouping>
+  <grouping name="ethernet-packet">
+    <leaf name="source">
+      <type name="yang:mac-address"/>
+    </leaf>
+    <leaf name="destination">
+      <type name="yang:mac-address"/>
+    </leaf>
+  </grouping>
+  <identity name="packet-in-reason">
+    <description>
+      <text>Base identity for all the available packet in reason</text>
+    </description>
+  </identity>
+  <identity name="no-match">
+    <base name="packet-in-reason"/>
+    <description>
+      <text>No matching flow in the classifier</text>
+    </description>
+  </identity>
+  <identity name="send-to-controller">
+    <base name="packet-in-reason"/>
+    <description>
+      <text>Explicit instruction to send packet to controller</text>
+    </description>
+  </identity>
+  <identity name="invalid-ttl">
+    <base name="packet-in-reason"/>
+    <description>
+      <text>Packet with invalid TTL</text>
+    </description>
+  </identity>
+  <notification name="packet-received">
+    <leaf name="connection-cookie">
+      <type name="connection-cookie"/>
+    </leaf>
+    <leaf name="flow-cookie">
+      <type name="flow-type:flow-cookie"/>
+    </leaf>
+    <leaf name="table-id">
+      <type name="table-type:table-id"/>
+    </leaf>
+    <leaf name="packet-in-reason">
+      <type name="identityref">
+        <base name="packet-in-reason"/>
+      </type>
+    </leaf>
+    <container name="match">
+      <uses name="match-type:match"/>
+    </container>
+    <uses name="raw-packet"/>
+  </notification>
+  <rpc name="transmit-packet">
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="connection-cookie">
+        <type name="connection-cookie"/>
+      </leaf>
+      <leaf name="egress">
+        <type name="inv:node-connector-ref"/>
+      </leaf>
+      <leaf name="buffer-id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="raw-packet"/>
+      <uses name="action-type:action-list"/>
+    </input>
+  </rpc>
+</module>

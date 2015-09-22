@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="meter-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:meter-cfg="urn:opendaylight:meter:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:meter="urn:opendaylight:meter:types">
+  <namespace uri="urn:opendaylight:meter:config"/>
+  <prefix value="meter-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter"/>
+  </import>
+  <revision date="2013-10-24">
+    <description>
+      <text>Initial revision of meter service</text>
+    </description>
+  </revision>
+  <grouping name="meter-entry">
+    <leaf name="node">
+      <type name="inv:node-ref"/>
+    </leaf>
+    <uses name="meter:meter"/>
+  </grouping>
+  <container name="meters">
+    <list name="meter">
+      <key value="id node"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="meter-entry"/>
+    </list>
+  </container>
+</module>

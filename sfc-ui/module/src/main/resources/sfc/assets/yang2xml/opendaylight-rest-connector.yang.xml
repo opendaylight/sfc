@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-rest-connector"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:md-sal-rest-connector="urn:opendaylight:params:xml:ns:yang:controller:md:sal:rest:connector"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"
+        xmlns:sal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:rest:connector"/>
+  <prefix value="md-sal-rest-connector"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="dom"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="sal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <description>
+    <text>Service definition for Rest Connector</text>
+  </description>
+  <revision date="2014-07-24">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="rest-connector">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.rest.api.RestConnector"/>
+  </identity>
+  <identity name="rest-connector-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="rest-connector"/>
+    <config:java-name-prefix java-prefix="RestConnector"/>
+  </identity>
+  <grouping name="statistics">
+    <leaf name="received-requests">
+      <type name="uint64"/>
+    </leaf>
+  </grouping>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="rest-connector-impl">
+      <when condition="/config:modules/config:module/config:type = 'rest-connector-impl'"/>
+      <leaf name="websocket-port">
+        <mandatory value="true"/>
+        <type name="inet:port-number"/>
+      </leaf>
+      <container name="dom-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="dom:dom-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="rest-connector-impl">
+      <when condition="/config:modules/config:module/config:type = 'rest-connector-impl'"/>
+      <container name="rpcs">
+        <uses name="statistics"/>
+      </container>
+      <container name="config">
+        <container name="get">
+          <uses name="statistics"/>
+        </container>
+        <container name="post">
+          <uses name="statistics"/>
+        </container>
+        <container name="put">
+          <uses name="statistics"/>
+        </container>
+      </container>
+      <container name="operational">
+        <container name="get">
+          <uses name="statistics"/>
+        </container>
+      </container>
+    </case>
+  </augment>
+</module>

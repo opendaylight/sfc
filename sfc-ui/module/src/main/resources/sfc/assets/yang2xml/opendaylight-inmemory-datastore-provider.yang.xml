@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-inmemory-datastore-provider"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:inmemory-datastore-provider="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:config-dom-store-spi="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:config-dom-store"
+        xmlns:operational-dom-store-spi="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:operational-dom-store"
+        xmlns:sal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:inmemory-datastore-provider"/>
+  <prefix value="inmemory-datastore-provider"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="opendaylight-config-dom-datastore">
+    <prefix value="config-dom-store-spi"/>
+  </import>
+  <import module="opendaylight-operational-dom-datastore">
+    <prefix value="operational-dom-store-spi"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="sal"/>
+  </import>
+  <description>
+    <text>InMemory datastore provider implementation for config &amp; operational datastore</text>
+  </description>
+  <revision date="2014-06-17">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="inmemory-config-datastore-provider">
+    <base name="config:module-type"/>
+    <config:provided-service name="config-dom-store-spi:config-dom-datastore"/>
+    <config:java-name-prefix java-prefix="InMemoryConfigDataStoreProvider"/>
+  </identity>
+  <identity name="inmemory-operational-datastore-provider">
+    <base name="config:module-type"/>
+    <config:provided-service name="operational-dom-store-spi:operational-dom-datastore"/>
+    <config:java-name-prefix java-prefix="InMemoryOperationalDataStoreProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="inmemory-config-datastore-provider">
+      <when condition="/config:modules/config:module/config:type = 'inmemory-config-datastore-provider'"/>
+      <container name="schema-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:schema-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="inmemory-operational-datastore-provider">
+      <when condition="/config:modules/config:module/config:type = 'inmemory-operational-datastore-provider'"/>
+      <container name="schema-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:schema-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

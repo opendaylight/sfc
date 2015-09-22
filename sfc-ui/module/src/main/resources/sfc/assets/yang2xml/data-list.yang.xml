@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="data-list-yang"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dtlstyg="data:list:yang">
+  <namespace uri="data:list:yang"/>
+  <prefix value="dtlstyg"/>
+  <import module="data-container-yang">
+    <prefix value="dtconyg"/>
+    <revision-date date="2013-11-19"/>
+  </import>
+  <revision date="2013-11-19"/>
+  <augment target-node="/dtconyg:cont">
+    <leaf name="lf1">
+      <type name="string"/>
+    </leaf>
+  </augment>
+</module>

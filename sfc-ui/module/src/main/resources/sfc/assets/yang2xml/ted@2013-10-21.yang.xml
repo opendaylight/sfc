@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ted"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ted="urn:TBD:params:xml:ns:yang:network:ted"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:TBD:params:xml:ns:yang:network:ted"/>
+  <prefix value="ted"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>TBD</text>
+  </contact>
+  <description>
+    <text>Helper module to hold TED attributes for OSPF/ISIS</text>
+  </description>
+  <revision date="2013-10-21">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <typedef name="switching-capabilities">
+    <description>
+      <text>Switching Capabilities of an interface.</text>
+    </description>
+    <reference>
+      <text>RFC 5307: IS-IS Extensions in Support of Generalized
+Multi-Protocol Label Switching (GMPLS)</text>
+    </reference>
+    <type name="enumeration">
+      <enum name="PSC-1">
+        <description>
+          <text>Packet-Switch Capable-1 (PSC-1)</text>
+        </description>
+        <value value="1"/>
+      </enum>
+      <enum name="PSC-2">
+        <description>
+          <text>Packet-Switch Capable-2 (PSC-2)</text>
+        </description>
+        <value value="2"/>
+      </enum>
+      <enum name="PSC-3">
+        <description>
+          <text>Packet-Switch Capable-3 (PSC-3)</text>
+        </description>
+        <value value="3"/>
+      </enum>
+      <enum name="PSC-4">
+        <description>
+          <text>Packet-Switch Capable-4 (PSC-4)</text>
+        </description>
+        <value value="4"/>
+      </enum>
+      <enum name="L2SC">
+        <description>
+          <text>Layer-2 Switch Capable (L2SC)</text>
+        </description>
+        <value value="51"/>
+      </enum>
+      <enum name="TDM">
+        <description>
+          <text>Time-Division-Multiplex Capable (TDM)</text>
+        </description>
+        <value value="100"/>
+      </enum>
+      <enum name="LSC">
+        <description>
+          <text>Lambda-Switch Capable (LSC)</text>
+        </description>
+        <value value="150"/>
+      </enum>
+      <enum name="FSC">
+        <description>
+          <text>Fiber-Switch Capable (FSC)</text>
+        </description>
+        <value value="200"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="pcc-capabilities">
+    <description>
+      <text>Path Computation Capabilities.</text>
+    </description>
+    <reference>
+      <text>RFC 5088, draft-ietf-pce-disco-protoc-isis-07.txt
+OSPF/ISIS Protocol Extensions for Path Computation Element (PCE) Discovery.</text>
+    </reference>
+    <type name="bits">
+      <bit name="path-computation-with-gmpls-link-constraints">
+        <position value="0"/>
+      </bit>
+      <bit name="bidirectional-path-computation">
+        <position value="1"/>
+      </bit>
+      <bit name="diverse-path-computation">
+        <position value="2"/>
+      </bit>
+      <bit name="load-balanced-path-computation">
+        <position value="3"/>
+      </bit>
+      <bit name="synchronized-path-computation">
+        <position value="4"/>
+      </bit>
+      <bit name="support-for-multiple-objective-functions">
+        <position value="5"/>
+      </bit>
+      <bit name="support-for-additive-path-constraints">
+        <position value="6"/>
+      </bit>
+      <bit name="support-for-request-prioritization">
+        <position value="7"/>
+      </bit>
+      <bit name="support-for-multiple-requests-per-message">
+        <position value="8"/>
+      </bit>
+    </type>
+  </typedef>
+  <grouping name="ted-node-attributes">
+    <description>
+      <text>Identifier to uniquely identify a node in TED</text>
+    </description>
+    <reference>
+      <text>RFC 5305, RFC 6119: IPv6 Traffic Engineering in IS-IS/OSPF</text>
+    </reference>
+    <leaf name="te-router-id-ipv4">
+      <description>
+        <text>Globally unique IPv4 Traffic Engineering Router ID.</text>
+      </description>
+      <type name="inet:ipv4-address"/>
+    </leaf>
+    <leaf name="te-router-id-ipv6">
+      <description>
+        <text>Globally unique IPv6 Traffic Engineering Router ID</text>
+      </description>
+      <type name="inet:ipv6-address"/>
+    </leaf>
+    <list name="ipv4-local-address">
+      <description>
+        <text>List of IPv4 Local Address(OSPF). RFC 5786</text>
+      </description>
+      <key value="ipv4-prefix"/>
+      <leaf name="ipv4-prefix">
+        <description>
+          <text>Local IPv4 address for the node</text>
+        </description>
+        <type name="inet:ipv4-prefix"/>
+      </leaf>
+    </list>
+    <list name="ipv6-local-address">
+      <description>
+        <text>List of IPv6 Local Address.</text>
+      </description>
+      <reference>
+        <text>RFC 5786: Advertising a Router's Local Addresses
+in OSPF Traffic Engineering (TE) Extensions</text>
+      </reference>
+      <key value="ipv6-prefix"/>
+      <leaf name="ipv6-prefix">
+        <description>
+          <text>Local IPv6 address for the node</text>
+        </description>
+        <type name="inet:ipv6-prefix"/>
+      </leaf>
+      <leaf name="prefix-option">
+        <description>
+          <text>IPv6 prefix option.</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+    </list>
+    <leaf name="pcc-capabilities">
+      <description>
+        <text>OSPF/ISIS PCC capabilities</text>
+      </description>
+      <type name="pcc-capabilities"/>
+    </leaf>
+  </grouping>
+  <grouping name="ted-link-attributes">
+    <description>
+      <text>TED Attributes associated with the link.</text>
+    </description>
+    <reference>
+      <text>RFC 3630, RFC 3784: IS-IS / OSPF Traffic Engineering (TE)</text>
+    </reference>
+    <leaf name="color">
+      <description>
+        <text>Administrative group or color of the link</text>
+      </description>
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="max-link-bandwidth">
+      <description>
+        <text>Maximum bandwidth that can be see on this link in this direction. Units in bytes per second</text>
+      </description>
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="max-resv-link-bandwidth">
+      <description>
+        <text>Maximum amount of bandwidth that can be reserved in this direction in this link. Units in bytes per second</text>
+      </description>
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <list name="unreserved-bandwidth">
+      <description>
+        <text>Unreserved bandwidth for 0-7 priority levels. Units in bytes per second</text>
+      </description>
+      <max-elements value="8"/>
+      <key value="priority"/>
+      <leaf name="priority">
+        <type name="uint8">
+          <range value="0..7"/>
+        </type>
+      </leaf>
+      <leaf name="bandwidth">
+        <description>
+          <text>Unreserved bandwidth for this level</text>
+        </description>
+        <type name="decimal64">
+          <fraction-digits value="2"/>
+        </type>
+      </leaf>
+    </list>
+    <leaf name="te-default-metric">
+      <description>
+        <text>Traffic Engineering Metric</text>
+      </description>
+      <type name="uint32"/>
+    </leaf>
+    <container name="srlg">
+      <description>
+        <text>Shared Risk Link Group Attributes</text>
+      </description>
+      <uses name="srlg-attributes"/>
+    </container>
+  </grouping>
+  <grouping name="srlg-attributes">
+    <description>
+      <text>Shared Risk Link Group Attributes</text>
+    </description>
+    <reference>
+      <text>RFC 5307, RFC 4203: ISIS / OSPF Extensions in Support of
+Generalized Multi-Protocol Label Switching (GMPLS)</text>
+    </reference>
+    <list name="interface-switching-capabilities">
+      <description>
+        <text>List of interface capabilities for this interface</text>
+      </description>
+      <key value="switching-capability"/>
+      <leaf name="switching-capability">
+        <description>
+          <text>Switching Capability for this interface</text>
+        </description>
+        <type name="ted:switching-capabilities"/>
+      </leaf>
+      <leaf name="encoding">
+        <description>
+          <text>Encoding supported by this interface</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <list name="max-lsp-bandwidth">
+        <description>
+          <text>Maximum LSP Bandwidth at priorities 0-7</text>
+        </description>
+        <max-elements value="8"/>
+        <key value="priority"/>
+        <leaf name="priority">
+          <type name="uint8">
+            <range value="0..7"/>
+          </type>
+        </leaf>
+        <leaf name="bandwidth">
+          <description>
+            <text>Max LSP Bandwidth for this level</text>
+          </description>
+          <type name="decimal64">
+            <fraction-digits value="2"/>
+          </type>
+        </leaf>
+      </list>
+      <container name="packet-switch-capable">
+        <when condition="../switching-capability = PSC-1 or ../switching-capability = PSC-2 or ../switching-capability = PSC-3 or ../switching-capability = PSC-4"/>
+        <description>
+          <text>Interface has packet-switching capabilities</text>
+        </description>
+        <leaf name="minimum-lsp-bandwidth">
+          <description>
+            <text>Minimum LSP Bandwidth. Units in bytes per second</text>
+          </description>
+          <type name="decimal64">
+            <fraction-digits value="2"/>
+          </type>
+        </leaf>
+        <leaf name="interface-mtu">
+          <description>
+            <text>Interface MTU</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+      </container>
+      <container name="time-division-multiplex-capable">
+        <when condition="../switching-capability = TDM"/>
+        <description>
+          <text>Interface has time-division multiplex capabilities</text>
+        </description>
+        <leaf name="minimum-lsp-bandwidth">
+          <description>
+            <text>Minimum LSP Bandwidth. Units in bytes per second</text>
+          </description>
+          <type name="decimal64">
+            <fraction-digits value="2"/>
+          </type>
+        </leaf>
+        <leaf name="indication">
+          <description>
+            <text>Indication whether the interface supports Standard or Arbitrary SONET/SDH</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+      </container>
+    </list>
+    <list name="srlg-values">
+      <description>
+        <text>List of Shared Risk Link Group this interface belongs to.</text>
+      </description>
+      <key value="srlg-value"/>
+      <leaf name="srlg-value">
+        <description>
+          <text>Shared Risk Link Group value</text>
+        </description>
+        <type name="uint32"/>
+      </leaf>
+    </list>
+    <leaf name="link-protection-type">
+      <description>
+        <text>Link Protection Type desired for this link</text>
+      </description>
+      <type name="uint16"/>
+    </leaf>
+  </grouping>
+</module>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-container"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:augcont="ns:augment:container"
+        xmlns:yng="ns:yang">
+  <namespace uri="ns:augment:container"/>
+  <prefix value="augcont"/>
+  <import module="yang">
+    <prefix value="yng"/>
+    <revision-date date="2013-11-26"/>
+  </import>
+  <revision date="2013-11-26"/>
+  <augment target-node="/yng:cont">
+    <container name="cont1">
+      <leaf name="lf11">
+        <type name="string"/>
+      </leaf>
+    </container>
+  </augment>
+</module>

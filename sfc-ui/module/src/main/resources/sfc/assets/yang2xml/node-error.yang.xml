@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="node-error"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:node-error="urn:opendaylight:node:error:service"
+        xmlns:flow="urn:opendaylight:flow:service"
+        xmlns:error="urn:opendaylight:flow:errors"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:types="urn:opendaylight:flow:types"
+        xmlns:group-type="urn:opendaylight:group:types"
+        xmlns:meter-type="urn:opendaylight:meter:types">
+  <namespace uri="urn:opendaylight:node:error:service"/>
+  <prefix value="node-error"/>
+  <import module="sal-flow">
+    <prefix value="flow"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="flow-errors">
+    <prefix value="error"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="types"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-group-types">
+    <prefix value="group-type"/>
+    <revision-date date="2013-10-18"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter-type"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <revision date="2014-04-10">
+    <description>
+      <text>Initial revision of errors received from a node</text>
+    </description>
+  </revision>
+  <notification name="hello-failed-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=0, Hello protocol failed</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="bad-request-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=1, Request was not understood.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="bad-action-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=2, Error in action description.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="bad-instruction-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=3, Error in instruction list.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="bad-match-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=4, Error in match.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="flow-mod-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=5 - Problem modifying flow entry.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="group-mod-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=6 - Problem modifying group entry.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="port-mod-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=7 - Port mod request failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="table-mod-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=8 - Table mod request failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="queue-op-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=9 - Queue operation failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="switch-config-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=10 - Switch Config request failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="role-request-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=11 - Controller Role request failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="meter-mod-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=12 - Error in meter.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="table-features-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=13 - Setting table features failed.</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+  <notification name="experimenter-error-notification">
+    <description>
+      <text>Model for ofp_error-Type=65535  - Experimenter Error Messages</text>
+    </description>
+    <uses name="error:error-message"/>
+    <uses name="tr:transaction-aware"/>
+    <uses name="tr:transaction-metadata"/>
+    <uses name="flow:base-node-error-notification"/>
+    <uses name="flow:node-error-reference"/>
+  </notification>
+</module>

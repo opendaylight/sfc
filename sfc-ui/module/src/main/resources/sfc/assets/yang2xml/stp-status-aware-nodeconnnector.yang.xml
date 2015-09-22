@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="stp-status-aware-node-connector"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:loopremover="urn:opendaylight:l2switch:loopremover"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:l2switch:loopremover"/>
+  <prefix value="loopremover"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <description>
+    <text>Loop remover stp status aware Data Model</text>
+  </description>
+  <revision date="2014-07-14">
+    <description>
+      <text>l2switch loop remover module draft.</text>
+    </description>
+  </revision>
+  <typedef name="stp-status">
+    <type name="enumeration">
+      <enum name="forwarding">
+        <value value="1"/>
+        <description>
+          <text>STP Status Forwarding</text>
+        </description>
+      </enum>
+      <enum name="discarding">
+        <value value="2"/>
+        <description>
+          <text>STP status discarding</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="stp-status-node-connector">
+    <leaf name="status">
+      <type name="stp-status"/>
+    </leaf>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node/inv:node-connector">
+    <ext:augment-identifier identifier="stp-status-aware-node-connector"/>
+    <uses name="stp-status-node-connector"/>
+  </augment>
+</module>

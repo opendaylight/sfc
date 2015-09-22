@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-md-sal-dom"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:md-sal-dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"/>
+  <prefix value="md-sal-dom"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>Service definition for Binding Aware MD-SAL.</text>
+  </description>
+  <revision date="2013-10-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="dom-broker-osgi-registry">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.core.api.Broker"/>
+  </identity>
+  <identity name="dom-data-broker">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.core.api.data.DataProviderService"/>
+  </identity>
+  <identity name="dom-async-data-broker">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.md.sal.dom.api.DOMDataBroker"/>
+  </identity>
+  <identity name="dom-data-store">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.core.api.data.DataStore"/>
+  </identity>
+  <identity name="schema-service">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.core.api.model.SchemaService"/>
+  </identity>
+</module>

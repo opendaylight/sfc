@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-yang-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:smptp="simple:yang:types">
+  <namespace uri="simple:yang:types"/>
+  <prefix value="smptp"/>
+  <revision date="2013-11-5">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <container name="cont1">
+    <leaf name="lf11">
+      <type name="string"/>
+    </leaf>
+    <leaf-list name="lflst11">
+      <type name="int32"/>
+    </leaf-list>
+    <leaf-list name="lflst12">
+      <type name="string"/>
+    </leaf-list>
+    <list name="lst11">
+      <key value="lf111"/>
+      <leaf name="lf111">
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="lf112">
+        <type name="string"/>
+      </leaf>
+      <container name="cont111">
+        <leaf name="lf1111">
+          <type name="string"/>
+        </leaf>
+        <leaf-list name="lflst1111">
+          <type name="int32"/>
+        </leaf-list>
+        <list name="lst1111">
+          <leaf name="lf1111A">
+            <type name="string"/>
+          </leaf>
+          <leaf name="lf1111B">
+            <type name="uint8"/>
+          </leaf>
+        </list>
+      </container>
+      <list name="lst111">
+        <leaf name="lf1111">
+          <type name="int32"/>
+        </leaf>
+      </list>
+      <list name="lst112">
+        <leaf name="lf1121">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </list>
+  </container>
+</module>

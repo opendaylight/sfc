@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-sal-test-store"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:binding-impl="urn:opendaylight:params:xml:ns:yang:controller:md:sal:test:store">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:test:store"/>
+  <prefix value="binding-impl"/>
+  <description>
+    <text>Regression Test model for data store</text>
+  </description>
+  <revision date="2014-04-22">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <grouping name="name-value">
+    <leaf name="name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="value">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+  <container name="lists">
+    <config value="false"/>
+    <container name="unordered-container">
+      <list name="unordered-list">
+        <key value="name"/>
+        <uses name="name-value"/>
+      </list>
+    </container>
+    <container name="ordered-container">
+      <list name="ordered-list">
+        <ordered-by value="user"/>
+        <key value="name"/>
+        <uses name="name-value"/>
+      </list>
+    </container>
+    <container name="unkeyed-container">
+      <list name="unkeyed-list">
+        <uses name="name-value"/>
+      </list>
+    </container>
+  </container>
+</module>

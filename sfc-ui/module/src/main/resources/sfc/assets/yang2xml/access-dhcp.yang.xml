@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="access-dhcp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dhcp="urn:cisco:params:xml:ns:yang:access-dhcp"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:access="urn:cisco:params:xml:ns:yang:access-topology">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:access-dhcp"/>
+  <prefix value="dhcp"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="access-topology">
+    <prefix value="access"/>
+  </import>
+  <organization>
+    <text>Cisco</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module augments the access topology model to
+include additional data learned from DHCP messages
+</text>
+  </description>
+  <revision date="2014-09-11">
+    <description>
+      <text>fourth revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <identity name="ac-information-dhcp-v4">
+    <base name="access:ac-information-source"/>
+    <description>
+      <text>DHCPv4</text>
+    </description>
+  </identity>
+  <identity name="ac-information-dhcp-v6">
+    <base name="access:ac-information-source"/>
+    <description>
+      <text>DHCPv6</text>
+    </description>
+  </identity>
+  <typedef name="dhcp-binding-state">
+    <type name="enumeration">
+      <enum name="UNKNOWN">
+        <value value="0"/>
+        <description>
+          <text>unknown state</text>
+        </description>
+      </enum>
+      <enum name="INIT">
+        <value value="1"/>
+        <description>
+          <text>client is initialising</text>
+        </description>
+      </enum>
+      <enum name="SELECTING">
+        <value value="2"/>
+        <description>
+          <text>client waiting for DHCPOFFER</text>
+        </description>
+      </enum>
+      <enum name="REQUESTING">
+        <value value="3"/>
+        <description>
+          <text>client waiting to hear back from server</text>
+        </description>
+      </enum>
+      <enum name="INIT-REBOOT">
+        <value value="4"/>
+        <description>
+          <text>client initialising post-reboot</text>
+        </description>
+      </enum>
+      <enum name="REBOOTING">
+        <value value="5"/>
+        <description>
+          <text>rebooting client waiting for address confirmation</text>
+        </description>
+      </enum>
+      <enum name="BOUND">
+        <value value="6"/>
+        <description>
+          <text>client has a lease - normal operation</text>
+        </description>
+      </enum>
+      <enum name="RENEWING">
+        <value value="7"/>
+        <description>
+          <text>client attempting to renew lease</text>
+        </description>
+      </enum>
+      <enum name="REBINDING">
+        <value value="8"/>
+        <description>
+          <text>client seeking lease extension from any server</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>DHCP binding state as per RFC2131</text>
+    </description>
+  </typedef>
+  <grouping name="dhcp-v4">
+    <leaf name="server-ip-address">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>IPv4 address of DHCPv4 server</text>
+      </description>
+    </leaf>
+    <leaf name="server-vrf">
+      <type name="string"/>
+      <description>
+        <text>VRF that DHCP server is in</text>
+      </description>
+    </leaf>
+    <leaf name="client-id">
+      <type name="binary">
+        <length value="1..16"/>
+      </type>
+      <description>
+        <text>Client ID</text>
+      </description>
+    </leaf>
+    <leaf name="state">
+      <type name="dhcp-binding-state"/>
+      <description>
+        <text>DHCP binding state</text>
+      </description>
+    </leaf>
+    <description>
+      <text>DHCP v4 fields</text>
+    </description>
+  </grouping>
+  <typedef name="address-type">
+    <type name="enumeration">
+      <enum name="NA">
+        <description>
+          <text>Non-temporary address assigned</text>
+        </description>
+      </enum>
+      <enum name="PD">
+        <description>
+          <text>Prefix delegated to client</text>
+        </description>
+      </enum>
+      <enum name="TA">
+        <description>
+          <text>Temporary address</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>DHCPv6 address type - normal/temp/prefix</text>
+    </description>
+  </typedef>
+  <grouping name="dhcp-v6">
+    <leaf name="server-ipv6-address">
+      <type name="inet:ipv6-address"/>
+      <description>
+        <text>IPv6 address of DHCPv6 server</text>
+      </description>
+    </leaf>
+    <leaf name="duid">
+      <type name="binary">
+        <length value="1..130"/>
+      </type>
+      <description>
+        <text>DUID - as opaque binary data</text>
+      </description>
+    </leaf>
+    <list name="ia-id">
+      <key value="id"/>
+      <leaf name="id">
+        <type name="uint32"/>
+        <description>
+          <text>Client IA ID</text>
+        </description>
+      </leaf>
+      <leaf name="state">
+        <type name="dhcp-binding-state"/>
+        <description>
+          <text>DHCP binding state</text>
+        </description>
+      </leaf>
+      <list name="address">
+        <key value="type value"/>
+        <leaf name="type">
+          <type name="address-type"/>
+          <description>
+            <text>type of address assigned</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="union">
+            <type name="inet:ipv6-address"/>
+            <type name="inet:ipv6-prefix"/>
+          </type>
+          <description>
+            <text>address or prefix assigned by DHCP</text>
+          </description>
+        </leaf>
+        <description>
+          <text>List of addresses</text>
+        </description>
+      </list>
+      <description>
+        <text>List of IA IDs</text>
+      </description>
+    </list>
+    <description>
+      <text>DHCP v6 fields</text>
+    </description>
+  </grouping>
+  <augment target-node="/access:attachment-circuit-status-msg">
+    <when condition="access:attachment-circuit-status-msg/information-source=ac-information-dhcp-v4">
+      <description>
+        <text>is the information source DHCPv4?</text>
+      </description>
+    </when>
+    <uses name="dhcp-v4"/>
+    <description>
+      <text>augmenting access-topology notification for DHCPv4</text>
+    </description>
+  </augment>
+  <augment target-node="/access:attachment-circuit-status-msg">
+    <when condition="access:attachment-circuit-status-msg/information-source=ac-information-dhcp-v6">
+      <description>
+        <text>is the information source DHCPv6</text>
+      </description>
+    </when>
+    <uses name="dhcp-v6"/>
+    <description>
+      <text>augmenting access-topology notification for DHCPv6</text>
+    </description>
+  </augment>
+</module>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-group-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:group="urn:opendaylight:group:types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:action="urn:opendaylight:action:types">
+  <namespace uri="urn:opendaylight:group:types"/>
+  <prefix value="group"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-action-types">
+    <prefix value="action"/>
+  </import>
+  <revision date="2013-10-18">
+    <description>
+      <text>Initial revision of group service</text>
+    </description>
+  </revision>
+  <typedef name="group-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="bucket-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="group-types">
+    <type name="enumeration">
+      <enum name="group-all"/>
+      <enum name="group-select"/>
+      <enum name="group-indirect"/>
+      <enum name="group-ff"/>
+    </type>
+  </typedef>
+  <typedef name="group-capabilities">
+    <type name="enumeration">
+      <enum name="select-weight"/>
+      <enum name="select-liveness"/>
+      <enum name="chaining"/>
+      <enum name="chaining-checks"/>
+    </type>
+  </typedef>
+  <identity name="group-type">
+    <description>
+      <text>Base identity for all the available group types</text>
+    </description>
+  </identity>
+  <identity name="group-all">
+    <base name="group-type"/>
+    <description>
+      <text>All (multicast/broadcast) group</text>
+    </description>
+  </identity>
+  <identity name="group-select">
+    <base name="group-type"/>
+    <description>
+      <text>Select group</text>
+    </description>
+  </identity>
+  <identity name="group-indirect">
+    <base name="group-type"/>
+    <description>
+      <text>Indirect group</text>
+    </description>
+  </identity>
+  <identity name="group-ff">
+    <base name="group-type"/>
+    <description>
+      <text>Fast failover group</text>
+    </description>
+  </identity>
+  <identity name="group-capability">
+    <description>
+      <text>Base identity for all the supported group capabilities</text>
+    </description>
+  </identity>
+  <identity name="select-weight">
+    <base name="group-capability"/>
+    <description>
+      <text>Support weight for select groups</text>
+    </description>
+  </identity>
+  <identity name="select-liveness">
+    <base name="group-capability"/>
+    <description>
+      <text>Support liveness for select groups</text>
+    </description>
+  </identity>
+  <identity name="chaining">
+    <base name="group-capability"/>
+    <description>
+      <text>Support chaining groups</text>
+    </description>
+  </identity>
+  <identity name="chaining-checks">
+    <base name="group-capability"/>
+    <description>
+      <text>Check chaining for loops and delete</text>
+    </description>
+  </identity>
+  <typedef name="group-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <grouping name="group">
+    <leaf name="group-type">
+      <type name="group-types"/>
+    </leaf>
+    <leaf name="group-id">
+      <type name="group-id"/>
+    </leaf>
+    <leaf name="group-name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="container-name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="barrier">
+      <type name="boolean"/>
+    </leaf>
+    <container name="buckets">
+      <list name="bucket">
+        <key value="bucket-id"/>
+        <leaf name="bucket-id">
+          <type name="bucket-id"/>
+        </leaf>
+        <leaf name="weight">
+          <type name="uint16"/>
+        </leaf>
+        <leaf name="watch_port">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="watch_group">
+          <type name="uint32"/>
+        </leaf>
+        <uses name="action:action-list"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="group-statistics">
+    <leaf name="group-id">
+      <type name="group-id"/>
+    </leaf>
+    <leaf name="ref-count">
+      <type name="yang:counter32"/>
+    </leaf>
+    <leaf name="packet-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="byte-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <container name="duration">
+      <leaf name="second">
+        <type name="yang:counter32"/>
+      </leaf>
+      <leaf name="nanosecond">
+        <type name="yang:counter32"/>
+      </leaf>
+    </container>
+    <container name="buckets">
+      <list name="bucket-counter">
+        <key value="bucket-id"/>
+        <leaf name="bucket-id">
+          <type name="bucket-id"/>
+        </leaf>
+        <leaf name="packet-count">
+          <type name="yang:counter64"/>
+        </leaf>
+        <leaf name="byte-count">
+          <type name="yang:counter64"/>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="group-features">
+    <leaf-list name="group-types-supported">
+      <type name="identityref">
+        <base name="group-type"/>
+      </type>
+    </leaf-list>
+    <leaf-list name="group-capabilities-supported">
+      <type name="identityref">
+        <base name="group-capability"/>
+      </type>
+    </leaf-list>
+    <leaf-list name="max-groups">
+      <type name="uint32"/>
+      <description>
+        <text>Maximum number of groups for each type</text>
+      </description>
+      <max-elements value="4"/>
+    </leaf-list>
+    <leaf-list name="actions">
+      <type name="uint32"/>
+      <description>
+        <text>Bitmap number OFPAT_* that are supported</text>
+      </description>
+      <max-elements value="4"/>
+    </leaf-list>
+  </grouping>
+  <grouping name="group-statistics-request">
+    <list name="group-stats">
+      <key value="group-id"/>
+      <leaf name="group-id">
+        <type name="group-id"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="group-statistics-reply">
+    <list name="group-stats">
+      <key value="group-id"/>
+      <uses name="group-statistics"/>
+    </list>
+  </grouping>
+  <grouping name="group-desc-stats-reply">
+    <list name="group-desc-stats">
+      <key value="group-id"/>
+      <uses name="group"/>
+    </list>
+  </grouping>
+  <grouping name="group-features-reply">
+    <uses name="group-features"/>
+  </grouping>
+  <grouping name="groups">
+    <list name="group">
+      <key value="group-id"/>
+      <uses name="group"/>
+    </list>
+  </grouping>
+</module>

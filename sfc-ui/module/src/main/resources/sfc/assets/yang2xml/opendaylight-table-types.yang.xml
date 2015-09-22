@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-table-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:table="urn:opendaylight:table:types"
+        xmlns:flow="urn:opendaylight:flow:types"
+        xmlns:action="urn:opendaylight:action:types">
+  <namespace uri="urn:opendaylight:table:types"/>
+  <prefix value="table"/>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-action-types">
+    <prefix value="action"/>
+  </import>
+  <revision date="2013-10-26">
+    <description>
+      <text>Initial revision of table service</text>
+    </description>
+  </revision>
+  <typedef name="table-id">
+    <type name="uint8"/>
+  </typedef>
+  <typedef name="table-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <typedef name="table-config">
+    <type name="bits">
+      <bit name="DEPRECATED-MASK"/>
+    </type>
+  </typedef>
+  <identity name="match-field">
+    <description>
+      <text>Base identity for match Fields</text>
+    </description>
+  </identity>
+  <identity name="in_port">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Switch input port.</text>
+    </description>
+  </identity>
+  <identity name="in_phy_port">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Switch physical input port.</text>
+    </description>
+  </identity>
+  <identity name="metadata">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Metadata passed between tables.</text>
+    </description>
+  </identity>
+  <identity name="eth_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Ethernet destination address.</text>
+    </description>
+  </identity>
+  <identity name="eth_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Ethernet source address.</text>
+    </description>
+  </identity>
+  <identity name="eth_type">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Ethernet frame type.</text>
+    </description>
+  </identity>
+  <identity name="vlan_vid">
+    <base name="match-field"/>
+    <description>
+      <text>Match for VLAN id.</text>
+    </description>
+  </identity>
+  <identity name="vlan_pcp">
+    <base name="match-field"/>
+    <description>
+      <text>Match for VLAN priority.</text>
+    </description>
+  </identity>
+  <identity name="ip_dscp">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IP DSCP (6 bits in ToS field).</text>
+    </description>
+  </identity>
+  <identity name="ip_ecn">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IP ECN (2 bits in ToS field).</text>
+    </description>
+  </identity>
+  <identity name="ip_proto">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IP protocol.</text>
+    </description>
+  </identity>
+  <identity name="ipv4_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv4 source address.</text>
+    </description>
+  </identity>
+  <identity name="ipv4_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv4 destination address.</text>
+    </description>
+  </identity>
+  <identity name="tcp_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for TCP source port.</text>
+    </description>
+  </identity>
+  <identity name="tcp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for TCP destination port.</text>
+    </description>
+  </identity>
+  <identity name="udp_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for UDP source port.</text>
+    </description>
+  </identity>
+  <identity name="udp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for UDP destination port.</text>
+    </description>
+  </identity>
+  <identity name="sctp_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for SCTP source port.</text>
+    </description>
+  </identity>
+  <identity name="sctp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for SCTP destination port.</text>
+    </description>
+  </identity>
+  <identity name="icmpv4_type">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ICMP type.</text>
+    </description>
+  </identity>
+  <identity name="icmpv4_code">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ICMP code.</text>
+    </description>
+  </identity>
+  <identity name="arp_op">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ARP opcode.</text>
+    </description>
+  </identity>
+  <identity name="arp_spa">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ARP source IPv4 address.</text>
+    </description>
+  </identity>
+  <identity name="arp_tpa">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ARP target IPv4 address.</text>
+    </description>
+  </identity>
+  <identity name="arp_sha">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ARP source hardware address.</text>
+    </description>
+  </identity>
+  <identity name="arp_tha">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ARP target hardware address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_src">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv6 source address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_dst">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv6 destination address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_flabel">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv6 Flow Label</text>
+    </description>
+  </identity>
+  <identity name="icmpv6_type">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ICMPv6 type.</text>
+    </description>
+  </identity>
+  <identity name="icmpv6_code">
+    <base name="match-field"/>
+    <description>
+      <text>Match for ICMPv6 code.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_target">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Target address for ND.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_sll">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Source link-layer for ND.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_tll">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Target link-layer for ND.</text>
+    </description>
+  </identity>
+  <identity name="mpls_label">
+    <base name="match-field"/>
+    <description>
+      <text>Match for MPLS label.</text>
+    </description>
+  </identity>
+  <identity name="mpls_tc">
+    <base name="match-field"/>
+    <description>
+      <text>Match for MPLS TC.</text>
+    </description>
+  </identity>
+  <identity name="mpls_bos">
+    <base name="match-field"/>
+    <description>
+      <text>Match for MPLS BoS bit.</text>
+    </description>
+  </identity>
+  <identity name="pbb_isid">
+    <base name="match-field"/>
+    <description>
+      <text>Match for PBB I-SID.</text>
+    </description>
+  </identity>
+  <identity name="tunnel_id">
+    <base name="match-field"/>
+    <description>
+      <text>Match for Logical Port Metadata</text>
+    </description>
+  </identity>
+  <identity name="ipv6_exthdr">
+    <base name="match-field"/>
+    <description>
+      <text>Match for IPv6 Extension Header pseudo-field</text>
+    </description>
+  </identity>
+  <identity name="tcp_flag">
+    <base name="match-field"/>
+    <description>
+      <text>TCP Flag Match</text>
+    </description>
+  </identity>
+  <identity name="tunnel_ipv4_dst">
+    <base name="match-field"/>
+    <description>
+      <text>IPv4 destination tunnel endpoint address.</text>
+    </description>
+  </identity>
+  <identity name="tunnel_ipv4_src">
+    <base name="match-field"/>
+    <description>
+      <text>IPv4 source tunnel endpoint address.</text>
+    </description>
+  </identity>
+  <grouping name="set-field-match">
+    <list name="set-field-match">
+      <key value="match-type"/>
+      <leaf name="match-type">
+        <type name="identityref">
+          <base name="match-field"/>
+        </type>
+      </leaf>
+      <leaf name="has-mask">
+        <type name="boolean"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="table-feature-prop-type">
+    <choice name="table-feature-prop-type">
+      <case name="instructions">
+        <container name="instructions">
+          <uses name="flow:instruction-list"/>
+        </container>
+      </case>
+      <case name="instructions-miss">
+        <container name="instructions-miss">
+          <uses name="flow:instruction-list"/>
+        </container>
+      </case>
+      <case name="next-table">
+        <container name="tables">
+          <leaf-list name="table-ids">
+            <type name="uint8"/>
+          </leaf-list>
+        </container>
+      </case>
+      <case name="next-table-miss">
+        <container name="tables-miss">
+          <leaf-list name="table-ids">
+            <type name="uint8"/>
+          </leaf-list>
+        </container>
+      </case>
+      <case name="write-actions">
+        <container name="write-actions">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="write-actions-miss">
+        <container name="write-actions-miss">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="apply-actions">
+        <container name="apply-actions">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="apply-actions-miss">
+        <container name="apply-actions-miss">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="match">
+        <container name="match-setfield">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+      <case name="wildcards">
+        <container name="wildcard-setfield">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+      <case name="write-setfield">
+        <container name="write-setfield">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+      <case name="write-setfield-miss">
+        <container name="write-setfield-miss">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+      <case name="apply-setfield">
+        <container name="apply-setfield">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+      <case name="apply-setfield-miss">
+        <container name="apply-setfield-miss">
+          <uses name="set-field-match"/>
+        </container>
+      </case>
+    </choice>
+  </grouping>
+  <grouping name="table-features">
+    <list name="table-features">
+      <key value="table-id"/>
+      <leaf name="table-id">
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="name">
+        <description>
+          <text>Name of the table</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+      <leaf name="metadata-match">
+        <description>
+          <text>Bits of metadata table can match</text>
+        </description>
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="metadata-write">
+        <description>
+          <text>Bits of metadata table can write</text>
+        </description>
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="max-entries">
+        <description>
+          <text>Max number of entries supported</text>
+        </description>
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="config">
+        <description>
+          <text>Bitmap of OFPTC_ values</text>
+        </description>
+        <type name="table-config"/>
+      </leaf>
+      <container name="table-properties">
+        <list name="table-feature-properties">
+          <key value="order"/>
+          <leaf name="order">
+            <type name="int32"/>
+          </leaf>
+          <uses name="table-feature-prop-type"/>
+        </list>
+      </container>
+    </list>
+  </grouping>
+</module>

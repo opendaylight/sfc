@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="choice-case-test"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:chcatst="choice:case:test">
+  <namespace uri="choice:case:test"/>
+  <prefix value="chcatst"/>
+  <revision date="2013-11-27"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="string"/>
+    </leaf>
+    <choice name="choi1">
+      <case name="a1">
+        <leaf name="lf1a">
+          <type name="uint16"/>
+        </leaf>
+        <choice name="choi1a">
+          <case name="aa1">
+            <leaf name="lf1aa">
+              <type name="string"/>
+            </leaf>
+            <choice name="choi1aa">
+              <case name="aaa1">
+                <leaf name="lf1aaa">
+                  <type name="string"/>
+                </leaf>
+              </case>
+              <case name="aab1">
+                <leaf name="lf1aab">
+                  <type name="string"/>
+                </leaf>
+              </case>
+            </choice>
+          </case>
+          <case name="ab1">
+            <leaf name="lf1ab">
+              <type name="string"/>
+            </leaf>
+          </case>
+        </choice>
+      </case>
+      <case name="b1">
+        <list name="lst1b">
+          <leaf name="lf11b">
+            <type name="string"/>
+          </leaf>
+        </list>
+      </case>
+      <case name="c1">
+        <container name="cont1c">
+          <leaf name="lf11c">
+            <type name="string"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="d1">
+        <leaf-list name="lflst1d">
+          <type name="string"/>
+        </leaf-list>
+      </case>
+      <leaf name="e1">
+        <type name="uint32"/>
+      </leaf>
+    </choice>
+    <choice name="choi2">
+      <case name="a2">
+        <leaf name="lf2a">
+          <type name="string"/>
+        </leaf>
+      </case>
+      <case name="b2">
+        <leaf name="lf2b">
+          <type name="string"/>
+        </leaf>
+      </case>
+    </choice>
+    <choice name="choi4">
+      <case name="a4">
+        <list name="lst4a">
+          <choice name="choi4aa">
+            <case name="aa1">
+              <leaf name="lf4aa">
+                <type name="string"/>
+              </leaf>
+            </case>
+            <case name="ab2">
+              <leaf name="lf4ab">
+                <type name="int16"/>
+              </leaf>
+            </case>
+          </choice>
+        </list>
+      </case>
+      <case name="b4">
+        <leaf-list name="lflst4b">
+          <type name="uint32"/>
+        </leaf-list>
+      </case>
+    </choice>
+  </container>
+</module>

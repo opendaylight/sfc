@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="leafref-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:lfrfmodule="leafref:module"
+        xmlns:refmod="referenced:module">
+  <namespace uri="leafref:module"/>
+  <prefix value="lfrfmodule"/>
+  <import module="referenced-module">
+    <prefix value="refmod"/>
+    <revision-date date="2014-04-17"/>
+  </import>
+  <revision date="2014-04-17"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="instance-identifier"/>
+    </leaf>
+    <leaf name="lf2">
+      <type name="leafref">
+        <path value="../lf1"/>
+      </type>
+    </leaf>
+    <leaf name="lf3">
+      <type name="leafref">
+        <path value="/refmod:cont/refmod:lf1"/>
+      </type>
+    </leaf>
+    <leaf name="lf4">
+      <type name="leafref">
+        <path value="/cont/lf1"/>
+      </type>
+    </leaf>
+    <leaf name="lf5">
+      <type name="leafref">
+        <path value="../lf1"/>
+      </type>
+    </leaf>
+  </container>
+</module>

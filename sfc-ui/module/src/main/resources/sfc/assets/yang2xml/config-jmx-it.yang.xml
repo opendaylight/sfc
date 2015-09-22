@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-jmx-it"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:jmxIt="urn:opendaylight:params:xml:ns:yang:controller:config:jmx:generator:it"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:jmx:generator:it"/>
+  <prefix value="jmxIt"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>Testing API</text>
+  </description>
+  <revision date="2013-06-13">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="testing">
+    <description>
+      <text>Test api</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="java.lang.AutoCloseable"/>
+  </identity>
+</module>

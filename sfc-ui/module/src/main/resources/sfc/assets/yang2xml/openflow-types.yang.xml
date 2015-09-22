@@ -1,0 +1,2283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oft="urn:opendaylight:openflow:common:types">
+  <namespace uri="urn:opendaylight:openflow:common:types"/>
+  <prefix value="oft"/>
+  <revision date="2013-07-31">
+    <description>
+      <text>OpenFlow 1.3 - common types model</text>
+    </description>
+  </revision>
+  <typedef name="port-number">
+    <description>
+      <text>Port numbering. Ports are numbered starting from 1 -
+supports special / reserved values (in OF v1.3)</text>
+    </description>
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="port-number-values">
+    <description>
+      <text>Reserved OpenFlow Port (fake output "ports") (OF v1.3).</text>
+    </description>
+    <type name="enumeration">
+      <enum name="MAX">
+        <description>
+          <text>Maximum number of physical and logical switch ports.</text>
+        </description>
+        <value value="-256"/>
+      </enum>
+      <enum name="IN_PORT">
+        <description>
+          <text>Send the packet out the input port. This
+reserved port must be explicitly used
+in order to send back out of the input
+port.</text>
+        </description>
+        <value value="-8"/>
+      </enum>
+      <enum name="TABLE">
+        <description>
+          <text>Submit the packet to the first flow table
+NB: This destination port can only be
+used in packet-out messages.</text>
+        </description>
+        <value value="-7"/>
+      </enum>
+      <enum name="NORMAL">
+        <description>
+          <text>Process with normal L2/L3 switching.</text>
+        </description>
+        <value value="-6"/>
+      </enum>
+      <enum name="FLOOD">
+        <description>
+          <text>All physical ports in VLAN, except input
+port and those blocked or link down.</text>
+        </description>
+        <value value="-5"/>
+      </enum>
+      <enum name="ALL">
+        <description>
+          <text>All physical ports except input port.</text>
+        </description>
+        <value value="-4"/>
+      </enum>
+      <enum name="CONTROLLER">
+        <description>
+          <text>Send to controller.</text>
+        </description>
+        <value value="-3"/>
+      </enum>
+      <enum name="LOCAL">
+        <description>
+          <text>Local openflow "port".</text>
+        </description>
+        <value value="-2"/>
+      </enum>
+      <enum name="ANY">
+        <description>
+          <text>Wildcard port used only for flow mod
+(delete) and flow stats requests. Selects 
+all flows regardless of output port
+(including flows with no output port).</text>
+        </description>
+        <value value="-1"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-features">
+    <description>
+      <text>Features of ports available in datapath.</text>
+    </description>
+    <type name="bits">
+      <bit name="_10mb_hd">
+        <position value="0"/>
+        <description>
+          <text>10 Mb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_10mb-fd">
+        <position value="1"/>
+        <description>
+          <text>10 Mb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_100mb-hd">
+        <position value="2"/>
+        <description>
+          <text>100 Mb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_100mb-fd">
+        <position value="3"/>
+        <description>
+          <text>100 Mb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_1gb-hd">
+        <position value="4"/>
+        <description>
+          <text>1 Gb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_1gb-fd">
+        <position value="5"/>
+        <description>
+          <text>1 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_10gb-fd">
+        <position value="6"/>
+        <description>
+          <text>10 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_40gb-fd">
+        <position value="7"/>
+        <description>
+          <text>40 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_100gb-fd">
+        <position value="8"/>
+        <description>
+          <text>100 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_1tb-fd">
+        <position value="9"/>
+        <description>
+          <text>1 Tb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="other">
+        <position value="10"/>
+        <description>
+          <text>Other rate, not in the list.</text>
+        </description>
+      </bit>
+      <bit name="copper">
+        <position value="11"/>
+        <description>
+          <text>Copper medium.</text>
+        </description>
+      </bit>
+      <bit name="fiber">
+        <position value="12"/>
+        <description>
+          <text>Fiber medium.</text>
+        </description>
+      </bit>
+      <bit name="autoneg">
+        <position value="13"/>
+        <description>
+          <text>Auto-negotiation.</text>
+        </description>
+      </bit>
+      <bit name="pause">
+        <position value="14"/>
+        <description>
+          <text>Pause.</text>
+        </description>
+      </bit>
+      <bit name="pause-asym">
+        <position value="15"/>
+        <description>
+          <text>Asymmetric pause.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="port-config">
+    <description>
+      <text>Flags to indicate behavior of the physical port. These flags are
+describe the current configuration and used port_mod message 
+to configure the port's behavior.</text>
+    </description>
+    <type name="bits">
+      <bit name="port-down">
+        <position value="0"/>
+      </bit>
+      <bit name="no-recv">
+        <position value="2"/>
+      </bit>
+      <bit name="no-fwd">
+        <position value="5"/>
+      </bit>
+      <bit name="no-packet-in">
+        <position value="6"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="port-state">
+    <description>
+      <text>Current state of the physical port. These are not configurable from
+the controller.</text>
+    </description>
+    <type name="bits">
+      <bit name="link_down">
+        <position value="0"/>
+      </bit>
+      <bit name="blocked">
+        <position value="1"/>
+      </bit>
+      <bit name="live">
+        <position value="2"/>
+      </bit>
+    </type>
+  </typedef>
+  <identity name="match-type-base">
+    <description>
+      <text>The match type indicates the match structure (set of fields that compose the
+match) in use. The match type is placed in the type field at the beginning
+of all match structures.Extensions that define match types may be 
+published on the ONF wiki. Support for extensions is optional.</text>
+    </description>
+  </identity>
+  <identity name="standard-match-type">
+    <base name="oft:match-type-base"/>
+  </identity>
+  <identity name="instruction-base">
+    <description>
+      <text>Base identity for instruction types</text>
+    </description>
+  </identity>
+  <identity name="action-base">
+    <description>
+      <text>Base identity for action types</text>
+    </description>
+  </identity>
+  <typedef name="metadata">
+    <type name="binary"/>
+  </typedef>
+  <typedef name="table-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="meter-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="queue-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="group-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="ether-type">
+    <type name="uint16"/>
+  </typedef>
+  <typedef name="experimenter-id">
+    <description>
+      <text>This type represents experimenter ID used in experimenter messages.
+It also represents vendor ID - as it is the same for OF version 1.3+.
+(VENDOR naming convention has been changed in OF v1.3 specification
+ to EXPERIMENTER)</text>
+    </description>
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="error-type">
+    <type name="enumeration">
+      <enum name="HELLO_FAILED">
+        <value value="0"/>
+        <description>
+          <text>Hello Protocol failed.</text>
+        </description>
+      </enum>
+      <enum name="BAD_REQUEST">
+        <value value="1"/>
+        <description>
+          <text>Request was not understood.</text>
+        </description>
+      </enum>
+      <enum name="BAD_ACTION">
+        <value value="2"/>
+        <description>
+          <text>Error in action description.</text>
+        </description>
+      </enum>
+      <enum name="BAD_INSTRUCTION">
+        <value value="3"/>
+        <description>
+          <text>Error in instruction list.</text>
+        </description>
+      </enum>
+      <enum name="BAD_MATCH">
+        <value value="4"/>
+        <description>
+          <text>Error in match.</text>
+        </description>
+      </enum>
+      <enum name="FLOW_MOD_FAILED">
+        <value value="5"/>
+        <description>
+          <text>Problem modifying flow entry.</text>
+        </description>
+      </enum>
+      <enum name="GROUP_MOD_FAILED">
+        <value value="6"/>
+        <description>
+          <text>Problem modifying group entry.</text>
+        </description>
+      </enum>
+      <enum name="PORT_MOD_FAILED">
+        <value value="7"/>
+        <description>
+          <text>Port mod request failed.</text>
+        </description>
+      </enum>
+      <enum name="TABLE_MOD_FAILED">
+        <value value="8"/>
+        <description>
+          <text>Table mod request failed.</text>
+        </description>
+      </enum>
+      <enum name="QUEUE_OP_FAILED">
+        <value value="9"/>
+        <description>
+          <text>Queue operation failed.</text>
+        </description>
+      </enum>
+      <enum name="SWITCH_CONFIG_FAILED">
+        <value value="10"/>
+        <description>
+          <text>Switch config request failed.</text>
+        </description>
+      </enum>
+      <enum name="ROLE_REQUEST_FAILED">
+        <value value="11"/>
+        <description>
+          <text>Controller Role request failed.</text>
+        </description>
+      </enum>
+      <enum name="METER_MOD_FAILED">
+        <value value="12"/>
+        <description>
+          <text>Error in meter.</text>
+        </description>
+      </enum>
+      <enum name="TABLE_FEATURES_FAILED">
+        <value value="13"/>
+        <description>
+          <text>Setting table features failed.</text>
+        </description>
+      </enum>
+      <enum name="EXPERIMENTER">
+        <value value="65535"/>
+        <description>
+          <text>Experimenter error messages.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="hello-failed-code">
+    <type name="enumeration">
+      <enum name="INCOMPATIBLE">
+        <value value="0"/>
+        <description>
+          <text>Hello Protocol failed.</text>
+        </description>
+      </enum>
+      <enum name="EPERM">
+        <value value="1"/>
+        <description>
+          <text>Request was not understood.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-request-code">
+    <type name="enumeration">
+      <enum name="BAD_VERSION">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_TYPE">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_MULTIPART">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_EXPERIMENTER">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_EXP_TYPE">
+        <value value="4"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="6"/>
+      </enum>
+      <enum name="BUFFER_EMPTY">
+        <value value="7"/>
+      </enum>
+      <enum name="BUFFER_UNKNOWN">
+        <value value="8"/>
+      </enum>
+      <enum name="BAD_TABLE_ID">
+        <value value="9"/>
+      </enum>
+      <enum name="IS_SLAVE">
+        <value value="10"/>
+      </enum>
+      <enum name="BAD_PORT">
+        <value value="11"/>
+      </enum>
+      <enum name="BAD_PACKET">
+        <value value="12"/>
+      </enum>
+      <enum name="MULTIPART_BUFFER_OVERFLOW">
+        <value value="13"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-action-code">
+    <type name="enumeration">
+      <enum name="BAD_TYPE">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_EXPERIMENTER">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_EXP_TYPE">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_OUT_PORT">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_ARGUMENT">
+        <value value="5"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="6"/>
+      </enum>
+      <enum name="TOO_MANY">
+        <value value="7"/>
+      </enum>
+      <enum name="BAD_QUEUE">
+        <value value="8"/>
+      </enum>
+      <enum name="BAD_OUT_GROUP">
+        <value value="9"/>
+      </enum>
+      <enum name="MATCH_INCONSISTENT">
+        <value value="10"/>
+      </enum>
+      <enum name="UNSUPPORTED_ORDER">
+        <value value="11"/>
+      </enum>
+      <enum name="BAD_TAG">
+        <value value="12"/>
+      </enum>
+      <enum name="BAD_SET_TYPE">
+        <value value="13"/>
+      </enum>
+      <enum name="BAD_SET_LEN">
+        <value value="14"/>
+      </enum>
+      <enum name="BAD_SET_ARGUMENT">
+        <value value="15"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-instruction-code">
+    <type name="enumeration">
+      <enum name="UNKNOWN_INST">
+        <value value="0"/>
+      </enum>
+      <enum name="UNSUP_INST">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_TABLE_ID">
+        <value value="2"/>
+      </enum>
+      <enum name="UNSUP_METADATA">
+        <value value="3"/>
+      </enum>
+      <enum name="UNSUP_METADATA_MASK">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_EXPERIMENTER">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_EXP_TYPE">
+        <value value="6"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="7"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="8"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-match-code">
+    <type name="enumeration">
+      <enum name="BAD_TYPE">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_TAG">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_DL_ADDR_MASK">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_NW_ADDR_MASK">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_WILDCARDS">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_FIELD">
+        <value value="6"/>
+      </enum>
+      <enum name="BAD_VALUE">
+        <value value="7"/>
+      </enum>
+      <enum name="BAD_MASK">
+        <value value="8"/>
+      </enum>
+      <enum name="BAD_PREREQ">
+        <value value="9"/>
+      </enum>
+      <enum name="DUP_FIELD">
+        <value value="10"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="11"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="flow-mod-failed-code">
+    <type name="enumeration">
+      <enum name="UNKNOWN">
+        <value value="0"/>
+      </enum>
+      <enum name="TABLE_FULL">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_TABLE_ID">
+        <value value="2"/>
+      </enum>
+      <enum name="OVERLAP">
+        <value value="3"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_TIMEOUT">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_COMMAND">
+        <value value="6"/>
+      </enum>
+      <enum name="BAD_FLAGS">
+        <value value="7"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="group-mod-failed-code">
+    <type name="enumeration">
+      <enum name="GROUP_EXISTS">
+        <value value="0"/>
+      </enum>
+      <enum name="INVALID_GROUP">
+        <value value="1"/>
+      </enum>
+      <enum name="WEIGHT_UNSUPPORTED">
+        <value value="2"/>
+      </enum>
+      <enum name="OUT_OF_GROUPS">
+        <value value="3"/>
+      </enum>
+      <enum name="OUT_OF_BUCKETS">
+        <value value="4"/>
+      </enum>
+      <enum name="CHAINING_UNSUPPORTED">
+        <value value="5"/>
+      </enum>
+      <enum name="WATCH_UNSUPPORTED">
+        <value value="6"/>
+      </enum>
+      <enum name="LOOP">
+        <value value="7"/>
+      </enum>
+      <enum name="UNKNOWN_GROUP">
+        <value value="8"/>
+      </enum>
+      <enum name="CHAINED_GROUP">
+        <value value="9"/>
+      </enum>
+      <enum name="BAD_TYPE">
+        <value value="10"/>
+      </enum>
+      <enum name="BAD_COMMAND">
+        <value value="11"/>
+      </enum>
+      <enum name="BAD_BUCKET">
+        <value value="12"/>
+      </enum>
+      <enum name="BAD_WATCH">
+        <value value="13"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="14"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-mod-failed-code">
+    <type name="enumeration">
+      <enum name="BAD_PORT">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_HW_ADDR">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_CONFIG">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_ADVERTISE">
+        <value value="3"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="4"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="table-mod-failed-code">
+    <type name="enumeration">
+      <enum name="BAD_TABLE">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_CONFIG">
+        <value value="1"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="2"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="queue-op-failed-code">
+    <type name="enumeration">
+      <enum name="BAD_PORT">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_QUEUE">
+        <value value="1"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="2"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="switch-config-failed-code">
+    <type name="enumeration">
+      <enum name="BAD_FLAGS">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="1"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="2"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="role-request-failed-code">
+    <type name="enumeration">
+      <enum name="STALE">
+        <value value="0"/>
+      </enum>
+      <enum name="UNSUP">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_ROLE">
+        <value value="2"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="meter-mod-failed-code">
+    <type name="enumeration">
+      <enum name="UNKNOWN">
+        <value value="0"/>
+      </enum>
+      <enum name="METER_EXISTS">
+        <value value="1"/>
+      </enum>
+      <enum name="INVALID_METER">
+        <value value="2"/>
+      </enum>
+      <enum name="UNKNOWN_METER">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_COMMAND">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_FLAGS">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_RATE">
+        <value value="6"/>
+      </enum>
+      <enum name="BAD_BURST">
+        <value value="7"/>
+      </enum>
+      <enum name="BAD_BAND">
+        <value value="8"/>
+      </enum>
+      <enum name="BAD_BAND_VALUE">
+        <value value="9"/>
+      </enum>
+      <enum name="OUT_OF_METERS">
+        <value value="10"/>
+      </enum>
+      <enum name="OUT_OF_BANDS">
+        <value value="11"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="table-features-failed-code">
+    <type name="enumeration">
+      <enum name="BAD_TABLE">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_METADATA">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_TYPE">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_ARGUMENT">
+        <value value="4"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="5"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="hello-element-type">
+    <type name="enumeration">
+      <enum name="VERSIONBITMAP">
+        <value value="1"/>
+        <description>
+          <text>Bitmap of version supported.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="capabilities">
+    <description>
+      <text>Capabilities supported by the datapath.</text>
+    </description>
+    <type name="bits">
+      <bit name="OFPC_FLOW_STATS">
+        <position value="0"/>
+      </bit>
+      <bit name="OFPC_TABLE_STATS">
+        <position value="1"/>
+      </bit>
+      <bit name="OFPC_PORT_STATS">
+        <position value="2"/>
+      </bit>
+      <bit name="OFPC_GROUP_STATS">
+        <position value="3"/>
+      </bit>
+      <bit name="OFPC_IP_REASM">
+        <position value="5"/>
+      </bit>
+      <bit name="OFPC_QUEUE_STATS">
+        <position value="6"/>
+      </bit>
+      <bit name="OFPC_PORT_BLOCKED">
+        <position value="8"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="switch-config-flag">
+    <description>
+      <text> Handling of IP fragments. </text>
+    </description>
+    <type name="enumeration">
+      <enum name="FRAG_NORMAL">
+        <value value="0"/>
+        <description>
+          <text>No special handling for fragments.</text>
+        </description>
+      </enum>
+      <enum name="OFPC_FRAG_DROP">
+        <value value="1"/>
+        <description>
+          <text>Drop fragments.</text>
+        </description>
+      </enum>
+      <enum name="OFPC_FRAG_REASM">
+        <value value="2"/>
+        <description>
+          <text>Reassemble (only if OFPC_IP_REASM set).</text>
+        </description>
+      </enum>
+      <enum name="OFPC_FRAG_MASK">
+        <value value="3"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="flow-removed-reason">
+    <description>
+      <text>Why was this flow removed?</text>
+    </description>
+    <type name="enumeration">
+      <enum name="OFPRR_IDLE_TIMEOUT">
+        <value value="0"/>
+        <description>
+          <text>Flow idle time exceeded idle_timeout.</text>
+        </description>
+      </enum>
+      <enum name="OFPRR_HARD_TIMEOUT">
+        <value value="1"/>
+        <description>
+          <text>Time exceeded hard_timeout.</text>
+        </description>
+      </enum>
+      <enum name="OFPRR_DELETE">
+        <value value="2"/>
+        <description>
+          <text>Evicted by a DELETE flow mod.</text>
+        </description>
+      </enum>
+      <enum name="OFPRR_GROUP_DELETE">
+        <value value="3"/>
+        <description>
+          <text>Group was removed.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-reason">
+    <description>
+      <text>What changed about the physical port</text>
+    </description>
+    <type name="enumeration">
+      <enum name="OFPPR_ADD">
+        <value value="0"/>
+        <description>
+          <text>The port was added.</text>
+        </description>
+      </enum>
+      <enum name="OFPPR_DELETE">
+        <value value="1"/>
+        <description>
+          <text>he port was removed.</text>
+        </description>
+      </enum>
+      <enum name="OFPPR_MODIFY">
+        <value value="2"/>
+        <description>
+          <text>Some attribute of the port has changed.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="flow-mod-command">
+    <type name="enumeration">
+      <enum name="OFPFC_ADD">
+        <value value="0"/>
+        <description>
+          <text>New flow.</text>
+        </description>
+      </enum>
+      <enum name="OFPFC_MODIFY">
+        <value value="1"/>
+        <description>
+          <text>Modify all matching flows.</text>
+        </description>
+      </enum>
+      <enum name="OFPFC_MODIFY_STRICT">
+        <value value="2"/>
+        <description>
+          <text>Modify entry strictly matching wildcards and priority.</text>
+        </description>
+      </enum>
+      <enum name="OFPFC_DELETE">
+        <value value="3"/>
+        <description>
+          <text>Delete all matching flows.</text>
+        </description>
+      </enum>
+      <enum name="OFPFC_DELETE_STRICT">
+        <value value="4"/>
+        <description>
+          <text>Delete entry strictly matching wildcards and priority.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="flow-mod-flags">
+    <type name="bits">
+      <bit name="OFPFF_SEND_FLOW_REM">
+        <position value="0"/>
+        <description>
+          <text>Send flow removed message when flow expires or is deleted.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_CHECK_OVERLAP">
+        <position value="1"/>
+        <description>
+          <text>Check for overlapping entries first.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_RESET_COUNTS">
+        <position value="2"/>
+        <description>
+          <text>Reset flow packet and byte counts.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_NO_PKT_COUNTS">
+        <position value="3"/>
+        <description>
+          <text>Don't keep track of packet count.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_NO_BYT_COUNTS">
+        <position value="4"/>
+        <description>
+          <text>Don't keep track of byte count.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="group-mod-command">
+    <type name="enumeration">
+      <enum name="OFPGC_ADD">
+        <value value="0"/>
+        <description>
+          <text>New group.</text>
+        </description>
+      </enum>
+      <enum name="OFPGC_MODIFY">
+        <value value="1"/>
+        <description>
+          <text>Modify all matching groups.</text>
+        </description>
+      </enum>
+      <enum name="OFPGC_DELETE">
+        <value value="2"/>
+        <description>
+          <text>Delete all matching groups.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="group-type">
+    <type name="enumeration">
+      <enum name="OFPGT_ALL">
+        <value value="0"/>
+        <description>
+          <text>All (multicast/broadcast) group.</text>
+        </description>
+      </enum>
+      <enum name="OFPGT_SELECT">
+        <value value="1"/>
+        <description>
+          <text>Select group.</text>
+        </description>
+      </enum>
+      <enum name="OFPGT_INDIRECT">
+        <value value="2"/>
+        <description>
+          <text>Indirect group.</text>
+        </description>
+      </enum>
+      <enum name="OFPGT_FF">
+        <value value="3"/>
+        <description>
+          <text>Fast failover group.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="table-values">
+    <type name="enumeration">
+      <enum name="OFPTT_MAX">
+        <value value="254"/>
+        <description>
+          <text>Last usable table number.</text>
+        </description>
+      </enum>
+      <enum name="OFPTT_ALL">
+        <value value="255"/>
+        <description>
+          <text>Wildcard table used for table config, 
+flow stats and flow deletes.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="group">
+    <type name="enumeration">
+      <enum name="OFPG_MAX">
+        <value value="-256"/>
+        <description>
+          <text>Last usable group number</text>
+        </description>
+      </enum>
+      <enum name="OFPG_ALL">
+        <value value="-4"/>
+        <description>
+          <text>Represents all groups for group delete commands</text>
+        </description>
+      </enum>
+      <enum name="OFPG_ANY">
+        <value value="-1"/>
+        <description>
+          <text>Wildcard group used only for flow stats requests. 
+Selects all flows regardless of group (including flows with no group)</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="multipart-request-flags">
+    <description>
+      <text>enum ofp_multipart_request_flags </text>
+    </description>
+    <type name="bits">
+      <bit name="OFPMPF_REQ_MORE">
+        <description>
+          <text>More requests to follow.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="multipart-type">
+    <type name="enumeration">
+      <enum name="OFPMP_DESC">
+        <value value="0"/>
+        <description>
+          <text>Description of this OpenFlow switch.
+The request body is empty.
+The reply body is struct ofp_desc.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_FLOW">
+        <value value="1"/>
+        <description>
+          <text>Individual flow statistics.
+The request body is struct ofp_flow_stats_request.
+The reply body is an array of struct ofp_flow_stats.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_AGGREGATE">
+        <value value="2"/>
+        <description>
+          <text>Aggregate flow statistics.
+The request body is struct ofp_aggregate_stats_request.
+The reply body is struct ofp_aggregate_stats_reply.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_TABLE">
+        <value value="3"/>
+        <description>
+          <text>Flow table statistics.
+The request body is empty.
+The reply body is an array of struct ofp_table_stats.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_PORT_STATS">
+        <value value="4"/>
+        <description>
+          <text>Port statistics.
+The request body is struct ofp_port_stats_request.
+The reply body is an array of struct ofp_port_stats.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_QUEUE">
+        <value value="5"/>
+        <description>
+          <text>Queue statistics for a port
+The request body is struct ofp_queue_stats_request.
+The reply body is an array of struct ofp_queue_stats</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_GROUP">
+        <value value="6"/>
+        <description>
+          <text>Group counter statistics.
+The request body is struct ofp_group_stats_request.
+The reply is an array of struct ofp_group_stats.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_GROUP_DESC">
+        <value value="7"/>
+        <description>
+          <text>Group description.
+The request body is empty.
+The reply body is an array of struct ofp_group_desc.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_GROUP_FEATURES">
+        <value value="8"/>
+        <description>
+          <text>Group features.
+The request body is empty.
+The reply body is struct ofp_group_features.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_METER">
+        <value value="9"/>
+        <description>
+          <text>Meter statistics.
+The request body is struct ofp_meter_multipart_requests.
+The reply body is an array of struct ofp_meter_stats.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_METER_CONFIG">
+        <value value="10"/>
+        <description>
+          <text>Meter configuration.
+The request body is struct ofp_meter_multipart_requests.
+The reply body is an array of struct ofp_meter_config.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_METER_FEATURES">
+        <value value="11"/>
+        <description>
+          <text>Meter features.
+The request body is empty.
+The reply body is struct ofp_meter_features.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_TABLE_FEATURES">
+        <value value="12"/>
+        <description>
+          <text>Table features.
+The request body is either empty or contains an array of
+struct ofp_table_features containing the controller’s
+desired view of the switch. If the switch is unable to
+set the specified view an error is returned.
+The reply body is an array of struct ofp_table_features.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_PORT_DESC">
+        <value value="13"/>
+        <description>
+          <text>Port description.
+The request body is empty.
+The reply body is an array of struct ofp_port.</text>
+        </description>
+      </enum>
+      <enum name="OFPMP_EXPERIMENTER">
+        <value value="65535"/>
+        <description>
+          <text>Experimenter extension.
+The request and reply bodies begin with
+struct ofp_experimenter_multipart_header.
+The request and reply bodies are otherwise experimenter-defined.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="queue-properties">
+    <type name="enumeration">
+      <enum name="OFPQT_NONE">
+        <value value="0"/>
+        <description>
+          <text>No property defined for queue (default).</text>
+        </description>
+      </enum>
+      <enum name="OFPQT_MIN_RATE">
+        <value value="1"/>
+        <description>
+          <text>Minimum datarate guaranteed.</text>
+        </description>
+      </enum>
+      <enum name="OFPQT_MAX_RATE">
+        <value value="2"/>
+        <description>
+          <text>Maximum datarate.</text>
+        </description>
+      </enum>
+      <enum name="OFPQT_EXPERIMENTER">
+        <value value="65535"/>
+        <description>
+          <text>Experimenter defined property.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="controller-role">
+    <type name="enumeration">
+      <enum name="OFPCR_ROLE_NOCHANGE">
+        <value value="0"/>
+        <description>
+          <text>Don’t change current role.</text>
+        </description>
+      </enum>
+      <enum name="OFPCR_ROLE_EQUAL">
+        <value value="1"/>
+        <description>
+          <text>Default role, full access.</text>
+        </description>
+      </enum>
+      <enum name="OFPCR_ROLE_MASTER">
+        <value value="2"/>
+        <description>
+          <text>Full access, at most one master.</text>
+        </description>
+      </enum>
+      <enum name="OFPCR_ROLE_SLAVE">
+        <value value="3"/>
+        <description>
+          <text>Read-only access.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="packet-in-reason">
+    <type name="enumeration">
+      <enum name="OFPR_NO_MATCH">
+        <value value="0"/>
+        <description>
+          <text>No matching flow (table-miss flow entry). </text>
+        </description>
+      </enum>
+      <enum name="OFPR_ACTION">
+        <value value="1"/>
+        <description>
+          <text>Action explicitly output to controller. </text>
+        </description>
+      </enum>
+      <enum name="OFPR_INVALID_TTL">
+        <value value="2"/>
+        <description>
+          <text>Packet has invalid TTL </text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="action-type">
+    <type name="bits">
+      <bit name="OFPAT_OUTPUT">
+        <position value="0"/>
+      </bit>
+      <bit name="OFPAT_COPY_TTL_OUT">
+        <position value="1"/>
+      </bit>
+      <bit name="OFPAT_COPY_TTL_IN">
+        <position value="2"/>
+      </bit>
+      <bit name="OFPAT_SET_MPLS_TTL">
+        <position value="3"/>
+      </bit>
+      <bit name="OFPAT_DEC_MPLS_TTL">
+        <position value="4"/>
+      </bit>
+      <bit name="OFPAT_PUSH_VLAN">
+        <position value="5"/>
+      </bit>
+      <bit name="OFPAT_POP_VLAN">
+        <position value="6"/>
+      </bit>
+      <bit name="OFPAT_PUSH_MPLS">
+        <position value="7"/>
+      </bit>
+      <bit name="OFPAT_POP_MPLS">
+        <position value="8"/>
+      </bit>
+      <bit name="OFPAT_SET_QUEUE">
+        <position value="9"/>
+      </bit>
+      <bit name="OFPAT_GROUP">
+        <position value="10"/>
+      </bit>
+      <bit name="OFPAT_SET_NW_TTL">
+        <position value="11"/>
+      </bit>
+      <bit name="OFPAT_DEC_NW_TTL">
+        <position value="12"/>
+      </bit>
+      <bit name="OFPAT_SET_FIELD">
+        <position value="13"/>
+      </bit>
+      <bit name="OFPAT_PUSH_PBB">
+        <position value="14"/>
+      </bit>
+      <bit name="OFPAT_POP_PBB">
+        <position value="15"/>
+      </bit>
+      <bit name="OFPAT_EXPERIMENTER">
+        <position value="16"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="meter-mod-command">
+    <type name="enumeration">
+      <enum name="OFPMC_ADD">
+        <description>
+          <text>New meter. </text>
+        </description>
+      </enum>
+      <enum name="OFPMC_MODIFY">
+        <description>
+          <text>Modify specified meter. </text>
+        </description>
+      </enum>
+      <enum name="OFPMC_DELETE">
+        <description>
+          <text>Delete specified meter. </text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="meter-flags">
+    <type name="bits">
+      <bit name="OFPMF_KBPS">
+        <position value="0"/>
+      </bit>
+      <bit name="OFPMF_PKTPS">
+        <position value="1"/>
+      </bit>
+      <bit name="OFPMF_BURST">
+        <position value="2"/>
+      </bit>
+      <bit name="OFPMF_STATS">
+        <position value="3"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="meter-band-type">
+    <type name="enumeration">
+      <enum name="OFPMBT_DROP">
+        <value value="1"/>
+        <description>
+          <text>Drop packet. </text>
+        </description>
+      </enum>
+      <enum name="OFPMBT_DSCP_REMARK">
+        <value value="2"/>
+        <description>
+          <text>Remark DSCP in the IP header. </text>
+        </description>
+      </enum>
+      <enum name="OFPMBT_EXPERIMENTER">
+        <value value="65535"/>
+        <description>
+          <text>Experimenter meter band. </text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="meter-band-type-bitmap">
+    <type name="bits">
+      <bit name="OFPMBT_DROP">
+        <position value="1"/>
+        <description>
+          <text>Drop packet. </text>
+        </description>
+      </bit>
+      <bit name="OFPMBT_DSCP_REMARK">
+        <position value="2"/>
+        <description>
+          <text>Remark DSCP in the IP header. </text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="meter">
+    <description>
+      <text>Meter numbering. Flow meters can use any number up to OFPM_MAX</text>
+    </description>
+    <type name="enumeration">
+      <enum name="OFPM_MAX">
+        <value value="-65536"/>
+        <description>
+          <text>Last usable meter number</text>
+        </description>
+      </enum>
+      <enum name="OFPM_SLOWPATH">
+        <value value="-3"/>
+        <description>
+          <text>Meter for slow datapath</text>
+        </description>
+      </enum>
+      <enum name="OFPM_CONTROLLER">
+        <value value="-2"/>
+        <description>
+          <text>Meter for controller connection</text>
+        </description>
+      </enum>
+      <enum name="OFPM_ALL">
+        <value value="-1"/>
+        <description>
+          <text>Represents all meters for stat requests commands</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="table-config">
+    <type name="bits">
+      <bit name="OFPTC_DEPRECATED_MASK">
+        <position value="3"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="table-features-prop-type">
+    <type name="enumeration">
+      <enum name="OFPTFPT_INSTRUCTIONS">
+        <value value="0"/>
+        <description>
+          <text>Instructions property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_INSTRUCTIONS_MISS">
+        <value value="1"/>
+        <description>
+          <text>Instructions for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_NEXT_TABLES">
+        <value value="2"/>
+        <description>
+          <text>Next Table property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_NEXT_TABLES_MISS">
+        <value value="3"/>
+        <description>
+          <text>Next Table for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_WRITE_ACTIONS">
+        <value value="4"/>
+        <description>
+          <text>Write Actions property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_WRITE_ACTIONS_MISS">
+        <value value="5"/>
+        <description>
+          <text>Write Actions for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_APPLY_ACTIONS">
+        <value value="6"/>
+        <description>
+          <text>Apply Actions property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_APPLY_ACTIONS_MISS">
+        <value value="7"/>
+        <description>
+          <text>Apply Actions for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_MATCH">
+        <value value="8"/>
+        <description>
+          <text>Match property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_WILDCARDS">
+        <value value="10"/>
+        <description>
+          <text>Wildcards property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_WRITE_SETFIELD">
+        <value value="12"/>
+        <description>
+          <text>Write Set-Field property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_WRITE_SETFIELD_MISS">
+        <value value="13"/>
+        <description>
+          <text>Write Set-Field for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_APPLY_SETFIELD">
+        <value value="14"/>
+        <description>
+          <text>Apply Set-Field property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_APPLY_SETFIELD_MISS">
+        <value value="15"/>
+        <description>
+          <text>Apply Set-Field for table-miss.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_EXPERIMENTER">
+        <value value="65534"/>
+        <description>
+          <text>Experimenter property.</text>
+        </description>
+      </enum>
+      <enum name="OFPTFPT_EXPERIMENTER_MISS">
+        <value value="65535"/>
+        <description>
+          <text>Experimenter for table-miss.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="group-types">
+    <type name="bits">
+      <bit name="OFPGT_ALL">
+        <description>
+          <text>All (multicast/broadcast) group.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="OFPGT_SELECT">
+        <description>
+          <text>Select group.</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="OFPGT_INDIRECT">
+        <description>
+          <text>Indirect group.</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="OFPGT_FF">
+        <description>
+          <text>Fast failover group.</text>
+        </description>
+        <position value="3"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="group-capabilities">
+    <type name="bits">
+      <bit name="OFPGFC_SELECT_WEIGHT">
+        <description>
+          <text>Support weight for select groups</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="OFPGFC_SELECT_LIVENESS">
+        <description>
+          <text>Support liveness for select groups</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="OFPGFC_CHAINING">
+        <description>
+          <text>Support chaining group</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="OFPGFC_CHAINING_CHECKS">
+        <description>
+          <text>Check chaining for loops and delete</text>
+        </description>
+        <position value="3"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="ipv6-exthdr-flags">
+    <description>
+      <text>Bit definitions for IPv6 Extension Header pseudo-field.</text>
+    </description>
+    <type name="bits">
+      <bit name="nonext">
+        <description>
+          <text>&lt;No next header&gt; encountered.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="esp">
+        <description>
+          <text>Encrypted Sec Payload header present.</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="auth">
+        <description>
+          <text>Authentication header present.</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="dest">
+        <description>
+          <text>1 or 2 dest headers present.</text>
+        </description>
+        <position value="3"/>
+      </bit>
+      <bit name="frag">
+        <description>
+          <text>Fragment header present.</text>
+        </description>
+        <position value="4"/>
+      </bit>
+      <bit name="router">
+        <description>
+          <text>Router header present.</text>
+        </description>
+        <position value="5"/>
+      </bit>
+      <bit name="hop">
+        <description>
+          <text>Hop-by-hop header present.</text>
+        </description>
+        <position value="6"/>
+      </bit>
+      <bit name="unrep">
+        <description>
+          <text>Unexpected repeats encountered.</text>
+        </description>
+        <position value="7"/>
+      </bit>
+      <bit name="unseq">
+        <description>
+          <text>Unexpected sequencing encountered.</text>
+        </description>
+        <position value="8"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="error-type-v10">
+    <type name="enumeration">
+      <enum name="HELLO_FAILED">
+        <value value="0"/>
+        <description>
+          <text>Hello Protocol failed.</text>
+        </description>
+      </enum>
+      <enum name="BAD_REQUEST">
+        <value value="1"/>
+        <description>
+          <text>Request was not understood.</text>
+        </description>
+      </enum>
+      <enum name="BAD_ACTION">
+        <value value="2"/>
+        <description>
+          <text>Error in action description.</text>
+        </description>
+      </enum>
+      <enum name="FLOW_MOD_FAILED">
+        <value value="3"/>
+        <description>
+          <text>Problem modifying flow entry.</text>
+        </description>
+      </enum>
+      <enum name="PORT_MOD_FAILED">
+        <value value="4"/>
+        <description>
+          <text>Port mod request failed.</text>
+        </description>
+      </enum>
+      <enum name="QUEUE_OP_FAILED">
+        <value value="5"/>
+        <description>
+          <text>Queue operation failed.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="hello-failed-code-v10">
+    <type name="enumeration">
+      <enum name="INCOMPATIBLE">
+        <value value="0"/>
+        <description>
+          <text>Hello Protocol failed.</text>
+        </description>
+      </enum>
+      <enum name="EPERM">
+        <value value="1"/>
+        <description>
+          <text>Request was not understood.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-request-code-v10">
+    <type name="enumeration">
+      <enum name="BAD_VERSION">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_TYPE">
+        <value value="1"/>
+      </enum>
+      <enum name="BAD_STAT">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_VENDOR">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_SUBTYPE">
+        <value value="4"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="5"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="6"/>
+      </enum>
+      <enum name="BUFFER_EMPTY">
+        <value value="7"/>
+      </enum>
+      <enum name="BUFFER_UNKNOWN">
+        <value value="8"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="bad-action-code-v10">
+    <type name="enumeration">
+      <enum name="BAD_TYPE">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_LEN">
+        <value value="1"/>
+      </enum>
+      <enum name="VENDOR">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_VENDOR_TYPE">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_OUT_PORT">
+        <value value="4"/>
+      </enum>
+      <enum name="BAD_ARGUMENT">
+        <value value="5"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="6"/>
+      </enum>
+      <enum name="TOO_MANY">
+        <value value="7"/>
+      </enum>
+      <enum name="BAD_QUEUE">
+        <value value="8"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="flow-mod-failed-code-v10">
+    <type name="enumeration">
+      <enum name="ALL_TABLES_FULL">
+        <value value="0"/>
+      </enum>
+      <enum name="OVERLAP">
+        <value value="1"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="2"/>
+      </enum>
+      <enum name="BAD_EMERG_TIMEOUT">
+        <value value="3"/>
+      </enum>
+      <enum name="BAD_COMMAND">
+        <value value="4"/>
+      </enum>
+      <enum name="UNSUPPORTED">
+        <value value="5"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-mod-failed-code-v10">
+    <type name="enumeration">
+      <enum name="BAD_PORT">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_HW_ADDR">
+        <value value="1"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="queue-op-failed-code-v10">
+    <type name="enumeration">
+      <enum name="BAD_PORT">
+        <value value="0"/>
+      </enum>
+      <enum name="BAD_QUEUE">
+        <value value="1"/>
+      </enum>
+      <enum name="EPERM">
+        <value value="2"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-number-values-v10">
+    <description>
+      <text>Port numbering. Physical ports are numbered starting from 1.</text>
+    </description>
+    <type name="enumeration">
+      <enum name="MAX">
+        <value value="65280"/>
+      </enum>
+      <enum name="IN_PORT">
+        <description>
+          <text>Send the packet out the input port. This
+virtual port must be explicitly used
+in order to send back out of the input
+port.</text>
+        </description>
+        <value value="65528"/>
+      </enum>
+      <enum name="TABLE">
+        <description>
+          <text>Perform actions in flow table.
+NB: This can only be the destination
+port for packet-out messages.</text>
+        </description>
+        <value value="65529"/>
+      </enum>
+      <enum name="NORMAL">
+        <description>
+          <text>Process with normal L2/L3 switching.</text>
+        </description>
+        <value value="65530"/>
+      </enum>
+      <enum name="FLOOD">
+        <description>
+          <text>All physical ports except input port and
+those disabled by STP.</text>
+        </description>
+        <value value="65531"/>
+      </enum>
+      <enum name="ALL">
+        <description>
+          <text>All physical ports except input port.</text>
+        </description>
+        <value value="65532"/>
+      </enum>
+      <enum name="CONTROLLER">
+        <description>
+          <text>Send to controller.</text>
+        </description>
+        <value value="65533"/>
+      </enum>
+      <enum name="LOCAL">
+        <description>
+          <text>Local openflow "port".</text>
+        </description>
+        <value value="65534"/>
+      </enum>
+      <enum name="NONE">
+        <description>
+          <text>Not associated with a physical port.</text>
+        </description>
+        <value value="65535"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="port-config-v10">
+    <description>
+      <text>Flags to indicate behavior of the physical port. These flags are
+describe the current configuration and used port_mod message 
+to configure the port's behavior.</text>
+    </description>
+    <type name="bits">
+      <bit name="port-down">
+        <description>
+          <text> Port is administratively down.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="no-stp">
+        <description>
+          <text>Disable 802.1D spanning tree on port.</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="no-recv">
+        <description>
+          <text> Drop all packets received by port.</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="no-recv-stp">
+        <description>
+          <text> Drop received 802.1D STP packets.</text>
+        </description>
+        <position value="3"/>
+      </bit>
+      <bit name="no-flood">
+        <description>
+          <text> Do not include this port when flooding.</text>
+        </description>
+        <position value="4"/>
+      </bit>
+      <bit name="no-fwd">
+        <description>
+          <text> Drop packets forwarded to port.</text>
+        </description>
+        <position value="5"/>
+      </bit>
+      <bit name="no-packet-in">
+        <description>
+          <text>Do not send packet-in msgs for port.</text>
+        </description>
+        <position value="6"/>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="port-state-v10">
+    <description>
+      <text>Current state of the physical port. These are not configurable from
+the controller.</text>
+    </description>
+    <type name="bits">
+      <bit name="link_down">
+        <description>
+          <text>No physical link present.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="blocked">
+        <description>
+          <text>Port is blocked</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="live">
+        <description>
+          <text>Live for Fast Failover Group.</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="stp_listen">
+        <description>
+          <text>Not learning or relaying frames.</text>
+        </description>
+      </bit>
+      <bit name="stp_learn">
+        <description>
+          <text>Learning but not relaying frames.</text>
+        </description>
+      </bit>
+      <bit name="stp_forward">
+        <description>
+          <text>Learning and relaying frames.</text>
+        </description>
+      </bit>
+      <bit name="stp_block">
+        <description>
+          <text>Not part of spanning tree.</text>
+        </description>
+      </bit>
+      <bit name="stp_mask">
+        <description>
+          <text>Bit mask for OFPPS_STP_* values.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="port-features-v10">
+    <description>
+      <text>Features of ports available in datapath.</text>
+    </description>
+    <reference>
+      <text>ofp_port_features</text>
+    </reference>
+    <type name="bits">
+      <bit name="_10mb-hd">
+        <position value="0"/>
+        <description>
+          <text>10 Mb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_10mb-fd">
+        <position value="1"/>
+        <description>
+          <text>10 Mb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_100mb-hd">
+        <position value="2"/>
+        <description>
+          <text>100 Mb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_100mb-fd">
+        <position value="3"/>
+        <description>
+          <text>100 Mb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_1gb-hd">
+        <position value="4"/>
+        <description>
+          <text>1 Gb half-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_1gb-fd">
+        <position value="5"/>
+        <description>
+          <text>1 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="_10gb-fd">
+        <position value="6"/>
+        <description>
+          <text>10 Gb full-duplex rate support.</text>
+        </description>
+      </bit>
+      <bit name="copper">
+        <position value="7"/>
+        <description>
+          <text>Copper medium.</text>
+        </description>
+      </bit>
+      <bit name="fiber">
+        <position value="8"/>
+        <description>
+          <text>Fiber medium.</text>
+        </description>
+      </bit>
+      <bit name="autoneg">
+        <position value="9"/>
+        <description>
+          <text>Auto-negotiation.</text>
+        </description>
+      </bit>
+      <bit name="pause">
+        <position value="10"/>
+        <description>
+          <text>Pause.</text>
+        </description>
+      </bit>
+      <bit name="pause-asym">
+        <position value="11"/>
+        <description>
+          <text>Asymmetric pause.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="capabilities-v10">
+    <type name="bits">
+      <bit name="OFPC_FLOW_STATS">
+        <position value="0"/>
+        <description>
+          <text>Flow statistics.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_TABLE_STATS">
+        <position value="1"/>
+        <description>
+          <text>Table statistics.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_PORT_STATS">
+        <position value="2"/>
+        <description>
+          <text>Port statistics.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_STP">
+        <position value="3"/>
+        <description>
+          <text>802.1d spanning tree.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_RESERVED">
+        <position value="4"/>
+        <description>
+          <text>Reserved, must be zero.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_IP_REASM">
+        <position value="5"/>
+        <description>
+          <text>Can reassemble IP fragments.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_QUEUE_STATS">
+        <position value="6"/>
+        <description>
+          <text>Queue statistics.</text>
+        </description>
+      </bit>
+      <bit name="OFPC_ARP_MATCH_IP">
+        <position value="8"/>
+        <description>
+          <text>Match IP addresses in ARP pkts.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="flow-mod-flags-v10">
+    <type name="bits">
+      <bit name="OFPFF_SEND_FLOW_REM">
+        <position value="0"/>
+        <description>
+          <text>Send flow removed message when flow expires or is deleted.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_CHECK_OVERLAP">
+        <position value="1"/>
+        <description>
+          <text>Check for overlapping entries first.</text>
+        </description>
+      </bit>
+      <bit name="OFPFF_EMERG">
+        <position value="2"/>
+        <description>
+          <text>Reset flow packet and byte counts.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="action-type-v10">
+    <type name="bits">
+      <bit name="OFPAT_OUTPUT">
+        <position value="0"/>
+        <description>
+          <text>Output to switch port.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_VLAN_VID">
+        <position value="1"/>
+        <description>
+          <text>Set the 802.1q VLAN id.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_VLAN_PCP">
+        <position value="2"/>
+        <description>
+          <text>Set the 802.1q priority.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_STRIP_VLAN">
+        <position value="3"/>
+        <description>
+          <text>Strip the 802.1q header.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_DL_SRC">
+        <position value="4"/>
+        <description>
+          <text>Ethernet source address.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_DL_DST">
+        <position value="5"/>
+        <description>
+          <text>Ethernet destination address.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_NW_SRC">
+        <position value="6"/>
+        <description>
+          <text>IP source address.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_NW_DST">
+        <position value="7"/>
+        <description>
+          <text>IP destination address.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_NW_TOS">
+        <position value="8"/>
+        <description>
+          <text>IP ToS (DSCP field, 6 bits).</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_TP_SRC">
+        <position value="9"/>
+        <description>
+          <text>TCP/UDP source port.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_SET_TP_DST">
+        <position value="10"/>
+        <description>
+          <text>TCP/UDP destination port.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_ENQUEUE">
+        <position value="11"/>
+        <description>
+          <text>Output to queue.</text>
+        </description>
+      </bit>
+      <bit name="OFPAT_VENDOR">
+        <position value="12"/>
+        <description>
+          <text>Experimenter in later versions.</text>
+        </description>
+      </bit>
+    </type>
+  </typedef>
+  <typedef name="flow-wildcards-v10">
+    <description>
+      <text>Flow wildcards - NW_SRC_MASK &amp; NW_DST_MASK are handled separately</text>
+    </description>
+    <type name="bits">
+      <bit name="IN_PORT">
+        <description>
+          <text>Switch input port.</text>
+        </description>
+        <position value="0"/>
+      </bit>
+      <bit name="DL_VLAN">
+        <description>
+          <text>VLAN id.</text>
+        </description>
+        <position value="1"/>
+      </bit>
+      <bit name="DL_SRC">
+        <description>
+          <text>Ethernet source address.</text>
+        </description>
+        <position value="2"/>
+      </bit>
+      <bit name="DL_DST">
+        <description>
+          <text>Ethernet destination address.</text>
+        </description>
+        <position value="3"/>
+      </bit>
+      <bit name="DL_TYPE">
+        <description>
+          <text>Ethernet frame type.</text>
+        </description>
+        <position value="4"/>
+      </bit>
+      <bit name="NW_PROTO">
+        <description>
+          <text>IP protocol.</text>
+        </description>
+        <position value="5"/>
+      </bit>
+      <bit name="TP_SRC">
+        <description>
+          <text>TCP/UDP source port.</text>
+        </description>
+        <position value="6"/>
+      </bit>
+      <bit name="TP_DST">
+        <description>
+          <text>TCP/UDP destination port.</text>
+        </description>
+        <position value="7"/>
+      </bit>
+      <bit name="DL_VLAN_PCP">
+        <description>
+          <text>VLAN priority.</text>
+        </description>
+        <position value="20"/>
+      </bit>
+      <bit name="NW_TOS">
+        <description>
+          <text>IP ToS (DSCP field, 6 bits).</text>
+        </description>
+        <position value="21"/>
+      </bit>
+    </type>
+  </typedef>
+</module>

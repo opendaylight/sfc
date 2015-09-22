@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-port-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:port-types="urn:opendaylight:flow:types:port"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:queue-types="urn:opendaylight:flow:types:queue">
+  <namespace uri="urn:opendaylight:flow:types:port"/>
+  <prefix value="port-types"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-queue-types">
+    <prefix value="queue-types"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <revision date="2013-09-25">
+    <description>
+      <text>Initial revision of Port Inventory model</text>
+    </description>
+  </revision>
+  <typedef name="port-reason">
+    <type name="enumeration">
+      <enum name="add"/>
+      <enum name="delete"/>
+      <enum name="update"/>
+    </type>
+  </typedef>
+  <typedef name="port-config">
+    <type name="bits">
+      <bit name="PORT-DOWN"/>
+      <bit name="NO-RECV"/>
+      <bit name="NO-FWD"/>
+      <bit name="NO-PACKET-IN"/>
+    </type>
+  </typedef>
+  <grouping name="port-state">
+    <leaf name="link-down">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="blocked">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="live">
+      <type name="boolean"/>
+    </leaf>
+  </grouping>
+  <typedef name="port-features">
+    <type name="bits">
+      <bit name="ten-mb-hd"/>
+      <bit name="ten-mb-fd"/>
+      <bit name="hundred-mb-hd"/>
+      <bit name="hundred-mb-fd"/>
+      <bit name="one-gb-hd"/>
+      <bit name="one-gb-fd"/>
+      <bit name="ten-gb-fd"/>
+      <bit name="forty-gb-fd"/>
+      <bit name="hundred-gb-fd"/>
+      <bit name="one-tb-fd"/>
+      <bit name="other"/>
+      <bit name="copper"/>
+      <bit name="fiber"/>
+      <bit name="autoeng"/>
+      <bit name="pause"/>
+      <bit name="pause-asym"/>
+    </type>
+  </typedef>
+  <grouping name="common-port">
+    <leaf name="port-number">
+      <type name="union">
+        <type name="uint32"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="hardware-address">
+      <type name="yang:mac-address"/>
+      <description>
+        <text>MAC Address of the port</text>
+      </description>
+    </leaf>
+    <leaf name="configuration">
+      <type name="port-config"/>
+      <description>
+        <text>Bit map of OFPPC-* flags</text>
+      </description>
+    </leaf>
+    <leaf name="advertised-features">
+      <type name="port-features"/>
+      <description>
+        <text>Features being advertised by the port</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="flow-port-status">
+    <leaf name="reason">
+      <type name="port-reason"/>
+    </leaf>
+    <uses name="flow-capable-port"/>
+  </grouping>
+  <grouping name="queues">
+    <list name="queue">
+      <key value="queue-id"/>
+      <uses name="queue-types:queue-packet"/>
+    </list>
+  </grouping>
+  <grouping name="flow-capable-port">
+    <uses name="common-port"/>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Human readable name of the port</text>
+      </description>
+    </leaf>
+    <container name="state">
+      <uses name="port-state"/>
+      <description>
+        <text>Description of state of port</text>
+      </description>
+    </container>
+    <leaf name="current-feature">
+      <type name="port-features"/>
+      <description>
+        <text>Bit map of OFPPF-* flags</text>
+      </description>
+    </leaf>
+    <leaf name="supported">
+      <type name="port-features"/>
+      <description>
+        <text>Features supported by the port</text>
+      </description>
+    </leaf>
+    <leaf name="peer-features">
+      <type name="port-features"/>
+      <description>
+        <text>Features advertised by peer</text>
+      </description>
+    </leaf>
+    <leaf name="current-speed">
+      <type name="uint32"/>
+      <units name="kbps"/>
+      <description>
+        <text>Current port bit rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-speed">
+      <type name="uint32"/>
+      <units name="kbps"/>
+      <description>
+        <text>Max port bit rate in kbps</text>
+      </description>
+    </leaf>
+    <uses name="queues"/>
+  </grouping>
+  <grouping name="port-mod">
+    <container name="port">
+      <list name="port">
+        <key value="port-mod-order"/>
+        <leaf name="port-mod-order">
+          <type name="uint32"/>
+        </leaf>
+        <uses name="common-port"/>
+        <leaf name="mask">
+          <type name="port-config"/>
+          <description>
+            <text>Bitmap of OFPPC-* flags to be changed</text>
+          </description>
+        </leaf>
+        <leaf name="container-name">
+          <type name="string"/>
+        </leaf>
+        <leaf name="port-name">
+          <type name="string"/>
+        </leaf>
+        <leaf name="barrier">
+          <type name="boolean"/>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+</module>

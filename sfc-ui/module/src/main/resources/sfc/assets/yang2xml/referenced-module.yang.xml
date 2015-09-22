@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="referenced-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:refmodule="referenced:module">
+  <namespace uri="referenced:module"/>
+  <prefix value="refmodule"/>
+  <revision date="2014-04-17"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="instance-identifier"/>
+    </leaf>
+  </container>
+</module>

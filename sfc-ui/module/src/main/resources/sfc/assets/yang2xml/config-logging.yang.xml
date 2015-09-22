@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-logging"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:logging="urn:opendaylight:params:xml:ns:yang:controller:logback:config"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:logback:config"/>
+  <prefix value="logging"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <description>
+    <text>This module contains the base YANG definitions for NS-OS
+logging module.</text>
+  </description>
+  <revision date="2013-07-16">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="logback">
+    <description>
+      <text>Actual state of logback configuration.</text>
+    </description>
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="Logback"/>
+  </identity>
+  <identity name="logback-rpc"/>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="logback">
+      <when condition="/config:modules/config:module/config:type = 'logback'"/>
+      <list name="file-appenders">
+        <leaf name="append">
+          <type name="boolean"/>
+          <mandatory value="false"/>
+        </leaf>
+        <leaf name="file-name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="encoder-pattern">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <key value="name"/>
+        <config:java-name-prefix java-prefix="FileAppenderTO"/>
+      </list>
+      <list name="rolling-appenders">
+        <leaf name="append">
+          <type name="boolean"/>
+          <mandatory value="false"/>
+        </leaf>
+        <leaf name="file-name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="encoder-pattern">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="min-index">
+          <type name="int32"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="max-index">
+          <type name="int32"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="max-file-size">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <key value="name"/>
+        <leaf name="file-name-pattern">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="rolling-policy-type">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="max-history">
+          <type name="int32"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="clean-history-on-start">
+          <type name="boolean"/>
+          <default value="false"/>
+        </leaf>
+        <config:java-name-prefix java-prefix="RollingFileAppenderTO"/>
+      </list>
+      <list name="console-appenders">
+        <leaf name="encoder-pattern">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="threshold-filter">
+          <type name="string"/>
+          <default value="ALL"/>
+        </leaf>
+        <leaf name="name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <key value="name"/>
+        <config:java-name-prefix java-prefix="ConsoleAppenderTO"/>
+      </list>
+      <list name="loggers">
+        <leaf name="logger-name">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <key value="logger-name"/>
+        <leaf name="level">
+          <type name="string"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf-list name="appenders">
+          <type name="string"/>
+        </leaf-list>
+        <config:java-name-prefix java-prefix="LoggerTO"/>
+      </list>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="logback">
+      <when condition="/config:modules/config:module/config:type = 'logback'"/>
+      <rpcx:rpc-context-instance context-type="logback-rpc"/>
+      <list name="status">
+        <config:java-name-prefix java-prefix="StatusTO"/>
+        <leaf name="level">
+          <type name="string"/>
+        </leaf>
+        <leaf name="message">
+          <type name="string"/>
+        </leaf>
+        <leaf name="date">
+          <type name="uint32"/>
+        </leaf>
+      </list>
+    </case>
+  </augment>
+  <rpc name="reset">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="logback-rpc"/>
+        </refine>
+      </uses>
+    </input>
+  </rpc>
+</module>

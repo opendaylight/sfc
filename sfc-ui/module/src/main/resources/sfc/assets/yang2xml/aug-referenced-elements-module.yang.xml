@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="aug-referenced-elements-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:augrefelmo="aug:referenced:elements:module">
+  <namespace uri="aug:referenced:elements:module"/>
+  <prefix value="augrefelmo"/>
+  <import module="referenced-elements-module">
+    <prefix value="refelmo"/>
+    <revision-date date="2013-12-3"/>
+  </import>
+  <revision date="2013-12-3"/>
+  <augment target-node="/refelmo:cont">
+    <leaf name="lf2">
+      <type name="boolean"/>
+    </leaf>
+  </augment>
+</module>

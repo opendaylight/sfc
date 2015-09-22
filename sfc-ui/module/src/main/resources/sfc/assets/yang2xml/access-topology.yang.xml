@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="access-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:atp="urn:cisco:params:xml:ns:yang:access-topology"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:access-topology"/>
+  <prefix value="atp"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module contains the definitions of access topology
+elements that idenfify attachment circuits e.g. Remote-ID,
+Circuit-ID, AN-ID.  This module should be used as the base
+module in defining the access network topology.
+</text>
+  </description>
+  <revision date="2014-09-03">
+    <description>
+      <text>22nd revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <typedef name="vlan-id">
+    <type name="uint16">
+      <range value="1..4094"/>
+    </type>
+    <description>
+      <text>VLAN identifier (IEEE 802.1Q)</text>
+    </description>
+  </typedef>
+  <typedef name="remote-id">
+    <type name="binary">
+      <length value="0..63"/>
+    </type>
+    <description>
+      <text>Remote-ID (TR-101, RFC3046, RFC6320)</text>
+    </description>
+  </typedef>
+  <typedef name="circuit-id">
+    <type name="binary">
+      <length value="0..63"/>
+    </type>
+    <description>
+      <text>Circuit-ID (TR-101, RFC3046, RFC6320)</text>
+    </description>
+  </typedef>
+  <typedef name="attachment-circuit-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Attachment Circuit Identifier - assigned by PE</text>
+    </description>
+  </typedef>
+  <typedef name="service-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Service Identifier - assigned by OSS</text>
+    </description>
+  </typedef>
+  <typedef name="endpoint-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Endpoint Identifier - assigned by SDN controller</text>
+    </description>
+  </typedef>
+  <identity name="ac-information-source">
+    <description>
+      <text>source of AC information</text>
+    </description>
+  </identity>
+  <grouping name="attachment-circuit">
+    <leaf name="attach-id">
+      <type name="attachment-circuit-id"/>
+      <description>
+        <text>Attachment-Circuit ID assigned by PE</text>
+      </description>
+    </leaf>
+    <leaf name="endpoint-id">
+      <type name="endpoint-id"/>
+      <description>
+        <text>Endpoint ID assigned by SDN controller</text>
+      </description>
+    </leaf>
+    <leaf name="service-id">
+      <type name="service-id"/>
+      <description>
+        <text>Service ID assigned by OSS</text>
+      </description>
+    </leaf>
+    <leaf name="information-source">
+      <type name="identityref">
+        <base name="ac-information-source"/>
+      </type>
+      <description>
+        <text>how was CE-ID/R-ID/C-ID/AN-ID/VLAN learned?</text>
+      </description>
+    </leaf>
+    <leaf name="pe-id">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>router ID of the PE</text>
+      </description>
+    </leaf>
+    <container name="ce-id">
+      <leaf name="ce-mac">
+        <type name="yang:mac-address"/>
+        <description>
+          <text>CE MAC address from DHCP, FSoL etc.</text>
+        </description>
+      </leaf>
+      <leaf name="ce-ip">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>CE IP address - learned from DHCP offer etc.</text>
+        </description>
+      </leaf>
+      <leaf name="ce-name">
+        <type name="string"/>
+        <description>
+          <text>From XMPP bare JID, LLDP system name etc.</text>
+        </description>
+      </leaf>
+      <leaf name="ce-vrf">
+        <type name="string"/>
+        <description>
+          <text>VRF name to distinguish CE MAC or IP</text>
+        </description>
+      </leaf>
+      <description>
+        <text>CE Identifiers</text>
+      </description>
+    </container>
+    <leaf name="remote-id">
+      <type name="remote-id"/>
+      <description>
+        <text>ANCP, PPP-IA, DHCPv4 Opt 82, DHCPv6 Opt 37</text>
+      </description>
+    </leaf>
+    <leaf name="circuit-id">
+      <type name="circuit-id"/>
+      <description>
+        <text>ANCP, PPP-IA, DHCPv4 Opt 82, DHCPv6 Opt 18</text>
+      </description>
+    </leaf>
+    <container name="an-id">
+      <leaf name="an-mac">
+        <type name="yang:mac-address"/>
+        <description>
+          <text>AN MAC address</text>
+        </description>
+      </leaf>
+      <leaf name="an-ip">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>AN IP address</text>
+        </description>
+      </leaf>
+      <leaf name="an-vrf">
+        <type name="string"/>
+        <description>
+          <text>VRF where AN is located</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Access Node Identifiers</text>
+      </description>
+    </container>
+    <container name="vlan-stack">
+      <leaf name="inner-vlan">
+        <type name="vlan-id"/>
+        <description>
+          <text>inner VLAN, or VLAN if only one in stack</text>
+        </description>
+      </leaf>
+      <leaf name="outer-vlan">
+        <type name="vlan-id"/>
+        <description>
+          <text>outer VLAN (if present)</text>
+        </description>
+      </leaf>
+      <description>
+        <text>VLAN stack for attachment circuit</text>
+      </description>
+    </container>
+    <container name="pe-interface">
+      <leaf name="interface-id">
+        <type name="string">
+          <length value="0..63"/>
+        </type>
+        <description>
+          <text>interface name - e.g. 'Ethernet 0/1'</text>
+        </description>
+      </leaf>
+      <leaf name="card-type">
+        <type name="string">
+          <length value="0..63"/>
+        </type>
+        <description>
+          <text>card type - e.g. '4 port 10GE'</text>
+        </description>
+      </leaf>
+      <leaf name="card-rev">
+        <type name="string">
+          <length value="0..63"/>
+        </type>
+        <description>
+          <text>revision number of this card</text>
+        </description>
+      </leaf>
+      <leaf name="card-id">
+        <type name="string">
+          <length value="0..63"/>
+        </type>
+        <description>
+          <text>serial number of this card</text>
+        </description>
+      </leaf>
+      <description>
+        <text>PE interface terminating the AC</text>
+      </description>
+    </container>
+    <description>
+      <text>description of an AC - published by the PE</text>
+    </description>
+  </grouping>
+  <typedef name="attachment-circuit-status">
+    <type name="enumeration">
+      <enum name="down">
+        <description>
+          <text>attachment circuit has gone down</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <description>
+          <text>attachment circuit has come up</text>
+        </description>
+      </enum>
+      <enum name="modify">
+        <description>
+          <text>attachment circuit has been modified</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>status of an attachment circuit</text>
+    </description>
+  </typedef>
+  <notification name="attachment-circuit-status-msg">
+    <leaf name="status">
+      <type name="attachment-circuit-status"/>
+      <description>
+        <text>type of notification - up/down/modify</text>
+      </description>
+    </leaf>
+    <uses name="attachment-circuit"/>
+    <description>
+      <text>notification of change of attachment circuit</text>
+    </description>
+  </notification>
+  <container name="attachment-circuits">
+    <list name="attachment-circuit">
+      <key value="attach-id"/>
+      <uses name="attachment-circuit"/>
+      <description>
+        <text>learned attachment circuit</text>
+      </description>
+    </list>
+    <description>
+      <text>list of attachment circuits</text>
+    </description>
+  </container>
+</module>

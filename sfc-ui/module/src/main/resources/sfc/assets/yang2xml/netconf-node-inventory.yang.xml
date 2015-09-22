@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="netconf-node-inventory"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:netinv="urn:opendaylight:netconf-node-inventory"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <namespace uri="urn:opendaylight:netconf-node-inventory"/>
+  <prefix value="netinv"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <revision date="2014-01-08">
+    <description>
+      <text>Initial revision of Inventory model</text>
+    </description>
+  </revision>
+  <grouping name="netconf-node-fields">
+    <leaf name="connected">
+      <type name="boolean"/>
+    </leaf>
+    <leaf-list name="initial-capability">
+      <type name="string"/>
+    </leaf-list>
+    <leaf-list name="current-capability">
+      <type name="string"/>
+    </leaf-list>
+    <container name="pass-through">
+      <when condition="../connected = true"/>
+      <description>
+        <text>When the underlying node is connected, its NETCONF context
+is available verbatim under this container through the
+mount extension.</text>
+      </description>
+    </container>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node">
+    <ext:augment-identifier identifier="netconf-node"/>
+    <uses name="netconf-node-fields"/>
+  </augment>
+</module>

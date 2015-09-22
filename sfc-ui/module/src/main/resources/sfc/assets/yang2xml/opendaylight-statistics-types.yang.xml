@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-statistics-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:stat-types="urn:opendaylight:model:statistics:types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:opendaylight:model:statistics:types"/>
+  <prefix value="stat-types"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <revision date="2013-09-25">
+    <description>
+      <text>Initial revision of flow service</text>
+    </description>
+  </revision>
+  <grouping name="duration">
+    <container name="duration">
+      <leaf name="second">
+        <type name="yang:counter32"/>
+      </leaf>
+      <leaf name="nanosecond">
+        <type name="yang:counter32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="node-connector-statistics">
+    <container name="packets">
+      <leaf name="received">
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="transmitted">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+    <container name="bytes">
+      <leaf name="received">
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="transmitted">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+    <leaf name="receive-drops">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="transmit-drops">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="receive-errors">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="transmit-errors">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="receive-frame-error">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="receive-over-run-error">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="receive-crc-error">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="collision-count">
+      <type name="uint64"/>
+    </leaf>
+    <uses name="duration"/>
+  </grouping>
+  <grouping name="generic-statistics">
+    <description>
+      <text>Generic grouping for statistics</text>
+    </description>
+    <leaf name="packet-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="byte-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <uses name="duration"/>
+  </grouping>
+  <grouping name="generic-table-statistics">
+    <description>
+      <text>Generic grouping holding generic statistics related to switch table</text>
+    </description>
+    <leaf name="active-flows">
+      <type name="yang:counter32"/>
+    </leaf>
+    <leaf name="packets-looked-up">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="packets-matched">
+      <type name="yang:counter64"/>
+    </leaf>
+  </grouping>
+  <grouping name="aggregate-flow-statistics">
+    <description>
+      <text>Aggregate flow statistics</text>
+    </description>
+    <leaf name="packet-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="byte-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="flow-count">
+      <type name="yang:counter32"/>
+    </leaf>
+  </grouping>
+  <grouping name="generic-queue-statistics">
+    <description>
+      <text>Generic statistics of switch port attached queues.</text>
+    </description>
+    <leaf name="transmitted-bytes">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="transmitted-packets">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="transmission-errors">
+      <type name="yang:counter64"/>
+    </leaf>
+    <uses name="duration"/>
+  </grouping>
+</module>

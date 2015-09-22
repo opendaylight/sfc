@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-action-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:action="urn:opendaylight:action:types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:l2t="urn:opendaylight:l2:types"
+        xmlns:match="urn:opendaylight:model:match:types">
+  <namespace uri="urn:opendaylight:action:types"/>
+  <prefix value="action"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-l2-types">
+    <prefix value="l2t"/>
+    <revision-date date="2013-08-27"/>
+  </import>
+  <import module="opendaylight-match-types">
+    <prefix value="match"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <revision date="2013-11-12">
+    <description>
+      <text>Initial revision of action service</text>
+    </description>
+  </revision>
+  <typedef name="vlan-cfi">
+    <type name="int32"/>
+  </typedef>
+  <grouping name="address">
+    <choice name="address">
+      <case name="ipv4">
+        <leaf name="ipv4-address">
+          <type name="inet:ipv4-prefix"/>
+        </leaf>
+      </case>
+      <case name="ipv6">
+        <leaf name="ipv6-address">
+          <type name="inet:ipv6-prefix"/>
+        </leaf>
+      </case>
+    </choice>
+  </grouping>
+  <container name="action-types">
+    <uses name="action-list"/>
+  </container>
+  <grouping name="action-list">
+    <list name="action">
+      <key value="order"/>
+      <leaf name="order">
+        <type name="int32"/>
+      </leaf>
+      <uses name="action"/>
+    </list>
+  </grouping>
+  <grouping name="action">
+    <choice name="action">
+      <case name="output-action-case">
+        <container name="output-action">
+          <leaf name="output-node-connector">
+            <type name="inet:uri"/>
+          </leaf>
+          <leaf name="max-length">
+            <type name="uint16"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="controller-action-case">
+        <container name="controller-action">
+          <leaf name="max-length">
+            <type name="uint16"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-field-case">
+        <container name="set-field">
+          <uses name="match:match"/>
+        </container>
+      </case>
+      <case name="set-queue-action-case">
+        <container name="set-queue-action">
+          <leaf name="queue">
+            <type name="string"/>
+          </leaf>
+          <leaf name="queue-id">
+            <type name="uint32"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="pop-mpls-action-case">
+        <container name="pop-mpls-action">
+          <leaf name="ethernet-type">
+            <type name="uint16"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-mpls-ttl-action-case">
+        <container name="set-mpls-ttl-action">
+          <leaf name="mpls-ttl">
+            <type name="uint8"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-nw-ttl-action-case">
+        <container name="set-nw-ttl-action">
+          <leaf name="nw-ttl">
+            <type name="uint8"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="push-pbb-action-case">
+        <container name="push-pbb-action">
+          <leaf name="ethernet-type">
+            <type name="uint16"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="pop-pbb-action-case">
+        <container name="pop-pbb-action"/>
+      </case>
+      <case name="push-mpls-action-case">
+        <container name="push-mpls-action">
+          <leaf name="ethernet-type">
+            <type name="uint16"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="dec-mpls-ttl-case">
+        <container name="dec-mpls-ttl"/>
+      </case>
+      <case name="dec-nw-ttl-case">
+        <container name="dec-nw-ttl"/>
+      </case>
+      <case name="drop-action-case">
+        <container name="drop-action"/>
+      </case>
+      <case name="flood-action-case">
+        <container name="flood-action"/>
+      </case>
+      <case name="flood-all-action-case">
+        <container name="flood-all-action"/>
+      </case>
+      <case name="hw-path-action-case">
+        <container name="hw-path-action"/>
+      </case>
+      <case name="loopback-action-case">
+        <container name="loopback-action"/>
+      </case>
+      <case name="pop-vlan-action-case">
+        <container name="pop-vlan-action"/>
+      </case>
+      <case name="push-vlan-action-case">
+        <container name="push-vlan-action">
+          <leaf name="ethernet-type">
+            <type name="uint16"/>
+          </leaf>
+          <leaf name="tag">
+            <type name="int32"/>
+          </leaf>
+          <leaf name="pcp">
+            <type name="int32"/>
+          </leaf>
+          <leaf name="cfi">
+            <type name="vlan-cfi"/>
+          </leaf>
+          <leaf name="vlan-id">
+            <type name="l2t:vlan-id"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="copy-ttl-out-case">
+        <container name="copy-ttl-out"/>
+      </case>
+      <case name="copy-ttl-in-case">
+        <container name="copy-ttl-in"/>
+      </case>
+      <case name="set-dl-dst-action-case">
+        <container name="set-dl-dst-action">
+          <leaf name="address">
+            <type name="yang:mac-address"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-dl-src-action-case">
+        <container name="set-dl-src-action">
+          <leaf name="address">
+            <type name="yang:mac-address"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="group-action-case">
+        <container name="group-action">
+          <leaf name="group">
+            <type name="string"/>
+          </leaf>
+          <leaf name="group-id">
+            <type name="uint32"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-dl-type-action-case">
+        <container name="set-dl-type-action">
+          <leaf name="dl-type">
+            <type name="l2t:ether-type"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-next-hop-action-case">
+        <container name="set-next-hop-action">
+          <uses name="address"/>
+        </container>
+      </case>
+      <case name="set-nw-dst-action-case">
+        <container name="set-nw-dst-action">
+          <uses name="address"/>
+        </container>
+      </case>
+      <case name="set-nw-src-action-case">
+        <container name="set-nw-src-action">
+          <uses name="address"/>
+        </container>
+      </case>
+      <case name="set-nw-tos-action-case">
+        <container name="set-nw-tos-action">
+          <leaf name="tos">
+            <type name="int32"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-tp-dst-action-case">
+        <container name="set-tp-dst-action">
+          <leaf name="port">
+            <type name="inet:port-number"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-tp-src-action-case">
+        <container name="set-tp-src-action">
+          <leaf name="port">
+            <type name="inet:port-number"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-vlan-cfi-action-case">
+        <container name="set-vlan-cfi-action">
+          <leaf name="vlan-cfi">
+            <type name="vlan-cfi"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-vlan-id-action-case">
+        <container name="set-vlan-id-action">
+          <leaf name="vlan-id">
+            <type name="l2t:vlan-id"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="set-vlan-pcp-action-case">
+        <container name="set-vlan-pcp-action">
+          <leaf name="vlan-pcp">
+            <type name="l2t:vlan-pcp"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="strip-vlan-action-case">
+        <container name="strip-vlan-action"/>
+      </case>
+      <case name="sw-path-action-case">
+        <container name="sw-path-action"/>
+      </case>
+    </choice>
+  </grouping>
+</module>

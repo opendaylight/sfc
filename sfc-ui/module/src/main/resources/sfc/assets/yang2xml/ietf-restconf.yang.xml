@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-restconf"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:restconf="urn:ietf:params:xml:ns:yang:ietf-restconf"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-restconf"/>
+  <prefix value="restconf"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2013-07-15"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>IETF NETCONF (Network Configuration) Working Group</text>
+  </organization>
+  <contact>
+    <text>Editor:   Andy Bierman
+          &lt;mailto:andy@yumaworks.com&gt;
+
+Editor:   Martin Bjorklund
+          &lt;mailto:mbj@tail-f.com&gt;
+
+Editor:   Kent Watsen
+          &lt;mailto:kwatsen@juniper.net&gt;
+
+Editor:   Rex Fernando
+          &lt;mailto:rex@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains conceptual YANG specifications
+for the YANG Patch and error content that is used in
+RESTCONF protocol messages. A conceptual container
+representing the RESTCONF API nodes (media type 
+application/yang.api).
+
+Note that the YANG definitions within this module do not
+represent configuration data of any kind.
+The YANG grouping statements provide a normative syntax
+for XML and JSON message encoding purposes.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2013-10-19">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC XXXX: RESTCONF Protocol.</text>
+    </reference>
+  </revision>
+  <typedef name="data-resource-identifier">
+    <type name="string">
+      <length value="1 .. max"/>
+    </type>
+    <description>
+      <text>Contains a Data Resource Identifier formatted string
+to identify a specific data node. The data node that
+uses this data type SHOULD define the document root
+for data resource identifiers.  The default document
+root is the target datastore conceptual root node.
+Data resource identifiers are defined relative to
+this document root.</text>
+    </description>
+    <reference>
+      <text>RFC XXXX: [sec. 5.3.1.1 ABNF For Data Resource Identifiers]</text>
+    </reference>
+  </typedef>
+  <typedef name="datastore-identifier">
+    <type name="union">
+      <type name="enumeration">
+        <enum name="candidate">
+          <description>
+            <text>Identifies the NETCONF shared candidate datastore.</text>
+          </description>
+          <reference>
+            <text>RFC 6241, section 8.3</text>
+          </reference>
+        </enum>
+        <enum name="running">
+          <description>
+            <text>Identifies the NETCONF running datastore.</text>
+          </description>
+          <reference>
+            <text>RFC 6241, section 5.1</text>
+          </reference>
+        </enum>
+        <enum name="startup">
+          <description>
+            <text>Identifies the NETCONF startup datastore.</text>
+          </description>
+          <reference>
+            <text>RFC 6241, section 8.7</text>
+          </reference>
+        </enum>
+      </type>
+      <type name="string"/>
+    </type>
+    <description>
+      <text>Contains a string to identify a specific datastore.
+The enumerated datastore identifier values are
+reserved for standard datastore names.</text>
+    </description>
+  </typedef>
+  <typedef name="revision-identifier">
+    <type name="string">
+      <pattern value="\d{4}-\d{2}-\d{2}"/>
+    </type>
+    <description>
+      <text>Represents a specific date in YYYY-MM-DD format.
+TBD: make pattern more precise to exclude leading zeros.</text>
+    </description>
+  </typedef>
+  <grouping name="yang-patch">
+    <description>
+      <text>A grouping that contains a YANG container
+representing the syntax and semantics of a
+YANG Patch edit request message.</text>
+    </description>
+    <container name="yang-patch">
+      <description>
+        <text>Represents a conceptual sequence of datastore edits,
+called a patch. Each patch is given a client-assigned
+patch identifier. Each edit MUST be applied
+in ascending order, and all edits MUST be applied.
+If any errors occur, then the target datastore MUST NOT
+be changed by the patch operation.
+  
+A patch MUST be validated by the server to be a 
+well-formed message before any of the patch edits
+are validated or attempted.
+  
+YANG datastore validation (defined in RFC 6020, section
+8.3.3) is performed after all edits have been
+individually validated.
+  
+It is possible for a datastore constraint violation to occur
+due to any node in the datastore, including nodes not
+included in the edit list. Any validation errors MUST
+be reported in the reply message.</text>
+      </description>
+      <reference>
+        <text>RFC 6020, section 8.3.</text>
+      </reference>
+      <leaf name="patch-id">
+        <type name="string"/>
+        <description>
+          <text>An arbitrary string provided by the client to identify
+the entire patch.  This value SHOULD be present in any
+audit logging records generated by the server for the
+patch. Error messages returned by the server pertaining
+to this patch will be identified by this patch-id value.</text>
+        </description>
+      </leaf>
+      <leaf name="comment">
+        <type name="string">
+          <length value="0 .. 1024"/>
+        </type>
+        <description>
+          <text>An arbitrary string provided by the client to describe
+the entire patch.  This value SHOULD be present in any
+audit logging records generated by the server for the
+patch.</text>
+        </description>
+      </leaf>
+      <list name="edit">
+        <key value="edit-id"/>
+        <ordered-by value="user"/>
+        <description>
+          <text>Represents one edit within the YANG Patch
+request message.</text>
+        </description>
+        <leaf name="edit-id">
+          <type name="string"/>
+          <description>
+            <text>Arbitrary string index for the edit.
+Error messages returned by the server pertaining
+to a specific edit will be identified by this
+value.</text>
+          </description>
+        </leaf>
+        <leaf name="operation">
+          <type name="enumeration">
+            <enum name="create">
+              <description>
+                <text>The target data node is created using the
+supplied value, only if it does not already
+exist.</text>
+              </description>
+            </enum>
+            <enum name="delete">
+              <description>
+                <text>Delete the target node, only if the data resource
+currently exists, otherwise return an error.</text>
+              </description>
+            </enum>
+            <enum name="insert">
+              <description>
+                <text>Insert the supplied value into a user-ordered
+list or leaf-list entry. The target node must
+represent a new data resource.</text>
+              </description>
+            </enum>
+            <enum name="merge">
+              <description>
+                <text>The supplied value is merged with the target data
+node.</text>
+              </description>
+            </enum>
+            <enum name="move">
+              <description>
+                <text>Move the target node. Reorder a user-ordered
+list or leaf-list. The target node must represent
+an existing data resource.</text>
+              </description>
+            </enum>
+            <enum name="replace">
+              <description>
+                <text>The supplied value is used to replace the target
+data node.</text>
+              </description>
+            </enum>
+            <enum name="remove">
+              <description>
+                <text>Delete the target node if it currently exists.</text>
+              </description>
+            </enum>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>The datastore operation requested for the associated
+edit entry</text>
+          </description>
+        </leaf>
+        <leaf name="target">
+          <type name="data-resource-identifier"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Identifies the target data resource for the edit
+operation.</text>
+          </description>
+        </leaf>
+        <leaf name="point">
+          <when condition="(../operation = 'insert' or ../operation = 'move') and (../where = 'before' or ../where = 'after')">
+            <description>
+              <text>Point leaf only applies for insert or move
+operations, before or after an existing entry.</text>
+            </description>
+          </when>
+          <type name="data-resource-identifier"/>
+          <description>
+            <text>The absolute URL path for the data node that is being
+used as the insertion point or move point for the
+target of this edit entry.</text>
+          </description>
+        </leaf>
+        <leaf name="where">
+          <when condition="../operation = 'insert' or ../operation = 'move'">
+            <description>
+              <text>Where leaf only applies for insert or move
+operations.</text>
+            </description>
+          </when>
+          <type name="enumeration">
+            <enum name="before">
+              <description>
+                <text>Insert or move a data node before the data resource
+identified by the 'point' parameter.</text>
+              </description>
+            </enum>
+            <enum name="after">
+              <description>
+                <text>Insert or move a data node after the data resource
+identified by the 'point' parameter.</text>
+              </description>
+            </enum>
+            <enum name="first">
+              <description>
+                <text>Insert or move a data node so it becomes ordered
+as the first entry.</text>
+              </description>
+            </enum>
+            <enum name="last">
+              <description>
+                <text>Insert or move a data node so it becomes ordered
+as the last entry.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="last"/>
+          <description>
+            <text>Identifies where a data resource will be inserted or
+moved. YANG only allows these operations for
+list and leaf-list data nodes that are ordered-by
+user.</text>
+          </description>
+        </leaf>
+        <anyxml name="value">
+          <when condition="(../operation = 'create' or ../operation = 'merge' or ../operation = 'replace' or ../operation = 'insert')">
+            <description>
+              <text>Value node only used for create, merge,
+replace, and insert operations</text>
+            </description>
+          </when>
+          <description>
+            <text>Value used for this edit operation.</text>
+          </description>
+        </anyxml>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="yang-patch-status">
+    <description>
+      <text>A grouping that contains a YANG container
+representing the syntax and semantics of
+YANG Patch status response message.</text>
+    </description>
+    <container name="yang-patch-status">
+      <description>
+        <text>A container representing the response message
+sent by the server after a YANG Patch edit
+request message has been processed.</text>
+      </description>
+      <leaf name="patch-id">
+        <type name="string"/>
+        <description>
+          <text>The patch-id value used in the request</text>
+        </description>
+      </leaf>
+      <choice name="global-status">
+        <description>
+          <text>Report global errors or complete success.
+If there is no case selected then errors
+are reported in the edit-status container.</text>
+        </description>
+        <case name="global-errors">
+          <uses name="errors"/>
+          <description>
+            <text>This container will be present if global
+errors unrelated to a specific edit occurred.</text>
+          </description>
+        </case>
+        <leaf name="ok">
+          <type name="empty"/>
+          <description>
+            <text>This leaf will be present if the request succeeded
+and there are no errors reported in the edit-status
+container.</text>
+          </description>
+        </leaf>
+      </choice>
+      <container name="edit-status">
+        <description>
+          <text>This container will be present if there are
+edit-specific status responses to report.</text>
+        </description>
+        <list name="edit">
+          <key value="edit-id"/>
+          <description>
+            <text>Represents a list of status responses,
+corresponding to edits in the YANG Patch
+request message.  If an edit entry was
+skipped or not reached by the server,
+then this list will not contain a corresponding
+entry for that edit.</text>
+          </description>
+          <leaf name="edit-id">
+            <type name="string"/>
+            <description>
+              <text>Response status is for the edit list entry
+with this edit-id value.</text>
+            </description>
+          </leaf>
+          <choice name="edit-status-choice">
+            <description>
+              <text>A choice between different types of status
+responses for each edit entry.</text>
+            </description>
+            <leaf name="ok">
+              <type name="empty"/>
+              <description>
+                <text>This edit entry was invoked without any
+errors detected by the server associated
+with this edit.</text>
+              </description>
+            </leaf>
+            <leaf name="location">
+              <type name="inet:uri"/>
+              <description>
+                <text>Contains the Location header value that would be
+returned if this edit causes a new resource to be
+created. If the edit identified by the same edit-id
+value was successfully invoked and a new resource
+was created, then this field will be returned
+instead of 'ok'.</text>
+              </description>
+            </leaf>
+            <case name="errors">
+              <uses name="errors"/>
+              <description>
+                <text>The server detected errors associated with the
+ edit identified by the same edit-id value.</text>
+              </description>
+            </case>
+          </choice>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="errors">
+    <description>
+      <text>A grouping that contains a YANG container
+representing the syntax and semantics of a
+YANG Patch errors report within a response message.</text>
+    </description>
+    <container name="errors">
+      <config value="false"/>
+      <description>
+        <text>Represents an error report returned by the server if
+a request results in an error.</text>
+      </description>
+      <list name="error">
+        <description>
+          <text>An entry containing information about one
+specific error that occurred while processing
+a RESTCONF request.</text>
+        </description>
+        <reference>
+          <text>RFC 6241, Section 4.3</text>
+        </reference>
+        <leaf name="error-type">
+          <type name="enumeration">
+            <enum name="transport">
+              <description>
+                <text>The transport layer</text>
+              </description>
+            </enum>
+            <enum name="rpc">
+              <description>
+                <text>The rpc or notification layer</text>
+              </description>
+            </enum>
+            <enum name="protocol">
+              <description>
+                <text>The protocol operation layer</text>
+              </description>
+            </enum>
+            <enum name="application">
+              <description>
+                <text>The server application layer</text>
+              </description>
+            </enum>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>The protocol layer where the error occurred.</text>
+          </description>
+        </leaf>
+        <leaf name="error-tag">
+          <type name="string"/>
+          <mandatory value="true"/>
+          <description>
+            <text>The enumerated error tag.</text>
+          </description>
+        </leaf>
+        <leaf name="error-app-tag">
+          <type name="string"/>
+          <description>
+            <text>The application-specific error tag.</text>
+          </description>
+        </leaf>
+        <leaf name="error-path">
+          <type name="data-resource-identifier"/>
+          <description>
+            <text>The target data resource identifier associated
+with the error, if any.</text>
+          </description>
+        </leaf>
+        <leaf name="error-message">
+          <type name="string"/>
+          <description>
+            <text>A message describing the error.</text>
+          </description>
+        </leaf>
+        <container name="error-info">
+          <description>
+            <text>A container allowing additional information
+to be included in the error report.</text>
+          </description>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="restconf">
+    <description>
+      <text>A grouping that contains a YANG container
+representing the syntax and semantics of
+the RESTCONF API resource.</text>
+    </description>
+    <container name="restconf">
+      <description>
+        <text>Conceptual container representing the
+application/yang.api resource type.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Container representing the application/yang.datastore
+resource type. Represents the conceptual root of the
+unified configuration datastore containing YANG data
+nodes. The child nodes of this container are
+configuration data resources (application/yang.data)
+defined as top-level YANG data nodes from the modules
+advertised by the server in /restconf/modules.</text>
+        </description>
+      </container>
+      <container name="operational">
+        <description>
+          <text>Container representing the application/yang.datastore
+resource type. Represents the conceptual root of the
+operational data supported by the server.  The child
+nodes of this container are operational data resources 
+(application/yang.data) defined as top-level
+YANG data nodes from the modules advertised by
+the server in /restconf/modules.</text>
+        </description>
+      </container>
+      <container name="modules">
+        <description>
+          <text>Contains a list of module description entries.
+These modules are currently loaded into the server.</text>
+        </description>
+        <list name="module">
+          <key value="name revision"/>
+          <description>
+            <text>Each entry represents one module currently
+supported by the server.</text>
+          </description>
+          <leaf name="name">
+            <type name="yang:yang-identifier"/>
+            <description>
+              <text>The YANG module name.</text>
+            </description>
+          </leaf>
+          <leaf name="revision">
+            <type name="union">
+              <type name="revision-identifier"/>
+              <type name="string">
+                <length value="0"/>
+              </type>
+            </type>
+            <description>
+              <text>The YANG module revision date. An empty string is
+used if no revision statement is present in the
+YANG module.</text>
+            </description>
+          </leaf>
+          <leaf name="namespace">
+            <type name="inet:uri"/>
+            <mandatory value="true"/>
+            <description>
+              <text>The XML namespace identifier for this module.</text>
+            </description>
+          </leaf>
+          <leaf-list name="feature">
+            <type name="yang:yang-identifier"/>
+            <description>
+              <text>List of YANG feature names from this module that are
+supported by the server.</text>
+            </description>
+          </leaf-list>
+          <leaf-list name="deviation">
+            <type name="yang:yang-identifier"/>
+            <description>
+              <text>List of YANG deviation module names used by this
+server to modify the conformance of the module
+associated with this entry.</text>
+            </description>
+          </leaf-list>
+        </list>
+      </container>
+      <container name="operations">
+        <description>
+          <text>Container for all operation resources
+(application/yang.operation),
+
+Each resource is represented as an empty leaf with the
+name of the RPC operation from the YANG rpc statement.
+  
+E.g.;
+  
+   POST /restconf/operations/show-log-errors
+  
+   leaf show-log-errors {
+     type empty;
+   }
+</text>
+        </description>
+      </container>
+      <container name="streams">
+        <description>
+          <text>Container representing the notification event streams
+supported by the server.</text>
+        </description>
+        <reference>
+          <text>RFC 5277, Section 3.4, &lt;streams&gt; element.</text>
+        </reference>
+        <list name="stream">
+          <key value="name"/>
+          <description>
+            <text>Each entry describes an event stream supported by
+the server.</text>
+          </description>
+          <leaf name="name">
+            <type name="string"/>
+            <description>
+              <text>The stream name</text>
+            </description>
+            <reference>
+              <text>RFC 5277, Section 3.4, &lt;name&gt; element.</text>
+            </reference>
+          </leaf>
+          <leaf name="description">
+            <type name="string"/>
+            <description>
+              <text>Description of stream content</text>
+            </description>
+            <reference>
+              <text>RFC 5277, Section 3.4, &lt;description&gt; element.</text>
+            </reference>
+          </leaf>
+          <leaf name="replay-support">
+            <type name="boolean"/>
+            <description>
+              <text>Indicates if replay buffer supported for this stream</text>
+            </description>
+            <reference>
+              <text>RFC 5277, Section 3.4, &lt;replaySupport&gt; element.</text>
+            </reference>
+          </leaf>
+          <leaf name="replay-log-creation-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Indicates the time the replay log for this stream
+was created.</text>
+            </description>
+            <reference>
+              <text>RFC 5277, Section 3.4, &lt;replayLogCreationTime&gt;
+element.</text>
+            </reference>
+          </leaf>
+          <leaf name="events">
+            <type name="empty"/>
+            <description>
+              <text>Represents the entry point for establishing
+notification delivery via server sent events.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <leaf name="version">
+        <type name="enumeration">
+          <enum name="1.0">
+            <description>
+              <text>Version 1.0 of the RESTCONF protocol.</text>
+            </description>
+          </enum>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Contains the RESTCONF protocol version.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="notification">
+    <description>
+      <text>Contains the notification message wrapper definition.</text>
+    </description>
+    <container name="notification">
+      <description>
+        <text>RESTCONF notification message wrapper.</text>
+      </description>
+      <leaf name="event-time">
+        <type name="yang:date-and-time"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The time the event was generated by the
+event source.</text>
+        </description>
+        <reference>
+          <text>RFC 5277, section 4, &lt;eventTime&gt; element.</text>
+        </reference>
+      </leaf>
+    </container>
+  </grouping>
+</module>

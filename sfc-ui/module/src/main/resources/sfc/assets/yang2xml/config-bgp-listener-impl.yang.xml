@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-bgp-listener-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgpl-impl="urn:opendaylight:params:xml:ns:yang:controller:config:bgp:listener:impl"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:bgp:listener:impl"/>
+  <prefix value="bgpl-impl"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for NS-OS
+BGP listener implementation.</text>
+  </description>
+  <revision date="2013-04-09">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>NS-OS System Design, version 1.2.</text>
+    </reference>
+  </revision>
+  <identity name="bgp-listener-impl">
+    <base name="config:module-type"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="bgp-listener-impl">
+      <when condition="/config:modules/config:module/config:type = 'bgp-listener-impl'"/>
+      <container name="bgp-listener-impl">
+        <list name="peers">
+          <config:inner-state-bean/>
+          <leaf name="port">
+            <type name="inet:port-number"/>
+            <default value="179"/>
+          </leaf>
+          <leaf name="core-size">
+            <type name="uint32"/>
+          </leaf>
+        </list>
+        <leaf name="as-number">
+          <mandatory value="true"/>
+          <type name="inet:as-number"/>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+</module>

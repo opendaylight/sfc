@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-provider"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ofplugin-cfg="urn:opendaylight:params:xml:ns:yang:openflow:common:config"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:common:config"/>
+  <prefix value="ofplugin-cfg"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>openflow-plugin-custom-config</text>
+  </description>
+  <revision date="2014-03-26">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflow-provider">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider"/>
+  </identity>
+</module>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="base-packet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bpacket="urn:opendaylight:packet:basepacket"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:pprocessing="urn:opendaylight:packet:service"
+        xmlns:match-type="urn:opendaylight:model:match:types"
+        xmlns:table-type="urn:opendaylight:table:types"
+        xmlns:flow-type="urn:opendaylight:flow:types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:basepacket"/>
+  <prefix value="bpacket"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="pprocessing"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-match-types">
+    <prefix value="match-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <revision date="2014-05-28">
+    <description>
+      <text>Base packet module draft.</text>
+    </description>
+  </revision>
+  <grouping name="packet-payload">
+    <leaf name="payload">
+      <type name="binary"/>
+    </leaf>
+  </grouping>
+  <grouping name="packet-fields">
+    <leaf name="payload-offset">
+      <type name="int32"/>
+    </leaf>
+    <leaf name="payload-length">
+      <type name="int32"/>
+    </leaf>
+  </grouping>
+  <grouping name="raw-packet-fields">
+    <leaf name="ingress">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+    <leaf name="connection-cookie">
+      <type name="pprocessing:connection-cookie"/>
+    </leaf>
+    <leaf name="flow-cookie">
+      <type name="flow-type:flow-cookie"/>
+    </leaf>
+    <leaf name="table-id">
+      <type name="table-type:table-id"/>
+    </leaf>
+    <leaf name="packet-in-reason">
+      <type name="identityref">
+        <base name="pprocessing:packet-in-reason"/>
+      </type>
+    </leaf>
+    <container name="match">
+      <uses name="match-type:match"/>
+    </container>
+    <uses name="packet-fields"/>
+  </grouping>
+  <grouping name="packet-chain-grp">
+    <list name="packet-chain">
+      <choice name="packet">
+        <case name="raw-packet">
+          <uses name="raw-packet-fields"/>
+        </case>
+      </choice>
+    </list>
+  </grouping>
+</module>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="test-interface2"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:snn="urn:ietf:params:xml:ns:yang:test-interface2">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:test-interface2"/>
+  <prefix value="snn"/>
+  <description>
+    <text>test file</text>
+  </description>
+  <revision date="2014-08-01">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>will be defined</text>
+    </reference>
+  </revision>
+  <container name="class">
+    <list name="student">
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+      </leaf>
+      <leaf name="age">
+        <type name="string"/>
+      </leaf>
+    </list>
+  </container>
+</module>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-endpoint"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:endpoint="urn:cisco:params:xml:ns:yang:service-endpoint"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:access="urn:cisco:params:xml:ns:yang:access-topology">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:service-endpoint"/>
+  <prefix value="endpoint"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="access-topology">
+    <prefix value="access"/>
+    <revision-date date="2014-09-03"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module contains the definition of a service endpoint in
+I2SS. Different services have different numbers of endpoints
+and may also augment this definition.
+</text>
+  </description>
+  <revision date="2014-04-10">
+    <description>
+      <text>seventh revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <typedef name="endpoint-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Endpoint Identifier</text>
+    </description>
+  </typedef>
+  <grouping name="endpoint">
+    <choice name="endpoint-type">
+      <case name="rid-cid">
+        <leaf name="remote-id">
+          <type name="access:remote-id"/>
+          <description>
+            <text>Access Loop Remote ID</text>
+          </description>
+        </leaf>
+        <leaf name="circuit-id">
+          <type name="access:circuit-id"/>
+          <description>
+            <text>Access Loop Circuit ID</text>
+          </description>
+        </leaf>
+        <description>
+          <text>Endpoint identified by remote-ID/circuit-ID</text>
+        </description>
+      </case>
+      <case name="mac-address">
+        <leaf name="mac-address">
+          <type name="yang:mac-address"/>
+          <description>
+            <text>user MAC address</text>
+          </description>
+        </leaf>
+        <description>
+          <text>Endpoint identified by MAC address</text>
+        </description>
+      </case>
+      <case name="ip-address">
+        <leaf name="ip-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>User IP address</text>
+          </description>
+        </leaf>
+        <leaf name="vrf-name">
+          <type name="string"/>
+          <description>
+            <text>User VRF</text>
+          </description>
+        </leaf>
+        <description>
+          <text>Endpoint identified by IP address</text>
+        </description>
+      </case>
+      <case name="switch-port-vlan">
+        <leaf name="switch">
+          <type name="string"/>
+          <description>
+            <text>switch name</text>
+          </description>
+        </leaf>
+        <leaf name="port">
+          <type name="string"/>
+          <description>
+            <text>port name</text>
+          </description>
+        </leaf>
+        <leaf name="vlan">
+          <type name="access:vlan-id"/>
+          <description>
+            <text>VLAN ID</text>
+          </description>
+        </leaf>
+        <description>
+          <text>Endpoint identified by switch/port/VLAN</text>
+        </description>
+      </case>
+      <description>
+        <text>various types of endpoint</text>
+      </description>
+    </choice>
+    <description>
+      <text>definition of an endpoint - passed over API</text>
+    </description>
+  </grouping>
+  <container name="endpoints">
+    <list name="endpoint">
+      <key value="endpoint-id"/>
+      <leaf name="endpoint-id">
+        <type name="endpoint-id"/>
+        <description>
+          <text>ID assigned to this endpoint</text>
+        </description>
+      </leaf>
+      <leaf name="active">
+        <type name="boolean"/>
+        <description>
+          <text>is this endpoint active?</text>
+        </description>
+      </leaf>
+      <uses name="endpoint"/>
+      <description>
+        <text>individual endpoint</text>
+      </description>
+    </list>
+    <description>
+      <text>list of all endpoints in system</text>
+    </description>
+  </container>
+  <rpc name="get-endpoint-by-ce-ip">
+    <description>
+      <text>Find Endpoint-ID matching a given CE IP Address</text>
+    </description>
+    <input>
+      <leaf name="ip-address">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>IP address to match</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="endpoint">
+        <type name="endpoint-id"/>
+        <description>
+          <text>Matching endpoint</text>
+        </description>
+      </leaf>
+    </output>
+  </rpc>
+</module>

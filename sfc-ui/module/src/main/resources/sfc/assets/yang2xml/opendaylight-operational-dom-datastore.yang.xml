@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-operational-dom-datastore"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:operational-dom-store-spi="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:operational-dom-store"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:operational-dom-store"/>
+  <prefix value="operational-dom-store-spi"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>DOM Service Provider Interface definition for MD-SAL operational store</text>
+  </description>
+  <revision date="2014-06-17">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="operational-dom-datastore">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.core.spi.data.DOMStore"/>
+  </identity>
+</module>

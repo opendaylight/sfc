@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-meter"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:meter="urn:opendaylight:meter:service"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:meter-type="urn:opendaylight:meter:types"
+        xmlns:tr="urn:opendaylight:flow:transaction">
+  <namespace uri="urn:opendaylight:meter:service"/>
+  <prefix value="meter"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter-type"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <revision date="2013-09-18">
+    <description>
+      <text>Initial revision of meter service</text>
+    </description>
+  </revision>
+  <grouping name="node-meter">
+    <uses name="inv:node-context-ref"/>
+    <uses name="meter-type:meter"/>
+  </grouping>
+  <grouping name="meter-update">
+    <uses name="inv:node-context-ref"/>
+    <container name="original-meter">
+      <uses name="meter-type:meter"/>
+    </container>
+    <container name="updated-meter">
+      <uses name="meter-type:meter"/>
+    </container>
+  </grouping>
+  <rpc name="add-meter">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="meter-ref">
+        <type name="meter-type:meter-ref"/>
+      </leaf>
+      <uses name="node-meter"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="remove-meter">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="meter-ref">
+        <type name="meter-type:meter-ref"/>
+      </leaf>
+      <uses name="node-meter"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="update-meter">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="meter-ref">
+        <type name="meter-type:meter-ref"/>
+      </leaf>
+      <uses name="meter-update"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="meter-added">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="meter-ref">
+      <type name="meter-type:meter-ref"/>
+    </leaf>
+    <uses name="node-meter"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <notification name="meter-updated">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="meter-ref">
+      <type name="meter-type:meter-ref"/>
+    </leaf>
+    <uses name="node-meter"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <notification name="meter-removed">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="meter-ref">
+      <type name="meter-type:meter-ref"/>
+    </leaf>
+    <uses name="node-meter"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+</module>

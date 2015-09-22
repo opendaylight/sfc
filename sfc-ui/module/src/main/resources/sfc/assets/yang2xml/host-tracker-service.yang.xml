@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="host-tracker-service"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:host-track="urn:opendaylight:host-tracker"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:at="urn:opendaylight:address-tracker"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:topo="urn:TBD:params:xml:ns:yang:network-topology"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <namespace uri="urn:opendaylight:host-tracker"/>
+  <prefix value="host-track"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="address-tracker">
+    <prefix value="at"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+  </import>
+  <import module="network-topology">
+    <prefix value="topo"/>
+    <revision-date date="2013-10-21"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+  </import>
+  <revision date="2014-06-24">
+    <description>
+      <text>draft based on address-tracker 2014-06-17</text>
+    </description>
+  </revision>
+  <typedef name="host-id">
+    <type name="string"/>
+  </typedef>
+  <grouping name="host">
+    <description>
+      <text>List of addresses and attachment points</text>
+    </description>
+    <uses name="at:address-node-connector"/>
+    <leaf name="id">
+      <type name="host-id"/>
+    </leaf>
+    <list name="attachment-points">
+      <description>
+        <text>the assumption is that all address can be reached at all attachment points</text>
+      </description>
+      <uses name="topo:tp-attributes"/>
+      <key value="tp-id"/>
+    </list>
+  </grouping>
+  <augment target-node="/topo:network-topology/topo:topology/topo:node">
+    <ext:augment-identifier identifier="host-node"/>
+    <uses name="host"/>
+  </augment>
+</module>

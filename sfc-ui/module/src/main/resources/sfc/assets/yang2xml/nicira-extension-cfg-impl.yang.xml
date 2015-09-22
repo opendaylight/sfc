@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="nicira-extension-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:niciraExt-cfg-impl="urn:opendaylight:params:xml:ns:yang:openflowplugin:nx:config:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflowplugin:nx:config:impl"/>
+  <prefix value="niciraExt-cfg-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflow-provider">
+    <prefix value="openflow-provider"/>
+    <revision-date date="2014-03-26"/>
+  </import>
+  <import module="nicira-extension">
+    <prefix value="niciraExt-provider"/>
+  </import>
+  <description>
+    <text>openflow extension for nicira - config-impl</text>
+  </description>
+  <revision date="2014-07-11">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="nicira-extension-provider-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="niciraExt-provider:nicira-extension-provider"/>
+    <config:java-name-prefix java-prefix="ConfigurableNiciraExtensionProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="nicira-extension-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'nicira-extension-provider-impl'"/>
+      <container name="openflow-plugin-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-provider:openflow-provider"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="flow-node-inventory"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flownode="urn:opendaylight:flow:inventory"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:port="urn:opendaylight:flow:types:port"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:table="urn:opendaylight:table:types"
+        xmlns:flow="urn:opendaylight:flow:types"
+        xmlns:group="urn:opendaylight:group:types"
+        xmlns:meter="urn:opendaylight:meter:types">
+  <namespace uri="urn:opendaylight:flow:inventory"/>
+  <prefix value="flownode"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-port-types">
+    <prefix value="port"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-group-types">
+    <prefix value="group"/>
+    <revision-date date="2013-10-18"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Flow Capable Node extensions to the Inventory model</text>
+    </description>
+  </revision>
+  <identity name="feature-capability"/>
+  <identity name="flow-feature-capability-flow-stats">
+    <description>
+      <text>Flow statistics</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-table-stats">
+    <description>
+      <text>Table statistics</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-port-stats">
+    <description>
+      <text>Port statistics</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-stp">
+    <description>
+      <text>802.1d spanning tree</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-reserved">
+    <description>
+      <text>Reserved, must be zero</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-ip-reasm">
+    <description>
+      <text>Can reassemble IP fragments</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-queue-stats">
+    <description>
+      <text>Queue statistics</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-arp-match-ip">
+    <description>
+      <text>Match IP addresses in ARP pkts</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-group-stats">
+    <description>
+      <text>Group statistics</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <identity name="flow-feature-capability-port-blocked">
+    <description>
+      <text>Switch will block looping ports</text>
+    </description>
+    <base name="feature-capability"/>
+  </identity>
+  <grouping name="feature">
+    <leaf name="support-state">
+      <type name="inv:support-type"/>
+    </leaf>
+  </grouping>
+  <grouping name="queue">
+    <leaf name="queue-id">
+      <type name="uint32"/>
+      <description>
+        <text>id for the specific queue</text>
+      </description>
+      <mandatory value="true"/>
+    </leaf>
+    <container name="properties">
+      <leaf name="minimum-rate">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="maximum-rate">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <typedef name="flow-id">
+    <type name="inet:uri"/>
+  </typedef>
+  <grouping name="tables">
+    <list name="table">
+      <key value="id"/>
+      <leaf name="id">
+        <type name="uint8"/>
+      </leaf>
+      <uses name="table:table-features"/>
+      <list name="flow">
+        <key value="id"/>
+        <leaf name="id">
+          <type name="flow-id"/>
+        </leaf>
+        <uses name="flow:flow"/>
+      </list>
+    </list>
+  </grouping>
+  <grouping name="meters">
+    <list name="meter">
+      <key value="meter-id"/>
+      <uses name="meter:meter"/>
+    </list>
+  </grouping>
+  <grouping name="flow-node">
+    <leaf name="manufacturer">
+      <type name="string"/>
+    </leaf>
+    <leaf name="hardware">
+      <type name="string"/>
+    </leaf>
+    <leaf name="software">
+      <type name="string"/>
+    </leaf>
+    <leaf name="serial-number">
+      <type name="string"/>
+    </leaf>
+    <leaf name="description">
+      <type name="string"/>
+    </leaf>
+    <uses name="tables"/>
+    <uses name="group:groups"/>
+    <uses name="meters"/>
+    <container name="supported-match-types">
+      <list name="match-type">
+        <key value="match"/>
+        <uses name="feature"/>
+        <leaf name="match">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </container>
+    <container name="supported-instructions">
+      <list name="instruction-type">
+        <key value="instruction"/>
+        <uses name="feature"/>
+        <leaf name="instruction">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </container>
+    <container name="supported-actions">
+      <list name="action-type">
+        <key value="action"/>
+        <uses name="feature"/>
+        <leaf name="action">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </container>
+    <container name="switch-features">
+      <leaf name="max_buffers">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="max_tables">
+        <type name="uint8"/>
+      </leaf>
+      <leaf-list name="capabilities">
+        <type name="identityref">
+          <base name="feature-capability"/>
+        </type>
+      </leaf-list>
+    </container>
+  </grouping>
+  <grouping name="flow-node-connector">
+    <uses name="port:flow-capable-port"/>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node">
+    <ext:augment-identifier identifier="flow-capable-node"/>
+    <uses name="flow-node"/>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/inv:node-connector">
+    <ext:augment-identifier identifier="flow-capable-node-connector"/>
+    <uses name="flow-node-connector"/>
+  </augment>
+  <augment target-node="/inv:node-updated">
+    <ext:augment-identifier identifier="flow-capable-node-updated"/>
+    <uses name="flow-node"/>
+  </augment>
+  <augment target-node="/inv:node-updated/inv:node-connector">
+    <ext:augment-identifier identifier="flow-capable-node-connector-update-fields"/>
+    <uses name="flow-node-connector"/>
+  </augment>
+  <augment target-node="/inv:node-connector-updated">
+    <ext:augment-identifier identifier="flow-capable-node-connector-updated"/>
+    <uses name="flow-node-connector"/>
+  </augment>
+</module>

@@ -62,7 +62,7 @@
         <feature>http</feature>
         <!--<feature version='${webconsole.version}'>webconsole</feature>-->
         <feature>webconsole</feature>
-        <bundle>mvn:org.opendaylight.sfc/sfc-ui/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ui-bundle/${project.version}</bundle>
     </feature>
 
     <feature name='odl-sfc-provider' version='${project.version}' description='OpenDaylight :: sfc :: Provider '>

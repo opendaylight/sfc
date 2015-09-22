@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="node-config"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:node-config="urn:opendaylight:module:config"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:inv="urn:opendaylight:inventory">
+  <namespace uri="urn:opendaylight:module:config"/>
+  <prefix value="node-config"/>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <revision date="2014-10-15">
+    <description>
+      <text>Initial revision of node configuration service</text>
+    </description>
+  </revision>
+  <grouping name="node-ref">
+    <uses name="inv:node-context-ref"/>
+  </grouping>
+  <grouping name="node-config">
+    <leaf name="flag">
+      <type name="string"/>
+      <description>
+        <text>Switch config flag. Expected values FRAGNORMAL, OFPCFRAGDROP, OFPCFRAGREASM, OFPCFRAGMASK</text>
+      </description>
+    </leaf>
+    <leaf name="miss-search-length">
+      <type name="uint16"/>
+    </leaf>
+  </grouping>
+  <rpc name="set-config">
+    <input>
+      <uses name="node-config"/>
+      <uses name="tr:transaction-aware"/>
+      <uses name="node-ref"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+</module>

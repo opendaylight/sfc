@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-switch-connection-provider-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflow-switch-connection-provider-impl="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:openflow-switch-connection-provider="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider"
+        xmlns:ietf-inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:of-config="urn:opendaylight:openflow:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl"/>
+  <prefix value="openflow-switch-connection-provider-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflow-switch-connection-provider">
+    <prefix value="openflow-switch-connection-provider"/>
+    <revision-date date="2014-03-28"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="ietf-inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="openflow-configuration">
+    <prefix value="of-config"/>
+    <revision-date date="2014-06-30"/>
+  </import>
+  <description>
+    <text>openflow-switch-connection-provider</text>
+  </description>
+  <revision date="2014-03-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflow-switch-connection-provider-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="openflow-switch-connection-provider:openflow-switch-connection-provider"/>
+    <config:java-name-prefix java-prefix="SwitchConnectionProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflow-switch-connection-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'openflow-switch-connection-provider-impl'"/>
+      <leaf name="port">
+        <description>
+          <text>local listening port</text>
+        </description>
+        <type name="uint16"/>
+        <mandatory value="true"/>
+      </leaf>
+      <leaf name="address">
+        <description>
+          <text>address of local listening interface</text>
+        </description>
+        <type name="ietf-inet:ip-address"/>
+      </leaf>
+      <leaf name="switch-idle-timeout">
+        <description>
+          <text>idle timeout in [ms]</text>
+        </description>
+        <type name="uint32"/>
+        <mandatory value="true"/>
+      </leaf>
+      <container name="tls">
+        <leaf name="keystore">
+          <description>
+            <text>keystore location</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="keystore-type">
+          <description>
+            <text>keystore type (JKS or PKCS12)</text>
+          </description>
+          <type name="of-config:keystore-type"/>
+        </leaf>
+        <leaf name="keystore-path-type">
+          <description>
+            <text>keystore path type (CLASSPATH or PATH)</text>
+          </description>
+          <type name="of-config:path-type"/>
+        </leaf>
+        <leaf name="keystore-password">
+          <description>
+            <text>password protecting keystore</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="certificate-password">
+          <description>
+            <text>password protecting certificate</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="truststore">
+          <description>
+            <text>truststore location</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="truststore-type">
+          <description>
+            <text>truststore type (JKS or PKCS12)</text>
+          </description>
+          <type name="of-config:keystore-type"/>
+        </leaf>
+        <leaf name="truststore-path-type">
+          <description>
+            <text>truststore path type (CLASSPATH or PATH)</text>
+          </description>
+          <type name="of-config:path-type"/>
+        </leaf>
+        <leaf name="truststore-password">
+          <description>
+            <text>password protecting truststore</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+</module>

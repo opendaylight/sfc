@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-threads"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:th="urn:opendaylight:params:xml:ns:yang:controller:config:threads"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:threads"/>
+  <prefix value="th"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for NS-OS
+thread-related services.</text>
+  </description>
+  <revision date="2013-04-09">
+    <description>
+      <text>Added eventbus service.</text>
+    </description>
+  </revision>
+  <revision date="2013-04-05">
+    <description>
+      <text>Updated with YANG extension for Java class specification.</text>
+    </description>
+  </revision>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="eventbus">
+    <description>
+      <text>Service representing an event bus. The service acts as message
+router between event producers and event consumers</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="com.google.common.eventbus.EventBus"/>
+  </identity>
+  <identity name="threadfactory">
+    <description>
+      <text>Service representing a ThreadFactory instance. It is directly
+useful in Java world, where various library pieces need to create
+threads and you may want to inject a customized thread
+implementation.</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="java.util.concurrent.ThreadFactory"/>
+  </identity>
+  <identity name="threadpool">
+    <description>
+      <text>A simple pool of threads able to execute work.</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.config.threadpool.ThreadPool"/>
+  </identity>
+  <identity name="scheduled-threadpool">
+    <description>
+      <text>An extension of the simple pool of threads able to schedule
+work to be executed at some point in time.</text>
+    </description>
+    <base name="threadpool"/>
+    <config:java-class name="org.opendaylight.controller.config.threadpool.ScheduledThreadPool"/>
+  </identity>
+</module>

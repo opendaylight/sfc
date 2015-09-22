@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-module-leaf-list"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:amodulelflst="augment:module:leaf:list"
+        xmlns:imodule="instance:identifier:module">
+  <namespace uri="augment:module:leaf:list"/>
+  <prefix value="amodulelflst"/>
+  <import module="instance-identifier-module">
+    <prefix value="imodule"/>
+    <revision-date date="2014-01-17"/>
+  </import>
+  <revision date="2014-01-27"/>
+  <augment target-node="/imodule:cont/imodule:cont1">
+    <leaf-list name="lflst11">
+      <type name="string"/>
+    </leaf-list>
+    <leaf name="lf11">
+      <type name="instance-identifier"/>
+    </leaf>
+  </augment>
+</module>

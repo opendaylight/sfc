@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-extensible-match"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oxm="urn:opendaylight:openflow:oxm"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:oft="urn:opendaylight:openflow:common:types">
+  <namespace uri="urn:opendaylight:openflow:oxm"/>
+  <prefix value="oxm"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <revision date="2013-07-31">
+    <description>
+      <text>OpenFlow 1.3 - match model</text>
+    </description>
+  </revision>
+  <identity name="oxm-match-type">
+    <description>
+      <text>The OpenFlow Extensible Match type must be supported by all OpenFlow
+switches.</text>
+    </description>
+    <base name="oft:match-type-base"/>
+  </identity>
+  <identity name="oxm-class-base">
+    <description>
+      <text>Base identity for OXM classes</text>
+    </description>
+  </identity>
+  <identity name="nxm-0-class">
+    <description>
+      <text>Match class for backward compatibility with NXM</text>
+    </description>
+    <base name="oxm-class-base"/>
+  </identity>
+  <identity name="nxm-1-class">
+    <description>
+      <text>Match class for backward compatibility with NXM</text>
+    </description>
+    <base name="oxm-class-base"/>
+  </identity>
+  <identity name="openflow-basic-class">
+    <description>
+      <text>Basic class for OpenFlow</text>
+    </description>
+    <base name="oxm-class-base"/>
+  </identity>
+  <identity name="experimenter-class">
+    <description>
+      <text>Marks Experimenter match type class.
+All experimenter match classes MUST use this class as a base.</text>
+    </description>
+    <base name="oxm-class-base"/>
+  </identity>
+  <identity name="match-field">
+    <description>
+      <text>Base identity for OXM Fields</text>
+    </description>
+  </identity>
+  <identity name="in_port">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Switch input port.</text>
+    </description>
+  </identity>
+  <identity name="in_phy_port">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Switch physical input port.</text>
+    </description>
+  </identity>
+  <identity name="metadata">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Metadata passed between tables.</text>
+    </description>
+  </identity>
+  <identity name="eth_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Ethernet destination address.</text>
+    </description>
+  </identity>
+  <identity name="eth_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Ethernet source address.</text>
+    </description>
+  </identity>
+  <identity name="eth_type">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Ethernet frame type.</text>
+    </description>
+  </identity>
+  <identity name="vlan_vid">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for VLAN id.</text>
+    </description>
+  </identity>
+  <identity name="vlan_pcp">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for VLAN priority.</text>
+    </description>
+  </identity>
+  <identity name="ip_dscp">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IP DSCP (6 bits in ToS field).</text>
+    </description>
+  </identity>
+  <identity name="ip_ecn">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IP ECN (2 bits in ToS field).</text>
+    </description>
+  </identity>
+  <identity name="ip_proto">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IP protocol.</text>
+    </description>
+  </identity>
+  <identity name="ipv4_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv4 source address.</text>
+    </description>
+  </identity>
+  <identity name="ipv4_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv4 destination address.</text>
+    </description>
+  </identity>
+  <identity name="tcp_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for TCP source port.</text>
+    </description>
+  </identity>
+  <identity name="tcp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for TCP destination port.</text>
+    </description>
+  </identity>
+  <identity name="udp_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for UDP source port.</text>
+    </description>
+  </identity>
+  <identity name="udp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for UDP destination port.</text>
+    </description>
+  </identity>
+  <identity name="sctp_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for SCTP source port.</text>
+    </description>
+  </identity>
+  <identity name="sctp_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for SCTP destination port.</text>
+    </description>
+  </identity>
+  <identity name="icmpv4_type">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ICMP type.</text>
+    </description>
+  </identity>
+  <identity name="icmpv4_code">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ICMP code.</text>
+    </description>
+  </identity>
+  <identity name="arp_op">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ARP opcode.</text>
+    </description>
+  </identity>
+  <identity name="arp_spa">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ARP source IPv4 address.</text>
+    </description>
+  </identity>
+  <identity name="arp_tpa">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ARP target IPv4 address.</text>
+    </description>
+  </identity>
+  <identity name="arp_sha">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ARP source hardware address.</text>
+    </description>
+  </identity>
+  <identity name="arp_tha">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ARP target hardware address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_src">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv6 source address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_dst">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv6 destination address.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_flabel">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv6 Flow Label</text>
+    </description>
+  </identity>
+  <identity name="icmpv6_type">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ICMPv6 type.</text>
+    </description>
+  </identity>
+  <identity name="icmpv6_code">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for ICMPv6 code.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_target">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Target address for ND.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_sll">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Source link-layer for ND.</text>
+    </description>
+  </identity>
+  <identity name="ipv6_nd_tll">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Target link-layer for ND.</text>
+    </description>
+  </identity>
+  <identity name="mpls_label">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for MPLS label.</text>
+    </description>
+  </identity>
+  <identity name="mpls_tc">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for MPLS TC.</text>
+    </description>
+  </identity>
+  <identity name="mpls_bos">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for MPLS BoS bit.</text>
+    </description>
+  </identity>
+  <identity name="pbb_isid">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for PBB I-SID.</text>
+    </description>
+  </identity>
+  <identity name="tunnel_id">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for Logical Port Metadata</text>
+    </description>
+  </identity>
+  <identity name="ipv6_exthdr">
+    <base name="match-field"/>
+    <description>
+      <text>OXM field for IPv6 Extension Header pseudo-field</text>
+    </description>
+  </identity>
+  <identity name="tcp_flag">
+    <base name="match-field"/>
+    <description>
+      <text>NXM field for NXM_NX_TCP_FLAGS</text>
+    </description>
+  </identity>
+  <identity name="tunnel_ipv4_dst">
+    <base name="match-field"/>
+    <description>
+      <text>NXM field for NXM_NX_TUN_IPV4_DST</text>
+    </description>
+  </identity>
+  <identity name="tunnel_ipv4_src">
+    <base name="match-field"/>
+    <description>
+      <text>NXM field for NXM_NX_TUN_IPV4_SRC</text>
+    </description>
+  </identity>
+  <container name="oxm-container">
+    <uses name="oxm-fields-grouping"/>
+  </container>
+  <grouping name="oxm-fields-grouping">
+    <list name="match-entries">
+      <description>
+        <text>OXM TLV-structures (Type Length Value)</text>
+      </description>
+      <config value="false"/>
+      <leaf name="oxm-class">
+        <type name="identityref">
+          <base name="oxm-class-base"/>
+        </type>
+      </leaf>
+      <leaf name="oxm-match-field">
+        <type name="identityref">
+          <base name="match-field"/>
+        </type>
+      </leaf>
+      <leaf name="has-mask">
+        <type name="boolean"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="match-grouping">
+    <container name="match">
+      <description>
+        <text>Match structure (OF v1.3)</text>
+      </description>
+      <leaf name="type">
+        <type name="identityref">
+          <base name="oft:match-type-base"/>
+        </type>
+      </leaf>
+      <uses name="oxm-fields-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="match-v10-grouping">
+    <container name="match-v10">
+      <description>
+        <text>OF v1.0 match structure</text>
+      </description>
+      <leaf name="wildcards">
+        <description>
+          <text>Wildcard fields (only flags).</text>
+        </description>
+        <type name="oft:flow-wildcards-v10"/>
+      </leaf>
+      <leaf name="nw-src-mask">
+        <description>
+          <text>IP source address mask (definition differs from OF v1.0.0 spec to ease
+understanding, library does the transformation into OF v1.0 spec correct data)</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="nw-dst-mask">
+        <description>
+          <text>IP destination address mask (definition differs from OF v1.0.0 spec to ease
+understanding, library does the transformation into OF v1.0 spec correct data)</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="in-port">
+        <description>
+          <text>Input switch port.</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="dl-src">
+        <description>
+          <text>Ethernet source address.</text>
+        </description>
+        <type name="yang:mac-address"/>
+      </leaf>
+      <leaf name="dl-dst">
+        <description>
+          <text>Ethernet destination address.</text>
+        </description>
+        <type name="yang:mac-address"/>
+      </leaf>
+      <leaf name="dl-vlan">
+        <description>
+          <text>Input VLAN id.</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="dl-vlan-pcp">
+        <description>
+          <text>Input VLAN priority.</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="dl-type">
+        <description>
+          <text>Ethernet frame type.</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="nw-tos">
+        <description>
+          <text>IP ToS (actually DSCP field, 6 bits).</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="nw-proto">
+        <description>
+          <text>IP protocol or lower 8 bits of ARP opcode.</text>
+        </description>
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="nw-src">
+        <description>
+          <text>IP source address.</text>
+        </description>
+        <type name="inet:ipv4-address"/>
+      </leaf>
+      <leaf name="nw-dst">
+        <description>
+          <text>IP destination address.</text>
+        </description>
+        <type name="inet:ipv4-address"/>
+      </leaf>
+      <leaf name="tp-src">
+        <description>
+          <text>TCP/UDP source port.</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="tp-dst">
+        <description>
+          <text>TCP/UDP destination port.</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+</module>

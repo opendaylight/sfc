@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="nicira-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nicira-action="urn:opendaylight:openflowjava:nx:action"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action"
+        xmlns:oft="urn:opendaylight:openflow:common:types"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowjava:nx:action"/>
+  <prefix value="nicira-action"/>
+  <import module="openflow-action">
+    <prefix value="ofaction"/>
+  </import>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <description>
+    <text>Nicira openflow extensions of action.</text>
+  </description>
+  <revision date="2014-04-21">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="nxm-nx-reg-load">
+    <base name="ofaction:experimenter-action-sub-type"/>
+  </identity>
+  <identity name="nxm-nx-reg-move">
+    <base name="ofaction:experimenter-action-sub-type"/>
+  </identity>
+  <identity name="nxm-nx-output-reg">
+    <base name="ofaction:experimenter-action-sub-type"/>
+  </identity>
+  <grouping name="ofj-nx-action-reg-load-grouping">
+    <container name="action-reg-load">
+      <leaf name="ofs_nbits">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="dst">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="value">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nx-action-reg-move-grouping">
+    <container name="action-reg-move">
+      <leaf name="n_bits">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="src_ofs">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="dst_ofs">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="src">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="dst">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nx-action-output-reg-grouping">
+    <container name="action-output-reg">
+      <leaf name="n_bits">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="src">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="max_len">
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="ofj-aug-nx-action"/>
+    <uses name="ofj-nx-action-reg-load-grouping"/>
+    <uses name="ofj-nx-action-reg-move-grouping"/>
+    <uses name="ofj-nx-action-output-reg-grouping"/>
+  </augment>
+</module>

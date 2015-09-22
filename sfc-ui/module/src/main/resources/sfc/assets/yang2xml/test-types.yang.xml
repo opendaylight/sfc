@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="test-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tt="urn:opendaylight:params:xml:ns:yang:controller:config:test:types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:test:types"/>
+  <prefix value="tt"/>
+  <description>
+    <text>Types generated for testing</text>
+  </description>
+  <revision date="2013-11-27"/>
+  <typedef name="extend-once">
+    <type name="uint16"/>
+  </typedef>
+  <typedef name="extend-twice">
+    <type name="extend-once"/>
+  </typedef>
+  <typedef name="extend-enum">
+    <type name="enumeration">
+      <enum name="ONE"/>
+      <enum name="TWO"/>
+    </type>
+  </typedef>
+  <typedef name="unionTest">
+    <type name="union">
+      <type name="string"/>
+      <type name="uint32"/>
+      <type name="extend-twice"/>
+    </type>
+  </typedef>
+  <identity name="test-identity1"/>
+  <identity name="test-identity2">
+    <base name="test-identity1"/>
+  </identity>
+</module>

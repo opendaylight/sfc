@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-sal-dom-broker-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:binding-impl="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:sal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"
+        xmlns:common="urn:opendaylight:params:xml:ns:yang:controller:md:sal:common"
+        xmlns:config-dom-store-spi="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:config-dom-store"
+        xmlns:operational-dom-store-spi="urn:opendaylight:params:xml:ns:yang:controller:md:sal:core:spi:operational-dom-store">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom:impl"/>
+  <prefix value="binding-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="sal"/>
+  </import>
+  <import module="opendaylight-md-sal-common">
+    <prefix value="common"/>
+  </import>
+  <import module="opendaylight-config-dom-datastore">
+    <prefix value="config-dom-store-spi"/>
+  </import>
+  <import module="opendaylight-operational-dom-datastore">
+    <prefix value="operational-dom-store-spi"/>
+  </import>
+  <description>
+    <text>Service definition for Binding Aware MD-SAL.
+Note: The dom-inmemory-data-broker utilizes configurable config-dom-datastore
+and operation-dom-datastore. If configuration is not done for this stores
+then it defaults to InMemoryDOMDataStore</text>
+  </description>
+  <revision date="2013-10-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="dom-broker-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:dom-broker-osgi-registry"/>
+    <config:java-name-prefix java-prefix="DomBrokerImpl"/>
+  </identity>
+  <identity name="dom-inmemory-data-broker">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:dom-async-data-broker"/>
+  </identity>
+  <identity name="hash-map-data-store">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:dom-data-store"/>
+    <config:java-name-prefix java-prefix="HashMapDataStore"/>
+  </identity>
+  <identity name="schema-service-singleton">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:schema-service"/>
+    <config:java-name-prefix java-prefix="SchemaServiceImplSingleton"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="dom-broker-impl">
+      <when condition="/config:modules/config:module/config:type = 'dom-broker-impl'"/>
+      <container name="data-store">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:dom-data-store"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="async-data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:dom-async-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="root-schema-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:schema-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="dom-inmemory-data-broker">
+      <when condition="/config:modules/config:module/config:type = 'dom-inmemory-data-broker'"/>
+      <container name="schema-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:schema-service"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="config-data-store">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="config-dom-store-spi:config-dom-datastore"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="operational-data-store">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="operational-dom-store-spi:operational-dom-datastore"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="hash-map-data-store">
+      <when condition="/config:modules/config:module/config:type = 'hash-map-data-store'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="schema-service-singleton">
+      <when condition="/config:modules/config:module/config:type = 'schema-service-singleton'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="dom-broker-impl">
+      <when condition="/config:modules/config:module/config:type = 'dom-broker-impl'"/>
+      <container name="data">
+        <uses name="common:data-state"/>
+      </container>
+    </case>
+  </augment>
+</module>

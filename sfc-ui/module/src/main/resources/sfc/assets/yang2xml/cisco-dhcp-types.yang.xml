@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-dhcp-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dhcp="urn:cisco:params:xml:ns:yang:cisco-dhcp-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:cisco-dhcp-types"/>
+  <prefix value="dhcp"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>Cisco</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text> This module contains the definitions of a DHCP message
+    sent from a DHCP client to a DHCP server.  May include
+    fields added by a relay agent. </text>
+  </description>
+  <revision date="2013-10-31">
+    <description>
+      <text>second revision</text>
+    </description>
+    <reference>
+      <text>http://wwwin-eng.cisco.com/Eng/SPCTO/I2SS/I2SS-Overview.pptx</text>
+    </reference>
+  </revision>
+  <identity name="dhcp-option-code">
+    <description>
+      <text>DHCP Option</text>
+    </description>
+  </identity>
+  <grouping name="dhcp-option">
+    <leaf name="code">
+      <type name="identityref">
+        <base name="dhcp-option-code"/>
+      </type>
+      <description>
+        <text>DHCP Option code</text>
+      </description>
+    </leaf>
+    <leaf name="data">
+      <type name="binary">
+        <length value="1..255"/>
+      </type>
+      <description>
+        <text>DHCP Option data</text>
+      </description>
+    </leaf>
+    <description>
+      <text>DHCP option - just option code and opaque data</text>
+    </description>
+  </grouping>
+  <grouping name="dhcp-v4-params">
+    <leaf name="op">
+      <type name="enumeration">
+        <enum name="BOOTREQUEST">
+          <value value="1"/>
+          <description>
+            <text>DHCP request from client</text>
+          </description>
+        </enum>
+        <enum name="BOOTREPLY">
+          <value value="2"/>
+          <description>
+            <text>DHCP response from server</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>message type</text>
+      </description>
+    </leaf>
+    <leaf name="htype">
+      <type name="enumeration">
+        <enum name="Ethernet">
+          <value value="1"/>
+          <description>
+            <text>Ethernet (10Mb)</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Hardware address type - from IANA ARP Parameters</text>
+      </description>
+    </leaf>
+    <leaf name="hlen">
+      <type name="uint8"/>
+      <description>
+        <text>Hardware address length - e.g. '6' for 10mb ethernet</text>
+      </description>
+    </leaf>
+    <leaf name="hops">
+      <type name="uint8"/>
+      <description>
+        <text>Client sets to zero, optionally used by relay agents</text>
+      </description>
+    </leaf>
+    <leaf name="xid">
+      <type name="uint32"/>
+      <description>
+        <text>Transaction ID</text>
+      </description>
+    </leaf>
+    <leaf name="secs">
+      <type name="uint16"/>
+      <description>
+        <text>Seconds elapsed since client began acquisition/renewal</text>
+      </description>
+    </leaf>
+    <container name="flags">
+      <leaf name="broadcast">
+        <type name="boolean"/>
+        <description>
+          <text>set if client requires broadcast response</text>
+        </description>
+      </leaf>
+      <description>
+        <text>DHCP flags</text>
+      </description>
+    </container>
+    <description>
+      <text>Parameters from DHCPv4 - RFC2131</text>
+    </description>
+    <leaf name="ciaddr">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Client IP address</text>
+      </description>
+    </leaf>
+    <leaf name="yiaddr">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>'your' (client) IP address</text>
+      </description>
+    </leaf>
+    <leaf name="siaddr">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>IP address of next server to use in bootstrap</text>
+      </description>
+    </leaf>
+    <leaf name="giaddr">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Relay agent IP address</text>
+      </description>
+    </leaf>
+    <leaf name="chaddr">
+      <type name="yang:mac-address"/>
+      <description>
+        <text>Client Hardware Address</text>
+      </description>
+    </leaf>
+    <leaf name="sname">
+      <type name="string">
+        <length value="1..63"/>
+      </type>
+      <description>
+        <text>Optional server host name</text>
+      </description>
+    </leaf>
+    <leaf name="file">
+      <type name="string">
+        <length value="1..127"/>
+      </type>
+      <description>
+        <text>Boot file name</text>
+      </description>
+    </leaf>
+    <choice name="dhcp-options">
+      <leaf name="options">
+        <type name="binary">
+          <length value="0..312"/>
+        </type>
+        <description>
+          <text>binary options data</text>
+        </description>
+      </leaf>
+      <list name="options-list">
+        <key value="code"/>
+        <uses name="dhcp-option"/>
+        <description>
+          <text>decoded options data</text>
+        </description>
+      </list>
+      <description>
+        <text>DHCP options - RFC2132</text>
+      </description>
+    </choice>
+  </grouping>
+  <grouping name="dhcp-v6-params">
+    <description>
+      <text>Parameters from DHCPv6 - RFC3315</text>
+    </description>
+  </grouping>
+  <grouping name="dhcp-params">
+    <choice name="version">
+      <container name="ipv4">
+        <uses name="dhcp-v4-params"/>
+        <description>
+          <text>IPv4</text>
+        </description>
+      </container>
+      <container name="ipv6">
+        <uses name="dhcp-v6-params"/>
+        <description>
+          <text>IPv6</text>
+        </description>
+      </container>
+      <description>
+        <text>v4 or v6 DHCP parameters</text>
+      </description>
+    </choice>
+    <description>
+      <text>Generic DHCP Paremeters</text>
+    </description>
+  </grouping>
+</module>

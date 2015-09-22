@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-list-yang1"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:smplstyg="simple:list:yang1">
+  <namespace uri="simple:list:yang1"/>
+  <prefix value="smplstyg"/>
+  <revision date="2013-11-12"/>
+  <list name="lst">
+    <container name="cont1"/>
+    <list name="lst1"/>
+    <leaf-list name="lflst1">
+      <type name="string"/>
+    </leaf-list>
+    <leaf name="lf1">
+      <type name="string"/>
+    </leaf>
+  </list>
+</module>

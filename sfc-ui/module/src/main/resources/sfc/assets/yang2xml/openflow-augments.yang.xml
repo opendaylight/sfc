@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-augments"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:aug="urn:opendaylight:openflow:augments"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:oft="urn:opendaylight:openflow:common:types"
+        xmlns:ofproto="urn:opendaylight:openflow:protocol"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action"
+        xmlns:ofinstruction="urn:opendaylight:openflow:common:instruction"
+        xmlns:oxm="urn:opendaylight:openflow:oxm">
+  <namespace uri="urn:opendaylight:openflow:augments"/>
+  <prefix value="aug"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <import module="openflow-protocol">
+    <prefix value="ofproto"/>
+  </import>
+  <import module="openflow-action">
+    <prefix value="ofaction"/>
+  </import>
+  <import module="openflow-instruction">
+    <prefix value="ofinstruction"/>
+  </import>
+  <import module="openflow-extensible-match">
+    <prefix value="oxm"/>
+  </import>
+  <revision date="2013-10-02">
+    <description>
+      <text>OpenFlow 1.3 - augments model. 
+Please visit 
+https://wiki.opendaylight.org/view/File:OpenFlow_Protocol_Library_-_Project_documentation.pdf
+- Augmentation Tables chapter</text>
+    </description>
+  </revision>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="port-number-match-entry"/>
+    <leaf name="port-number">
+      <type name="oft:port-number"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="metadata-match-entry"/>
+    <leaf name="metadata">
+      <type name="binary"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="mask-match-entry"/>
+    <leaf name="mask">
+      <type name="binary"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="mac-address-match-entry"/>
+    <leaf name="mac-address">
+      <type name="yang:mac-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="eth-type-match-entry"/>
+    <leaf name="eth-type">
+      <type name="oft:ether-type"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="vlan-vid-match-entry"/>
+    <leaf name="vlan-vid">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="cfi-bit">
+      <type name="boolean"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="vlan-pcp-match-entry"/>
+    <leaf name="vlan-pcp">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="dscp-match-entry"/>
+    <leaf name="dscp">
+      <type name="inet:dscp"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="ecn-match-entry"/>
+    <leaf name="ecn">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="protocol-number-match-entry"/>
+    <leaf name="protocol-number">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="port-match-entry"/>
+    <leaf name="port">
+      <type name="inet:port-number"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="icmpv4-type-match-entry"/>
+    <leaf name="icmpv4-type">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="icmpv4-code-match-entry"/>
+    <leaf name="icmpv4-code">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="op-code-match-entry"/>
+    <leaf name="op-code">
+      <type name="uint16"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="ipv6-flabel-match-entry"/>
+    <leaf name="ipv6-flabel">
+      <type name="inet:ipv6-flow-label"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="icmpv6-type-match-entry"/>
+    <leaf name="icmpv6-type">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="icmpv6-code-match-entry"/>
+    <leaf name="icmpv6-code">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="ipv6-address-match-entry"/>
+    <leaf name="ipv6-address">
+      <type name="inet:ipv6-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="ipv4-address-match-entry"/>
+    <leaf name="ipv4-address">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="mpls-label-match-entry"/>
+    <leaf name="mpls-label">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="tc-match-entry"/>
+    <leaf name="tc">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="bos-match-entry"/>
+    <leaf name="bos">
+      <type name="boolean"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="isid-match-entry"/>
+    <leaf name="isid">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="pseudo-field-match-entry"/>
+    <leaf name="pseudo-field">
+      <type name="oft:ipv6-exthdr-flags"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="experimenter-id-match-entry"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="tcp-flag-match-entry"/>
+    <leaf name="tcp-flag">
+      <type name="uint16"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="tunnel-ipv4-dst-match-entry"/>
+    <leaf name="tunnel-ipv4-dst">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/oxm:oxm-container/oxm:match-entries">
+    <ext:augment-identifier identifier="tunnel-ipv4-src-match-entry"/>
+    <leaf name="tunnel-ipv4-src">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="port-action"/>
+    <leaf name="port">
+      <type name="oft:port-number"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="max-length-action"/>
+    <leaf name="max-length">
+      <type name="uint16"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="mpls-ttl-action"/>
+    <leaf name="mpls-ttl">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="ethertype-action"/>
+    <leaf name="ethertype">
+      <type name="oft:ether-type"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="queue-id-action"/>
+    <leaf name="queue-id">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="group-id-action"/>
+    <leaf name="group-id">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="nw-ttl-action"/>
+    <leaf name="nw-ttl">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="oxm-fields-action"/>
+    <uses name="oxm:oxm-fields-grouping"/>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="experimenter-id-action"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="vlan-vid-action"/>
+    <leaf name="vlan-vid">
+      <type name="uint16"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="vlan-pcp-action"/>
+    <leaf name="vlan-pcp">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="dl-address-action"/>
+    <leaf name="dl-address">
+      <type name="yang:mac-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="nw-tos-action"/>
+    <leaf name="nw-tos">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="ip-address-action"/>
+    <leaf name="ip-address">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:table-features-properties-container/ofproto:table-feature-properties">
+    <ext:augment-identifier identifier="instruction-related-table-feature-property"/>
+    <uses name="ofinstruction:instructions-grouping"/>
+  </augment>
+  <augment target-node="/ofproto:table-features-properties-container/ofproto:table-feature-properties">
+    <ext:augment-identifier identifier="next-table-related-table-feature-property"/>
+    <list name="next-table-ids">
+      <config value="false"/>
+      <leaf name="table-id">
+        <type name="uint8"/>
+      </leaf>
+    </list>
+  </augment>
+  <augment target-node="/ofproto:table-features-properties-container/ofproto:table-feature-properties">
+    <ext:augment-identifier identifier="action-related-table-feature-property"/>
+    <uses name="ofaction:actions-grouping"/>
+  </augment>
+  <augment target-node="/ofproto:table-features-properties-container/ofproto:table-feature-properties">
+    <ext:augment-identifier identifier="oxm-related-table-feature-property"/>
+    <uses name="oxm:oxm-fields-grouping"/>
+  </augment>
+  <augment target-node="/ofproto:table-features-properties-container/ofproto:table-feature-properties">
+    <ext:augment-identifier identifier="experimenter-id-table-feature-property"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+    <leaf name="exp-type">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofinstruction:instruction-container/ofinstruction:instruction">
+    <ext:augment-identifier identifier="table-id-instruction"/>
+    <leaf name="table-id">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofinstruction:instruction-container/ofinstruction:instruction">
+    <ext:augment-identifier identifier="metadata-instruction"/>
+    <leaf name="metadata">
+      <type name="binary"/>
+    </leaf>
+    <leaf name="metadata-mask">
+      <type name="binary"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofinstruction:instruction-container/ofinstruction:instruction">
+    <ext:augment-identifier identifier="actions-instruction"/>
+    <uses name="ofaction:actions-grouping"/>
+  </augment>
+  <augment target-node="/ofinstruction:instruction-container/ofinstruction:instruction">
+    <ext:augment-identifier identifier="meter-id-instruction"/>
+    <leaf name="meter-id">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofinstruction:instruction-container/ofinstruction:instruction">
+    <ext:augment-identifier identifier="experimenter-id-instruction"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:queue-prop-container/ofproto:queue-property">
+    <ext:augment-identifier identifier="rate-queue-property"/>
+    <leaf name="rate">
+      <type name="uint16"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:queue-prop-container/ofproto:queue-property">
+    <ext:augment-identifier identifier="experimenter-id-queue-property"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:error-message">
+    <ext:augment-identifier identifier="experimenter-id-error"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:multipart-request/input/ofproto:multipart-request-body/ofproto:multipart-request-experimenter-case/ofproto:multipart-request-experimenter">
+    <ext:augment-identifier identifier="experimenter-id-multipart-request"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+    <leaf name="exp-type">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:multipart-reply-message/ofproto:multipart-reply-body/ofproto:multipart-reply-experimenter-case/ofproto:multipart-reply-experimenter">
+    <ext:augment-identifier identifier="experimenter-id-multipart-reply"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+    <leaf name="exp-type">
+      <type name="uint32"/>
+    </leaf>
+  </augment>
+  <augment target-node="/ofproto:meter-band-container/ofproto:meter-band/ofproto:meter-band-experimenter-case/ofproto:meter-band-experimenter">
+    <ext:augment-identifier identifier="experimenter-id-meter-band"/>
+    <leaf name="experimenter">
+      <type name="oft:experimenter-id"/>
+    </leaf>
+  </augment>
+</module>

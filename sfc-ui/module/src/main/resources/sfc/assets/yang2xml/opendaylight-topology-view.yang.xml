@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-topology-view"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nt="urn:opendaylight:model:topology:view"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:topo="urn:TBD:params:xml:ns:yang:network-topology">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:model:topology:view"/>
+  <prefix value="nt"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+  </import>
+  <import module="network-topology">
+    <prefix value="topo"/>
+    <revision-date date="2013-10-21"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>WILL-BE-DEFINED-LATER</text>
+  </contact>
+  <revision date="2013-10-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <grouping name="aggregate-topology">
+    <leaf-list name="original-topology">
+      <type name="topo:topology-ref"/>
+    </leaf-list>
+  </grouping>
+  <grouping name="aggregate-node">
+    <list name="original-node">
+      <leaf name="topology">
+        <type name="topo:topology-ref"/>
+      </leaf>
+      <leaf name="node">
+        <type name="topo:node-ref"/>
+      </leaf>
+    </list>
+  </grouping>
+  <augment target-node="/topo:network-topology/topo:topology">
+    <ext:augment-identifier identifier="aggregated-topology"/>
+    <uses name="aggregate-topology"/>
+  </augment>
+  <augment target-node="/topo:network-topology/topo:topology/topo:node">
+    <ext:augment-identifier identifier="aggregated-node"/>
+    <uses name="aggregate-node"/>
+  </augment>
+</module>

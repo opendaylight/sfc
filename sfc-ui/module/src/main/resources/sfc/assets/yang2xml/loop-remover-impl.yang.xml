@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="loop-remover-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:loop-remover-impl="urn:opendaylight:packet:loop-remover-impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:loop-remover-impl"/>
+  <prefix value="loop-remover-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+loop-remover-impl implementation.</text>
+  </description>
+  <revision date="2014-05-28">
+    <description>
+      <text>Initial module draft.</text>
+    </description>
+  </revision>
+  <identity name="loop-remover-impl">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="LoopRemover"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="loop-remover-impl">
+      <when condition="/config:modules/config:module/config:type = 'loop-remover-impl'"/>
+      <leaf name="is-install-lldp-flow">
+        <type name="boolean"/>
+      </leaf>
+      <leaf name="lldp-flow-table-id">
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="lldp-flow-priority">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="lldp-flow-hard-timeout">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="lldp-flow-idle-timeout">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="graph-refresh-delay">
+        <type name="uint32"/>
+      </leaf>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="mdsal:binding-async-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="rpc-registry">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-rpc-registry"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

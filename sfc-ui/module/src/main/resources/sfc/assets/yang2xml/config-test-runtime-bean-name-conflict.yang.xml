@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-test-runtime-bean-name-conflict"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:th-java="urn:opendaylight:params:xml:ns:yang:controller:jmx:duplicate:runtime:bean"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:jmx:duplicate:runtime:bean"/>
+  <prefix value="th-java"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+thread services pure Java implementation.</text>
+  </description>
+  <revision date="2013-04-05">
+    <description>
+      <text>Updated to work with new anchors.</text>
+    </description>
+  </revision>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="async-eventbus">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="AsyncEventBus"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <leaf name="port">
+        <type name="string"/>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <list name="state-a">
+        <config:inner-state-bean/>
+        <leaf name="port">
+          <type name="string"/>
+        </leaf>
+        <list name="state-a">
+          <config:inner-state-bean/>
+          <leaf name="port">
+            <type name="string"/>
+          </leaf>
+        </list>
+      </list>
+    </case>
+  </augment>
+</module>

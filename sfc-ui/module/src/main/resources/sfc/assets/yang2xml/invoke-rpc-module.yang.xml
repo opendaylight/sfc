@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="invoke-rpc-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:inrpcmod="invoke:rpc:module">
+  <namespace uri="invoke:rpc:module"/>
+  <prefix value="inrpcmod"/>
+  <revision date="2013-12-3"/>
+  <rpc name="rpc-test">
+    <input>
+      <container name="cont">
+        <leaf name="lf">
+          <type name="string"/>
+        </leaf>
+      </container>
+    </input>
+  </rpc>
+</module>

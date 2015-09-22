@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="odl-sal-dom-rpc-remote-cfg"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rpc-cluster="urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote:rpc"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote:rpc"/>
+  <prefix value="rpc-cluster"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="dom"/>
+  </import>
+  <description>
+    <text>Service definition for Binding Aware MD-SAL.</text>
+  </description>
+  <revision date="2013-10-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="remote-rpc-server">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.connector.remoterpc.RemoteRpcServer"/>
+  </identity>
+  <identity name="remote-rpc-client">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.sal.connector.remoterpc.RemoteRpcClient"/>
+  </identity>
+  <identity name="remote-zeromq-rpc-server">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="ZeroMQServer"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="remote-zeromq-rpc-server">
+      <when condition="/config:modules/config:module/config:type = 'remote-zeromq-rpc-server'"/>
+      <container name="dom-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="dom:dom-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <leaf name="port">
+        <type name="uint16"/>
+      </leaf>
+    </case>
+  </augment>
+</module>

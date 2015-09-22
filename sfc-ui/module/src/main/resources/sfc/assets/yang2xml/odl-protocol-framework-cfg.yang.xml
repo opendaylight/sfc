@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="protocol-framework"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pf="urn:opendaylight:params:xml:ns:yang:controller:protocol:framework"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:netty="urn:opendaylight:params:xml:ns:yang:controller:netty">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:protocol:framework"/>
+  <prefix value="pf"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="netty">
+    <prefix value="netty"/>
+    <revision-date date="2013-11-19"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Milos Fabian &lt;milfabia@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the base YANG definitions for
+protocol framework.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2014-03-13">
+    <description>
+      <text>Changed reconnect-strategy to reconnect-strategy-factory - represents ReconnectStrategyFactory.
+reconnect-strategy-factory modules provides reconnect-strategy-factory service.</text>
+    </description>
+  </revision>
+  <revision date="2013-11-09">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="reconnect-strategy-factory">
+    <description>
+      <text>Service representing a reconnect strategy factory.</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.protocol.framework.ReconnectStrategyFactory"/>
+  </identity>
+  <identity name="never-reconnect-strategy-factory">
+    <base name="config:module-type"/>
+    <config:provided-service name="reconnect-strategy-factory"/>
+    <config:java-name-prefix java-prefix="NeverReconnectStrategyFactory"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="never-reconnect-strategy-factory">
+      <when condition="/config:modules/config:module/config:type = 'never-reconnect-strategy-factory'"/>
+      <leaf name="timeout">
+        <mandatory value="true"/>
+        <type name="int32"/>
+      </leaf>
+      <container name="executor">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="netty:netty-event-executor"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <identity name="reconnect-immediately-strategy-factory">
+    <base name="config:module-type"/>
+    <config:provided-service name="reconnect-strategy-factory"/>
+    <config:java-name-prefix java-prefix="ReconnectImmediatelyStrategyFactory"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="reconnect-immediately-strategy-factory">
+      <when condition="/config:modules/config:module/config:type = 'reconnect-immediately-strategy-factory'"/>
+      <leaf name="timeout">
+        <mandatory value="true"/>
+        <type name="int32"/>
+      </leaf>
+      <container name="executor">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="netty:netty-event-executor"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <identity name="timed-reconnect-strategy-factory">
+    <base name="config:module-type"/>
+    <config:provided-service name="reconnect-strategy-factory"/>
+    <config:java-name-prefix java-prefix="TimedReconnectStrategyFactory"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="timed-reconnect-strategy-factory">
+      <when condition="/config:modules/config:module/config:type = 'timed-reconnect-strategy-factory'"/>
+      <leaf name="deadline">
+        <type name="int64"/>
+        <units name="epoch nanoseconds"/>
+      </leaf>
+      <leaf name="max-attempts">
+        <mandatory value="true"/>
+        <type name="int64"/>
+      </leaf>
+      <leaf name="max-sleep">
+        <mandatory value="true"/>
+        <type name="int64"/>
+        <units name="milliseconds"/>
+      </leaf>
+      <leaf name="min-sleep">
+        <mandatory value="true"/>
+        <type name="int64"/>
+        <units name="milliseconds"/>
+      </leaf>
+      <leaf name="sleep-factor">
+        <mandatory value="true"/>
+        <type name="decimal64">
+          <fraction-digits value="2"/>
+        </type>
+      </leaf>
+      <leaf name="connect-time">
+        <mandatory value="true"/>
+        <type name="int32"/>
+        <units name="milliseconds"/>
+      </leaf>
+      <container name="executor">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="netty:netty-event-executor"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

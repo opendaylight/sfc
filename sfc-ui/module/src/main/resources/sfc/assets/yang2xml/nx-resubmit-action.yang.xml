@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="nx-resubmit-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nx-resubmit="urn:opendaylight:openflow:nx:resubmit:action"
+        xmlns:oft="urn:opendaylight:openflow:common:types"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <namespace uri="urn:opendaylight:openflow:nx:resubmit:action"/>
+  <prefix value="nx-resubmit"/>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <import module="openflow-action">
+    <prefix value="ofaction"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+  </import>
+  <revision date="2013-07-31">
+    <description>
+      <text>OpenFlow 1.3 - action model</text>
+    </description>
+  </revision>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="nx-action-resubmit-augment"/>
+    <leaf name="subtype">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="in-port">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="table">
+      <type name="uint8"/>
+    </leaf>
+  </augment>
+</module>

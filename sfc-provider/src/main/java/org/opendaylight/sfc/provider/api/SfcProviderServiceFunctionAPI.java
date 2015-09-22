@@ -652,10 +652,10 @@ public class SfcProviderServiceFunctionAPI extends SfcProviderAbstractAPI {
 
         printTraceStart(LOG);
         ServiceFunction ret = null;
-        Object[] servicePathObj = {serviceFunctionName};
-        Class[] servicePathClass = {String.class};
+        Object[] serviceFunctionObj = {serviceFunctionName};
+        Class[] serviceFunctionClass = {String.class};
         SfcProviderServiceFunctionAPI sfcProviderServiceFunctionAPI = SfcProviderServiceFunctionAPI
-                .getRead(servicePathObj, servicePathClass);
+                .getRead(serviceFunctionObj, serviceFunctionClass);
         Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionAPI);
         try {
             ret = (ServiceFunction) future.get();

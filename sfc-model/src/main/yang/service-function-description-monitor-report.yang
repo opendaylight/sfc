@@ -124,8 +124,40 @@ module service-function-description-monitor-report {
                     leaf bandwidth-utilization {
                        type uint32;
                        description "Percentage of the port's supported bandwidth utilization.";
-                   }
-               }
+                    }
+                    leaf rx-packet {
+                       type yang:zero-based-counter64;
+                       description "The number of received packets.";
+                    }
+                    leaf tx-packet {
+                       type yang:zero-based-counter64;
+                       description "The number of transmitted packets.";
+                    }
+                    leaf rx-bytes {
+                       type yang:zero-based-counter64;
+                       description "The number of received bytes.";
+                    }
+                    leaf tx-bytes {
+                       type yang:zero-based-counter64;
+                       description "The number of transmitted bytes.";
+                    }
+                    leaf rx-bytes-rate {
+                       type uint32;
+                       description "Bytes received rate.";
+                    }
+                    leaf tx-bytes-rate {
+                       type uint32;
+                       description "Bytes transmitted rate.";
+                    }
+                    leaf rx-packet-rate {
+                       type uint32;
+                       description "Packets received rate.";
+                    }
+                    leaf tx-packet-rate {
+                       type uint32;
+                       description "Packets transmitted rate.";
+                    }
+                }
             }
         }
     }

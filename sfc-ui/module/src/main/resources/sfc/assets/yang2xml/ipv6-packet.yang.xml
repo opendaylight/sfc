@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ipv6-packet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ipv6="urn:opendaylight:packet:ipv6"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ipv4="urn:opendaylight:packet:ipv4"
+        xmlns:ethernet="urn:opendaylight:packet:ethernet">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:ipv6"/>
+  <prefix value="ipv6"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="base-packet">
+    <prefix value="bpacket"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <import module="ipv4-packet">
+    <prefix value="ipv4"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <import module="ethernet-packet">
+    <prefix value="ethernet"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <revision date="2014-05-28">
+    <description>
+      <text>IPv6 packet module draft.</text>
+    </description>
+  </revision>
+  <grouping name="ipv6-packet-fields">
+    <leaf name="version">
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="dscp">
+      <type name="inet:dscp"/>
+      <description>
+        <text>Differentiated Code Services Point</text>
+      </description>
+    </leaf>
+    <leaf name="ecn">
+      <type name="uint8"/>
+      <description>
+        <text>Explicit Congestion Notification</text>
+      </description>
+    </leaf>
+    <leaf name="flow-label">
+      <type name="uint32"/>
+      <description>
+        <text>Flow label</text>
+      </description>
+    </leaf>
+    <leaf name="ipv6-length">
+      <type name="uint16"/>
+      <description>
+        <text>Payload size including any extension headers, in octets</text>
+      </description>
+    </leaf>
+    <leaf name="next-header">
+      <type name="ipv4:known-ip-protocols"/>
+      <description>
+        <text>Type of the next header or Transport layer protocol used by the payload</text>
+      </description>
+    </leaf>
+    <leaf name="hop-limit">
+      <type name="uint8"/>
+      <description>
+        <text>Hop Limit, the IPv6 version of Time to live</text>
+      </description>
+    </leaf>
+    <leaf name="source-ipv6">
+      <type name="inet:ipv6-address"/>
+    </leaf>
+    <leaf name="destination-ipv6">
+      <type name="inet:ipv6-address"/>
+    </leaf>
+    <list name="extension-headers">
+      <leaf name="next-header">
+        <type name="ipv4:known-ip-protocols"/>
+        <description>
+          <text>Type of this extension header</text>
+        </description>
+      </leaf>
+      <leaf name="length">
+        <type name="uint16"/>
+        <description>
+          <text>Length of this extension header, in octets</text>
+        </description>
+      </leaf>
+      <leaf name="data">
+        <type name="binary"/>
+        <description>
+          <text>Data for this extension header</text>
+        </description>
+      </leaf>
+    </list>
+    <uses name="bpacket:packet-fields"/>
+  </grouping>
+  <notification name="ipv6-packet-received">
+    <uses name="bpacket:packet-chain-grp">
+      <augment target-node="bpacket:packet-chain/bpacket:packet">
+        <case name="ipv6-packet">
+          <uses name="ipv6-packet-fields"/>
+        </case>
+      </augment>
+    </uses>
+    <uses name="bpacket:packet-payload"/>
+  </notification>
+</module>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-remote"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sal-remote="urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote"/>
+  <prefix value="sal-remote"/>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Martin Bobak &lt;mbobak@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the definition of methods related to
+sal remote model.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2014-01-14">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <typedef name="q-name">
+    <type name="string"/>
+    <reference>
+      <text>http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#QName</text>
+    </reference>
+  </typedef>
+  <rpc name="create-data-change-event-subscription">
+    <input>
+      <leaf name="path">
+        <type name="instance-identifier"/>
+        <description>
+          <text>Subtree path. </text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="stream-name">
+        <type name="string"/>
+        <description>
+          <text>Notification stream name.</text>
+        </description>
+      </leaf>
+    </output>
+  </rpc>
+  <notification name="data-changed-notification">
+    <description>
+      <text>Data change notification.</text>
+    </description>
+    <list name="data-change-event">
+      <key value="path"/>
+      <leaf name="path">
+        <type name="instance-identifier"/>
+      </leaf>
+      <leaf name="store">
+        <type name="enumeration">
+          <enum name="config"/>
+          <enum name="operation"/>
+        </type>
+      </leaf>
+      <leaf name="operation">
+        <type name="enumeration">
+          <enum name="created"/>
+          <enum name="updated"/>
+          <enum name="deleted"/>
+        </type>
+      </leaf>
+      <anyxml name="data">
+        <description>
+          <text>DataObject </text>
+        </description>
+      </anyxml>
+    </list>
+  </notification>
+  <rpc name="create-notification-stream">
+    <input>
+      <leaf-list name="notifications">
+        <type name="q-name"/>
+        <description>
+          <text>Notification QNames</text>
+        </description>
+      </leaf-list>
+    </input>
+    <output>
+      <leaf name="notification-stream-identifier">
+        <type name="string"/>
+        <description>
+          <text>Unique notification stream identifier, in which notifications will be propagated</text>
+        </description>
+      </leaf>
+    </output>
+  </rpc>
+  <rpc name="begin-transaction">
+    <output>
+      <anyxml name="data-modification-transaction">
+        <description>
+          <text>DataModificationTransaction xml</text>
+        </description>
+      </anyxml>
+    </output>
+  </rpc>
+</module>

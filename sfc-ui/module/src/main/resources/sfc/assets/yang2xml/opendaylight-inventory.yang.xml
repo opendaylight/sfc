@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-inventory"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:opendaylight:inventory"/>
+  <prefix value="inv"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Initial revision of Inventory model</text>
+    </description>
+  </revision>
+  <typedef name="support-type">
+    <type name="enumeration">
+      <enum name="native"/>
+      <enum name="emulated"/>
+      <enum name="not-supported"/>
+    </type>
+  </typedef>
+  <typedef name="node-id">
+    <type name="inet:uri"/>
+  </typedef>
+  <typedef name="node-connector-id">
+    <type name="inet:uri"/>
+  </typedef>
+  <typedef name="node-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <typedef name="node-connector-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <identity name="node-context">
+    <description>
+      <text>Identity used to mark node context</text>
+    </description>
+  </identity>
+  <identity name="node-connector-context">
+    <description>
+      <text>Identity used to mark node connector context</text>
+    </description>
+  </identity>
+  <identity name="node-type">
+    <description>
+      <text>Base identity for node types</text>
+    </description>
+  </identity>
+  <identity name="node-connector-type">
+    <description>
+      <text>Base identity for node connectors type</text>
+    </description>
+  </identity>
+  <grouping name="node">
+    <leaf name="id">
+      <type name="node-id"/>
+    </leaf>
+    <list name="node-connector">
+      <key value="id"/>
+      <ext:context-instance context-type="node-connector-context"/>
+      <uses name="node-connector"/>
+    </list>
+  </grouping>
+  <grouping name="node-connector">
+    <leaf name="id">
+      <type name="node-connector-id"/>
+    </leaf>
+  </grouping>
+  <grouping name="node-context-ref">
+    <description>
+      <text>Helper grouping which contains a reference to node context.</text>
+    </description>
+    <leaf name="node">
+      <ext:context-reference context-type="node-context"/>
+      <type name="node-ref"/>
+    </leaf>
+  </grouping>
+  <container name="nodes">
+    <list name="node">
+      <key value="id"/>
+      <ext:context-instance context-type="node-context"/>
+      <uses name="node"/>
+    </list>
+  </container>
+  <notification name="node-updated">
+    <leaf name="node-ref">
+      <ext:context-reference context-type="node-context"/>
+      <type name="node-ref"/>
+    </leaf>
+    <uses name="node"/>
+  </notification>
+  <notification name="node-connector-updated">
+    <leaf name="node-connector-ref">
+      <ext:context-reference context-type="node-connector-context"/>
+      <type name="node-connector-ref"/>
+    </leaf>
+    <uses name="node-connector"/>
+  </notification>
+  <notification name="node-removed">
+    <leaf name="node-ref">
+      <ext:context-reference context-type="node-context"/>
+      <type name="node-ref"/>
+    </leaf>
+  </notification>
+  <notification name="node-connector-removed">
+    <leaf name="node-connector-ref">
+      <ext:context-reference context-type="node-connector-context"/>
+      <type name="node-connector-ref"/>
+    </leaf>
+  </notification>
+</module>

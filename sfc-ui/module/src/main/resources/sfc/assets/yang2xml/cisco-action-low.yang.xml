@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-action-low"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cisco-action="urn:opendaylight:openflowjava:cof:action"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action"
+        xmlns:oft="urn:opendaylight:openflow:common:types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowjava:cof:action"/>
+  <prefix value="cisco-action"/>
+  <import module="openflow-action">
+    <prefix value="ofaction"/>
+  </import>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <description>
+    <text>Cisco openflow extensions of action.</text>
+  </description>
+  <revision date="2014-10-08">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="cof-at-output-nh">
+    <base name="ofaction:experimenter-action-sub-type"/>
+  </identity>
+  <identity name="cof-at-vrf">
+    <base name="ofaction:experimenter-action-sub-type"/>
+  </identity>
+  <grouping name="ofj-cof-action-output-nh-grouping">
+    <container name="action-output-nh">
+      <leaf name="address-type">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="address-extra-type">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="address">
+        <type name="binary"/>
+      </leaf>
+      <leaf name="address-extra">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-cof-action-vrf-grouping">
+    <container name="action-vrf">
+      <leaf name="vpn-type">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="vrf-extra">
+        <type name="binary"/>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/ofaction:actions-container/ofaction:action">
+    <ext:augment-identifier identifier="ofj-aug-cof-action"/>
+    <uses name="ofj-cof-action-output-nh-grouping"/>
+    <uses name="ofj-cof-action-vrf-grouping"/>
+  </augment>
+</module>

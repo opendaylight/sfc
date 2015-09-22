@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="identity-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:idemod="identity:module">
+  <namespace uri="identity:module"/>
+  <prefix value="idemod"/>
+  <revision date="2013-12-2"/>
+  <identity name="iden"/>
+</module>

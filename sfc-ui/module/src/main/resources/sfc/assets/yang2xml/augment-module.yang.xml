@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:amodule="augment:module"
+        xmlns:imodule="instance:identifier:module">
+  <namespace uri="augment:module"/>
+  <prefix value="amodule"/>
+  <import module="instance-identifier-module">
+    <prefix value="imodule"/>
+    <revision-date date="2014-01-17"/>
+  </import>
+  <revision date="2014-01-17"/>
+  <augment target-node="/imodule:cont/imodule:cont1">
+    <list name="lst11">
+      <key value="keyvalue111 keyvalue112"/>
+      <leaf name="keyvalue111">
+        <type name="string"/>
+      </leaf>
+      <leaf name="keyvalue112">
+        <type name="string"/>
+      </leaf>
+    </list>
+  </augment>
+</module>

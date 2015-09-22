@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="arp-packet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:arp="urn:opendaylight:packet:arp"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ethernet="urn:opendaylight:packet:ethernet">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:arp"/>
+  <prefix value="arp"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="base-packet">
+    <prefix value="bpacket"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <import module="ethernet-packet">
+    <prefix value="ethernet"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <revision date="2014-05-28">
+    <description>
+      <text>ARP packet module draft.</text>
+    </description>
+  </revision>
+  <typedef name="known-hardware-type">
+    <type name="enumeration">
+      <enum name="reserved">
+        <value value="0"/>
+      </enum>
+      <enum name="ethernet">
+        <value value="1"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="known-operation">
+    <type name="enumeration">
+      <enum name="reserved">
+        <value value="0"/>
+      </enum>
+      <enum name="request">
+        <value value="1"/>
+      </enum>
+      <enum name="reply">
+        <value value="2"/>
+      </enum>
+      <enum name="request reverse">
+        <value value="3"/>
+      </enum>
+      <enum name="reply reverse">
+        <value value="4"/>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="arp-packet-fields">
+    <leaf name="hardware-type">
+      <type name="known-hardware-type"/>
+      <description>
+        <text>Network protocol type</text>
+      </description>
+    </leaf>
+    <leaf name="protocol-type">
+      <type name="ethernet:known-ether-type"/>
+      <description>
+        <text>Higher layer protocol for which the ARP request is intended.  This corresponds to EtherType.</text>
+      </description>
+    </leaf>
+    <leaf name="hardware-length">
+      <type name="uint8"/>
+      <description>
+        <text>Length (in octets) of a hardware address.  Ethernet address size is 6.</text>
+      </description>
+    </leaf>
+    <leaf name="protocol-length">
+      <type name="uint8"/>
+      <description>
+        <text>Length (in octets) of addresses used in the higher layer protocol.  IPv4 address size is 4.</text>
+      </description>
+    </leaf>
+    <leaf name="operation">
+      <type name="known-operation"/>
+      <description>
+        <text>Specifies the operation that the sender is performing: 1 for request, 2 for reply.</text>
+      </description>
+    </leaf>
+    <leaf name="source-hardware-address">
+      <type name="string"/>
+      <description>
+        <text>Media address of the sender.</text>
+      </description>
+    </leaf>
+    <leaf name="source-protocol-address">
+      <type name="string"/>
+      <description>
+        <text>Internet address of the sender.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-hardware-address">
+      <type name="string"/>
+      <description>
+        <text>Media address of the destination/target.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-protocol-address">
+      <type name="string"/>
+      <description>
+        <text>Internet address of the destination/target.</text>
+      </description>
+    </leaf>
+    <uses name="bpacket:packet-fields"/>
+  </grouping>
+  <notification name="arp-packet-received">
+    <uses name="bpacket:packet-chain-grp">
+      <augment target-node="bpacket:packet-chain/bpacket:packet">
+        <case name="arp-packet">
+          <uses name="arp-packet-fields"/>
+        </case>
+      </augment>
+    </uses>
+    <uses name="bpacket:packet-payload"/>
+  </notification>
+</module>

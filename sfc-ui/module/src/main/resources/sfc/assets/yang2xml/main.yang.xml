@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="main"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ma="ns:main">
+  <namespace uri="ns:main"/>
+  <prefix value="ma"/>
+  <revision date="2014-01-21"/>
+  <container name="cont"/>
+</module>

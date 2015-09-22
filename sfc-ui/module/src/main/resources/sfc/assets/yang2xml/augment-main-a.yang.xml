@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-main-a"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:aumaa="ns:augment:main:a"
+        xmlns:mn="ns:main">
+  <namespace uri="ns:augment:main:a"/>
+  <prefix value="aumaa"/>
+  <import module="main">
+    <prefix value="mn"/>
+    <revision-date date="2014-01-21"/>
+  </import>
+  <revision date="2014-01-21"/>
+  <augment target-node="/mn:cont">
+    <container name="cont1">
+      <leaf name="lf11">
+        <type name="string"/>
+      </leaf>
+    </container>
+  </augment>
+</module>

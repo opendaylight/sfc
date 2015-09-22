@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="flow-capable-transaction"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:type="urn:opendaylight:flow:transaction"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <namespace uri="urn:opendaylight:flow:transaction"/>
+  <prefix value="type"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <revision date="2013-11-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <typedef name="transaction-id">
+    <type name="uint64"/>
+  </typedef>
+  <grouping name="transaction-metadata">
+    <leaf name="transaction-uri">
+      <type name="inet:uri"/>
+    </leaf>
+  </grouping>
+  <grouping name="transaction-aware">
+    <leaf name="transaction-id">
+      <type name="transaction-id"/>
+    </leaf>
+  </grouping>
+  <grouping name="multipart-transaction-aware">
+    <uses name="transaction-aware"/>
+    <leaf name="moreReplies">
+      <type name="boolean"/>
+      <default value="false"/>
+    </leaf>
+  </grouping>
+  <rpc name="get-next-transaction-id">
+    <input>
+      <leaf name="node">
+        <ext:context-reference context-type="inv:node-context"/>
+        <type name="inv:node-ref"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="finish-transaction">
+    <input>
+      <leaf name="node">
+        <ext:context-reference context-type="inv:node-context"/>
+        <type name="inv:node-ref"/>
+      </leaf>
+      <leaf name="transaction-id">
+        <type name="transaction-id"/>
+      </leaf>
+    </input>
+  </rpc>
+</module>

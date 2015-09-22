@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="flow-errors"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:error="urn:opendaylight:flow:errors">
+  <namespace uri="urn:opendaylight:flow:errors"/>
+  <prefix value="error"/>
+  <revision date="2013-11-16">
+    <description>
+      <text>Initial revision of error</text>
+    </description>
+  </revision>
+  <typedef name="error-type">
+    <type name="enumeration">
+      <enum name="hello-failed"/>
+      <enum name="bad-request"/>
+      <enum name="bad-action"/>
+      <enum name="bad-instruction"/>
+      <enum name="bad-match"/>
+      <enum name="flow-mod-failed"/>
+      <enum name="group-mod-failed"/>
+      <enum name="port-mod-failed"/>
+      <enum name="table-mod-failed"/>
+      <enum name="queue-op-failed"/>
+      <enum name="switch-config-failed"/>
+      <enum name="role-request-failed"/>
+      <enum name="meter-mod-failed"/>
+      <enum name="table-features-failed"/>
+      <enum name="experimenter">
+        <value value="65535"/>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="error-message">
+    <leaf name="type">
+      <type name="error-type"/>
+    </leaf>
+    <leaf name="code">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="data">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+  <grouping name="experimenter-error-message">
+    <leaf name="type">
+      <type name="error-type"/>
+    </leaf>
+    <leaf name="exp-type">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="experimenter-id">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="data">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+</module>

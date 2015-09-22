@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="netty-event-executor"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:netty-ee="urn:opendaylight:params:xml:ns:yang:controller:netty:eventexecutor"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:netty="urn:opendaylight:params:xml:ns:yang:controller:netty">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:netty:eventexecutor"/>
+  <prefix value="netty-ee"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="netty">
+    <prefix value="netty"/>
+    <revision-date date="2013-11-19"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Milos Fabian &lt;milfabia@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the base YANG definitions for
+netty event executor implementation.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-11-12">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="netty-global-event-executor">
+    <base name="config:module-type"/>
+    <config:provided-service name="netty:netty-event-executor"/>
+    <config:java-name-prefix java-prefix="GlobalEventExecutor"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="netty-global-event-executor">
+      <when condition="/config:modules/config:module/config:type = 'netty-global-event-executor'"/>
+    </case>
+  </augment>
+  <identity name="netty-immediate-event-executor">
+    <base name="config:module-type"/>
+    <config:provided-service name="netty:netty-event-executor"/>
+    <config:java-name-prefix java-prefix="ImmediateEventExecutor"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="netty-immediate-event-executor">
+      <when condition="/config:modules/config:module/config:type = 'netty-immediate-event-executor'"/>
+    </case>
+  </augment>
+</module>

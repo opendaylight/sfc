@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="yang-ext"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:yang:extension:yang-ext"/>
+  <prefix value="ext"/>
+  <contact>
+    <text>Anton Tkacik &lt;ttkacik@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-07-09">
+    <description>
+      <text></text>
+    </description>
+  </revision>
+  <extension name="augment-identifier">
+    <description>
+      <text>YANG language extension which assigns an identifier to 
+augmentation. Augment identifier is used to identify
+specific augment statement by name. 
+
+The identifier syntax is defined formally defined by the rule
+'identifier' in Section 12 of RFC 6020.
+
+All augment identifiers defined in a namespace MUST be unique.
+The namespace of augment identifiers is shared by module and
+its submodules.</text>
+    </description>
+    <argument name="identifier"/>
+  </extension>
+  <grouping name="rpc-context-ref">
+    <description>
+      <text>A reference to RPC context.</text>
+    </description>
+    <leaf name="context-instance">
+      <type name="instance-identifier"/>
+      <description>
+        <text>Pointer to the context. </text>
+      </description>
+    </leaf>
+  </grouping>
+  <extension name="rpc-context-instance">
+    <description>
+      <text>YANG language extension which defines enclosing (parent) 
+schema node as referencable context for RPCs.
+
+The argument is identity which is used to identify RPC context
+type.</text>
+    </description>
+    <argument name="context-type"/>
+  </extension>
+  <extension name="context-reference">
+    <argument name="context-type"/>
+  </extension>
+  <extension name="context-instance">
+    <argument name="context-type"/>
+  </extension>
+  <extension name="instance-target">
+    <argument name="path"/>
+  </extension>
+</module>

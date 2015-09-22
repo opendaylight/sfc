@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="instance-identifier-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:inidmod="instance:identifier:module">
+  <namespace uri="instance:identifier:module"/>
+  <prefix value="inidmod"/>
+  <revision date="2013-12-3"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="instance-identifier"/>
+    </leaf>
+  </container>
+</module>

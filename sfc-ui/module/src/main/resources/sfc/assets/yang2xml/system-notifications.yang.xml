@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="system-notifications"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ofs="urn:opendaylight:openflow:system">
+  <namespace uri="urn:opendaylight:openflow:system"/>
+  <prefix value="ofs"/>
+  <revision date="2013-09-27">
+    <description>
+      <text>Model of system messages used in OpenFlow Protocol Library</text>
+    </description>
+  </revision>
+  <notification name="disconnect-event">
+    <description>
+      <text>Disconnect notification</text>
+    </description>
+    <leaf name="info">
+      <type name="string"/>
+    </leaf>
+  </notification>
+  <notification name="switch-idle-event">
+    <description>
+      <text>Switch-idle notification</text>
+    </description>
+    <leaf name="info">
+      <type name="string"/>
+    </leaf>
+  </notification>
+</module>

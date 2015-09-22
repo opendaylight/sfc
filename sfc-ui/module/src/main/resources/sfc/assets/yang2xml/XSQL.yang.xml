@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="XSQL"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:XSQL="http://netconfcentral.org/ns/XSQL"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:sal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"
+        xmlns:common="urn:opendaylight:params:xml:ns:yang:controller:md:sal:common">
+  <yang-version value="1"/>
+  <namespace uri="http://netconfcentral.org/ns/XSQL"/>
+  <prefix value="XSQL"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="sal"/>
+  </import>
+  <import module="opendaylight-md-sal-common">
+    <prefix value="common"/>
+  </import>
+  <organization>
+    <text>Netconf Central</text>
+  </organization>
+  <contact>
+    <text>Sharon Aicler &lt;saichler@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>YANG version of the XSQL status</text>
+  </description>
+  <revision date="2014-06-26">
+    <description>
+      <text>XSQL module initial version</text>
+    </description>
+  </revision>
+  <container name="XSQL">
+    <presence value="Indicates the XSQL service is available"/>
+    <description>
+      <text>Container to indicate the XSQL availability</text>
+    </description>
+    <leaf name="port">
+      <type name="string"/>
+      <config value="false"/>
+      <mandatory value="true"/>
+      <description>
+        <text>The port the XSQL binds on</text>
+      </description>
+    </leaf>
+  </container>
+  <identity name="XSQL">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="XSQL"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="XSQL">
+      <when condition="/config:modules/config:module/config:type = 'XSQL'"/>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="mdsal:binding-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="async-data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:dom-async-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="schema-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="sal:schema-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

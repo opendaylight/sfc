@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-l2-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ethertype="urn:opendaylight:l2:types">
+  <namespace uri="urn:opendaylight:l2:types"/>
+  <prefix value="ethertype"/>
+  <description>
+    <text>Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-08-27">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <typedef name="vlan-pcp">
+    <description>
+      <text>IEEE 802.1p priority. It indicates the frame priority level. 
+Values are from 0 (best effort) to 7 (highest); 
+1 represents the lowest priority.</text>
+    </description>
+    <type name="uint8">
+      <range value="0..7"/>
+    </type>
+  </typedef>
+  <typedef name="vlan-dei">
+    <description>
+      <text>Drop Eligible Indicator (DEI): a 1-bit field. (formerly CFI). 
+May be used separately or in conjunction with PCP to indicate frames 
+eligible to be dropped in the presence of congestion.</text>
+    </description>
+    <type name="boolean"/>
+  </typedef>
+  <typedef name="vlan-id">
+    <type name="uint16">
+      <range value="0..4095"/>
+    </type>
+  </typedef>
+  <typedef name="ether-type">
+    <type name="uint32"/>
+  </typedef>
+</module>

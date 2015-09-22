@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="address-tracker"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:address-tracker="urn:opendaylight:address-tracker"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:ethernet="urn:opendaylight:packet:ethernet">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:address-tracker"/>
+  <prefix value="address-tracker"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="ethernet-packet">
+    <prefix value="ethernet"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <description>
+    <text>Address Tracker Data Model</text>
+  </description>
+  <revision date="2014-06-17">
+    <description>
+      <text>Address Tracker module draft.</text>
+    </description>
+  </revision>
+  <grouping name="address-node-connector">
+    <list name="addresses">
+      <key value="id"/>
+      <leaf name="id">
+        <description>
+          <text>A 64-bit key for this observation. This is opaque and should not be interpreted.</text>
+        </description>
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="mac">
+        <type name="yang:mac-address"/>
+        <description>
+          <text>MAC address</text>
+        </description>
+      </leaf>
+      <leaf name="ip">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>IPv4 or IPv6 address</text>
+        </description>
+      </leaf>
+      <leaf name="vlan">
+        <type name="ethernet:vlan-id"/>
+        <description>
+          <text>VLAN id</text>
+        </description>
+      </leaf>
+      <leaf name="first-seen">
+        <type name="int64"/>
+        <description>
+          <text>Timestamp (number of ms since January 1, 1970, 00:00:00 GMT) of observing this address for the first time</text>
+        </description>
+      </leaf>
+      <leaf name="last-seen">
+        <type name="int64"/>
+        <description>
+          <text>The most recent timestamp (tnumber of ms since January 1, 1970, 00:00:00 GMT) of observing this address</text>
+        </description>
+      </leaf>
+    </list>
+  </grouping>
+  <augment target-node="/inv:nodes/inv:node/inv:node-connector">
+    <ext:augment-identifier identifier="address-capable-node-connector"/>
+    <uses name="address-node-connector"/>
+  </augment>
+</module>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-instruction"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ofinstruction="urn:opendaylight:openflow:common:instruction"
+        xmlns:oft="urn:opendaylight:openflow:common:types">
+  <namespace uri="urn:opendaylight:openflow:common:instruction"/>
+  <prefix value="ofinstruction"/>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <revision date="2013-07-31">
+    <description>
+      <text>OpenFlow 1.3 - instruction model</text>
+    </description>
+  </revision>
+  <identity name="goto_table">
+    <description>
+      <text> Setup the next table in the lookup pipeline</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="write_metadata">
+    <description>
+      <text> Setup the metadata field for use later in     pipeline</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="write_actions">
+    <description>
+      <text> Write the action(s) onto the datapath action set</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="apply_actions">
+    <description>
+      <text> Applies the action(s) immediately</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="clear_actions">
+    <description>
+      <text> Clears all actions from the datapath action set</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="meter">
+    <description>
+      <text> Apply meter (rate limiter)</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <identity name="experimenter">
+    <description>
+      <text>Experimenter instruction</text>
+    </description>
+    <base name="oft:instruction-base"/>
+  </identity>
+  <container name="instruction-container">
+    <uses name="instructions-grouping"/>
+  </container>
+  <grouping name="instructions-grouping">
+    <list name="instruction">
+      <config value="false"/>
+      <leaf name="type">
+        <type name="identityref">
+          <base name="oft:instruction-base"/>
+        </type>
+      </leaf>
+    </list>
+  </grouping>
+</module>

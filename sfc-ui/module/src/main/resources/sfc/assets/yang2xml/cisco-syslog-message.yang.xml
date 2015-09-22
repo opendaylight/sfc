@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-syslog-message"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:csyslog="urn:cisco:params:xml:ns:yang:cisco-syslog-message"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:syslog="urn:cisco:params:xml:ns:yang:syslog-message">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:cisco-syslog-message"/>
+  <prefix value="csyslog"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="syslog-message">
+    <prefix value="syslog"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module contains the definitions of a syslog
+message that is mapped into a NETCONF Notification
+(IOS-XR specifics).
+
+Copyright (c) 2014 by Cisco Systems, Inc.
+All rights reserved.
+</text>
+  </description>
+  <revision date="2014-02-19">
+    <description>
+      <text>first revision</text>
+    </description>
+    <reference>
+      <text>tbd</text>
+    </reference>
+  </revision>
+  <augment target-node="/syslog:syslog-message">
+    <leaf name="msg">
+      <type name="uint32"/>
+      <description>
+        <text>Message ID</text>
+      </description>
+    </leaf>
+    <leaf name="hostnameprefix">
+      <type name="string"/>
+      <description>
+        <text>Optional host name prefix</text>
+      </description>
+    </leaf>
+    <leaf name="nodeid">
+      <type name="string"/>
+      <description>
+        <text>RP/CPU sending the message</text>
+      </description>
+    </leaf>
+    <leaf name="timestamp">
+      <type name="yang:date-and-time"/>
+      <description>
+        <text>Timestamp from sender</text>
+      </description>
+    </leaf>
+    <leaf name="process-name">
+      <type name="string"/>
+      <description>
+        <text>Process sending the message</text>
+      </description>
+    </leaf>
+    <leaf name="pid">
+      <type name="uint32"/>
+      <description>
+        <text>Process/Job ID</text>
+      </description>
+    </leaf>
+    <leaf name="category">
+      <type name="string"/>
+      <description>
+        <text>message category</text>
+      </description>
+    </leaf>
+    <leaf name="group">
+      <type name="string"/>
+      <description>
+        <text>group name</text>
+      </description>
+    </leaf>
+    <leaf name="code">
+      <type name="string"/>
+      <description>
+        <text>message code</text>
+      </description>
+    </leaf>
+    <leaf name="message-text">
+      <type name="string"/>
+      <description>
+        <text>Description of the message</text>
+      </description>
+    </leaf>
+    <description>
+      <text>Syslog message augmented with IOS XR fields</text>
+    </description>
+  </augment>
+</module>

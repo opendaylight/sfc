@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-lldp-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:lldp="urn:cisco:params:xml:ns:yang:cisco-lldp-types"
+        xmlns:iana="urn:ietf:params:xml:ns:yang:iana-afn-safi">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:cisco-lldp-types"/>
+  <prefix value="lldp"/>
+  <import module="iana-afn-safi">
+    <prefix value="iana"/>
+  </import>
+  <organization>
+    <text>Cisco</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text> This module contains the definition of an LLDP message </text>
+  </description>
+  <revision date="2013-03-28">
+    <description>
+      <text>second revision</text>
+    </description>
+    <reference>
+      <text>http://wwwin-eng.cisco.com/Eng/SPCTO/I2SS/I2SS-Overview.pptx</text>
+    </reference>
+  </revision>
+  <typedef name="chassis-id-subtype">
+    <type name="enumeration">
+      <enum name="Chassis component">
+        <value value="1"/>
+        <description>
+          <text>EntPhysicalAlias (RFC 4133)</text>
+        </description>
+      </enum>
+      <enum name="Interface alias">
+        <value value="2"/>
+        <description>
+          <text>ifAlias (IETF RFC 2863)</text>
+        </description>
+      </enum>
+      <enum name="Port component">
+        <value value="3"/>
+        <description>
+          <text>EntPhysicalAlias (RFC 4133)</text>
+        </description>
+      </enum>
+      <enum name="MAC address">
+        <value value="4"/>
+        <description>
+          <text>MAC address (IEEE Std 802)</text>
+        </description>
+      </enum>
+      <enum name="Network address">
+        <value value="5"/>
+        <description>
+          <text>networkAddress - AFI+address</text>
+        </description>
+      </enum>
+      <enum name="Interface name">
+        <value value="6"/>
+        <description>
+          <text>ifName (IETF RFC 2863)</text>
+        </description>
+      </enum>
+      <enum name="Locally assigned">
+        <value value="7"/>
+        <description>
+          <text>locally assigned alpha-numeric</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Chassis-ID Subtype - information source</text>
+    </description>
+  </typedef>
+  <typedef name="port-id-subtype">
+    <type name="enumeration">
+      <enum name="Interface alias">
+        <value value="1"/>
+        <description>
+          <text>ifAlias (IETF RFC 2863)</text>
+        </description>
+      </enum>
+      <enum name="Port component">
+        <value value="2"/>
+        <description>
+          <text>EntPhysicalAlias (RFC 4133)</text>
+        </description>
+      </enum>
+      <enum name="MAC address">
+        <value value="3"/>
+        <description>
+          <text>MAC address (IEEE Std 802)</text>
+        </description>
+      </enum>
+      <enum name="Network address">
+        <value value="4"/>
+        <description>
+          <text>networkAddress - AFI+address</text>
+        </description>
+      </enum>
+      <enum name="Interface name">
+        <value value="5"/>
+        <description>
+          <text>ifName (IETF RFC 2863)</text>
+        </description>
+      </enum>
+      <enum name="Agent circuit ID">
+        <value value="6"/>
+        <description>
+          <text>agent circuit ID (RFC 3046)</text>
+        </description>
+      </enum>
+      <enum name="Locally assigned">
+        <value value="7"/>
+        <description>
+          <text>locally assigned alpha-numeric</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Port-ID Subtype - information source</text>
+    </description>
+  </typedef>
+  <typedef name="capability-bits">
+    <type name="bits">
+      <bit name="Other">
+        <position value="0"/>
+        <description>
+          <text>Other</text>
+        </description>
+      </bit>
+      <bit name="Repeater">
+        <position value="1"/>
+        <description>
+          <text>IETF RFC 2108</text>
+        </description>
+      </bit>
+      <bit name="MAC-Bridge">
+        <position value="2"/>
+        <description>
+          <text>IEEE Std 802.1D</text>
+        </description>
+      </bit>
+      <bit name="WLAN-Access-Point">
+        <position value="3"/>
+        <description>
+          <text>IEEE Std 802.11 MIB</text>
+        </description>
+      </bit>
+      <bit name="Router">
+        <position value="4"/>
+        <description>
+          <text>IETF RFC 1812</text>
+        </description>
+      </bit>
+      <bit name="Telephone">
+        <position value="5"/>
+        <description>
+          <text>IETF RFC 4293</text>
+        </description>
+      </bit>
+      <bit name="DOCSIS-cable-device">
+        <position value="6"/>
+        <description>
+          <text>IETF RFC 4639/4546</text>
+        </description>
+      </bit>
+      <bit name="Station-only">
+        <position value="7"/>
+        <description>
+          <text>IETF RFC 4293 - mutex with other bits</text>
+        </description>
+      </bit>
+      <bit name="C-VLAN-Component-VLAN-Bridge">
+        <position value="8"/>
+        <description>
+          <text>IEEE Std 802.1Q</text>
+        </description>
+      </bit>
+      <bit name="S-VLAN-Component-VLAN-Bridge">
+        <position value="9"/>
+        <description>
+          <text>IEEE Std 802.1Q</text>
+        </description>
+      </bit>
+      <bit name="Two-port-MAC-Relay">
+        <position value="10"/>
+        <description>
+          <text>IEEE Std 802.1Q</text>
+        </description>
+      </bit>
+    </type>
+    <description>
+      <text>System capability bits for LLDP</text>
+    </description>
+  </typedef>
+  <typedef name="interface-numbering-subtype">
+    <type name="enumeration">
+      <enum name="unknown">
+        <description>
+          <text>Unknown - interface number must be zero</text>
+        </description>
+      </enum>
+      <enum name="ifIndex">
+        <description>
+          <text>ifIndex</text>
+        </description>
+      </enum>
+      <enum name="system-port-number">
+        <description>
+          <text>system port number</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>interface numbering subtype</text>
+    </description>
+  </typedef>
+  <grouping name="lldp-params">
+    <container name="chassis-id">
+      <leaf name="subtype">
+        <type name="chassis-id-subtype"/>
+        <description>
+          <text>basis for Chassis ID</text>
+        </description>
+      </leaf>
+      <leaf name="identifier">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <description>
+          <text>chassis ID string</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Chassis ID</text>
+      </description>
+    </container>
+    <container name="port-id">
+      <leaf name="subtype">
+        <type name="port-id-subtype"/>
+        <description>
+          <text>basis for Port ID</text>
+        </description>
+      </leaf>
+      <leaf name="identifier">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <description>
+          <text>port ID string</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Port ID</text>
+      </description>
+    </container>
+    <leaf name="port-descripton">
+      <type name="string">
+        <length value="1..255"/>
+      </type>
+      <description>
+        <text>alpha-numeric port description (RFC2863 ifDescr)</text>
+      </description>
+    </leaf>
+    <leaf name="system-name">
+      <type name="string">
+        <length value="1..255"/>
+      </type>
+      <description>
+        <text>alpha-numeric system name/FQDN (RFC3418 sysName)</text>
+      </description>
+    </leaf>
+    <leaf name="system-description">
+      <type name="string">
+        <length value="1..255"/>
+      </type>
+      <description>
+        <text>alpha-numeric description (RFC3418 sysDescr)</text>
+      </description>
+    </leaf>
+    <container name="system-capabilities">
+      <leaf name="chassis-id-subtype">
+        <type name="chassis-id-subtype"/>
+        <description>
+          <text>chassis ID subtype - same as in chassis ID?</text>
+        </description>
+      </leaf>
+      <leaf name="system-capabilities">
+        <type name="capability-bits"/>
+        <description>
+          <text>system capabiities bitmap</text>
+        </description>
+      </leaf>
+      <leaf name="enabled-capabilities">
+        <type name="capability-bits"/>
+        <description>
+          <text>enabled capabilities bitmap</text>
+        </description>
+      </leaf>
+      <description>
+        <text>system capabilities from LLDP</text>
+      </description>
+    </container>
+    <container name="management-address">
+      <leaf name="management-address-subtype">
+        <type name="iana:address-family"/>
+        <description>
+          <text>management address subtype from RFC 3232</text>
+        </description>
+      </leaf>
+      <leaf name="management-address">
+        <type name="binary">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>management address</text>
+        </description>
+      </leaf>
+      <leaf name="interface-numbering-subtype">
+        <type name="interface-numbering-subtype"/>
+        <description>
+          <text>interface address subtype from 802.1AB</text>
+        </description>
+      </leaf>
+      <leaf name="interface-number">
+        <type name="binary">
+          <length value="4"/>
+        </type>
+        <description>
+          <text>interface number</text>
+        </description>
+      </leaf>
+      <leaf name="object-identifier">
+        <type name="binary">
+          <length value="0..128"/>
+        </type>
+        <description>
+          <text>ASN.1 encoding of object identifier</text>
+        </description>
+      </leaf>
+      <description>
+        <text>management address</text>
+      </description>
+    </container>
+    <description>
+      <text>CE parameters from LLDP</text>
+    </description>
+  </grouping>
+</module>

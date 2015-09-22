@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="instance-identifier-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:iimodule="instance:identifier:module">
+  <namespace uri="instance:identifier:module"/>
+  <prefix value="iimodule"/>
+  <revision date="2014-01-17"/>
+  <container name="cont">
+    <container name="cont1"/>
+  </container>
+</module>

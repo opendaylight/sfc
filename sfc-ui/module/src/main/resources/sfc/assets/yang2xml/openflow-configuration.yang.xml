@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-configuration"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:of-config="urn:opendaylight:openflow:config">
+  <namespace uri="urn:opendaylight:openflow:config"/>
+  <prefix value="of-config"/>
+  <revision date="2014-06-30">
+    <description>
+      <text>Library configuration classes</text>
+    </description>
+  </revision>
+  <typedef name="path-type">
+    <type name="enumeration">
+      <enum name="CLASSPATH">
+        <value value="0"/>
+        <description>
+          <text>Keystore file is located on classpath.</text>
+        </description>
+      </enum>
+      <enum name="PATH">
+        <value value="1"/>
+        <description>
+          <text>Keystore file is located on absolute or relative path.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="keystore-type">
+    <type name="enumeration">
+      <enum name="JKS">
+        <value value="0"/>
+        <description>
+          <text>Keystore type - JKS.</text>
+        </description>
+      </enum>
+      <enum name="PKCS12">
+        <value value="1"/>
+        <description>
+          <text>Keystore type - PKCS12.</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+</module>

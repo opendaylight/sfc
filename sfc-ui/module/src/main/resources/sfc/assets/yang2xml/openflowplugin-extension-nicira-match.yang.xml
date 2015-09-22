@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowplugin-extension-nicira-match"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowplugin-nicira-match="urn:opendaylight:openflowplugin:extension:nicira:match"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:fni="urn:opendaylight:flow:inventory"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:sal-flow="urn:opendaylight:flow:service"
+        xmlns:sal-packet="urn:opendaylight:packet:service"
+        xmlns:ext-gen="urn:opendaylight:openflowplugin:extension:general"
+        xmlns:odl-flow-stats="urn:opendaylight:flow:statistics"
+        xmlns:nicira-match="urn:opendaylight:openflowjava:nx:match"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowplugin:extension:nicira:match"/>
+  <prefix value="openflowplugin-nicira-match"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="fni"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-flow">
+    <prefix value="sal-flow"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="sal-packet"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="openflowplugin-extension-general">
+    <prefix value="ext-gen"/>
+    <revision-date date="2014-07-14"/>
+  </import>
+  <import module="opendaylight-flow-statistics">
+    <prefix value="odl-flow-stats"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="nicira-match">
+    <prefix value="nicira-match"/>
+    <revision-date date="2014-04-21"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <description>
+    <text>Nicira openflow match extensions.</text>
+  </description>
+  <revision date="2014-07-14">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="nxm-nx-reg0-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg1-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg2-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg3-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg4-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg5-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg6-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-reg7-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-tun-id-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-arp-sha-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-arp-tha-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-arp-op-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-arp-spa-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-arp-tpa-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-tun-ipv4-dst-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-nx-tun-ipv4-src-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-eth-src-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-eth-dst-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nxm-of-eth-type-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <grouping name="ipv4-address-grouping">
+    <leaf name="ipv4-address">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+  </grouping>
+  <grouping name="mac-address-grouping">
+    <leaf name="mac-address">
+      <type name="yang:mac-address"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-reg-grouping">
+    <container name="nxm-nx-reg">
+      <leaf name="reg">
+        <type name="identityref">
+          <base name="nicira-match:nxm-nx-reg"/>
+        </type>
+      </leaf>
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="nxm-nx-tun-id-grouping">
+    <container name="nxm-nx-tun-id">
+      <leaf name="value">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="nxm-nx-arp-sha-grouping">
+    <container name="nxm-nx-arp-sha">
+      <uses name="mac-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-nx-arp-tha-grouping">
+    <container name="nxm-nx-arp-tha">
+      <uses name="mac-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-arp-op-grouping">
+    <container name="nxm-of-arp-op">
+      <description>
+        <text>Prereqs: NXM_OF_ETH_TYPE must match either 0x0806 or 0x8035.</text>
+      </description>
+      <leaf name="value">
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-arp-spa-grouping">
+    <container name="nxm-of-arp-spa">
+      <description>
+        <text>Prereqs: NXM_OF_ETH_TYPE must match either 0x0806 or 0x8035.</text>
+      </description>
+      <uses name="ipv4-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-arp-tpa-grouping">
+    <container name="nxm-of-arp-tpa">
+      <description>
+        <text>Prereqs: NXM_OF_ETH_TYPE must match either 0x0806 or 0x8035.</text>
+      </description>
+      <uses name="ipv4-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-nx-tun-ipv4-dst-grouping">
+    <container name="nxm-nx-tun-ipv4-dst">
+      <uses name="ipv4-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-nx-tun-ipv4-src-grouping">
+    <container name="nxm-nx-tun-ipv4-src">
+      <uses name="ipv4-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-eth-src-grouping">
+    <container name="nxm-of-eth-src">
+      <uses name="mac-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-eth-dst-grouping">
+    <container name="nxm-of-eth-dst">
+      <uses name="mac-address-grouping"/>
+    </container>
+  </grouping>
+  <grouping name="nxm-of-eth-type-grouping">
+    <container name="nxm-of-eth-type">
+      <leaf name="value">
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="all-matches-grouping">
+    <uses name="nxm-nx-reg-grouping"/>
+    <uses name="nxm-nx-tun-id-grouping"/>
+    <uses name="nxm-nx-arp-sha-grouping"/>
+    <uses name="nxm-nx-arp-tha-grouping"/>
+    <uses name="nxm-of-arp-op-grouping"/>
+    <uses name="nxm-of-arp-spa-grouping"/>
+    <uses name="nxm-of-arp-tpa-grouping"/>
+    <uses name="nxm-nx-tun-ipv4-dst-grouping"/>
+    <uses name="nxm-nx-tun-ipv4-src-grouping"/>
+    <uses name="nxm-of-eth-src-grouping"/>
+    <uses name="nxm-of-eth-dst-grouping"/>
+    <uses name="nxm-of-eth-type-grouping"/>
+  </grouping>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-rpc-add-flow"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-rpc-remove-flow"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-rpc-update-flow-original"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-rpc-update-flow-updated"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-nodes-node-table-flow"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-notif-switch-flow-removed"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-notif-packet-in"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension">
+    <ext:augment-identifier identifier="nx-aug-match-notif-update-flow-stats"/>
+    <uses name="all-matches-grouping"/>
+  </augment>
+</module>

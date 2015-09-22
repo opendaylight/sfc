@@ -1,0 +1,22 @@
+<div class="sfcWrapper">
+
+    <div class="menu">
+        <ul class="nav nav-pills">
+            <li ng-class="{ active: isState('main.sfc.servicenode') || isState ('main.sfc.servicenode-edit') || isState ('main.sfc.servicenode-create')}"><a href="#/sfc/servicenode">{{ 'SFC_SERVICE_NODES' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.serviceforwarder') || isState ('main.sfc.serviceforwarder-create') || isState ('main.sfc.serviceforwarder-clone') || isState ('main.sfc.serviceforwarder-edit') }"><a href="#/sfc/serviceforwarder">{{ 'SFC_SERVICE_FORWARDERS' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.servicefunction') || isState ('main.sfc.servicefunction-create') || isState ('main.sfc.servicefunction-clone') || isState ('main.sfc.servicefunction-edit') }"><a href="#/sfc/servicefunction">{{ 'SFC_SERVICE_FUNCTIONS' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.servicechain') || isState ('main.sfc.servicechain-create') }"><a href="#/sfc/servicechain">{{ 'SFC_SERVICE_CHAINS' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.servicepath') }"><a href="#/sfc/servicepath">{{ 'SFC_SERVICE_PATHS' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.acl') || isState ('main.sfc.acl-create') || isState ('main.sfc.classifier-create') }"><a href="#/sfc/acl">{{ 'SFC_ACCESS_LISTS_MENU' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.metadata') || isState ('main.sfc.metadata-context-create') || isState ('main.sfc.metadata-variable-create') }"><a href="#/sfc/metadata">{{ 'SFC_METADATA' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.ipfix') || isState ('main.sfc.ipfix-classid-create') || isState ('main.sfc.ipfix-appid-create') }"><a href="#/sfc/ipfix">{{ 'SFC_IPFIX' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.system') }"><a href="#/sfc/system">{{ 'SFC_SYSTEM' | translate }}</a></li>
+            <li ng-class="{ active: isState('main.sfc.config') }"><a href="#/sfc/config">{{ 'SFC_CONFIG' | translate }}</a></li>
+        </ul>
+
+        <!-- For child state use-->
+        <div ui-view="submenu"></div>
+    </div>
+
+    <div class="main" ui-view="sfc"></div>
+</div>

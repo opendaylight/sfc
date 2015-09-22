@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-sal-binding-broker-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:binding-impl="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:sal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding"
+        xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom"
+        xmlns:common="urn:opendaylight:params:xml:ns:yang:controller:md:sal:common">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl"/>
+  <prefix value="binding-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="sal"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="dom"/>
+  </import>
+  <import module="opendaylight-md-sal-common">
+    <prefix value="common"/>
+  </import>
+  <description>
+    <text>Service definition for Binding Aware MD-SAL.</text>
+  </description>
+  <revision date="2013-10-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="binding-dom-mapping-service">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.yangtools.yang.data.impl.codec.BindingIndependentMappingService"/>
+  </identity>
+  <identity name="binding-broker-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:binding-broker-osgi-registry"/>
+    <config:provided-service name="sal:binding-rpc-registry"/>
+    <config:java-name-prefix java-prefix="BindingBrokerImpl"/>
+  </identity>
+  <identity name="binding-data-broker">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:binding-data-broker"/>
+    <config:provided-service name="sal:binding-data-consumer-broker"/>
+    <config:java-name-prefix java-prefix="DataBrokerImpl"/>
+  </identity>
+  <identity name="binding-data-compatible-broker">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:binding-data-broker"/>
+    <config:provided-service name="sal:binding-data-consumer-broker"/>
+    <config:java-name-prefix java-prefix="ForwardedCompatibleDataBrokerImpl"/>
+  </identity>
+  <identity name="binding-rpc-broker">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:binding-rpc-registry"/>
+    <config:java-name-prefix java-prefix="RpcBrokerImpl"/>
+  </identity>
+  <identity name="binding-notification-broker">
+    <base name="config:module-type"/>
+    <config:provided-service name="sal:binding-notification-service"/>
+    <config:provided-service name="sal:binding-notification-subscription-service"/>
+    <config:java-name-prefix java-prefix="NotificationBrokerImpl"/>
+  </identity>
+  <identity name="runtime-generated-mapping">
+    <base name="config:module-type"/>
+    <config:provided-service name="binding-dom-mapping-service"/>
+    <config:java-name-prefix java-prefix="RuntimeMapping"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="binding-broker-impl">
+      <when condition="/config:modules/config:module/config:type = 'binding-broker-impl'"/>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="sal:binding-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="sal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="binding-data-broker">
+      <when condition="/config:modules/config:module/config:type = 'binding-data-broker'"/>
+      <container name="dom-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="dom:dom-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="mapping-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="binding-dom-mapping-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="binding-data-compatible-broker">
+      <when condition="/config:modules/config:module/config:type = 'binding-data-compatible-broker'"/>
+      <container name="dom-async-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="dom:dom-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="binding-mapping-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="binding-dom-mapping-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="runtime-generated-mapping">
+      <when condition="/config:modules/config:module/config:type = 'runtime-generated-mapping'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="binding-data-broker">
+      <when condition="/config:modules/config:module/config:type = 'binding-data-broker'"/>
+      <container name="data">
+        <uses name="common:data-state"/>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="binding-rpc-broker">
+      <when condition="/config:modules/config:module/config:type = 'binding-rpc-broker'"/>
+      <uses name="common:rpc-state"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="binding-notification-broker">
+      <when condition="/config:modules/config:module/config:type = 'binding-notification-broker'"/>
+      <uses name="common:notification-state"/>
+    </case>
+  </augment>
+</module>

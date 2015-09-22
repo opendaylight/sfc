@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="isis-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:isis="urn:TBD:params:xml:ns:yang:network:isis-topology"
+        xmlns:nt="urn:TBD:params:xml:ns:yang:network-topology"
+        xmlns:igp="urn:TBD:params:xml:ns:yang:nt:l3-unicast-igp-topology"
+        xmlns:ted="urn:TBD:params:xml:ns:yang:network:ted">
+  <yang-version value="1"/>
+  <namespace uri="urn:TBD:params:xml:ns:yang:network:isis-topology"/>
+  <prefix value="isis"/>
+  <import module="network-topology">
+    <prefix value="nt"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <import module="l3-unicast-igp-topology">
+    <prefix value="igp"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <import module="ted">
+    <prefix value="ted"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>TBD</text>
+  </contact>
+  <description>
+    <text>ISIS Topology model</text>
+  </description>
+  <revision date="2013-07-12">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <typedef name="iso-system-id">
+    <description>
+      <text>ISO System ID. RFC 1237</text>
+    </description>
+    <type name="string">
+      <pattern value="[0-9a-fA-F]{4}(.[0-9a-fA-F]{4}){2}"/>
+    </type>
+  </typedef>
+  <typedef name="iso-pseudonode-id">
+    <description>
+      <text>ISO pseudonode id for broadcast network</text>
+    </description>
+    <type name="string">
+      <pattern value="[0-9a-fA-F]{2}"/>
+    </type>
+  </typedef>
+  <typedef name="iso-net-id">
+    <description>
+      <text>ISO NET ID. RFC 1237</text>
+    </description>
+    <type name="string">
+      <pattern value="[0-9a-fA-F]{2}((.[0-9a-fA-F]{4}){6}*)"/>
+    </type>
+  </typedef>
+  <grouping name="isis-topology-type">
+    <container name="isis">
+      <presence value="Indicates ISIS Topology"/>
+    </container>
+  </grouping>
+  <augment target-node="/nt:network-topology/nt:topology/nt:topology-types/igp:l3-unicast-igp-topology">
+    <uses name="isis-topology-type"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/igp:igp-topology-attributes">
+    <when condition="../../topology-types/isis"/>
+    <container name="isis-topogloy-attributes">
+      <leaf name="net">
+        <type name="iso-net-id"/>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:node/igp:igp-node-attributes">
+    <when condition="../../../topology-types/isis"/>
+    <uses name="isis-node-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:link/igp:igp-link-attributes">
+    <when condition="../../../../topology-types/isis"/>
+    <uses name="isis-link-attributes"/>
+  </augment>
+  <grouping name="isis-node-attributes">
+    <container name="isis-node-attributes">
+      <container name="iso">
+        <leaf name="iso-system-id">
+          <type name="iso-system-id"/>
+        </leaf>
+        <leaf name="iso-pseudonode-id">
+          <default value="0"/>
+          <type name="iso-pseudonode-id"/>
+        </leaf>
+      </container>
+      <leaf-list name="net">
+        <max-elements value="3"/>
+        <type name="iso-net-id"/>
+      </leaf-list>
+      <leaf-list name="multi-topology-id">
+        <description>
+          <text>List of Multi Topology Identifier upto 128 (0-127). RFC 4915</text>
+        </description>
+        <max-elements value="128"/>
+        <type name="uint8">
+          <range value="0..127"/>
+        </type>
+      </leaf-list>
+      <choice name="router-type">
+        <case name="level-2">
+          <leaf name="level-2">
+            <type name="empty"/>
+          </leaf>
+        </case>
+        <case name="level-1">
+          <leaf name="level-1">
+            <type name="empty"/>
+          </leaf>
+        </case>
+        <case name="level-1-2">
+          <leaf name="level-1-2">
+            <type name="empty"/>
+          </leaf>
+        </case>
+      </choice>
+      <container name="ted">
+        <uses name="ted:ted-node-attributes"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="isis-link-attributes">
+    <container name="isis-link-attributes">
+      <leaf name="multi-topology-id">
+        <type name="uint8">
+          <range value="0..127"/>
+        </type>
+      </leaf>
+      <container name="ted">
+        <uses name="ted:ted-link-attributes"/>
+      </container>
+    </container>
+  </grouping>
+</module>

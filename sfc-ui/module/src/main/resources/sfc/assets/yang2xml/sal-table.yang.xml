@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-table"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:table="urn:opendaylight:table:service"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:table-type="urn:opendaylight:table:types"
+        xmlns:tr="urn:opendaylight:flow:transaction">
+  <namespace uri="urn:opendaylight:table:service"/>
+  <prefix value="table"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table-type"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <revision date="2013-10-26">
+    <description>
+      <text>Initial revision of table service</text>
+    </description>
+  </revision>
+  <grouping name="table-update">
+    <uses name="inv:node-context-ref"/>
+    <container name="original-table">
+      <uses name="table-type:table-features"/>
+    </container>
+    <container name="updated-table">
+      <uses name="table-type:table-features"/>
+    </container>
+  </grouping>
+  <rpc name="update-table">
+    <input>
+      <uses name="table-update"/>
+      <uses name="tr:transaction-aware"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="table-updated">
+    <uses name="inv:node-context-ref"/>
+    <uses name="tr:multipart-transaction-aware"/>
+    <uses name="table-type:table-features"/>
+  </notification>
+</module>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowjava-cof-config"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowjava-cof="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:config"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:openflowjava-cof-api-config="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:config"/>
+  <prefix value="openflowjava-cof"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflowjava-cof-api-config">
+    <prefix value="openflowjava-cof-api-config"/>
+    <revision-date date="2014-10-08"/>
+  </import>
+  <description>
+    <text>Cisco extensions in openflow library.</text>
+  </description>
+  <revision date="2014-10-08">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflowjava-extension-cisco">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="CiscoExtensionProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflowjava-extension-cisco">
+      <when condition="/config:modules/config:module/config:type = 'openflowjava-extension-cisco'"/>
+      <container name="cisco-extension-codec-registrator">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflowjava-cof-api-config:cisco-extension-codec-registrator"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

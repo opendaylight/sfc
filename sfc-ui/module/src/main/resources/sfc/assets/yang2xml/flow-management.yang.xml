@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="flow-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flow-cfg="urn:opendaylight:flow:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:flow="urn:opendaylight:flow:types">
+  <namespace uri="urn:opendaylight:flow:config"/>
+  <prefix value="flow-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-flow-types">
+    <prefix value="flow"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Initial revision of flow service</text>
+    </description>
+  </revision>
+  <grouping name="flow-entry">
+    <leaf name="node">
+      <type name="inv:node-ref"/>
+    </leaf>
+    <uses name="flow:flow"/>
+  </grouping>
+  <container name="flows">
+    <list name="flow">
+      <key value="node id"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="flow-entry"/>
+    </list>
+  </container>
+</module>

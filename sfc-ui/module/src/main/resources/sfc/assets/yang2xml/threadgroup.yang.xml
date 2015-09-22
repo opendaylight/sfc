@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="threadgroup"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:netty-th="urn:opendaylight:params:xml:ns:yang:controller:netty:threadgroup"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:netty="urn:opendaylight:params:xml:ns:yang:controller:netty">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:netty:threadgroup"/>
+  <prefix value="netty-th"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="netty">
+    <prefix value="netty"/>
+    <revision-date date="2013-11-19"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Robert Varga &lt;rovarga@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the base YANG definitions for
+netty threadgroup implementation.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.</text>
+  </description>
+  <revision date="2013-11-07">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="netty-threadgroup-fixed">
+    <base name="config:module-type"/>
+    <config:provided-service name="netty:netty-threadgroup"/>
+    <config:java-name-prefix java-prefix="NettyThreadgroup"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="netty-threadgroup-fixed">
+      <when condition="/config:modules/config:module/config:type = 'netty-threadgroup-fixed'"/>
+      <leaf name="thread-count">
+        <type name="uint16"/>
+        <description>
+          <text>Number of threads to be used by NioEventLoopGroup. This attribute is optional and default value will be 2* Number of CPUs</text>
+        </description>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="netty-threadgroup-fixed">
+      <when condition="/config:modules/config:module/config:type = 'netty-threadgroup-fixed'"/>
+    </case>
+  </augment>
+</module>

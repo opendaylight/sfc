@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="address-tracker-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:address-tracker-impl="urn:opendaylight:packet:address-tracker-impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:address-tracker-impl"/>
+  <prefix value="address-tracker-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+address-tracker-impl implementation.</text>
+  </description>
+  <revision date="2014-05-28">
+    <description>
+      <text>Initial module draft.</text>
+    </description>
+  </revision>
+  <identity name="address-tracker-impl">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="AddressTracker"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="address-tracker-impl">
+      <when condition="/config:modules/config:module/config:type = 'address-tracker-impl'"/>
+      <leaf name="timestamp-update-interval">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="observe-addresses-from">
+        <type name="string"/>
+      </leaf>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="mdsal:binding-async-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

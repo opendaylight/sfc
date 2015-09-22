@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ex-vlan"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vlan="http://example.com/vlan"
+        xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+  <namespace uri="http://example.com/vlan"/>
+  <prefix value="vlan"/>
+  <import module="ietf-interfaces">
+    <prefix value="if"/>
+  </import>
+  <revision date="2013-10-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC A YANG Data Model for Interface Management draft-ietf-netmod-interfaces-cfg-12 - Appendix C</text>
+    </reference>
+  </revision>
+  <augment target-node="/if:interfaces/if:interface">
+    <when condition="if:type = 'ethernetCsmacd' or&#13;&#10;if:type = 'ieee8023adLag'"/>
+    <leaf name="vlan-tagging">
+      <type name="boolean"/>
+      <default value="false"/>
+    </leaf>
+  </augment>
+  <augment target-node="/if:interfaces/if:interface">
+    <when condition="if:type = 'l2vlan'"/>
+    <leaf name="base-interface">
+      <type name="if:interface-ref"/>
+      <must condition="/if:interfaces/if:interface[if:name = current()]/vlan:vlan-tagging = 'true'">
+        <description>
+          <text>The base interface must have vlan tagging enabled.</text>
+        </description>
+      </must>
+    </leaf>
+    <leaf name="vlan-id">
+      <type name="uint16">
+        <range value="1..4094"/>
+      </type>
+      <must condition="../base-interface">
+        <description>
+          <text>If a vlan-id is defined, a base-interface must
+be specified.</text>
+        </description>
+      </must>
+    </leaf>
+  </augment>
+</module>

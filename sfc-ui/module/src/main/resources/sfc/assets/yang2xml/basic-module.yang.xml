@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="basic-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:basmod="basic:module">
+  <namespace uri="basic:module"/>
+  <prefix value="basmod"/>
+  <import module="referenced-module">
+    <prefix value="refmo"/>
+    <revision-date date="2013-12-2"/>
+  </import>
+  <revision date="2013-12-2"/>
+  <container name="cont">
+    <container name="cont1">
+      <leaf name="lf11">
+        <type name="identityref">
+          <base name="refmo:iden"/>
+        </type>
+      </leaf>
+    </container>
+    <leaf name="lfStr">
+      <type name="string"/>
+    </leaf>
+    <leaf name="lfInt8">
+      <type name="int8"/>
+    </leaf>
+    <leaf name="lfInt16">
+      <type name="int16"/>
+    </leaf>
+    <leaf name="lfInt32">
+      <type name="int32"/>
+    </leaf>
+    <leaf name="lfInt64">
+      <type name="int64"/>
+    </leaf>
+    <leaf name="lfUint8">
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="lfUint16">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="lfUint32">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="lfUint64">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="lfBinary">
+      <type name="binary"/>
+    </leaf>
+    <leaf name="lfBits">
+      <type name="bits">
+        <bit name="one"/>
+        <bit name="two"/>
+        <bit name="three"/>
+      </type>
+    </leaf>
+    <leaf name="lfEnumeration">
+      <type name="enumeration">
+        <enum name="enum1"/>
+        <enum name="enum2"/>
+        <enum name="enum3"/>
+      </type>
+    </leaf>
+    <leaf name="lfEmpty">
+      <type name="empty"/>
+    </leaf>
+    <leaf name="lfBoolean">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="lfUnion">
+      <type name="union">
+        <type name="int8"/>
+        <type name="string"/>
+        <type name="bits">
+          <bit name="first"/>
+          <bit name="second"/>
+        </type>
+        <type name="boolean"/>
+      </type>
+    </leaf>
+    <leaf name="lfLfref">
+      <type name="leafref">
+        <path value="/cont/lfBoolean"/>
+      </type>
+    </leaf>
+    <leaf name="lfInIdentifier">
+      <type name="instance-identifier"/>
+    </leaf>
+  </container>
+</module>

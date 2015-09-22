@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-status"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:status="urn:cisco:params:xml:ns:yang:service-status"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:service="urn:cisco:params:xml:ns:yang:service-instance"
+        xmlns:act="urn:cisco:params:xml:ns:yang:access-topology">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:service-status"/>
+  <prefix value="status"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="service-instance">
+    <prefix value="service"/>
+  </import>
+  <import module="access-topology">
+    <prefix value="act"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Robert Gallas</text>
+  </contact>
+  <description>
+    <text>Module intended for query services status.</text>
+  </description>
+  <revision date="2013-12-13">
+    <description>
+      <text>first revision</text>
+    </description>
+  </revision>
+  <typedef name="object-status">
+    <type name="enumeration">
+      <enum name="up"/>
+      <enum name="down"/>
+    </type>
+    <description>
+      <text>Object status</text>
+    </description>
+  </typedef>
+  <augment target-node="/service:service-instances/service:service-instance">
+    <leaf name="status">
+      <type name="object-status"/>
+    </leaf>
+  </augment>
+  <rpc name="get-endpoints-statuses">
+    <description>
+      <text>Query Endpoints statuses</text>
+    </description>
+    <input>
+      <leaf name="query">
+        <type name="string"/>
+        <description>
+          <text>error by not providing input?</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <list name="statuses">
+        <key value="endpoint-id"/>
+        <leaf name="status">
+          <type name="act:attachment-circuit-status"/>
+        </leaf>
+        <uses name="act:attachment-circuit"/>
+      </list>
+    </output>
+  </rpc>
+</module>

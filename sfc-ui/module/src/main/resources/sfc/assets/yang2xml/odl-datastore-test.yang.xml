@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="odl-datastore-test"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:store-test="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom:store:test">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom:store:test"/>
+  <prefix value="store-test"/>
+  <revision date="2014-03-13">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <container name="test">
+    <list name="outer-list">
+      <key value="id"/>
+      <leaf name="id">
+        <type name="uint16"/>
+      </leaf>
+      <choice name="outer-choice">
+        <case name="one">
+          <leaf name="one">
+            <type name="string"/>
+          </leaf>
+        </case>
+        <case name="two-three">
+          <leaf name="two">
+            <type name="string"/>
+          </leaf>
+          <leaf name="three">
+            <type name="string"/>
+          </leaf>
+        </case>
+      </choice>
+      <list name="inner-list">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+        </leaf>
+        <leaf name="value">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </list>
+  </container>
+</module>

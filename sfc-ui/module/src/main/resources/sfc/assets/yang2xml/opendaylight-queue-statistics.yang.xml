@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-queue-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:queuestat="urn:opendaylight:queue:statistics"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:flow-node="urn:opendaylight:flow:inventory"
+        xmlns:queue-types="urn:opendaylight:flow:types:queue"
+        xmlns:stat-types="urn:opendaylight:model:statistics:types">
+  <namespace uri="urn:opendaylight:queue:statistics"/>
+  <prefix value="queuestat"/>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="flow-node"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-queue-types">
+    <prefix value="queue-types"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <import module="opendaylight-statistics-types">
+    <prefix value="stat-types"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <contact>
+    <text>Anilkumar Vishnoi
+Email: avishnoi@in.ibm.com</text>
+  </contact>
+  <revision date="2013-12-16">
+    <description>
+      <text>Initial revision of queue statistics model</text>
+    </description>
+  </revision>
+  <augment target-node="/inv:nodes/inv:node/inv:node-connector/flow-node:queue">
+    <ext:augment-identifier identifier="flow-capable-node-connector-queue-statistics-data"/>
+    <uses name="flow-capable-node-connector-queue-statistics"/>
+  </augment>
+  <grouping name="flow-capable-node-connector-queue-statistics">
+    <container name="flow-capable-node-connector-queue-statistics">
+      <uses name="stat-types:generic-queue-statistics"/>
+    </container>
+  </grouping>
+  <grouping name="queue-id-and-statistics-map">
+    <list name="queue-id-and-statistics-map">
+      <key value="queue-id node-connector-id"/>
+      <leaf name="queue-id">
+        <type name="queue-types:queue-id"/>
+      </leaf>
+      <leaf name="node-connector-id">
+        <type name="inv:node-connector-id"/>
+      </leaf>
+      <uses name="stat-types:generic-queue-statistics"/>
+    </list>
+  </grouping>
+  <rpc name="get-all-queues-statistics-from-all-ports">
+    <description>
+      <text>Get statistics for all the queues attached to all the ports from the node</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="queue-id-and-statistics-map"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-all-queues-statistics-from-given-port">
+    <description>
+      <text>Get statistics for all queues for given port of the node</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="node-connector-id">
+        <type name="inv:node-connector-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="queue-id-and-statistics-map"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="get-queue-statistics-from-given-port">
+    <description>
+      <text>Get statistics for given queues from given port of the node</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+      <leaf name="node-connector-id">
+        <type name="inv:node-connector-id"/>
+      </leaf>
+      <leaf name="queue-id">
+        <type name="queue-types:queue-id"/>
+      </leaf>
+    </input>
+    <output>
+      <uses name="queue-id-and-statistics-map"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="queue-statistics-update">
+    <uses name="inv:node"/>
+    <uses name="queue-id-and-statistics-map"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+</module>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-group"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:group="urn:opendaylight:group:service"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:group-type="urn:opendaylight:group:types"
+        xmlns:tr="urn:opendaylight:flow:transaction">
+  <namespace uri="urn:opendaylight:group:service"/>
+  <prefix value="group"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-types">
+    <prefix value="group-type"/>
+    <revision-date date="2013-10-18"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <revision date="2013-09-18">
+    <description>
+      <text>Initial revision of group service</text>
+    </description>
+  </revision>
+  <grouping name="node-group">
+    <uses name="inv:node-context-ref"/>
+    <uses name="group-type:group"/>
+  </grouping>
+  <grouping name="group-update">
+    <uses name="inv:node-context-ref"/>
+    <container name="original-group">
+      <uses name="group-type:group"/>
+    </container>
+    <container name="updated-group">
+      <uses name="group-type:group"/>
+    </container>
+  </grouping>
+  <rpc name="add-group">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="group-ref">
+        <type name="group-type:group-ref"/>
+      </leaf>
+      <uses name="node-group"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="remove-group">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="group-ref">
+        <type name="group-type:group-ref"/>
+      </leaf>
+      <uses name="node-group"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <rpc name="update-group">
+    <input>
+      <uses name="tr:transaction-metadata"/>
+      <leaf name="group-ref">
+        <type name="group-type:group-ref"/>
+      </leaf>
+      <uses name="group-update"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="group-added">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="group-ref">
+      <type name="group-type:group-ref"/>
+    </leaf>
+    <uses name="node-group"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <notification name="group-updated">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="group-ref">
+      <type name="group-type:group-ref"/>
+    </leaf>
+    <uses name="node-group"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <notification name="group-removed">
+    <uses name="tr:transaction-metadata"/>
+    <leaf name="group-ref">
+      <type name="group-type:group-ref"/>
+    </leaf>
+    <uses name="node-group"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+</module>

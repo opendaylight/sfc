@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-meter-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:meter="urn:opendaylight:meter:types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:opendaylight:meter:types"/>
+  <prefix value="meter"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <revision date="2013-09-18">
+    <description>
+      <text>Initial revision of meter service</text>
+    </description>
+  </revision>
+  <typedef name="meter-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="band-id">
+    <type name="uint32"/>
+  </typedef>
+  <typedef name="meter-flags">
+    <type name="bits">
+      <bit name="meter-kbps"/>
+      <bit name="meter-pktps"/>
+      <bit name="meter-burst"/>
+      <bit name="meter-stats"/>
+    </type>
+  </typedef>
+  <identity name="meter-capability">
+    <description>
+      <text>Base identity for all the supported meter capabilities/flags</text>
+    </description>
+  </identity>
+  <identity name="meter-kbps">
+    <base name="meter-capability"/>
+    <description>
+      <text>Rate value in kb/s (kilo-bit per second)</text>
+    </description>
+  </identity>
+  <identity name="meter-pktps">
+    <base name="meter-capability"/>
+    <description>
+      <text>Rate value in packet/sec.</text>
+    </description>
+  </identity>
+  <identity name="meter-burst">
+    <base name="meter-capability"/>
+    <description>
+      <text>Do burst size.</text>
+    </description>
+  </identity>
+  <identity name="meter-stats">
+    <base name="meter-capability"/>
+    <description>
+      <text>Collect statistics.</text>
+    </description>
+  </identity>
+  <typedef name="meter-band-type">
+    <type name="bits">
+      <bit name="ofpmbt-drop"/>
+      <bit name="ofpmbt-dscp-remark"/>
+      <bit name="ofpmbt-experimenter"/>
+    </type>
+  </typedef>
+  <identity name="meter-band">
+    <description>
+      <text>Base identity for all the band type available</text>
+    </description>
+  </identity>
+  <identity name="meter-band-drop">
+    <base name="meter-band"/>
+    <description>
+      <text>Drop packet</text>
+    </description>
+  </identity>
+  <identity name="meter-band-dscp-remark">
+    <base name="meter-band"/>
+    <description>
+      <text>Remark DSCP in the IP header</text>
+    </description>
+  </identity>
+  <identity name="meter-band-experimenter">
+    <base name="meter-band"/>
+    <description>
+      <text>Experimenter meter band</text>
+    </description>
+  </identity>
+  <grouping name="band-type">
+    <choice name="band-type">
+      <case name="drop">
+        <leaf name="drop-rate">
+          <description>
+            <text>Rate for dropping packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="drop-burst-size">
+          <description>
+            <text>Size of bursts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+      </case>
+      <case name="dscp-remark">
+        <leaf name="dscp-remark-rate">
+          <description>
+            <text>Rate for remarking packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="dscp-remark-burst-size">
+          <description>
+            <text>Size of bursts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="perc_level">
+          <description>
+            <text>Number of drop precedence level to add</text>
+          </description>
+          <type name="uint8"/>
+        </leaf>
+      </case>
+      <case name="experimenter">
+        <leaf name="experimenter-rate">
+          <description>
+            <text>Rate for remarking packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="experimenter-burst-size">
+          <description>
+            <text>Size of bursts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="experimenter">
+          <description>
+            <text>Experimenter id</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+      </case>
+    </choice>
+  </grouping>
+  <typedef name="meter-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <grouping name="meter">
+    <leaf name="flags">
+      <description>
+        <text>Meter configuration flags</text>
+      </description>
+      <type name="meter-flags"/>
+    </leaf>
+    <leaf name="meter-id">
+      <description>
+        <text>Meter instance</text>
+      </description>
+      <type name="meter-id"/>
+    </leaf>
+    <leaf name="barrier">
+      <description>
+        <text>If true, barrier message is sent</text>
+      </description>
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="meter-name">
+      <description>
+        <text>Name of meter instance</text>
+      </description>
+      <type name="string"/>
+    </leaf>
+    <leaf name="container-name">
+      <description>
+        <text>Name of container</text>
+      </description>
+      <type name="string"/>
+    </leaf>
+    <container name="meter-band-headers">
+      <list name="meter-band-header">
+        <key value="band-id"/>
+        <leaf name="band-id">
+          <description>
+            <text>Meter band id</text>
+          </description>
+          <type name="band-id"/>
+        </leaf>
+        <container name="meter-band-types">
+          <leaf name="flags">
+            <description>
+              <text>Meter band flags</text>
+            </description>
+            <type name="meter-band-type"/>
+          </leaf>
+        </container>
+        <leaf name="band-rate">
+          <description>
+            <text>Rate for this band</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="band-burst-size">
+          <description>
+            <text>Size of bursts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <uses name="band-type"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="meter-statistics">
+    <leaf name="meter-id">
+      <type name="meter-id"/>
+    </leaf>
+    <leaf name="flow-count">
+      <type name="yang:counter32"/>
+    </leaf>
+    <leaf name="packet-in-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="byte-in-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <container name="duration">
+      <leaf name="second">
+        <type name="yang:counter32"/>
+      </leaf>
+      <leaf name="nanosecond">
+        <type name="yang:counter32"/>
+      </leaf>
+    </container>
+    <container name="meter-band-stats">
+      <list name="band-stat">
+        <key value="band-id"/>
+        <leaf name="band-id">
+          <type name="band-id"/>
+        </leaf>
+        <leaf name="packet-band-count">
+          <type name="yang:counter64"/>
+        </leaf>
+        <leaf name="byte-band-count">
+          <type name="yang:counter64"/>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="meter-features">
+    <leaf name="max_meter">
+      <type name="yang:counter32"/>
+    </leaf>
+    <leaf-list name="meter-band-supported">
+      <type name="identityref">
+        <base name="meter-band"/>
+      </type>
+    </leaf-list>
+    <leaf-list name="meter-capabilities-supported">
+      <type name="identityref">
+        <base name="meter-capability"/>
+      </type>
+    </leaf-list>
+    <leaf name="max_bands">
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="max_color">
+      <type name="uint8"/>
+    </leaf>
+  </grouping>
+  <grouping name="meter-stats-config-request">
+    <list name="meter-stats">
+      <key value="meter-id"/>
+      <leaf name="meter-id">
+        <type name="meter-id"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="meter-statistics-reply">
+    <list name="meter-stats">
+      <key value="meter-id"/>
+      <uses name="meter-statistics"/>
+    </list>
+  </grouping>
+  <grouping name="meter-config-stats-reply">
+    <list name="meter-config-stats">
+      <key value="meter-id"/>
+      <uses name="meter"/>
+    </list>
+  </grouping>
+  <grouping name="meter-features-reply">
+    <uses name="meter-features"/>
+  </grouping>
+</module>

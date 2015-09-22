@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-flow-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flow="urn:opendaylight:flow:types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:match="urn:opendaylight:model:match:types"
+        xmlns:action="urn:opendaylight:action:types"
+        xmlns:meter="urn:opendaylight:meter:types">
+  <namespace uri="urn:opendaylight:flow:types"/>
+  <prefix value="flow"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-match-types">
+    <prefix value="match"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-action-types">
+    <prefix value="action"/>
+  </import>
+  <import module="opendaylight-meter-types">
+    <prefix value="meter"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <revision date="2013-10-26">
+    <description>
+      <text>Initial revision of flow service</text>
+    </description>
+  </revision>
+  <typedef name="flow-ref">
+    <type name="instance-identifier"/>
+  </typedef>
+  <typedef name="flow-cookie">
+    <description>
+      <text>openflow specific type - flow cookie / flow cookie mask</text>
+    </description>
+    <type name="uint64"/>
+  </typedef>
+  <typedef name="output-port-values">
+    <type name="enumeration">
+      <enum name="MAX">
+        <value value="1"/>
+      </enum>
+      <enum name="IN_PORT">
+        <value value="2"/>
+      </enum>
+      <enum name="TABLE">
+        <value value="3"/>
+      </enum>
+      <enum name="NORMAL">
+        <value value="4"/>
+      </enum>
+      <enum name="FLOOD">
+        <value value="5"/>
+      </enum>
+      <enum name="ALL">
+        <value value="6"/>
+      </enum>
+      <enum name="CONTROLLER">
+        <value value="7"/>
+      </enum>
+      <enum name="LOCAL">
+        <value value="8"/>
+      </enum>
+      <enum name="ANY">
+        <value value="9"/>
+      </enum>
+      <enum name="NONE">
+        <value value="10"/>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="instruction-list">
+    <list name="instruction">
+      <key value="order"/>
+      <leaf name="order">
+        <type name="int32"/>
+      </leaf>
+      <uses name="instruction"/>
+    </list>
+  </grouping>
+  <grouping name="instruction">
+    <choice name="instruction">
+      <case name="go-to-table-case">
+        <container name="go-to-table">
+          <leaf name="table_id">
+            <type name="uint8"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="write-metadata-case">
+        <container name="write-metadata">
+          <leaf name="metadata">
+            <type name="uint64"/>
+          </leaf>
+          <leaf name="metadata-mask">
+            <type name="uint64"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="write-actions-case">
+        <container name="write-actions">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="apply-actions-case">
+        <container name="apply-actions">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="clear-actions-case">
+        <container name="clear-actions">
+          <uses name="action:action-list"/>
+        </container>
+      </case>
+      <case name="meter-case">
+        <container name="meter">
+          <leaf name="meter-id">
+            <type name="meter:meter-id"/>
+          </leaf>
+        </container>
+      </case>
+    </choice>
+  </grouping>
+  <typedef name="flow-mod-flags">
+    <type name="bits">
+      <bit name="CHECK_OVERLAP"/>
+      <bit name="RESET_COUNTS"/>
+      <bit name="NO_PKT_COUNTS"/>
+      <bit name="NO_BYT_COUNTS"/>
+      <bit name="SEND_FLOW_REM"/>
+    </type>
+  </typedef>
+  <typedef name="removed_reason_flags">
+    <type name="bits">
+      <bit name="IDLE_TIMEOUT"/>
+      <bit name="HARD_TIMEOUT"/>
+      <bit name="DELETE"/>
+      <bit name="GROUP_DELETE"/>
+    </type>
+  </typedef>
+  <grouping name="generic_flow_attributes">
+    <leaf name="priority">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="idle-timeout">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="hard-timeout">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="cookie">
+      <type name="flow-cookie"/>
+    </leaf>
+    <leaf name="table_id">
+      <type name="uint8"/>
+    </leaf>
+  </grouping>
+  <grouping name="flow">
+    <container name="match">
+      <uses name="match:match"/>
+    </container>
+    <container name="instructions">
+      <uses name="instruction-list"/>
+    </container>
+    <uses name="generic_flow_attributes"/>
+    <leaf name="container-name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="cookie_mask">
+      <type name="flow-cookie"/>
+    </leaf>
+    <leaf name="buffer_id">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="out_port">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="out_group">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="flags">
+      <type name="flow-mod-flags"/>
+    </leaf>
+    <leaf name="flow-name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="installHw">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="barrier">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="strict">
+      <type name="boolean"/>
+      <default value="false"/>
+    </leaf>
+  </grouping>
+  <grouping name="flow-statistics">
+    <leaf name="packet-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="byte-count">
+      <type name="yang:counter64"/>
+    </leaf>
+    <container name="duration">
+      <leaf name="second">
+        <type name="yang:counter64"/>
+      </leaf>
+      <leaf name="nanosecond">
+        <type name="yang:counter64"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="flow-table-statistics">
+    <leaf name="active">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="lookup">
+      <type name="yang:counter64"/>
+    </leaf>
+    <leaf name="matched">
+      <type name="yang:counter64"/>
+    </leaf>
+  </grouping>
+  <grouping name="flow-mod-removed">
+    <uses name="generic_flow_attributes"/>
+    <leaf name="removed_reason">
+      <type name="removed_reason_flags"/>
+    </leaf>
+    <leaf name="duration_nsec">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="duration_sec">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="packet_count">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="byte_count">
+      <type name="uint64"/>
+    </leaf>
+    <container name="match">
+      <uses name="match:match"/>
+    </container>
+  </grouping>
+</module>

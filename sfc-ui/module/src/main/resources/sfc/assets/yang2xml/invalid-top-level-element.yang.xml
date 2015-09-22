@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="invalid-top-level-element"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:intoleel="invalid:top:level:element">
+  <namespace uri="invalid:top:level:element"/>
+  <prefix value="intoleel"/>
+  <revision date="2013-12-17"/>
+  <leaf name="lf">
+    <type name="string"/>
+  </leaf>
+</module>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="notification-store"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nost="urn:cisco:params:xml:ns:yang:notification-store">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:notification-store"/>
+  <prefix value="nost"/>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Robert Gallas</text>
+  </contact>
+  <description>
+    <text>none</text>
+  </description>
+  <revision date="2014-04-10">
+    <description>
+      <text>First revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <container name="notifications">
+    <list name="notification">
+      <key value="notification-id"/>
+      <leaf name="notification-id">
+        <type name="string"/>
+        <mandatory value="true"/>
+      </leaf>
+      <leaf name="source-device">
+        <type name="string"/>
+        <mandatory value="true"/>
+      </leaf>
+      <leaf name="payload">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>in json format</text>
+        </description>
+      </leaf>
+    </list>
+    <description>
+      <text>list of stored notifications</text>
+    </description>
+  </container>
+</module>

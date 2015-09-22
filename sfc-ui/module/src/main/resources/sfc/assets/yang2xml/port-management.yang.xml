@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="port-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:port-cfg="urn:opendaylight:port:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:port="urn:opendaylight:flow:types:port">
+  <namespace uri="urn:opendaylight:port:config"/>
+  <prefix value="port-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-port-types">
+    <prefix value="port"/>
+  </import>
+  <revision date="2013-10-24">
+    <description>
+      <text>Initial revision of port service</text>
+    </description>
+  </revision>
+  <grouping name="port-entry">
+    <leaf name="node">
+      <type name="inv:node-ref"/>
+    </leaf>
+    <uses name="port:port-mod"/>
+  </grouping>
+  <container name="ports">
+    <list name="port">
+      <key value="id node"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="port-entry"/>
+    </list>
+  </container>
+</module>

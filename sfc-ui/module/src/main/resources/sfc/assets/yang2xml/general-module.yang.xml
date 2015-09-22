@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="general-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:genmod="general:module">
+  <namespace uri="general:module"/>
+  <prefix value="genmod"/>
+  <revision date="2013-12-12"/>
+  <container name="cont">
+    <container name="cont1"/>
+  </container>
+</module>

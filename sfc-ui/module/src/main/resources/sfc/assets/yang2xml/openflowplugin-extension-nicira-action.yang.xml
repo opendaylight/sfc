@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowplugin-extension-nicira-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowplugin-nicira-action="urn:opendaylight:openflowplugin:extension:nicira:action"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:fni="urn:opendaylight:flow:inventory"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:sal-flow="urn:opendaylight:flow:service"
+        xmlns:sal-group="urn:opendaylight:group:service"
+        xmlns:sal-packet="urn:opendaylight:packet:service"
+        xmlns:odl-flow-stats="urn:opendaylight:flow:statistics"
+        xmlns:odl-group-stats="urn:opendaylight:group:statistics"
+        xmlns:nicira-match="urn:opendaylight:openflowjava:nx:match"
+        xmlns:ext-gen="urn:opendaylight:openflowplugin:extension:general"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowplugin:extension:nicira:action"/>
+  <prefix value="openflowplugin-nicira-action"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="fni"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-flow">
+    <prefix value="sal-flow"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-group">
+    <prefix value="sal-group"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="sal-packet"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-flow-statistics">
+    <prefix value="odl-flow-stats"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-statistics">
+    <prefix value="odl-group-stats"/>
+    <revision-date date="2013-11-11"/>
+  </import>
+  <import module="nicira-match">
+    <prefix value="nicira-match"/>
+    <revision-date date="2014-04-21"/>
+  </import>
+  <import module="openflowplugin-extension-general">
+    <prefix value="ext-gen"/>
+    <revision-date date="2014-07-14"/>
+  </import>
+  <import module="openflow-action">
+    <prefix value="ofaction"/>
+    <revision-date date="2013-07-31"/>
+  </import>
+  <description>
+    <text>Nicira openflow action extensions.</text>
+  </description>
+  <revision date="2014-07-14">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="nx-action-reg-load-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <identity name="nx-action-reg-move-key">
+    <base name="ext-gen:extension-key"/>
+  </identity>
+  <grouping name="nxm-nx-reg-grouping">
+    <leaf name="nx-reg">
+      <type name="identityref">
+        <base name="nicira-match:nxm-nx-reg"/>
+      </type>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-tun-id-grouping">
+    <leaf name="nx-tun-id">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-arp-sha-grouping">
+    <leaf name="nx-arp-sha">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-arp-tha-grouping">
+    <leaf name="nx-arp-tha">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-arp-op-grouping">
+    <leaf name="of-arp-op">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-arp-spa-grouping">
+    <leaf name="of-arp-spa">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-arp-tpa-grouping">
+    <leaf name="of-arp-tpa">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-tun-ipv4-dst-grouping">
+    <leaf name="nx-tun-ipv4-dst">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-nx-tun-ipv4-src-grouping">
+    <leaf name="nx-tun-ipv4-src">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-eth-src-grouping">
+    <leaf name="of-eth-src">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-eth-dst-grouping">
+    <leaf name="of-eth-dst">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="nxm-of-eth-type-grouping">
+    <leaf name="of-eth-type">
+      <type name="empty"/>
+    </leaf>
+  </grouping>
+  <grouping name="dst-choice-grouping">
+    <choice name="dst-choice">
+      <case name="dst-nx-reg-case">
+        <uses name="nxm-nx-reg-grouping"/>
+      </case>
+      <case name="dst-nx-tun-id-case">
+        <uses name="nxm-nx-tun-id-grouping"/>
+      </case>
+      <case name="dst-nx-arp-sha-case">
+        <uses name="nxm-nx-arp-sha-grouping"/>
+      </case>
+      <case name="dst-nx-arp-tha-case">
+        <uses name="nxm-nx-arp-tha-grouping"/>
+      </case>
+      <case name="dst-of-arp-op-case">
+        <uses name="nxm-of-arp-op-grouping"/>
+      </case>
+      <case name="dst-of-arp-spa-case">
+        <uses name="nxm-of-arp-spa-grouping"/>
+      </case>
+      <case name="dst-of-arp-tpa-case">
+        <uses name="nxm-of-arp-tpa-grouping"/>
+      </case>
+      <case name="dst-nx-tun-ipv4-dst-case">
+        <uses name="nxm-nx-tun-ipv4-dst-grouping"/>
+      </case>
+      <case name="dst-nx-tun-ipv4-src-case">
+        <uses name="nxm-nx-tun-ipv4-src-grouping"/>
+      </case>
+      <case name="dst-of-eth-src-case">
+        <uses name="nxm-of-eth-src-grouping"/>
+      </case>
+      <case name="dst-of-eth-dst-case">
+        <uses name="nxm-of-eth-dst-grouping"/>
+      </case>
+    </choice>
+  </grouping>
+  <grouping name="src-choice-grouping">
+    <choice name="src-choice">
+      <case name="src-nx-reg-case">
+        <uses name="nxm-nx-reg-grouping"/>
+      </case>
+      <case name="src-nx-tun-id-case">
+        <uses name="nxm-nx-tun-id-grouping"/>
+      </case>
+      <case name="src-nx-arp-sha-case">
+        <uses name="nxm-nx-arp-sha-grouping"/>
+      </case>
+      <case name="src-nx-arp-tha-case">
+        <uses name="nxm-nx-arp-tha-grouping"/>
+      </case>
+      <case name="src-of-arp-op-case">
+        <uses name="nxm-of-arp-op-grouping"/>
+      </case>
+      <case name="src-of-arp-spa-case">
+        <uses name="nxm-of-arp-spa-grouping"/>
+      </case>
+      <case name="src-of-arp-tpa-case">
+        <uses name="nxm-of-arp-tpa-grouping"/>
+      </case>
+      <case name="src-nx-tun-ipv4-dst-case">
+        <uses name="nxm-nx-tun-ipv4-dst-grouping"/>
+      </case>
+      <case name="src-nx-tun-ipv4-src-case">
+        <uses name="nxm-nx-tun-ipv4-src-grouping"/>
+      </case>
+      <case name="src-of-eth-src-case">
+        <uses name="nxm-of-eth-src-grouping"/>
+      </case>
+      <case name="src-of-eth-dst-case">
+        <uses name="nxm-of-eth-dst-grouping"/>
+      </case>
+      <case name="src-of-eth-type-case">
+        <uses name="nxm-of-eth-type-grouping"/>
+      </case>
+    </choice>
+  </grouping>
+  <grouping name="range-grouping">
+    <leaf name="start">
+      <description>
+        <text>Include value.</text>
+      </description>
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="end">
+      <description>
+        <text>Include value.</text>
+      </description>
+      <type name="uint16"/>
+    </leaf>
+  </grouping>
+  <grouping name="nx-action-reg-load-grouping">
+    <container name="nx-reg-load">
+      <container name="dst">
+        <description>
+          <text>Writes value to bits start through end, inclusive, in field dst.</text>
+        </description>
+        <uses name="dst-choice-grouping"/>
+        <uses name="range-grouping"/>
+      </container>
+      <leaf name="value">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="nx-action-reg-move-grouping">
+    <container name="nx-reg-move">
+      <container name="src">
+        <description>
+          <text>Writes value to bits start through end, inclusive, in field src.</text>
+        </description>
+        <uses name="src-choice-grouping"/>
+        <uses name="range-grouping"/>
+      </container>
+      <container name="dst">
+        <description>
+          <text>Writes value to bits start through end, inclusive, in field dst.</text>
+        </description>
+        <uses name="dst-choice-grouping"/>
+        <uses name="range-grouping"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="nx-action-output-reg-grouping">
+    <container name="nx-output-reg">
+      <container name="src">
+        <description>
+          <text>Choose the register with the OpenFlow output port, using the number of 
+bits specified from the register.</text>
+        </description>
+        <uses name="src-choice-grouping"/>
+        <leaf name="ofs_nbits">
+          <type name="uint16"/>
+        </leaf>
+      </container>
+      <leaf name="max_len">
+        <description>
+          <text>The number of bytes to send when the chosen port is OFPP_CONTROLLER</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-add-flow-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-add-flow-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-add-flow-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-add-flow-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-add-flow-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-add-flow-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-remove-flow-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-remove-flow-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-remove-flow-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-remove-flow-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-remove-flow-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-remove-flow-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-update-flow-original-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-update-flow-original-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-update-flow-original-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-update-flow-original-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-update-flow-original-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-update-flow-original-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-update-flow-updated-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-update-flow-updated-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-update-flow-updated-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-load-rpc-update-flow-updated-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-reg-move-rpc-update-flow-updated-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="nx-action-output-reg-rpc-update-flow-updated-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-load-rpc-add-group-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-move-rpc-add-group-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-output-reg-rpc-add-group-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-load-rpc-remove-group-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-move-rpc-remove-group-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-output-reg-rpc-remove-group-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-load-rpc-update-group-original-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-move-rpc-update-group-original-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-output-reg-rpc-update-group-original-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-load-rpc-update-group-updated-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-reg-move-rpc-update-group-updated-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="nx-action-output-reg-rpc-update-group-updated-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action">
+    <case name="nx-action-reg-load-rpc-transmit-packet-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action">
+    <case name="nx-action-reg-move-rpc-transmit-packet-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action">
+    <case name="nx-action-output-reg-rpc-transmit-packet-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action">
+    <case name="nx-action-reg-load-nodes-node-table-flow-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action">
+    <case name="nx-action-reg-move-nodes-node-table-flow-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action">
+    <case name="nx-action-output-reg-nodes-node-table-flow-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action">
+    <case name="nx-action-reg-load-nodes-node-table-flow-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action">
+    <case name="nx-action-reg-move-nodes-node-table-flow-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action">
+    <case name="nx-action-output-reg-nodes-node-table-flow-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action">
+    <case name="nx-action-reg-load-nodes-node-group-buckets-bucket-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action">
+    <case name="nx-action-reg-move-nodes-node-group-buckets-bucket-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action">
+    <case name="nx-action-output-reg-nodes-node-group-buckets-bucket-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-reg-load-notif-flows-statistics-update-write-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-reg-move-notif-flows-statistics-update-write-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-output-reg-notif-flows-statistics-update-write-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-reg-load-notif-flows-statistics-update-apply-actions-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-reg-move-notif-flows-statistics-update-apply-actions-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="nx-action-output-reg-notif-flows-statistics-update-apply-actions-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action">
+    <case name="nx-action-reg-load-notif-group-desc-stats-updated-case">
+      <uses name="nx-action-reg-load-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action">
+    <case name="nx-action-reg-move-notif-group-desc-stats-updated-case">
+      <uses name="nx-action-reg-move-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action">
+    <case name="nx-action-output-reg-notif-group-desc-stats-updated-case">
+      <uses name="nx-action-output-reg-grouping"/>
+    </case>
+  </augment>
+</module>

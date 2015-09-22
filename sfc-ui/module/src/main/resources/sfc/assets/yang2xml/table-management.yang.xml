@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="table-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:table-cfg="urn:opendaylight:table:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:table="urn:opendaylight:table:types">
+  <namespace uri="urn:opendaylight:table:config"/>
+  <prefix value="table-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table"/>
+  </import>
+  <revision date="2013-10-24">
+    <description>
+      <text>Initial revision of table service</text>
+    </description>
+  </revision>
+  <grouping name="table-entry">
+    <leaf name="node">
+      <type name="inv:node-ref"/>
+    </leaf>
+    <uses name="table:table-features"/>
+  </grouping>
+  <container name="tables">
+    <list name="table">
+      <key value="id node"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="table-entry"/>
+    </list>
+  </container>
+</module>

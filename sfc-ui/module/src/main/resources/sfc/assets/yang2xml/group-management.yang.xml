@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="group-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:group-cfg="urn:opendaylight:group:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:group="urn:opendaylight:group:types">
+  <namespace uri="urn:opendaylight:group:config"/>
+  <prefix value="group-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-types">
+    <prefix value="group"/>
+  </import>
+  <revision date="2013-10-24">
+    <description>
+      <text>Initial revision of group service</text>
+    </description>
+  </revision>
+  <grouping name="group-entry">
+    <leaf name="node">
+      <type name="inv:node-ref"/>
+    </leaf>
+    <uses name="group:group"/>
+  </grouping>
+  <container name="groups">
+    <list name="group">
+      <key value="id node"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="group-entry"/>
+    </list>
+  </container>
+</module>

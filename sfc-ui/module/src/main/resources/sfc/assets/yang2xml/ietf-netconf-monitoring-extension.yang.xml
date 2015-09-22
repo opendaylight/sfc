@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-netconf-monitoring-extension"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ncme="urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring-extension"
+        xmlns:ncm="urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring-extension"/>
+  <prefix value="ncme"/>
+  <import module="ietf-netconf-monitoring">
+    <prefix value="ncm"/>
+  </import>
+  <revision date="2013-12-10">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="netconf-tcp">
+    <base name="ncm:transport"/>
+    <description>
+      <text>NETCONF over TCP.</text>
+    </description>
+  </identity>
+  <augment target-node="/ncm:netconf-state/ncm:sessions/ncm:session">
+    <leaf name="session-identifier">
+      <type name="string"/>
+    </leaf>
+  </augment>
+</module>

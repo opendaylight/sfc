@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-action-high"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cisco-action-high="urn:opendaylight:openflowplugin:extension:cof:hi:action"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowplugin:extension:cof:hi:action"/>
+  <prefix value="cisco-action-high"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <description>
+    <text>Cisco openflow extensions of action - semantic view.</text>
+  </description>
+  <revision date="2014-10-10">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <typedef name="cof-at-output-nh-address-type">
+    <type name="enumeration">
+      <enum name="NONE">
+        <description>
+          <text>address only</text>
+        </description>
+      </enum>
+      <enum name="P2P">
+        <description>
+          <text>address and port</text>
+        </description>
+      </enum>
+      <enum name="IPV4">
+        <description>
+          <text>address and port</text>
+        </description>
+      </enum>
+      <enum name="IPV6">
+        <description>
+          <text>address and port</text>
+        </description>
+      </enum>
+      <enum name="MAC48">
+        <description>
+          <text>address and port</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="cof-at-output-nh-address-extra-type">
+    <type name="enumeration">
+      <enum name="NONE">
+        <description>
+          <text>address only</text>
+        </description>
+      </enum>
+      <enum name="PORT">
+        <description>
+          <text>address and port</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="nh-port-number">
+    <type name="uint32"/>
+  </typedef>
+  <grouping name="cof-action-next-hop-grouping">
+    <container name="action-output-nh-hi">
+      <leaf name="address-type">
+        <type name="cof-at-output-nh-address-type"/>
+      </leaf>
+      <leaf name="address-extra-type">
+        <type name="cof-at-output-nh-address-extra-type"/>
+      </leaf>
+      <leaf name="address-nh">
+        <type name="union">
+          <type name="inet:ipv4-address"/>
+          <type name="inet:ipv6-address"/>
+          <type name="yang:mac-address"/>
+        </type>
+      </leaf>
+      <leaf name="address-extra">
+        <type name="nh-port-number"/>
+      </leaf>
+    </container>
+  </grouping>
+  <typedef name="cof-at-vrf-type">
+    <type name="enumeration">
+      <enum name="NONE">
+        <description>
+          <text>illegal value</text>
+        </description>
+      </enum>
+      <enum name="VPNID">
+        <description>
+          <text>vpn-id (rfc 2685)</text>
+        </description>
+      </enum>
+      <enum name="NAME">
+        <description>
+          <text>vrf namestring (sized determine by len)</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="vrf-vpn-id">
+    <description>
+      <text>see RFC-2685, vpn identifier (7 bytes)</text>
+    </description>
+    <type name="binary"/>
+  </typedef>
+  <typedef name="vrf-name">
+    <type name="string"/>
+  </typedef>
+  <typedef name="vrf-extra">
+    <type name="union">
+      <type name="vrf-vpn-id"/>
+      <type name="vrf-name"/>
+    </type>
+  </typedef>
+  <grouping name="cof-action-vrf-grouping">
+    <container name="action-vrf-hi">
+      <leaf name="vpn-type">
+        <type name="cof-at-vrf-type"/>
+      </leaf>
+      <leaf name="vrf-extra">
+        <type name="vrf-extra"/>
+      </leaf>
+    </container>
+  </grouping>
+</module>

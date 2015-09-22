@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-provider-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ofplugin-cfg-impl="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:openflow-switch-connection-provider="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider"
+        xmlns:md-sal-binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl"/>
+  <prefix value="ofplugin-cfg-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="openflow-provider">
+    <prefix value="openflow-provider"/>
+  </import>
+  <import module="openflow-switch-connection-provider">
+    <prefix value="openflow-switch-connection-provider"/>
+    <revision-date date="2014-03-28"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="md-sal-binding"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>openflow-plugin-custom-config-impl</text>
+  </description>
+  <revision date="2014-03-26">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflow-provider-impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="openflow-provider:openflow-provider"/>
+    <config:java-name-prefix java-prefix="ConfigurableOpenFlowProvider"/>
+  </identity>
+  <identity name="msg-spy-service">
+    <description>
+      <text>MessageCountDumperServiceInterface as a MsgSpyService interface identity</text>
+    </description>
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.openflowplugin.statistics.MessageCountDumper"/>
+  </identity>
+  <identity name="msg-spy-service-impl">
+    <description>
+      <text>This is the definition of MsgSpyService implementation module identity.</text>
+    </description>
+    <base name="config:module-type"/>
+    <config:provided-service name="msg-spy-service"/>
+    <config:java-name-prefix java-prefix="MsgSpyService"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflow-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'openflow-provider-impl'"/>
+      <container name="binding-aware-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="md-sal-binding:binding-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <list name="openflow-switch-connection-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-switch-connection-provider:openflow-switch-connection-provider"/>
+          </refine>
+        </uses>
+      </list>
+    </case>
+    <case name="msg-spy-service-impl">
+      <when condition="/config:modules/config:module/config:type = 'msg-spy-service-impl'"/>
+      <container name="openflow-plugin-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-provider:openflow-provider"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="msg-spy-service-impl">
+      <when condition="/config:modules/config:module/config:type = 'msg-spy-service-impl'"/>
+      <description>
+        <text>MXBean designed for Message Statistic providing to JConsole.</text>
+      </description>
+      <leaf name="msgStatistics">
+        <type name="string"/>
+      </leaf>
+      <rpcx:rpc-context-instance context-type="make-msg-statistics-rpc"/>
+    </case>
+  </augment>
+  <identity name="make-msg-statistics-rpc"/>
+  <rpc name="make-msg-statistics">
+    <description>
+      <text>Shortcut JMX call to getMsgStatistics.</text>
+    </description>
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="make-msg-statistics-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="string"/>
+      </leaf>
+    </output>
+  </rpc>
+</module>

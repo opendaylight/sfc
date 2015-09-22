@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ofaction="urn:opendaylight:openflow:common:action"
+        xmlns:oft="urn:opendaylight:openflow:common:types">
+  <namespace uri="urn:opendaylight:openflow:common:action"/>
+  <prefix value="ofaction"/>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <revision date="2013-07-31">
+    <description>
+      <text>OpenFlow 1.3 - action model</text>
+    </description>
+  </revision>
+  <identity name="output">
+    <description>
+      <text> Output to switch port. (both OF v1.0 and v1.3)</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="copy_ttl_out">
+    <description>
+      <text> Copy TTL "outwards" -- from next-to-outermost to outermost </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="copy_ttl_in">
+    <description>
+      <text> Copy TTL "inwards" -- from outermost to next-to-outermost </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_mpls_ttl">
+    <description>
+      <text> MPLS TTL </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="dec_mpls_ttl">
+    <description>
+      <text> Decrement MPLS TTL </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="push_vlan">
+    <description>
+      <text> Push a new VLAN tag </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="pop_vlan">
+    <description>
+      <text> Pop the outer VLAN tag </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="push_mpls">
+    <description>
+      <text> Push a new MPLS tag </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="pop_mpls">
+    <description>
+      <text> Pop the outer MPLS tag </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_queue">
+    <description>
+      <text> Set queue id when outputting to a port </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="group">
+    <description>
+      <text> Apply group. </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_nw_ttl">
+    <description>
+      <text> IP TTL. </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="dec_nw_ttl">
+    <description>
+      <text> Decrement IP TTL. </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_field">
+    <description>
+      <text> Set a header field using OXM TLV format. </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="push_pbb">
+    <description>
+      <text> Push a new PBB service tag (I-TAG) </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="pop_pbb">
+    <description>
+      <text> Pop the outer PBB service tag (I-TAG) </text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="experimenter">
+    <description>
+      <text></text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <container name="actions-container">
+    <uses name="actions-grouping"/>
+  </container>
+  <grouping name="actions-grouping">
+    <list name="action">
+      <config value="false"/>
+      <leaf name="type">
+        <type name="identityref">
+          <base name="oft:action-base"/>
+        </type>
+      </leaf>
+    </list>
+  </grouping>
+  <identity name="set_vlan_vid">
+    <description>
+      <text>Set the 802.1q VLAN id (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_vlan_pcp">
+    <description>
+      <text>Set the 802.1q priority (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="strip_vlan">
+    <description>
+      <text>Strip the 802.1q header (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_dl_src">
+    <description>
+      <text>Ethernet source address (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_dl_dst">
+    <description>
+      <text>Ethernet destination address (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_nw_src">
+    <description>
+      <text>IP source address (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_nw_dst">
+    <description>
+      <text>IP destination address (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_nw_tos">
+    <description>
+      <text>IP ToS (DSCP field, 6 bits) (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_tp_src">
+    <description>
+      <text>TCP/UDP source port (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="set_tp_dst">
+    <description>
+      <text>TCP/UDP destination port (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+  <identity name="enqueue">
+    <description>
+      <text>Output to queue (OF v1.0).</text>
+    </description>
+    <base name="oft:action-base"/>
+  </identity>
+</module>

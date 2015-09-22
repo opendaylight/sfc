@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-pwe3-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pwe3="urn:cisco:params:xml:ns:yang:cisco-pwe3-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:cisco-pwe3-types"/>
+  <prefix value="pwe3"/>
+  <organization>
+    <text>Cisco</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text> This module contains the definitions of PWE3 control plane
+    messages - encoded using LDP FEC 128 and FEC 129. </text>
+  </description>
+  <revision date="2013-10-14">
+    <description>
+      <text>first revision</text>
+    </description>
+    <reference>
+      <text>http://wwwin-eng.cisco.com/Eng/SPCTO/I2SS/I2SS-Overview.pptx</text>
+    </reference>
+  </revision>
+  <grouping name="fec128-params">
+    <description>
+      <text>parameters from PWE3 LDP FEC128</text>
+    </description>
+  </grouping>
+  <grouping name="fec129-params">
+    <description>
+      <text>paramewters from PWE3 LDP FEC129</text>
+    </description>
+  </grouping>
+</module>

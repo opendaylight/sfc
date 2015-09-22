@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="main-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mainmod="main:module">
+  <namespace uri="main:module"/>
+  <prefix value="mainmod"/>
+  <revision date="2013-12-2"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="uint32"/>
+    </leaf>
+    <container name="cont1">
+      <leaf name="lf11">
+        <type name="boolean"/>
+      </leaf>
+    </container>
+    <leaf name="lf2">
+      <type name="leafref">
+        <path value="../lf1"/>
+      </type>
+    </leaf>
+    <leaf name="lf3">
+      <type name="leafref">
+        <path value="/cont/cont1/lf11"/>
+      </type>
+    </leaf>
+    <leaf name="lf5">
+      <type name="leafref">
+        <path value="/cont/lf"/>
+      </type>
+    </leaf>
+  </container>
+</module>

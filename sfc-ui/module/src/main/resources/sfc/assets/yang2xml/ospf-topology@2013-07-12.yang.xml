@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ospf-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ospf="urn:ietf:params:xml:ns:yang:ospf-topology"
+        xmlns:nt="urn:TBD:params:xml:ns:yang:network-topology"
+        xmlns:igp="urn:TBD:params:xml:ns:yang:nt:l3-unicast-igp-topology"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ted="urn:TBD:params:xml:ns:yang:network:ted">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ospf-topology"/>
+  <prefix value="ospf"/>
+  <import module="network-topology">
+    <prefix value="nt"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <import module="l3-unicast-igp-topology">
+    <prefix value="igp"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ted">
+    <prefix value="ted"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>TBD</text>
+  </contact>
+  <description>
+    <text>OSPF Topology model</text>
+  </description>
+  <revision date="2013-07-12">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>TBD</text>
+    </reference>
+  </revision>
+  <typedef name="area-id">
+    <description>
+      <text>OSPF Area ID</text>
+    </description>
+    <type name="uint32"/>
+  </typedef>
+  <grouping name="ospf-topology-type">
+    <container name="ospf">
+      <presence value="indiates OSPF Topology"/>
+    </container>
+  </grouping>
+  <augment target-node="/nt:network-topology/nt:topology/nt:topology-types/igp:l3-unicast-igp-topology">
+    <uses name="ospf-topology-type"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/igp:igp-topology-attributes">
+    <when condition="../topology-types/ospf"/>
+    <container name="ospf-topology-attributes">
+      <leaf name="area-id">
+        <type name="area-id"/>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:node/igp:igp-node-attributes">
+    <when condition="../../../topology-types/ospf"/>
+    <uses name="ospf-node-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:link/igp:igp-link-attributes">
+    <when condition="../../../topology-types/ospf"/>
+    <uses name="ospf-link-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:node/igp:igp-node-attributes/igp:prefix">
+    <when condition="../../../../topology-types/ospf"/>
+    <uses name="ospf-prefix-attributes"/>
+  </augment>
+  <grouping name="ospf-node-attributes">
+    <container name="ospf-node-attributes">
+      <choice name="router-type">
+        <case name="abr">
+          <leaf name="abr">
+            <type name="empty"/>
+          </leaf>
+        </case>
+        <case name="asbr">
+          <leaf name="asbr">
+            <type name="empty"/>
+          </leaf>
+        </case>
+        <case name="internal">
+          <leaf name="internal">
+            <type name="empty"/>
+          </leaf>
+        </case>
+        <case name="pseudonode">
+          <leaf name="pseudonode">
+            <type name="empty"/>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="dr-interface-id">
+        <when condition="../router-type/pseudonode"/>
+        <description>
+          <text>For pseudonodes, DR interface-id</text>
+        </description>
+        <default value="0"/>
+        <type name="uint32"/>
+      </leaf>
+      <leaf-list name="multi-topology-id">
+        <description>
+          <text>List of Multi-Topology Identifier up-to 128 (0-127). RFC 4915</text>
+        </description>
+        <max-elements value="128"/>
+        <type name="uint8">
+          <range value="0..127"/>
+        </type>
+      </leaf-list>
+      <leaf name="capabilities">
+        <description>
+          <text>OSPF capabilities as bit vector. RFC 4970</text>
+        </description>
+        <type name="bits">
+          <bit name="graceful-restart-capable">
+            <position value="0"/>
+          </bit>
+          <bit name="graceful-restart-helper">
+            <position value="1"/>
+          </bit>
+          <bit name="stub-router-support">
+            <position value="2"/>
+          </bit>
+          <bit name="traffic-engineering-support">
+            <position value="3"/>
+          </bit>
+          <bit name="point-to-point-over-lan">
+            <position value="4"/>
+          </bit>
+          <bit name="experimental-te">
+            <position value="5"/>
+          </bit>
+        </type>
+      </leaf>
+      <container name="ted">
+        <uses name="ted:ted-node-attributes"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="ospf-link-attributes">
+    <container name="ospf-link-attributes">
+      <leaf name="multi-topology-id">
+        <type name="uint8">
+          <range value="0..127"/>
+        </type>
+      </leaf>
+      <container name="ted">
+        <uses name="ted:ted-link-attributes"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="ospf-prefix-attributes">
+    <container name="ospf-prefix-attributes">
+      <leaf name="forwarding-address">
+        <when condition="../../igp:l3-unicast-igp-topology/igp:ospf/igp:router-type/igp:asbr"/>
+        <type name="inet:ipv4-address"/>
+      </leaf>
+    </container>
+  </grouping>
+</module>

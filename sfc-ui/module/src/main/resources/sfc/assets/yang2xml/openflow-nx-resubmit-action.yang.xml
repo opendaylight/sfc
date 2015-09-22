@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflow-nx-resubmit-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflow-nx-resubmit-action="urn:opendaylight:params:xml:ns:yang:openflow:nx:resubmit:action"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:openflow-switch-connection-provider="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:nx:resubmit:action"/>
+  <prefix value="openflow-nx-resubmit-action"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflow-switch-connection-provider">
+    <prefix value="openflow-switch-connection-provider"/>
+    <revision-date date="2014-03-28"/>
+  </import>
+  <description>
+    <text>openflow library default exemplary package</text>
+  </description>
+  <revision date="2014-07-09">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflow-nx-resubmit-action">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="NxResubmitActionRegistrator"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflow-nx-resubmit-action">
+      <when condition="/config:modules/config:module/config:type = 'openflow-nx-resubmit-action'"/>
+      <list name="openflow-switch-connection-provider">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflow-switch-connection-provider:openflow-switch-connection-provider"/>
+          </refine>
+        </uses>
+      </list>
+    </case>
+  </augment>
+</module>

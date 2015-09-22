@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="netconf-cli"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ncli="netconf:cli"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:cliext="urn:ietf:params:xml:ns:netconf:base:1.0:cli">
+  <namespace uri="netconf:cli"/>
+  <prefix value="ncli"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="netconf-cli-ext">
+    <prefix value="cliext"/>
+    <revision-date date="2014-05-26"/>
+  </import>
+  <revision date="2014-05-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <extension name="java-class">
+    <description>
+      <text>This could be used to link between rpc yang definition and custom command implementation</text>
+    </description>
+    <argument name="name"/>
+  </extension>
+  <rpc name="help">
+    <description>
+      <text>Display help</text>
+    </description>
+    <output>
+      <list name="commands">
+        <key value="id"/>
+        <leaf name="id">
+          <type name="string"/>
+        </leaf>
+        <leaf name="description">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </output>
+  </rpc>
+  <rpc name="close">
+    <description>
+      <text>Close the whole cli</text>
+    </description>
+  </rpc>
+  <rpc name="connect">
+    <description>
+      <text>Connect to a remote netconf device, if not connected yet. Connection initialization is blocking and might take some time, depending on amount of yang schemas in remote device.</text>
+    </description>
+    <input>
+      <leaf name="address-name">
+        <type name="inet:host"/>
+        <default value="localhost"/>
+      </leaf>
+      <leaf name="address-port">
+        <type name="inet:port-number"/>
+        <default value="830"/>
+      </leaf>
+      <leaf name="user-name">
+        <type name="string"/>
+      </leaf>
+      <leaf name="user-password">
+        <cliext:argument-handler name="org.opendaylight.controller.netconf.cli.reader.custom.PasswordReader"/>
+        <type name="string"/>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="status">
+        <type name="string"/>
+      </leaf>
+      <leaf-list name="remote-commands">
+        <type name="string"/>
+      </leaf-list>
+    </output>
+  </rpc>
+  <rpc name="disconnect">
+    <description>
+      <text>Disconnect from a netconf device that is currently connected</text>
+    </description>
+    <output>
+      <leaf name="status">
+        <type name="string"/>
+      </leaf>
+    </output>
+  </rpc>
+</module>

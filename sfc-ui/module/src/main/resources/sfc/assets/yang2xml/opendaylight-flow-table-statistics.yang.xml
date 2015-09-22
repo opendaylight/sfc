@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-flow-table-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flowtablestat="urn:opendaylight:flow:table:statistics"
+        xmlns:tr="urn:opendaylight:flow:transaction"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:flow-node="urn:opendaylight:flow:inventory"
+        xmlns:table-types="urn:opendaylight:table:types"
+        xmlns:stat-types="urn:opendaylight:model:statistics:types">
+  <namespace uri="urn:opendaylight:flow:table:statistics"/>
+  <prefix value="flowtablestat"/>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="flow-node"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-table-types">
+    <prefix value="table-types"/>
+    <revision-date date="2013-10-26"/>
+  </import>
+  <import module="opendaylight-statistics-types">
+    <prefix value="stat-types"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <contact>
+    <text>Anilkumar Vishnoi
+Email: avishnoi@in.ibm.com</text>
+  </contact>
+  <revision date="2013-12-15">
+    <description>
+      <text>Initial revision of flow table statistics model</text>
+    </description>
+  </revision>
+  <augment target-node="/inv:nodes/inv:node/flow-node:table">
+    <ext:augment-identifier identifier="flow-table-statistics-data"/>
+    <uses name="flow-table-statistics"/>
+  </augment>
+  <grouping name="flow-table-statistics">
+    <container name="flow-table-statistics">
+      <uses name="stat-types:generic-table-statistics"/>
+    </container>
+  </grouping>
+  <grouping name="flow-table-and-statistics-map">
+    <list name="flow-table-and-statistics-map">
+      <key value="table-id"/>
+      <leaf name="table-id">
+        <type name="table-types:table-id"/>
+      </leaf>
+      <uses name="stat-types:generic-table-statistics"/>
+    </list>
+  </grouping>
+  <rpc name="get-flow-tables-statistics">
+    <description>
+      <text>Fetch statistics of all the flow tables present on the tarnet node</text>
+    </description>
+    <input>
+      <uses name="inv:node-context-ref"/>
+    </input>
+    <output>
+      <uses name="flow-table-and-statistics-map"/>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="flow-table-statistics-update">
+    <description>
+      <text>Receive flow table statistics update</text>
+    </description>
+    <uses name="inv:node"/>
+    <uses name="flow-table-and-statistics-map"/>
+    <uses name="tr:multipart-transaction-aware"/>
+  </notification>
+</module>

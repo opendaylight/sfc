@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-data-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:smpdtp="simple:data:types">
+  <namespace uri="simple:data:types"/>
+  <prefix value="smpdtp"/>
+  <revision date="2013-11-12"/>
+  <identity name="iden"/>
+  <typedef name="tpdfempty">
+    <type name="empty"/>
+  </typedef>
+  <typedef name="tpdfbit">
+    <type name="bits">
+      <bit name="b1"/>
+      <bit name="b2"/>
+      <bit name="b3"/>
+    </type>
+  </typedef>
+  <typedef name="tpdfun4">
+    <type name="boolean"/>
+  </typedef>
+  <typedef name="tpdfun3">
+    <type name="union">
+      <type name="tpdfbit"/>
+      <type name="tpdfempty"/>
+    </type>
+  </typedef>
+  <typedef name="tpdfun2">
+    <type name="union">
+      <type name="tpdfun3"/>
+      <type name="tpdfun4"/>
+    </type>
+  </typedef>
+  <typedef name="tpdfun1">
+    <type name="union">
+      <type name="uint8"/>
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </type>
+  </typedef>
+  <container name="cont">
+    <leaf name="lfnint8Min">
+      <type name="int8"/>
+    </leaf>
+    <leaf name="lfnint8Max">
+      <type name="int8"/>
+    </leaf>
+    <leaf name="lfnint16Min">
+      <type name="int16"/>
+    </leaf>
+    <leaf name="lfnint16Max">
+      <type name="int16"/>
+    </leaf>
+    <leaf name="lfnint32Min">
+      <type name="int32"/>
+    </leaf>
+    <leaf name="lfnint32Max">
+      <type name="int32"/>
+    </leaf>
+    <leaf name="lfnint64Min">
+      <type name="int64"/>
+    </leaf>
+    <leaf name="lfnint64Max">
+      <type name="int64"/>
+    </leaf>
+    <leaf name="lfnuint8Max">
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="lfnuint16Max">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="lfnuint32Max">
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="lfuint64Max">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="lfstr">
+      <type name="string"/>
+    </leaf>
+    <leaf name="lfstr1">
+      <type name="string"/>
+    </leaf>
+    <leaf name="lfbool1">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="lfbool2">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="lfbool3">
+      <type name="boolean"/>
+    </leaf>
+    <leaf name="lfdecimal1">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="lfdecimal2">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="lfdecimal3">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="lfdecimal4">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="lfdecimal6">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </leaf>
+    <leaf name="lfenum">
+      <type name="enumeration">
+        <enum name="enum1"/>
+        <enum name="enum2"/>
+        <enum name="enum3"/>
+        <enum name="enum4"/>
+      </type>
+    </leaf>
+    <leaf name="lfbits">
+      <type name="bits">
+        <bit name="bit1"/>
+        <bit name="bit2"/>
+        <bit name="bit3"/>
+        <bit name="bit4"/>
+      </type>
+    </leaf>
+    <leaf name="lfbinary">
+      <type name="binary"/>
+    </leaf>
+    <leaf name="lfref1">
+      <type name="leafref">
+        <path value="../lfstr"/>
+      </type>
+    </leaf>
+    <leaf name="lfref2">
+      <type name="leafref">
+        <path value="../lfnint8Max"/>
+      </type>
+    </leaf>
+    <leaf name="lfempty">
+      <type name="empty"/>
+    </leaf>
+    <leaf name="lfunion1">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion2">
+      <type name="union">
+        <type name="decimal64">
+          <fraction-digits value="2"/>
+        </type>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion3">
+      <type name="union">
+        <type name="empty"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion4">
+      <type name="union">
+        <type name="boolean"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion5">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion6">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="empty"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion7">
+      <type name="tpdfun3"/>
+    </leaf>
+    <leaf name="lfunion8">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="string"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion9">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="boolean"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion10">
+      <type name="union">
+        <type name="bits">
+          <bit name="bt1"/>
+          <bit name="bt2"/>
+        </type>
+        <type name="boolean"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion11">
+      <type name="union">
+        <type name="tpdfun1"/>
+        <type name="tpdfun2"/>
+      </type>
+    </leaf>
+    <leaf name="lfunion12">
+      <type name="tpdfun2"/>
+    </leaf>
+    <leaf name="lfunion13">
+      <type name="tpdfbit"/>
+    </leaf>
+    <leaf name="lfunion14">
+      <type name="union">
+        <type name="enumeration">
+          <enum name="zero"/>
+          <enum name="one"/>
+        </type>
+        <type name="uint16"/>
+      </type>
+    </leaf>
+    <leaf name="identityref1">
+      <type name="identityref">
+        <base name="iden"/>
+      </type>
+    </leaf>
+  </container>
+</module>

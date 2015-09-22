@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ethernet-packet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ethernet="urn:opendaylight:packet:ethernet"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:pprocessing="urn:opendaylight:packet:service">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:ethernet"/>
+  <prefix value="ethernet"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="pprocessing"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="base-packet">
+    <prefix value="bpacket"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <revision date="2014-05-28">
+    <description>
+      <text>Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+
+This module contains a YANG definition of the Ethernet protocol.</text>
+    </description>
+  </revision>
+  <typedef name="known-ether-type">
+    <type name="enumeration">
+      <enum name="ipv4">
+        <value value="2048"/>
+        <description>
+          <text>Internet Protocol version 4 (IPv4)</text>
+        </description>
+      </enum>
+      <enum name="arp">
+        <value value="2054"/>
+        <description>
+          <text>Address Resolution Protocol (ARP)</text>
+        </description>
+      </enum>
+      <enum name="wake-on-lan">
+        <value value="2114"/>
+        <description>
+          <text>Wake-on-LAN[3]</text>
+        </description>
+      </enum>
+      <enum name="ietf-trill">
+        <value value="8947"/>
+        <description>
+          <text>IETF TRILL Protocol</text>
+        </description>
+      </enum>
+      <enum name="decnet-phase-iv">
+        <value value="24579"/>
+        <description>
+          <text>DECnet Phase IV</text>
+        </description>
+      </enum>
+      <enum name="reverse-arp">
+        <value value="32821"/>
+        <description>
+          <text>Reverse Address Resolution Protocol</text>
+        </description>
+      </enum>
+      <enum name="apple-talk">
+        <value value="32923"/>
+        <description>
+          <text>AppleTalk (Ethertalk)</text>
+        </description>
+      </enum>
+      <enum name="apple-talk-arp">
+        <value value="33011"/>
+        <description>
+          <text>AppleTalk Address Resolution Protocol (AARP)</text>
+        </description>
+      </enum>
+      <enum name="vlan-tagged">
+        <value value="33024"/>
+        <description>
+          <text>VLAN-tagged frame (IEEE 802.1Q) &amp; Shortest Path Bridging IEEE 802.1aq[4]</text>
+        </description>
+      </enum>
+      <enum name="ipx">
+        <value value="33079"/>
+        <description>
+          <text>IPX</text>
+        </description>
+      </enum>
+      <enum name="ipx2">
+        <value value="33080"/>
+        <description>
+          <text>IPX</text>
+        </description>
+      </enum>
+      <enum name="qnx-qnet">
+        <value value="33284"/>
+        <description>
+          <text>QNX Qnet</text>
+        </description>
+      </enum>
+      <enum name="ipv6">
+        <value value="34525"/>
+        <description>
+          <text>Internet Protocol Version 6 (IPv6)</text>
+        </description>
+      </enum>
+      <enum name="ethernet-flow-control">
+        <value value="34824"/>
+        <description>
+          <text>Ethernet flow control</text>
+        </description>
+      </enum>
+      <enum name="slow-protocols">
+        <value value="34825"/>
+        <description>
+          <text>Slow Protocols (IEEE 802.3)</text>
+        </description>
+      </enum>
+      <enum name="cobra-net">
+        <value value="34841"/>
+        <description>
+          <text>CobraNet</text>
+        </description>
+      </enum>
+      <enum name="mpls-unicast">
+        <value value="34887"/>
+        <description>
+          <text>MPLS unicast</text>
+        </description>
+      </enum>
+      <enum name="mpls-multicast">
+        <value value="34888"/>
+        <description>
+          <text>MPLS multicast</text>
+        </description>
+      </enum>
+      <enum name="PPP-over-ethernet-discovery">
+        <value value="34915"/>
+        <description>
+          <text>PPPoE Discovery Stage</text>
+        </description>
+      </enum>
+      <enum name="PPP-over-ethernet-session">
+        <value value="34916"/>
+        <description>
+          <text>PPPoE Session Stage</text>
+        </description>
+      </enum>
+      <enum name="jumbo">
+        <value value="34928"/>
+        <description>
+          <text>Jumbo Frames[2]</text>
+        </description>
+      </enum>
+      <enum name="homeplug">
+        <value value="34939"/>
+        <description>
+          <text>HomePlug 1.0 MME</text>
+        </description>
+      </enum>
+      <enum name="eap-over-lan">
+        <value value="34958"/>
+        <description>
+          <text>EAP over LAN (IEEE 802.1X)</text>
+        </description>
+      </enum>
+      <enum name="profinet">
+        <value value="34962"/>
+        <description>
+          <text>PROFINET Protocol</text>
+        </description>
+      </enum>
+      <enum name="hyper-scsi">
+        <value value="34970"/>
+        <description>
+          <text>HyperSCSI (SCSI over Ethernet)</text>
+        </description>
+      </enum>
+      <enum name="ata-over-ethernet">
+        <value value="34978"/>
+        <description>
+          <text>ATA over Ethernet</text>
+        </description>
+      </enum>
+      <enum name="ethercat">
+        <value value="34980"/>
+        <description>
+          <text>EtherCAT Protocol</text>
+        </description>
+      </enum>
+      <enum name="provider-bridging">
+        <value value="34984"/>
+        <description>
+          <text>Provider Bridging (IEEE 802.1ad) &amp; Shortest Path Bridging IEEE 802.1aq[5]</text>
+        </description>
+      </enum>
+      <enum name="ethernet-powerlink">
+        <value value="34987"/>
+        <description>
+          <text>Ethernet Powerlink[citation needed]</text>
+        </description>
+      </enum>
+      <enum name="lldp">
+        <value value="35020"/>
+        <description>
+          <text>Link Layer Discovery Protocol (LLDP)</text>
+        </description>
+      </enum>
+      <enum name="sercos-3">
+        <value value="35021"/>
+        <description>
+          <text>SERCOS III</text>
+        </description>
+      </enum>
+      <enum name="homeplug-av-mme">
+        <value value="35041"/>
+        <description>
+          <text>HomePlug AV MME[citation needed]</text>
+        </description>
+      </enum>
+      <enum name="media-redudancy-protocol">
+        <value value="35043"/>
+        <description>
+          <text>Media Redundancy Protocol (IEC62439-2)</text>
+        </description>
+      </enum>
+      <enum name="mac-security">
+        <value value="35045"/>
+        <description>
+          <text>MAC security (IEEE 802.1AE)</text>
+        </description>
+      </enum>
+      <enum name="precision-time-protocol">
+        <value value="35063"/>
+        <description>
+          <text>Precision Time Protocol (IEEE 1588)</text>
+        </description>
+      </enum>
+      <enum name="connectivity-fault-management">
+        <value value="35074"/>
+        <description>
+          <text>IEEE 802.1ag Connectivity Fault Management (CFM) Protocol / ITU-T Recommendation Y.1731 (OAM)</text>
+        </description>
+      </enum>
+      <enum name="fibre-channel-over-ethernet">
+        <value value="35078"/>
+        <description>
+          <text>Fibre Channel over Ethernet (FCoE)</text>
+        </description>
+      </enum>
+      <enum name="fibre-channel-over-ethernet-initialization">
+        <value value="35092"/>
+        <description>
+          <text>FCoE Initialization Protocol</text>
+        </description>
+      </enum>
+      <enum name="rmda-over-converged-ethernet">
+        <value value="35093"/>
+        <description>
+          <text>RDMA over Converged Ethernet (RoCE)</text>
+        </description>
+      </enum>
+      <enum name="high-availability-seamless-redudancy">
+        <value value="35119"/>
+        <description>
+          <text>High-availability Seamless Redundancy (HSR)</text>
+        </description>
+      </enum>
+      <enum name="ethernet-configuration-testing-protocol">
+        <value value="36864"/>
+        <description>
+          <text>Ethernet Configuration Testing Protocol[6]</text>
+        </description>
+      </enum>
+      <enum name="q-in-q">
+        <value value="37120"/>
+        <description>
+          <text>Q-in-Q</text>
+        </description>
+      </enum>
+      <enum name="veritas-low-latency">
+        <value value="51966"/>
+        <description>
+          <text>Veritas Low Latency Transport (LLT)[7] for Veritas Cluster Server</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="vlan-id">
+    <type name="uint16">
+      <range value="0..4095"/>
+    </type>
+  </typedef>
+  <typedef name="header8021q-type">
+    <type name="enumeration">
+      <enum name="vlan-tagged">
+        <value value="33024"/>
+        <description>
+          <text>VLAN-tagged frame (IEEE 802.1Q) &amp; Shortest Path Bridging IEEE 802.1aq[4]</text>
+        </description>
+      </enum>
+      <enum name="q-in-q">
+        <value value="37120"/>
+        <description>
+          <text>Q-in-Q</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="header8021q">
+    <leaf name="TPID">
+      <type name="header8021q-type"/>
+      <mandatory value="true"/>
+    </leaf>
+    <leaf name="priority-code">
+      <type name="uint8">
+        <range value="0..7"/>
+      </type>
+      <mandatory value="true"/>
+    </leaf>
+    <leaf name="drop-eligible">
+      <type name="boolean"/>
+      <mandatory value="true"/>
+    </leaf>
+    <leaf name="vlan">
+      <type name="vlan-id"/>
+      <mandatory value="true"/>
+    </leaf>
+  </grouping>
+  <grouping name="ethernet-packet-fields">
+    <leaf name="source-mac">
+      <type name="yang:mac-address"/>
+      <mandatory value="true"/>
+    </leaf>
+    <leaf name="destination-mac">
+      <type name="yang:mac-address"/>
+      <mandatory value="true"/>
+    </leaf>
+    <list name="header8021q">
+      <uses name="header8021q"/>
+    </list>
+    <leaf name="ethertype">
+      <type name="known-ether-type"/>
+    </leaf>
+    <leaf name="ethernet-length">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="crc">
+      <type name="uint32"/>
+    </leaf>
+    <uses name="bpacket:packet-fields"/>
+  </grouping>
+  <notification name="ethernet-packet-received">
+    <uses name="bpacket:packet-chain-grp">
+      <augment target-node="bpacket:packet-chain/bpacket:packet">
+        <case name="ethernet-packet">
+          <uses name="ethernet-packet-fields"/>
+        </case>
+      </augment>
+    </uses>
+    <uses name="bpacket:packet-payload"/>
+  </notification>
+</module>

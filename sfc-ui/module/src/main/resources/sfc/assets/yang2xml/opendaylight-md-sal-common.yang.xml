@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-md-sal-common"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:md-sal-common="urn:opendaylight:params:xml:ns:yang:controller:md:sal:common">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:md:sal:common"/>
+  <prefix value="md-sal-common"/>
+  <description>
+    <text>Common definition for MD-SAL.</text>
+  </description>
+  <revision date="2013-10-28">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <grouping name="rpc-routing-table">
+    <leaf name="routing-context">
+      <type name="string"/>
+    </leaf>
+    <list name="routes">
+      <leaf name="path">
+        <type name="string"/>
+      </leaf>
+      <leaf name="destination">
+        <type name="string"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="rpc-router">
+    <leaf name="module">
+      <type name="string"/>
+    </leaf>
+    <container name="routing-tables">
+      <list name="routing-table">
+        <uses name="rpc-routing-table"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="rpc-state">
+    <list name="rpc-router">
+      <uses name="rpc-router"/>
+    </list>
+  </grouping>
+  <grouping name="notification-state">
+    <container name="notifications">
+      <leaf name="published">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="data-state">
+    <container name="transactions">
+      <leaf name="created">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="submitted">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="successful">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="failed">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+</module>

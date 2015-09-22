@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="odl-netconf-cfg"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cfg-net="urn:opendaylight:params:xml:ns:yang:controller:config:netconf"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:netconf"/>
+  <prefix value="cfg-net"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+netconf related services.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2014-04-08">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="netconf-client-dispatcher">
+    <base name="config:service-type"/>
+    <config:java-class name="org.opendaylight.controller.netconf.client.NetconfClientDispatcher"/>
+  </identity>
+</module>

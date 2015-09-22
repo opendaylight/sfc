@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module1"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:m1="module:one">
+  <namespace uri="module:one"/>
+  <prefix value="m1"/>
+  <revision date="2014-01-17"/>
+  <container name="cont_m1">
+    <leaf name="lf1_m1">
+      <type name="string"/>
+    </leaf>
+  </container>
+  <container name="contB_m1"/>
+</module>

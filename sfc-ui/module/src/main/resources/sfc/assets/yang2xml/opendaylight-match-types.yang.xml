@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-match-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:match="urn:opendaylight:model:match:types"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:l2t="urn:opendaylight:l2:types"
+        xmlns:inv="urn:opendaylight:inventory">
+  <namespace uri="urn:opendaylight:model:match:types"/>
+  <prefix value="match"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-l2-types">
+    <prefix value="l2t"/>
+    <revision-date date="2013-08-27"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <revision date="2013-10-26">
+    <description>
+      <text>Initial revision of match types</text>
+    </description>
+  </revision>
+  <grouping name="mac-address-filter">
+    <leaf name="address">
+      <mandatory value="true"/>
+      <type name="yang:mac-address"/>
+    </leaf>
+    <leaf name="mask">
+      <type name="yang:mac-address"/>
+    </leaf>
+  </grouping>
+  <grouping name="of-metadata">
+    <leaf name="metadata">
+      <type name="uint64"/>
+    </leaf>
+    <leaf name="metadata-mask">
+      <type name="uint64"/>
+    </leaf>
+  </grouping>
+  <grouping name="ethernet-match-fields">
+    <container name="ethernet-source">
+      <description>
+        <text>Ethernet source address.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <uses name="mac-address-filter"/>
+    </container>
+    <container name="ethernet-destination">
+      <description>
+        <text>Ethernet destination address.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <uses name="mac-address-filter"/>
+    </container>
+    <container name="ethernet-type">
+      <description>
+        <text>Ethernet frame type.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <leaf name="type">
+        <mandatory value="true"/>
+        <type name="l2t:ether-type"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="vlan-match-fields">
+    <container name="vlan-id">
+      <description>
+        <text>VLAN id.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <leaf name="vlan-id-present">
+        <type name="boolean"/>
+      </leaf>
+      <leaf name="vlan-id">
+        <type name="l2t:vlan-id"/>
+      </leaf>
+    </container>
+    <leaf name="vlan-pcp">
+      <description>
+        <text>VLAN priority.</text>
+      </description>
+      <type name="l2t:vlan-pcp"/>
+    </leaf>
+  </grouping>
+  <grouping name="ip-match-fields">
+    <leaf name="ip-protocol">
+      <description>
+        <text>IP protocol.</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="ip-dscp">
+      <description>
+        <text>IP DSCP (6 bits in ToS field).</text>
+      </description>
+      <type name="inet:dscp"/>
+    </leaf>
+    <leaf name="ip-ecn">
+      <description>
+        <text>IP ECN (2 bits in ToS field).</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="ip-proto">
+      <description>
+        <text>IP Proto (IPv4 or IPv6 Protocol Number).</text>
+      </description>
+      <type name="inet:ip-version"/>
+    </leaf>
+  </grouping>
+  <grouping name="ipv4-match-fields">
+    <leaf name="ipv4-source">
+      <description>
+        <text>IPv4 source address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+    <leaf name="ipv4-destination">
+      <description>
+        <text>IPv4 destination address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+  </grouping>
+  <grouping name="ipv6-match-fields">
+    <leaf name="ipv6-source">
+      <description>
+        <text>IPv6 source address.</text>
+      </description>
+      <type name="inet:ipv6-prefix"/>
+    </leaf>
+    <leaf name="ipv6-destination">
+      <description>
+        <text>IPv6 destination address.</text>
+      </description>
+      <type name="inet:ipv6-prefix"/>
+    </leaf>
+    <leaf name="ipv6-nd-target">
+      <description>
+        <text>IPv6 target address for neighbour discovery message</text>
+      </description>
+      <type name="inet:ipv6-address"/>
+    </leaf>
+    <container name="ipv6-label">
+      <leaf name="ipv6-flabel">
+        <type name="inet:ipv6-flow-label"/>
+      </leaf>
+      <leaf name="flabel-mask">
+        <type name="inet:ipv6-flow-label"/>
+      </leaf>
+    </container>
+    <leaf name="ipv6-nd-sll">
+      <description>
+        <text>Link layer source address for neighbour discovery message</text>
+      </description>
+      <type name="yang:mac-address"/>
+    </leaf>
+    <leaf name="ipv6-nd-tll">
+      <description>
+        <text>Link layer target address for neighbour discovery message</text>
+      </description>
+      <type name="yang:mac-address"/>
+    </leaf>
+    <container name="ipv6-ext-header">
+      <leaf name="ipv6-exthdr">
+        <description>
+          <text>IPv6 Extension Header field</text>
+        </description>
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="ipv6-exthdr-mask">
+        <type name="uint16">
+          <range value="0..512"/>
+        </type>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="udp-match-fields">
+    <leaf name="udp-source-port">
+      <description>
+        <text>UDP source port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+    <leaf name="udp-destination-port">
+      <description>
+        <text>UDP destination port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+  </grouping>
+  <grouping name="protocol-match-fields">
+    <leaf name="mpls-label">
+      <description>
+        <text>Label in the first MPLS shim header</text>
+      </description>
+      <type name="uint32"/>
+    </leaf>
+    <leaf name="mpls-tc">
+      <description>
+        <text>TC in the first MPLS shim header</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="mpls-bos">
+      <description>
+        <text>BoS bit in the first MPLS shim header</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <container name="pbb">
+      <leaf name="pbb-isid">
+        <description>
+          <text>I-SID in the first PBB service instance tag</text>
+        </description>
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="pbb-mask">
+        <type name="uint32">
+          <range value="0..16777216"/>
+        </type>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="tcp-match-fields">
+    <leaf name="tcp-source-port">
+      <description>
+        <text>TCP source port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+    <leaf name="tcp-destination-port">
+      <description>
+        <text>TCP destination port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+  </grouping>
+  <grouping name="sctp-match-fields">
+    <leaf name="sctp-source-port">
+      <description>
+        <text>SCTP source port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+    <leaf name="sctp-destination-port">
+      <description>
+        <text>SCTP destination port.</text>
+      </description>
+      <type name="inet:port-number"/>
+    </leaf>
+  </grouping>
+  <grouping name="icmpv4-match-fields">
+    <leaf name="icmpv4-type">
+      <description>
+        <text>ICMP type.</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <description>
+      <text>ICMP code.</text>
+    </description>
+    <leaf name="icmpv4-code">
+      <type name="uint8"/>
+    </leaf>
+  </grouping>
+  <grouping name="icmpv6-match-fields">
+    <leaf name="icmpv6-type">
+      <description>
+        <text>ICMP type.</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <description>
+      <text>ICMP code.</text>
+    </description>
+    <leaf name="icmpv6-code">
+      <type name="uint8"/>
+    </leaf>
+  </grouping>
+  <grouping name="arp-match-fields">
+    <leaf name="arp-op">
+      <type name="uint16"/>
+    </leaf>
+    <leaf name="arp-source-transport-address">
+      <description>
+        <text>ARP source IPv4 address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+    <leaf name="arp-target-transport-address">
+      <description>
+        <text>ARP target IPv4 address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+    <container name="arp-source-hardware-address">
+      <description>
+        <text>ARP source hardware address.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <uses name="mac-address-filter"/>
+    </container>
+    <container name="arp-target-hardware-address">
+      <description>
+        <text>ARP target hardware address.</text>
+      </description>
+      <presence value="Match field is active and set"/>
+      <uses name="mac-address-filter"/>
+    </container>
+  </grouping>
+  <grouping name="tcp-flag-match-fields">
+    <leaf name="tcp-flag">
+      <type name="uint16"/>
+    </leaf>
+  </grouping>
+  <grouping name="tunnel-ipv4-match-fields">
+    <leaf name="tunnel-ipv4-source">
+      <description>
+        <text>IPv4 source tunnel endpoint address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+    <leaf name="tunnel-ipv4-destination">
+      <description>
+        <text>IPv4 destination tunnel endpoint address.</text>
+      </description>
+      <type name="inet:ipv4-prefix"/>
+    </leaf>
+  </grouping>
+  <grouping name="match">
+    <leaf name="in-port">
+      <type name="inv:node-connector-id"/>
+    </leaf>
+    <leaf name="in-phy-port">
+      <type name="inv:node-connector-id"/>
+    </leaf>
+    <container name="metadata">
+      <uses name="of-metadata"/>
+    </container>
+    <container name="tunnel">
+      <leaf name="tunnel-id">
+        <description>
+          <text>Metadata associated in the logical port</text>
+        </description>
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="tunnel-mask">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+    <container name="ethernet-match">
+      <uses name="ethernet-match-fields"/>
+    </container>
+    <container name="vlan-match">
+      <uses name="vlan-match-fields"/>
+    </container>
+    <container name="ip-match">
+      <uses name="ip-match-fields"/>
+    </container>
+    <choice name="layer-3-match">
+      <case name="ipv4-match">
+        <uses name="ipv4-match-fields"/>
+      </case>
+      <case name="ipv6-match">
+        <uses name="ipv6-match-fields"/>
+      </case>
+      <case name="arp-match">
+        <uses name="arp-match-fields"/>
+      </case>
+      <case name="tunnel-ipv4-match">
+        <uses name="tunnel-ipv4-match-fields"/>
+      </case>
+    </choice>
+    <choice name="layer-4-match">
+      <case name="udp-match">
+        <uses name="udp-match-fields"/>
+      </case>
+      <case name="tcp-match">
+        <uses name="tcp-match-fields"/>
+      </case>
+      <case name="sctp-match">
+        <uses name="sctp-match-fields"/>
+      </case>
+    </choice>
+    <container name="icmpv4-match">
+      <uses name="icmpv4-match-fields"/>
+    </container>
+    <container name="icmpv6-match">
+      <uses name="icmpv6-match-fields"/>
+    </container>
+    <container name="protocol-match-fields">
+      <uses name="protocol-match-fields"/>
+    </container>
+    <container name="tcp-flag-match">
+      <uses name="tcp-flag-match-fields"/>
+    </container>
+  </grouping>
+</module>

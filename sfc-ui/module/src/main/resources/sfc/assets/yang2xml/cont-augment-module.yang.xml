@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cont-augment-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cntaugmod="cont:augment:module"
+        xmlns:mamo="main:module">
+  <namespace uri="cont:augment:module"/>
+  <prefix value="cntaugmod"/>
+  <import module="main-module">
+    <prefix value="mamo"/>
+    <revision-date date="2013-12-2"/>
+  </import>
+  <revision date="2013-12-2"/>
+  <augment target-node="/mamo:cont">
+    <leaf-list name="lflst1">
+      <type name="leafref">
+        <path value="../lf1"/>
+      </type>
+    </leaf-list>
+    <leaf name="lf4">
+      <type name="leafref">
+        <path value="../lf1"/>
+      </type>
+    </leaf>
+    <leaf name="lf6">
+      <type name="leafref">
+        <path value="../lflst1"/>
+      </type>
+    </leaf>
+    <leaf name="lf7">
+      <type name="leafref">
+        <path value="../lf4"/>
+      </type>
+    </leaf>
+  </augment>
+</module>

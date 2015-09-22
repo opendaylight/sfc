@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-queue-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:queue-types="urn:opendaylight:flow:types:queue"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:opendaylight:flow:types:queue"/>
+  <prefix value="queue-types"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <revision date="2013-09-25">
+    <description>
+      <text>Initial revision of Queue Inventory model</text>
+    </description>
+  </revision>
+  <typedef name="queue-id">
+    <type name="yang:counter32"/>
+    <description>
+      <text>id for the specific queue.</text>
+    </description>
+  </typedef>
+  <typedef name="queue-properties">
+    <type name="enumeration">
+      <enum name="min_rate"/>
+      <enum name="max_rate"/>
+    </type>
+  </typedef>
+  <grouping name="common-queue">
+    <leaf name="property">
+      <type name="uint16"/>
+      <description>
+        <text>One of OFPQT_.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="queue-prop-min-rate">
+    <uses name="common-queue"/>
+    <leaf name="rate">
+      <type name="uint16"/>
+      <description>
+        <text>OFPQT_MIN, len: 16</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="queue-prop-max-rate">
+    <uses name="common-queue"/>
+    <leaf name="rate">
+      <type name="uint16"/>
+      <description>
+        <text>OFPQT_MAX, len: 16</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="queue-packet">
+    <leaf name="queue-id">
+      <type name="queue-id"/>
+      <description>
+        <text>id for the specific queue.</text>
+      </description>
+    </leaf>
+    <leaf name="port">
+      <type name="uint32"/>
+      <description>
+        <text>Port this queue is attached to.</text>
+      </description>
+    </leaf>
+    <uses name="common-queue"/>
+  </grouping>
+  <grouping name="queue-config-request">
+    <leaf name="port">
+      <type name="uint32"/>
+      <description>
+        <text>Port to be queried.</text>
+      </description>
+    </leaf>
+  </grouping>
+</module>

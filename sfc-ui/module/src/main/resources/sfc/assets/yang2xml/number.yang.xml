@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="number"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:number="number">
+  <namespace uri="number"/>
+  <prefix value="number"/>
+  <revision date="2014-04-24"/>
+  <container name="cont">
+    <leaf name="lf">
+      <type name="uint8"/>
+    </leaf>
+  </container>
+</module>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-notifications"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:seno="urn:cisco:params:xml:ns:odl:service-notifications:1.0">
+  <namespace uri="urn:cisco:params:xml:ns:odl:service-notifications:1.0"/>
+  <prefix value="seno"/>
+  <contact>
+    <text>rgallas@cisco.com</text>
+  </contact>
+  <description>
+    <text>Model for retrieving notifications for notifications demo.</text>
+  </description>
+  <revision date="2014-07-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <typedef name="seq-id">
+    <type name="uint32"/>
+  </typedef>
+  <rpc name="receive">
+    <input>
+      <leaf name="start-seq-id">
+        <type name="seq-id"/>
+      </leaf>
+    </input>
+    <output>
+      <list name="notifications">
+        <leaf name="router-id">
+          <type name="string"/>
+        </leaf>
+        <leaf name="seq-id">
+          <type name="seq-id"/>
+        </leaf>
+      </list>
+    </output>
+  </rpc>
+</module>

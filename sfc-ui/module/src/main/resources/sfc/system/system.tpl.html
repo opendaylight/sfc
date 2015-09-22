@@ -1,0 +1,101 @@
+<div class="col-xs-12" style="padding: 0px">
+
+    <div class="col-xs-12" style="padding: 0px">
+        <button type="button" ng-click="clearSorting()" class="btn btn-default pull-right">
+            {{'SFC_CLEAR_SORTING' | translate}}
+        </button>
+    </div>
+
+    <tabset>
+        <tab heading="{{'SFC_SYSTEM_KARAF_FEATURES' | translate}}" select="fetchTableData()">
+
+            <table ng-table="tableParams" show-filter="true" class="footable table" style="font-size:12px; margin-top: 0">
+                <tr ng-repeat="feature in $data track by $index" ng-model="features">
+                    <td data-title="'SFC_SYSTEM_FEATURE_ID' | translate" sortable="'id'" filter="{ 'id': 'text' }">
+                        {{feature['id']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_FEATURE_REPOSITORY_URL' | translate"
+                        sortable="'valueOf()[\'repository-url\']'" filter="{ 'repository-url': 'text' }">
+                        {{feature['repository-url']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_FEATURE_STATUS' | translate" sortable="'state'"
+                        filter="{ 'state': 'text' }">
+                        <i ng-show="isFeatureInstalled(feature)" class="icon-circle" style="color:green"></i>
+                        <i ng-show="!isFeatureInstalled(feature)" class="icon-circle" style="color:red"></i>
+                        {{feature['state']}}
+                    </td>
+
+                    <td data-title="'SFC_FUNCTION_ACTIONS' | translate">
+                        <a ng-click="refreshRepository(feature)">
+                            <i class="icon-refresh" ng-class="{rotating: isFeatureReloading(feature)}"
+                               style="cursor: pointer; font-size: 14px" popover-trigger="mouseenter"
+                               popover="{{ 'SFC_SYSTEM_REPOSITORY_REFRESH' | translate }}"></i>
+                        </a>
+                        <a ng-show="isFeatureInstalled(feature)" ng-click="uninstallFeature(feature)">
+                            <i class="icon-eject" style="cursor: pointer; font-size: 14px" popover-trigger="mouseenter"
+                               popover="{{ 'SFC_SYSTEM_FEATURE_UNINSTALL' | translate }}"></i>
+                        </a>
+                        <a ng-show="!isFeatureInstalled(feature)" ng-click="installFeature(feature)">
+                            <i class="icon-play" style="cursor: pointer; font-size: 14px" popover-trigger="mouseenter"
+                               popover="{{ 'SFC_SYSTEM_FEATURE_INSTALL' | translate }}"></i>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <table ng-table="tableParams" show-filter="true" class="footable table" style="font-size:12px; margin-top: 0" ng-controller="sfcMdsalCtrl">
+                <tr ng-repeat="datastore in $data track by $index" ng-model="mdsalStatusArray">
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE' | translate" sortable="'moduleName'" filter="{ 'moduleName': 'text' }">
+                        {{datastore['moduleName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_CONTAINER' | translate" sortable="'containerName'" filter="{ 'containerName': 'text' }">
+                        {{datastore['containerName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_LIST' | translate" sortable="'listName'" filter="{ 'listName': 'text' }">
+                        {{datastore['listName']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_STATUS' | translate" sortable="'status'" filter="{ 'status': 'text' }">
+                        <i ng-show="(datastore['status'])" class="icon-circle" ng-style="{color: getStatusColor(datastore['status'])}"></i>
+                        {{datastore['status']}}
+                    </td>
+                    <td data-title="'SFC_SYSTEM_MDSAL_MODULE_STATUS_TEXT' | translate" sortable="'statusText'" filter="{ 'statusText': 'text' }">
+                        {{datastore['statusText']}}
+                    </td>
+                </tr>
+            </table>
+        </tab>
+
+        <tab heading="{{'SFC_SYSTEM_KARAF_LOGS' | translate}}" select="callBroadcastFromRoot('SYS_LOG_FETCH_DATA')">
+            <div ng-controller="sfcSystemLogCtrl">
+                <table ng-table="tableParams" show-filter="true" class="footable table"
+                       style="font-size:12px; margin-top: 0">
+                    <tr ng-repeat="log in $data track by $index" ng-model="logs">
+                        <td data-title="'SFC_SYSTEM_LOG_RECEIVED' | translate" sortable="'received'"
+                            filter="{ 'received': 'text' }">
+                            {{log['received']}}
+                        </td>
+                        <td data-title="'SFC_SYSTEM_LOG_LEVEL' | translate" sortable="'level'" filter="{ 'level': 'select' }" filter-data="logLevels()">
+                            {{log['level']}}
+                        </td>
+                        <td data-title="'SFC_SYSTEM_LOG_MESSAGE' | translate" sortable="'message'"
+                            filter="{ 'message': 'text' }">
+                            {{log['message']}}
+                        </td>
+                        <td data-title="'SFC_SYSTEM_LOG_BUNDLE' | translate" sortable="'bundleName'"
+                            filter="{ 'bundleName': 'text' }">
+                            {{log['bundleName']}}
+                        </td>
+                        <td data-title="'SFC_SYSTEM_LOG_EXCEPTION' | translate">
+                            <a ng-if="log['exception']" ng-click="showException(log)">
+                                <i class="icon-list-alt"
+                                   style="cursor: pointer; font-size: 14px" popover-trigger="mouseenter"
+                                   popover="{{ 'SFC_SYSTEM_LOG_SHOW_EXCEPTION' | translate }}"></i>
+                            </a>
+                            <span class="spanText" ng-if="!log['exception']">-</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </tab>
+    </tabset>
+</div>

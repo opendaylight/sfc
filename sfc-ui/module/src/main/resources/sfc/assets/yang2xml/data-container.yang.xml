@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="data-container-yang"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dtconyg="data:container:yang">
+  <namespace uri="data:container:yang"/>
+  <prefix value="dtconyg"/>
+  <revision date="2013-11-19"/>
+  <container name="cont">
+    <list name="lst1">
+      <leaf name="lf11">
+        <type name="string"/>
+      </leaf>
+      <leaf-list name="lflst11">
+        <type name="string"/>
+      </leaf-list>
+      <list name="lst11">
+        <leaf name="lf111">
+          <type name="string"/>
+        </leaf>
+      </list>
+      <container name="cont11">
+        <leaf name="lf111">
+          <type name="uint8"/>
+        </leaf>
+      </container>
+    </list>
+  </container>
+</module>

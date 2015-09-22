@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="network-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nt="urn:TBD:params:xml:ns:yang:network-topology"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:TBD:params:xml:ns:yang:network-topology"/>
+  <prefix value="nt"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>WILL-BE-DEFINED-LATER</text>
+  </contact>
+  <revision date="2013-07-12">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <typedef name="topology-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>An identifier for a topology.</text>
+    </description>
+  </typedef>
+  <typedef name="node-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>An identifier for a node in a topology.  
+The identifier may be opaque.  
+The identifier SHOULD be chosen such that the same node in a 
+real network topology will always be identified through the 
+same identifier, even if the model is instantiated in separate 
+datastores. An implementation MAY choose to capture semantics 
+in the identifier, for example to indicate the type of node 
+and/or the type of topology that the node is a part of.</text>
+    </description>
+  </typedef>
+  <typedef name="link-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>An identifier for a link in a topology.  
+The identifier may be opaque.  
+The identifier SHOULD be chosen such that the same link in a 
+real network topology will always be identified through the 
+same identifier, even if the model is instantiated in separate 
+datastores. An implementation MAY choose to capture semantics 
+in the identifier, for example to indicate the type of link 
+and/or the type of topology that the link is a part of.</text>
+    </description>
+  </typedef>
+  <typedef name="tp-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>An identifier for termination points on a node. 
+The identifier may be opaque.  
+The identifier SHOULD be chosen such that the same TP in a 
+real network topology will always be identified through the 
+same identifier, even if the model is instantiated in separate 
+datastores. An implementation MAY choose to capture semantics 
+in the identifier, for example to indicate the type of TP 
+and/or the type of node and topology that the TP is a part of.</text>
+    </description>
+  </typedef>
+  <typedef name="tp-ref">
+    <type name="leafref">
+      <path value="/network-topology/topology/node/termination-point/tp-id"/>
+    </type>
+    <description>
+      <text>A type for an absolute reference to a termination point.
+(This type should not be used for relative references.
+In such a case, a relative path should be used instead.)</text>
+    </description>
+  </typedef>
+  <typedef name="topology-ref">
+    <type name="leafref">
+      <path value="/network-topology/topology/topology-id"/>
+    </type>
+    <description>
+      <text>A type for an absolute reference a topology instance.</text>
+    </description>
+  </typedef>
+  <typedef name="node-ref">
+    <type name="leafref">
+      <path value="/network-topology/topology/node/node-id"/>
+    </type>
+    <description>
+      <text>A type for an absolute reference to a node instance.
+(This type should not be used for relative references.
+In such a case, a relative path should be used instead.)</text>
+    </description>
+  </typedef>
+  <typedef name="link-ref">
+    <type name="leafref">
+      <path value="/network-topology/topology/link/link-id"/>
+    </type>
+    <description>
+      <text>A type for an absolute reference a link instance.
+(This type should not be used for relative references.
+In such a case, a relative path should be used instead.)</text>
+    </description>
+  </typedef>
+  <grouping name="tp-attributes">
+    <description>
+      <text>The data objects needed to define a termination point.
+(This only includes a single leaf at this point, used
+to identify the termination point.)  
+Provided in a grouping so that in addition to the datastore,
+the data can also be included in notifications.</text>
+    </description>
+    <leaf name="tp-id">
+      <type name="tp-id"/>
+    </leaf>
+    <leaf-list name="tp-ref">
+      <type name="tp-ref"/>
+      <config value="false"/>
+      <description>
+        <text>The leaf list identifies any termination points that the 
+termination point is dependent on, or maps onto.  
+Those termination points will themselves be contained 
+in a supporting node.  
+This dependency information can be inferred from 
+the dependencies between links.  For this reason, 
+this item is not separately configurable.  Hence no
+corresponding constraint needs to be articulated.  
+The corresponding information is simply provided by the
+implementing system.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="node-attributes">
+    <description>
+      <text>The data objects needed to define a node.
+The objects are provided in a grouping so that in addition to
+the datastore, the data can also be included in notifications
+as needed.</text>
+    </description>
+    <leaf name="node-id">
+      <type name="node-id"/>
+      <description>
+        <text>The identifier of a node in the topology.  
+A node is specific to a topology to which it belongs.</text>
+      </description>
+    </leaf>
+    <list name="supporting-node">
+      <description>
+        <text>This list defines vertical layering information for nodes. 
+It allows to capture for any given node, which node (or nodes)
+in the corresponding underlay topology it maps onto.  
+A node can map to zero, one, or more nodes below it;
+accordingly there can be zero, one, or more elements in the list.
+If there are specific layering requirements, for example
+specific to a particular type of topology that only allows
+for certain layering relationships, the choice
+below can be augmented with additional cases.
+A list has been chosen rather than a leaf-list in order 
+to provide room for augmentations, e.g. for 
+statistics or priorization information associated with 
+supporting nodes.</text>
+      </description>
+      <key value="node-ref"/>
+      <leaf name="node-ref">
+        <type name="node-ref"/>
+      </leaf>
+    </list>
+  </grouping>
+  <grouping name="link-attributes">
+    <leaf name="link-id">
+      <type name="link-id"/>
+      <description>
+        <text>The identifier of a link in the topology.  
+A link is specific to a topology to which it belongs.</text>
+      </description>
+    </leaf>
+    <container name="source">
+      <leaf name="source-node">
+        <mandatory value="true"/>
+        <type name="node-ref"/>
+        <description>
+          <text>Source node identifier, must be in same topology.</text>
+        </description>
+      </leaf>
+      <leaf name="source-tp">
+        <type name="tp-ref"/>
+        <description>
+          <text>Termination point within source node that terminates the link.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="destination">
+      <leaf name="dest-node">
+        <mandatory value="true"/>
+        <type name="node-ref"/>
+        <description>
+          <text>Destination node identifier, must be in same topology.</text>
+        </description>
+      </leaf>
+      <leaf name="dest-tp">
+        <type name="tp-ref"/>
+        <description>
+          <text>Termination point within destination node that terminates the link.</text>
+        </description>
+      </leaf>
+    </container>
+    <list name="supporting-link">
+      <key value="link-ref"/>
+      <leaf name="link-ref">
+        <type name="link-ref"/>
+      </leaf>
+    </list>
+  </grouping>
+  <container name="network-topology">
+    <list name="topology">
+      <description>
+        <text>
+This is the model of an abstract topology.
+A topology contins nodes and links.  
+Each topology MUST be identified by
+unique topology-id for reason that a network could contain many
+topologies.
+</text>
+      </description>
+      <key value="topology-id"/>
+      <leaf name="topology-id">
+        <type name="topology-id"/>
+        <description>
+          <text>
+It is presumed that a datastore will contain many topologies. To
+distinguish between topologies it is vital to have UNIQUE
+topology identifiers.
+</text>
+        </description>
+      </leaf>
+      <container name="topology-types">
+        <description>
+          <text>This container is used to identify the type, or types 
+(as a topology can support several types simultaneously), 
+of the topology.  
+Topology types are the subject of several integrity constraints 
+that an implementing server can validate in order to 
+maintain integrity of the datastore.  
+Topology types are indicated through separate data nodes; 
+the set of topology types is expected to increase over time.
+To add support for a new topology, an augmenting module
+needs to augment this container with a new empty optional 
+container to indicate the new topology type.  
+The use of a container allows to indicate a subcategorization
+of topology types.  
+The container SHALL NOT be augmented with any data nodes 
+that serve a purpose other than identifying a particular 
+topology type.  
+</text>
+        </description>
+      </container>
+      <list name="underlay-topology">
+        <key value="topology-ref"/>
+        <leaf name="topology-ref">
+          <type name="topology-ref"/>
+        </leaf>
+        <description>
+          <text>Identifies the topology, or topologies, that this topology
+is dependent on.</text>
+        </description>
+      </list>
+      <list name="node">
+        <description>
+          <text>The list of network nodes defined for the topology.</text>
+        </description>
+        <key value="node-id"/>
+        <uses name="node-attributes"/>
+        <must condition="boolean(../underlay-topology[*]/node[./supporting-nodes/node-ref])"/>
+        <list name="termination-point">
+          <description>
+            <text>A termination point can terminate a link.  
+Depending on the type of topology, a termination point could, 
+for example, refer to a port or an interface.</text>
+          </description>
+          <key value="tp-id"/>
+          <uses name="tp-attributes"/>
+        </list>
+      </list>
+      <list name="link">
+        <description>
+          <text>
+A Network Link connects a by Local (Source) node and
+a Remote (Destination) Network Nodes via a set of the 
+nodes' termination points. 
+As it is possible to have several links between the same
+source and destination nodes, and as a link could potentially
+be re-homed between termination points, to ensure that we 
+would always know to distinguish between links, every link 
+is identified by a dedicated link identifier.  
+Note that a link models a point-to-point link, not a multipoint
+link.  
+Layering dependencies on links in underlay topologies are
+not represented as the layering information of nodes and of 
+termination points is sufficient.  
+</text>
+        </description>
+        <key value="link-id"/>
+        <uses name="link-attributes"/>
+        <must condition="boolean(../underlay-topology/link[./supporting-link])"/>
+        <must condition="boolean(../node[./source/source-node])"/>
+        <must condition="boolean(../node[./destination/dest-node])"/>
+        <must condition="boolean(../node/termination-point[./source/source-tp])"/>
+        <must condition="boolean(../node/termination-point[./destination/dest-tp])"/>
+      </list>
+    </list>
+  </container>
+</module>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="yang"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:yng="ns:yang">
+  <namespace uri="ns:yang"/>
+  <prefix value="yng"/>
+  <revision date="2013-11-26"/>
+  <container name="cont">
+    <leaf name="lf1">
+      <type name="string"/>
+    </leaf>
+  </container>
+</module>

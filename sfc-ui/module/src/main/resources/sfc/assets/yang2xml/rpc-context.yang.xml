@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="rpc-context"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:rpc-context"/>
+  <prefix value="rpcx"/>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>TBD</text>
+  </contact>
+  <description>
+    <text></text>
+  </description>
+  <revision date="2013-06-17">
+    <description>
+      <text>Initial mock</text>
+    </description>
+  </revision>
+  <grouping name="rpc-context-ref">
+    <description>
+      <text>A reference to RPC context.</text>
+    </description>
+    <leaf name="context-instance">
+      <type name="instance-identifier"/>
+      <description>
+        <text>Pointer to the context. </text>
+      </description>
+    </leaf>
+  </grouping>
+  <extension name="rpc-context-instance">
+    <description>
+      <text>Marks enclosing (parent) schema node as suitable RPC context.
+The argument is identity which is used to identify RPC context
+type.</text>
+    </description>
+    <argument name="context-type"/>
+  </extension>
+</module>

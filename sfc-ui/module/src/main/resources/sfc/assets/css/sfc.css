@@ -1,0 +1,334 @@
+/*@import '../app/openflow_manager/sfc.less';
+@import "../src/app/sfc/vendor/select2/select2.css";
+@import "../src/app/sfc/vendor/select2-bootstrap-css/select2-bootstrap.css";*/
+
+.sfcWrapper {
+  /* saf3+, chrome1+ */
+}
+.sfcWrapper .menu {
+  position: relative;
+  top: 0px;
+  left: 0;
+  right: 0;
+  height: 45px;
+  z-index: 1;
+  background: #fff;
+  border-radius: 7px 7px 0 0;
+}
+.sfcWrapper .menu .ul {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+.sfcWrapper .menu .ul .li .a {
+  padding: 5px 10px;
+}
+.sfcWrapper .formElement {
+  border-radius: 5px;
+  background-color: #5f5f5f;
+  padding: 15px 10px 5px 10px;
+  margin-bottom: 15px;
+}
+.sfcWrapper .small-label {
+  font-size: 12px;
+}
+.sfcWrapper .spanText {
+  color: #444;
+}
+.sfcWrapper .spanTip {
+  font-size: 12px;
+  margin-right: 5px;
+}
+.sfcWrapper .node {
+  cursor: pointer;
+}
+.sfcWrapper .overlay {
+  background-image: none;
+  border: none;
+}
+.sfcWrapper .node text {
+  font-size: 12px;
+  font-family: sans-serif;
+  fill: #ffffff;
+  text-shadow: 2px 2px black;
+}
+.sfcWrapper .nodeLabelOutContainer {
+  width: 50%;
+  height: 100%;
+  margin: auto;
+  display: table;
+  table-layout: fixed;
+}
+.sfcWrapper .nodeLabelInContainer {
+  display: table-cell;
+  line-height: 1;
+}
+.sfcWrapper .nodeLabel {
+  font-size: 12px;
+  font-family: sans-serif;
+  color: white;
+  background: #414042;
+  white-space: pre-wrap;
+  /* css-3 */
+  white-space: -moz-pre-wrap;
+  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;
+  /* Opera 4-6 */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
+  word-wrap: break-word;
+  /* Internet Explorer 5.5+ */
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .sfcWrapper .nodeLabel {
+    word-wrap: inherit;
+  }
+}
+.sfcWrapper .link {
+  fill: none;
+  stroke: #fafafa;
+  stroke-width: 2.5px;
+}
+.sfcWrapper .sfc-node-main {
+  margin-top: 30px;
+  text-align: center;
+}
+.sfcWrapper .dropcontainer {
+  display: table-cell;
+  float: left;
+}
+.sfcWrapper .editable-input {
+  color: #1C94C4 !important;
+  background-color: white !important;
+  font-size: 12px;
+  width: 80px;
+  text-align: center;
+  cursor: text;
+}
+.sfcWrapper .editable-click,
+.sfcWrapper a.editable-click {
+  text-decoration: none;
+  color: #428bca;
+  border-bottom: none;
+  cursor: text;
+}
+.sfcWrapper .place {
+  width: 104px;
+  height: 100px;
+  background-image: url(/src/app/sfc/assets/images/arrow-right-part-small.png), url(/src/app/sfc/assets/images/arrow-left-part-small.png);
+  background-position: top left, top right;
+  background-repeat: no-repeat, no-repeat;
+  float: left;
+}
+.sfcWrapper .new {
+  background: rgba(106, 147, 255, 0.32);
+}
+.sfcWrapper .edited {
+  background: rgba(250, 182, 0, 0.49);
+}
+.sfcWrapper .persisted {
+  background: inherit;
+}
+.sfcWrapper .error {
+  background: rgba(255, 0, 0, 0.53);
+  border-radius: 0px;
+  float: right;
+}
+.sfcWrapper .warning {
+  background-color: orange;
+  color: #444444;
+}
+.sfcWrapper .draggable {
+  cursor: move;
+}
+.sfcWrapper .sfc-sf-component {
+  height: 100px;
+  width: 104px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+.sfcWrapper .arrow-left-part {
+  width: 18px;
+  height: 64px;
+  background: url(/src/app/sfc/assets/images/arrow-left-part-small.png) 0 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+.sfcWrapper .arrow-right-part {
+  width: 22px;
+  height: 64px;
+  background: url(/src/app/sfc/assets/images/arrow-right-part-small.png) 0 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+.sfcWrapper .obr-box {
+  width: 64px;
+  height: 64px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  float: left;
+}
+.sfcWrapper .obr-box.sf {
+  background: url(/src/app/sfc/assets/images/Device_switch_3062_unknown_64.png) 0 0;
+}
+.sfcWrapper .obr-box.sff {
+  background: url(/src/app/sfc/assets/images/Device_switch_3062_unknown_64_orange.png) 0 0;
+}
+.sfcWrapper .displayNone {
+  display: none;
+}
+.sfcWrapper .arrow-empty {
+  visibility: hidden !important;
+}
+.sfcWrapper .ng-table th.sortable.sort-desc,
+.sfcWrapper .ng-table th.sortable.sort-asc {
+  background-color: rgba(255, 255, 0, 0.25);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+.sfcWrapper .ng-table th.filter {
+  background-color: white;
+  border-left: 1px solid #ccc;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+.sfcWrapper .ng-table input[type="text"] {
+  background-color: white;
+  color: #858585;
+}
+.sfcWrapper .btn-default span {
+  color: #444;
+}
+.sfcWrapper .pagination span {
+  color: #444;
+}
+.sfcWrapper .modal-open {
+  overflow: auto;
+}
+.sfcWrapper .modal {
+  overflow: hidden;
+}
+.sfcWrapper .modal-body {
+  overflow: auto;
+  max-height: 600px;
+}
+.sfcWrapper .has-error .select2-choice {
+  border-color: #a94442 !important;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+}
+.sfcWrapper .popUp {
+  width: 40%;
+  left: 50%;
+  min-width: 450px;
+  position: absolute;
+  z-index: 15;
+}
+.sfcWrapper .popUp button.close {
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  color: #f1f1f1;
+}
+.sfcWrapper .nav-tabs li a {
+  color: white !important;
+  background-color: transparent !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+.sfcWrapper .nav-tabs {
+  border-bottom: none !important;
+}
+.sfcWrapper select.filter.filter-select.form-control {
+  font-size: 10px;
+  padding: 1px;
+}
+.sfcWrapper input.input-filter.form-control {
+  font-size: 10px;
+}
+@-webkit-keyframes rotating {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-moz-keyframes rotating {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-ms-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotating {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(360deg);
+  }
+}
+.sfcWrapper .rotating {
+  -moz-animation: rotating 1.5s linear infinite;
+  -webkit-animation: rotating 1.5s linear infinite;
+  -o-animation: rotating 1.5s linear infinite;
+  -ms-animation: rotating 1.5s linear infinite;
+  animation: rotating 1.5s linear infinite;
+}
+@media screen and (max-height: 700px) {
+  .sfcWrapper .modal-body {
+    max-height: 355px;
+  }
+}
+@media screen and (max-height: 540px) {
+  .sfcWrapper .modal-body {
+    max-height: 225px;
+  }
+}
+div.tooltip {
+  position: absolute;
+  text-align: left;
+  padding: 10px;
+  font: 12px sans-serif;
+  color: white;
+  background: black;
+  border: 0px;
+  border-radius: 4px;
+}
+div.tooltip a {
+  color: #428bca !important;
+}

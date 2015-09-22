@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-eline"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:eline="urn:cisco:params:xml:ns:yang:service-eline"
+        xmlns:service="urn:cisco:params:xml:ns:yang:service-instance">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:service-eline"/>
+  <prefix value="eline"/>
+  <import module="service-instance">
+    <prefix value="service"/>
+  </import>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>This module contains the I2SS definition of an E-Line.</text>
+  </description>
+  <revision date="2013-03-18">
+    <description>
+      <text>eighth revision</text>
+    </description>
+    <reference>
+      <text>I2SS</text>
+    </reference>
+  </revision>
+  <identity name="eline-service">
+    <base name="service:service-type"/>
+    <description>
+      <text>E-Line service</text>
+    </description>
+  </identity>
+  <augment target-node="/service:service-instances/service:service-instance">
+    <when condition="service-type=eline-service">
+      <description>
+        <text>E-Line augment follows</text>
+      </description>
+    </when>
+    <description>
+      <text>E-Line Service Instance</text>
+    </description>
+  </augment>
+</module>

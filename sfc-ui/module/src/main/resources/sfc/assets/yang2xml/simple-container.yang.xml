@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-container-yang"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:smpdtp="simple:container:yang">
+  <namespace uri="simple:container:yang"/>
+  <prefix value="smpdtp"/>
+  <revision date="2013-11-12"/>
+  <container name="cont">
+    <container name="cont1"/>
+    <list name="lst1"/>
+    <leaf-list name="lflst1">
+      <type name="string"/>
+    </leaf-list>
+    <leaf name="lf1">
+      <type name="string"/>
+    </leaf>
+  </container>
+</module>

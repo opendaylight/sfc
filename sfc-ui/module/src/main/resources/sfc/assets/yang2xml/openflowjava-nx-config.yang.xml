@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowjava-nx-config"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowjava-nx="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:config"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:openflowjava-nx-api-config="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:api:config">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:config"/>
+  <prefix value="openflowjava-nx"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="openflowjava-nx-api-config">
+    <prefix value="openflowjava-nx-api-config"/>
+    <revision-date date="2014-07-11"/>
+  </import>
+  <description>
+    <text>Nicira extensions in openflow library.</text>
+  </description>
+  <revision date="2014-07-11">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="openflowjava-extension-nicira">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="NiciraExtensionProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="openflowjava-extension-nicira">
+      <when condition="/config:modules/config:module/config:type = 'openflowjava-extension-nicira'"/>
+      <container name="nicira-extension-codec-registrator">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="openflowjava-nx-api-config:nicira-extension-codec-registrator"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

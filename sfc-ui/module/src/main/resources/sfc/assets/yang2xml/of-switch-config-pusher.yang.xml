@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="of-switch-config-pusher"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:of-switch-config-pusher="urn:opendaylight:params:xml:ns:yang:openflow:applications:of-switch-config-pusher"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:openflow:applications:of-switch-config-pusher"/>
+  <prefix value="of-switch-config-pusher"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>of-switch-config-pusher-custom-config-impl</text>
+  </description>
+  <revision date="2014-10-15">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="of-switch-config-pusher">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="DefaultConfigPusher"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="of-switch-config-pusher">
+      <when condition="/config:modules/config:module/config:type = 'of-switch-config-pusher'"/>
+      <container name="rpc-registry">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-rpc-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="mdsal:binding-async-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

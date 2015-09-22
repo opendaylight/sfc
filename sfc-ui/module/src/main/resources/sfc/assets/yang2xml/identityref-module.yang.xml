@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="identityref-module"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:iderefmod="identityref:module"
+        xmlns:idemo="identity:module"
+        xmlns:gmo="general:module">
+  <namespace uri="identityref:module"/>
+  <prefix value="iderefmod"/>
+  <import module="identity-module">
+    <prefix value="idemo"/>
+    <revision-date date="2013-12-2"/>
+  </import>
+  <import module="general-module">
+    <prefix value="gmo"/>
+    <revision-date date="2013-12-12"/>
+  </import>
+  <revision date="2013-12-2"/>
+  <augment target-node="/gmo:cont/gmo:cont1">
+    <leaf name="lf11">
+      <type name="identityref">
+        <base name="idemo:iden"/>
+      </type>
+    </leaf>
+  </augment>
+</module>

@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cisco-ancp-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ancp="urn:cisco:params:xml:ns:yang:cisco-ancp-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:cisco-ancp-types"/>
+  <prefix value="ancp"/>
+  <organization>
+    <text>Cisco</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text> This module contains the definition of an ANCP message
+    sent from an ANCP client to an ANCP server </text>
+  </description>
+  <revision date="2013-03-28">
+    <description>
+      <text>first revision</text>
+    </description>
+    <reference>
+      <text>http://wwwin-eng.cisco.com/Eng/SPCTO/TAPA-GAP.pptx</text>
+    </reference>
+  </revision>
+  <grouping name="ethernet-params">
+    <leaf name="speed">
+      <type name="enumeration">
+        <enum name="10Mb">
+          <description>
+            <text>10mbps</text>
+          </description>
+        </enum>
+        <enum name="100Mb">
+          <description>
+            <text>100mbps</text>
+          </description>
+        </enum>
+        <enum name="1Gb">
+          <description>
+            <text>1Gbps</text>
+          </description>
+        </enum>
+        <enum name="10Gb">
+          <description>
+            <text>10Gbps - could be WAN or LAN</text>
+          </description>
+        </enum>
+        <enum name="40Gb">
+          <description>
+            <text>40Gbps</text>
+          </description>
+        </enum>
+        <enum name="100Gb">
+          <description>
+            <text>100Gbps</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Ethernet port speed</text>
+      </description>
+    </leaf>
+    <leaf name="duplex">
+      <type name="enumeration">
+        <enum name="half">
+          <description>
+            <text>Half Duplex</text>
+          </description>
+        </enum>
+        <enum name="full">
+          <description>
+            <text>Full Duplex</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Ethernet port duplex</text>
+      </description>
+    </leaf>
+    <leaf name="media-type">
+      <type name="enumeration">
+        <enum name="utp">
+          <description>
+            <text>Cat 5/6 UTP</text>
+          </description>
+        </enum>
+        <enum name="coax">
+          <description>
+            <text>thin/thicknet</text>
+          </description>
+        </enum>
+        <enum name="twinax">
+          <description>
+            <text>10GE Twinax Copper</text>
+          </description>
+        </enum>
+        <enum name="pof">
+          <description>
+            <text>Plastic Optical Fibre</text>
+          </description>
+        </enum>
+        <enum name="mmf">
+          <description>
+            <text>Multi-Mode Fibre</text>
+          </description>
+        </enum>
+        <enum name="smf">
+          <description>
+            <text>Single-Mode Fibre</text>
+          </description>
+        </enum>
+        <enum name="radio">
+          <description>
+            <text>Radio Link</text>
+          </description>
+        </enum>
+        <enum name="fso">
+          <description>
+            <text>Free Space Optics</text>
+          </description>
+        </enum>
+        <enum name="efm">
+          <description>
+            <text>Ethernet in the First Mile - multipair G.SHDSL</text>
+          </description>
+        </enum>
+        <enum name="tdm">
+          <description>
+            <text>Ethernet over TDM</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Media type for the Ethernet port</text>
+      </description>
+    </leaf>
+    <leaf name="sff-info">
+      <type name="binary">
+        <length value="256"/>
+      </type>
+      <description>
+        <text>SFF info - need to break this down</text>
+      </description>
+    </leaf>
+    <leaf name="dom-info">
+      <type name="binary">
+        <length value="256"/>
+      </type>
+      <description>
+        <text>DOM info (SFF-8472) - need to break down</text>
+      </description>
+    </leaf>
+    <description>
+      <text>Ethernet interface parameters</text>
+    </description>
+  </grouping>
+  <grouping name="xdsl-params">
+    <leaf name="dsl-type">
+      <type name="enumeration">
+        <enum name="other">
+          <value value="0"/>
+          <description>
+            <text>non-standard DSL type?</text>
+          </description>
+        </enum>
+        <enum name="adsl1">
+          <value value="1"/>
+          <description>
+            <text>DSL_type_adsl1</text>
+          </description>
+        </enum>
+        <enum name="adsl2">
+          <value value="2"/>
+          <description>
+            <text>DSL_type_adsl2</text>
+          </description>
+        </enum>
+        <enum name="adsl2plus">
+          <value value="3"/>
+          <description>
+            <text>DSL_type_adsl2plus</text>
+          </description>
+        </enum>
+        <enum name="vdsl1">
+          <value value="4"/>
+          <description>
+            <text>DSL_type_vdsl1</text>
+          </description>
+        </enum>
+        <enum name="vdsl2">
+          <value value="5"/>
+          <description>
+            <text>DSL_type_vdsl2</text>
+          </description>
+        </enum>
+        <enum name="sdsl">
+          <value value="6"/>
+          <description>
+            <text>DSL_type_sdsl</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Subscriber access loop DSL type</text>
+      </description>
+    </leaf>
+    <leaf name="actual-net-data-rate-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>actual upstream net rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="actual-net-data-rate-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>actual downstream net rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="minimum-net-data-rate-upsteam">
+      <type name="uint32"/>
+      <description>
+        <text>min desired upstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="minimum-net-data-rate-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>min desired downstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="attainable-net-data-rate-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>max attainable upstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="attainable-net-data-rate-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>max attainable downstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-net-data-rate-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>max desired upstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-net-data-rate-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>max desired downstream rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="minimum-low-power-rate-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>min desired upstream low power rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="minimum-low-power-rate-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>min desired downstream low power rate in kbps</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-interleaving-delay-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>max one-way upstream interleaving delay in ms</text>
+      </description>
+    </leaf>
+    <leaf name="actual-interleaving-delay-upstream">
+      <type name="uint32"/>
+      <description>
+        <text>upstream interleaver setting in ms</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-interleaving-delay-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>max one-way downstream interleaving delay in ms</text>
+      </description>
+    </leaf>
+    <leaf name="actual-inteleaving-delay-downstream">
+      <type name="uint32"/>
+      <description>
+        <text>downstream interleaver setting in ms</text>
+      </description>
+    </leaf>
+    <leaf name="dsl-line-state">
+      <type name="enumeration">
+        <enum name="showtime">
+          <value value="1"/>
+          <description>
+            <text>SHOWTIME state</text>
+          </description>
+        </enum>
+        <enum name="idle">
+          <value value="2"/>
+          <description>
+            <text>IDLE state</text>
+          </description>
+        </enum>
+        <enum name="silent">
+          <value value="3"/>
+          <description>
+            <text>SILENT state</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>DSL acess line state</text>
+      </description>
+    </leaf>
+    <container name="access-loop-encapsulation">
+      <leaf name="data-link">
+        <type name="enumeration">
+          <enum name="atm">
+            <value value="0"/>
+            <description>
+              <text>ATM_access_loop</text>
+            </description>
+          </enum>
+          <enum name="ethernet">
+            <value value="1"/>
+            <description>
+              <text>Ethernet_access_loop</text>
+            </description>
+          </enum>
+        </type>
+        <description>
+          <text>Data Link</text>
+        </description>
+      </leaf>
+      <leaf name="encapsulation_1">
+        <type name="enumeration">
+          <enum name="not_applicable">
+            <value value="0"/>
+            <description>
+              <text>Not Applicable</text>
+            </description>
+          </enum>
+          <enum name="untagged_ethernet">
+            <value value="1"/>
+            <description>
+              <text>Untagged Ethernet</text>
+            </description>
+          </enum>
+          <enum name="single-tagged-ethernet">
+            <value value="2"/>
+            <description>
+              <text>Single-tagged Ethernet</text>
+            </description>
+          </enum>
+          <enum name="double-tagged-ethernet">
+            <value value="3"/>
+            <description>
+              <text>Double-tagged Ethernet</text>
+            </description>
+          </enum>
+        </type>
+        <description>
+          <text>Ethernet Encapsulation Type</text>
+        </description>
+      </leaf>
+      <leaf name="encapsulation_2">
+        <type name="enumeration">
+          <enum name="not_applicable">
+            <value value="0"/>
+            <description>
+              <text>Not Applicable</text>
+            </description>
+          </enum>
+          <enum name="pppoa_llc">
+            <value value="1"/>
+            <description>
+              <text>PPPoA LLC</text>
+            </description>
+          </enum>
+          <enum name="pppoa_null">
+            <value value="2"/>
+            <description>
+              <text>PPPoA Null</text>
+            </description>
+          </enum>
+          <enum name="ipoa_llc">
+            <value value="3"/>
+            <description>
+              <text>IPoA LLC</text>
+            </description>
+          </enum>
+          <enum name="ipoa_null">
+            <value value="4"/>
+            <description>
+              <text>IPoA Null</text>
+            </description>
+          </enum>
+          <enum name="eth_aal5_llc_fcs">
+            <value value="5"/>
+            <description>
+              <text>Ethernet over AAL5 LLC with FCS</text>
+            </description>
+          </enum>
+          <enum name="eth_aal5_llc_nofcs">
+            <value value="6"/>
+            <description>
+              <text>Ethernet over AAL5 LLC without FCS</text>
+            </description>
+          </enum>
+          <enum name="eth_aal5_null_fcs">
+            <value value="7"/>
+            <description>
+              <text>Ethernet over AAL5 NULL with FCS</text>
+            </description>
+          </enum>
+          <enum name="eth_aal5_null_nofcs">
+            <value value="8"/>
+            <description>
+              <text>Ethernet over AAL5 NULL wihout FCS</text>
+            </description>
+          </enum>
+        </type>
+        <description>
+          <text>ATM Encapsulation Type</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Subscriber access loop encapsulation type</text>
+      </description>
+    </container>
+    <leaf name="adjust-percent">
+      <type name="uint32">
+        <range value="1..100"/>
+      </type>
+      <description>
+        <text>Percent factor rate adjustment</text>
+      </description>
+    </leaf>
+    <description>
+      <text>XDSL interface parameters - RFC6320 (ANCP)</text>
+    </description>
+  </grouping>
+  <grouping name="xpon-params">
+    <leaf name="pon-type">
+      <type name="enumeration">
+        <enum name="bpon">
+          <description>
+            <text>B-PON</text>
+          </description>
+        </enum>
+        <enum name="epon">
+          <description>
+            <text>E-PON</text>
+          </description>
+        </enum>
+        <enum name="gpon">
+          <description>
+            <text>G-PON</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>PON type</text>
+      </description>
+    </leaf>
+    <description>
+      <text>XPON interface parameters - need more!</text>
+    </description>
+  </grouping>
+  <grouping name="ancp-params">
+    <choice name="access-type">
+      <container name="ethernet">
+        <uses name="ethernet-params"/>
+        <description>
+          <text>Ethernet access loop parameters</text>
+        </description>
+      </container>
+      <container name="xdsl">
+        <uses name="xdsl-params"/>
+        <description>
+          <text>XDSL access loop parameters</text>
+        </description>
+      </container>
+      <container name="xpon">
+        <uses name="xpon-params"/>
+        <description>
+          <text>XPON access loop parameters</text>
+        </description>
+      </container>
+      <description>
+        <text>AN access loop parameters</text>
+      </description>
+    </choice>
+  </grouping>
+</module>

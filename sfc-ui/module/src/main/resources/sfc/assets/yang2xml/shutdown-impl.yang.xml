@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="shutdown-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:shutdown-impl="urn:opendaylight:params:xml:ns:yang:controller:shutdown:impl"
+        xmlns:shutdown="urn:opendaylight:params:xml:ns:yang:controller:shutdown"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:shutdown:impl"/>
+  <prefix value="shutdown-impl"/>
+  <import module="shutdown">
+    <prefix value="shutdown"/>
+    <revision-date date="2013-12-18"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <description>
+    <text>This module contains the base YANG definitions for
+shutdown implementation.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-12-18">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="shutdown">
+    <base name="config:module-type"/>
+    <config:provided-service name="shutdown:shutdown"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="shutdown">
+      <when condition="/config:modules/config:module/config:type = 'shutdown'"/>
+      <leaf name="secret">
+        <type name="string"/>
+        <default value=""/>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="shutdown">
+      <when condition="/config:modules/config:module/config:type = 'shutdown'"/>
+      <rpcx:rpc-context-instance context-type="shutdown-rpc"/>
+    </case>
+  </augment>
+  <identity name="shutdown-rpc"/>
+  <rpc name="shutdown">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="shutdown-rpc"/>
+        </refine>
+      </uses>
+      <leaf name="input-secret">
+        <type name="string"/>
+      </leaf>
+      <leaf name="max-wait-time">
+        <type name="uint32"/>
+        <description>
+          <text>Maximum time in milliseconds before process is forcibly exited. Zero or null cancels this functionality.</text>
+        </description>
+      </leaf>
+      <leaf name="reason">
+        <type name="string"/>
+      </leaf>
+    </input>
+  </rpc>
+</module>

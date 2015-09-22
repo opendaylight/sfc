@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-port"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:port="urn:opendaylight:port:service"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:port-type="urn:opendaylight:flow:types:port"
+        xmlns:tr="urn:opendaylight:flow:transaction">
+  <namespace uri="urn:opendaylight:port:service"/>
+  <prefix value="port"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-port-types">
+    <prefix value="port-type"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <import module="flow-capable-transaction">
+    <prefix value="tr"/>
+  </import>
+  <revision date="2013-11-07">
+    <description>
+      <text>Initial revision of port service</text>
+    </description>
+  </revision>
+  <grouping name="node-port">
+    <uses name="inv:node-context-ref"/>
+    <uses name="port-type:flow-port-status"/>
+  </grouping>
+  <grouping name="port-update">
+    <uses name="inv:node-context-ref"/>
+    <container name="original-port">
+      <uses name="port-type:port-mod"/>
+    </container>
+    <container name="updated-port">
+      <uses name="port-type:port-mod"/>
+    </container>
+  </grouping>
+  <rpc name="update-port">
+    <input>
+      <uses name="port-update"/>
+      <uses name="tr:transaction-aware"/>
+    </input>
+    <output>
+      <uses name="tr:transaction-aware"/>
+    </output>
+  </rpc>
+  <notification name="port-updated">
+    <uses name="port-update"/>
+    <uses name="tr:transaction-aware"/>
+  </notification>
+  <notification name="port-removed">
+    <uses name="node-port"/>
+  </notification>
+</module>

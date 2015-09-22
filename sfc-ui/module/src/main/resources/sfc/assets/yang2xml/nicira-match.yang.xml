@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="nicira-match"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nicira-match="urn:opendaylight:openflowjava:nx:match"
+        xmlns:ofoxm="urn:opendaylight:openflow:oxm"
+        xmlns:oft="urn:opendaylight:openflow:common:types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowjava:nx:match"/>
+  <prefix value="nicira-match"/>
+  <import module="openflow-extensible-match">
+    <prefix value="ofoxm"/>
+  </import>
+  <import module="openflow-types">
+    <prefix value="oft"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <description>
+    <text>Nicira openflow extensions of match.</text>
+  </description>
+  <revision date="2014-04-21">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="nxm-nx-reg">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-nx-reg0">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg1">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg2">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg3">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg4">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg5">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg6">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-reg7">
+    <base name="nxm-nx-reg"/>
+  </identity>
+  <identity name="nxm-nx-tun-id">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-nx-arp-sha">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-nx-arp-tha">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-arp-op">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-arp-spa">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-arp-tpa">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-nx-tun-ipv4-dst">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-nx-tun-ipv4-src">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-eth-src">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-eth-dst">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <identity name="nxm-of-eth-type">
+    <base name="ofoxm:match-field"/>
+  </identity>
+  <grouping name="ofj-nxm-nx-match-reg-grouping">
+    <container name="reg-values">
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-nx-match-tun-id-grouping">
+    <container name="tun-id-values">
+      <leaf name="value">
+        <type name="uint64"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-nx-match-arp-sha-grouping">
+    <container name="arp-sha-values">
+      <leaf name="mac-address">
+        <type name="yang:mac-address"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-nx-match-arp-tha-grouping">
+    <container name="arp-tha-values">
+      <leaf name="mac-address">
+        <type name="yang:mac-address"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-arp-op-grouping">
+    <container name="arp-op-values">
+      <leaf name="value">
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-arp-spa-grouping">
+    <container name="arp-spa-values">
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-arp-tpa-grouping">
+    <container name="arp-tpa-values">
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-nx-match-tun-ipv4-dst-grouping">
+    <container name="tun-ipv4-dst-values">
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-nx-match-tun-ipv4-src-grouping">
+    <container name="tun-ipv4-src-values">
+      <leaf name="value">
+        <type name="uint32"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-eth-src-grouping">
+    <container name="eth-src-values">
+      <leaf name="mac-address">
+        <type name="yang:mac-address"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-eth-dst-grouping">
+    <container name="eth-dst-values">
+      <leaf name="mac-address">
+        <type name="yang:mac-address"/>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="ofj-nxm-of-match-eth-type-grouping">
+    <container name="eth-type-values">
+      <leaf name="value">
+        <type name="uint16"/>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/ofoxm:oxm-container/ofoxm:match-entries">
+    <ext:augment-identifier identifier="ofj-aug_nx_match"/>
+    <uses name="ofj-nxm-nx-match-reg-grouping"/>
+    <uses name="ofj-nxm-nx-match-tun-id-grouping"/>
+    <uses name="ofj-nxm-nx-match-arp-sha-grouping"/>
+    <uses name="ofj-nxm-nx-match-arp-tha-grouping"/>
+    <uses name="ofj-nxm-of-match-arp-op-grouping"/>
+    <uses name="ofj-nxm-of-match-arp-spa-grouping"/>
+    <uses name="ofj-nxm-of-match-arp-tpa-grouping"/>
+    <uses name="ofj-nxm-nx-match-tun-ipv4-dst-grouping"/>
+    <uses name="ofj-nxm-nx-match-tun-ipv4-src-grouping"/>
+    <uses name="ofj-nxm-of-match-eth-src-grouping"/>
+    <uses name="ofj-nxm-of-match-eth-dst-grouping"/>
+    <uses name="ofj-nxm-of-match-eth-type-grouping"/>
+  </augment>
+</module>

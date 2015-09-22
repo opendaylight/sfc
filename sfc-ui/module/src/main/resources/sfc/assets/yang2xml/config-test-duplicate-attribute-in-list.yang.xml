@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-test-duplicate-attribute-in-list"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:it-duplicate="urn:opendaylight:params:xml:ns:yang:controller:jmx:generator:it:duplicate"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:jmx:generator:it:duplicate"/>
+  <prefix value="it-duplicate"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <description>
+    <text>Testing IMPL</text>
+  </description>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="implementation">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="TestImpl"/>
+  </identity>
+  <identity name="netconf">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="NetconfTestImpl"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="implementation">
+      <when condition="/config:modules/config:module/config:type = 'implementation'"/>
+      <container name="dto-a">
+        <leaf name="simple-arg">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="port">
+          <type name="inet:port-number"/>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="implementation">
+      <when condition="/config:modules/config:module/config:type = 'implementation'"/>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="netconf">
+      <when condition="/config:modules/config:module/config:type = 'netconf'"/>
+      <list name="dtos">
+        <config:java-name-prefix java-prefix="dto-a"/>
+        <leaf name="port">
+          <type name="string"/>
+        </leaf>
+        <leaf name="core-size">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simple-int3">
+          <type name="uint16"/>
+        </leaf>
+      </list>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="netconf">
+      <when condition="/config:modules/config:module/config:type = 'netconf'"/>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+  </augment>
+</module>

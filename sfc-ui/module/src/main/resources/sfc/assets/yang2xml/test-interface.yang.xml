@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="test-interface"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sn="urn:ietf:params:xml:ns:yang:test-interface">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:test-interface"/>
+  <prefix value="sn"/>
+  <description>
+    <text>test file</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>will be defined</text>
+    </reference>
+  </revision>
+  <container name="interfaces">
+    <container name="block">
+      <leaf name="address">
+        <type name="string"/>
+      </leaf>
+      <leaf name="location">
+        <type name="string"/>
+      </leaf>
+    </container>
+    <list name="interface">
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+      </leaf>
+      <leaf name="type">
+        <type name="string"/>
+      </leaf>
+      <leaf name="enabled">
+        <type name="string"/>
+      </leaf>
+    </list>
+  </container>
+</module>

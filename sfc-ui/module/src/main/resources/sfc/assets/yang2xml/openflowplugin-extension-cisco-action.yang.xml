@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowplugin-extension-cisco-action"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowplugin-cisco-action="urn:opendaylight:openflowplugin:extension:cisco:action"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:fni="urn:opendaylight:flow:inventory"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:sal-flow="urn:opendaylight:flow:service"
+        xmlns:sal-group="urn:opendaylight:group:service"
+        xmlns:sal-packet="urn:opendaylight:packet:service"
+        xmlns:odl-flow-stats="urn:opendaylight:flow:statistics"
+        xmlns:odl-group-stats="urn:opendaylight:group:statistics"
+        xmlns:cAction-hi="urn:opendaylight:openflowplugin:extension:cof:hi:action">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowplugin:extension:cisco:action"/>
+  <prefix value="openflowplugin-cisco-action"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="fni"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-flow">
+    <prefix value="sal-flow"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-group">
+    <prefix value="sal-group"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="sal-packet"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-flow-statistics">
+    <prefix value="odl-flow-stats"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-statistics">
+    <prefix value="odl-group-stats"/>
+    <revision-date date="2013-11-11"/>
+  </import>
+  <import module="cisco-action-high">
+    <prefix value="cAction-hi"/>
+    <revision-date date="2014-10-10"/>
+  </import>
+  <description>
+    <text>Cisco openflow action extensions.</text>
+  </description>
+  <revision date="2014-10-10">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-add-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-add-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-add-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-add-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-remove-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-remove-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-remove-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-remove-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-update-flow-original-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-update-flow-original-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-update-flow-original-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-update-flow-original-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-update-flow-updated-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-update-flow-updated-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-vrf-rpc-update-flow-updated-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action">
+    <case name="cof-action-next-hop-rpc-update-flow-updated-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-vrf-rpc-add-group-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-next-hop-rpc-add-group-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-vrf-rpc-remove-group-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-next-hop-rpc-remove-group-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-vrf-rpc-update-group-original-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-next-hop-rpc-update-group-original-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-vrf-rpc-update-group-updated-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action">
+    <case name="cof-action-next-hop-rpc-update-group-updated-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action">
+    <case name="cof-action-vrf-rpc-transmit-packet-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action">
+    <case name="cof-action-next-hop-rpc-transmit-packet-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action">
+    <case name="cof-action-vrf-nodes-node-table-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action">
+    <case name="cof-action-next-hop-nodes-node-table-flow-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action">
+    <case name="cof-action-vrf-nodes-node-table-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action">
+    <case name="cof-action-next-hop-nodes-node-table-flow-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action">
+    <case name="cof-action-vrf-nodes-node-group-buckets-bucket-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action">
+    <case name="cof-action-next-hop-nodes-node-group-buckets-bucket-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="cof-action-vrf-notif-flows-statistics-update-write-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="cof-action-next-hop-notif-flows-statistics-update-write-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="cof-action-vrf-notif-flows-statistics-update-apply-actions-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action">
+    <case name="cof-action-next-hop-notif-flows-statistics-update-apply-actions-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action">
+    <case name="cof-action-vrf-notif-group-desc-stats-updated-case">
+      <uses name="cAction-hi:cof-action-vrf-grouping"/>
+    </case>
+  </augment>
+  <augment target-node="/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action">
+    <case name="cof-action-next-hop-notif-group-desc-stats-updated-case">
+      <uses name="cAction-hi:cof-action-next-hop-grouping"/>
+    </case>
+  </augment>
+</module>

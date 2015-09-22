@@ -1,0 +1,77 @@
+<div class="openFlowManager">
+    <alert ng-show="loadStatusMsgs.length" type="danger">
+        <b> {{'OM_LOAD_ERROR' | translate }} </b>
+        <div class="text">
+            <span ng-repeat="m in loadStatusMsgs track by $index" >{{m | translate}}</span>
+        </div>
+    </alert>
+    <div ng-hide="loadStatusMsgs.length" class="ofmWrapper">
+        <div class="ofmNav">
+            <div class="navWrapper">
+                <button class="basicView {{view.basic ? 'active':''}}" ng-click="collapseAll(true)" tooltip="{{'OF_BAS_VIEW_TT' | translate}}" >{{'OF_BAS_VIEW' | translate}}</button>
+                <button class="{{view.flowPopup || view.flowOperPopup ? 'active':''}}" ng-click="loadFlows(); toggleExpanded('flowPopup')" tooltip="{{'OF_MANAGMENT_TT' | translate}}">{{ 'OF_MANAGMENT' | translate}}</button>
+                <button class="{{view.statisticsPopup ? 'active':''}}" ng-click="toggleExpanded('statisticsPopup')" tooltip="{{'OF_STATS_TT' | translate}}">{{ 'OF_STATS' | translate}}</button>
+                <button class="{{view.hostsPopup ? 'active':''}}" ng-click="loadHostData(); toggleExpanded('hostsPopup')" tooltip="{{'OF_HOSTS_TT' | translate}}">{{ 'OF_HOSTS' | translate}}</button>
+                <button class="{{view.settingsPopup ? 'active':''}}" ng-click="toggleExpanded('settingsPopup')" tooltip="{{'OF_SETTINGS_TT' | translate}}">{{ 'OF_SETTINGS' | translate}}</button>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div ng-show="showTopStatsPopup" class="popUpDevInfo">
+            <button class="close" ng-click="hideTopStatsPopup()" tooltip="{{'OF_CLOSE_WIN_TT' | translate}}">×</button>
+            <label class="sectionTitle">{{ 'OF_PORT_ST' | translate}}</label>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(1, null)" tooltip="{{'OF_PORT_ST_TT' | translate}}">{{ 'OF_PORT_STS' | translate}}</button>
+            <label class="sectionTitle">{{ 'OF_TABLE_ST' | translate}}</label>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(0, 'getFlowSstats')" tooltip="{{'OF_FLOW_ST_TT' | translate}}">{{ 'OF_FLOW_ST' | translate}}</button>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(0, 'getFlowTstats')" tooltip="{{'OF_FLOW_TB_ST_TT' | translate}}">{{ 'OF_FLOW_TB_ST' | translate}}</button>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(0, 'getAggregateFstats')" tooltip="{{'OF_AGG_ST_TT' | translate}}">{{ 'OF_AGG_ST' | translate}}</button>
+            <label class="sectionTitle">{{ 'OF_OTHER_ST' | translate}}</label>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(2, null)" tooltip="{{'OF_QU_ST_TT' | translate}}">{{ 'OF_QUEUE_ST' | translate}}</button>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(3, null)" tooltip="{{'OF_GROUP_ST_TT' | translate}}">{{ 'OF_GROUP_ST' | translate}}</button>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(4, null)" tooltip="{{'OF_METER_ST_TT' | translate}}">{{ 'OF_METER_ST' | translate}}</button>
+            <button class="btn btn-primary" ng-click="showPopUpStatistics(5, null)" tooltip="{{'OF_METER_FT_ST_TT' | translate}}">{{ 'OF_METER_FT_ST' | translate}}</button>
+        </div>
+
+        <div class="nextTopo col-md-12">
+            <div class="hostDevices">
+                <label>Show host devices :</label><input type="checkbox" ng-model="showHostDevice" />
+            </div>
+
+            <alert ng-show="loadStatusTopoMsgs.length" type="danger">
+                <b> {{'OM_LOAD_ERROR' | translate }} </b>
+                <div class="text">
+                    <span ng-repeat="m in loadStatusTopoMsgs track by $index" >{{m | translate}}</span>
+                </div>
+            </alert>
+
+            <!-- <sigma-topology topology-data="topologyData" settings-sigma="sigmaSettings" settings-atlas="settingsAtlas" drag-nodes="true" custom-shapes="true" topology-custfunc="topologyCustfunc"></sigma-toppology> -->
+            <next-topology topology-data="topologyData" custom-functions="customFunctionality" show-host-device="showHostDevice" node-click-callback="toggleSelDevice"></next-topology>
+            
+        </div>
+
+        <div class="flowInfoWrapper sample-show-hide" ng-show="view.flowPopup">
+            <div ng-include src="view_path+'flow_info.tpl.html'"></div>
+        </div>
+
+        <div class="flowInfoWrapper dragAble sample-show-hide" ng-show="view.flowOperPopup">
+            <div ng-include src="view_path+'flow_oper.tpl.html'"></div>
+        </div>
+
+        <div class="flowInfoWrapper dragAble sample-show-hide" ng-show="view.flowsFilter">
+            <div ng-include src="view_path+'flows_filter.tpl.html'"></div>
+        </div>
+
+        <div class="flowInfoWrapper statistics sample-show-hide" ng-show="view.statisticsPopup">
+            <div ng-include src="view_path+'om_statistics.tpl.html'"></div>
+        </div>
+
+        <div class="flowInfoWrapper statistics sample-show-hide" ng-show="view.settingsPopup">
+            <div ng-include src="view_path+'ofm_settings.tpl.html'"></div>
+        </div>
+
+        <div class="flowInfoWrapper statistics sample-show-hide" ng-show="view.hostsPopup">
+            <div ng-include src="view_path+'ofm_hosts.tpl.html'"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>

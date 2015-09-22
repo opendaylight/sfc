@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module2-behind-mount-point"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mod2bemopo="module:2:behind:mount:point">
+  <namespace uri="module:2:behind:mount:point"/>
+  <prefix value="mod2bemopo"/>
+  <revision date="2014-02-04"/>
+  <rpc name="rpc-behind-module2"/>
+</module>

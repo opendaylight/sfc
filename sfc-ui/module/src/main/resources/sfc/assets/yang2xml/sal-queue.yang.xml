@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sal-queue"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:queue="urn:opendaylight:queue:service"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:queue-type="urn:opendaylight:flow:types:queue">
+  <namespace uri="urn:opendaylight:queue:service"/>
+  <prefix value="queue"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-queue-types">
+    <prefix value="queue-type"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <revision date="2013-11-07">
+    <description>
+      <text>Initial revision of queue service</text>
+    </description>
+  </revision>
+  <grouping name="node-queue">
+    <uses name="inv:node-context-ref"/>
+    <uses name="queue-type:queue-packet"/>
+  </grouping>
+  <rpc name="get-queue">
+    <output>
+      <uses name="queue-type:queue-packet"/>
+    </output>
+  </rpc>
+  <notification name="queue-get-config-reply">
+    <uses name="node-queue"/>
+  </notification>
+</module>

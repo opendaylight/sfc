@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ipv4-packet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ipv4="urn:opendaylight:packet:ipv4"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ethernet="urn:opendaylight:packet:ethernet">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:ipv4"/>
+  <prefix value="ipv4"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="base-packet">
+    <prefix value="bpacket"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <import module="ethernet-packet">
+    <prefix value="ethernet"/>
+    <revision-date date="2014-05-28"/>
+  </import>
+  <revision date="2014-05-28">
+    <description>
+      <text>IPv4 packet module draft.</text>
+    </description>
+  </revision>
+  <typedef name="known-ip-protocols">
+    <type name="enumeration">
+      <enum name="hopopt">
+        <value value="0"/>
+        <description>
+          <text>IPv6 Hop-by-Hop Option</text>
+        </description>
+      </enum>
+      <enum name="icmp">
+        <value value="1"/>
+        <description>
+          <text>Internet Control Message Protocol</text>
+        </description>
+      </enum>
+      <enum name="igmp">
+        <value value="2"/>
+        <description>
+          <text>Internet Group Management Protocol</text>
+        </description>
+      </enum>
+      <enum name="ggp">
+        <value value="3"/>
+        <description>
+          <text>Gateway-to-Gateway Protocol</text>
+        </description>
+      </enum>
+      <enum name="ip-in-ip">
+        <value value="4"/>
+        <description>
+          <text>IP-in-IP Encapsulation</text>
+        </description>
+      </enum>
+      <enum name="st">
+        <value value="5"/>
+        <description>
+          <text>Internet Stream Protocol</text>
+        </description>
+      </enum>
+      <enum name="tcp">
+        <value value="6"/>
+        <description>
+          <text>Transmisson Control Protocol</text>
+        </description>
+      </enum>
+      <enum name="cbt">
+        <value value="7"/>
+        <description>
+          <text>Core-based trees</text>
+        </description>
+      </enum>
+      <enum name="egp">
+        <value value="8"/>
+        <description>
+          <text>Exterior Gateway Protocol</text>
+        </description>
+      </enum>
+      <enum name="igp">
+        <value value="9"/>
+        <description>
+          <text>Interior Gateway Protocol</text>
+        </description>
+      </enum>
+      <enum name="nvp">
+        <value value="11"/>
+        <description>
+          <text>Network Voice Protocol</text>
+        </description>
+      </enum>
+      <enum name="udp">
+        <value value="17"/>
+        <description>
+          <text>User Datagram Protocol</text>
+        </description>
+      </enum>
+      <enum name="hmp">
+        <value value="20"/>
+        <description>
+          <text>Host Monitoring Protocol</text>
+        </description>
+      </enum>
+      <enum name="rdp">
+        <value value="27"/>
+        <description>
+          <text>Reliable Datagram Protocol</text>
+        </description>
+      </enum>
+      <enum name="dccp">
+        <value value="33"/>
+        <description>
+          <text>Datagram Congestion Control Protocol</text>
+        </description>
+      </enum>
+      <enum name="encap">
+        <value value="41"/>
+        <description>
+          <text>IPv6 Encapsulation</text>
+        </description>
+      </enum>
+      <enum name="ipv6-route">
+        <value value="43"/>
+        <description>
+          <text>IPv6 Routing Header</text>
+        </description>
+      </enum>
+      <enum name="ipv6-frag">
+        <value value="44"/>
+        <description>
+          <text>IPv6 Fragment Header</text>
+        </description>
+      </enum>
+      <enum name="rsvp">
+        <value value="46"/>
+        <description>
+          <text>Resource Reservation Protocol</text>
+        </description>
+      </enum>
+      <enum name="gre">
+        <value value="47"/>
+        <description>
+          <text>Generic Routing Encapsulation</text>
+        </description>
+      </enum>
+      <enum name="esp">
+        <value value="50"/>
+        <description>
+          <text>Encapsulating Security Payload</text>
+        </description>
+      </enum>
+      <enum name="ah">
+        <value value="51"/>
+        <description>
+          <text>Authentication Header</text>
+        </description>
+      </enum>
+      <enum name="ipv6-icmp">
+        <value value="58"/>
+        <description>
+          <text>IPv6 ICMP</text>
+        </description>
+      </enum>
+      <enum name="ipv6-no-next">
+        <value value="59"/>
+        <description>
+          <text>IPv6 No Next Header</text>
+        </description>
+      </enum>
+      <enum name="ipv6-opts">
+        <value value="60"/>
+        <description>
+          <text>IPv6 Destination Options</text>
+        </description>
+      </enum>
+      <enum name="ospf">
+        <value value="89"/>
+        <description>
+          <text>Open Shortest Path First</text>
+        </description>
+      </enum>
+      <enum name="sctp">
+        <value value="132"/>
+        <description>
+          <text>Stream Control Transmission Protocol</text>
+        </description>
+      </enum>
+      <enum name="fibre-channel">
+        <value value="133"/>
+        <description>
+          <text>Fibre Channel</text>
+        </description>
+      </enum>
+      <enum name="ipv6-mobility">
+        <value value="135"/>
+        <description>
+          <text>IPv6 Mobility Header</text>
+        </description>
+      </enum>
+      <enum name="experimentation1">
+        <value value="253"/>
+        <description>
+          <text>Use for experimentation and testing, RFC3692</text>
+        </description>
+      </enum>
+      <enum name="experimentation2">
+        <value value="254"/>
+        <description>
+          <text>Use for experimentation and testing, RFC3692</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <grouping name="ipv4-packet-fields">
+    <leaf name="version">
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="ihl">
+      <type name="uint8"/>
+      <description>
+        <text>Internal Header Length</text>
+      </description>
+    </leaf>
+    <leaf name="dscp">
+      <type name="inet:dscp"/>
+      <description>
+        <text>Differentiated Code Services Point</text>
+      </description>
+    </leaf>
+    <leaf name="ecn">
+      <type name="uint8"/>
+      <description>
+        <text>Explicit Congestion Notification</text>
+      </description>
+    </leaf>
+    <leaf name="ipv4-length">
+      <type name="uint16"/>
+      <description>
+        <text>Packet size, including header and data, in bytes</text>
+      </description>
+    </leaf>
+    <leaf name="id">
+      <type name="uint16"/>
+      <description>
+        <text>Identification</text>
+      </description>
+    </leaf>
+    <leaf name="reserved-flag">
+      <type name="boolean"/>
+      <description>
+        <text>First bit in the flags, must be 0</text>
+      </description>
+    </leaf>
+    <leaf name="df-flag">
+      <type name="boolean"/>
+      <description>
+        <text>Second bit in the flags, Don't Fragment Flag</text>
+      </description>
+    </leaf>
+    <leaf name="mf-flag">
+      <type name="boolean"/>
+      <description>
+        <text>Third bit in the flags, More Fragments Flag</text>
+      </description>
+    </leaf>
+    <leaf name="fragment-offset">
+      <type name="uint16"/>
+      <description>
+        <text>Specifies the offset of a particular fragment relative to the beginning of the original unfragmented IP datagram</text>
+      </description>
+    </leaf>
+    <leaf name="ttl">
+      <type name="uint8"/>
+      <description>
+        <text>Time to live</text>
+      </description>
+    </leaf>
+    <leaf name="protocol">
+      <type name="known-ip-protocols"/>
+      <description>
+        <text>Protocol for the data</text>
+      </description>
+    </leaf>
+    <leaf name="checksum">
+      <type name="uint16"/>
+      <description>
+        <text>Header Checksum</text>
+      </description>
+    </leaf>
+    <leaf name="source-ipv4">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+    <leaf name="destination-ipv4">
+      <type name="inet:ipv4-address"/>
+    </leaf>
+    <leaf name="ipv4-options">
+      <type name="binary"/>
+    </leaf>
+    <uses name="bpacket:packet-fields"/>
+  </grouping>
+  <notification name="ipv4-packet-received">
+    <uses name="bpacket:packet-chain-grp">
+      <augment target-node="bpacket:packet-chain/bpacket:packet">
+        <case name="ipv4-packet">
+          <uses name="ipv4-packet-fields"/>
+        </case>
+      </augment>
+    </uses>
+    <uses name="bpacket:packet-payload"/>
+  </notification>
+</module>

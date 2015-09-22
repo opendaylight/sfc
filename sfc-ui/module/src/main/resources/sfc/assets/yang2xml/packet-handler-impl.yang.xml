@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="packet-handler-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:packet-handler-impl="urn:opendaylight:packet:packet-handler-impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:packet:packet-handler-impl"/>
+  <prefix value="packet-handler-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+packethandler-impl implementation.</text>
+  </description>
+  <revision date="2014-05-28">
+    <description>
+      <text>Initial module draft.</text>
+    </description>
+  </revision>
+  <identity name="packet-handler-impl">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="PacketHandler"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="packet-handler-impl">
+      <when condition="/config:modules/config:module/config:type = 'packet-handler-impl'"/>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+</module>

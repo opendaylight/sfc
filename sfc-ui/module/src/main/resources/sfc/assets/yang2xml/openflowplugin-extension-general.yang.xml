@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openflowplugin-extension-general"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:openflowplugin-extension-general="urn:opendaylight:openflowplugin:extension:general"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:fni="urn:opendaylight:flow:inventory"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:sal-flow="urn:opendaylight:flow:service"
+        xmlns:sal-group="urn:opendaylight:group:service"
+        xmlns:sal-packet="urn:opendaylight:packet:service"
+        xmlns:odl-flow-stats="urn:opendaylight:flow:statistics"
+        xmlns:odl-group-stats="urn:opendaylight:group:statistics">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:openflowplugin:extension:general"/>
+  <prefix value="openflowplugin-extension-general"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="flow-node-inventory">
+    <prefix value="fni"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-flow">
+    <prefix value="sal-flow"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="sal-group">
+    <prefix value="sal-group"/>
+    <revision-date date="2013-09-18"/>
+  </import>
+  <import module="packet-processing">
+    <prefix value="sal-packet"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-flow-statistics">
+    <prefix value="odl-flow-stats"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-group-statistics">
+    <prefix value="odl-group-stats"/>
+    <revision-date date="2013-11-11"/>
+  </import>
+  <description>
+    <text>Everything for a vendor who want to implement openflow extensions.</text>
+  </description>
+  <revision date="2014-07-14">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="extension-key">
+    <description>
+      <text>Base identity for all extension keys.</text>
+    </description>
+  </identity>
+  <grouping name="general-extension-grouping">
+    <leaf name="extension-key">
+      <type name="identityref">
+        <base name="extension-key"/>
+      </type>
+    </leaf>
+    <container name="extension">
+      <description>
+        <text>A vendor has to augment this container.</text>
+      </description>
+    </container>
+  </grouping>
+  <grouping name="general-extension-list-grouping">
+    <list name="extension-list">
+      <key value="extension-key"/>
+      <uses name="general-extension-grouping"/>
+    </list>
+  </grouping>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:match">
+    <ext:augment-identifier identifier="general-aug-match-rpc-add-flow"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:remove-flow/sal-flow:input/sal-flow:match">
+    <ext:augment-identifier identifier="general-aug-match-rpc-remove-flow"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match">
+    <ext:augment-identifier identifier="general-aug-match-rpc-update-flow-original"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match">
+    <ext:augment-identifier identifier="general-aug-match-rpc-update-flow-updated"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:match">
+    <ext:augment-identifier identifier="general-aug-match-nodes-node-table-flow"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:switch-flow-removed/sal-flow:match">
+    <ext:augment-identifier identifier="general-aug-match-notif-switch-flow-removed"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/sal-packet:packet-received/sal-packet:match">
+    <ext:augment-identifier identifier="general-aug-match-notif-packet-in"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match">
+    <ext:augment-identifier identifier="general-aug-match-notif-update-flow-stats"/>
+    <uses name="general-extension-list-grouping"/>
+  </augment>
+  <augment target-node="/inv:nodes/inv:node/fni:table/fni:flow/fni:match/extension-list/extension">
+    <ext:augment-identifier identifier="vendor-xxx1"/>
+    <uses name="vendor-xxx-grouping"/>
+  </augment>
+  <augment target-node="/sal-flow:add-flow/sal-flow:input/sal-flow:match/extension-list/extension">
+    <ext:augment-identifier identifier="vendor-xxx2"/>
+    <uses name="vendor-xxx-grouping"/>
+  </augment>
+  <grouping name="vendor-xxx-grouping">
+    <leaf name="dos-ekis">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+</module>

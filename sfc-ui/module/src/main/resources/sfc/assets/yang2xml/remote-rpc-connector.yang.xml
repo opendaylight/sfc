@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="remote-rpc-connector"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:remote-rpc-connector="urn:opendaylight:params:xml:ns:yang:controller:config:remote-rpc-connector"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:remote-rpc-connector"/>
+  <prefix value="remote-rpc-connector"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="opendaylight-md-sal-dom">
+    <prefix value="dom"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+        the remote routed rpc</text>
+  </description>
+  <revision date="2014-07-07">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="remote-rpc-connector">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="RemoteRPCBroker"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="remote-rpc-connector">
+      <when condition="/config:modules/config:module/config:type = 'remote-rpc-connector'"/>
+      <container name="dom-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="dom:dom-broker-osgi-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <leaf name="enable-metric-capture">
+        <default value="false"/>
+        <type name="boolean"/>
+        <description>
+          <text>Enable or disable metric capture.</text>
+        </description>
+      </leaf>
+      <leaf name="actor-system-name">
+        <default value="odl-cluster-rpc"/>
+        <type name="string"/>
+        <description>
+          <text>Name by which actor system is identified. Its also used to find relevant configuration</text>
+        </description>
+      </leaf>
+      <leaf name="bounded-mailbox-capacity">
+        <default value="1000"/>
+        <type name="uint16"/>
+        <description>
+          <text>Max queue size that an actor's mailbox can reach</text>
+        </description>
+      </leaf>
+    </case>
+  </augment>
+</module>

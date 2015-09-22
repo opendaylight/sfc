@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="l3-unicast-igp-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:l3t="urn:TBD:params:xml:ns:yang:nt:l3-unicast-igp-topology"
+        xmlns:nt="urn:TBD:params:xml:ns:yang:network-topology"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:TBD:params:xml:ns:yang:nt:l3-unicast-igp-topology"/>
+  <prefix value="l3t"/>
+  <import module="network-topology">
+    <prefix value="nt"/>
+    <revision-date date="2013-07-12"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>TBD</text>
+  </contact>
+  <revision date="2013-07-12">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>TBD</text>
+    </reference>
+  </revision>
+  <typedef name="igp-event-type">
+    <description>
+      <text>IGP Event type for notifications</text>
+    </description>
+    <type name="enumeration">
+      <enum name="add">
+        <value value="0"/>
+        <description>
+          <text>An IGP node or link or prefix or termination-point has been added</text>
+        </description>
+      </enum>
+      <enum name="remove">
+        <value value="1"/>
+        <description>
+          <text>An IGP node or link or prefix or termination-point has been removed</text>
+        </description>
+      </enum>
+      <enum name="update">
+        <value value="2"/>
+        <description>
+          <text>An IGP node or link or prefix or termination-point has been updated</text>
+        </description>
+      </enum>
+    </type>
+  </typedef>
+  <identity name="flag-identity">
+    <description>
+      <text>Base type for flags</text>
+    </description>
+  </identity>
+  <identity name="undefined-flag">
+    <base name="flag-identity"/>
+  </identity>
+  <typedef name="flag-type">
+    <type name="identityref">
+      <base name="flag-identity"/>
+    </type>
+  </typedef>
+  <grouping name="igp-prefix-attributes">
+    <leaf name="prefix">
+      <type name="inet:ip-prefix"/>
+    </leaf>
+    <leaf name="metric">
+      <type name="uint32"/>
+    </leaf>
+    <leaf-list name="flag">
+      <type name="flag-type"/>
+    </leaf-list>
+  </grouping>
+  <grouping name="l3-unicast-igp-topology-type">
+    <container name="l3-unicast-igp-topology">
+      <presence value="indicates L3 Unicast IGP Topology"/>
+    </container>
+  </grouping>
+  <grouping name="igp-topology-attributes">
+    <container name="igp-topology-attributes">
+      <leaf name="name">
+        <description>
+          <text>Name of the topology</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+      <leaf-list name="flag">
+        <description>
+          <text>Topology flags</text>
+        </description>
+        <type name="flag-type"/>
+      </leaf-list>
+    </container>
+  </grouping>
+  <grouping name="igp-node-attributes">
+    <container name="igp-node-attributes">
+      <leaf name="name">
+        <description>
+          <text>Node name</text>
+        </description>
+        <type name="inet:domain-name"/>
+      </leaf>
+      <leaf-list name="flag">
+        <description>
+          <text>Node operational flags</text>
+        </description>
+        <type name="flag-type"/>
+      </leaf-list>
+      <leaf-list name="router-id">
+        <description>
+          <text>Router-id for the node</text>
+        </description>
+        <type name="inet:ip-address"/>
+      </leaf-list>
+      <list name="prefix">
+        <key value="prefix"/>
+        <uses name="igp-prefix-attributes"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="igp-link-attributes">
+    <container name="igp-link-attributes">
+      <leaf name="name">
+        <description>
+          <text>Link Name</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+      <leaf-list name="flag">
+        <description>
+          <text>Link flags</text>
+        </description>
+        <type name="flag-type"/>
+      </leaf-list>
+      <leaf name="metric">
+        <description>
+          <text>Link Metric</text>
+        </description>
+        <type name="uint32">
+          <range value="0..16777215">
+            <description>
+              <text>
+</text>
+            </description>
+          </range>
+        </type>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="igp-termination-point-attributes">
+    <container name="igp-termination-point-attributes">
+      <choice name="termination-point-type">
+        <case name="ip">
+          <leaf-list name="ip-address">
+            <description>
+              <text>IPv4 or IPv6 address</text>
+            </description>
+            <type name="inet:ip-address"/>
+          </leaf-list>
+        </case>
+        <case name="unnumbered">
+          <leaf name="unnumbered-id">
+            <description>
+              <text>Unnumbered interface identifier</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+        </case>
+      </choice>
+    </container>
+  </grouping>
+  <augment target-node="/nt:network-topology/nt:topology/nt:topology-types">
+    <uses name="l3-unicast-igp-topology-type"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology">
+    <when condition="topology-types/l3-unicast-igp-topology"/>
+    <uses name="igp-topology-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:node">
+    <when condition="../../topology-types/l3-unicast-igp-topology"/>
+    <uses name="igp-node-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:link">
+    <when condition="../../topology-types/l3-unicast-igp-topology"/>
+    <uses name="igp-link-attributes"/>
+  </augment>
+  <augment target-node="/nt:network-topology/nt:topology/nt:node/nt:termination-point">
+    <when condition="../../topology-types/l3-unicast-igp-topology"/>
+    <uses name="igp-termination-point-attributes"/>
+  </augment>
+  <notification name="igp-node-event">
+    <leaf name="igp-event-type">
+      <type name="igp-event-type"/>
+    </leaf>
+    <leaf name="topology-ref">
+      <type name="nt:topology-ref"/>
+    </leaf>
+    <uses name="l3-unicast-igp-topology-type"/>
+    <uses name="nt:node-attributes"/>
+    <uses name="igp-node-attributes"/>
+  </notification>
+  <notification name="igp-link-event">
+    <leaf name="igp-event-type">
+      <type name="igp-event-type"/>
+    </leaf>
+    <leaf name="topology-ref">
+      <type name="nt:topology-ref"/>
+    </leaf>
+    <uses name="l3-unicast-igp-topology-type"/>
+    <uses name="nt:link-attributes"/>
+    <uses name="igp-link-attributes"/>
+  </notification>
+  <notification name="igp-prefix-event">
+    <leaf name="igp-event-type">
+      <type name="igp-event-type"/>
+    </leaf>
+    <leaf name="topology-ref">
+      <type name="nt:topology-ref"/>
+    </leaf>
+    <leaf name="node-ref">
+      <type name="nt:node-ref"/>
+    </leaf>
+    <uses name="l3-unicast-igp-topology-type"/>
+    <container name="prefix">
+      <uses name="igp-prefix-attributes"/>
+    </container>
+  </notification>
+  <notification name="termination-point-event">
+    <leaf name="igp-event-type">
+      <type name="igp-event-type"/>
+    </leaf>
+    <leaf name="topology-ref">
+      <type name="nt:topology-ref"/>
+    </leaf>
+    <leaf name="node-ref">
+      <type name="nt:node-ref"/>
+    </leaf>
+    <uses name="l3-unicast-igp-topology-type"/>
+    <uses name="nt:tp-attributes"/>
+    <uses name="igp-termination-point-attributes"/>
+  </notification>
+</module>

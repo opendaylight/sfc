@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-syslog-notifications"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sesyno="urn:cisco:params:xml:ns:odl:service-syslog-notifications:1.0"
+        xmlns:seno="urn:cisco:params:xml:ns:odl:service-notifications:1.0"
+        xmlns:syslog="urn:cisco:params:xml:ns:yang:syslog-message"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:cisco:params:xml:ns:odl:service-syslog-notifications:1.0"/>
+  <prefix value="sesyno"/>
+  <import module="service-notifications">
+    <prefix value="seno"/>
+  </import>
+  <import module="syslog-message">
+    <prefix value="syslog"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <contact>
+    <text>rgallas@cisco.com</text>
+  </contact>
+  <description>
+    <text>Model for retrieving syslog notifications for notifications demo.</text>
+  </description>
+  <revision date="2014-07-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <augment target-node="/seno:receive/output/seno:notifications">
+    <leaf name="facility">
+      <type name="syslog:syslog-facility"/>
+      <description>
+        <text>logging facility</text>
+      </description>
+    </leaf>
+    <leaf name="severity">
+      <type name="syslog:syslog-severity"/>
+      <description>
+        <text>logging severity</text>
+      </description>
+    </leaf>
+    <leaf name="message-body">
+      <type name="string"/>
+      <description>
+        <text>syslog message body</text>
+      </description>
+    </leaf>
+    <leaf name="msg">
+      <type name="uint32"/>
+      <description>
+        <text>Message ID</text>
+      </description>
+    </leaf>
+    <leaf name="hostnameprefix">
+      <type name="string"/>
+      <description>
+        <text>Optional host name prefix</text>
+      </description>
+    </leaf>
+    <leaf name="nodeid">
+      <type name="string"/>
+      <description>
+        <text>RP/CPU sending the message</text>
+      </description>
+    </leaf>
+    <leaf name="timestamp">
+      <type name="yang:date-and-time"/>
+      <description>
+        <text>Timestamp from sender</text>
+      </description>
+    </leaf>
+    <leaf name="process-name">
+      <type name="string"/>
+      <description>
+        <text>Process sending the message</text>
+      </description>
+    </leaf>
+    <leaf name="pid">
+      <type name="uint32"/>
+      <description>
+        <text>Process/Job ID</text>
+      </description>
+    </leaf>
+    <leaf name="category">
+      <type name="string"/>
+      <description>
+        <text>message category</text>
+      </description>
+    </leaf>
+    <leaf name="group">
+      <type name="string"/>
+      <description>
+        <text>group name</text>
+      </description>
+    </leaf>
+    <leaf name="code">
+      <type name="string"/>
+      <description>
+        <text>message code</text>
+      </description>
+    </leaf>
+    <leaf name="message-text">
+      <type name="string"/>
+      <description>
+        <text>Description of the message</text>
+      </description>
+    </leaf>
+  </augment>
+</module>

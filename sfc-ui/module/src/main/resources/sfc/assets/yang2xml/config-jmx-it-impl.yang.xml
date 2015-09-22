@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-jmx-it-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:it-impl="urn:opendaylight:params:xml:ns:yang:controller:config:jmx:generator:it:impl"
+        xmlns:jmxIt="urn:opendaylight:params:xml:ns:yang:controller:config:jmx:generator:it"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:jmx:generator:it:impl"/>
+  <prefix value="it-impl"/>
+  <import module="config-jmx-it">
+    <prefix value="jmxIt"/>
+    <revision-date date="2013-06-13"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="config-threads">
+    <prefix value="th"/>
+    <revision-date date="2013-04-09"/>
+  </import>
+  <description>
+    <text>Testing IMPL</text>
+  </description>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="jmxIt:testing"/>
+    <config:java-name-prefix java-prefix="TestImpl"/>
+  </identity>
+  <identity name="impl-netconf">
+    <base name="config:module-type"/>
+    <config:provided-service name="jmxIt:testing"/>
+    <config:java-name-prefix java-prefix="NetconfTestImpl"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="impl">
+      <when condition="/config:modules/config:module/config:type = 'impl'"/>
+      <container name="dto-a1">
+        <leaf name="simple-arg">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="port">
+          <type name="inet:port-number"/>
+        </leaf>
+      </container>
+      <leaf name="as-number">
+        <mandatory value="true"/>
+        <type name="inet:as-number"/>
+      </leaf>
+      <leaf name="simpleInt">
+        <type name="uint32"/>
+        <default value="99L"/>
+      </leaf>
+      <container name="dto_b">
+        <leaf name="simple-int1">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simple-int2">
+          <type name="uint32"/>
+        </leaf>
+      </container>
+    </case>
+    <case name="impl-netconf">
+      <when condition="/config:modules/config:module/config:type = 'impl-netconf'"/>
+      <container name="dto-a">
+        <leaf name="simple-arg">
+          <type name="uint32"/>
+        </leaf>
+        <container name="dto-a-inner">
+          <leaf name="simple-arg">
+            <type name="uint32"/>
+          </leaf>
+          <container name="dto-a-inner-inner">
+            <leaf name="simple-arg">
+              <type name="uint32"/>
+            </leaf>
+          </container>
+        </container>
+      </container>
+      <leaf name="simpleInt">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="simpleBoolean">
+        <type name="boolean"/>
+        <default value="false"/>
+      </leaf>
+      <leaf name="simple-long">
+        <type name="int64"/>
+      </leaf>
+      <leaf name="simple-long-2">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="simple-BigInteger">
+        <type name="uint64"/>
+      </leaf>
+      <leaf name="simple-byte">
+        <type name="int8"/>
+      </leaf>
+      <leaf name="simple-short">
+        <type name="uint8"/>
+      </leaf>
+      <leaf name="simple-test">
+        <type name="uint16"/>
+        <default value="99"/>
+      </leaf>
+      <leaf-list name="simple-list">
+        <type name="uint16"/>
+      </leaf-list>
+      <container name="dto_c">
+        <leaf name="simple-int1">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simple-int2">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simple-int3">
+          <type name="uint16"/>
+        </leaf>
+        <leaf-list name="simple-list">
+          <type name="uint16"/>
+        </leaf-list>
+        <list name="complex-dto-bInner">
+          <leaf-list name="simple-list">
+            <type name="uint16"/>
+          </leaf-list>
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+          <container name="deep">
+            <leaf name="simple-int3">
+              <type name="uint16"/>
+            </leaf>
+          </container>
+        </list>
+      </container>
+      <list name="complex-list">
+        <list name="simple-list">
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+        </list>
+      </list>
+      <list name="peers">
+        <config:java-name-prefix java-prefix="Peer"/>
+        <leaf name="port">
+          <type name="string"/>
+        </leaf>
+        <leaf name="core-size">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simple-int3">
+          <type name="uint16"/>
+        </leaf>
+      </list>
+      <container name="thread-factory">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="th:threadfactory"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="impl">
+      <when condition="/config:modules/config:module/config:type = 'impl'"/>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+    <case name="impl-netconf">
+      <when condition="/config:modules/config:module/config:type = 'impl-netconf'"/>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+      <leaf name="created-sessions-2">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+  </augment>
+</module>

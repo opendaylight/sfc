@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-test-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:it-impl="urn:opendaylight:params:xml:ns:yang:controller:test:impl"
+        xmlns:test="urn:opendaylight:params:xml:ns:yang:controller:test"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:tt="urn:opendaylight:params:xml:ns:yang:controller:config:test:types">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:test:impl"/>
+  <prefix value="it-impl"/>
+  <import module="config-test">
+    <prefix value="test"/>
+    <revision-date date="2013-06-13"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="test-types">
+    <prefix value="tt"/>
+    <revision-date date="2013-11-27"/>
+  </import>
+  <description>
+    <text>Testing IMPL</text>
+  </description>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="impl">
+    <base name="config:module-type"/>
+    <config:provided-service name="test:testing"/>
+    <config:java-name-prefix java-prefix="TestImpl"/>
+  </identity>
+  <identity name="impl-dep">
+    <base name="config:module-type"/>
+    <config:provided-service name="test:testing"/>
+    <config:java-name-prefix java-prefix="DepTestImpl"/>
+  </identity>
+  <identity name="impl-netconf">
+    <base name="config:module-type"/>
+    <config:provided-service name="test:testing"/>
+    <config:java-name-prefix java-prefix="NetconfTestImpl"/>
+  </identity>
+  <identity name="impl-identity-test">
+    <base name="config:module-type"/>
+    <config:provided-service name="test:testing"/>
+    <config:java-name-prefix java-prefix="IdentityTest"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="impl-identity-test">
+      <when condition="/config:modules/config:module/config:type = 'impl-identity-test'"/>
+      <leaf name="afi">
+        <type name="identityref">
+          <base name="tt:test-identity1"/>
+        </type>
+      </leaf>
+      <container name="identities-container">
+        <leaf name="afi">
+          <type name="identityref">
+            <base name="tt:test-identity1"/>
+          </type>
+        </leaf>
+      </container>
+      <list name="identities">
+        <leaf name="afi">
+          <type name="identityref">
+            <base name="tt:test-identity1"/>
+          </type>
+        </leaf>
+        <leaf name="safi">
+          <type name="identityref">
+            <base name="tt:test-identity1"/>
+          </type>
+        </leaf>
+        <container name="identities-inner">
+          <leaf name="afi">
+            <type name="identityref">
+              <base name="tt:test-identity1"/>
+            </type>
+          </leaf>
+        </container>
+      </list>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="impl-identity-test">
+      <when condition="/config:modules/config:module/config:type = 'impl-identity-test'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="impl">
+      <when condition="/config:modules/config:module/config:type = 'impl'"/>
+      <leaf-list name="allow-user">
+        <type name="string"/>
+        <description>
+          <text>A list of user name patterns to allow</text>
+        </description>
+      </leaf-list>
+      <container name="dto-a">
+        <leaf name="simple-arg">
+          <type name="uint32"/>
+          <default value="1"/>
+        </leaf>
+        <leaf name="port">
+          <type name="inet:port-number"/>
+          <default value="8080"/>
+        </leaf>
+        <leaf name="ip4">
+          <type name="inet:ipv4-address"/>
+          <default value="127.0.0.1"/>
+        </leaf>
+      </container>
+      <leaf name="as-number">
+        <type name="inet:as-number"/>
+        <default value="44"/>
+      </leaf>
+      <leaf name="simpleInt">
+        <type name="uint32"/>
+        <default value="99"/>
+      </leaf>
+      <container name="dto_b">
+        <leaf name="simple-int1">
+          <type name="uint32"/>
+          <default value="32"/>
+        </leaf>
+        <leaf name="simple-int2">
+          <type name="uint32"/>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="impl">
+      <when condition="/config:modules/config:module/config:type = 'impl'"/>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="impl-dep">
+      <when condition="/config:modules/config:module/config:type = 'impl-dep'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="impl-netconf">
+      <when condition="/config:modules/config:module/config:type = 'impl-netconf'"/>
+      <container name="impl-netconf">
+        <leaf name="binaryLeaf">
+          <type name="binary"/>
+          <default value="ZGVmYXVsdEJpbg=="/>
+        </leaf>
+        <leaf name="type">
+          <type name="string"/>
+          <default value="default-string"/>
+        </leaf>
+        <leaf name="extended">
+          <type name="tt:extend-once"/>
+          <default value="1"/>
+        </leaf>
+        <leaf name="extended-twice">
+          <type name="tt:extend-twice"/>
+          <default value="2"/>
+        </leaf>
+        <leaf name="extended-enum">
+          <type name="tt:extend-enum"/>
+          <default value="ONE"/>
+        </leaf>
+        <leaf name="ip">
+          <type name="inet:ip-address"/>
+          <default value="0:0:0:0:0:0:0:1"/>
+        </leaf>
+        <leaf name="union-test-attr">
+          <type name="tt:unionTest"/>
+          <default value="456"/>
+        </leaf>
+        <leaf name="sleep-factor">
+          <type name="decimal64">
+            <fraction-digits value="2"/>
+          </type>
+          <default value="2.00"/>
+        </leaf>
+        <container name="dto-c">
+          <leaf name="simple-arg">
+            <type name="uint32"/>
+          </leaf>
+          <container name="dto-a-inner">
+            <leaf name="simple-arg">
+              <type name="uint32"/>
+            </leaf>
+            <container name="dto-a-inner-inner">
+              <leaf name="simple-arg">
+                <type name="uint32"/>
+              </leaf>
+            </container>
+          </container>
+        </container>
+        <leaf name="simpleInt">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="simpleBoolean">
+          <type name="boolean"/>
+          <default value="false"/>
+        </leaf>
+        <leaf name="simple-long">
+          <type name="int64"/>
+          <default value="-45"/>
+        </leaf>
+        <leaf name="simple-long-2">
+          <type name="uint32"/>
+          <default value="445"/>
+        </leaf>
+        <leaf name="simple-BigInteger">
+          <type name="uint64"/>
+          <default value="545454"/>
+        </leaf>
+        <leaf name="simple-byte">
+          <type name="int8"/>
+          <default value="-4"/>
+        </leaf>
+        <leaf name="simple-short">
+          <type name="uint8"/>
+          <default value="45"/>
+        </leaf>
+        <leaf name="simple-test">
+          <type name="uint16"/>
+          <default value="99"/>
+        </leaf>
+        <leaf-list name="simple-list">
+          <type name="uint16"/>
+        </leaf-list>
+        <container name="dto_d">
+          <leaf name="simple-int1">
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="simple-int2">
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+          <leaf-list name="simple-list">
+            <type name="uint16"/>
+          </leaf-list>
+          <list name="complex-dto-bInner">
+            <leaf-list name="simple-list">
+              <type name="uint16"/>
+            </leaf-list>
+            <leaf name="simple-int3">
+              <type name="uint16"/>
+            </leaf>
+            <container name="deep">
+              <leaf name="simple-int3">
+                <type name="uint16"/>
+                <default value="0"/>
+              </leaf>
+            </container>
+          </list>
+        </container>
+        <list name="complex-list">
+          <list name="simple-list">
+            <leaf name="simple-int3">
+              <type name="uint16"/>
+            </leaf>
+          </list>
+        </list>
+        <list name="peers">
+          <leaf name="port">
+            <type name="string"/>
+          </leaf>
+          <leaf name="core-size">
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+        </list>
+        <container name="testing-dep">
+          <uses name="config:service-ref">
+            <refine target-node="type">
+              <mandatory value="true"/>
+              <config:required-identity name="test:testing"/>
+            </refine>
+          </uses>
+        </container>
+        <list name="testing-deps">
+          <uses name="config:service-ref">
+            <refine target-node="type">
+              <mandatory value="true"/>
+              <config:required-identity name="test:testing"/>
+            </refine>
+          </uses>
+        </list>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="impl-netconf">
+      <when condition="/config:modules/config:module/config:type = 'impl-netconf'"/>
+      <container name="impl-netconf">
+        <rpcx:rpc-context-instance context-type="test-rpc"/>
+        <leaf name="created-sessions">
+          <type name="uint32"/>
+        </leaf>
+        <container name="asdf">
+          <leaf name="simpleInt">
+            <type name="uint16"/>
+          </leaf>
+          <leaf name="simpleString">
+            <type name="string"/>
+          </leaf>
+        </container>
+        <list name="inner-running-data-additional">
+          <config:inner-state-bean/>
+          <rpcx:rpc-context-instance context-type="inner-test-rpc"/>
+          <key value="simpleString"/>
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+          <leaf name="simpleString">
+            <type name="string"/>
+          </leaf>
+          <container name="deep4">
+            <leaf name="boool">
+              <type name="boolean"/>
+            </leaf>
+          </container>
+        </list>
+        <list name="inner-running-data">
+          <config:inner-state-bean/>
+          <key value="simple-int3"/>
+          <leaf name="simple-int3">
+            <type name="uint16"/>
+          </leaf>
+          <container name="deep2">
+            <leaf name="boool">
+              <type name="boolean"/>
+            </leaf>
+          </container>
+          <list name="inner-inner-running-data">
+            <config:inner-state-bean/>
+            <rpcx:rpc-context-instance context-type="inner-inner-test-rpc"/>
+            <rpcx:rpc-context-instance context-type="complex-output-rpc"/>
+            <key value="simple-int3"/>
+            <leaf name="simple-int3">
+              <type name="uint16"/>
+            </leaf>
+            <leaf-list name="list-of-strings">
+              <type name="string"/>
+            </leaf-list>
+            <list name="not-state-bean">
+              <leaf name="element">
+                <type name="string"/>
+              </leaf>
+              <list name="not-state-bean-internal">
+                <config:inner-state-bean/>
+                <leaf name="element2">
+                  <type name="string"/>
+                </leaf>
+              </list>
+            </list>
+            <container name="deep3">
+              <leaf name="boool">
+                <type name="boolean"/>
+              </leaf>
+            </container>
+          </list>
+        </list>
+      </container>
+    </case>
+  </augment>
+  <identity name="test-rpc"/>
+  <identity name="inner-test-rpc"/>
+  <identity name="inner-inner-test-rpc"/>
+  <identity name="complex-output-rpc"/>
+  <rpc name="no-arg">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="test-rpc"/>
+        </refine>
+      </uses>
+      <leaf name="arg1">
+        <type name="string"/>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="string"/>
+      </leaf>
+    </output>
+  </rpc>
+  <rpc name="container-output">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="complex-output-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <container name="retValContainer">
+        <leaf name="v1">
+          <type name="string"/>
+          <default value="from rpc"/>
+        </leaf>
+        <leaf name="v2">
+          <type name="uint32"/>
+        </leaf>
+      </container>
+    </output>
+  </rpc>
+  <rpc name="leaf-list-output">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="complex-output-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <leaf-list name="result">
+        <type name="string"/>
+      </leaf-list>
+    </output>
+  </rpc>
+  <rpc name="list-output">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="complex-output-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <list name="ret-val-list">
+        <leaf name="v2">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="v1">
+          <type name="boolean"/>
+        </leaf>
+      </list>
+    </output>
+  </rpc>
+  <rpc name="noArgInner">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="inner-test-rpc"/>
+        </refine>
+      </uses>
+    </input>
+  </rpc>
+  <rpc name="noArgInnerInner">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="inner-inner-test-rpc"/>
+        </refine>
+      </uses>
+      <leaf name="arg1">
+        <type name="uint16"/>
+      </leaf>
+      <leaf name="arg2">
+        <type name="boolean"/>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="boolean"/>
+      </leaf>
+    </output>
+  </rpc>
+</module>

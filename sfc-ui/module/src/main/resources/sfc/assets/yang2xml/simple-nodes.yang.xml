@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-nodes"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sn="urn:opendaylight:simple-nodes">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:simple-nodes"/>
+  <prefix value="sn"/>
+  <description>
+    <text>test file containing yang data nodes</text>
+  </description>
+  <revision date="2013-07-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>will be defined</text>
+    </reference>
+  </revision>
+  <container name="users">
+    <leaf name="user">
+      <type name="string"/>
+    </leaf>
+    <leaf name="group">
+      <type name="string"/>
+    </leaf>
+  </container>
+  <list name="user">
+    <key value="name class"/>
+    <leaf name="name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="full-name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="class">
+      <type name="string"/>
+    </leaf>
+  </list>
+  <list name="userWithoutClass">
+    <key value="name"/>
+    <leaf name="name">
+      <type name="string"/>
+    </leaf>
+    <leaf name="full-name">
+      <type name="string"/>
+    </leaf>
+  </list>
+  <container name="food">
+    <choice name="snack">
+      <case name="sports-arena">
+        <leaf name="pretzel">
+          <type name="string"/>
+        </leaf>
+        <leaf name="beer">
+          <type name="string"/>
+        </leaf>
+        <container name="nonalcoholic">
+          <leaf name="beer">
+            <type name="string"/>
+          </leaf>
+        </container>
+      </case>
+      <case name="late-night">
+        <leaf name="chocolate">
+          <type name="enumeration">
+            <enum name="dark"/>
+            <enum name="milk"/>
+            <enum name="first-available"/>
+          </type>
+        </leaf>
+      </case>
+    </choice>
+  </container>
+</module>

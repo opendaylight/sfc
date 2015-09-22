@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="flow-topology-discovery"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flow-node-topo="urn:opendaylight:flow:topology:discovery"
+        xmlns:inv="urn:opendaylight:inventory">
+  <namespace uri="urn:opendaylight:flow:topology:discovery"/>
+  <prefix value="flow-node-topo"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Flow Capable Node extensions to the Inventory model</text>
+    </description>
+  </revision>
+  <grouping name="link">
+    <leaf name="source">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+    <leaf name="destination">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+  </grouping>
+  <notification name="link-discovered">
+    <uses name="link"/>
+  </notification>
+  <notification name="link-overutilized">
+    <uses name="link"/>
+  </notification>
+  <notification name="link-removed">
+    <uses name="link"/>
+  </notification>
+  <notification name="link-utilization-normal">
+    <uses name="link"/>
+  </notification>
+  <rpc name="solicit-refresh"/>
+</module>

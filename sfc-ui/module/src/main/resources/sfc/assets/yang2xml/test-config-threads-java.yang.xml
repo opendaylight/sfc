@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="config-threads-java"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:th-java="urn:opendaylight:params:xml:ns:yang:controller:config:threads:java"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:threads:java"/>
+  <prefix value="th-java"/>
+  <import module="config-threads">
+    <prefix value="th2"/>
+    <revision-date date="2013-04-09"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for NS-OS
+thread services pure Java implementation.</text>
+  </description>
+  <revision date="2013-04-05">
+    <description>
+      <text>Updated to work with new anchors.</text>
+    </description>
+  </revision>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <identity name="thread-rpc-context"/>
+  <identity name="eventbus">
+    <base name="config:module-type"/>
+    <config:provided-service name="th2:eventbus"/>
+    <config:java-name-prefix java-prefix="EventBus"/>
+  </identity>
+  <identity name="async-eventbus">
+    <base name="config:module-type"/>
+    <config:provided-service name="th2:eventbus"/>
+    <config:java-name-prefix java-prefix="AsyncEventBus"/>
+  </identity>
+  <identity name="threadfactory-naming">
+    <base name="config:module-type"/>
+    <config:provided-service name="th2:threadfactory"/>
+    <config:java-name-prefix java-prefix="NamingThreadFactory"/>
+  </identity>
+  <identity name="threadpool-dynamic">
+    <base name="config:module-type"/>
+    <description>
+      <text>threadpool-dynamic description</text>
+    </description>
+    <config:provided-service name="th2:threadpool"/>
+    <config:provided-service name="th2:scheduled-threadpool"/>
+    <config:java-name-prefix java-prefix="DynamicThreadPool"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="eventbus">
+      <when condition="/config:modules/config:module/config:type = 'eventbus'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <container name="threadpool">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <config:required-identity name="th2:threadpool"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <list name="event">
+        <config:inner-state-bean/>
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+        </leaf>
+      </list>
+    </case>
+  </augment>
+  <typedef name="thread-state">
+    <type name="enumeration">
+      <enum name="STARTED"/>
+      <enum name="STOPPED"/>
+    </type>
+    <description>
+      <text>Enum type holding state in which a thread can be.</text>
+    </description>
+  </typedef>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="threadfactory-naming">
+      <when condition="/config:modules/config:module/config:type = 'threadfactory-naming'"/>
+      <leaf name="name-prefix">
+        <description>
+          <text>String that will be prefixed to each created thread. Suffix will be constructed from
+underscore (_) and auto-incremented index number.</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="threadfactory-naming">
+      <when condition="/config:modules/config:module/config:type = 'threadfactory-naming'"/>
+      <list name="thread">
+        <config:inner-state-bean/>
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+        </leaf>
+        <rpcx:rpc-context-instance context-type="thread-rpc-context"/>
+        <list name="stream">
+          <config:inner-state-bean/>
+          <config:java-name-prefix java-prefix="ThreadStream"/>
+          <leaf name="timestamp">
+            <type name="string"/>
+          </leaf>
+          <leaf name="state">
+            <type name="thread-state"/>
+          </leaf>
+          <container name="peer">
+            <leaf name="port">
+              <type name="uint32"/>
+              <default value="179"/>
+            </leaf>
+            <leaf name="core-size">
+              <type name="uint32"/>
+            </leaf>
+          </container>
+          <list name="inner-stream-list">
+            <leaf name="timestamp">
+              <type name="string"/>
+            </leaf>
+          </list>
+        </list>
+      </list>
+      <list name="stream">
+        <config:inner-state-bean/>
+        <leaf name="timestamp">
+          <type name="string"/>
+        </leaf>
+      </list>
+      <leaf name="created-sessions">
+        <type name="uint32"/>
+      </leaf>
+    </case>
+  </augment>
+  <rpc name="dump-stack">
+    <config:java-name-prefix java-prefix="dumpStack"/>
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="thread-rpc-context"/>
+        </refine>
+      </uses>
+    </input>
+  </rpc>
+  <rpc name="sleep">
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="thread-rpc-context"/>
+        </refine>
+      </uses>
+      <leaf name="millis">
+        <type name="uint32"/>
+      </leaf>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="thread-state"/>
+      </leaf>
+    </output>
+  </rpc>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="threadpool-dynamic">
+      <when condition="/config:modules/config:module/config:type = 'threadpool-dynamic'"/>
+      <container name="threadpool-dynamic">
+        <leaf name="core-size">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="keep-alive">
+          <type name="uint32"/>
+          <units name="seconds"/>
+          <default value="10"/>
+        </leaf>
+        <leaf name="maximum-size">
+          <type name="uint32"/>
+          <description>
+            <text>maximum-size description</text>
+          </description>
+        </leaf>
+        <leaf name="binary">
+          <type name="binary"/>
+        </leaf>
+        <container name="threadfactory">
+          <description>
+            <text>threadfactory description</text>
+          </description>
+          <uses name="config:service-ref">
+            <refine target-node="type">
+              <mandatory value="true"/>
+              <config:required-identity name="th2:threadfactory"/>
+            </refine>
+          </uses>
+        </container>
+        <leaf-list name="users">
+          <type name="string"/>
+        </leaf-list>
+        <leaf-list name="users-numbers">
+          <type name="uint32"/>
+          <description>
+            <text>numbers of users description</text>
+          </description>
+        </leaf-list>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="threadpool-dynamic">
+      <when condition="/config:modules/config:module/config:type = 'threadpool-dynamic'"/>
+      <container name="threadpool-dynamic">
+        <leaf name="created-sessions">
+          <type name="uint32"/>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+  <identity name="threadpool-registry-impl">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="ThreadPoolRegistryImpl"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="threadpool-registry-impl">
+      <when condition="/config:modules/config:module/config:type = 'threadpool-registry-impl'"/>
+      <list name="threadpools">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="th2:threadpool"/>
+          </refine>
+        </uses>
+      </list>
+    </case>
+  </augment>
+</module>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="toaster-provider-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:toaster-provider-impl="urn:opendaylight:params:xml:ns:yang:controller:config:toaster-provider:impl"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context"
+        xmlns:mdsal="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:config:toaster-provider:impl"/>
+  <prefix value="toaster-provider-impl"/>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <import module="opendaylight-md-sal-binding">
+    <prefix value="mdsal"/>
+    <revision-date date="2013-10-28"/>
+  </import>
+  <description>
+    <text>This module contains the base YANG definitions for
+toaster-provider impl implementation.</text>
+  </description>
+  <revision date="2014-01-31">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="toaster-provider-impl">
+    <base name="config:module-type"/>
+    <config:java-name-prefix java-prefix="ToasterProvider"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="toaster-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'toaster-provider-impl'"/>
+      <container name="rpc-registry">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-rpc-registry"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="notification-service">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="true"/>
+            <config:required-identity name="mdsal:binding-notification-service"/>
+          </refine>
+        </uses>
+      </container>
+      <container name="data-broker">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <mandatory value="false"/>
+            <config:required-identity name="mdsal:binding-data-broker"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="toaster-provider-impl">
+      <when condition="/config:modules/config:module/config:type = 'toaster-provider-impl'"/>
+      <leaf name="toasts-made">
+        <type name="uint32"/>
+      </leaf>
+      <rpcx:rpc-context-instance context-type="clear-toasts-made-rpc"/>
+    </case>
+  </augment>
+  <identity name="clear-toasts-made-rpc"/>
+  <rpc name="clear-toasts-made">
+    <description>
+      <text>JMX call to clear the toasts-made counter.</text>
+    </description>
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="clear-toasts-made-rpc"/>
+        </refine>
+      </uses>
+    </input>
+  </rpc>
+</module>

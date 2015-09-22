@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-inventory-config"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:inv-config="urn:opendaylight:inventory:config"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inv="urn:opendaylight:inventory">
+  <namespace uri="urn:opendaylight:inventory:config"/>
+  <prefix value="inv-config"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <revision date="2013-08-19">
+    <description>
+      <text>Initial revision of Inventory model</text>
+    </description>
+  </revision>
+  <container name="nodes">
+    <list name="node">
+      <key value="id"/>
+      <ext:context-instance context-type="node-context"/>
+      <uses name="inv:node"/>
+    </list>
+  </container>
+</module>

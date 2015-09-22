@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="augment-leaflist"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:auglflst="ns:augment:leaflist"
+        xmlns:yng="ns:yang">
+  <namespace uri="ns:augment:leaflist"/>
+  <prefix value="auglflst"/>
+  <import module="yang">
+    <prefix value="yng"/>
+    <revision-date date="2013-11-26"/>
+  </import>
+  <revision date="2013-11-26"/>
+  <augment target-node="/yng:cont">
+    <leaf-list name="lflst1">
+      <type name="string"/>
+    </leaf-list>
+  </augment>
+</module>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="opendaylight-topology"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nt="urn:opendaylight:model:topology:general"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:topo="urn:TBD:params:xml:ns:yang:network-topology">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:model:topology:general"/>
+  <prefix value="nt"/>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+  </import>
+  <import module="network-topology">
+    <prefix value="topo"/>
+    <revision-date date="2013-10-21"/>
+  </import>
+  <organization>
+    <text>TBD</text>
+  </organization>
+  <contact>
+    <text>WILL-BE-DEFINED-LATER</text>
+  </contact>
+  <revision date="2013-10-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <identity name="node-type"/>
+  <typedef name="node-type-ref">
+    <type name="identityref">
+      <base name="node-type"/>
+    </type>
+  </typedef>
+  <identity name="topology-context"/>
+  <identity name="topology-node-context"/>
+  <grouping name="node-identifiers">
+    <list name="node-identifier">
+      <key value="type identifier"/>
+      <leaf name="type">
+        <type name="node-type-ref"/>
+      </leaf>
+      <leaf name="identifier">
+        <type name="inet:uri"/>
+      </leaf>
+    </list>
+  </grouping>
+  <augment target-node="/topo:network-topology/topo:topology">
+    <ext:context-instance context-type="topology-context"/>
+  </augment>
+  <augment target-node="/topo:network-topology/topo:topology/topo:node">
+    <ext:context-instance context-type="topology-node-context"/>
+  </augment>
+  <augment target-node="/topo:network-topology/topo:topology/topo:node">
+    <ext:augment-identifier identifier="identifiable-node"/>
+    <uses name="node-identifiers"/>
+  </augment>
+</module>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="syslog-message"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:syslog="urn:cisco:params:xml:ns:yang:syslog-message">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:syslog-message"/>
+  <prefix value="syslog"/>
+  <organization>
+    <text>Cisco Systems</text>
+  </organization>
+  <contact>
+    <text>Giles Heron</text>
+  </contact>
+  <description>
+    <text>
+This module contains the definitions of a syslog
+message that is mapped into a NETCONF Notification.
+
+Copyright (c) 2014 by Cisco Systems, Inc.
+All rights reserved.
+</text>
+  </description>
+  <revision date="2014-02-19">
+    <description>
+      <text>first revision</text>
+    </description>
+    <reference>
+      <text>tbd</text>
+    </reference>
+  </revision>
+  <typedef name="syslog-facility">
+    <type name="enumeration">
+      <enum name="kern">
+        <value value="0"/>
+        <description>
+          <text>kernel messages</text>
+        </description>
+      </enum>
+      <enum name="user">
+        <value value="1"/>
+        <description>
+          <text>user-level messages</text>
+        </description>
+      </enum>
+      <enum name="mail">
+        <value value="2"/>
+        <description>
+          <text>mail system</text>
+        </description>
+      </enum>
+      <enum name="daemon">
+        <value value="3"/>
+        <description>
+          <text>system daemons</text>
+        </description>
+      </enum>
+      <enum name="auth">
+        <value value="4"/>
+        <description>
+          <text>security/authorization messages</text>
+        </description>
+      </enum>
+      <enum name="syslog">
+        <value value="5"/>
+        <description>
+          <text>messages generated internally by syslogd</text>
+        </description>
+      </enum>
+      <enum name="lpr">
+        <value value="6"/>
+        <description>
+          <text>line printer subsystem</text>
+        </description>
+      </enum>
+      <enum name="news">
+        <value value="7"/>
+        <description>
+          <text>network news subsystem</text>
+        </description>
+      </enum>
+      <enum name="uucp">
+        <value value="8"/>
+        <description>
+          <text>UUCP subsystem</text>
+        </description>
+      </enum>
+      <enum name="cron">
+        <value value="9"/>
+        <description>
+          <text>clock daemon</text>
+        </description>
+      </enum>
+      <enum name="authpriv">
+        <value value="10"/>
+        <description>
+          <text>security/authorization messages</text>
+        </description>
+      </enum>
+      <enum name="ftp">
+        <value value="11"/>
+        <description>
+          <text>FTP daemon</text>
+        </description>
+      </enum>
+      <enum name="ntp">
+        <value value="12"/>
+        <description>
+          <text>NTP subsystem</text>
+        </description>
+      </enum>
+      <enum name="audit">
+        <value value="13"/>
+        <description>
+          <text>log audit</text>
+        </description>
+      </enum>
+      <enum name="alert">
+        <value value="14"/>
+        <description>
+          <text>log alert</text>
+        </description>
+      </enum>
+      <enum name="cron2">
+        <value value="15"/>
+        <description>
+          <text>clock daemon (note 2 - RFC3164)</text>
+        </description>
+      </enum>
+      <enum name="local0">
+        <value value="16"/>
+        <description>
+          <text>local use 0  (local0)</text>
+        </description>
+      </enum>
+      <enum name="local1">
+        <value value="17"/>
+        <description>
+          <text>local use 1  (local1)</text>
+        </description>
+      </enum>
+      <enum name="local2">
+        <value value="18"/>
+        <description>
+          <text>local use 2  (local2)</text>
+        </description>
+      </enum>
+      <enum name="local3">
+        <value value="19"/>
+        <description>
+          <text>local use 3  (local3)</text>
+        </description>
+      </enum>
+      <enum name="local4">
+        <value value="20"/>
+        <description>
+          <text>local use 4  (local4)</text>
+        </description>
+      </enum>
+      <enum name="local5">
+        <value value="21"/>
+        <description>
+          <text>local use 5  (local5)</text>
+        </description>
+      </enum>
+      <enum name="local6">
+        <value value="22"/>
+        <description>
+          <text>local use 6  (local6)</text>
+        </description>
+      </enum>
+      <enum name="local7">
+        <value value="23"/>
+        <description>
+          <text>local use 7  (local7)</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>syslog message facilities</text>
+    </description>
+  </typedef>
+  <typedef name="syslog-severity">
+    <type name="enumeration">
+      <enum name="emergency">
+        <value value="0"/>
+        <description>
+          <text>Emergency: system is unusable</text>
+        </description>
+      </enum>
+      <enum name="alert">
+        <value value="1"/>
+        <description>
+          <text>Alert: action must be taken immediately</text>
+        </description>
+      </enum>
+      <enum name="critical">
+        <value value="2"/>
+        <description>
+          <text>Critical: critical conditions</text>
+        </description>
+      </enum>
+      <enum name="error">
+        <value value="3"/>
+        <description>
+          <text>Error: error conditions</text>
+        </description>
+      </enum>
+      <enum name="warning">
+        <value value="4"/>
+        <description>
+          <text>Warning: warning conditions</text>
+        </description>
+      </enum>
+      <enum name="notice">
+        <value value="5"/>
+        <description>
+          <text>Notice: normal but significant condition</text>
+        </description>
+      </enum>
+      <enum name="informational">
+        <value value="6"/>
+        <description>
+          <text>Informational: informational messages</text>
+        </description>
+      </enum>
+      <enum name="debug">
+        <value value="7"/>
+        <description>
+          <text>Debug: debug-level messages</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>syslog message severities</text>
+    </description>
+  </typedef>
+  <notification name="syslog-message">
+    <leaf name="facility">
+      <type name="syslog-facility"/>
+      <description>
+        <text>logging facility</text>
+      </description>
+    </leaf>
+    <leaf name="severity">
+      <type name="syslog-severity"/>
+      <description>
+        <text>logging severity</text>
+      </description>
+    </leaf>
+    <leaf name="message-body">
+      <type name="string"/>
+      <description>
+        <text>syslog message body</text>
+      </description>
+    </leaf>
+    <description>
+      <text>syslog message mapped into NETCONF</text>
+    </description>
+  </notification>
+</module>

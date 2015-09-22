@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="netconf-cli-ext"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cliext="urn:ietf:params:xml:ns:netconf:base:1.0:cli">
+  <namespace uri="urn:ietf:params:xml:ns:netconf:base:1.0:cli"/>
+  <prefix value="cliext"/>
+  <revision date="2014-05-26">
+    <description>
+      <text>Initial revision</text>
+    </description>
+  </revision>
+  <extension name="argument-handler">
+    <description>
+      <text>Links custom argument reader to an input argument</text>
+    </description>
+    <argument name="name"/>
+  </extension>
+</module>

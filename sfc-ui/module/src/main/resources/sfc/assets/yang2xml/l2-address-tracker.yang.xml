@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="l2-address-tracker"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:l2-address-tracker="urn:opendaylight:l2-address-tracker"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:inv="urn:opendaylight:inventory">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:l2-address-tracker"/>
+  <prefix value="l2-address-tracker"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <organization>
+    <text>Cisco Systems Inc</text>
+  </organization>
+  <contact>
+    <text>Alex Fan &lt;alefan@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>YANG version of the  L2 Address Tracker Data Model</text>
+  </description>
+  <revision date="2014-04-02">
+    <description>
+      <text>L2 Address Tracker module draft.</text>
+    </description>
+  </revision>
+  <grouping name="l2-address">
+    <leaf name="mac">
+      <type name="yang:mac-address"/>
+      <mandatory value="true"/>
+      <description>
+        <text>the mac address of the host.</text>
+      </description>
+    </leaf>
+    <leaf name="node-connector-ref">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+  </grouping>
+  <container name="l2-addresses">
+    <config value="false"/>
+    <list name="l2-address">
+      <key value="mac"/>
+      <uses name="l2-address"/>
+    </list>
+  </container>
+</module>

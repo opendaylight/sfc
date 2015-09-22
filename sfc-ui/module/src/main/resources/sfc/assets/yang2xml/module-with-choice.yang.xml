@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-with-choice"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mowicho="module:with:choice">
+  <namespace uri="module:with:choice"/>
+  <prefix value="mowicho"/>
+  <revision date="2013-12-18"/>
+  <container name="cont">
+    <choice name="choA">
+      <case name="caA1">
+        <leaf name="lf1">
+          <type name="string"/>
+        </leaf>
+      </case>
+      <case name="caA2">
+        <leaf name="lf2">
+          <type name="string"/>
+        </leaf>
+      </case>
+    </choice>
+  </container>
+</module>

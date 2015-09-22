@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="threadpool-impl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:th-java="urn:opendaylight:params:xml:ns:yang:controller:threadpool:impl"
+        xmlns:th="urn:opendaylight:params:xml:ns:yang:controller:threadpool"
+        xmlns:config="urn:opendaylight:params:xml:ns:yang:controller:config"
+        xmlns:rpcx="urn:ietf:params:xml:ns:yang:rpc-context">
+  <yang-version value="1"/>
+  <namespace uri="urn:opendaylight:params:xml:ns:yang:controller:threadpool:impl"/>
+  <prefix value="th-java"/>
+  <import module="threadpool">
+    <prefix value="th"/>
+    <revision-date date="2013-04-09"/>
+  </import>
+  <import module="config">
+    <prefix value="config"/>
+    <revision-date date="2013-04-05"/>
+  </import>
+  <import module="rpc-context">
+    <prefix value="rpcx"/>
+    <revision-date date="2013-06-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Robert Varga &lt;rovarga@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains the base YANG definitions for
+thread services pure Java implementation.
+
+Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html</text>
+  </description>
+  <revision date="2013-04-05">
+    <description>
+      <text>Updated to work with new anchors.</text>
+    </description>
+  </revision>
+  <revision date="2013-04-03">
+    <description>
+      <text>Initial revision by Anton Tkacik, Tomas Olvecky and
+Robert Varga.</text>
+    </description>
+  </revision>
+  <identity name="eventbus">
+    <base name="config:module-type"/>
+    <config:provided-service name="th:eventbus"/>
+    <config:java-name-prefix java-prefix="EventBus"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="eventbus">
+      <when condition="/config:modules/config:module/config:type = 'eventbus'"/>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="eventbus">
+      <when condition="/config:modules/config:module/config:type = 'eventbus'"/>
+      <rpcx:rpc-context-instance context-type="event-bus-rpc"/>
+    </case>
+  </augment>
+  <identity name="event-bus-rpc"/>
+  <identity name="async-eventbus">
+    <base name="config:module-type"/>
+    <config:provided-service name="th:eventbus"/>
+    <config:java-name-prefix java-prefix="AsyncEventBus"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <container name="threadpool">
+        <uses name="config:service-ref">
+          <refine target-node="type">
+            <config:required-identity name="th:threadpool"/>
+          </refine>
+        </uses>
+      </container>
+    </case>
+  </augment>
+  <augment target-node="/config:modules/config:module/config:state">
+    <case name="async-eventbus">
+      <when condition="/config:modules/config:module/config:type = 'async-eventbus'"/>
+      <rpcx:rpc-context-instance context-type="event-bus-rpc"/>
+    </case>
+  </augment>
+  <rpc name="get-dead-events-count">
+    <config:java-name-prefix java-prefix="countDeadEvents"/>
+    <input>
+      <uses name="rpcx:rpc-context-ref">
+        <refine target-node="context-instance">
+          <rpcx:rpc-context-instance context-type="event-bus-rpc"/>
+        </refine>
+      </uses>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="uint32"/>
+      </leaf>
+    </output>
+  </rpc>
+  <identity name="threadfactory-naming">
+    <base name="config:module-type"/>
+    <config:provided-service name="th:threadfactory"/>
+    <config:java-name-prefix java-prefix="NamingThreadFactory"/>
+  </identity>
+  <augment target-node="/config:modules/config:module/config:configuration">
+    <case name="threadfactory-naming">
+      <when condition="/config:modules/config:module/config:type = 'threadfactory-naming'"/>
+      <leaf name="name-prefix">
+        <type name="string"/>
+      </leaf>
+    </case>
+  </augment>
+</module>

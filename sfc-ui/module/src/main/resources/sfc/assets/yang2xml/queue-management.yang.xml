@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="queue-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:queue-cfg="urn:opendaylight:queue:config"
+        xmlns:inv="urn:opendaylight:inventory"
+        xmlns:queue="urn:opendaylight:flow:types:queue">
+  <namespace uri="urn:opendaylight:queue:config"/>
+  <prefix value="queue-cfg"/>
+  <import module="opendaylight-inventory">
+    <prefix value="inv"/>
+    <revision-date date="2013-08-19"/>
+  </import>
+  <import module="opendaylight-queue-types">
+    <prefix value="queue"/>
+    <revision-date date="2013-09-25"/>
+  </import>
+  <revision date="2013-10-24">
+    <description>
+      <text>Initial revision of queue service</text>
+    </description>
+  </revision>
+  <grouping name="queue-entry">
+    <leaf name="node">
+      <type name="inv:node-connector-ref"/>
+    </leaf>
+    <uses name="queue:queue-config-request"/>
+  </grouping>
+  <container name="queues">
+    <list name="queue">
+      <key value="id node"/>
+      <leaf name="id">
+        <type name="uint32"/>
+      </leaf>
+      <uses name="queue-entry"/>
+    </list>
+  </container>
+</module>

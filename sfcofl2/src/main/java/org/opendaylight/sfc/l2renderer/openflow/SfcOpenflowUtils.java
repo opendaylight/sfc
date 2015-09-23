@@ -143,6 +143,7 @@ import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class SfcOpenflowUtils {
+    public static final int ETHERTYPE_META = 0xFFFF;
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
@@ -153,6 +154,7 @@ public class SfcOpenflowUtils {
     public static final int TCP_FLAG_SYN = 0x0002;
     public static final int ARP_REQUEST = 1;
     public static final int ARP_REPLY = 2;
+    public static final PortNumber TUNNEL_VXLANGPE_NSH_PORT = new PortNumber(Integer.parseInt("4790"));
 
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();

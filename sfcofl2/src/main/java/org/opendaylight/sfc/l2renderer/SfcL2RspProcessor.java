@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MplsLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -523,6 +524,8 @@ public class SfcL2RspProcessor {
                 //Only support VxLAN-gpe + NSH currently
                 this.sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(sffNodeName);
            }
+        } else {
+            this.sfcL2FlowProgrammer.configureMetaPortIngressFlow(sffNodeName);
         }
 
         // The next flows will be stored with the RSP pathId
@@ -623,8 +626,6 @@ public class SfcL2RspProcessor {
                     "configureSffNextHopFlow SFF [" + sffName + "] does not exist");
         }
 
-        LOG.debug("configureSffNextHopFlow sff [{}] pathId [{}] serviceIndex [{}] srcMac [{}] dstMac [{}]",
-                sffName, pathId, serviceIndex, srcMac, dstMac);
 
         LocatorType srcSffLocatorType = (srcDpl != null) ? srcDpl.getLocatorType() : null;
         LocatorType dstSffLocatorType = (dstDpl != null) ? dstDpl.getLocatorType() : null;
@@ -634,7 +635,7 @@ public class SfcL2RspProcessor {
                         srcSffLocatorType.getImplementedInterface() :
                         dstSffLocatorType.getImplementedInterface();
 
-        if (implementedInterface.equals(Ip.class)) {
+        if (implementedInterface.equals(Ip.class) || implementedInterface.equals(Other.class)) {
             //VxLAN-gpe, it is IP/UDP flow with VLAN tag
             if(dstDpl != null) {
                 if(dstDpl.getTransport().equals(VxlanGpe.class)) {
@@ -642,6 +643,10 @@ public class SfcL2RspProcessor {
                     long nsp = pathId;
                     short nsi = serviceIndex;
                     this.sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(sffNodeName, dstIp, nsp, nsi);
+                } else if (dstDpl.getTransport().equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other.class)) {
+                    long nsp = pathId;
+                    short nsi = serviceIndex;
+                    this.sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(sffNodeName, null, nsp, nsi);
                 }
             }
         } else {
@@ -753,10 +758,9 @@ public class SfcL2RspProcessor {
                     "configureSffTransportEgressFlow Sff Node name for SFF [" + sffName + "] does not exist");
         }
 
-        LOG.debug("configureSffTransportEgressFlow sff [{}] node [{}]", sffName, sffNodeName);
-
         LocatorType hopLocatorType = hopDpl.getLocatorType();
         Class<? extends DataContainer> implementedInterface = hopLocatorType.getImplementedInterface();
+
 
         if (implementedInterface.equals(Mac.class)) {
             // Mac and possibly VLAN
@@ -785,6 +789,16 @@ public class SfcL2RspProcessor {
                             sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
                 }
            }
+        } else if (implementedInterface.equals(Other.class)) {
+           //Other, only gets the Meta Port of the OVS
+            long nsp = pathId;
+            short nsi = serviceIndex;
+            this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(
+                    sffNodeName, nsp, nsi, srcOfsPort, isLastServiceIndex, doPktIn);
+            if(isLastServiceIndex) {
+                this.sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(
+                        sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
+            }
         }
     }
 

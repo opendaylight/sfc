@@ -5,9 +5,10 @@ module service-function {
   prefix sfc-sf;
 
   import ietf-inet-types { prefix inet; }
-  import service-function-type {prefix sfc-sft;}
-  import service-locator {prefix sfc-sl;}
+  import service-function-type {prefix sfc-sft; }
+  import service-locator {prefix sfc-sl; }
   import service-statistics {prefix sfc-ss; }
+  import service-function-forwarder {prefix sfc-sff; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -77,10 +78,12 @@ module service-function {
         "Service Function Type from service-function-type yang
          model";
     }
+    //TODO alagalah: This is meaningless outside of python agent.
     leaf rest-uri {
       type inet:uri;
       description "URI of REST based management";
     }
+    //TODO alagalah: Why does SFC need to know this? Either it is in the VNFM business or it is not.
     leaf ip-mgmt-address {
       type inet:ip-address;
       description
@@ -108,7 +111,9 @@ module service-function {
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
-        type string;
+        type leafref {
+            path "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:name";
+        }
         description
           "The service function forwarder associated with this
            locator";
@@ -149,6 +154,7 @@ module service-function {
     }
   }
 
+  //TODO alagalah: This is not STATE, its statistics. That should be a whole new container.
   container service-functions-state {
     config false;
     description
@@ -164,6 +170,7 @@ module service-function {
         description
           "the name of the service function";
       }
+      //TODO alagalah: Not sure this makes a lot of sense. Its not per RSP step, and there's no velocity for load decisions... (ie B/s)
       uses sfc-ss:service-statistics-group {
         description "Global Service Function statistics";
       }
@@ -174,6 +181,7 @@ module service-function {
           description
             "The name of the Service Path";
         }
+        //TODO alagalah: See comment above.
         uses sfc-ss:service-statistics-group;
         description
         "A list of all service function paths that contain this
@@ -182,6 +190,7 @@ module service-function {
     }
   }
 
+  //TODO: alagalah If REST operations on the CONF datastore are used, we do not need RPCs.
   rpc delete-all-service-function {
   description
     "Deletes all service functions";

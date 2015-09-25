@@ -5,10 +5,9 @@ module service-function {
   prefix sfc-sf;
 
   import ietf-inet-types { prefix inet; }
-  import service-function-type {prefix sfc-sft; }
-  import service-locator {prefix sfc-sl; }
+  import service-function-type {prefix sfc-sft;}
+  import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
-  import service-function-forwarder {prefix sfc-sff; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -109,9 +108,7 @@ module service-function {
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
-        type leafref {
-            path "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:name";
-        }
+        type string;
         description
           "The service function forwarder associated with this
            locator";

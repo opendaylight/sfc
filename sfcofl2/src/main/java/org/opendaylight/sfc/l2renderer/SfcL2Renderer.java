@@ -14,6 +14,7 @@ import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.flowprogrammer.OpenflowProgrammer;
 import org.opendaylight.yangtools.concepts.Registration;
 
 import java.util.concurrent.ExecutionException;
@@ -46,6 +47,7 @@ public class SfcL2Renderer implements AutoCloseable {
 
         this.packetInHandler = new SfcIpv4PacketInHandler((SfcL2FlowProgrammerOFimpl) sfcL2FlowProgrammer);
         this.pktInRegistration = notificationService.registerNotificationListener(packetInHandler);
+        OpenflowProgrammer.setDataBroker(dataBroker, OpenflowProgrammer.PRJ_SFC);
 
         LOG.info("SfcL2Renderer successfully started the SfcL2Renderer plugin");
     }

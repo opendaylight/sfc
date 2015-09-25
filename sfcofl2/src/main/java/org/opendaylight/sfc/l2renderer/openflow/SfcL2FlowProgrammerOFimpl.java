@@ -23,6 +23,7 @@ import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.flowprogrammer.OpenflowProgrammer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -84,11 +85,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     private static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
 
-    private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
-    private static final short TABLE_INDEX_PATH_MAPPER = 1;
-    private static final short TABLE_INDEX_PATH_MAPPER_ACL = 2;
-    private static final short TABLE_INDEX_NEXT_HOP = 3;
-    private static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
+    private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = OpenflowProgrammer.TBL_SFC_INGRESS_TRANSPORT;
+    private static final short TABLE_INDEX_PATH_MAPPER = OpenflowProgrammer.TBL_SFC_PATH_MAPPER;
+    private static final short TABLE_INDEX_PATH_MAPPER_ACL = OpenflowProgrammer.TBL_SFC_PATH_MAPPER_ACL;
+    private static final short TABLE_INDEX_NEXT_HOP = OpenflowProgrammer.TBL_SFC_NEXT_HOP;
+    private static final short TABLE_INDEX_TRANSPORT_EGRESS = OpenflowProgrammer.TBL_SFC_TRANSPORT_EGRESS;
 
     private static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 250;
     private static final int FLOW_PRIORITY_ARP_TRANSPORT_INGRESS = 300;
@@ -382,11 +383,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 new ConfigureTransportIngressThread(
                         sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4);
         configureIngressTransportTcpThread.setIpProtocol(SfcOpenflowUtils.IP_PROTOCOL_TCP);
+        configureIngressTransportTcpThread.setAddFlowSpace(true);
 
         ConfigureTransportIngressThread configureIngressTransportUdpThread =
                 new ConfigureTransportIngressThread(
                         sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4);
         configureIngressTransportUdpThread.setIpProtocol(SfcOpenflowUtils.IP_PROTOCOL_UDP);
+        configureIngressTransportUdpThread.setAddFlowSpace(true);
 
         try {
             threadPoolExecutorService.execute(configureIngressTransportTcpThread);
@@ -394,12 +397,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
+        LOG.info("Called configureIpv4TransportIngressFlow");
     }
 
     @Override
     public void configureVlanTransportIngressFlow(final String sffNodeName) {
         ConfigureTransportIngressThread configureIngressTransportThread =
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_VLAN);
+        configureIngressTransportThread.setAddFlowSpace(true);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -412,11 +417,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         ConfigureTransportIngressThread configureIngressTransportThread =
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4);
         configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
+        configureIngressTransportThread.setAddFlowSpace(true);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
+        LOG.info("Called configureVxlanGpeTransportIngressFlow");
     }
 
     @Override
@@ -424,6 +431,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         ConfigureTransportIngressThread configureIngressTransportThread =
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST);
+        configureIngressTransportThread.setAddFlowSpace(true);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -437,6 +445,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         short ipProtocol;
         short nextTable;
         Long rspId;
+        boolean addFlowSpace;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType) {
             this.sffNodeName = sffNodeName;
@@ -444,10 +453,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.ipProtocol = (short) -1;
             this.nextTable = TABLE_INDEX_PATH_MAPPER;
             this.rspId = flowRspId;
+            this.addFlowSpace = false;
         }
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
         public void setNextTable(short nextTable) { this.nextTable = nextTable; }
+        public void setAddFlowSpace(boolean addFlowSpace) { this.addFlowSpace = addFlowSpace; }
 
         @Override
         public void run() {
@@ -497,6 +508,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                                 isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+                if (this.addFlowSpace == true) {
+                    OpenflowProgrammer.addFlowSpace(transportIngressFlow, new NodeId(sffNodeName), OpenflowProgrammer.PRJ_SFC);
+                }
 
             } catch (Exception e) {
                 LOG.error("ConfigureTransportIngress writer caught an Exception: ", e);
@@ -1434,6 +1448,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path, which will include the Node, Table, and Flow
+        /*
         InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId()))
@@ -1446,6 +1461,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             LOG.error("{}: Failed to create Flow on node: {}",
                     Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
+        */
+        OpenflowProgrammer.writeFlow(flow, nodeBuilder.getId(), flow.getTableId(), OpenflowProgrammer.PRJ_SFC);
         storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
     }
 

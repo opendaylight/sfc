@@ -68,6 +68,11 @@
           <version>${openflowplugin.version}</version>
         </dependency>
         <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-flow-programmer</artifactId>
+          <version>${openflowplugin.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>yang-jmx-generator</artifactId>
             <type>test-jar</type>

@@ -36,6 +36,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <type>xml</type>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>features-openflowplugin-flow-programmer</artifactId>
+      <version>${openflowplugin.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
@@ -125,6 +132,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin</artifactId>
+      <version>${openflowplugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-flow-programmer</artifactId>
       <version>${openflowplugin.version}</version>
     </dependency>
     <dependency>

@@ -109,9 +109,7 @@ module service-function {
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
-        type leafref {
-            path "/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:name";
-        }
+        type sfc-sff:service-function-forwarder-ref;
         description
           "The service function forwarder associated with this
            locator";

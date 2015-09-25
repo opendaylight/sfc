@@ -44,6 +44,17 @@ module service-function-forwarder {
 
   // Failmode type definitions
 
+  typedef service-function-forwarder-ref {
+    type leafref {
+      path "/sfc-sff:service-function-forwarders/" +
+        "sfc-sff:service-function-forwarder/sfc-sff:name";
+    }
+    description
+      "This type is used by data models that need to reference
+       service function forwarders.";
+  }
+
+
   identity failmode-type-identity {
     description
       "Base identity from which specific failmode

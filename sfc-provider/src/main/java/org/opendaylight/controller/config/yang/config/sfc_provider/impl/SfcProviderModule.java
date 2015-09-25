@@ -87,6 +87,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                         OpendaylightSfc.SCF_ENTRY_IID, sfcProviderScfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
 
+        //SF Schedule type Entry
+        SfcProviderSfstEntryDataListener sfcProviderSfstEntryDataListener = new SfcProviderSfstEntryDataListener();
+        final ListenerRegistration<DataChangeListener> sfstEntryDataChangeListenerRegistration =
+                dataBrokerService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                        OpendaylightSfc.SFST_ENTRY_IID, sfcProviderSfstEntryDataListener, DataBroker.DataChangeScope.SUBTREE  );
 
         final BindingAwareBroker.RpcRegistration<ServiceFunctionService> sfRpcRegistration =
                 getRpcRegistryDependency()
@@ -111,6 +116,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 sfEntryDataChangeListenerRegistration.close();
                 scfEntryDataChangeListenerRegistration.close();
                 sffDataChangeListenerRegistration.close();
+                sfstEntryDataChangeListenerRegistration.close();
                 sfRpcRegistration.close();
                 sfcRpcRegistration.close();
                 rspRpcRegistration.close();

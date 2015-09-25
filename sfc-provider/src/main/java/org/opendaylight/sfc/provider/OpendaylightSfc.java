@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev1405
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +100,9 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public static final InstanceIdentifier<ServiceFunctionPaths> SFP_IID = InstanceIdentifier
             .builder(ServiceFunctionPaths.class).build();
+
+    public static final InstanceIdentifier<ServiceFunctionState> SFSTATE_ENTRY_IID = InstanceIdentifier
+            .builder(ServiceFunctionsState.class).child(ServiceFunctionState.class).build();
 
     public static final int EXECUTOR_THREAD_POOL_SIZE = 100;
 
@@ -167,6 +172,9 @@ public class OpendaylightSfc implements AutoCloseable {
             final InstanceIdentifier<ServiceFunctionSchedulerTypes> sfstIid = InstanceIdentifier.builder(
                     ServiceFunctionSchedulerTypes.class).build();
 
+            final InstanceIdentifier<ServiceFunctionsState> sfstateIid = InstanceIdentifier.builder(
+                    ServiceFunctionsState.class).build();
+
             SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SCF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFT_IID, LogicalDatastoreType.CONFIGURATION);
@@ -177,6 +185,7 @@ public class OpendaylightSfc implements AutoCloseable {
             SfcDataStoreAPI.deleteTransactionAPI(rspIid, LogicalDatastoreType.OPERATIONAL);
             SfcDataStoreAPI.deleteTransactionAPI(aclIid, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(sfstIid, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(sfstateIid, LogicalDatastoreType.OPERATIONAL);
 
             // When we close this service we need to shutdown our executor!
             executor.shutdown();

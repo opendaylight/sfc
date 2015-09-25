@@ -1,0 +1,105 @@
+{
+    "service-function-state":
+    [
+        {
+            "name": "NAME",
+            "service-statistics": {
+                "bytes-in":BYTES_IN,
+                "bytes-out":BYTES_OUT,
+                "packets-in":PACKETS_IN,
+                "packet-out":PACKETS_OUT
+            },
+            "sf-service-path": [
+                {
+                    "name":"PATH_NAME",
+                    "service-statistics": {
+                        "bytes-in":PATH_BYTES_IN,
+                        "bytes-out":PATH_BYTES_OUT,
+                        "packets-in":PATH_PACKETS_IN,
+                        "packet-out":PATH_PACKETS_OUT
+                    }
+                }
+            ],
+            "service-function-description-monitor:sfc-sf-desc-mon": {
+                "monitoring-info":
+                {
+                    "liveness": LIVENESS,
+                    "resource-utilization":
+                    {
+                        "packet-rate-utilization": PACKET_RATE_UTIL,
+                        "CPU-utilization": CPU_UTIL,
+                        "FIB-utilization": FIB_UTIL,
+                        "power-utilization": POWER_UTIL,
+                        "bandwidth-utilization": BANDWIDTH_UTIL,
+                        "available-memory": AVAILABLE_MEMORY,
+                        "RIB-utilization": RIB_UTIL,
+                        "memory-utilization": MEMORY_UTIL,
+                        "SF-ports-bandwidth-utilization":
+                        {
+                            "port-bandwidth-utilization":
+                            [
+                                {
+                                    "port-id": PORT_ID1,
+                                    "tx-bytes": TX_BYTES1,
+                                    "tx-packet": TX_PACKET1,
+                                    "tx-bytes-rate": TX_BYTES_RATE1,
+                                    "tx-packet-rate": TX_PACKET_RATE1,
+                                    "rx-packet": RX_PACKET1,
+                                    "rx-bytes": RX_BYTES1,
+                                    "rx-bytes-rate": RX_BYTES_RATE1,
+                                    "rx-packet-rate": RX_PACKET_RATE1,
+                                    "bandwidth-utilization": PORT_BANDWIDTH_UTIL1
+                                },
+                                {
+                                    "port-id": PORT_ID2,
+                                    "tx-bytes": TX_BYTES2,
+                                    "tx-packet": TX_PACKET2,
+                                    "tx-bytes-rate": TX_BYTES_RATE2,
+                                    "tx-packet-rate": TX_PACKET_RATE2,
+                                    "rx-packet": RX_PACKET2,
+                                    "rx-bytes": RX_BYTES2,
+                                    "rx-bytes-rate": RX_BYTES_RATE2,
+                                    "rx-packet-rate": RX_PACKET_RATE2,
+                                    "bandwidth-utilization": PORT_BANDWIDTH_UTIL2
+                                }
+                            ]
+                        }
+                    }
+                },
+                "description-info":
+                {
+                    "type": "TYPE",
+                    "data-plane-port": DATA_PLANE_PORT,
+                    "data-plane-ip": "DATA_PLANE_IP",
+                    "number-of-dataports": NUMBER_OF_DATAPORTS,
+                    "capabilities":
+                    {
+                        "ports-bandwidth":
+                        {
+                            "port-bandwidth":
+                            [
+                                {
+                                    "port-id": PORT_ID1,
+                                    "ipaddress": "IPADDRESS1",
+                                    "macaddress": "MACADDRESS1",
+                                    "supported-bandwidth": SUPPORTED_BANDWIDTH1
+                                },
+                                {
+                                    "port-id": PORT_ID2,
+                                    "ipaddress": "IPADDRESS2",
+                                    "macaddress": "MACADDRESS2",
+                                    "supported-bandwidth": SUPPORTED_BANDWIDTH2
+                                }
+                            ]
+                        },
+                        "RIB-size": RIB_SIZE,
+                        "supported-packet-rate": SUPPORTED_PACKET_RATE,
+                        "supported-ACL-number": SUPPORTED_ACL_NUMBER,
+                        "FIB-size": FIB_SIZE,
+                        "supported-bandwidth": WHOLE_SUPPORTED_BANDWIDTH
+                    }
+                }
+            }
+        }
+    ]
+}

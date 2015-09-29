@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_02aa5d19",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T16:02:00Z",
+      "side": 1,
+      "message": "This comment needs to be removed since it is from the code you based your class.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

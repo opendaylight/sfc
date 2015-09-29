@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a76adc5_d83c5296",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T20:05:51Z",
+      "side": 1,
+      "message": "you are not verifying that the scheduler was created. If you do this:\n\n                        Future future \u003d odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI\n                                .getPut(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));\n\nThen you need to read from the data store to be sure. Please see my listener unit tests.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_02aa5d19",
         "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
         "patchSetId": 1
@@ -13,6 +30,74 @@
       "writtenOn": "2015-09-29T16:02:00Z",
       "side": 1,
       "message": "This comment needs to be removed since it is from the code you based your class.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_78417e0a",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T20:05:51Z",
+      "side": 1,
+      "message": "Again, you need to verify that scheduler was removed.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_384b062d",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T20:05:51Z",
+      "side": 1,
+      "message": "This comment does not apply to this code.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_5848422d",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T20:05:51Z",
+      "side": 1,
+      "message": "is the name key? If name is key changing it creates a new scheduler. You need to update something else in this case.",
+      "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_f854aecb",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-29T20:05:51Z",
+      "side": 1,
+      "message": "You need to verify that scheduler was updated.",
       "revId": "a551ffc172c1c1f90c23397ac5d080c956a24c3d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

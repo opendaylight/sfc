@@ -203,6 +203,11 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                                 } else {
                                     LOG.error("Failed to create SF from Netconf node {}", nodeName);
                                 }
+
+                                GetSfDescriptionMonitoringInfoDynamicThread sfDescriptionMonitoringInfoDynamicThread =
+                                        new GetSfDescriptionMonitoringInfoDynamicThread(nodeName);
+                                Thread thread = new Thread(sfDescriptionMonitoringInfoDynamicThread);
+                                thread.start();
                             } else { //SFF
                                 ServiceFunctionForwarder sff = SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetconf(nodeName, nnode);
                                 if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(sff)) {
@@ -257,5 +262,30 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
         return nodeId;
     }
 
+}
 
+class GetSfDescriptionMonitoringInfoDynamicThread implements Runnable{
+    private static final Logger LOG = LoggerFactory.getLogger(GetSfDescriptionMonitoringInfoDynamicThread.class);
+    private int ticket =10;
+    private String nodeName;
+
+    public GetSfDescriptionMonitoringInfoDynamicThread(String nodeName) {
+        this.nodeName = nodeName;
+    }
+
+    public void run(){
+        while(true) {
+            printTraceStart(LOG);
+            MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
+            if (monInfo != null) {
+                SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, nodeName);
+            }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                LOG.warn("failed to ....", e);
+            }
+            printTraceStop(LOG);
+        }
+    }
 }

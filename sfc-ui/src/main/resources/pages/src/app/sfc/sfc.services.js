@@ -1375,5 +1375,22 @@ define(['app/sfc/sfc.module'], function (sfc) {
     return new SfcServiceForwarderOvsSvc();
   });
 
+// ******* SfcServiceFunctionStateSvc *********
+  sfc.register.factory('SfcServiceFunctionStateSvc', function (SfcRestBaseSvc) {
+
+    var modelUrl = 'service-function';
+    var containerName = 'service-functions-state';
+    var listName = 'service-function-state';
+    var availabilityCheckFunction = 'getOperationalArray';
+
+    // constructor
+    function SfcServiceFunctionStateSvc() {
+    }
+
+    SfcServiceFunctionStateSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName, availabilityCheckFunction);
+
+    return new SfcServiceFunctionStateSvc();
+  });
+
 })
 ; // end define

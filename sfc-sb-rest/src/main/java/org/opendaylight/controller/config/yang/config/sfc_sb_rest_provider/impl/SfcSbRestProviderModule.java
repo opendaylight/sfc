@@ -44,6 +44,7 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
         final SbRestAclEntryDataListener sbRestAclEntryDataListener = new SbRestAclEntryDataListener(opendaylightSfc);
         final SbRestScfEntryDataListener sbRestScfEntryDataListener = new SbRestScfEntryDataListener(opendaylightSfc);
         final SbRestSfstEntryDataListener sbRestSfstEntryDataListener = new SbRestSfstEntryDataListener(opendaylightSfc);
+        final SbRestSfstateEntryDataListener sbRestSfstateEntryDataListener = new SbRestSfstateEntryDataListener(opendaylightSfc);
         final SbRestKeepAliveSocket sbRestKeepAliveSocket = new SbRestKeepAliveSocket();
         opendaylightSfc.getExecutor().execute(sbRestKeepAliveSocket);
 
@@ -60,6 +61,7 @@ public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
                 sbRestAclEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestScfEntryDataListener.getDataChangeListenerRegistration().close();
                 sbRestSfstEntryDataListener.getDataChangeListenerRegistration().close();
+                sbRestSfstateEntryDataListener.getDataChangeListenerRegistration().close();
 
                 try {
                     opendaylightSfc.close();

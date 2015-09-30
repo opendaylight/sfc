@@ -170,6 +170,26 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
+    public static ServiceFunctionSchedulerTypes readAllServiceFunctionScheduleTypesExecutor() {
+        ServiceFunctionSchedulerTypes ret = null;
+        Object[] sfstObj = {};
+        Class[] sfstClass = {};
+
+        printTraceStart(LOG);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
+                .getReadAll(sfstObj, sfstClass);
+        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
+        try {
+            LOG.debug("getReadAll returns: {}", future.get());
+            ret = (ServiceFunctionSchedulerTypes) future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("failed to ....", e);
+        }
+
+        printTraceStop(LOG);
+        return ret;
+    }
+
     protected boolean putServiceFunctionScheduleType(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         boolean ret;
         printTraceStart(LOG);

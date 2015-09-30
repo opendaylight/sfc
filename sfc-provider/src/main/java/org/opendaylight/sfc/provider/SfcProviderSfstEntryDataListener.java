@@ -68,6 +68,7 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener {
                                 (ServiceFunctionSchedulerType) entry.getValue();
                         LOG.debug("\n########## createdServiceFunctionSchedulerType {} {}",
                                 createdServiceFunctionSchedulerType.getType(), createdServiceFunctionSchedulerType.getName());
+
                         try {
                             if (createdServiceFunctionSchedulerType.isEnabled() == true) {
                                 isCreateTrue = true;
@@ -118,6 +119,10 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener {
                         LOG.debug("\n########## deletedServiceFunctionSchedulerType {} {}",
                             origServiceFunctionSchedulerType.getType(), origServiceFunctionSchedulerType.getName());
                     }
+                }
+
+                if (SfcProviderScheduleTypeAPI.readAllServiceFunctionScheduleTypesExecutor()==null) {
+                    isCreateTrue = false;
                 }
 
                 // SF Schedule Type UPDATE

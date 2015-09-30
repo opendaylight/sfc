@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_d30af5d1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-09-30T07:02:38Z",
+      "side": 1,
+      "message": "Why is this if statement needed? isCreateTrue is not referenced anywhere.",
+      "revId": "74bceb610db21e7dd4db4debbbad72c271b62f9c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

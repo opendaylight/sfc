@@ -1,48 +1,48 @@
-/**
+/*
  * Copyright (c) 2015 Intel Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.sfc.provider.util;
 
-import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import java.util.List;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.host.tracker.rev140624.HostNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.address.tracker.rev140617.address.node.connector.Addresses;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.host.tracker.rev140624.HostNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.host.tracker.rev140624.host.AttachmentPoints;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-
-import java.util.List;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * This class provides some static APIs which are used to execute
  * some read operations on MD-SAL network topology and returns
  * what a caller needs.
- *
  * <p>
  *
  * @author Yi Yang (yi.y.yang@intel.com)
- *
- * <p>
+ *         <p>
  * @since 2015-05-08
  */
 public class SfcNetworkTopologyUtils {
+
     private static final String FLOW_TOPO_ID = "flow:1";
     private static final String OVSDB_TOPO_ID = "ovsdb:1";
     private static final String HOST_NODE_PREFIX = "host:";
@@ -52,21 +52,20 @@ public class SfcNetworkTopologyUtils {
      * This method gets network topology from MD-SAL data store
      * per the given topology ID.
      * <p>
+     *
      * @param topoID network topology ID to read
      * @return Topology network topology instance corresponding to topoID
      */
     private static Topology getTopology(String topoID) {
-        InstanceIdentifier<Topology> topoIID = InstanceIdentifier
-            .create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(topoID)));
+        InstanceIdentifier<Topology> topoIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
+                new TopologyKey(new TopologyId(topoID)));
         Topology topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
         return topo;
     }
 
     /**
      * This method gets Openflow network topology from MD-SAL data store.
-     * <p>
-     * @param none
+     *
      * @return Topology Openflow network topology instance
      */
     public static Topology getOpenflowTopology() {
@@ -75,8 +74,7 @@ public class SfcNetworkTopologyUtils {
 
     /**
      * This method gets OVSDB network topology from MD-SAL data store.
-     * <p>
-     * @param none
+     *
      * @return Topology OVSDB network topology instance
      */
     public static Topology getOvsdbTopology() {
@@ -86,13 +84,12 @@ public class SfcNetworkTopologyUtils {
     /**
      * This method gets OVSDB node from OVSDB network topology
      * per the given node ID.
-     * <p>
+     *
      * @param nodeId OVSDB node ID to read
      * @return Node OVSDB node corresponding to nodeId
      */
     public static Node getOvsdbNode(String nodeId) {
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier
-            .create(NetworkTopology.class)
+        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(OVSDB_TOPO_ID)))
             .child(Node.class, new NodeKey(new NodeId(nodeId)));
         Node node = SfcDataStoreAPI.readTransactionAPI(nodeIID, LogicalDatastoreType.OPERATIONAL);
@@ -105,6 +102,7 @@ public class SfcNetworkTopologyUtils {
      * ponit ID is the port the host connects to an Openvswitch or Openflow
      * switch by.
      * <p>
+     *
      * @param obj MAC/IP address of the given host
      * @param isIp true for IP, false for MAC
      * @return String termination point ID corresponding to the given host
@@ -141,12 +139,12 @@ public class SfcNetworkTopologyUtils {
             found = false;
             for (Addresses addrs : hostAddresses) {
                 if (isIp == true) {
-                    if (addrs.getIp().equals((IpAddress)obj)) {
+                    if (addrs.getIp().equals(obj)) {
                         found = true;
                         break;
                     }
                 } else {
-                    if (addrs.getMac().equals((MacAddress)obj)) {
+                    if (addrs.getMac().equals(obj)) {
                         found = true;
                         break;
                     }
@@ -170,10 +168,10 @@ public class SfcNetworkTopologyUtils {
                 if (attachmentPoints.getCorrespondingTp().equals(tpList.get(0).getTpId())) {
                     /*
                      * Openflow switch termination point format:
-                     *     openflow:1:1
-                     *              | |
-                     *              | +-- Switch port ID
-                     *              +---- Switch ID
+                     * openflow:1:1
+                     * | |
+                     * | +-- Switch port ID
+                     * +---- Switch ID
                      */
                     tpId = attachmentPoints.getTpId().getValue();
                     break;
@@ -188,6 +186,7 @@ public class SfcNetworkTopologyUtils {
      * of the given host (argument 'Object obj'), the host connects
      * to an Openflow switch by the port.
      * <p>
+     *
      * @param obj MAC/IP address of the given host
      * @param isIp true for IP, false for MAC
      * @return String the port corresponding to the given host
@@ -205,6 +204,7 @@ public class SfcNetworkTopologyUtils {
      * of the given host, the host connects to an Openflow switch
      * by the port.
      * <p>
+     *
      * @param ip IP address of the given host
      * @return String the port corresponding to the given host
      */
@@ -217,6 +217,7 @@ public class SfcNetworkTopologyUtils {
      * of the given host, the host connects to an Openflow switch
      * by the port.
      * <p>
+     *
      * @param mac MAC address of the given host
      * @return String the port corresponding to the given host
      */
@@ -228,6 +229,7 @@ public class SfcNetworkTopologyUtils {
      * This method gets a link (edge) in network topology per
      * the given source node ID and destination node ID.
      * <p>
+     *
      * @param srcNodeId source node ID
      * @param dstNodeId destination node ID
      * @return Link the link corresponding to srcNodeId and dstNodeId
@@ -253,8 +255,8 @@ public class SfcNetworkTopologyUtils {
 
     /**
      * This method gets source port of the given link.
-     * <p>
-     * @param Link the given link
+     *
+     * @param link the given link
      * @return String source port of the given link
      */
     public static String getLinkSrcPort(Link link) {
@@ -268,8 +270,8 @@ public class SfcNetworkTopologyUtils {
 
     /**
      * This method gets destination port of the given link.
-     * <p>
-     * @param Link the given link
+     *
+     * @param link the given link
      * @return String destination port of the given link
      */
     public static String getLinkDstPort(Link link) {
@@ -284,25 +286,23 @@ public class SfcNetworkTopologyUtils {
     /**
      * This method gets Openflow node ID per OVSDB data plane ID.
      * <p>
+     *
      * @param dpid OVSDB data plane ID
      * @return String Openflow node ID corresponding to dpid
      */
     public static String getOfNodeIdByDpid(String dpid) {
         String HEX = "0x";
         String[] addressInBytes = dpid.split(":");
-        Long address =
-                (Long.decode(HEX + addressInBytes[2]) << 40) |
-                (Long.decode(HEX + addressInBytes[3]) << 32) |
-                (Long.decode(HEX + addressInBytes[4]) << 24) |
-                (Long.decode(HEX + addressInBytes[5]) << 16) |
-                (Long.decode(HEX + addressInBytes[6]) << 8 ) |
-                (Long.decode(HEX + addressInBytes[7]));
+        Long address = (Long.decode(HEX + addressInBytes[2]) << 40) | (Long.decode(HEX + addressInBytes[3]) << 32)
+                | (Long.decode(HEX + addressInBytes[4]) << 24) | (Long.decode(HEX + addressInBytes[5]) << 16)
+                | (Long.decode(HEX + addressInBytes[6]) << 8) | (Long.decode(HEX + addressInBytes[7]));
         return OPENFLOW_NODE_PREFIX + String.valueOf(address);
     }
 
     /**
      * This method gets OVSDB data plane ID per Openflow node ID.
      * <p>
+     *
      * @param ofNodeId Openflow node ID
      * @return String OVSDB data plane ID corresponding to ofNodeId
      */
@@ -321,7 +321,7 @@ public class SfcNetworkTopologyUtils {
         }
 
         // Add "00" for the highest order if needed
-        for (i = 0; i < (16 - longStr.length())/2; i++) {
+        for (i = 0; i < (16 - longStr.length()) / 2; i++) {
             if (!dpid.isEmpty()) {
                 dpid += ":";
             }
@@ -332,7 +332,7 @@ public class SfcNetworkTopologyUtils {
             if (!dpid.isEmpty()) {
                 dpid += ":";
             }
-            dpid += longStr.substring(i, i+2);
+            dpid += longStr.substring(i, i + 2);
         }
         return dpid;
     }
@@ -340,6 +340,7 @@ public class SfcNetworkTopologyUtils {
     /**
      * This method gets Openflow node ID per OVSDB node ID
      * <p>
+     *
      * @param ovsdbNodeId OVSDB node ID
      * @return String Openflow node ID corresponding to ovsdbNodeId
      */
@@ -365,6 +366,7 @@ public class SfcNetworkTopologyUtils {
      * host, the Openflow node ID is openflow ID of the switch
      * the given host connects to.
      * <p>
+     *
      * @param obj MAC/IP address of the given host
      * @param isIp true for IP, false for MAC
      * @return String Openflow node ID corresponding to the given host
@@ -384,6 +386,7 @@ public class SfcNetworkTopologyUtils {
      * host, the Openflow node ID is openflow ID of the switch the
      * given host connects to.
      * <p>
+     *
      * @param ip IP address of the given host
      * @return String Openflow node ID corresponding to the given host
      */
@@ -396,6 +399,7 @@ public class SfcNetworkTopologyUtils {
      * host, the Openflow node ID is openflow ID of the switch the
      * given host connects to.
      * <p>
+     *
      * @param mac MAC address of the given host
      * @return String Openflow node ID corresponding to the given host
      */
@@ -407,6 +411,7 @@ public class SfcNetworkTopologyUtils {
      * This method gets OVSDB node ID per the given OVSDB data
      * plane ID (String dpid).
      * <p>
+     *
      * @param dpid OVSDB data plane ID
      * @return String OVSDB node ID corresponding to dpid
      */
@@ -433,6 +438,7 @@ public class SfcNetworkTopologyUtils {
      * This method gets OVSDB node ID per the given IP
      * address.
      * <p>
+     *
      * @param ip the given IP address
      * @return String OVSDB node ID corresponding to the given IP
      */
@@ -446,6 +452,7 @@ public class SfcNetworkTopologyUtils {
      * This method gets OVSDB node ID per the given MAC
      * address.
      * <p>
+     *
      * @param mac the given MAC address
      * @return String OVSDB node ID corresponding to the given MAC
      */

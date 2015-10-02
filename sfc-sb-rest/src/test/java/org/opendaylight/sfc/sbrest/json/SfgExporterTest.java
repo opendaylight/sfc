@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,8 +8,16 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
@@ -23,23 +31,15 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionBuilder;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class contains unit tests for SfgExporter
  *
  * @author Vladimir Lavor
  * @version 0.1
- * @see SfgExporter
- * <p/>
+ * @see org.opendaylight.sfc.sbrest.json.SfgExporter
  * @since 2015-05-28
  */
 
@@ -50,8 +50,7 @@ public class SfgExporterTest {
     private static final String NAME_ONLY_JSON = "/SfgJsonStrings/NameOnly.json";
     private ServiceFunctionBuilder serviceFunctionBuilder;
 
-
-    //read .json in resources/SfgJsonStrings and create a string
+    // read .json in resources/SfgJsonStrings and create a string
     private String gatherServiceFunctionGroupJsonStringFromFile(String testFileName) {
         String jsonString = null;
 
@@ -82,7 +81,7 @@ public class SfgExporterTest {
     }
 
     @Test
-    //put wrong argument, illegal argument exception is expected
+    // put wrong argument, illegal argument exception is expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         SfgExporter sfgExporter = new SfgExporter();
@@ -100,8 +99,9 @@ public class SfgExporterTest {
         }
     }
 
-    //create a .json with specified attributes, then compare it with file in Resources/SfgJsonString/*.json
-    //result is a boolean value which depends on whether strings (.json files) are equals or not
+    // create a .json with specified attributes, then compare it with file in
+    // Resources/SfgJsonString/*.json
+    // result is a boolean value which depends on whether strings (.json files) are equals or not
     private boolean testExportSfgJson(String expectedResultFile, boolean nameOnly) throws IOException {
         ServiceFunctionGroup serviceFunctionGroup;
         String exportedSfgString;
@@ -116,7 +116,8 @@ public class SfgExporterTest {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode expectedSfgJson = objectMapper.readTree(this.gatherServiceFunctionGroupJsonStringFromFile(expectedResultFile));
+        JsonNode expectedSfgJson =
+                objectMapper.readTree(this.gatherServiceFunctionGroupJsonStringFromFile(expectedResultFile));
         JsonNode exportedSfgJson = objectMapper.readTree(exportedSfgString);
 
         System.out.println("EXPECTED: " + expectedSfgJson);
@@ -125,7 +126,7 @@ public class SfgExporterTest {
         return expectedSfgJson.equals(exportedSfgJson);
     }
 
-    //create service function group with name only
+    // create service function group with name only
     private ServiceFunctionGroup buildServiceFunctionGroupNameOnly() {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
         serviceFunctionGroupBuilder.setName(SfgTestValues.NAME.getValue());
@@ -136,18 +137,18 @@ public class SfgExporterTest {
     // create service function group and set all attributes needed for testing
     private ServiceFunctionGroup buildServiceFunctionGroup() {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
-        //noinspection unchecked
+        // noinspection unchecked
         serviceFunctionGroupBuilder.setName(SfgTestValues.NAME.getValue())
-                .setType(SfgTestValues.TYPE.getIdentity())
-                .setRestUri(new Uri(SfgTestValues.REST_URI.getValue()))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfgTestValues.IP_MGMT_ADDRESS.getValue())))
-                .setAlgorithm(SfgTestValues.ALGORITHM.getValue())
-                .setSfcServiceFunction(this.createSfcSfList());
+            .setType(SfgTestValues.TYPE.getIdentity())
+            .setRestUri(new Uri(SfgTestValues.REST_URI.getValue()))
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfgTestValues.IP_MGMT_ADDRESS.getValue())))
+            .setAlgorithm(SfgTestValues.ALGORITHM.getValue())
+            .setSfcServiceFunction(this.createSfcSfList());
 
         return serviceFunctionGroupBuilder.build();
     }
 
-    //create list of service functions
+    // create list of service functions
     private List<SfcServiceFunction> createSfcSfList() {
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -165,13 +166,9 @@ public class SfgExporterTest {
     // all attributes and their values necessary to create service function group are defined here
     // these enums are used here an also in respective .json in resources/SfgJsonStrings
     public enum SfgTestValues {
-        NAME("SFG"),
-        REST_URI("http://localhost:5000/"),
-        IP_MGMT_ADDRESS("10.0.0.1"),
-        ALGORITHM("Alg1"),
-        TYPE(SERVICE_FUNCTION_GROUP_TYPE_PREFIX + Firewall.class.getName().toLowerCase(), Firewall.class),
-        SERVICE_FUNCTION_NAME("SffName"),
-        SERVICE_FUNCTION_KEY("SffKey");
+        NAME("SFG"), REST_URI("http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), ALGORITHM("Alg1"), TYPE(
+                SERVICE_FUNCTION_GROUP_TYPE_PREFIX + Firewall.class.getName().toLowerCase(),
+                Firewall.class), SERVICE_FUNCTION_NAME("SffName"), SERVICE_FUNCTION_KEY("SffKey");
 
         private final String value;
         private Class identity;
@@ -194,5 +191,3 @@ public class SfgExporterTest {
         }
     }
 }
-
-

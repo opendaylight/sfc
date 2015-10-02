@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -22,8 +22,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import com.google.common.base.Preconditions;
 
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -62,6 +60,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 public class SfcOvsUtil {
 
@@ -119,10 +119,8 @@ public class SfcOvsUtil {
      * @return InstanceIdentifier&lt;Topology&gt;
      */
     public static InstanceIdentifier<Topology> buildOvsdbTopologyIID() {
-        InstanceIdentifier<Topology> ovsdbTopologyIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID));
+        InstanceIdentifier<Topology> ovsdbTopologyIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID));
 
         return ovsdbTopologyIID;
     }
@@ -146,8 +144,10 @@ public class SfcOvsUtil {
         String bridgeName = (ovsdbBridge.getBridgeName().getValue());
         InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) ovsdbBridge.getManagedBy().getValue();
 
-        KeyedInstanceIdentifier keyedInstanceIdentifier = (KeyedInstanceIdentifier) nodeIID.firstIdentifierOf(Node.class);
-        Preconditions.checkNotNull(keyedInstanceIdentifier, "Cannot build getManagedByNodeId, parent OVS Node is null.");
+        KeyedInstanceIdentifier keyedInstanceIdentifier =
+                (KeyedInstanceIdentifier) nodeIID.firstIdentifierOf(Node.class);
+        Preconditions.checkNotNull(keyedInstanceIdentifier,
+                "Cannot build getManagedByNodeId, parent OVS Node is null.");
 
         NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
         String nodeId = nodeKey.getNodeId().getValue();
@@ -165,29 +165,26 @@ public class SfcOvsUtil {
      * @see SfcOvsUtil getManagedByNodeId
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(OvsdbBridgeAugmentation ovsdbBridge) {
-        InstanceIdentifier<Node> nodeIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)));
+        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)));
 
         return nodeIID;
     }
 
     /**
      * Method builds OVS Node InstanceIdentifier which is based on Service Function Forwarder name.
-     * Method will return valid InstanceIdentifier only if the given SFF name belongs to SFF instance mapped to OVS.
+     * Method will return valid InstanceIdentifier only if the given SFF name belongs to SFF
+     * instance mapped to OVS.
      * <p>
      *
      * @param serviceFunctionForwarderName String
      * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(String serviceFunctionForwarderName) {
-        InstanceIdentifier<Node> nodeIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(new NodeId(serviceFunctionForwarderName)));
+        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(new NodeId(serviceFunctionForwarderName)));
 
         return nodeIID;
     }
@@ -200,11 +197,9 @@ public class SfcOvsUtil {
      * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(NodeId nodeId) {
-        InstanceIdentifier<Node> nodeIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(nodeId));
+        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(nodeId));
 
         return nodeIID;
     }
@@ -218,29 +213,26 @@ public class SfcOvsUtil {
      * @see SfcOvsUtil getManagedByNodeId
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(OvsdbBridgeAugmentation ovsdbBridge) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)))
-                        .augmentation(OvsdbBridgeAugmentation.class);
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)))
+            .augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
     }
 
     /**
-     * Create a {@link InstanceIdentifier<OvsdbBridgeAugmentation>} based on the Topology
+     * Create a {@link InstanceIdentifier} {@link OvsdbBridgeAugmentation} based on the Topology
      * {@link NodeId}
+     *
      * @param nodeId A topology {@link NodeId}
      * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(NodeId nodeId) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(nodeId))
-                        .augmentation(OvsdbBridgeAugmentation.class);
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(nodeId))
+            .augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
     }
@@ -253,21 +245,22 @@ public class SfcOvsUtil {
      * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(String serviceFunctionForwarderName) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = buildOvsdbNodeIID(serviceFunctionForwarderName)
-                .augmentation(OvsdbBridgeAugmentation.class);
+        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID =
+                buildOvsdbNodeIID(serviceFunctionForwarderName).augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
     }
 
     /**
      * Method builds OVS TerminationPointAugmentation InstanceIdentifier which is based on:
-     * 1. OVS Node InstanceIdentifier which manages the OVS Bridge, to which the OVS TerminationPoint is attached
+     * 1. OVS Node InstanceIdentifier which manages the OVS Bridge, to which the OVS
+     * TerminationPoint is attached
      * 2. OVS Termination Point name
      * <p>
      * If the two aforementioned fields are missing, NullPointerException is raised.
      * <p>
      *
-     * @param ovsdbBridge           OvsdbBridgeAugmentation
+     * @param ovsdbBridge OvsdbBridgeAugmentation
      * @param ovsdbTerminationPoint OvsdbTerminationPointAugmentation
      * @return InstanceIdentifier&lt;OvsdbTerminationPointAugmentation&gt;
      */
@@ -285,34 +278,32 @@ public class SfcOvsUtil {
         String terminationPointId = ovsdbTerminationPoint.getName();
 
         InstanceIdentifier<OvsdbTerminationPointAugmentation> terminationPointIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(nodeId))
-                        .child(TerminationPoint.class, new TerminationPointKey(new TpId(terminationPointId)))
-                        .augmentation(OvsdbTerminationPointAugmentation.class);
+                InstanceIdentifier.create(NetworkTopology.class)
+                    .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                    .child(Node.class, new NodeKey(nodeId))
+                    .child(TerminationPoint.class, new TerminationPointKey(new TpId(terminationPointId)))
+                    .augmentation(OvsdbTerminationPointAugmentation.class);
 
         return terminationPointIID;
     }
 
     /**
-     * Method builds OVS TerminationPoint InstanceIdentifier which is based on SFF name and SFF DataPlane locator name.
+     * Method builds OVS TerminationPoint InstanceIdentifier which is based on SFF name and SFF
+     * DataPlane locator name.
      * Method will return valid InstanceIdentifier only if the given SFF and SFF DataPlane locator
      * belongs to SFF instance mapped to OVS.
      * <p>
      *
-     * @param sffName                 Service Function Forwarder Name
+     * @param sffName Service Function Forwarder Name
      * @param sffDataPlaneLocatorName Service Function Forwarder Data Plane locator name
      * @return InstanceIdentifier&lt;TerminationPoint&gt;
      */
-    public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(String sffName, String sffDataPlaneLocatorName) {
-        InstanceIdentifier<TerminationPoint> terminationPointIID =
-                InstanceIdentifier
-                        .create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class, new NodeKey(new NodeId(sffName)))
-                        .child(TerminationPoint.class, new TerminationPointKey(
-                                new TpId(sffDataPlaneLocatorName)));
+    public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(String sffName,
+            String sffDataPlaneLocatorName) {
+        InstanceIdentifier<TerminationPoint> terminationPointIID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+            .child(Node.class, new NodeKey(new NodeId(sffName)))
+            .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffDataPlaneLocatorName)));
 
         return terminationPointIID;
     }
@@ -351,8 +342,7 @@ public class SfcOvsUtil {
     }
 
     public static boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,
-                                                    List<SffDataPlaneLocator> sffDataPlaneLocatorList,
-                                                    ExecutorService executor) {
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList, ExecutorService executor) {
         Preconditions.checkNotNull(executor);
 
         boolean result = true;
@@ -362,14 +352,12 @@ public class SfcOvsUtil {
         for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint : ovsdbTerminationPointList) {
             Object[] methodParameters = {ovsdbBridge, ovsdbTerminationPoint};
             SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint =
-                    new SfcOvsDataStoreAPI(
-                            SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT,
-                            methodParameters
-                    );
+                    new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT, methodParameters);
             boolean partialResult =
                     (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint, executor);
 
-            //once result is false, we will keep it false (it will be not overwritten with next partialResults)
+            // once result is false, we will keep it false (it will be not overwritten with next
+            // partialResults)
             if (result) {
                 result = partialResult;
             }
@@ -383,10 +371,7 @@ public class SfcOvsUtil {
 
         Object[] methodParameters = {ovsdbBridge};
         SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutBridge =
-                new SfcOvsDataStoreAPI(
-                        SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE,
-                        methodParameters
-                );
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParameters);
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, executor);
     }
 
@@ -394,22 +379,18 @@ public class SfcOvsUtil {
         Preconditions.checkNotNull(executor);
 
         Object[] methodParameters = {ovsdbNodeIID};
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteNode = new SfcOvsDataStoreAPI(
-                SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE,
-                methodParameters
-        );
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteNode =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE, methodParameters);
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, executor);
     }
 
     public static boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID,
-                                                      ExecutorService executor) {
+            ExecutorService executor) {
         Preconditions.checkNotNull(executor);
 
         Object[] methodParameters = {ovsdbTerminationPointIID};
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint = new SfcOvsDataStoreAPI(
-                SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT,
-                methodParameters
-        );
+        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint =
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT, methodParameters);
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, executor);
     }
 
@@ -420,7 +401,7 @@ public class SfcOvsUtil {
             SffOvsBridgeAugmentationBuilder sffOvsBrAugBuilder;
             OvsBridgeBuilder ovsBrBuilder;
 
-            //if augmentation exists, create builders based on existing data
+            // if augmentation exists, create builders based on existing data
             SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
             if (sffOvsBrAug != null) {
                 sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder(sffOvsBrAug);
@@ -432,7 +413,7 @@ public class SfcOvsUtil {
                     ovsBrBuilder = new OvsBridgeBuilder();
                 }
 
-            //if not, create empty builders
+                // if not, create empty builders
             } else {
                 sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder();
                 ovsBrBuilder = new OvsBridgeBuilder();
@@ -445,7 +426,7 @@ public class SfcOvsUtil {
             return sffBuilder.build();
         }
 
-        //if the OpenFlowNodeId does not exist, return the original SFF
+        // if the OpenFlowNodeId does not exist, return the original SFF
         else {
             return sff;
         }
@@ -457,9 +438,9 @@ public class SfcOvsUtil {
      * found in an IP based Data Plane Locator. If there isn't
      * an IP based Data Plane Locator, then this will return null.
      *
-     * @param serviceFunctionForwarder
-     * @param executor
-     * @return
+     * @param serviceFunctionForwarder - {@link ServiceFunctionForwarder}
+     * @param executor - {@link ExecutorService}
+     * @return {@link Node}
      */
     public static Node lookupTopologyNode(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
         List<SffDataPlaneLocator> sffDplList = serviceFunctionForwarder.getSffDataPlaneLocator();
@@ -475,9 +456,8 @@ public class SfcOvsUtil {
          * locator. If we find one, use the IP address from that as the
          * IP for the OVSDB manager connection.
          */
-        for (SffDataPlaneLocator sffDpl: sffDplList) {
-            if ((sffDpl.getDataPlaneLocator() != null)
-                    && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
+        for (SffDataPlaneLocator sffDpl : sffDplList) {
+            if ((sffDpl.getDataPlaneLocator() != null) && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
                 Class<? extends DataContainer> locatorType =
                         sffDpl.getDataPlaneLocator().getLocatorType().getImplementedInterface();
                 if (locatorType.isAssignableFrom(Ip.class)) {
@@ -495,7 +475,8 @@ public class SfcOvsUtil {
     }
 
     public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {
-        Node managerNode = lookupTopologyNode(serviceFunctionForwarder, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        Node managerNode =
+                lookupTopologyNode(serviceFunctionForwarder, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
         if (managerNode == null) {
             LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -509,12 +490,13 @@ public class SfcOvsUtil {
         OvsBridge serviceForwarderOvsBridge = serviceForwarderOvsBridgeAugmentation.getOvsBridge();
 
         if (serviceForwarderOvsBridge == null) {
-            LOG.warn("No OvsBridge for SffOvsBridgeAugmentation in Service Function Forwarder {}", serviceFunctionForwarder);
+            LOG.warn("No OvsBridge for SffOvsBridgeAugmentation in Service Function Forwarder {}",
+                    serviceFunctionForwarder);
             return null;
         }
 
         OvsdbBridgeAugmentationBuilder builder = new OvsdbBridgeAugmentationBuilder();
-        OvsdbNodeRef ovsdbNodeRef =  new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(managerNode.getNodeId()));
+        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(managerNode.getNodeId()));
         builder.setManagedBy(ovsdbNodeRef);
         builder.setBridgeName(new OvsdbBridgeName(serviceForwarderOvsBridge.getBridgeName()));
 
@@ -532,16 +514,12 @@ public class SfcOvsUtil {
     private static DatapathId getOvsDataPathId(NodeId nodeId) {
         Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(nodeId)};
         SfcOvsDataStoreAPI readOvsdbBridge =
-                new SfcOvsDataStoreAPI(
-                        SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE,
-                        methodParams
-                );
+                new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE, methodParams);
 
-        OvsdbBridgeAugmentation readBridge =
-                (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(
-                        readOvsdbBridge, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        OvsdbBridgeAugmentation readBridge = (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge,
+                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
 
-        if(readBridge == null) {
+        if (readBridge == null) {
             return null;
         }
         return readBridge.getDatapathId();
@@ -550,21 +528,16 @@ public class SfcOvsUtil {
     private static Long getLongFromDpid(String dpid) {
         String HEX = "0x";
         String[] addressInBytes = dpid.split(":");
-        Long address =
-                (Long.decode(HEX + addressInBytes[2]) << 40) |
-                        (Long.decode(HEX + addressInBytes[3]) << 32) |
-                        (Long.decode(HEX + addressInBytes[4]) << 24) |
-                        (Long.decode(HEX + addressInBytes[5]) << 16) |
-                        (Long.decode(HEX + addressInBytes[6]) << 8 ) |
-                        (Long.decode(HEX + addressInBytes[7]));
+        Long address = (Long.decode(HEX + addressInBytes[2]) << 40) | (Long.decode(HEX + addressInBytes[3]) << 32)
+                | (Long.decode(HEX + addressInBytes[4]) << 24) | (Long.decode(HEX + addressInBytes[5]) << 16)
+                | (Long.decode(HEX + addressInBytes[6]) << 8) | (Long.decode(HEX + addressInBytes[7]));
         return address;
     }
 
     public static Node getManagerNodeByIp(IpAddress ip, ExecutorService executor) {
         String ipAddressString = null;
 
-        if ((ip == null)
-                || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
+        if ((ip == null) || ((ip.getIpv4Address() == null) && (ip.getIpv6Address() == null))) {
             LOG.warn("Invalid IP address");
             return null;
         }
@@ -588,20 +561,17 @@ public class SfcOvsUtil {
 
     public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef, ExecutorService executor) {
         Preconditions.checkNotNull(executor);
-        if(nodeRef.getValue().getTargetType().equals(Node.class)) {
+        if (nodeRef.getValue().getTargetType().equals(Node.class)) {
             Object[] methodParams = {nodeRef};
             SfcOvsDataStoreAPI readOvsdbNode =
-                   new SfcOvsDataStoreAPI(
-                           SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
-                            methodParams
-                   );
+                    new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF, methodParams);
 
             Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
 
             if (ovsdbNode != null) {
                 return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
             } else {
-                LOG.warn("Could not find ovsdb-node for connection for {}",ovsdbNode);
+                LOG.warn("Could not find ovsdb-node for connection for {}", ovsdbNode);
             }
         } else {
             LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);

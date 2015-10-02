@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,10 +8,15 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,21 +34,16 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SbRestRspTask
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-17
  */
 
@@ -63,7 +63,7 @@ public class SbRestRspTaskTest {
 
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
-                .thenReturn(this.buildServiceFunctionForwarder());
+            .thenReturn(this.buildServiceFunctionForwarder());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class SbRestRspTaskTest {
     public void testSbRestRspTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
-                .thenReturn(new ServiceFunctionForwarderBuilder().build());
+            .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestRspTask sbRestRspTask =
                 new SbRestRspTask(RestOperation.PUT, new RenderedServicePathBuilder().build(), executorService);
@@ -100,7 +100,7 @@ public class SbRestRspTaskTest {
         assertNull("Must be null", sbRestRspTask.restUriList);
     }
 
-    //build rendered service path, which is needed to create SbRestRspTask object
+    // build rendered service path, which is needed to create SbRestRspTask object
     private RenderedServicePath buildRenderedServicePath() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(RSP_NAME);
@@ -115,7 +115,7 @@ public class SbRestRspTaskTest {
         return renderedServicePathBuilder.build();
     }
 
-    //returns sff with name & rest uri
+    // returns sff with name & rest uri
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);
@@ -145,7 +145,7 @@ public class SbRestRspTaskTest {
         return topNode;
     }
 
-    //returns object node with name only
+    // returns object node with name only
     private ObjectNode buildRenderedServicePathObjectNode1() {
         ObjectNode topNode = mapper.createObjectNode();
 

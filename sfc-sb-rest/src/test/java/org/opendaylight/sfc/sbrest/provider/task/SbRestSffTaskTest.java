@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,10 +8,13 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.sbrest.json.SffExporterFactory;
@@ -19,19 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SbRestSffTask
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-18
  */
 
@@ -78,7 +78,7 @@ public class SbRestSffTaskTest {
         assertNull("Must be null", sbRestSffTask.restUriList);
     }
 
-    //build service function forwarder, which is needed to create SbRestSffTask object
+    // build service function forwarder, which is needed to create SbRestSffTask object
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);
@@ -87,7 +87,7 @@ public class SbRestSffTaskTest {
         return serviceFunctionForwarderBuilder.build();
     }
 
-    //returns object node with name & rest uri, uses FullTest.json
+    // returns object node with name & rest uri, uses FullTest.json
     private ObjectNode buildServiceFunctionForwarderObjectNode() {
         ObjectNode topNode = mapper.createObjectNode();
 
@@ -102,7 +102,7 @@ public class SbRestSffTaskTest {
         return topNode;
     }
 
-    //returns object node with name only, uses NameOnly.json
+    // returns object node with name only, uses NameOnly.json
     private ObjectNode buildServiceFunctionForwarderObjectNode1() {
         ObjectNode topNode = mapper.createObjectNode();
 

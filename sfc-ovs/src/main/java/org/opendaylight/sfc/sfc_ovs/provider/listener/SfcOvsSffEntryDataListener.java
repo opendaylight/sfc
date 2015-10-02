@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,8 +8,6 @@
 
 /**
  * DataChangeListener attached to the SFC SFF config datastore
- * <p/>
- * <p/>
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -43,11 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsSffEntryDataListener.class);
 
     public static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class).build();
+            InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
 
     public SfcOvsSffEntryDataListener(OpendaylightSfc opendaylightSfc) {
         setOpendaylightSfc(opendaylightSfc);
@@ -58,8 +56,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         printTraceStart(LOG);
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -89,7 +86,6 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
             }
         }
 
-
         // SFF DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
         for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
@@ -104,7 +100,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
                     String sffName = sffKey.getName();
 
-                    //delete OvsdbNode
+                    // delete OvsdbNode
                     SfcOvsUtil.deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName), opendaylightSfc.getExecutor());
                 }
 
@@ -118,9 +114,10 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
                     String sffName = sffKey.getName();
 
-                    //delete OvsdbTerminationPoint
-                    SfcOvsUtil.deleteOvsdbTerminationPoint(SfcOvsUtil.buildOvsdbTerminationPointIID(
-                            sffName, sffDataPlaneLocator.getName()), opendaylightSfc.getExecutor());
+                    // delete OvsdbTerminationPoint
+                    SfcOvsUtil.deleteOvsdbTerminationPoint(
+                            SfcOvsUtil.buildOvsdbTerminationPointIID(sffName, sffDataPlaneLocator.getName()),
+                            opendaylightSfc.getExecutor());
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,9 +8,17 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentationBuilder;
@@ -28,26 +36,22 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SffExporter
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-13
  */
 
@@ -61,7 +65,7 @@ public class SffExporterTest {
     private SffExporterFactory sffExporterFactory;
     private String result;
 
-    //create string, that represents .json file
+    // create string, that represents .json file
     private String gatherServiceFunctionForwardersJsonStringFromFile(String testFileName) {
         String jsonString = null;
 
@@ -73,7 +77,8 @@ public class SffExporterTest {
         }
 
         for (SffTestValues sffTestValue : SffTestValues.values()) {
-            jsonString = jsonString != null ? jsonString.replaceAll("\\b" + sffTestValue.name() + "\\b", sffTestValue.getValue()) : null;
+            jsonString = jsonString != null ? jsonString.replaceAll("\\b" + sffTestValue.name() + "\\b",
+                    sffTestValue.getValue()) : null;
         }
 
         return jsonString;
@@ -90,7 +95,7 @@ public class SffExporterTest {
     }
 
     @Test
-    //put wrong parameter, illegal argument exception expected
+    // put wrong parameter, illegal argument exception expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
         SffExporter sffExporter = new SffExporter();
@@ -122,9 +127,9 @@ public class SffExporterTest {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode expectedSffJson = objectMapper.readTree(this.gatherServiceFunctionForwardersJsonStringFromFile(expectedResultFile));
+        JsonNode expectedSffJson =
+                objectMapper.readTree(this.gatherServiceFunctionForwardersJsonStringFromFile(expectedResultFile));
         JsonNode exportedSffJson = objectMapper.readTree(exportedSffString);
-
 
         System.out.println("EXPECTED: " + expectedSffJson);
         System.out.println("CREATED:  " + exportedSffJson);
@@ -142,34 +147,35 @@ public class SffExporterTest {
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SffTestValues.NAME.getValue())
-                .setRestUri(new Uri(SffTestValues.REST_URI.getValue()))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(SffTestValues.IP_MGMT_ADDRESS.getValue())))
-                .setServiceNode(SffTestValues.SERVICE_NODE.getValue())
-                .setSffDataPlaneLocator(this.buildSffDataPlaneLocator())
-                .setServiceFunctionDictionary(this.buildServiceFunctionDictionary());
+            .setRestUri(new Uri(SffTestValues.REST_URI.getValue()))
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(SffTestValues.IP_MGMT_ADDRESS.getValue())))
+            .setServiceNode(SffTestValues.SERVICE_NODE.getValue())
+            .setSffDataPlaneLocator(this.buildSffDataPlaneLocator())
+            .setServiceFunctionDictionary(this.buildServiceFunctionDictionary());
 
         return serviceFunctionForwarderBuilder.build();
     }
 
-    //build sff data plane locator list with one sff data plane locator
+    // build sff data plane locator list with one sff data plane locator
     private List<SffDataPlaneLocator> buildSffDataPlaneLocator() {
         List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
 
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorBuilder.setName(SffTestValues.SFF_DATA_PLANE_LOCATOR_NAME.getValue())
-                .addAugmentation(SffOvsLocatorBridgeAugmentation.class, this.buildSffDataPlaneLocator1());
+            .addAugmentation(SffOvsLocatorBridgeAugmentation.class, this.buildSffDataPlaneLocator1());
         sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());
 
         return sffDataPlaneLocatorList;
     }
 
-    //build data plane locator
+    // build data plane locator
     private SffOvsLocatorBridgeAugmentation buildSffDataPlaneLocator1() {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         ovsBridgeBuilder.setBridgeName(SffTestValues.SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME.getValue())
-                .setUuid(new Uuid(SffTestValues.SFF_DATA_PLANE_LOCATOR_UUID.getValue()));
+            .setUuid(new Uuid(SffTestValues.SFF_DATA_PLANE_LOCATOR_UUID.getValue()));
 
-        SffOvsLocatorBridgeAugmentationBuilder sffDataPlaneLocator1Builder = new SffOvsLocatorBridgeAugmentationBuilder();
+        SffOvsLocatorBridgeAugmentationBuilder sffDataPlaneLocator1Builder =
+                new SffOvsLocatorBridgeAugmentationBuilder();
         sffDataPlaneLocator1Builder.setOvsBridge(ovsBridgeBuilder.build());
 
         return sffDataPlaneLocator1Builder.build();
@@ -179,18 +185,18 @@ public class SffExporterTest {
         List<ServiceFunctionDictionary> serviceFunctionDictionaryList = new ArrayList<>();
 
         ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-        //noinspection unchecked
+        // noinspection unchecked
         serviceFunctionDictionaryBuilder.setName(SffTestValues.SF_DICTIONARY_NAME.getValue())
-                .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
-                .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv4());
+            .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
+            .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv4());
 
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
 
         serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-        //noinspection unchecked
+        // noinspection unchecked
         serviceFunctionDictionaryBuilder.setName(SffTestValues.SF_DICTIONARY_NAME.getValue())
-                .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
-                .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv6());
+            .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
+            .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv6());
 
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
 
@@ -204,8 +210,9 @@ public class SffExporterTest {
         ipBuilder.setPort(new PortNumber(Integer.valueOf(SffTestValues.PORT1.getValue())));
 
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder.addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
-                .setLocatorType(ipBuilder.build());
+        sffSfDataPlaneLocatorBuilder
+            .addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
+            .setLocatorType(ipBuilder.build());
 
         return sffSfDataPlaneLocatorBuilder.build();
     }
@@ -217,8 +224,9 @@ public class SffExporterTest {
         ipBuilder.setPort(new PortNumber(Integer.valueOf(SffTestValues.PORT2.getValue())));
 
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder.addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
-                .setLocatorType(ipBuilder.build());
+        sffSfDataPlaneLocatorBuilder
+            .addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
+            .setLocatorType(ipBuilder.build());
 
         return sffSfDataPlaneLocatorBuilder.build();
     }
@@ -227,27 +235,21 @@ public class SffExporterTest {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         ovsBridgeBuilder.setBridgeName(SffTestValues.SF_DATA_PLANE_LOCATOR_BRIDGE_NAME.getValue());
 
-        SffSfOvsLocatorBridgeAugmentationBuilder sffSfOvsLocatorBridgeAugmentationBuilder = new SffSfOvsLocatorBridgeAugmentationBuilder();
+        SffSfOvsLocatorBridgeAugmentationBuilder sffSfOvsLocatorBridgeAugmentationBuilder =
+                new SffSfOvsLocatorBridgeAugmentationBuilder();
         sffSfOvsLocatorBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
         return sffSfOvsLocatorBridgeAugmentationBuilder.build();
     }
 
     public enum SffTestValues {
-        NAME("SFF1"),
-        SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"),
-        SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-int"),
-        SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"),
-        SF_DICTIONARY_NAME("SF1"),
-        SF_DICTIONARY_TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi", Dpi.class),
-        SF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-tun"),
-        REST_URI("http://localhost:5000/"),
-        IP_MGMT_ADDRESS("10.0.0.1"),
-        SERVICE_NODE("SN1"),
-        IP_V4_ADDRESS("192.168.10.5"),
-        IP_V6_ADDRESS("01:23:45:67:89:AB:CD:EF"),
-        PORT1("6640"),
-        PORT2("6633");
+        NAME("SFF1"), SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"), SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME(
+                "br-int"), SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"), SF_DICTIONARY_NAME(
+                        "SF1"), SF_DICTIONARY_TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi",
+                                Dpi.class), SF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-tun"), REST_URI(
+                                        "http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), SERVICE_NODE(
+                                                "SN1"), IP_V4_ADDRESS("192.168.10.5"), IP_V6_ADDRESS(
+                                                        "01:23:45:67:89:AB:CD:EF"), PORT1("6640"), PORT2("6633");
 
         private final String value;
         private Class identity;
@@ -270,5 +272,3 @@ public class SffExporterTest {
         }
     }
 }
-
-

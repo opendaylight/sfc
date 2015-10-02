@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,16 +8,15 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,14 +42,16 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SbRestAclTask
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-17
  */
 
@@ -67,18 +68,20 @@ public class SbRestAclTaskTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Before
-    //some mocked methods are prepared here
+    // some mocked methods are prepared here
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
 
         PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListStateExecutor", String.class))
-                .toReturn(this.buildAccessListState());
+            .toReturn(this.buildAccessListState());
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifierExecutor", String.class))
-                .toReturn(this.buildServiceFunctionClassifier());
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifierExecutor",
+                String.class))
+            .toReturn(this.buildServiceFunctionClassifier());
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarderExecutor", String.class))
-                .toReturn(this.buildServiceFunctionForwarder());
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class,
+                "readServiceFunctionForwarderExecutor", String.class))
+            .toReturn(this.buildServiceFunctionForwarder());
     }
 
     @Test
@@ -103,7 +106,7 @@ public class SbRestAclTaskTest {
     public void testSbRestAclTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
-                .thenReturn(new ServiceFunctionForwarderBuilder().build());
+            .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
 
@@ -133,7 +136,8 @@ public class SbRestAclTaskTest {
 
     @Test
     public void testSbRestAclTaskForwarderListEmpty() throws IOException {
-        SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder = new SclServiceFunctionForwarderBuilder();
+        SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder =
+                new SclServiceFunctionForwarderBuilder();
         sclServiceFunctionForwarderBuilder.setName(SFF_NAME);
 
         List<SclServiceFunctionForwarder> sclServiceFunctionForwarderList = new ArrayList<>();
@@ -147,7 +151,7 @@ public class SbRestAclTaskTest {
         assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
     }
 
-    //build access list
+    // build access list
     private AccessList buildAccessList() {
         AccessListBuilder accessListBuilder = new AccessListBuilder();
         accessListBuilder.setAclName(ACL_NAME);
@@ -155,12 +159,13 @@ public class SbRestAclTaskTest {
         return accessListBuilder.build();
     }
 
-    //this method mocks readAccessListStateExecutor method
+    // this method mocks readAccessListStateExecutor method
     private AccessListState buildAccessListState() {
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
         accessListStateBuilder.setAclName(ACL_NAME);
 
-        AclServiceFunctionClassifierBuilder aclServiceFunctionClassifierBuilder = new AclServiceFunctionClassifierBuilder();
+        AclServiceFunctionClassifierBuilder aclServiceFunctionClassifierBuilder =
+                new AclServiceFunctionClassifierBuilder();
         aclServiceFunctionClassifierBuilder.setName(CLASSIFIER_NAME);
 
         List<AclServiceFunctionClassifier> aclServiceFunctionClassifierList = new ArrayList<>();
@@ -170,12 +175,13 @@ public class SbRestAclTaskTest {
         return accessListStateBuilder.build();
     }
 
-    //this method mocks readServiceClassifierExecutor method
+    // this method mocks readServiceClassifierExecutor method
     private ServiceFunctionClassifier buildServiceFunctionClassifier() {
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
         serviceFunctionClassifierBuilder.setName(CLASSIFIER_NAME);
 
-        SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder = new SclServiceFunctionForwarderBuilder();
+        SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder =
+                new SclServiceFunctionForwarderBuilder();
         sclServiceFunctionForwarderBuilder.setName(SFF_NAME);
 
         List<SclServiceFunctionForwarder> sclServiceFunctionForwarderList = new ArrayList<>();
@@ -185,7 +191,7 @@ public class SbRestAclTaskTest {
         return serviceFunctionClassifierBuilder.build();
     }
 
-    //this method mocks readServiceFunctionForwarderExecutor method
+    // this method mocks readServiceFunctionForwarderExecutor method
     private ServiceFunctionForwarder buildServiceFunctionForwarder() {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(SFF_NAME);

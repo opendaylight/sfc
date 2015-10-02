@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel .Ltd, and others.  All rights reserved.
+ * Copyright (c) 2015 Intel .Ltd, and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,13 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -17,13 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class defines the APIs to operate on the ServiceFunctionScheduleTypes
@@ -65,17 +65,17 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method puts service function schedule type.
-     * <p/>
      *
      * @return True if ST was put, false otherwise
      */
-    public static boolean putServiceFunctionScheduleTypeExecutor(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public static boolean putServiceFunctionScheduleTypeExecutor(
+            ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         printTraceStart(LOG);
         boolean ret = false;
         Object[] servicePathObj = {serviceFunctionSchedulerType};
         Class[] servicePathClass = {ServiceFunctionSchedulerType.class};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getPut(servicePathObj, servicePathClass);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI =
+                SfcProviderScheduleTypeAPI.getPut(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
         try {
             ret = (boolean) future.get();
@@ -91,17 +91,17 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method deletes service function schedule type.
-     * <p/>
      *
      * @return True if ST was deleted, false otherwise
      */
-    public static boolean deleteServiceFunctionScheduleTypeExecutor(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
+    public static boolean deleteServiceFunctionScheduleTypeExecutor(
+            Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
         printTraceStart(LOG);
         boolean ret = false;
         Object[] servicePathObj = {serviceFunctionSchedulerType};
         Class[] servicePathClass = {serviceFunctionSchedulerType.getClass()};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getDelete(servicePathObj, servicePathClass);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI =
+                SfcProviderScheduleTypeAPI.getDelete(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
         try {
             ret = (boolean) future.get();
@@ -117,17 +117,17 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method reads service function schedule type.
-     * <p/>
      *
      * @return If ST was read successfully, returns that ST
      */
-    public static ServiceFunctionSchedulerType readServiceFunctionScheduleTypeExecutor(Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
+    public static ServiceFunctionSchedulerType readServiceFunctionScheduleTypeExecutor(
+            Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
         printTraceStart(LOG);
         ServiceFunctionSchedulerType ret = null;
         Object[] servicePathObj = {serviceFunctionSchedulerType};
         Class[] servicePathClass = {serviceFunctionSchedulerType.getClass()};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getRead(servicePathObj, servicePathClass);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI =
+                SfcProviderScheduleTypeAPI.getRead(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
         try {
             ret = (ServiceFunctionSchedulerType) future.get();
@@ -147,13 +147,12 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         Class[] sfstClass = {};
 
         printTraceStart(LOG);
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getReadAll(sfstObj, sfstClass);
+        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI =
+                SfcProviderScheduleTypeAPI.getReadAll(sfstObj, sfstClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
         try {
             LOG.debug("getReadAll returns: {}", future.get());
-            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
-                    (ServiceFunctionSchedulerTypes) future.get();
+            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = (ServiceFunctionSchedulerTypes) future.get();
             List<ServiceFunctionSchedulerType> sfScheduleTypeList =
                     serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
             for (ServiceFunctionSchedulerType serviceFunctionSchedulerType : sfScheduleTypeList) {
@@ -176,7 +175,8 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
 
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID =
                 InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
-                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
+                    .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey())
+                    .build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfstEntryIID, serviceFunctionSchedulerType,
                 LogicalDatastoreType.CONFIGURATION);
@@ -190,11 +190,12 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         printTraceStart(LOG);
         boolean ret = false;
 
-        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey = new
-                ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerType);
+        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey =
+                new ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerType);
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID =
                 InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
-                        .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).build();
+                    .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey)
+                    .build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfstIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
@@ -212,11 +213,12 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         ServiceFunctionSchedulerType serviceFunctionSchedulerType;
 
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstIID;
-        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey = new
-                ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerTypeIdentity);
+        ServiceFunctionSchedulerTypeKey serviceFunctionSchedulerTypeKey =
+                new ServiceFunctionSchedulerTypeKey(serviceFunctionSchedulerTypeIdentity);
 
         sfstIID = InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class)
-                .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey).build();
+            .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerTypeKey)
+            .build();
 
         serviceFunctionSchedulerType = SfcDataStoreAPI.readTransactionAPI(sfstIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -231,7 +233,8 @@ public class SfcProviderScheduleTypeAPI extends SfcProviderAbstractAPI {
         InstanceIdentifier<ServiceFunctionSchedulerTypes> schedulerTypesIID =
                 InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).build();
 
-        serviceFunctionSchedulerTypes = SfcDataStoreAPI.readTransactionAPI(schedulerTypesIID, LogicalDatastoreType.CONFIGURATION);
+        serviceFunctionSchedulerTypes =
+                SfcDataStoreAPI.readTransactionAPI(schedulerTypesIID, LogicalDatastoreType.CONFIGURATION);
 
         printTraceStop(LOG);
         return serviceFunctionSchedulerTypes;

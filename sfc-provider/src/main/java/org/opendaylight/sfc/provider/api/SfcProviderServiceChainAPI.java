@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,12 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -23,17 +29,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-
 /**
  * This class has the APIs to operate on the ServiceFunctionChain
  * datastore.
- * <p/>
  * It is normally called from onDataChanged() through a executor
  * service. We need to use an executor service because we can not
  * operate on a datastore while on onDataChanged() context.
@@ -43,9 +41,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Vladimir Lavor (vladimir.lavor@pantheon.sk)
  * @version 0.1
  * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
- * <p/>
- * <p/>
- * <p/>
  * @since 2014-06-30
  */
 public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
@@ -97,8 +92,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     /**
      * This method creates a service chain by Executor, it includes
      * Executor creation and response management.
-     * <p/>
-     * <p/>
      *
      * @param serviceFunctionChain a ServiceFunctionChain object
      * @return true if serviceFunctionChain was created, false otherwise
@@ -111,7 +104,9 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
         printTraceStart(LOG);
         try {
-            Object result = ODL_SFC.getExecutor().submit(SfcProviderServiceChainAPI.getPut(sfcParameters, sfcParameterTypes)).get();
+            Object result = ODL_SFC.getExecutor()
+                .submit(SfcProviderServiceChainAPI.getPut(sfcParameters, sfcParameterTypes))
+                .get();
             ret = (boolean) result;
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn(FAILED_TO_STR, e);
@@ -123,20 +118,19 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     /**
      * This method reads the service function chain specified by the given name from
      * the datastore
-     * <p/>
      *
      * @param serviceFunctionChainName SF name
      * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     *         this service function, null otherwise
      */
     public static ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
         printTraceStart(LOG);
         ServiceFunctionChain sfc;
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
-        ServiceFunctionChainKey serviceFunctionChainKey =
-                new ServiceFunctionChainKey(serviceFunctionChainName);
+        ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
         sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-                .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
+            .child(ServiceFunctionChain.class, serviceFunctionChainKey)
+            .build();
 
         sfc = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -146,11 +140,10 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method reads the operational state for a service function.
-     * <p/>
      *
      * @param serviceFunctionName SF name
      * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     *         this service function, null otherwise
      */
     public static ServiceFunctionChain readServiceFunctionChainExecutor(String serviceFunctionName) {
 
@@ -158,8 +151,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         ServiceFunctionChain ret = null;
         Object[] servicePathObj = {serviceFunctionName};
         Class[] servicePathClass = {String.class};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI = SfcProviderServiceChainAPI
-                .getRead(servicePathObj, servicePathClass);
+        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
+                SfcProviderServiceChainAPI.getRead(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
         try {
             ret = (ServiceFunctionChain) future.get();
@@ -174,25 +167,24 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     /**
      * This method deletes a single service path name from the Service Function
      * Chain operational data store
-     * <p/>
      *
      * @param serviceFunctionChainName sfc name
-     * @param servicePathName          service path name
+     * @param servicePathName service path name
      * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     *         this service function, null otherwise
      */
     @SuppressWarnings("unused")
     public static boolean deletePathFromServiceFunctionChainState(String serviceFunctionChainName,
-                                                                  String servicePathName) {
+            String servicePathName) {
 
         printTraceStart(LOG);
         boolean ret = false;
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
-                ServiceFunctionChainStateKey(serviceFunctionChainName);
-        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier
-                .builder(ServiceFunctionChainsState.class)
-                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-                .child(SfcServicePath.class, new SfcServicePathKey(servicePathName)).build();
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey =
+                new ServiceFunctionChainStateKey(serviceFunctionChainName);
+        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
+            .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
+            .child(SfcServicePath.class, new SfcServicePathKey(servicePathName))
+            .build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfcoIID, LogicalDatastoreType.OPERATIONAL)) {
             ret = true;
@@ -205,25 +197,23 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     /**
      * This method adds a single service path name to the Service Function
      * Chain operational data store
-     * <p/>
      *
      * @param serviceFunctionChainName sfc name
-     * @param servicePathName          service path name
+     * @param servicePathName service path name
      * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     *         this service function, null otherwise
      */
     @SuppressWarnings("unused")
-    public static boolean addPathToServiceFunctionChainState(String serviceFunctionChainName,
-                                                             String servicePathName) {
+    public static boolean addPathToServiceFunctionChainState(String serviceFunctionChainName, String servicePathName) {
 
         printTraceStart(LOG);
         boolean ret = false;
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new
-                ServiceFunctionChainStateKey(serviceFunctionChainName);
-        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier
-                .builder(ServiceFunctionChainsState.class)
-                .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-                .child(SfcServicePath.class, new SfcServicePathKey(servicePathName)).build();
+        ServiceFunctionChainStateKey serviceFunctionChainStateKey =
+                new ServiceFunctionChainStateKey(serviceFunctionChainName);
+        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
+            .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
+            .child(SfcServicePath.class, new SfcServicePathKey(servicePathName))
+            .build();
 
         SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
         sfcServicePathBuilder.setKey(new SfcServicePathKey(servicePathName));
@@ -243,8 +233,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         ServiceFunctionChains ret = null;
         Object[] servicePathObj = {};
         Class[] servicePathClass = {};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI = SfcProviderServiceChainAPI
-                .getSfcRef(servicePathObj, servicePathClass);
+        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
+                SfcProviderServiceChainAPI.getSfcRef(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
         try {
             ret = (ServiceFunctionChains) future.get();
@@ -261,8 +251,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         ServiceFunctionChainsState ret = null;
         Object[] servicePathObj = {};
         Class[] servicePathClass = {};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI = SfcProviderServiceChainAPI
-                .getSfcStateRef(servicePathObj, servicePathClass);
+        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
+                SfcProviderServiceChainAPI.getSfcStateRef(servicePathObj, servicePathClass);
         Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
         try {
             ret = (ServiceFunctionChainsState) future.get();
@@ -276,7 +266,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method creates a SFC from the datastore.
-     * <p/>
      *
      * @param serviceFunctionChain SFC object
      * @return true if SFC was created, false otherwise
@@ -285,12 +274,12 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         boolean ret = false;
         printTraceStart(LOG);
 
-        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class)
-                        .child(ServiceFunctionChain.class, serviceFunctionChain.getKey())
-                        .build();
+        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+            .child(ServiceFunctionChain.class, serviceFunctionChain.getKey())
+            .build();
 
-        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcEntryIID, serviceFunctionChain, LogicalDatastoreType.CONFIGURATION)) {
+        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcEntryIID, serviceFunctionChain,
+                LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
         } else {
             LOG.error("Failed to create Service Function Chain: {}", serviceFunctionChain);
@@ -302,7 +291,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method deletes a SFC from the datastore
-     * <p/>
      *
      * @param serviceFunctionChainName SFC name
      * @return true if SF was deleted, false otherwise
@@ -311,11 +299,10 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     protected boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
         boolean ret = false;
         printTraceStart(LOG);
-        ServiceFunctionChainKey serviceFunctionChainKey =
-                new ServiceFunctionChainKey(serviceFunctionChainName);
-        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class)
-                        .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
+        ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
+        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+            .child(ServiceFunctionChain.class, serviceFunctionChainKey)
+            .build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfcEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             ret = true;
@@ -329,11 +316,10 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     /**
      * This method puts all service functions from the given object in the
      * datastore
-     * <p/>
      *
      * @param sfcs Service Functions Object
      * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
+     *         this service function, null otherwise
      */
     @SuppressWarnings("unused")
     protected boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
@@ -353,7 +339,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
 
     /**
      * This method reads all service function chains from datastore
-     * <p/>
      *
      * @return ServiceFunctionChains A object that contains all Service Functions Object
      */
@@ -361,8 +346,8 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     protected ServiceFunctionChains readAllServiceFunctionChains() {
         ServiceFunctionChains sfcs;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier
-                .builder(ServiceFunctionChains.class).build();
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
         sfcs = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION);
 

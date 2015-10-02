@@ -17,8 +17,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
-import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.SfcL2BaseProviderUtils;
+import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -43,8 +43,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class has will be notified when changes are mad to Service function group.
+ *
  * @author Shlomi Alfasi (shlomi.alfasi@contextream.com)
- * @version 0.1 <p/>
+ * @version 0.1
  * @since 2015-18-04
  */
 public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
@@ -52,10 +53,10 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private SfcL2BaseProviderUtils sfcL2ProviderUtils;
 
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2SfgDataListener.class);
 
-    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer, SfcL2BaseProviderUtils sfcL2ProviderUtils) {
+    public SfcL2SfgDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
+            SfcL2BaseProviderUtils sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
 
@@ -81,8 +82,8 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
         // SFG update
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionGroup && (!(dataCreatedConfigurationObject
-                    .containsKey(entry.getKey()))))) {
+            if ((entry.getValue() instanceof ServiceFunctionGroup
+                    && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
                 LOG.info("SfcL2SfgDataListener.onDataChanged Update SFG {}",
                         ((ServiceFunctionGroup) entry.getValue()).getName());
                 ServiceFunctionGroup sfg = (ServiceFunctionGroup) entry.getValue();
@@ -113,28 +114,29 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
             String sffNodeId = null;
             sffNodeId = getSffOpenFlowNodeName(sffName);
 
-            if(sffNodeId == null){
+            if (sffNodeId == null) {
                 LOG.warn("failed to find switch configuration: sffName: {}- \naborting", sffName);
                 return;
             }
 
-            ServiceFunctionGroupAlgorithm algorithm = SfcProviderServiceFunctionGroupAlgAPI
-                    .readServiceFunctionGroupAlg(sfg.getAlgorithm());
+            ServiceFunctionGroupAlgorithm algorithm =
+                    SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlg(sfg.getAlgorithm());
 
             List<GroupBucketInfo> bucketsInfo = new ArrayList<GroupBucketInfo>();
 
             ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
 
-
             int index = 0;
             for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
                 sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfcServiceFunction.getName());
-                ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sff, sfcServiceFunction.getName());
+                ServiceFunctionDictionary sffSfDict =
+                        sfcL2ProviderUtils.getSffSfDictionary(sff, sfcServiceFunction.getName());
                 String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sffSfDict);
                 bucketsInfo.add(buildBucket(sf, outPort, index));
                 index++;
             }
-            this.sfcL2FlowProgrammer.configureGroup(sffName, sffNodeId, sfg.getName(), sfg.getGroupId(), algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
+            this.sfcL2FlowProgrammer.configureGroup(sffName, sffNodeId, sfg.getName(), sfg.getGroupId(),
+                    algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
 
         } catch (Exception e) {
             LOG.warn("Failed generating group " + sfg, e);
@@ -187,5 +189,5 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
     private String getSffOpenFlowNodeName(final String sffName) {
         ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
         return sfcL2ProviderUtils.getSffOpenFlowNodeName(sff);
-     }
+    }
 }

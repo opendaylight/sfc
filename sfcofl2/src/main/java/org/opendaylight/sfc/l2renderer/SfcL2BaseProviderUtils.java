@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2014 by Ericsson and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 
 package org.opendaylight.sfc.l2renderer;
 
@@ -31,16 +30,16 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+/*
  * This Abstract Base class allows us to completely isolate the
  * SfcL2RspProcessor and SfcL2SfgDataListener from the sfc-provider-api
  * and the controller data store, which makes it much easier to Unit
  * Test both classes.
  *
  * @author Brady Johnson
- *
  */
 public abstract class SfcL2BaseProviderUtils {
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2BaseProviderUtils.class);
 
     abstract public void addRsp(long rspId);
@@ -65,7 +64,7 @@ public abstract class SfcL2BaseProviderUtils {
 
         List<SffDataPlaneLocator> sffDataPlanelocatorList = sff.getSffDataPlaneLocator();
         for (SffDataPlaneLocator sffDataPlanelocator : sffDataPlanelocatorList) {
-            if(sffDataPlanelocator.getName().equals(dplName)) {
+            if (sffDataPlanelocator.getName().equals(dplName)) {
                 sffDpl = sffDataPlanelocator;
                 break;
             }
@@ -77,14 +76,14 @@ public abstract class SfcL2BaseProviderUtils {
     /**
      * Return the SfDataPlaneLocator
      *
-     * @param sff - The SFF to search in
-     * @param dplName - The name of the DPL to look for
-     * @return SffDataPlaneLocator or null if not found
+     * @param sf
+     * @param sffName
+     * @return SfDataPlaneLocator
      */
     public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final String sffName) {
         List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
         for (SfDataPlaneLocator sfDpl : sfDataPlanelocatorList) {
-            if(sfDpl.getServiceFunctionForwarder().equals(sffName)) {
+            if (sfDpl.getServiceFunctionForwarder().equals(sffName)) {
                 return sfDpl;
             }
         }
@@ -104,7 +103,7 @@ public abstract class SfcL2BaseProviderUtils {
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
         for (ServiceFunctionDictionary sffSfDict : sffSfDictList) {
-            if(sffSfDict.getName().equals(sfName)) {
+            if (sffSfDict.getName().equals(sfName)) {
                 sffSfDpl = sffSfDict.getSffSfDataPlaneLocator();
             }
         }
@@ -117,7 +116,7 @@ public abstract class SfcL2BaseProviderUtils {
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
         for (ServiceFunctionDictionary dict : sffSfDictList) {
-            if(dict.getName().equals(sfName)) {
+            if (dict.getName().equals(sfName)) {
                 sffSfDict = dict;
                 break;
             }
@@ -133,7 +132,7 @@ public abstract class SfcL2BaseProviderUtils {
 
         // Mac/IP and possibly VLAN
         if (implementedInterface.equals(Mac.class)) {
-            if(((MacAddressLocator) sffLocatorType).getMac() != null) {
+            if (((MacAddressLocator) sffLocatorType).getMac() != null) {
                 sfMac = ((MacAddressLocator) sffLocatorType).getMac().getValue();
             }
         }
@@ -144,7 +143,7 @@ public abstract class SfcL2BaseProviderUtils {
     public String getDictPortInfoPort(final ServiceFunctionDictionary dict) {
         OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
-        if(ofsPort == null) {
+        if (ofsPort == null) {
             // This case is most likely because the sff-of augmentation wasnt used
             // assuming the packet should just be sent on the same port it was received on
             return OutputPortValues.INPORT.toString();
@@ -154,11 +153,11 @@ public abstract class SfcL2BaseProviderUtils {
     }
 
     public OfsPort getSffPortInfoFromSffSfDict(final ServiceFunctionDictionary sffSfDict) {
-        if(sffSfDict == null) {
+        if (sffSfDict == null) {
             return null;
         }
         ServiceFunctionDictionary1 ofsSffSfDict = sffSfDict.getAugmentation(ServiceFunctionDictionary1.class);
-        if(ofsSffSfDict == null) {
+        if (ofsSffSfDict == null) {
             LOG.debug("No OFS SffSf Dictionary available for dict [{}]", sffSfDict.getName());
             return null;
         }
@@ -167,12 +166,12 @@ public abstract class SfcL2BaseProviderUtils {
     }
 
     public OfsPort getSffPortInfoFromDpl(final SffDataPlaneLocator sffDpl) {
-        if(sffDpl == null) {
+        if (sffDpl == null) {
             return null;
         }
 
         SffDataPlaneLocator1 ofsDpl = sffDpl.getAugmentation(SffDataPlaneLocator1.class);
-        if(ofsDpl == null) {
+        if (ofsDpl == null) {
             LOG.debug("No OFS DPL available for dpl [{}]", sffDpl.getName());
             return null;
         }
@@ -183,7 +182,7 @@ public abstract class SfcL2BaseProviderUtils {
     public String getDplPortInfoPort(final SffDataPlaneLocator dpl) {
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
-        if(ofsPort == null) {
+        if (ofsPort == null) {
             // This case is most likely because the sff-of augmentation wasnt used
             // assuming the packet should just be sent on the same port it was received on
             return OutputPortValues.INPORT.toString();
@@ -193,24 +192,24 @@ public abstract class SfcL2BaseProviderUtils {
     }
 
     public String getDplPortInfoMac(final SffDataPlaneLocator dpl) {
-        if(dpl == null) {
+        if (dpl == null) {
             return null;
         }
 
         String macStr = null;
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
-        if(ofsPort != null) {
-            if(ofsPort.getMacAddress() != null) {
-                macStr =  ofsPort.getMacAddress().getValue();
+        if (ofsPort != null) {
+            if (ofsPort.getMacAddress() != null) {
+                macStr = ofsPort.getMacAddress().getValue();
             }
         }
 
-        if(macStr == null) {
-            if(dpl.getDataPlaneLocator().getTransport()
-                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+        if (macStr == null) {
+            if (dpl.getDataPlaneLocator().getTransport().equals(
+                    org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
                 MacAddress mac = ((MacAddressLocator) dpl.getDataPlaneLocator().getLocatorType()).getMac();
-                if(mac != null) {
+                if (mac != null) {
                     macStr = mac.getValue();
                 }
             }
@@ -219,22 +218,21 @@ public abstract class SfcL2BaseProviderUtils {
         return macStr;
     }
 
-
     public String getDictPortInfoMac(final ServiceFunctionDictionary dict) {
         String macStr = null;
         OfsPort ofsPort = getSffPortInfoFromSffSfDict(dict);
 
-        if(ofsPort != null) {
-            if(ofsPort.getMacAddress() != null) {
-                macStr =  ofsPort.getMacAddress().getValue();
+        if (ofsPort != null) {
+            if (ofsPort.getMacAddress() != null) {
+                macStr = ofsPort.getMacAddress().getValue();
             }
         }
 
-        if(macStr == null) {
-            if(dict.getSffSfDataPlaneLocator().getTransport()
-                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+        if (macStr == null) {
+            if (dict.getSffSfDataPlaneLocator().getTransport().equals(
+                    org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
                 MacAddress mac = ((MacAddressLocator) dict.getSffSfDataPlaneLocator().getLocatorType()).getMac();
-                if(mac != null) {
+                if (mac != null) {
                     macStr = mac.getValue();
                 }
             }
@@ -249,15 +247,15 @@ public abstract class SfcL2BaseProviderUtils {
     }
 
     public String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
-        if(sff == null) {
+        if (sff == null) {
             return null;
         }
 
         // Check if its an service-function-forwarder-ovs augmentation
         // if it is, then get the open flow node id there
         SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-        if(ovsSff != null) {
-            if(ovsSff.getOvsBridge() != null) {
+        if (ovsSff != null) {
+            if (ovsSff.getOvsBridge() != null) {
                 return ovsSff.getOvsBridge().getOpenflowNodeId();
             }
         }

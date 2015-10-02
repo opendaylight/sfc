@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,9 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
@@ -39,21 +37,26 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev1405
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.DestinationPortRange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.DestinationPortRangeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRangeBuilder;
 
-import static org.junit.Assert.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class contains unit tests for AclExporterFactory
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-10
  */
 public class AclExporterTest {
@@ -64,22 +67,15 @@ public class AclExporterTest {
     public static final String NAME_ONLY_JSON = "/AclJsonStrings/NameOnly.json";
 
     public enum AclTestValues {
-        ACL_NAME("ACL1"),
-        RULE_NAME("ACE1"),
-        DESTINATION_IPV4_ADDRESS("127.0.0.1/0"),
-        SOURCE_IPV4_ADDRESS("127.0.0.1/0"),
-        DESTINATION_IPV6_ADDRESS("abcd:abcd::2222/0"),
-        SOURCE_IPV6_ADDRESS("abcd:abcd::2222"),
-        FLOW_LABEL("1234"),
-        LOWER_PORT("80"),
-        UPPER_PORT("80"),
-        IP_PROTOCOL("17"),
-        DSCP("10"),
-        DESTINATION_MAC_ADDRESS("00:11:22:33:44:55"),
-        DESTINATION_MAC_ADDRESS_MASK("00:11:22:33:44:55"),
-        SOURCE_MAC_ADDRESS("00:11:22:33:44:55"),
-        SOURCE_MAC_ADDRESS_MASK("00:11:22:33:44:55"),
-        SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH("SFC1-SFP1");
+        ACL_NAME("ACL1"), RULE_NAME("ACE1"), DESTINATION_IPV4_ADDRESS("127.0.0.1/0"), SOURCE_IPV4_ADDRESS(
+                "127.0.0.1/0"), DESTINATION_IPV6_ADDRESS("abcd:abcd::2222/0"), SOURCE_IPV6_ADDRESS(
+                        "abcd:abcd::2222"), FLOW_LABEL("1234"), LOWER_PORT("80"), UPPER_PORT("80"), IP_PROTOCOL(
+                                "17"), DSCP("10"), DESTINATION_MAC_ADDRESS(
+                                        "00:11:22:33:44:55"), DESTINATION_MAC_ADDRESS_MASK(
+                                                "00:11:22:33:44:55"), SOURCE_MAC_ADDRESS(
+                                                        "00:11:22:33:44:55"), SOURCE_MAC_ADDRESS_MASK(
+                                                                "00:11:22:33:44:55"), SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH(
+                                                                        "SFC1-SFP1");
 
         private String value;
 
@@ -109,7 +105,8 @@ public class AclExporterTest {
         return jsonString;
     }
 
-    private boolean testExportAclJson(String accessListType, String expectedResultFile, boolean nameOnly) throws IOException {
+    private boolean testExportAclJson(String accessListType, String expectedResultFile, boolean nameOnly)
+            throws IOException {
         AccessList accessList;
         String exportedAclString;
         AclExporterFactory aclExporterFactory = new AclExporterFactory();
@@ -162,10 +159,10 @@ public class AclExporterTest {
         List<AccessListEntries> accessListEntriesList = new ArrayList<>();
         accessListBuilder.setAccessListEntries(accessListEntriesList);
 
-        //build access list entry
+        // build access list entry
         accessListEntriesList.add(this.buildAccessListEntries(accessListTestType));
 
-        //build access list
+        // build access list
         return accessListBuilder.build();
     }
 
@@ -190,7 +187,8 @@ public class AclExporterTest {
         Actions1Builder actions1Builder = new Actions1Builder();
         AclRenderedServicePathBuilder aclRenderedServicePathBuilder = new AclRenderedServicePathBuilder();
 
-        aclRenderedServicePathBuilder.setRenderedServicePath(AclTestValues.SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH.getValue());
+        aclRenderedServicePathBuilder
+            .setRenderedServicePath(AclTestValues.SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH.getValue());
         actions1Builder.setSfcAction(aclRenderedServicePathBuilder.build());
         actionsBuilder.addAugmentation(Actions1.class, actions1Builder.build());
 
@@ -237,7 +235,8 @@ public class AclExporterTest {
     private AceEth buildAceEth() {
         AceEthBuilder aceEthBuilder = new AceEthBuilder();
         aceEthBuilder.setDestinationMacAddress(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS.getValue()));
-        aceEthBuilder.setDestinationMacAddressMask(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS_MASK.getValue()));
+        aceEthBuilder
+            .setDestinationMacAddressMask(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS_MASK.getValue()));
         aceEthBuilder.setSourceMacAddress(new MacAddress(AclTestValues.SOURCE_MAC_ADDRESS.getValue()));
         aceEthBuilder.setSourceMacAddressMask(new MacAddress(AclTestValues.SOURCE_MAC_ADDRESS_MASK.getValue()));
 
@@ -266,10 +265,10 @@ public class AclExporterTest {
         AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder();
         accessListEntriesBuilder.setRuleName(AclTestValues.RULE_NAME.getValue());
 
-        //build matches
+        // build matches
         accessListEntriesBuilder.setMatches(this.buildMatches(accessListTestType));
 
-        //build actions
+        // build actions
         accessListEntriesBuilder.setActions(this.buildActions());
 
         return accessListEntriesBuilder.build();

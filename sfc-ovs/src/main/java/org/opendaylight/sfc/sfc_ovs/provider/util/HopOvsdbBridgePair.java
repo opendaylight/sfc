@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,8 +8,6 @@
 
 /**
  * Rendered Service Path Hop - OvsdbBridgeAugmentation pair
- * <p/>
- * <p/>
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -18,13 +16,11 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.util;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import com.google.common.base.Preconditions;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -33,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 public class HopOvsdbBridgePair {
 
     private static final Logger LOG = LoggerFactory.getLogger(HopOvsdbBridgePair.class);
@@ -40,7 +38,8 @@ public class HopOvsdbBridgePair {
     public final RenderedServicePathHop renderedServicePathHop;
     public final OvsdbBridgeAugmentation ovsdbBridgeAugmentation;
 
-    public HopOvsdbBridgePair(RenderedServicePathHop renderedServicePathHop, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
+    public HopOvsdbBridgePair(RenderedServicePathHop renderedServicePathHop,
+            OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
         Preconditions.checkNotNull(renderedServicePathHop, "Passed argument renderedServicePathHop cannot be null");
         Preconditions.checkNotNull(ovsdbBridgeAugmentation, "Passed argument ovsdbBridgeAugmentation cannot be null");
 
@@ -48,10 +47,12 @@ public class HopOvsdbBridgePair {
         this.ovsdbBridgeAugmentation = ovsdbBridgeAugmentation;
     }
 
-    public static List<HopOvsdbBridgePair> buildHopOvsdbBridgePairList(RenderedServicePath renderedServicePath, ExecutorService executor) {
+    public static List<HopOvsdbBridgePair> buildHopOvsdbBridgePairList(RenderedServicePath renderedServicePath,
+            ExecutorService executor) {
         Preconditions.checkNotNull(renderedServicePath);
         Preconditions.checkNotNull(renderedServicePath.getRenderedServicePathHop(),
-                "Cannot build HopOvsdbBridgePairList for RSP '"+ renderedServicePath.getName() + "', the RSP does not contain any HOPS!");
+                "Cannot build HopOvsdbBridgePairList for RSP '" + renderedServicePath.getName()
+                        + "', the RSP does not contain any HOPS!");
         Preconditions.checkNotNull(executor);
 
         List<HopOvsdbBridgePair> hopOvsdbBridgePairList = new ArrayList<>();
@@ -59,10 +60,7 @@ public class HopOvsdbBridgePair {
         for (RenderedServicePathHop hop : renderedServicePath.getRenderedServicePathHop()) {
             Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(hop.getServiceFunctionForwarder())};
             SfcOvsDataStoreAPI readOvsdbBridge =
-                    new SfcOvsDataStoreAPI(
-                            SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE,
-                            methodParams
-                    );
+                    new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE, methodParams);
 
             OvsdbBridgeAugmentation ovsdbBridge =
                     (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge, executor);

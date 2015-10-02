@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,10 +8,13 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.sbrest.json.SfExporterFactory;
@@ -19,19 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SbRestSfTask
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- *          <p/>
  * @since 2015-02-17
  */
 
@@ -58,7 +58,8 @@ public class SbRestSfTaskTest {
 
     @Test
     public void testSbRestSfTask1() throws IOException {
-        SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(), executorService);
+        SbRestSfTask sbRestSfTask =
+                new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionObjectNode1()));
@@ -67,14 +68,15 @@ public class SbRestSfTaskTest {
 
     @Test
     public void testSbRestSfTaskEmpty() throws IOException {
-        SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.PUT, new ServiceFunctionBuilder().build(), executorService);
+        SbRestSfTask sbRestSfTask =
+                new SbRestSfTask(RestOperation.PUT, new ServiceFunctionBuilder().build(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionTopNode()));
         assertNull("Must be null", sbRestSfTask.restUriList);
     }
 
-    //build service function, which is needed to create SbRestSfTask object
+    // build service function, which is needed to create SbRestSfTask object
     private ServiceFunction buildServiceFunction() {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SF_NAME);
@@ -83,7 +85,7 @@ public class SbRestSfTaskTest {
         return serviceFunctionBuilder.build();
     }
 
-    //returns object node with name & rest uri, uses FullTest.json
+    // returns object node with name & rest uri, uses FullTest.json
     private ObjectNode buildServiceFunctionObjectNode() {
         ObjectNode topNode = mapper.createObjectNode();
 
@@ -98,7 +100,7 @@ public class SbRestSfTaskTest {
         return topNode;
     }
 
-    //returns object node with name only, uses NameOnly.json
+    // returns object node with name only, uses NameOnly.json
     private ObjectNode buildServiceFunctionObjectNode1() {
         ObjectNode topNode = mapper.createObjectNode();
 

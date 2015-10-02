@@ -1,5 +1,5 @@
 {
-  "access-list": [
+  "acl": [
     {
       "acl-name": "ACL_NAME"
     }

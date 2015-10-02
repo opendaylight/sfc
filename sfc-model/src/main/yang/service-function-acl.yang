@@ -5,7 +5,7 @@ module service-function-acl {
 
   prefix sfc-acl;
 
-  import ietf-acl {
+  import ietf-access-control-list {
     prefix "ietf-acl";
   }
   import ipfix-application-information {
@@ -15,12 +15,11 @@ module service-function-acl {
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
-  revision 2014-07-01 {
+  revision 2015-10-01 {
     description "creating Service Function Chaining extensions to ietf-acl model";
   }
 
-
-  augment "/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:actions" {
+  augment "/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:actions" {
     description "SFC simple filter actions";
     choice sfc-action {
     case acl-rendered-service-path {
@@ -33,7 +32,7 @@ module service-function-acl {
     }
   }
 
-  augment "/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:matches" {
+  augment "/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:matches" {
     description "Level 7 match criteria, based on IPFIX applicationIds";
     leaf-list application-id {
       description "Application Identifier";

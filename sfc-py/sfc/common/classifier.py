@@ -77,12 +77,12 @@ if sys.platform.startswith('linux'):
 
 #: ACE items to ip(6)tables flags/types mapping
 ace_2_iptables = {'source-ips': {'flag': '-s',
-                                 'type': ('source-ipv4-address',
-                                          'source-ipv6-address')
+                                 'type': ('source-ipv4-network',
+                                          'source-ipv6-network')
                                  },
                   'destination-ips': {'flag': '-d',
-                                      'type': ('destination-ipv4-address',
-                                               'destination-ipv6-address')
+                                      'type': ('destination-ipv4-network',
+                                               'destination-ipv6-network')
                                       },
                   'protocols': {'flag': '-p',
                                 'type': {6: 'tcp',
@@ -598,18 +598,18 @@ class NfqClassifier(metaclass=Singleton):
         ipv = None
         ace_rule_cmd = ['-I', self.rsp_chain]
         logger.info('Parsing ACE...')
-        if 'ip-protocol' in ace_matches:
+        if 'protocol' in ace_matches:
             protocols = ace_2_iptables['protocols']['type']
             protocol_flag = ace_2_iptables['protocols']['flag']
 
             for protocol in protocols:
                 try:
-                    protocol = protocols[ace_matches.pop('ip-protocol')]
+                    protocol = protocols[ace_matches.pop('protocol')]
                     ace_rule_cmd.extend([protocol_flag, protocol])
                     break
 
                 except KeyError:
-                    logger.warning('Unknown ip-protocol "%s"', protocol)
+                    logger.warning('Unknown protocol "%s"', protocol)
 
         src_ips = ace_2_iptables['source-ips']['type']
         for src_ip in src_ips:

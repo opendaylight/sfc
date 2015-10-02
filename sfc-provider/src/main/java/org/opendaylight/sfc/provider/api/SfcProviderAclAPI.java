@@ -14,15 +14,15 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.SfcReflection;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessListsState;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListState;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListStateKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifier;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifierKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessListsState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListStateKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifierKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,13 +82,13 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
      */
     @SuppressWarnings("unused")
     @SfcReflection
-    protected AccessList readAccessList(String accessListName) {
+    protected Acl readAccessList(String accessListName) {
         printTraceStart(LOG);
-        AccessList acl;
-        InstanceIdentifier<AccessList> aclIID;
-        AccessListKey accessListKey = new AccessListKey(accessListName);
+        Acl acl;
+        InstanceIdentifier<Acl> aclIID;
+        AclKey aclKey = new AclKey(accessListName);
         aclIID = InstanceIdentifier.builder(AccessLists.class)
-                .child(AccessList.class, accessListKey).build();
+                .child(Acl.class, aclKey).build();
 
         acl = SfcDataStoreAPI.readTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -101,18 +101,18 @@ public class SfcProviderAclAPI extends SfcProviderAbstractAPI {
      * Wrapper API to read access list from Datastore
      * <p>
      * @param accessListName Access List name
-     * @return an AccessList object, null otherwise
+     * @return an Acl object, null otherwise
      */
-    public static AccessList readAccessListExecutor(String accessListName) {
+    public static Acl readAccessListExecutor(String accessListName) {
 
         printTraceStart(LOG);
-        AccessList ret = null;
+        Acl ret = null;
         Object[] functionParamsObj = {accessListName};
         Class[] functionParamsClass = {String.class};
         Future future  = ODL_SFC.getExecutor().submit(SfcProviderAclAPI
                 .getReadAccessList(functionParamsObj, functionParamsClass));
         try {
-            ret = (AccessList) future.get();
+            ret = (Acl) future.get();
             LOG.debug("getReadAccessList: {}", future.get());
         } catch (InterruptedException e) {
             LOG.warn("failed to ...." , e);

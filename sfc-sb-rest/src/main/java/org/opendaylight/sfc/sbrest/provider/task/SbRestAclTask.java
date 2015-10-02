@@ -18,9 +18,9 @@ import org.opendaylight.sfc.sbrest.json.AclExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListState;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,13 @@ public class SbRestAclTask extends SbRestAbstractTask {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclTask.class);
 
 
-    public SbRestAclTask(RestOperation restOperation, AccessList dataObject, ExecutorService odlExecutor) {
+    public SbRestAclTask(RestOperation restOperation, Acl dataObject, ExecutorService odlExecutor) {
         super(restOperation, odlExecutor);
         setJsonObject(restOperation, dataObject);
         setRestUriList(dataObject);
     }
 
-    public SbRestAclTask(RestOperation restOperation, AccessList dataObject,
+    public SbRestAclTask(RestOperation restOperation, Acl dataObject,
                          List<SclServiceFunctionForwarder> sclServiceForwarderList, ExecutorService odlExecutor) {
         super(restOperation, odlExecutor);
         setJsonObject(restOperation, dataObject);
@@ -50,7 +50,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
         setRestUriList(accessListName, sclServiceForwarderList);
     }
 
-    private void setJsonObject (RestOperation restOperation, AccessList dataObject) {
+    private void setJsonObject (RestOperation restOperation, Acl dataObject) {
         this.exporterFactory = new AclExporterFactory();
         if (restOperation.equals(RestOperation.DELETE)) {
             this.jsonObject = this.exporterFactory.getExporter().exportJsonNameOnly(dataObject);
@@ -61,7 +61,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
 
     @Override
     protected void setRestUriList(DataObject dataObject) {
-        AccessList accessList = (AccessList) dataObject;
+        Acl accessList = (Acl) dataObject;
         String accessListName = null;
 
         if (accessList != null){
@@ -90,7 +90,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
     }
 
     protected void setRestUriList(DataObject dataObject, List<SclServiceFunctionForwarder> sclServiceForwarderList) {
-        AccessList accessList = (AccessList) dataObject;
+        Acl accessList = (Acl) dataObject;
 
         if (accessList != null) {
             this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, accessList.getAclName());

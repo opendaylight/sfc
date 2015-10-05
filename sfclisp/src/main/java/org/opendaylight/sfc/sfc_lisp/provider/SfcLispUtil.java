@@ -18,7 +18,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.LispAddressContainer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.EidUri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.IidUri;
@@ -58,10 +58,10 @@ public class SfcLispUtil {
                 .child(InstanceId.class, iidKey).child(Mapping.class, eidKey);
     }
 
-    public static AccessList getServiceFunctionAcl(String sfPathName) {
+    public static Acl getServiceFunctionAcl(String sfPathName) {
         ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(sfPathName);
         String classifierName = serviceFunctionPath.getClassifier();
-        AccessList acl = null;
+        Acl acl = null;
         if(classifierName != null) {
             ServiceFunctionClassifier classifier = SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(classifierName);
             String aclName = classifier.getAccessList();

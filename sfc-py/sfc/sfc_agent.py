@@ -302,7 +302,7 @@ def page_not_found(e):
     return 'Not found', 404
 
 
-@app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
+@app.route('/config/ietf-access-control-list:access-lists/acl/<acl_name>',
            methods=['PUT', 'POST'])
 def apply_acl(acl_name):
     check_nfq_classifier_state()
@@ -323,12 +323,12 @@ def apply_acl(acl_name):
     return '', 201
 
 
-@app.route('/config/ietf-acl:access-lists/access-list/<acl_name>',
+@app.route('/config/ietf-access-control-list:access-lists/acl/<acl_name>',
            methods=['DELETE'])
 def remove_acl(acl_name):
     check_nfq_classifier_state()
     logger.info("Received request from ODL to delete ACL ...")
-    acl_data = {'access-list': [{'access-list-entries': [{'delete': True}],
+    acl_data = {'acl': [{'access-list-entries': [{'delete': True}],
                                  'acl-name': acl_name}]}
 
     nfq_classifier.process_acl(acl_data)

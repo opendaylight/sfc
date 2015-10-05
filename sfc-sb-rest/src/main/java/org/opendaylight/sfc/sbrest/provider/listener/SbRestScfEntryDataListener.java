@@ -19,7 +19,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 LOG.debug("\nCreated Service Classifier Name: {}", createdServiceClassifier.getName());
 
                 if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()) {
-                    AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
+                    Acl accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.POST, accessList,
                             createdServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
@@ -78,7 +78,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 LOG.debug("\nModified Service Classifier Name: {}", updatedServiceClassifier.getName());
 
                 if (updatedServiceClassifier.getAccessList() != null && !updatedServiceClassifier.getAccessList().isEmpty()) {
-                    AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(updatedServiceClassifier.getAccessList());
+                    Acl accessList = SfcProviderAclAPI.readAccessListExecutor(updatedServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
                             updatedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());

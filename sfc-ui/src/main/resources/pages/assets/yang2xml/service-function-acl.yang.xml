@@ -5,8 +5,11 @@
   <yang-version value="1"/>
   <namespace uri="urn:cisco:params:xml:ns:yang:sfc-acl"/>
   <prefix value="sfc-acl"/>
-  <import module="ietf-acl">
+  <import module="ietf-access-control-list">
     <prefix value="ietf-acl"/>
+  </import>
+  <import module="ipfix-application-information">
+    <prefix value="ipfix-application-information"/>
   </import>
   <organization>
     <text>Cisco Systems, Inc.</text>
@@ -14,12 +17,12 @@
   <contact>
     <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
   </contact>
-  <revision date="2014-07-01">
+  <revision date="2015-10-01">
     <description>
       <text>creating Service Function Chaining extensions to ietf-acl model</text>
     </description>
   </revision>
-  <augment target-node="/ietf-acl:access-lists/ietf-acl:access-list/ietf-acl:access-list-entries/ietf-acl:actions">
+  <augment target-node="/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:actions">
     <description>
       <text>SFC simple filter actions</text>
     </description>
@@ -34,5 +37,16 @@ traverse</text>
         </leaf>
       </case>
     </choice>
+  </augment>
+  <augment target-node="/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:matches">
+    <description>
+      <text>Level 7 match criteria, based on IPFIX applicationIds</text>
+    </description>
+    <leaf-list name="application-id">
+      <description>
+        <text>Application Identifier</text>
+      </description>
+      <type name="ipfix-application-information:application-id-ref"/>
+    </leaf-list>
   </augment>
 </module>

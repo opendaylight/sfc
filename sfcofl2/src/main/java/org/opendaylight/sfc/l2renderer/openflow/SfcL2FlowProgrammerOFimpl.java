@@ -91,10 +91,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final BigInteger METADATA_MASK_SFP_MATCH =
             new BigInteger("000000000000FFFF", COOKIE_BIGINT_HEX_RADIX);
 
-    private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 0;
-    private static final short TABLE_INDEX_PATH_MAPPER = 1;
-    private static final short TABLE_INDEX_PATH_MAPPER_ACL = 2;
-    private static final short TABLE_INDEX_NEXT_HOP = 3;
+    private static final short TABLE_INDEX_CLASSIFIER_TABLE = 0;
+    private static final short TABLE_INDEX_INGRESS_TRANSPORT_TABLE = 1;
+    private static final short TABLE_INDEX_PATH_MAPPER = 2;
+    private static final short TABLE_INDEX_PATH_MAPPER_ACL = 3;
+    private static final short TABLE_INDEX_NEXT_HOP = 4;
     private static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
 
     private static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 250;
@@ -209,6 +210,21 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
             }
             rspNameToFlowsMap.clear();
+        }
+    }
+
+    @Override
+    public void configureClassifierTableMatchAny(final String sffNodeName, final boolean doDrop) {
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        getTableId(TABLE_INDEX_CLASSIFIER_TABLE),
+                        getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
+                        doDrop);
+        try {
+            threadPoolExecutorService.execute(configureTableMatchAnyThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 

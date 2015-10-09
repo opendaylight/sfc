@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_1bd2a300",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-09T04:30:25Z",
+      "side": 1,
+      "message": "Remove this LOG",
+      "revId": "1f7fc3fa002c7d5368c3466fe4dd28b659e4f213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_3bcd1f5e",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-09T04:30:25Z",
+      "side": 1,
+      "message": "Remove this LOG",
+      "revId": "1f7fc3fa002c7d5368c3466fe4dd28b659e4f213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_bb160fa6",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-09T04:30:25Z",
+      "side": 1,
+      "message": "What are your plans for flowspace?",
+      "revId": "1f7fc3fa002c7d5368c3466fe4dd28b659e4f213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

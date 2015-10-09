@@ -18,7 +18,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <lisp.version>1.3.0-SNAPSHOT</lisp.version>
    </properties>
    <dependencies>
    <dependency>

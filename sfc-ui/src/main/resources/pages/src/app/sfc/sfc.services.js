@@ -1110,9 +1110,9 @@ define(['app/sfc/sfc.module'], function (sfc) {
 // *** SfcAclSvc **********************
   sfc.register.factory('SfcAclSvc', function (SfcRestBaseSvc) {
 
-    var modelUrl = 'ietf-acl';
+    var modelUrl = 'ietf-access-control-list';
     var containerName = 'access-lists';
-    var listName = 'access-list';
+    var listName = 'acl';
 
     // constructor
     function SfcAclSvc() {
@@ -1128,7 +1128,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       _.each(aclArray, function (acl) {
         if (!_.isEmpty(acl['access-list-entries'])) {
 
-          _.each(acl['access-list-entries'], function (ace) {
+          _.each(acl['access-list-entries']['ace'], function (ace) {
             var actions = ace['actions'];
             if (angular.isDefined(actions)) {
               if (angular.isDefined(actions["service-function-acl:service-function-path"])) {

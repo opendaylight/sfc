@@ -45,13 +45,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Lisp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Matches;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.AceIpVersion;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.Matches;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.AceIpVersion;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -260,16 +261,22 @@ public class LispUpdater implements ILispUpdater {
         }
 
         // get rsp's acl
-        AccessList acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
+        Acl acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
         if (acl == null) {
             LOG.debug("ACL for RSP is null, can't register TE path with LISP!");
             return;
         }
 
-        List<AccessListEntries> acesList = acl.getAccessListEntries();
+        AccessListEntries accessListEntries = acl.getAccessListEntries();
+        if (accessListEntries == null) {
+            LOG.debug("AccessListEntries for RSP is null, can't register TE path with LISP!");
+            return;
+        }
+
+        List<Ace> acesList = accessListEntries.getAce();
 
         // for each of acl's aces get src/dst ips ...
-        for (AccessListEntries aces: acesList) {
+        for (Ace aces: acesList) {
             Matches matches = aces.getMatches();
             if (matches.getAceType() instanceof AceIp) {
                 AceIp ipMatch = (AceIp) matches.getAceType();
@@ -364,12 +371,12 @@ public class LispUpdater implements ILispUpdater {
 
     public void deletePath(RenderedServicePath rsp) {
         // get rsp's acl
-        AccessList acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
+        Acl acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
         if(acl != null) {
-            List<AccessListEntries> acesList = acl.getAccessListEntries();
+            List<Ace> acesList = acl.getAccessListEntries().getAce();
 
             // for each of acl's aces get src/dst ips ...
-            for(AccessListEntries aces: acesList) {
+            for(Ace aces: acesList) {
                 Matches matches = aces.getMatches();
                 if (matches.getAceType() instanceof AceIp) {
                     AceIp ipMatch = (AceIp) matches.getAceType();
@@ -386,12 +393,12 @@ public class LispUpdater implements ILispUpdater {
 
         if (ipMatchVersion instanceof AceIpv4) {
             AceIpv4 ipMatch4 = (AceIpv4) ipMatchVersion;
-            srcPrefixParts = ipMatch4.getSourceIpv4Address().getValue().split("/");
-            dstPrefixParts = ipMatch4.getDestinationIpv4Address().getValue().split("/");
+            srcPrefixParts = ipMatch4.getSourceIpv4Network().getValue().split("/");
+            dstPrefixParts = ipMatch4.getDestinationIpv4Network().getValue().split("/");
         } else if (ipMatchVersion instanceof AceIpv6) {
             AceIpv6 ipMatch6 = (AceIpv6) ipMatchVersion;
-            srcPrefixParts = ipMatch6.getSourceIpv6Address().getValue().split("/");
-            dstPrefixParts = ipMatch6.getDestinationIpv6Address().getValue().split("/");
+            srcPrefixParts = ipMatch6.getSourceIpv6Network().getValue().split("/");
+            dstPrefixParts = ipMatch6.getDestinationIpv6Network().getValue().split("/");
         }
 
         if (srcPrefixParts != null && srcPrefixParts.length == 2 && dstPrefixParts != null
@@ -411,8 +418,8 @@ public class LispUpdater implements ILispUpdater {
     }
 
     public void updatePath(RenderedServicePath newRsp, RenderedServicePath oldRsp) {
-        AccessList newAcl = SfcLispUtil.getServiceFunctionAcl(newRsp.getParentServiceFunctionPath());
-        AccessList oldAcl = SfcLispUtil.getServiceFunctionAcl(oldRsp.getParentServiceFunctionPath());
+        Acl newAcl = SfcLispUtil.getServiceFunctionAcl(newRsp.getParentServiceFunctionPath());
+        Acl oldAcl = SfcLispUtil.getServiceFunctionAcl(oldRsp.getParentServiceFunctionPath());
         if (shallowCompareAcls(newAcl, oldAcl)) {
             // overwrite
             registerPath(newRsp);
@@ -422,7 +429,7 @@ public class LispUpdater implements ILispUpdater {
         }
     }
 
-    private boolean shallowCompareAcls(AccessList acl1, AccessList acl2) {
+    private boolean shallowCompareAcls(Acl acl1, Acl acl2) {
         if(acl1 != null && acl2 == null){
             return false;
         } else if(acl1 == null && acl2 != null){
@@ -434,13 +441,13 @@ public class LispUpdater implements ILispUpdater {
         if (!acl1.getAclName().equals(acl2.getAclName())) {
             return false;
         }
-        List<AccessListEntries> aces1 = acl1.getAccessListEntries();
-        List<AccessListEntries> aces2 = acl2.getAccessListEntries();
+        List<Ace> aces1 = acl1.getAccessListEntries().getAce();
+        List<Ace> aces2 = acl2.getAccessListEntries().getAce();
         if (aces1.size() != aces2.size()) {
             return false;
         }
 
-        for (AccessListEntries it1 : aces1) {
+        for (Ace it1 : aces1) {
             Matches matches1 = it1.getMatches();
             if (!(matches1.getAceType() instanceof AceIp)) {
                 continue;
@@ -449,7 +456,7 @@ public class LispUpdater implements ILispUpdater {
             LcafSourceDest sd1 = getSrcDstFromAce(ipMatch1);
 
             boolean found = false;
-            for (AccessListEntries it2: aces2) {
+            for (Ace it2: aces2) {
                 if (it1.getRuleName().equals(it2.getRuleName())) {
                     found = true;
                     Matches matches2 = it2.getMatches();

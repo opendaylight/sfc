@@ -1,21 +1,23 @@
 {
-  "access-list": [
+  "acl": [
     {
       "acl-name": "ACL_NAME",
-      "access-list-entries": [
-        {
-          "rule-name": "RULE_NAME",
-          "matches": {
-            "destination-mac-address": "DESTINATION_MAC_ADDRESS",
-            "destination-mac-address-mask": "DESTINATION_MAC_ADDRESS_MASK",
-            "source-mac-address": "SOURCE_MAC_ADDRESS",
-            "source-mac-address-mask": "SOURCE_MAC_ADDRESS_MASK"
-          },
-          "actions": {
-            "service-function-acl:rendered-service-path": "SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH"
+      "access-list-entries": {
+        "ace": [
+          {
+            "rule-name": "RULE_NAME",
+            "matches": {
+              "destination-mac-address": "DESTINATION_MAC_ADDRESS",
+              "destination-mac-address-mask": "DESTINATION_MAC_ADDRESS_MASK",
+              "source-mac-address": "SOURCE_MAC_ADDRESS",
+              "source-mac-address-mask": "SOURCE_MAC_ADDRESS_MASK"
+            },
+            "actions": {
+              "service-function-acl:rendered-service-path": "SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH"
+            }
           }
-        }
-      ]
+        ]
+      }
     }
   ]
 }

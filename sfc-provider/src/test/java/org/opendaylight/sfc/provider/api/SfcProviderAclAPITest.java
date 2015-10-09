@@ -12,29 +12,29 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessLists;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.AccessListsState;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.ActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.MatchesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.actions.packet.handling.PermitBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListState;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListStateBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.AccessListStateKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifier;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessListsState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.AceBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.ActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.MatchesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.actions.packet.handling.PermitBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListState;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListStateBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.AccessListStateKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.DestinationPortRangeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRangeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.timerange.AbsoluteBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRangeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
@@ -80,29 +80,31 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     public void testReadAccessList() throws Exception {
 
         //create Access List with entries and IID, then write transaction to data store
-        AccessListBuilder accessListBuilder = new AccessListBuilder();
-        accessListBuilder.setAclName(ACL_NAME)
-                .setKey(new AccessListKey(ACL_NAME))
+        AclBuilder aclBuilder = new AclBuilder();
+        aclBuilder.setAclName(ACL_NAME)
+                .setKey(new AclKey(ACL_NAME))
                 .setAccessListEntries(createAccessListEntries());
 
-        InstanceIdentifier<AccessList> aclIID = InstanceIdentifier.builder(AccessLists.class)
-                .child(AccessList.class, new AccessListKey(ACL_NAME)).build();
+        InstanceIdentifier<Acl> aclIID = InstanceIdentifier.builder(AccessLists.class)
+                .child(Acl.class, new AclKey(ACL_NAME)).build();
 
-        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclIID, accessListBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclIID, aclBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         assertTrue("must be true", transactionSuccessful);
 
         //read access list from data store
-        AccessList accessList = SfcProviderAclAPI.readAccessListExecutor(ACL_NAME);
+        Acl accessList = SfcProviderAclAPI.readAccessListExecutor(ACL_NAME);
 
         assertNotNull("Must not be null", accessList);
+        assertNotNull("Must not be null", accessList.getAccessListEntries());
+        assertNotNull("Must not be null", accessList.getAccessListEntries().getAce());
         assertEquals("Must be equal", accessList.getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.getKey().getAclName(), ACL_NAME);
-        assertEquals("Must be equal", accessList.getAccessListEntries().size(), 4);
-        assertTrue("Must be equal", accessList.getAccessListEntries().get(0).equals(createAccessListEntries().get(0)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().get(1).equals(createAccessListEntries().get(1)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().get(2).equals(createAccessListEntries().get(2)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().get(3).equals(createAccessListEntries().get(3)));
+        assertEquals("Must be equal", accessList.getAccessListEntries().getAce().size(), 4);
+        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(0).equals(createAccessListEntries().getAce().get(0)));
+        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(1).equals(createAccessListEntries().getAce().get(1)));
+        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(2).equals(createAccessListEntries().getAce().get(2)));
+        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(3).equals(createAccessListEntries().getAce().get(3)));
 
         //delete transaction
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);
@@ -169,12 +171,12 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     }
 
     //create entries for access list
-    private List<AccessListEntries> createAccessListEntries() {
+    private AccessListEntries createAccessListEntries() {
         String ACE_RULE_NAME = "aceRule";
-        List<AccessListEntries> accessListEntriesList = new ArrayList<>();
+        AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder();
+        List<Ace> aceList = new ArrayList<>();
 
         for (int i = 1; i <= 4; i++) {
-            AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder();
 
             //build actions
             PermitBuilder permitBuilder = new PermitBuilder();
@@ -182,9 +184,6 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
             ActionsBuilder actionsBuilder = new ActionsBuilder();
             actionsBuilder.setPacketHandling(permitBuilder.build());
-
-            AbsoluteBuilder absoluteBuilder = new AbsoluteBuilder();
-            absoluteBuilder.setActive(true);
 
             //build matches
             //create src & dst port ranges
@@ -205,33 +204,35 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
             if (i <= 2) {
                 //create ip address & prefix
                 AceIpv4Builder aceIpv4Builder = new AceIpv4Builder();
-                aceIpv4Builder.setSourceIpv4Address(new Ipv4Prefix(IP_V4_ADDRESS[0] + i + IP_PREFIX[0]))
-                        .setDestinationIpv4Address(new Ipv4Prefix(IP_V4_ADDRESS[1] + i + IP_PREFIX[1]));
+                aceIpv4Builder.setSourceIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS[0] + i + IP_PREFIX[0]))
+                        .setDestinationIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS[1] + i + IP_PREFIX[1]));
                 aceIpBuilder.setAceIpVersion(aceIpv4Builder.build())
-                        .setIpProtocol((short) 4);
+                        .setProtocol((short) 4);
 
             } else {
                 //create ip address & prefix
                 AceIpv6Builder aceIpv6Builder = new AceIpv6Builder();
-                aceIpv6Builder.setSourceIpv6Address(new Ipv6Address(IP_V6_ADDRESS[0] + i))
-                        .setDestinationIpv6Address(new Ipv6Prefix(IP_V6_ADDRESS[1] + i + IP_PREFIX[2]));
+                aceIpv6Builder.setSourceIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS[0] + i + IP_PREFIX[1]))
+                        .setDestinationIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS[1] + i + IP_PREFIX[2]));
                 aceIpBuilder.setAceIpVersion(aceIpv6Builder.build())
-                        .setIpProtocol((short) 41);
+                        .setProtocol((short) 41);
             }
 
             MatchesBuilder matchesBuilder = new MatchesBuilder();
             matchesBuilder.setInputInterface("interface-" + i)
                     .setAceType(aceIpBuilder.build());
 
-            //set matches and actions for ipv6
-            accessListEntriesBuilder.setRuleName(ACE_RULE_NAME + i)
-                    .setKey(new AccessListEntriesKey(ACE_RULE_NAME + i))
+            //set matches and actions
+            AceBuilder ace = new AceBuilder();
+            ace.setRuleName(ACE_RULE_NAME + i)
                     .setActions(actionsBuilder.build())
                     .setMatches(matchesBuilder.build());
 
-            accessListEntriesList.add(accessListEntriesBuilder.build());
+            aceList.add(ace.build());
         }
 
-        return accessListEntriesList;
+        accessListEntriesBuilder.setAce(aceList);
+
+        return accessListEntriesBuilder.build();
     }
 }

@@ -18,36 +18,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.Actions1Builder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev140701.access.lists.access.list.access.list.entries.actions.sfc.action.AclRenderedServicePathBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessList;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.AccessListBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntries;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.AccessListEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Actions;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.ActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.Matches;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.MatchesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceEth;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceEthBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.AceIpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.acl.rev140520.access.lists.access.list.access.list.entries.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1Builder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePathBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.AceBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.Actions;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.ActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.Matches;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.MatchesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceEth;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceEthBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIp;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.DestinationPortRange;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.DestinationPortRangeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRange;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.packet.fields.rev140625.acl.transport.header.fields.SourcePortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRange;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRange;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRangeBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,9 +68,9 @@ public class AclExporterTest {
     public static final String NAME_ONLY_JSON = "/AclJsonStrings/NameOnly.json";
 
     public enum AclTestValues {
-        ACL_NAME("ACL1"), RULE_NAME("ACE1"), DESTINATION_IPV4_ADDRESS("127.0.0.1/0"), SOURCE_IPV4_ADDRESS(
-                "127.0.0.1/0"), DESTINATION_IPV6_ADDRESS("abcd:abcd::2222/0"), SOURCE_IPV6_ADDRESS(
-                        "abcd:abcd::2222"), FLOW_LABEL("1234"), LOWER_PORT("80"), UPPER_PORT("80"), IP_PROTOCOL(
+        ACL_NAME("ACL1"), RULE_NAME("ACE1"), DESTINATION_IPV4_NETWORK("127.0.0.1/0"), SOURCE_IPV4_NETWORK(
+                "127.0.0.1/0"), DESTINATION_IPV6_NETWORK("abcd:abcd::2222/0"), SOURCE_IPV6_NETWORK(
+                        "abcd:abcd::2222/0"), FLOW_LABEL("1234"), LOWER_PORT("80"), UPPER_PORT("80"), PROTOCOL(
                                 "17"), DSCP("10"), DESTINATION_MAC_ADDRESS(
                                         "00:11:22:33:44:55"), DESTINATION_MAC_ADDRESS_MASK(
                                                 "00:11:22:33:44:55"), SOURCE_MAC_ADDRESS(
@@ -107,7 +108,7 @@ public class AclExporterTest {
 
     private boolean testExportAclJson(String accessListType, String expectedResultFile, boolean nameOnly)
             throws IOException {
-        AccessList accessList;
+        Acl accessList;
         String exportedAclString;
         AclExporterFactory aclExporterFactory = new AclExporterFactory();
 
@@ -146,24 +147,20 @@ public class AclExporterTest {
         assertTrue(testExportAclJson(null, NAME_ONLY_JSON, true));
     }
 
-    private AccessList buildAccessListNameOnly() {
-        AccessListBuilder accessListBuilder = new AccessListBuilder();
-        accessListBuilder.setAclName(AclTestValues.ACL_NAME.getValue());
-        return accessListBuilder.build();
+    private Acl buildAccessListNameOnly() {
+        AclBuilder aclBuilder = new AclBuilder();
+        aclBuilder.setAclName(AclTestValues.ACL_NAME.getValue());
+
+        return aclBuilder.build();
     }
 
-    private AccessList buildAccessList(String accessListTestType) {
-        AccessListBuilder accessListBuilder = new AccessListBuilder();
-        accessListBuilder.setAclName(AclTestValues.ACL_NAME.getValue());
+    private Acl buildAccessList(String accessListTestType) {
+        AclBuilder aclBuilder = new AclBuilder();
+        aclBuilder.setAclName(AclTestValues.ACL_NAME.getValue());
+        aclBuilder.setAccessListEntries(this.buildAccessListEntries(accessListTestType));
 
-        List<AccessListEntries> accessListEntriesList = new ArrayList<>();
-        accessListBuilder.setAccessListEntries(accessListEntriesList);
-
-        // build access list entry
-        accessListEntriesList.add(this.buildAccessListEntries(accessListTestType));
-
-        // build access list
-        return accessListBuilder.build();
+         //build access list
+        return aclBuilder.build();
     }
 
     private SourcePortRange buildSourcePortRange() {
@@ -200,7 +197,7 @@ public class AclExporterTest {
 
         aceIpBuilder.setSourcePortRange(this.buildSourcePortRange());
         aceIpBuilder.setDestinationPortRange(this.buildDestinationPortRange());
-        aceIpBuilder.setIpProtocol(Short.parseShort(AclTestValues.IP_PROTOCOL.getValue()));
+        aceIpBuilder.setProtocol(Short.parseShort(AclTestValues.PROTOCOL.getValue()));
         aceIpBuilder.setDscp(new Dscp(Short.parseShort(AclTestValues.DSCP.getValue())));
 
         switch (accessListTestType) {
@@ -217,16 +214,16 @@ public class AclExporterTest {
 
     private AceIpv4 buildAceIpv4() {
         AceIpv4Builder aceIpv4Builder = new AceIpv4Builder();
-        aceIpv4Builder.setDestinationIpv4Address(new Ipv4Prefix(AclTestValues.DESTINATION_IPV4_ADDRESS.getValue()));
-        aceIpv4Builder.setSourceIpv4Address(new Ipv4Prefix(AclTestValues.SOURCE_IPV4_ADDRESS.getValue()));
+        aceIpv4Builder.setDestinationIpv4Network(new Ipv4Prefix(AclTestValues.DESTINATION_IPV4_NETWORK.getValue()));
+        aceIpv4Builder.setSourceIpv4Network(new Ipv4Prefix(AclTestValues.SOURCE_IPV4_NETWORK.getValue()));
 
         return aceIpv4Builder.build();
     }
 
     private AceIpv6 buildAceIpv6() {
         AceIpv6Builder aceIpv6Builder = new AceIpv6Builder();
-        aceIpv6Builder.setDestinationIpv6Address(new Ipv6Prefix(AclTestValues.DESTINATION_IPV6_ADDRESS.getValue()));
-        aceIpv6Builder.setSourceIpv6Address(new Ipv6Address(AclTestValues.SOURCE_IPV6_ADDRESS.getValue()));
+        aceIpv6Builder.setDestinationIpv6Network(new Ipv6Prefix(AclTestValues.DESTINATION_IPV6_NETWORK.getValue()));
+        aceIpv6Builder.setSourceIpv6Network(new Ipv6Prefix(AclTestValues.SOURCE_IPV6_NETWORK.getValue()));
         aceIpv6Builder.setFlowLabel(new Ipv6FlowLabel(Long.parseLong(AclTestValues.FLOW_LABEL.getValue())));
 
         return aceIpv6Builder.build();
@@ -262,14 +259,20 @@ public class AclExporterTest {
     }
 
     private AccessListEntries buildAccessListEntries(String accessListTestType) {
+        AceBuilder aceBuilder = new AceBuilder();
+        aceBuilder.setRuleName(AclTestValues.RULE_NAME.getValue());
+
+        //build matches
+        aceBuilder.setMatches(this.buildMatches(accessListTestType));
+
+        //build actions
+        aceBuilder.setActions(this.buildActions());
+
+        List<Ace> aceList = new ArrayList<>();
+        aceList.add(aceBuilder.build());
+
         AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder();
-        accessListEntriesBuilder.setRuleName(AclTestValues.RULE_NAME.getValue());
-
-        // build matches
-        accessListEntriesBuilder.setMatches(this.buildMatches(accessListTestType));
-
-        // build actions
-        accessListEntriesBuilder.setActions(this.buildActions());
+        accessListEntriesBuilder.setAce(aceList);
 
         return accessListEntriesBuilder.build();
     }

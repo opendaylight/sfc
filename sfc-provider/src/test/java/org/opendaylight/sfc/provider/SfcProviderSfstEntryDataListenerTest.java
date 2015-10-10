@@ -245,12 +245,6 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
      * @return ServiceFunctionSchedulerTypes object
      */
     public void build_service_function_scheduler_types() throws Exception {
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent = Mockito.mock(AsyncDataChangeEvent.class);
-        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
-        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
-
         String[] SFST_NAMES =
                 {"listernerSFST1", "listernerSFST2","listernerSFST3"};
         Class[] schedulerTypes =
@@ -258,6 +252,12 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
         Boolean enabledStatus = true;
 
         for(int i = 0; i < SFST_NAMES.length; i++) {
+            AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent = Mockito.mock(AsyncDataChangeEvent.class);
+            Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
+            Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
+            Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
+            Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
+
             ServiceFunctionSchedulerTypeKey key = new ServiceFunctionSchedulerTypeKey(schedulerTypes[i]);
             ServiceFunctionSchedulerTypeBuilder sfstBuilder = new ServiceFunctionSchedulerTypeBuilder();
             sfstBuilder.setName(SFST_NAMES[i]).setKey(key)
@@ -271,17 +271,17 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
                 child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
 
             createdData.put(sfstEntryIID, serviceFunctionSchedulerType);
+
+            when(dataChangeEvent.getUpdatedData()).thenReturn(updatedData);
+            when(dataChangeEvent.getOriginalData()).thenReturn(originalData);
+            when(dataChangeEvent.getCreatedData()).thenReturn(createdData);
+            when(dataChangeEvent.getRemovedPaths()).thenReturn(removedPaths);
+
+            // The listener will remove the Original Service Function Type Entry and create a new one
+            // with the new type
+            sfstEntryDataListener.onDataChanged(dataChangeEvent);
+            Thread.sleep(500);
         }
-
-        when(dataChangeEvent.getUpdatedData()).thenReturn(updatedData);
-        when(dataChangeEvent.getOriginalData()).thenReturn(originalData);
-        when(dataChangeEvent.getCreatedData()).thenReturn(createdData);
-        when(dataChangeEvent.getRemovedPaths()).thenReturn(removedPaths);
-
-        // The listener will remove the Original Service Function Type Entry and create a new one
-        // with the new type
-        sfstEntryDataListener.onDataChanged(dataChangeEvent);
-        Thread.sleep(500);
     }
 
     public int countNumOfEnabledAlgorithmType() throws Exception  {

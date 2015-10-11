@@ -49,7 +49,8 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           }
         ],
         "ip-mgmt-address": "10.0.2.7",
-        "service-node": ""
+        "service-node": "",
+        "service-function-forwarder-metadata-features:vxlan-overlay-classifier-type-1": {}
       }
     ]
   }

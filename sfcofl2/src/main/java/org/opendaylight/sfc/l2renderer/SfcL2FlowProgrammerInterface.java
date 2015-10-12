@@ -35,7 +35,7 @@ public interface SfcL2FlowProgrammerInterface {
     public void deleteRspFlows(final Long rspId);
 
     //
-    // Congfigure Table 0, Transport Ingress
+    // Congfigure Table 1, Transport Ingress
     //
     public void configureIpv4TransportIngressFlow(final String sffNodeName);
 
@@ -48,7 +48,7 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureArpTransportIngressFlow(final String sffNodeName, final String mac);
 
     //
-    // Configure Table 1, Path Mapper
+    // Configure Table 2, Path Mapper
     //
     public void configureMacPathMapperFlow(final String sffNodeName, final String mac, long pathId, boolean isSf);
 
@@ -60,7 +60,7 @@ public interface SfcL2FlowProgrammerInterface {
 
 
     //
-    // Table 2, NextHop
+    // Table 3, NextHop
     //
     public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac, final String dstMac);
 
@@ -122,11 +122,13 @@ public interface SfcL2FlowProgrammerInterface {
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // If doDrop == False
-    //      TransportIngress MatchAny will go to Ingress
+    //      Classifier       MatchAny will go to Ingress
+    //      TransportIngress MatchAny will go to PathMapper
     //      PathMapper       MatchAny will go to PathMapperAcl
     //      PathMapperAcl    MatchAny will go to NextHop
     //      NextHop          MatchAny will go to TransportEgress
     //
+    public void configureClassifierTableMatchAny(final String sffNodeName, final boolean doDrop);
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop);
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop);
     public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop);

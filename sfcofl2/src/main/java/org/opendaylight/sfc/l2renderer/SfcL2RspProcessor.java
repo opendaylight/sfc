@@ -476,6 +476,7 @@ public class SfcL2RspProcessor {
 
         if(!getSffInitialized(sffName)) {
             LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
+            this.sfcL2FlowProgrammer.configureClassifierTableMatchAny( sffNodeName, false);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true);
             this.sfcL2FlowProgrammer.configurePathMapperTableMatchAny(       sffNodeName, false);
             this.sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(    sffNodeName, false);

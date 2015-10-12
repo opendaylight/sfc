@@ -42,6 +42,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         configureMplsTransportEgressFlowMethodIndex,
         configureNshNscTransportEgressFlowMethodIndex,
 
+        configureClassifierTableMatchAnyMethodIndex,
         configureTransportIngressTableMatchAnyMethodIndex,
         configurePathMapperTableMatchAnyMethodIndex,
         configurePathMapperAclTableMatchAnyMethodIndex,
@@ -251,6 +252,12 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     //            Match Any methods
     //
     //---------------------------------------------
+    @Override
+    public void configureClassifierTableMatchAny(
+            String sffNodeName,
+            boolean doDrop) {
+        incrementMethodCalled(MethodIndeces.configureClassifierTableMatchAnyMethodIndex);
+    }
 
     @Override
     public void configureTransportIngressTableMatchAny(

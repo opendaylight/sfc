@@ -431,12 +431,26 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    @Override
+    public void configureMetaPortIngressFlow(final String sffNodeName, final Long ofPort) {
+        ConfigureTransportIngressThread configureIngressTransportThread =
+                new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_META);
+        configureIngressTransportThread.setSffNodeMetaOfPort(ofPort);
+        configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
+        try {
+            threadPoolExecutorService.execute(configureIngressTransportThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
+    }
+
     private class ConfigureTransportIngressThread implements Runnable {
         String sffNodeName;
         long etherType;
         short ipProtocol;
         short nextTable;
         Long rspId;
+        Long sffNodeMetaOfPort;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType) {
             this.sffNodeName = sffNodeName;
@@ -448,6 +462,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         public void setIpProtocol(short ipProtocol) { this.ipProtocol = ipProtocol; }
         public void setNextTable(short nextTable) { this.nextTable = nextTable; }
+        public void setSffNodeMetaOfPort(Long sffNodeMetaOfPort) { this.sffNodeMetaOfPort = sffNodeMetaOfPort; }
 
         @Override
         public void run() {
@@ -470,19 +485,32 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     vlanIdBuilder.setVlanIdPresent(true);
                     vlanBuilder.setVlanId(vlanIdBuilder.build());
                     match.setVlanMatch(vlanBuilder.build());
-                } else {
+                } else if (this.etherType != SfcOpenflowUtils.ETHERTYPE_META) {
                     SfcOpenflowUtils.addMatchEtherType(match, this.etherType);
                 }
 
-                //
-                // Action, goto the nextTable, defaults to Ingress table unless otherwise set
-                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
-
                 InstructionBuilder ib = new InstructionBuilder();
-                ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
-                ib.setKey(new InstructionKey(1));
-                ib.setOrder(0);
+                int flowPriority = FLOW_PRIORITY_TRANSPORT_INGRESS;
 
+                if (this.etherType != SfcOpenflowUtils.ETHERTYPE_META) {
+                    // Action, goto the nextTable, defaults to Ingress table unless otherwise set
+                    GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
+                    ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
+                    ib.setKey(new InstructionKey(1));
+                } else {
+                    SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+                    SfcOpenflowUtils.addMatchIpProtocol(match, SfcOpenflowUtils.IP_PROTOCOL_UDP);
+                    SfcOpenflowUtils.addMatchDstUdpPort(match, SfcOpenflowUtils.TUNNEL_VXLANGPE_NSH_PORT);
+                    List<Action> actionList = new ArrayList<Action>();
+                    actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.LOCAL.toString(), 0));
+                    ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                    aab.setAction(actionList);
+                    ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                    flowPriority += 10;   /* Output to local for NSH parse */
+                    ib.setKey(new InstructionKey(0));
+                }
+
+                ib.setOrder(0);
                 // Put our Instruction in a list of Instructions
                 InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
 
@@ -491,12 +519,42 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder transportIngressFlow =
                         SfcOpenflowUtils.createFlowBuilder(
                                 TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
-                                FLOW_PRIORITY_TRANSPORT_INGRESS,
+                                flowPriority,
                                 "ingress_Transport_Default_Flow",
                                 match,
                                 isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+
+                /* We need another flow for IP-less VNFs */
+                if (this.etherType == SfcOpenflowUtils.ETHERTYPE_META) {
+                    MatchBuilder match1 = new MatchBuilder();
+                    InstructionBuilder ib1 = new InstructionBuilder();
+
+                    flowPriority = FLOW_PRIORITY_TRANSPORT_INGRESS + 10;
+                    SfcOpenflowUtils.addMatchSffNodeInPort(match1, sffNodeName, sffNodeMetaOfPort);
+
+                    // Action, goto the nextTable, defaults to Ingress table unless otherwise set
+                    GoToTableBuilder gotoIngress1 = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
+                    ib1.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress1.build()).build());
+                    ib1.setKey(new InstructionKey(1));
+                    ib1.setOrder(0);
+
+                    // Put our Instruction in a list of Instructions
+                    InstructionsBuilder isb1 = SfcOpenflowUtils.createInstructionsBuilder(ib1);
+
+                    //
+                    // Create and configure the FlowBuilder
+                    FlowBuilder transportIngressFlow1 =
+                            SfcOpenflowUtils.createFlowBuilder(
+                                    TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
+                                    flowPriority,
+                                    "ingress_Transport_Default_Flow",
+                                    match1,
+                                    isb1);
+
+                    writeFlowToConfig(rspId, sffNodeName, transportIngressFlow1);
+                }
 
             } catch (Exception e) {
                 LOG.error("ConfigureTransportIngress writer caught an Exception: ", e);
@@ -939,28 +997,32 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                     actionList.add(actionSetNwDst);
                 }
 
-                // Create an Apply Action
-                ApplyActionsBuilder aab = new ApplyActionsBuilder();
-                aab.setAction(actionList);
+                List<Instruction> instructions = new ArrayList<Instruction>();
+
+                order = 0;
+                if (actionList.isEmpty() == false) {
+                    // Create an Apply Action
+                    ApplyActionsBuilder aab = new ApplyActionsBuilder();
+                    aab.setAction(actionList);
+
+                    // Wrap our Apply Action in an Instruction
+                    InstructionBuilder ib = new InstructionBuilder();
+                    ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+                    ib.setKey(new InstructionKey(order));
+                    ib.setOrder(order);
+                    instructions.add(ib.build());
+                    order++;
+                }
 
                 GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(TABLE_INDEX_TRANSPORT_EGRESS);
-
                 InstructionBuilder gotoTbIb = new InstructionBuilder();
                 gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-                gotoTbIb.setKey(new InstructionKey(1));
-                gotoTbIb.setOrder(1);
-
-                // Wrap our Apply Action in an Instruction
-                InstructionBuilder ib = new InstructionBuilder();
-                ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-                ib.setKey(new InstructionKey(0));
-                ib.setOrder(0);
+                gotoTbIb.setKey(new InstructionKey(order));
+                gotoTbIb.setOrder(order);
+                instructions.add(gotoTbIb.build());
 
                 // Put our Instruction in a list of Instructions
                 InstructionsBuilder isb = new InstructionsBuilder();
-                List<Instruction> instructions = new ArrayList<Instruction>();
-                instructions.add(ib.build());
-                instructions.add(gotoTbIb.build());
                 isb.setInstruction(instructions);
 
                 //
@@ -1137,17 +1199,19 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 // Nsh stuff, if present
                 if (this.nshNsp >=0 && this.nshNsi >= 0) {
-                    if(this.isLastHop) {
-                        // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId (Vnid)
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
-                    } else {
-                        // If its not the last hop, Copy/Move Nsc1/Nsc2 to the next hop
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
-                        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+                    if (this.port.equals(OutputPortValues.INPORT.toString())) {
+                        if(this.isLastHop) {
+                            // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId (Vnid)
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
+                        } else {
+                            // If its not the last hop, Copy/Move Nsc1/Nsc2 to the next hop
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
+                            actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+                        }
                     }
                 }
 

@@ -47,6 +47,8 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureArpTransportIngressFlow(final String sffNodeName, final String mac);
 
+    public void configureMetaPortIngressFlow(final String sffNodeName, final Long ofPort);
+
     //
     // Configure Table 1, Path Mapper
     //

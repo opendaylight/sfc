@@ -50,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -143,6 +144,7 @@ import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class SfcOpenflowUtils {
+    public static final int ETHERTYPE_META = 0xFFFF;
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
@@ -153,6 +155,7 @@ public class SfcOpenflowUtils {
     public static final int TCP_FLAG_SYN = 0x0002;
     public static final int ARP_REQUEST = 1;
     public static final int ARP_REPLY = 2;
+    public static final PortNumber TUNNEL_VXLANGPE_NSH_PORT = new PortNumber(Integer.parseInt("4790"));
 
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
     private static AtomicLong flowIdInc = new AtomicLong();
@@ -192,6 +195,10 @@ public class SfcOpenflowUtils {
     //
     // Add Match methods
     //
+
+    public static void addMatchSffNodeInPort(MatchBuilder match, final String sffNodeName, final Long portNo) {
+        match.setInPort(new NodeConnectorId(sffNodeName + ":" + portNo));
+    }
 
     // If we call multiple ethernet match methods, the MatchBuilder
     // EthernetMatch object gets overwritten each time, when we actually

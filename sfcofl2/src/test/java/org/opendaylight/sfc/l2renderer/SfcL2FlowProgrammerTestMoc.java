@@ -27,6 +27,7 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         configureVxlanGpeTransportIngressFlowMethodIndex,
         configureMplsTransportIngressFlowMethodIndex,
         configureArpTransportIngressFlowMethodIndex,
+        configureMetaPortIngressFlowMethodIndex,
 
         configureMacPathMapperFlowMethodIndex,
         configureMplsPathMapperFlowMethodIndex,
@@ -131,6 +132,10 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
         incrementMethodCalled(MethodIndeces.configureMplsTransportIngressFlowMethodIndex);
     }
 
+    @Override
+    public void configureMetaPortIngressFlow(String sffNodeName, Long ofPort) {
+        incrementMethodCalled(MethodIndeces.configureMetaPortIngressFlowMethodIndex);
+    }
     //---------------------------------------------
     //
     //            PathMapper methods

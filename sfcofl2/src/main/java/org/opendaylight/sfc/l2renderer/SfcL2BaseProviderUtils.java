@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1;
@@ -266,4 +267,26 @@ public abstract class SfcL2BaseProviderUtils {
         return sff.getServiceNode();
     }
 
+    public Long getPortIdForSffFirstVxlanGpeDpl(final String sffName, long rspId) {
+        if(sffName == null) {
+            return 0L;
+        }
+
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+        SffDataPlaneLocator sffDpl = null;
+        Long portId = 0L;
+
+        List<SffDataPlaneLocator> sffDataPlanelocatorList = sff.getSffDataPlaneLocator();
+        for (SffDataPlaneLocator sffDataPlanelocator : sffDataPlanelocatorList) {
+            if (sffDataPlanelocator.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
+                OfsPort ofsPort = getSffPortInfoFromDpl(sffDataPlanelocator);
+                if (ofsPort != null) {
+                    portId = Long.valueOf(ofsPort.getPortId());
+                }
+                break;
+            }
+        }
+
+        return portId;
+    }
 }

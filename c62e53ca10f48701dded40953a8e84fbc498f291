@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_676e9598",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-10-13T00:56:00Z",
+      "side": 1,
+      "message": "Correct two typos: \"fatures\" to \"features\", \"appraoch\" to \"approach\".\n\nI think this new allocation type is not necessary, it is just a temporary solution, the root cause of this issue is GBP classifier has no capability to route a VxLAN-gpe+NSH packet to next hop without changing its destination IP. Actually, an well-encapsulated packet has included VNID and destination IP, why do we need to put them into NSH context header? I think our current issue is we have not an efficient way to route this VxLAN-gpe+NSH to every SFF and keep its outer IP header intact, this is ovs\u0027s bug, every hop shouldn\u0027t de-capsulate to get all vxlan header + nsh header info.",
+      "revId": "c62e53ca10f48701dded40953a8e84fbc498f291",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_c75f69e4",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2015-10-13T00:56:00Z",
+      "side": 1,
+      "message": "From my understanding, any classifier only can use one of them as context header allocation type, so \"choice ... case ...\" will be better, data-plane-locator is a good reference for this.",
+      "revId": "c62e53ca10f48701dded40953a8e84fbc498f291",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

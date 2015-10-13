@@ -8,26 +8,28 @@
 
 package org.opendaylight.sfc.provider;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.SffVxlanOverlayClassifierType1;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.service.function.forwarders.service.function.forwarder.VxlanOverlayClassifierType1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class is the DataListener for SFF changes.
@@ -104,6 +106,12 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                     if (entry.getValue() instanceof ServiceFunctionForwarder) {
                         ServiceFunctionForwarder createdServiceFunctionForwarder =
                                 (ServiceFunctionForwarder) entry.getValue();
+                        SffVxlanOverlayClassifierType1 sffVxlanOverlayClassifierType1 = createdServiceFunctionForwarder.
+                                getAugmentation(SffVxlanOverlayClassifierType1.class);
+                        if (sffVxlanOverlayClassifierType1 != null) {
+                            VxlanOverlayClassifierType1 vxlanOverlayClassifierType1 = sffVxlanOverlayClassifierType1.
+                                    getVxlanOverlayClassifierType1();
+                        }
                         LOG.debug("{}: SFF {} create", Thread.currentThread().getStackTrace()[1],
                                 createdServiceFunctionForwarder.getName());
 

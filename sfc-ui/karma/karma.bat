@@ -1,1 +1,0 @@
-node "%~dp0\..\node_modules\karma-cli\bin\karma" start "%~dp0\karma-unit.tpl.js"

@@ -36,6 +36,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
         <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-util/${project.version}</bundle>
     </feature>
     <!-- Optional TODO: Remove TODO Comments -->
 </features>

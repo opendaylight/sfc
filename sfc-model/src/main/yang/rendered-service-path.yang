@@ -259,6 +259,32 @@ module rendered-service-path {
         description "The classifier responsible for directing"
           + "packets to this service path";
       }
+      choice context-header-allocation-type-1 {
+        case vxlan-classifier {
+          leaf vxlan-classifier-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              VXLAN overlay classifier metadata allocation";
+          }
+        }
+        case mobility {
+          leaf mobility-allocation-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              Mobility Metadata allocation";
+          }
+        }
+        case dc {
+          leaf dc-allocation-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              DC Allocation Metadata allocation";
+          }
+        }
+      }
     }
     output {
       leaf name {

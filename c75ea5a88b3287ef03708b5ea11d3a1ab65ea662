@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_fa58f857",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 3972
+      },
+      "writtenOn": "2015-10-13T14:13:24Z",
+      "side": 1,
+      "message": "Would it be useful to have an explicit \"none\" case, or would you simply omit the context-header-allocation-type-1 from the request?",
+      "revId": "c75ea5a88b3287ef03708b5ea11d3a1ab65ea662",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

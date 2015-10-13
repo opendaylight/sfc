@@ -298,7 +298,8 @@ SERVICE_PATH_JSON = """
 RENDERED_SERVICE_PATH_RPC_PATH_1_REQ = """
 {
   "input": {
-    "parent-service-function-path": "Path-1-SFC1"
+    "parent-service-function-path": "Path-1-SFC1",
+    "vxlan-overlay-classifier-enabled": true
   }
 }"""
 

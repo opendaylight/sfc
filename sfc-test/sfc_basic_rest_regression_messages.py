@@ -323,6 +323,23 @@ RENDERED_SERVICE_PATH_RPC_PATH_2_RESP = """
   }
 }"""
 
+RENDERED_SERVICE_PATH_RPC_PATH_3_REQ = """
+{
+  "input": {
+    "parent-service-function-path": "Path-1-SFC1",
+    "vxlan-overlay-classifier-enabled": true
+  }
+}"""
+
+
+RENDERED_SERVICE_PATH_RPC_PATH_3_RESP = """
+{
+  "output": {
+    "result": true
+  }
+}"""
+
+
 RENDERED_SERVICE_PATH_RESP_JSON = """
 {
   "rendered-service-paths": {

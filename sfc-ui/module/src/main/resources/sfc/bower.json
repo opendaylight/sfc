@@ -1,0 +1,19 @@
+{
+  "name": "opendaylight-sfc",
+  "version": "0.2.0",
+  "dependencies": {
+    "ngstorage": "~0.3.4",
+    "angular-xeditable": "~0.1.9",
+    "angular-ui-sortable": "0.12.8",
+    "angular-dragdrop": "https://github.com/ganarajpr/angular-dragdrop/archive/1.0.2.zip",
+    "ng-table": "https://github.com/esvit/ng-table/archive/v0.3.3.zip",
+    "select2": "3.5.2",
+    "angular-ui-select2": "https://raw.github.com/angular-ui/ui-select2/master/src/select2.js",
+    "angular-sanitize": "~1.4.0",
+    "select2-bootstrap-css": "~1.4.6",
+    "angular-ui-utils": "~0.0.3"
+  },
+  "resolutions": {
+    "angular": "~1.4.0"
+  }
+}

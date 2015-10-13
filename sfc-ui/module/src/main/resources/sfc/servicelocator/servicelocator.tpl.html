@@ -1,0 +1,47 @@
+<ng-form name="f_locator">
+    <div class="form-group">
+        <label class="col-lg-6 control-label small-label" ui-select2-label="type{{idSuffix}}">
+            {{'SFC_DATA_PLANE_LOCATOR_TYPE' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="type{{idSuffix}}" name="type" ui-select2="{allowClear: true}" ng-model="locator_type"
+                    ng-required="false" data-placeholder="{{'SFC_DATA_PLANE_CREATE_LOCATOR_TYPE' | translate}}"
+                    ng-change="$broadcast('service_locator_type_change', locator_type)">
+
+                <option value=""></option>
+                <option ng-repeat="t in serviceLocatorConstants.type" value="{{t}}">{{t}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!--<service-locator-ip locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[0]"-->
+                        <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[0]}}"></service-locator-ip>-->
+    <!--<service-locator-mac locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[1]"-->
+                         <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[1]}}"></service-locator-mac>-->
+    <!--<service-locator-lisp locator="service_locator" id-suffix="{{idSuffix}}" ng-if="locator_type == serviceLocatorConstants.type[2]"-->
+                          <!--reset-on="service_locator_type_change" not-reset-condition="{{serviceLocatorConstants.type[2]}}"></service-locator-lisp>-->
+
+    <service-locator-dynamic ng-if="locator_type" locator="service_locator" id-suffix="{{idSuffix}}" reset-on="service_locator_type_change"
+                             not-reset-condition="{{locator_type}}" locator-type="{{locator_type}}"
+                             form-fields="serviceLocatorConstants.typeFormFields[locator_type]"></service-locator-dynamic>
+
+    <div class="form-group">
+        <label ui-select2-label="transport{{idSuffix}}" class="col-lg-6 control-label small-label">
+            {{'SFC_FORWARDER_DATA_PLANE_LOCATOR_TRANSPORT_TYPE' | translate}}
+        </label>
+
+        <div class="col-lg-6">
+            <select class="form-control input-sm" id="transport{{idSuffix}}" name="transport" ui-select2="{allowClear: true}" ng-model="service_locator['transport']"
+                    ng-required="false"
+                    data-placeholder="{{'SFC_FORWARDER_DATA_PLANE_LOCATOR_CREATE_TRANSPORT_TYPE' | translate}}">
+
+                <option value=""></option>
+                <option ng-repeat="t in serviceLocatorConstants.transport track by $index" value="{{t}}">{{t}}</option>
+            </select>
+        </div>
+    </div>
+</ng-form>
+
+
+

@@ -8,6 +8,19 @@
 
 package org.opendaylight.sfc.provider;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +28,13 @@ import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.api.*;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
@@ -37,14 +56,25 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -55,11 +85,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 
 /**
@@ -179,7 +204,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         String sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
         LOG.info("sffNme: {}", sffName);
         ServiceFunctionForwarder serviceFunctionForwarder = SfcProviderServiceForwarderAPI.
-                readServiceFunctionForwarderExecutor(sffName);
+                readServiceFunctionForwarder(sffName);
         assertNotNull(serviceFunctionForwarder);
 
         // Now we prepare to remove the entry through the listener
@@ -201,10 +226,10 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         sffEntryDataListener.onDataChanged(dataChangeEvent);
         Thread.sleep(2000);
         // Verify that RSP was removed
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePathExecutor(renderedServicePath.getName()));
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
         assertNull(sffServicePathList);
 /*        for (SffServicePath sffServicePath : sffServicePathList) {
             assertNotEquals(sffServicePath.getName(), renderedServicePath.getName());
@@ -248,7 +273,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         // Prepare to remove the first SF used by the RSP.
         String sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
         ServiceFunctionForwarder serviceFunctionForwarder = SfcProviderServiceForwarderAPI.
-                readServiceFunctionForwarderExecutor(sffName);
+                readServiceFunctionForwarder(sffName);
         assertNotNull(serviceFunctionForwarder);
 
         // Now we prepare the updated data. We change mgmt address and type
@@ -277,10 +302,10 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
          */
         sffEntryDataListener.onDataChanged(dataChangeEvent);
         Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePathExecutor(renderedServicePath.getName()));
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
         assertNull(sffServicePathList);
 /*        for (SffServicePath sffServicePath : sffServicePathList) {
             assertNotEquals(sffServicePath.getName(), renderedServicePath.getName());
@@ -361,7 +386,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
                         .setServiceNode(null) // for consistency only; we are going to get rid of ServiceNodes in the future
                         .build();
 
-        assertTrue(SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(sff));
+        assertTrue(SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff));
 
         return sff;
 
@@ -423,13 +448,13 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        assertTrue(SfcProviderServiceFunctionAPI.putAllServiceFunctionsExecutor(sfsBuilder.build()));
+        assertTrue(SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build()));
         //executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
         Thread.sleep(1000); // Wait they are really created
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {
-            assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction));
+            assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
         }
 
         // Create Service Function Forwarders
@@ -483,7 +508,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
         serviceFunctionForwardersBuilder.setServiceFunctionForwarder(sffList);
         assertTrue(SfcProviderServiceForwarderAPI.
-                putAllServiceFunctionForwardersExecutor(serviceFunctionForwardersBuilder.build()));
+                putAllServiceFunctionForwarders(serviceFunctionForwardersBuilder.build()));
 
         //Create Service Function Chain
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
@@ -503,12 +528,12 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
                 .setSfcServiceFunction(sfcServiceFunctionList)
                 .setSymmetric(true);
 
-        assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChainExecutor(sfcBuilder.build()));
+        assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
 
         Thread.sleep(1000); // Wait SFC is really crated
 
         ServiceFunctionChain readServiceFunctionChain =
-                SfcProviderServiceChainAPI.readServiceFunctionChainExecutor(SFC_NAME);
+                SfcProviderServiceChainAPI.readServiceFunctionChain(SFC_NAME);
 
         assertNotNull(readServiceFunctionChain);
 
@@ -521,7 +546,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
                 .setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
-        assertTrue(SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPath));
+        assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
 
         Thread.sleep(1000); // Wait they are really created
 

@@ -68,42 +68,27 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener {
                                 (ServiceFunctionSchedulerType) entry.getValue();
                         LOG.debug("\n########## createdServiceFunctionSchedulerType {} {}",
                                 createdServiceFunctionSchedulerType.getType(), createdServiceFunctionSchedulerType.getName());
-                        try {
-                            if (createdServiceFunctionSchedulerType.isEnabled() == true) {
-                                isCreateTrue = true;
+                        if (createdServiceFunctionSchedulerType.isEnabled() == true) {
+                            isCreateTrue = true;
+                            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
+                                    .readAllServiceFunctionScheduleTypes();
+                            if(serviceFunctionSchedulerTypes != null) {
+                                List<ServiceFunctionSchedulerType> sfScheduleTypeList =
+                                        serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
+                                for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                                    if (sfst.isEnabled() == true) {
+                                        if (!(sfst.getType().equals(createdServiceFunctionSchedulerType.getType()))) {
+                                            ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                                                                        .setName(sfst.getName())
+                                                                                        .setType(sfst.getType())
+                                                                                        .setEnabled(false).build();
 
-                                Object[] sfstObj = {};
-                                Class[] sfstClass = {};
-                                SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                                        .getReadAll(sfstObj, sfstClass);
-                                Future future = odlSfc.getExecutor().submit(sfcProviderScheduleTypeAPI);
-                                if(future.get()!=null) {
-                                    ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
-                                            (ServiceFunctionSchedulerTypes)future.get();
-                                    List<ServiceFunctionSchedulerType> sfScheduleTypeList =
-                                            serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
-                                    for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                                        if (sfst.isEnabled() == true) {
-                                            if (!(sfst.getType().equals(createdServiceFunctionSchedulerType.getType()))) {
-                                                ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
-                                                                                            .setName(sfst.getName())
-                                                                                            .setType(sfst.getType())
-                                                                                            .setEnabled(false).build();
-
-                                                Object[] sfstObjUpdate = {sfstUpdate};
-                                                Class[] sfstClassUpdate = {ServiceFunctionSchedulerType.class};
-                                                future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                                                    .getPut(sfstObjUpdate, sfstClassUpdate));
-                                                break;
-                                            }
+                                            SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
+                                            break;
                                         }
                                     }
                                 }
                             }
-                        } catch (InterruptedException e) {
-                            LOG.warn("failed to ....", e);
-                        } catch (ExecutionException e) {
-                            LOG.warn("failed to ....", e);
                         }
                     }
                 }
@@ -130,45 +115,31 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener {
                         LOG.debug("\n########## updatedServiceFunctionSchedulerType {} {}",
                                 updatedServiceFunctionSchedulerType.getType(), updatedServiceFunctionSchedulerType.getName());
 
-                        try {
-                            if (isCreateTrue==false) {
-                                if (updatedServiceFunctionSchedulerType.isEnabled() == true) {
-                                    Object[] sfstObj = {};
-                                    Class[] sfstClass = {};
-                                    SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                                            .getReadAll(sfstObj, sfstClass);
-                                    Future future = odlSfc.getExecutor().submit(sfcProviderScheduleTypeAPI);
-                                    if(future.get()!=null) {
-                                        ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes =
-                                                (ServiceFunctionSchedulerTypes)future.get();
-                                        List<ServiceFunctionSchedulerType> sfScheduleTypeList =
-                                                serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
-                                        for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                                            if (sfst.isEnabled() == true) {
-                                                if (!(sfst.getType().equals(updatedServiceFunctionSchedulerType.getType()))) {
-                                                    ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
-                                                                                                .setName(sfst.getName())
-                                                                                                .setType(sfst.getType())
-                                                                                                .setEnabled(false).build();
+                        if (isCreateTrue==false) {
+                            if (updatedServiceFunctionSchedulerType.isEnabled() == true) {
+                                ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
+                                        .readAllServiceFunctionScheduleTypes();
+                                if(serviceFunctionSchedulerTypes != null) {
+                                    List<ServiceFunctionSchedulerType> sfScheduleTypeList =
+                                            serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
+                                    for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                                        if (sfst.isEnabled() == true) {
+                                            if (!(sfst.getType().equals(updatedServiceFunctionSchedulerType.getType()))) {
+                                                ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                                                                            .setName(sfst.getName())
+                                                                                            .setType(sfst.getType())
+                                                                                            .setEnabled(false).build();
 
-                                                    Object[] serviceFunctionSchedulerTypeObj = {sfstUpdate};
-                                                    Class[] serviceFunctionSchedulerTypeClass = {ServiceFunctionSchedulerType.class};
-                                                    future = odlSfc.getExecutor().submit(SfcProviderScheduleTypeAPI
-                                                        .getPut(serviceFunctionSchedulerTypeObj, serviceFunctionSchedulerTypeClass));
-                                                    break;
+                                                SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
+                                                break;
 
-                                                }
                                             }
                                         }
                                     }
                                 }
-                            } else if (isCreateTrue==true) {
-                                isCreateTrue=false;
                             }
-                        } catch (InterruptedException e) {
-                            LOG.warn("failed to ...." , e);
-                        } catch (ExecutionException e) {
-                            LOG.warn("failed to ...." , e);
+                        } else if (isCreateTrue==true) {
+                            isCreateTrue=false;
                         }
                     }
                 }

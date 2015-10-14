@@ -11,9 +11,6 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.ServiceFunctionGroupAlgorithms;
@@ -31,40 +28,17 @@ import org.slf4j.LoggerFactory;
  * @version 0.1 <p>
  * @since 2015-02-14
  */
-public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAPI {
+public class SfcProviderServiceFunctionGroupAlgAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAlgAPI.class);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-
-    SfcProviderServiceFunctionGroupAlgAPI(Object[] params, String m) {
-        super(params, m);
-    }
-
-    SfcProviderServiceFunctionGroupAlgAPI(Object[] params, Class[] paramsTypes, String m) {
-        super(params, paramsTypes, m);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAlgAPI getPut(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "putServiceFunctionGroupAlgorithm");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAlgAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "readServiceFunctionGroupAlgorithm");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAlgAPI getDelete(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAlgAPI(params, paramsTypes, "deleteServiceFunctionGroupAlgorithm");
-    }
 
     /**
      * Reads a SFG Algorithm from the datastore <p>
      * @param serviceFunctionGroupAlgorithmName name
      * @return ServiceFunctionGroupAlgorithm object or null if not found
      */
-    protected ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlgorithm(String serviceFunctionGroupAlgorithmName) {
+    protected static ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlgorithm(String serviceFunctionGroupAlgorithmName) {
         printTraceStart(LOG);
         ServiceFunctionGroupAlgorithm sfgAlg;
         InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgIID;
@@ -112,25 +86,11 @@ public class SfcProviderServiceFunctionGroupAlgAPI extends SfcProviderAbstractAP
         return ret;
     }
 
-    @SuppressWarnings("rawtypes")
     public static ServiceFunctionGroupAlgorithm readServiceFunctionGroupAlg(String serviceFunctionGroupAlgName) {
-
         printTraceStart(LOG);
-        ServiceFunctionGroupAlgorithm ret = null;
-        Object[] sfgObj = { serviceFunctionGroupAlgName};
-        Class[] sfgClass = { String.class };
-        SfcProviderServiceFunctionGroupAlgAPI sfgAPI = SfcProviderServiceFunctionGroupAlgAPI.getRead(sfgObj, sfgClass);
-        Future future = ODL_SFC.getExecutor().submit(sfgAPI);
-        try {
-            ret = (ServiceFunctionGroupAlgorithm) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn("failed to ....", e);
-        } catch (ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
+        ServiceFunctionGroupAlgorithm ret =
+                SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlgorithm(serviceFunctionGroupAlgName);
+        LOG.debug("getRead: {}", ret);
         printTraceStop(LOG);
         return ret;
     }

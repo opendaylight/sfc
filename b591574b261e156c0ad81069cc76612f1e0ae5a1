@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_aea3224e",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sff-data-plane-locator-name",
+      "range": {
+        "startLine": 45,
+        "startChar": 10,
+        "endLine": 45,
+        "endChar": 45
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4e8a8ec0",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sff-name ?",
+      "range": {
+        "startLine": 51,
+        "startChar": 10,
+        "endLine": 51,
+        "endChar": 41
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6e850aac",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sff-data-plane-locator-ref ?",
+      "range": {
+        "startLine": 56,
+        "startChar": 10,
+        "endLine": 56,
+        "endChar": 44
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0e9496e0",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sff-ref ?",
+      "range": {
+        "startLine": 67,
+        "startChar": 12,
+        "endLine": 67,
+        "endChar": 47
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_2e8f12ce",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "copy-paste mistake",
+      "range": {
+        "startLine": 69,
+        "startChar": 12,
+        "endLine": 71,
+        "endChar": 64
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_aeba426c",
+        "filename": "sfc-model/src/main/yang/service-function-mapping.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sff-dpl-by-sf-dpl-mappings ?\n\nso word after by means usually key",
+      "range": {
+        "startLine": 30,
+        "startChar": 12,
+        "endLine": 30,
+        "endChar": 54
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4eb12e8e",
+        "filename": "sfc-model/src/main/yang/service-function-mapping.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "redundant information. use either name or ref. If you use name it means that instance with that name does not have to exist. if you use ref it means that instance of list where leafref point to has to exist",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 11
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6eac2a36",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sf-name ?",
+      "range": {
+        "startLine": 49,
+        "startChar": 10,
+        "endLine": 49,
+        "endChar": 31
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0eab361e",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sf-data-plane-locator-name ?",
+      "range": {
+        "startLine": 54,
+        "startChar": 10,
+        "endLine": 54,
+        "endChar": 35
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_2ea63254",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "sf-data-plane-locator-ref ?",
+      "range": {
+        "startLine": 60,
+        "startChar": 10,
+        "endLine": 60,
+        "endChar": 34
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_ee67da23",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T14:03:22Z",
+      "side": 1,
+      "message": "to be consistent I would rename also this sf-ref",
+      "range": {
+        "startLine": 71,
+        "startChar": 10,
+        "endLine": 71,
+        "endChar": 35
+      },
+      "revId": "b591574b261e156c0ad81069cc76612f1e0ae5a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

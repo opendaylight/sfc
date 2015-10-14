@@ -65,7 +65,7 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
 
         ServiceFunction sf = rspContext.serviceFunctions.get(sfName);
         if(sf == null) {
-            sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfName);
+            sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if(sf != null) {
                 rspContext.serviceFunctions.put(sfName, sf);
             }
@@ -88,7 +88,7 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
 
         ServiceFunctionForwarder sff = rspContext.serviceFunctionFowarders.get(sffName);
         if(sff == null) {
-            sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
+            sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
             if(sff != null) {
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 rspContext.serviceFunctionFowarders.put(sffName, sff);
@@ -103,7 +103,7 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
 
         ServiceFunctionGroup sfg = rspContext.serviceFunctionGroups.get(sfgName);
         if (sfg == null) {
-            sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(sfgName);
+            sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(sfgName);
             if (sfg != null) {
                 rspContext.serviceFunctionGroups.put(sfgName, sfg);
             }

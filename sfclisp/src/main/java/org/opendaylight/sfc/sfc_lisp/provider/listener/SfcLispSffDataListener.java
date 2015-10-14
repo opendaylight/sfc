@@ -62,12 +62,8 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener  {
                 List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
                 for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
                     if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
-                        Object[] serviceFunctionForwarderObj = { serviceFunctionForwarder };
-                        Class[] serviceFunctionForwarderClass = { ServiceFunctionForwarder.class };
-                        OpendaylightSfc.getOpendaylightSfcObj().getExecutor().submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceFunctionForwarderObj,
-                                serviceFunctionForwarderClass));
+                        SfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
                     }
-
                 }
             }
         }

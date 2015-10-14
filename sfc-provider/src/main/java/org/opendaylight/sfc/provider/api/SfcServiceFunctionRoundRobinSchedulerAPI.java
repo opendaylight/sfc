@@ -84,7 +84,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
              * we do not hit NULL Pointer exceptions
              */
             ServiceFunctionType serviceFunctionType;
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {

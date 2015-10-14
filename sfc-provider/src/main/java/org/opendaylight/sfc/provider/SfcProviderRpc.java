@@ -203,7 +203,7 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RpcResult <CreateRenderedPathOutput> rpcResult;
         String retRspName = null;
 
-        createdServiceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor
+        createdServiceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath
                 (createRenderedPathInput.getParentServiceFunctionPath());
 
         if (createdServiceFunctionPath != null) {
@@ -215,9 +215,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
 
                 if ((createdServiceFunctionPath.getClassifier() != null) &&
-                        SfcProviderServiceClassifierAPI.readServiceClassifierExecutor
+                        SfcProviderServiceClassifierAPI.readServiceClassifier
                                 (createdServiceFunctionPath.getClassifier()) != null) {
-                    SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
+                    SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState
                             (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
                 } else {
                     LOG.warn("Classifier not provided or does not exist");
@@ -233,9 +233,9 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
                         if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
                                 SfcProviderServiceClassifierAPI
-                                        .readServiceClassifierExecutor
+                                        .readServiceClassifier
                                                 (createdServiceFunctionPath.getSymmetricClassifier()) != null) {
-                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor
+                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState
                                     (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
 
                         } else {
@@ -264,11 +264,11 @@ public class SfcProviderRpc implements ServiceFunctionService,
         RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
         // If a RSP is deleted we delete both SF and SFF operational states.
         SfcProviderServiceForwarderAPI
-                .deletePathFromServiceForwarderStateExecutor(input.getName());
+                .deletePathFromServiceForwarderState(input.getName());
         SfcProviderServiceFunctionAPI
-                .deleteServicePathFromServiceFunctionStateExecutor(input.getName());
+                .deleteServicePathFromServiceFunctionState(input.getName());
 
-        ret = SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(input.getName());
+        ret = SfcProviderRenderedPathAPI.deleteRenderedServicePath(input.getName());
         DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
         deleteRenderedPathOutputBuilder.setResult(ret);
         if (ret) {

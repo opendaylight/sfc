@@ -50,14 +50,14 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
             sfName = curSftServiceFunctionName.getName();
 
             /* Check next one if curSftServiceFunctionName doesn't exist */
-            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfName);
+            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if (serviceFunction == null) {
                 LOG.error("ServiceFunction {} doesn't exist", sfName);
                 continue;
             }
 
             /* Read ServiceFunctionMonitor information */
-            SfcSfDescMon sfcSfDescMon = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfName);
+            SfcSfDescMon sfcSfDescMon = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfName);
             if (sfcSfDescMon == null) {
                 sftServiceFunctionName = sfName;
                 LOG.error("Read monitor information from Data Store failed! serviceFunction: {}", sfName);
@@ -105,7 +105,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
              */
 
             ServiceFunctionType serviceFunctionType;
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {

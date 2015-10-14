@@ -8,8 +8,10 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
@@ -22,12 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 
 /**
@@ -45,7 +41,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceClassifierAPI.class);
-    private static final String FAILED_TO_STR = "failed to ...";
 
     SfcProviderServiceClassifierAPI(Object[] params, String m) {
         super(params, m);
@@ -53,16 +48,6 @@ public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
 
     SfcProviderServiceClassifierAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
-    }
-
-
-    public static SfcProviderServiceClassifierAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceClassifierAPI(params, paramsTypes, "readServiceClassifier");
-    }
-
-    public static SfcProviderServiceClassifierAPI getAddRenderedPathToServiceClassifierStateExecutor
-            (Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceClassifierAPI(params, paramsTypes, "addRenderedPathToServiceClassifierState");
     }
 
     /**
@@ -73,7 +58,6 @@ public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
      * @param renderedPathName Rendered Path name
      * @return Nothing.
      */
-    @SuppressWarnings("unused")
     public static boolean addRenderedPathToServiceClassifierState (String serviceClassifierName, String renderedPathName) {
 
         printTraceStart(LOG);
@@ -102,43 +86,12 @@ public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * We iterate through all service paths that use this service function and if
-     * necessary, remove them.
-     * <p>
-     * @param serviceClassifierName Service Function Classifier name
-     * @param renderedPathName Rendered Path name
-     * @return Nothing.
-     */
-    @SuppressWarnings("unused")
-    public static boolean addRenderedPathToServiceClassifierStateExecutor (String serviceClassifierName, String renderedPathName) {
-
-        printTraceStart(LOG);
-        boolean ret = true;
-        Object[] functionParams = {serviceClassifierName, renderedPathName};
-        Class[] functionParamsTypes = {String.class, String.class};
-        Future future = ODL_SFC.getExecutor().submit(SfcProviderServiceClassifierAPI
-                .getAddRenderedPathToServiceClassifierStateExecutor(functionParams, functionParamsTypes));
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getAddRenderedPathToServiceClassifierStateExecutor returns: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR , e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
      * This method reads a classifier from DataStore
      * <p>
      * @param serviceClassifierName Classifier name
      * @return SF object or null if not found
      */
-    @SuppressWarnings("unused")
-    @SfcReflection
-    protected ServiceFunctionClassifier readServiceClassifier(String serviceClassifierName) {
+    public static ServiceFunctionClassifier readServiceClassifier(String serviceClassifierName) {
         printTraceStart(LOG);
         ServiceFunctionClassifier scl;
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
@@ -150,35 +103,6 @@ public class SfcProviderServiceClassifierAPI extends SfcProviderAbstractAPI {
 
         printTraceStop(LOG);
         return scl;
-    }
-
-
-    /**
-     * Wrapper API to reads a service function classifier from datastore
-     * <p>
-     * @param serviceClassifierName Service Classifier Name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     * this service function, null otherwise
-     */
-    public static ServiceFunctionClassifier readServiceClassifierExecutor(String serviceClassifierName) {
-
-        printTraceStart(LOG);
-        ServiceFunctionClassifier ret = null;
-        Object[] servicePathObj = {serviceClassifierName};
-        Class[] servicePathClass = {String.class};
-        SfcProviderServiceClassifierAPI sfcProviderServiceClassifierAPI = SfcProviderServiceClassifierAPI
-                .getRead(servicePathObj, servicePathClass);
-        Future future  = ODL_SFC.getExecutor().submit(sfcProviderServiceClassifierAPI);
-        try {
-            ret = (ServiceFunctionClassifier) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn("failed to ...." , e);
-        } catch (ExecutionException e) {
-            LOG.warn("failed to ...." , e);
-        }
-        printTraceStop(LOG);
-        return ret;
     }
 
 

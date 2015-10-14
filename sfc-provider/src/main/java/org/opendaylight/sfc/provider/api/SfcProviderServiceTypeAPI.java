@@ -12,11 +12,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
@@ -45,8 +42,6 @@ import org.slf4j.LoggerFactory;
 public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceTypeAPI.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-    private static final String FAILED_TO_STR = "failed to ...";
 
     SfcProviderServiceTypeAPI(Object[] params, String m) {
         super(params, m);
@@ -54,127 +49,6 @@ public class SfcProviderServiceTypeAPI extends SfcProviderAbstractAPI {
 
     SfcProviderServiceTypeAPI(Object[] params, Class[] paramsTypes, String m) {
         super(params, paramsTypes, m);
-    }
-
-    public static SfcProviderServiceTypeAPI getPut(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "putServiceFunctionType");
-    }
-
-    public static SfcProviderServiceTypeAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "readServiceFunctionType");
-    }
-
-    public static SfcProviderServiceTypeAPI getDelete(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionType");
-    }
-
-    public static SfcProviderServiceTypeAPI getPutAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "putAllServiceFunctionTypes");
-    }
-
-    public static SfcProviderServiceTypeAPI getReadAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "readAllServiceFunctionTypes");
-    }
-
-    public static SfcProviderServiceTypeAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteAllServiceFunctionTypes");
-    }
-
-    public static SfcProviderServiceTypeAPI getCreateServiceFunctionTypeEntry(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "createServiceFunctionTypeEntry");
-    }
-
-    public static SfcProviderServiceTypeAPI getDeleteServiceFunctionTypeEntry(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionTypeEntry");
-    }
-
-    public static SfcProviderServiceTypeAPI getDeleteServiceFunctionFromServiceType(Object[] params,
-            Class[] paramsTypes) {
-        return new SfcProviderServiceTypeAPI(params, paramsTypes, "deleteServiceFunctionTypeEntry");
-    }
-
-    public static boolean putServiceFunctionTypeExecutor(ServiceFunctionType sft) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        Object[] serviceTypeObj = {sft};
-        Class[] serviceTypeClass = {ServiceFunctionType.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI =
-                SfcProviderServiceTypeAPI.getPut(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads the operational state for a service function.
-     *
-     * @param serviceFunctionTypeIdentity SF name
-     * @return A ServiceFunctionType object
-     */
-    public static ServiceFunctionType readServiceFunctionTypeExecutor(
-            Class<? extends ServiceFunctionTypeIdentity> serviceFunctionTypeIdentity) {
-
-        printTraceStart(LOG);
-        ServiceFunctionType ret = null;
-        Object[] serviceTypeObj = {serviceFunctionTypeIdentity};
-        Class[] serviceTypeClass = {Class.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI =
-                SfcProviderServiceTypeAPI.getRead(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (ServiceFunctionType) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    public static boolean deleteServiceFunctionTypeEntryExecutor(ServiceFunction serviceFunction) {
-        boolean ret = false;
-        Object[] serviceTypeObj = {serviceFunction};
-        Class[] serviceTypeClass = {ServiceFunction.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI =
-                SfcProviderServiceTypeAPI.getDeleteServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteServiceFunctionTypeEntry: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        }
-        return ret;
-    }
-
-    /**
-     * Wrapper method that creates an executor that will execute a method to add a
-     * SFType to the datatore
-     *
-     * @param serviceFunction Service Function Object
-     * @return Nothing.
-     */
-    public static boolean createServiceFunctionTypeEntryExecutor(ServiceFunction serviceFunction) {
-        boolean ret = false;
-        Object[] serviceTypeObj = {serviceFunction};
-        Class[] serviceTypeClass = {ServiceFunction.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI =
-                SfcProviderServiceTypeAPI.getCreateServiceFunctionTypeEntry(serviceTypeObj, serviceTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceTypeAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("createServiceFunctionTypeEntryExecutor: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        }
-        return ret;
     }
 
     /**

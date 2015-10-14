@@ -42,7 +42,40 @@ module service-function-forwarder {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-  // Failmode type definitions
+  typedef service-function-forwarder-dpl-name {
+      type string;
+      description
+                "Service Function Forwarder data-plane-locator name type";
+  }
+
+  typedef service-function-forwarder-name {
+      type string;
+      description "Service Function Forwarder Name type";
+  }
+
+  typedef service-function-forwarder-dpl-ref {
+      type leafref {
+        path "/sfc-sff:service-function-forwarders/"
+            + "sfc-sff:service-function-forwarder/"
+            + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
+      }
+      description
+        "This type is used by data models that need to reference
+         the SFF data plane locator.";
+    }
+
+    typedef service-function-forwarder-name-ref {
+        type leafref {
+            path "/sfc-sff:service-function-forwarders/"
+                + "sfc-sff:service-function-forwarder/"
+                + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
+          }
+          description
+            "This type is used by data models that need to reference
+             the SFF data plane locator.";
+    }
+
+// Failmode type definitions
 
   identity failmode-type-identity {
     description
@@ -72,18 +105,6 @@ module service-function-forwarder {
        function, packets will be forwarded";
   }
 
-  typedef service-function-forwarder-locator-ref {
-    type leafref {
-      path "/sfc-sff:service-function-forwarders/"
-          + "sfc-sff:service-function-forwarder/"
-          + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       the SFF data plane locator.";
-  }
-
-
   container service-function-forwarders {
     description
       "A service function forwarder is
@@ -96,7 +117,7 @@ module service-function-forwarder {
       description
         "A list that holds configuration of all SFFs in the domain";
       leaf name {
-        type string;
+        type service-function-forwarder-name;
         description
           "The unique name of this service function forwarder, such
            as SFF1";
@@ -120,15 +141,12 @@ module service-function-forwarder {
       }
 
       list sff-data-plane-locator {
-        key "name";
-        description
-          "A list of all data-plane-locators of this SFF.";
-        leaf name {
-          type string;
+          key "name";
           description
-            "A unique string that represents this
-             data-plane-locator";
-        }
+            "A network data-plane locator";
+          leaf name {
+            type service-function-forwarder-dpl-name;
+          }
 
         container data-plane-locator {
           description

@@ -8,6 +8,7 @@ module service-function {
   import service-function-type {prefix sfc-sft;}
   import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
+  import service-function-forwarder {prefix sfc-sff;}
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -45,8 +46,29 @@ module service-function {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
+  typedef service-function-name {
+      type string;
+      description "Service Function Name";
+  }
 
-  typedef service-function-ref {
+  typedef service-function-dpl-name {
+      type string;
+      description
+                "A unique name for SF data-plane-locator";
+  }
+
+  typedef service-function-dpl-ref {
+      type leafref {
+        path "/sfc-sf:service-functions/"
+            + "sfc-sf:service-function/"
+            + "sfc-sf:sf-data-plane-locator/sfc-sf:name";
+      }
+      description
+        "This type is used by data models that need to reference
+         the SFF data plane locator.";
+    }
+
+  typedef service-function-name-ref {
     type leafref {
       path "/sfc-sf:service-functions/sfc-sf:service-function/"
           + "sfc-sf:name";
@@ -61,7 +83,7 @@ module service-function {
       "This group bundles together all information related to a
        single service function";
     leaf name {
-      type string;
+      type service-function-name;
       description
           "The name of the service function.";
     }
@@ -101,14 +123,11 @@ module service-function {
       description
         "A network data-plane locator";
       leaf name {
-        type string;
-        description
-          "A unique string that represents this
-           data-plane-locator";
+        type service-function-dpl-name;
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
-        type string;
+        type sfc-sff:service-function-forwarder-name;
         description
           "The service function forwarder associated with this
            locator";

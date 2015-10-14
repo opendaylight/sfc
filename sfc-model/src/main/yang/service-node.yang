@@ -7,6 +7,7 @@ module service-node {
   import ietf-inet-types { prefix inet; }
   import ietf-yang-types { prefix yang; }
   import service-function {prefix sfc-sf; }
+  import service-function-forwarder {prefix sfc-sff;}
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -69,13 +70,13 @@ module service-node {
         "The IP and port used to configure this service-node";
     }
     leaf-list service-function-forwarder {
-      type string;
+      type sfc-sff:sff-name-ref;
       description
         "A list of service function forwarders resident in this
          service node";
     }
     leaf-list service-function {
-      type sfc-sf:service-function-ref;
+      type sfc-sf:sf-name-ref;
       description
           "A list of service functions resident in this service
            node";

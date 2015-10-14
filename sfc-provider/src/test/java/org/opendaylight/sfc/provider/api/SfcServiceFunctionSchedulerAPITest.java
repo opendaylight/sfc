@@ -8,10 +8,17 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -38,13 +45,6 @@ import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
-
 public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionSchedulerAPITest.class);
@@ -54,7 +54,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
     private ServiceFunctionPath sfPath;
 
     @Before
-    public void before() throws ExecutionException, InterruptedException, IllegalAccessException {
+    public void before() throws Exception {
         setOdlSfc();
 
         int maxTries = 10;
@@ -129,38 +129,27 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        executor.submit(SfcProviderServiceFunctionAPI.getPutAll
-                (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
-        Thread.sleep(1000); //Wait they are really created
+        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
 
         for (ServiceFunction serviceFunction : sfList) {
-            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
+            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
         }
 
-        Object[] sfcParameters = {sfChain};
-        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(sfcParameters, sfcParameterTypes)).get();
-        Thread.sleep(1000); //Wait it is really created
+        SfcProviderServiceChainAPI.putServiceFunctionChain(sfChain);
     }
 
     @Test
-    public void testBasicEnvSetup() throws ExecutionException, InterruptedException {
+    public void testBasicEnvSetup() {
         int maxTries;
         for (ServiceFunction serviceFunction : sfList) {
             maxTries = 10;
             ServiceFunction sf2 = null;
             while (maxTries > 0) {
-                Object[] parameters2 = {serviceFunction.getName()};
-                Class[] parameterTypes2 = {String.class};
-                Object result = executor.submit(SfcProviderServiceFunctionAPI
-                        .getRead(parameters2, parameterTypes2)).get();
-                sf2 = (ServiceFunction) result;
+                sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunction.getName());
                 maxTries--;
                 if (sf2 != null) {
                     break;
                 }
-                Thread.sleep(1000);
             }
             LOG.debug("SfcServiceFunctionSchedulerAPITest: getRead ServiceFunction {} {} times: {}", serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
@@ -168,11 +157,8 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());
         }
 
-        Object[] parameters2 = {sfChain.getName()};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceChainAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
+        SfcProviderServiceFunctionAPI.readServiceFunction(sfChain.getName());
+        ServiceFunctionChain sfc2 = SfcProviderServiceChainAPI.readServiceFunctionChain(sfChain.getName());
 
         assertNotNull("Must be not null", sfc2);
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfChain.getSfcServiceFunction());
@@ -180,7 +166,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         ServiceFunctionType serviceFunctionType;
         List<SftServiceFunctionName> sftServiceFunctionNameList;
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
@@ -188,19 +174,19 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         }
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
     }
 
     @Test
-    public void testServiceFunctionRandomScheduler() throws ExecutionException, InterruptedException {
+    public void testServiceFunctionRandomScheduler() {
         int serviceIndex = 255;
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         List<String> serviceFunctionNameArrayList =
@@ -208,34 +194,34 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
-        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionNameArrayList.get(0));
+        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(0));
         assertNotNull("Must be not null", serviceFunction);
         assertEquals("Must be equal", serviceFunction.getType(), Firewall.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Dpi.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(1));
+                .readServiceFunction(serviceFunctionNameArrayList.get(1));
         assertEquals("Must be equal", serviceFunction.getType(), Dpi.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Napt44.class);
 
         serviceFunction = SfcProviderServiceFunctionAPI
-                .readServiceFunctionExecutor(serviceFunctionNameArrayList.get(2));
+                .readServiceFunction(serviceFunctionNameArrayList.get(2));
         assertEquals("Must be equal", serviceFunction.getType(), Napt44.class);
         assertNotEquals("Must be not equal", serviceFunction.getType(), Firewall.class);
     }
 
     @Test
-    public void testServiceFunctionRoundRobinScheduler() throws ExecutionException, InterruptedException {
+    public void testServiceFunctionRoundRobinScheduler() {
         int serviceIndex = 255;
         SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
         List<String> serviceFunctionNameArrayList;
 
         ServiceFunctionType serviceFunctionType;
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
         List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
         List<SftServiceFunctionName> sftDpiList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         /* First round */
@@ -264,7 +250,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(1), sftDpiList.get(0).getName());
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(2), sftNapt44List.get(0).getName());
 
-        Class scheduleType = scheduler.getSfcServiceFunctionSchedulerType();
+        Class<?> scheduleType = scheduler.getSfcServiceFunctionSchedulerType();
 
         assertNotNull("Must be not null", scheduleType);
         assertEquals("Must be equal", scheduleType.getSimpleName(), RoundRobin.class.getSimpleName());

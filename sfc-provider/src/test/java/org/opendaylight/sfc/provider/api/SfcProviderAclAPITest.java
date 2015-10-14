@@ -64,18 +64,6 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     }
 
     @Test
-    //tes SfcProviderAclAPI constructor
-    public void constructorTest() {
-        String methodName = "test string";
-        Object[] params = {methodName};
-        SfcProviderAclAPI sfcProviderAclAPI = new SfcProviderAclAPI(params, methodName);
-
-        assertNotNull("Must not be null", sfcProviderAclAPI);
-        assertEquals("Must be equal", sfcProviderAclAPI.getMethodName(), methodName);
-        assertEquals("Must be  equal", sfcProviderAclAPI.getParameters().getClass(), Object[].class);
-    }
-
-    @Test
     //read existing access list from data store
     public void testReadAccessList() throws Exception {
 
@@ -93,7 +81,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         assertTrue("must be true", transactionSuccessful);
 
         //read access list from data store
-        Acl accessList = SfcProviderAclAPI.readAccessListExecutor(ACL_NAME);
+        Acl accessList = SfcProviderAclAPI.readAccessList(ACL_NAME);
 
         assertNotNull("Must not be null", accessList);
         assertNotNull("Must not be null", accessList.getAccessListEntries());
@@ -131,7 +119,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         assertTrue("must be true", transactionSuccessful);
 
         //read access list state from data store
-        AccessListState accessListState = SfcProviderAclAPI.readAccessListStateExecutor(ACL_STATE_NAME);
+        AccessListState accessListState = SfcProviderAclAPI.readAccessListState(ACL_STATE_NAME);
 
         assertNotNull("Must not be null", accessListState);
         assertEquals("Must be equal", accessListState.getAclName(), ACL_STATE_NAME);
@@ -149,12 +137,12 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     public void testAddAndDeleteClassifier() throws Exception {
 
         //add classifier
-        boolean result = SfcProviderAclAPI.addClassifierToAccessListStateExecutor(ACL_NAME, CLASSIFIER_NAME);
+        boolean result = SfcProviderAclAPI.addClassifierToAccessListState(ACL_NAME, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
 
         //delete classifier
-        result = SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(ACL_NAME, CLASSIFIER_NAME);
+        result = SfcProviderAclAPI.deleteClassifierFromAccessListState(ACL_NAME, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
     }

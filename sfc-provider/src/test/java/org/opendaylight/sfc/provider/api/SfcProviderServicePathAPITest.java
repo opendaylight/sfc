@@ -59,8 +59,6 @@ import static org.junit.Assert.*;
 
 public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
 
-    private List<ServiceFunction> sfList = new ArrayList<>();
-
     @Before
     public void before() {
         setOdlSfc();
@@ -125,17 +123,17 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         assertTrue("Must be true", transactionSuccessful);
 
         //read service path state
-        List<SfpRenderedServicePath> sfpList = SfcProviderServicePathAPI.readServicePathStateExecutor(sfpKey);
+        List<SfpRenderedServicePath> sfpList = SfcProviderServicePathAPI.readServicePathState(sfpKey);
 
         assertNotNull("Must not be null", sfpList);
         assertEquals("Must be equal", sfpList.get(0).getName(), rspKey);
 
         //delete service path state
-        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathStateExecutor(sfpKey);
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathState(sfpKey);
         assertTrue("Must be true", transactionSuccessful);
 
         //try to read again, must be null
-        sfpList = SfcProviderServicePathAPI.readServicePathStateExecutor(sfpKey);
+        sfpList = SfcProviderServicePathAPI.readServicePathState(sfpKey);
 
         assertNull("Must be null", sfpList);
     }
@@ -151,7 +149,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         serviceFunctionPathStateBuilder.setName(sfpKey)
                 .setKey(new ServiceFunctionPathStateKey(sfpKey));
 
-        boolean transactionSuccessful = SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor(serviceFunctionPathStateBuilder.build().getName(), rspKey);
+        boolean transactionSuccessful = SfcProviderServicePathAPI.addRenderedPathToServicePathState(serviceFunctionPathStateBuilder.build().getName(), rspKey);
         assertTrue("Must be true", transactionSuccessful);
 
         //check if path is already added
@@ -172,16 +170,16 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
                 .setKey(new ServiceFunctionPathKey(sfpName))
                 .setClassifier(testClassifier);
 
-        boolean transactionSuccessful = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPathBuilder.build());
+        boolean transactionSuccessful = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPathBuilder.build());
         assertTrue("Must be true", transactionSuccessful);
 
         //read service function path
-        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(sfpName);
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(sfpName);
         assertNotNull("Must not be null", serviceFunctionPath);
         assertEquals("Must be equal", serviceFunctionPath.getClassifier(), testClassifier);
 
         //delete service function path
-        transactionSuccessful = SfcProviderServicePathAPI.deleteServiceFunctionPathExecutor(sfpName);
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServiceFunctionPath(sfpName);
         assertTrue("Must be true", transactionSuccessful);
     }
 
@@ -209,15 +207,15 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         ServiceFunctionPaths writtenPaths = serviceFunctionPathsBuilder.build();
 
         //put all paths
-        boolean transactionSuccessful = SfcProviderServicePathAPI.putServiceFunctionPathsExecutor(writtenPaths);
+        boolean transactionSuccessful = SfcProviderServicePathAPI.putAllServiceFunctionPaths(writtenPaths);
         assertTrue("Must be true", transactionSuccessful);
 
         //read all paths
-        ServiceFunctionPaths getPaths = SfcProviderServicePathAPI.readAllServiceFunctionPathsExecutor();
+        ServiceFunctionPaths getPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
         assertNotNull("Must not be null", getPaths);
         assertTrue("Must be true", getPaths.equals(writtenPaths));
 
-        transactionSuccessful = SfcProviderServicePathAPI.deleteAllServiceFunctionPathsExecutor();
+        transactionSuccessful = SfcProviderServicePathAPI.deleteAllServiceFunctionPaths();
         assertTrue("Must be true", transactionSuccessful);
     }
 
@@ -275,7 +273,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         assertTrue("Must be true", transactionSuccessful);
 
         //delete path
-        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathContainingFunctionExecutor(serviceFunction);
+        transactionSuccessful = SfcProviderServicePathAPI.deleteServicePathContainingFunction(serviceFunction);
         assertTrue("Must be true", transactionSuccessful);
     }
 }

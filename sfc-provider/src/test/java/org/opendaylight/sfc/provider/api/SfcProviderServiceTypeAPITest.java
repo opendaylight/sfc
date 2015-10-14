@@ -33,33 +33,18 @@ import static org.junit.Assert.*;
 
 public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
 
-    SfcProviderServiceTypeAPILocal sfcProviderServiceTypeAPILocal;
+    SfcProviderServiceTypeAPI sfcProviderServiceTypeAPILocal;
 
     @Before
     public void before() {
         setOdlSfc();
-        Object[] params = {"hello"};
-        sfcProviderServiceTypeAPILocal = new SfcProviderServiceTypeAPILocal(params);
-    }
-
-    @Test
-    public void testGetPut(){
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-
-        Class serviceFunctionTypeIdentity = Firewall.class;
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity)).setType(serviceFunctionTypeIdentity);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-        Object[] serviceTypeObj = {serviceFunctionType};
-        Class[] serviceTypeClass = {Firewall.class};
-        SfcProviderServiceTypeAPI sfcProviderServiceTypeAPI = SfcProviderServiceTypeAPI.getPut(serviceTypeObj, serviceTypeClass);
-        assertNotNull(sfcProviderServiceTypeAPI);
-        assertEquals("Incorrectly returned value of SfcProviderServiceTypeAPI.", "putServiceFunctionType", sfcProviderServiceTypeAPI.getMethodName());
+        sfcProviderServiceTypeAPILocal = new SfcProviderServiceTypeAPI();
     }
 
     @Test
     public void testPutServiceFunctionType() throws Exception{
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class serviceFunctionTypeIdentity = Firewall.class;
+        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity)).setType(serviceFunctionTypeIdentity);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
 
@@ -92,7 +77,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
 
         SfcDataStoreAPI.writePutTransactionAPI(sftentryIID, sftServiceFunctionName, LogicalDatastoreType.CONFIGURATION);
 
-        assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntryExecutor(serviceFunction));
+        assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(serviceFunction));
         assertNull(SfcDataStoreAPI.readTransactionAPI(sftentryIID, LogicalDatastoreType.CONFIGURATION));
     }
 
@@ -101,7 +86,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class serviceFunctionTypeIdentity = Firewall.class;
+        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity)).setType(serviceFunctionTypeIdentity);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
@@ -120,7 +105,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class serviceFunctionTypeIdentity = Firewall.class;
+        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity)).setType(serviceFunctionTypeIdentity);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
@@ -138,7 +123,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class serviceFunctionTypeIdentity = Firewall.class;
+        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity)).setType(serviceFunctionTypeIdentity);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
@@ -152,10 +137,4 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager{
         assertNull("Variable has not been set correctly.", outputSFTypes);
     }
 
-    private class SfcProviderServiceTypeAPILocal extends SfcProviderServiceTypeAPI{
-
-        SfcProviderServiceTypeAPILocal(Object[] params) {
-            super(params, "m");
-        }
-    }
 }

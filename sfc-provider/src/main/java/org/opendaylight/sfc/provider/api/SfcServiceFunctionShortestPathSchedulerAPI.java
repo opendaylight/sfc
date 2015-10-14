@@ -150,7 +150,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         String toSffName;
 
         /* Add all the ServiceFunction nodes */
-        ServiceFunctions sfs = SfcProviderServiceFunctionAPI.readAllServiceFunctionsExecutor();
+        ServiceFunctions sfs = SfcProviderServiceFunctionAPI.readAllServiceFunctions();
         List<ServiceFunction> serviceFunctionList = sfs.getServiceFunction();
         for (ServiceFunction serviceFunction : serviceFunctionList) {
             sfName = serviceFunction.getName();
@@ -158,7 +158,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             LOG.debug("Add ServiceFunction: {}", sfName);
         }
 
-        ServiceFunctionForwarders sffs = SfcProviderServiceForwarderAPI.readAllServiceFunctionForwardersExecutor();
+        ServiceFunctionForwarders sffs = SfcProviderServiceForwarderAPI.readAllServiceFunctionForwarders();
         List<ServiceFunctionForwarder> serviceFunctionForwarderList = sffs.getServiceFunctionForwarder();
 
         /* Add edges and node for every ServiceFunctionForwarder */
@@ -239,7 +239,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             }
 
             ServiceFunctionType serviceFunctionType =
-                    SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+                    SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList =
                         serviceFunctionType.getSftServiceFunctionName();

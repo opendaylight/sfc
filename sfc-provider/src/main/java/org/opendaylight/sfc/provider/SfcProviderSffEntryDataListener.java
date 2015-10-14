@@ -77,9 +77,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                         String sffName = serviceFunctionForwarder.getName();
                         List<String> rspList = new ArrayList<>();
                         List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+                                SfcProviderServiceForwarderAPI.readSffState(sffName);
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
-                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName)) {
+                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
 
                             } else {
                                 LOG.error("{}: Failed to delete SFF {} operational state",
@@ -88,10 +88,10 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                             for (SffServicePath sffServicePath : sffServicePathList) {
                                 String rspName = sffServicePath.getName();
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionStateExecutor(rspName);
+                                    .deleteServicePathFromServiceFunctionState(rspName);
                                 rspList.add(rspName);
                             }
-                            SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
+                            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
                         }
                     }
                 }
@@ -126,20 +126,20 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                         String sffName = serviceFunctionForwarder.getName();
                         LOG.debug("{}: SFF {} update", Thread.currentThread().getStackTrace()[1], sffName);
                         List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffStateExecutor(sffName);
+                                SfcProviderServiceForwarderAPI.readSffState(sffName);
                         List<String> rspList = new ArrayList<>();
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
-                            if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderStateExecutor(sffName)) {
+                            if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
                                 LOG.error("{}: Failed to delete SFF {} operational state",
                                         Thread.currentThread().getStackTrace()[1], sffName);
                             }
                             for (SffServicePath sffServicePath : sffServicePathList) {
                                 String rspName = sffServicePath.getName();
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionStateExecutor(rspName);
+                                    .deleteServicePathFromServiceFunctionState(rspName);
                                 rspList.add(rspName);
                             }
-                            SfcProviderRenderedPathAPI.deleteRenderedServicePathsExecutor(rspList);
+                            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
                         }
 
                     }

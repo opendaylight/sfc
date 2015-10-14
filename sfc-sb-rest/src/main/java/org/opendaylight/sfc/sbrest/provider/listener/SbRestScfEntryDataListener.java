@@ -60,7 +60,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 LOG.debug("\nCreated Service Classifier Name: {}", createdServiceClassifier.getName());
 
                 if (createdServiceClassifier.getAccessList() != null && !createdServiceClassifier.getAccessList().isEmpty()) {
-                    Acl accessList = SfcProviderAclAPI.readAccessListExecutor(createdServiceClassifier.getAccessList());
+                    Acl accessList = SfcProviderAclAPI.readAccessList(createdServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.POST, accessList,
                             createdServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
@@ -78,7 +78,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 LOG.debug("\nModified Service Classifier Name: {}", updatedServiceClassifier.getName());
 
                 if (updatedServiceClassifier.getAccessList() != null && !updatedServiceClassifier.getAccessList().isEmpty()) {
-                    Acl accessList = SfcProviderAclAPI.readAccessListExecutor(updatedServiceClassifier.getAccessList());
+                    Acl accessList = SfcProviderAclAPI.readAccessList(updatedServiceClassifier.getAccessList());
 
                     Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
                             updatedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());

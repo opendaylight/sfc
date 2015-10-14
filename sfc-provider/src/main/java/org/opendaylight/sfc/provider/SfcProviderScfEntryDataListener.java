@@ -66,7 +66,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                 if ((createdServiceFunctionClassifier.getAccessList() != null) && !createdServiceFunctionClassifier.getAccessList().isEmpty()) {
                     //call executor to write <ACL, Classifier> entry into ACL operational store
-                    SfcProviderAclAPI.addClassifierToAccessListStateExecutor(createdServiceFunctionClassifier.getAccessList(),
+                    SfcProviderAclAPI.addClassifierToAccessListState(createdServiceFunctionClassifier.getAccessList(),
                             createdServiceFunctionClassifier.getName());
                 }
             }
@@ -86,13 +86,13 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                     if (!updatedServiceFunctionClassifier.getAccessList().isEmpty()) {
                         //call executor to write <ACL, Classifier> entry into ACL operational store
-                        SfcProviderAclAPI.addClassifierToAccessListStateExecutor(updatedServiceFunctionClassifier.getAccessList(),
+                        SfcProviderAclAPI.addClassifierToAccessListState(updatedServiceFunctionClassifier.getAccessList(),
                                 updatedServiceFunctionClassifier.getName());
                     }
                     // if Access List is empty string, Classifier should be not more linked to the origin Access List
                     else {
                         //call executor to delete <ACL, Classifier> entry from ACL operational store
-                        SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(originalServiceFunctionClassifier.getAccessList(),
+                        SfcProviderAclAPI.deleteClassifierFromAccessListState(originalServiceFunctionClassifier.getAccessList(),
                                 originalServiceFunctionClassifier.getName());
                     }
                 }
@@ -108,7 +108,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
 
                 if ((deletedServiceFunctionClassifier.getAccessList() != null) && !deletedServiceFunctionClassifier.getAccessList().isEmpty()) {
                     //call executor to delete <ACL, Classifier> entry from ACL operational store
-                    SfcProviderAclAPI.deleteClassifierFromAccessListStateExecutor(deletedServiceFunctionClassifier.getAccessList(),
+                    SfcProviderAclAPI.deleteClassifierFromAccessListState(deletedServiceFunctionClassifier.getAccessList(),
                             deletedServiceFunctionClassifier.getName());
                 }
             }

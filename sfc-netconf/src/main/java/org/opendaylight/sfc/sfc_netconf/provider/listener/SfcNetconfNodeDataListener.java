@@ -17,16 +17,30 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider.listener;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI;
+import org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
@@ -39,25 +53,11 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
-import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
@@ -193,7 +193,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                                     break;
                                 }
                                 ServiceFunction sf = SfcNetconfServiceFunctionAPI.buildServiceFunctionFromNetconf(nodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
-                                if (SfcProviderServiceFunctionAPI.putServiceFunctionExecutor(sf)) {
+                                if (SfcProviderServiceFunctionAPI.putServiceFunction(sf)) {
                                     LOG.info("Successfully created SF from Netconf node {}", nodeName);
                                     SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, nodeName);
                                     MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
@@ -210,7 +210,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                                 thread.start();
                             } else { //SFF
                                 ServiceFunctionForwarder sff = SfcNetconfServiceForwarderAPI.buildServiceForwarderFromNetconf(nodeName, nnode);
-                                if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarderExecutor(sff)) {
+                                if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff)) {
                                     LOG.info("Successfully created SFF from Netconf node {}", nodeName);
                                 } else {
                                     LOG.error("Failed to create SFF from Netconf node {}", nodeName);
@@ -223,7 +223,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                             // Note that device could jump back and forth between connected and connecting for various reasons:
                             // disconnect from remote device, network connectivity loss etc.
                             LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
-                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(nodeName)) {
                                 LOG.info("SFF {} deleted successfully", nodeName);
                             } else {
                                 LOG.error("Failed to delete SFF {}", nodeName);
@@ -233,7 +233,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                         case UnableToConnect: {
                             // Its over for the device, no more reconnects
                             LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
-                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderExecutor(nodeName)) {
+                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(nodeName)) {
                                 LOG.info("SFF {} deleted successfully", nodeName);
                             } else {
                                 LOG.error("Failed to delete SFF {}", nodeName);

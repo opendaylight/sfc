@@ -58,11 +58,8 @@ public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
             if( entry.getValue() instanceof  ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
 
-                Object[] serviceTypeObj = { createdServiceFunction };
-                Class[] serviceTypeClass = { ServiceFunction.class };
-
                 if (lispUpdater.containsLispAddress(createdServiceFunction)) {
-                    OpendaylightSfc.getOpendaylightSfcObj().getExecutor().submit(SfcProviderServiceLispAPI.getUpdateServiceFunction(serviceTypeObj, serviceTypeClass));
+                    SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
                 }
 
             }

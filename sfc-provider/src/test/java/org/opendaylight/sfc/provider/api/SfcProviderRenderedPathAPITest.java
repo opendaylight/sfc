@@ -8,6 +8,14 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
@@ -18,21 +26,23 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.*;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 import org.powermock.reflect.Whitebox;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
 
 public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePathAPITest {
 
@@ -56,10 +66,10 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     }
 
     @Test
-    public void testReadRenderedServicePathFirstHop() throws ExecutionException, InterruptedException {
+    public void testReadRenderedServicePathFirstHop() {
         super.init();
 
-        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
@@ -95,12 +105,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
         assertEquals("Must be equal", lastHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[SFF_LOCATOR_IP.length - 1])));
         assertEquals("Must be equal", lastHop.getPort(), new PortNumber(PORT[PORT.length - 1]));
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(renderedServicePath.getName());
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
+        SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
+        SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
     }
 
     @Test
-    public void testReadRspFirstHopBySftList() throws ExecutionException, InterruptedException {
+    public void testReadRspFirstHopBySftList() {
         init();
 
         List<Class<? extends ServiceFunctionTypeIdentity>> sftList = new ArrayList<>();
@@ -123,15 +133,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     }
 
     @Test
-    public void testCreateRenderedServicePathHopList() throws ExecutionException, InterruptedException {
+    public void testCreateRenderedServicePathHopList() {
         init();
 
         final String[] tmpSfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1"};
         List<String> sfNameList = Arrays.asList(tmpSfNames);
         final int startingIndex = 255;
 
-        Object[] parameters = {};
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(parameters, null);
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
 
         List<RenderedServicePathHop> rspHopList;
 
@@ -157,11 +166,11 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     }
 
     @Test
-    public void testCreateRenderedServicePathAndState() throws ExecutionException, InterruptedException {
+    public void testCreateRenderedServicePathAndState() {
         init();
 
         ServiceFunctionPath serviceFunctionPath =
-                SfcProviderServicePathAPI.readServiceFunctionPathExecutor(SFP_NAME);
+                SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
@@ -171,16 +180,16 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
                 serviceFunctionPath, createRenderedPathInputBuilder.build());
 
         //check if SFF oper contains RSP
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffStateExecutor(SFF_NAMES[1]);
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(SFF_NAMES[1]);
         assertNotNull("Must be not null", sffServicePathList);
         assertEquals(sffServicePathList.get(0).getName(), RSP_NAME);
 
         //check if SF oper contains RSP
-        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionStateExecutor("unittest-fw-1");
+        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState("unittest-fw-1");
         assertEquals(sfServicePathList.get(0).getName(), RSP_NAME);
 
         //check if SFP oper contains RSP
-        List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathStateExecutor(SFP_NAME);
+        List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName(), RSP_NAME);
     }
 
@@ -192,7 +201,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         RenderedServicePath testRenderedServicePath;
 
         serviceFunctionPathBuilder.setServiceChainName(null);
@@ -226,7 +235,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath;
 
@@ -247,7 +256,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath;
 
@@ -271,7 +280,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI(params, null);
+        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath;
 

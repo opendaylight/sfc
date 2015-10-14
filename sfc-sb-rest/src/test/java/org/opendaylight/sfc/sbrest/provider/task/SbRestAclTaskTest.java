@@ -72,15 +72,15 @@ public class SbRestAclTaskTest {
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListStateExecutor", String.class))
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class))
             .toReturn(this.buildAccessListState());
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifierExecutor",
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifier",
                 String.class))
             .toReturn(this.buildServiceFunctionClassifier());
 
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class,
-                "readServiceFunctionForwarderExecutor", String.class))
+                "readServiceFunctionForwarder", String.class))
             .toReturn(this.buildServiceFunctionForwarder());
     }
 
@@ -105,7 +105,7 @@ public class SbRestAclTaskTest {
     @Test
     public void testSbRestAclTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
+        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
             .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);

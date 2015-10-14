@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_c983f854",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T15:47:13Z",
+      "side": 1,
+      "message": "why you want to have \"name\" in this name? Name is in this case just key on path for sff\n\nyou do not have name sff-data-plane-locator-name-ref so it is not consistent",
+      "range": {
+        "startLine": 67,
+        "startChar": 12,
+        "endLine": 67,
+        "endChar": 24
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4997e890",
+        "filename": "sfc-model/src/main/yang/service-function-mapping.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T15:47:13Z",
+      "side": 1,
+      "message": "redundand information again",
+      "range": {
+        "startLine": 34,
+        "startChar": 10,
+        "endLine": 39,
+        "endChar": 11
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6992e4a0",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-14T15:47:13Z",
+      "side": 1,
+      "message": "why?",
+      "range": {
+        "startLine": 70,
+        "startChar": 13,
+        "endLine": 70,
+        "endChar": 17
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

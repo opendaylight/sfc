@@ -4,13 +4,11 @@ module service-function-mapping {
 
   prefix sfc-sf-map;
 
-  import sfc-common {
-      prefix sfc-common;
-      }
-  import service-locator {
-      prefix sfc-sl;
-      revision-date 2014-07-01;
-      }
+  import sfc-common {prefix sfc-common;}
+  import service-function-type {prefix sfc-sft;}
+  import service-locator {prefix sfc-sl;}
+  import service-function {prefix sfc-sf;}
+  import service-function-forwarder {prefix sfc-sff;}
 
   organization "Ericsson Inc.";
   contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
@@ -28,6 +26,19 @@ module service-function-mapping {
   revision 2014-07-01 {
     description
     "First version.";
+  }
+
+  container sff-dpl-by-sf-dpl-mappings {
+      description "A mapping of SF-DPL to SFF-DPL.";
+      list sff-dpl-by-sf-dpl-mapping {
+          key "sf-dpl";
+          leaf sf-dpl {
+              type sfc-common:sf-data-plane-locator-name;
+          }
+          leaf sff-dpl {
+              type sfc-common:sff-data-plane-locator-name;
+          }
+      }
   }
 
   container service-function-mapping {

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_c9d1b858",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-14T16:10:50Z",
+      "side": 1,
+      "message": "Reinaldo has made it clear that the name should be a ref so that if the structure changes the thing referencing the name doesn\u0027t have to. I added sff-name cos sf had a name and so we had a mix of stuff \"typed\" and stuff not typed.",
+      "parentUuid": "1a76adc5_c983f854",
+      "range": {
+        "startLine": 67,
+        "startChar": 12,
+        "endLine": 67,
+        "endChar": 24
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_4997e890",
         "filename": "sfc-model/src/main/yang/service-function-mapping.yang",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_e9d4b448",
+        "filename": "sfc-model/src/main/yang/service-function-mapping.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-14T16:10:50Z",
+      "side": 1,
+      "message": "Well, technically NAME is the key to the SF DPL list, not the DPL itself.... but ok, I can remove it. But this could result in a double lookup wher the list of SFs are not indexed by DPL....",
+      "parentUuid": "1a76adc5_4997e890",
+      "range": {
+        "startLine": 34,
+        "startChar": 10,
+        "endLine": 39,
+        "endChar": 11
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_6992e4a0",
         "filename": "sfc-model/src/main/yang/service-function.yang",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2015-10-14T15:47:13Z",
       "side": 1,
       "message": "why?",
+      "range": {
+        "startLine": 70,
+        "startChar": 13,
+        "endLine": 70,
+        "endChar": 17
+      },
+      "revId": "9595573d0fba6d41428bbecec9b02abe92391be7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_89cbc0a4",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-14T16:10:50Z",
+      "side": 1,
+      "message": "See prior comment about Reinaldo wanting this. See line 49 of Base PatchSet",
+      "parentUuid": "1a76adc5_6992e4a0",
       "range": {
         "startLine": 70,
         "startChar": 13,

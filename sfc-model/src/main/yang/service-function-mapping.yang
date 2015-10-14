@@ -6,6 +6,8 @@ module service-function-mapping {
 
   import service-function-type {prefix sfc-sft;}
   import service-locator {prefix sfc-sl;}
+  import service-function {prefix sfc-sf;}
+  import service-function-forwarder {prefix sfc-sff;}
 
   organization "Ericsson Inc.";
   contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
@@ -23,6 +25,27 @@ module service-function-mapping {
   revision 2014-07-01 {
     description
     "First version.";
+  }
+
+  container service-function-dpl-to-forwarder-mappings {
+      description "A mapping of SF-DPL to SFF-DPL.";
+      list service-function-dpl-to-forwarder-mapping {
+          key "sf-dpl";
+          leaf sf-dpl {
+              type sfc-sf:service-function--locator-ref;
+          }
+          leaf sf-dpl-name {
+              type sfc-sf:service-function-dpl-name;
+          }
+          leaf sff-dpl {
+              type sfc-sff:service-function-forwarder-locator-ref;
+          }
+          leaf sff-dpl-name {
+              type sfc-sff:service-function-forwarder-dpl-name;
+          }
+      }
+      //SF-DPL
+      //
   }
 
   container service-function-mapping {

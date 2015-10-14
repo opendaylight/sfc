@@ -45,6 +45,22 @@ module service-function {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
+  typedef service-function-dpl-name {
+      type string;
+      description
+                "A unique name for SF data-plane-locator";
+  }
+
+  typedef service-function--locator-ref {
+      type leafref {
+        path "/sfc-sf:service-functions/"
+            + "sfc-sf:service-function/"
+            + "sfc-sf:sf-data-plane-locator/sfc-sf:sf-dpl-name";
+      }
+      description
+        "This type is used by data models that need to reference
+         the SFF data plane locator.";
+    }
 
   typedef service-function-ref {
     type leafref {
@@ -97,14 +113,11 @@ module service-function {
     }
 
     list sf-data-plane-locator {
-      key "name";
+      key "sf-dpl-name";
       description
         "A network data-plane locator";
-      leaf name {
-        type string;
-        description
-          "A unique string that represents this
-           data-plane-locator";
+      leaf sf-dpl-name {
+        type service-function-dpl-name;
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {

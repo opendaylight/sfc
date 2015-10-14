@@ -76,13 +76,18 @@ module service-function-forwarder {
     type leafref {
       path "/sfc-sff:service-function-forwarders/"
           + "sfc-sff:service-function-forwarder/"
-          + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
+          + "sfc-sff:sff-data-plane-locator/sfc-sff:sff-dpl-name";
     }
     description
       "This type is used by data models that need to reference
        the SFF data plane locator.";
   }
 
+  typedef service-function-forwarder-dpl-name {
+      type string;
+      description
+                "A unique name for SFF data-plane-locator";
+  }
 
   container service-function-forwarders {
     description
@@ -120,15 +125,12 @@ module service-function-forwarder {
       }
 
       list sff-data-plane-locator {
-        key "name";
-        description
-          "A list of all data-plane-locators of this SFF.";
-        leaf name {
-          type string;
+          key "sff-dpl-name";
           description
-            "A unique string that represents this
-             data-plane-locator";
-        }
+            "A network data-plane locator";
+          leaf sff-dpl-name {
+            type service-function-forwarder-dpl-name;
+          }
 
         container data-plane-locator {
           description

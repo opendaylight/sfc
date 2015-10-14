@@ -1,4 +1,4 @@
-module rendered-service-path {
+`module rendered-service-path {
 
   namespace "urn:cisco:params:xml:ns:yang:sfc-rsp";
 
@@ -123,12 +123,12 @@ module rendered-service-path {
             "Service Function group name";
         }
         leaf service-function-forwarder {
-          type string;
+          type sfc-sff:sff-name;
           description
             "Service Function Forwarder name";
         }
         leaf service-function-forwarder-locator {
-          type sfc-sff:service-function-forwarder-locator-ref;
+          type sfc-sff:sff-data-plane-locator-ref;
           description
             "The name of the SFF data plane locator";
         }

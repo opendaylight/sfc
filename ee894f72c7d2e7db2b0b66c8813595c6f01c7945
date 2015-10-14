@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_7822b002",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3280
+      },
+      "writtenOn": "2015-10-14T05:27:30Z",
+      "side": 1,
+      "message": "is this vxlan or vxlan-gpe?",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_18213cfb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 3280
+      },
+      "writtenOn": "2015-10-14T05:27:30Z",
+      "side": 1,
+      "message": "is this supposed to be 4790?",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_b81048a9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3280
+      },
+      "writtenOn": "2015-10-14T05:27:30Z",
+      "side": 1,
+      "message": "Can you provide the code reference for this. I couldnt see this in the ovs-nsh linux kernel datapath code.",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -278,6 +278,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         createRenderedPathInputBuilder.setName(null);
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setTransportType(null);
+        serviceFunctionPathBuilder.setContextMetadata("CMD");
+        serviceFunctionPathBuilder.setVariableMetadata("VMD");
 
         testRenderedServicePath = sfcProviderRenderedPathAPI
                 .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
@@ -285,5 +287,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         assertNotNull("Must not be null", testRenderedServicePath);
         assertEquals("Must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);
         assertEquals("Must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
+        assertEquals("Must be equal", testRenderedServicePath.getContextMetadata(), "CMD");
+        assertEquals("Must be equal", testRenderedServicePath.getVariableMetadata(), "VMD");
     }
 }

@@ -575,6 +575,9 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
         renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
+        renderedServicePathBuilder.setContextMetadata(serviceFunctionPath.getContextMetadata());
+        renderedServicePathBuilder.setVariableMetadata(serviceFunctionPath.getVariableMetadata());
+
         if (serviceFunctionPath.getTransportType() == null) {
             // TODO this is a temporary workaround to a YANG problem
             // Even though the SFP.transportType is defined with a default, if its not

@@ -52,7 +52,7 @@ public class SfcProviderServiceFunctionMetadataAPI {
         return ret;
     }
 
-    protected static ContextMetadata readContextMetadata(String mdName) {
+    public static ContextMetadata readContextMetadata(String mdName) {
         printTraceStart(LOG);
         ContextMetadata md;
         InstanceIdentifier<ContextMetadata> mdIID;

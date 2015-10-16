@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2015 Intel Ltd. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->		
+<features name="odl-sfc-scf-openflow-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${feature.openflowplugin.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.sfc/features-sfc/${project.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.sfc/features-sfc-ovs/${project.version}/xml/features</repository>
+    <feature name='odl-sfc-scf-openflow' version='${project.version}' description='OpenDaylight :: sfc-scf-openflow'>
+          <!--
+            Necessary TODO:
+            List all of the user consumable features you define in this feature file here.
+            Generally you would *not* list individual bundles here, but only features defined in *this* file.
+            It is useful to list them in the same order they occur in the file.
+
+            Examples:
+            <feature version='${project.version}'>odl-sfc-provider</feature>
+            <feature version='${project.version}'>odl-sfc-model</feature>
+        -->
+
+
+        <configfile finalname="etc/opendaylight/karaf/sfc-scf-openflow-initial.xml">mvn:org.opendaylight.sfc/sfc-scf-openflow/${project.version}/xml/config</configfile>
+        <feature version='${project.version}'>odl-sfc-provider</feature>
+        <feature version="${project.version}">odl-sfc-ovs</feature>
+        <!--<feature version='${project.version}'>odl-sfc-model</feature>-->
+        <!--<feature version="${mdsal.version}">odl-mdsal-broker</feature>-->
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-all</feature>
+        <feature version='${feature.openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-util/${project.version}</bundle>
+    </feature>
+    <!-- Optional TODO: Remove TODO Comments -->
+</features>
+

@@ -122,6 +122,24 @@
       "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_595cf425",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3280
+      },
+      "writtenOn": "2015-10-16T15:59:02Z",
+      "side": 1,
+      "message": "From the patch description text, it appears that the support for no-decap of VXLAN+NSH is supported only in the DPDK dataplane. Please correct me if I have misread the patch:\n\"\nvxlan-gpe-nsh: decap and encap in kernel dataplane and control plane.\n  vxlan-gpe-nsh: decap and encap in DPDK-netdev dataplane and control\n    plane.\n  vxlan-gpe-nsh: tun_nodecap mode in DPDk-netdev dataplane.\"",
+      "parentUuid": "fad0f9df_8c79bb95",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

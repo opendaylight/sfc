@@ -160,6 +160,7 @@
         <module>sfc-sb-rest</module>
         <module>sfclisp</module>
         <module>sfcofl2</module>
+        <module>sfc-scf-openflow</module>
         <module>sfc-ovs</module>
         <module>sfc-netconf</module>
         <module>sfc-config</module>
@@ -167,6 +168,7 @@
         <module>features-sfc-sb-rest</module>
         <module>features-sfclisp</module>
         <module>features-sfcofl2</module>
+        <module>features-sfc-scf-openflow</module>
         <module>features-sfc-ovs</module>
         <module>features-sfc-netconf</module>
         <module>features</module>

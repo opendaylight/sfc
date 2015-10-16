@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.openflow;
+package org.opendaylight.sfc.util.openflow;
 
 import java.util.Random;
 
@@ -27,13 +27,13 @@ import static junitparams.JUnitParamsRunner.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 //import static org.mockito.Mockito.mock;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionOutPort;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionPopVlan;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionPushVlan;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionSetDlDst;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionSetDlSrc;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.createActionSetVlanId;
-import static org.opendaylight.sfc.l2renderer.openflow.SfcOpenflowUtils.addMatchVlan;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionOutPort;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionPopVlan;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionPushVlan;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionSetDlDst;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionSetDlSrc;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionSetVlanId;
+import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.addMatchVlan;
 
 
 @RunWith(JUnitParamsRunner.class)

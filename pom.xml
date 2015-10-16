@@ -159,6 +159,7 @@
         <module>sfc-ui</module>
         <module>sfc-sb-rest</module>
         <module>sfclisp</module>
+        <module>sfc-util</module>
         <module>sfcofl2</module>
         <module>sfc-ovs</module>
         <module>sfc-netconf</module>

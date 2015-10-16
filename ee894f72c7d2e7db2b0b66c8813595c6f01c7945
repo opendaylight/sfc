@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fad0f9df_41407c56",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-10-16T06:55:43Z",
+      "side": 1,
+      "message": "We still use type vxlan. But we use port 4790 to indicate it\u0027s vxlangpe",
+      "parentUuid": "1a76adc5_7822b002",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_18213cfb",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "fad0f9df_e12410c8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-10-16T06:55:43Z",
+      "side": 1,
+      "message": "My bad, copy-paste issue. I will update it then.",
+      "parentUuid": "1a76adc5_18213cfb",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_b81048a9",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2015-10-14T05:27:30Z",
       "side": 1,
       "message": "Can you provide the code reference for this. I couldnt see this in the ovs-nsh linux kernel datapath code.",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_6c26d7bc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-10-16T06:55:43Z",
+      "side": 1,
+      "message": "Mengke Liu sent out the patch to Openvswitch\u0027s maillist. If you want to try this patch, you need to get NSH from the mail list first.",
+      "parentUuid": "1a76adc5_b81048a9",
       "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -70,7 +70,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     }
 
     @Test
-    public void testCreateReadServiceFunction() throws ExecutionException, InterruptedException {
+    public void testCreateReadServiceFunction() {
 
         String name = "unittest-fw-1";
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
@@ -94,17 +94,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
                 .setIpMgmtAddress(ipMgmtAddress)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
 
-        Object[] parameters = {sfBuilder.build()};
-        Class[] parameterTypes = {ServiceFunction.class};
-
-        executor.submit(SfcProviderServiceFunctionAPI
-                .getPut(parameters, parameterTypes)).get();
-
-        Object[] parameters2 = {name};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunction sf2 = (ServiceFunction) result;
+        SfcProviderServiceFunctionAPI.putServiceFunction(sfBuilder.build());
+        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(name);
 
         assertNotNull("Must be not null", sf2);
         assertEquals("Must be equal", sf2.getIpMgmtAddress(), ipMgmtAddress);
@@ -113,7 +104,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     }
 
     @Test
-    public void testDeleteServiceFunction() throws ExecutionException, InterruptedException {
+    public void testDeleteServiceFunction() {
 
         String name = "unittest-fw-1";
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
@@ -137,26 +128,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
                 .setIpMgmtAddress(ipMgmtAddress)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
 
-        Object[] parameters = {sfBuilder.build()};
-        Class[] parameterTypes = {ServiceFunction.class};
+        SfcProviderServiceFunctionAPI.putServiceFunction(sfBuilder.build());
+        assertNotNull("Must be not null", SfcProviderServiceFunctionAPI.readServiceFunction(name));
 
-        executor.submit(SfcProviderServiceFunctionAPI
-                .getPut(parameters, parameterTypes)).get();
-
-        Object[] parameters2 = {name};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parameters2, parameterTypes2)).get();
-
-        assertNotNull("Must be not null", result);
-        assertTrue("Must be ServiceFunction", result instanceof ServiceFunction);
-
-        executor.submit(SfcProviderServiceFunctionAPI
-                .getDelete(parameters2, parameterTypes2)).get();
-        result = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parameters2, parameterTypes2)).get();
-
-        assertNull("Must be null", result);
+        SfcProviderServiceFunctionAPI.deleteServiceFunction(name);
+        assertNull("Must be null", SfcProviderServiceFunctionAPI.readServiceFunction(name));
     }
 
     @Test
@@ -201,15 +177,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(list);
 
-        executor.submit(SfcProviderServiceFunctionAPI.getPutAll
-                (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
-
-
-        Object[] parameters2 = {sfName[1]};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunction sf2 = (ServiceFunction) result;
+        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
+        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(sfName[1]);
 
         assertNotNull("Must be not null", sf2);
         assertEquals("Must be equal", sf2.getIpMgmtAddress(), ipMgmtAddress[1]);
@@ -232,7 +201,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         assertTrue("Must be true", transactionSuccessful);
 
         //read service function with its name and return it
-        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(SF_NAME);
+        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(SF_NAME);
 
         assertNotNull("Must be not null", serviceFunction);
         assertEquals("Must be equal", serviceFunction.getIpMgmtAddress().getIpv4Address().getValue(), IP_MGMT_ADDRESS[1]);
@@ -257,14 +226,14 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         //read service function state with its name
         //list of SfServicePath will be returned
-        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionStateExecutor(SF_STATE_NAME);
+        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(SF_STATE_NAME);
 
         assertNotNull("Must not be null", sfServicePathList);
         assertEquals("Must be equal", sfServicePathList.get(0).getName(), SF_SERVICE_PATH);
 
         //read service function state with its name
         //list of Strings representing paths will be returned
-        List<String> rspList = SfcProviderServiceFunctionAPI.readServiceFunctionStateAsStringListExecutor(SF_STATE_NAME);
+        List<String> rspList = SfcProviderServiceFunctionAPI.readServiceFunctionStateAsStringList(SF_STATE_NAME);
 
         assertNotNull("Must not be null", rspList);
         assertEquals("Must be equal", rspList.get(0), SF_SERVICE_PATH);
@@ -288,7 +257,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         assertTrue("Must be true", transactionSuccessful);
 
         //read all service functions from data store
-        ServiceFunctions serviceFunctionsResult = SfcProviderServiceFunctionAPI.readAllServiceFunctionsExecutor();
+        ServiceFunctions serviceFunctionsResult = SfcProviderServiceFunctionAPI.readAllServiceFunctions();
 
         assertNotNull("Must not be null", serviceFunctionsResult);
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getName(), SF_NAME);
@@ -319,7 +288,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         assertTrue("Must be true", transactionSuccessful);
 
         //add this path to service function, a name of service path is used
-        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionStateExecutor(RSP_NAME + 1);
+        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(RSP_NAME + 1);
 
         assertTrue("Must be true", result);
 
@@ -327,7 +296,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME + 2, SF_NAME + 2, false);
 
         //add this path to service function, an object of service path is used
-        result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionStateExecutor(renderedServicePath);
+        result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath);
 
         assertTrue("Must be true", result);
 
@@ -336,11 +305,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         serviceFunctionPathBuilder.setName(RSP_NAME + 1);
 
         //delete both paths; first through created path object, second through path name
-        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(serviceFunctionPathBuilder.build());
+        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(serviceFunctionPathBuilder.build());
 
         assertTrue("Must be true", result);
 
-        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionStateExecutor(RSP_NAME + 2);
+        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(RSP_NAME + 2);
 
         assertTrue("Must be true", result);
     }

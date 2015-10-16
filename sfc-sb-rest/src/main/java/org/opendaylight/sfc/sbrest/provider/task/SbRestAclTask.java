@@ -70,7 +70,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
 
         //rest uri list should be created from Classifier SFFs. Classifier will be taken from ACL operational data store <ACL, Classifier>
         //this prevents from looping through all classifiers and looking from ACL.
-        AccessListState accessListState = SfcProviderAclAPI.readAccessListStateExecutor(accessListName);
+        AccessListState accessListState = SfcProviderAclAPI.readAccessListState(accessListName);
         if (accessListState != null) {
             List<AclServiceFunctionClassifier> serviceClassifierList = accessListState.getAclServiceFunctionClassifier();
 
@@ -78,7 +78,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
             if (serviceClassifierList != null) {
                 for (AclServiceFunctionClassifier aclServiceClassifier : serviceClassifierList) {
                     ServiceFunctionClassifier serviceClassifier =
-                            SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(aclServiceClassifier.getName());
+                            SfcProviderServiceClassifierAPI.readServiceClassifier(aclServiceClassifier.getName());
 
                     if (serviceClassifier != null) {
                         List<SclServiceFunctionForwarder> sclServiceForwarderList = serviceClassifier.getSclServiceFunctionForwarder();
@@ -108,7 +108,7 @@ public class SbRestAclTask extends SbRestAbstractTask {
         if (sclServiceForwarderList != null && accessListName != null && !accessListName.isEmpty()) {
             for (SclServiceFunctionForwarder sclServiceForwarder : sclServiceForwarderList) {
                 ServiceFunctionForwarder serviceForwarder =
-                        SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sclServiceForwarder.getName());
+                        SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sclServiceForwarder.getName());
 
                 if (serviceForwarder != null && serviceForwarder.getRestUri() != null &&
                         !serviceForwarder.getRestUri().getValue().isEmpty()) {

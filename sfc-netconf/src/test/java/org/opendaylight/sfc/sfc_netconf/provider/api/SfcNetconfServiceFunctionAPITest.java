@@ -8,23 +8,29 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider.api;
 
-import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
@@ -49,16 +55,8 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-
-import static org.junit.Assert.*;
-
 public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
 
-    private ExecutorService executor;
     private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final String IP_MGMT_ADDRESS = "192.168.1.2";
     private static final int DP_PORT = 6633;
@@ -66,17 +64,12 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     private static final String SF_STATE_NAME = "dummySFS";
 
     @Before
-    public void before() throws InterruptedException {
+    public void before() {
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
-        executor = opendaylightSfc.getExecutor();
     }
 
-    @After
-    public void after() throws InterruptedException {
-    }
-
-    public void testCreateReadServiceFunctionDescription() throws ExecutionException, InterruptedException {
+    public void testCreateReadServiceFunctionDescription() {
         ServiceFunctionStateKey serviceFunctionStateKey =
                 new ServiceFunctionStateKey("unittest-fw-1");
         SfcSfDescMon sfDescMon;
@@ -123,7 +116,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
 
         SfcSfDescMon readSfcSfDescMon =
-                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor("unittest-fw-1");
+                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor("unittest-fw-1");
         Long numPorts = 1L;
         assertNotNull("Must be not null", readSfcSfDescMon);
         assertEquals("Must be equal", cap, readSfcSfDescMon.getDescriptionInfo().getCapabilities());
@@ -131,7 +124,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     }
 
     @Test
-    public void testCreateReadServiceFunctionMonitor() throws ExecutionException, InterruptedException {
+    public void testCreateReadServiceFunctionMonitor() {
         SfcSfDescMon sfDescMon;
 
         ServiceFunctionStateKey serviceFunctionStateKey =
@@ -179,7 +172,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
                 .addAugmentation(ServiceFunctionState1.class,sfState1).build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         SfcSfDescMon readSfcSfDescMon =
-                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor("unittest-fw-2");
+                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor("unittest-fw-2");
         assertNotNull("Must be not null", readSfcSfDescMon);
         assertEquals("Must be equal", resrcUtil, readSfcSfDescMon.getMonitoringInfo().getResourceUtilization());
         assertTrue("Must be true", readSfcSfDescMon.getMonitoringInfo().isLiveness());

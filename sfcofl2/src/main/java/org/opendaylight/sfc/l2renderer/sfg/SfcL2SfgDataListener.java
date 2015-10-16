@@ -107,7 +107,7 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
     private void buildGroup(ServiceFunctionGroup sfg, boolean isAdd) {
         try {
             List<SfcServiceFunction> sfs = sfg.getSfcServiceFunction();
-            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfs.get(0).getName());
+            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfs.get(0).getName());
             // assuming all SF's have the same SFF
             // should use the ovs id
             String sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
@@ -124,11 +124,11 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
 
             List<GroupBucketInfo> bucketsInfo = new ArrayList<GroupBucketInfo>();
 
-            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
+            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
 
             int index = 0;
             for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
-                sf = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(sfcServiceFunction.getName());
+                sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfcServiceFunction.getName());
                 ServiceFunctionDictionary sffSfDict =
                         sfcL2ProviderUtils.getSffSfDictionary(sff, sfcServiceFunction.getName());
                 String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sffSfDict);
@@ -187,7 +187,7 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
     }
 
     private String getSffOpenFlowNodeName(final String sffName) {
-        ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(sffName);
+        ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
         return sfcL2ProviderUtils.getSffOpenFlowNodeName(sff);
     }
 }

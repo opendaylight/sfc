@@ -53,11 +53,11 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
                 .setContextHeader4(4L);
 
         //write service function metadata
-        boolean transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.putContextMetadataExecutor(contextMetadataBuilder.build());
+        boolean transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.putContextMetadata(contextMetadataBuilder.build());
         assertTrue("Must be true", transactionSuccessful);
 
         //read service function metadata
-        ContextMetadata contextMetadata =  SfcProviderServiceFunctionMetadataAPI.readContextMetadataExecutor("CMD");
+        ContextMetadata contextMetadata =  SfcProviderServiceFunctionMetadataAPI.readContextMetadata("CMD");
         assertNotNull("Must not be null", contextMetadata);
         assertEquals("Must be equal", contextMetadata.getName(), "CMD");
         assertEquals("Must be equal", contextMetadata.getContextHeader1(), (Object)1L);
@@ -66,7 +66,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         assertEquals("Must be equal", contextMetadata.getContextHeader4(), (Object)4L);
 
         //remove service function metadata
-        transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.deleteContextMetadataExecutor("CMD");
+        transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.deleteContextMetadata("CMD");
         assertTrue("Must be true", transactionSuccessful);
     }
 
@@ -89,11 +89,11 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
                 .setTlvMetadata(tlvList);
 
         //write service function metadata
-        boolean transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.putVariableMetadataExecutor(variableMetadataBuilder.build());
+        boolean transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.putVariableMetadata(variableMetadataBuilder.build());
         assertTrue("Must be true", transactionSuccessful);
 
         //read service function metadata
-        VariableMetadata variableMetadata =  SfcProviderServiceFunctionMetadataAPI.readVariableMetadataExecutor("VMD");
+        VariableMetadata variableMetadata =  SfcProviderServiceFunctionMetadataAPI.readVariableMetadata("VMD");
         assertNotNull("Must not be null", variableMetadata);
         assertNotNull("Must not be null", variableMetadata.getTlvMetadata());
         assertEquals("Must be equal", variableMetadata.getTlvMetadata().size(), 1);
@@ -104,7 +104,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvData(), "123456");
 
         //remove service function metadata
-        transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.deleteVariableMetadataExecutor("VMD");
+        transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.deleteVariableMetadata("VMD");
         assertTrue("Must be true", transactionSuccessful);
     }
 }

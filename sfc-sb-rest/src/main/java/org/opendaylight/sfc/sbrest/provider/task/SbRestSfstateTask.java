@@ -39,8 +39,8 @@ public class SbRestSfstateTask extends SbRestAbstractTask {
 
         this.restUriList = new ArrayList<>();
 
-        if(SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(obj.getName())!=null) {
-            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(obj.getName());
+        if(SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName())!=null) {
+            ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName());
             if (serviceFunction.getRestUri() != null) {
                 String restUri = serviceFunction.getRestUri().getValue() + SFSTATE_REST_URI + obj.getName();
                 this.restUriList.add(restUri);

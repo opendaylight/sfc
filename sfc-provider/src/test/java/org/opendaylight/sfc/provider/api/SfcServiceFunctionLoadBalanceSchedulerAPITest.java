@@ -9,10 +9,15 @@
 package org.opendaylight.sfc.provider.api;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -49,13 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
@@ -67,7 +65,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
     private SfcServiceFunctionSchedulerAPI scheduler;
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
+    public void before() {
         setOdlSfc();
 
         scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
@@ -138,13 +136,11 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        executor.submit(SfcProviderServiceFunctionAPI.getPutAll
-                (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
+        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
         //Wait a while in order to ensure they are really created
-        Thread.sleep(1000);
 
         for (ServiceFunction serviceFunction : sfList) {
-            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
+            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
         }
 
         /* Ensure all the ServiceFunctions in sfList are indeed created */
@@ -152,16 +148,11 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             maxTries = 10;
             ServiceFunction sf2 = null;
             while (maxTries > 0) {
-                Object[] parameters2 = {serviceFunction.getName()};
-                Class[] parameterTypes2 = {String.class};
-                Object result = executor.submit(SfcProviderServiceFunctionAPI
-                        .getRead(parameters2, parameterTypes2)).get();
-                sf2 = (ServiceFunction) result;
+                sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunction.getName());
                 maxTries--;
                 if (sf2 != null) {
                     break;
                 }
-                Thread.sleep(1000);
             }
             LOG.debug("SfcServiceFunctionLoadBalanceSchedulerAPITest: getRead ServiceFunction {} {} times: {}", serviceFunction.getName(), 10 - maxTries, (sf2 == null) ? "Failed" : "Successful");
         }
@@ -230,17 +221,9 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
     }
 
     @Test
-    public void testServiceFunctionLoadBalanceScheduler() throws ExecutionException, InterruptedException {
-        Object[] sfcParameters = {sfChain};
-        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(sfcParameters, sfcParameterTypes)).get();
-
-        Object[] parameters2 = {sfChain.getName()};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceChainAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
+    public void testServiceFunctionLoadBalanceScheduler() {
+        SfcProviderServiceChainAPI.putServiceFunctionChain(sfChain);
+        ServiceFunctionChain sfc2 = SfcProviderServiceChainAPI.readServiceFunctionChain(sfChain.getName());
 
         assertNotNull("Must be not null", sfc2);
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfChain.getSfcServiceFunction());
@@ -248,27 +231,27 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         ServiceFunctionType serviceFunctionType;
         List<SftServiceFunctionName> sftServiceFunctionNameList;
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
         int serviceIndex = 255;
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
         List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
         List<SftServiceFunctionName> sftDpiList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
@@ -276,7 +259,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         for (int i = 0; i < 3; i++) {
             String sfFWName = sftFirewallList.get(i).getName();
-            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfFWName)
+            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfFWName)
                     .getMonitoringInfo()
                     .getResourceUtilization()
                     .getCPUUtilization();
@@ -285,7 +268,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         for (int i = 0; i < 3; i++) {
             String sfDPIName = sftDpiList.get(i).getName();
-            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfDPIName)
+            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfDPIName)
                     .getMonitoringInfo()
                     .getResourceUtilization()
                     .getCPUUtilization();
@@ -294,7 +277,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         for (int i = 0; i < 3; i++) {
             String sfNATName = sftNapt44List.get(i).getName();
-            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitorExecutor(sfNATName)
+            java.lang.Long cPUUtilization = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfNATName)
                     .getMonitoringInfo()
                     .getResourceUtilization()
                     .getCPUUtilization();

@@ -8,6 +8,14 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
@@ -17,7 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
@@ -28,13 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.*;
 
 /**
  * Tests for dictionary operations on SFFs
@@ -60,7 +66,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
     }
 
     @Test
-    public void testUpdateDictionary() throws ExecutionException, InterruptedException {
+    public void testUpdateDictionary() {
 
         String name = sffName[0];
 
@@ -108,18 +114,8 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
                         .setServiceNode(null) // for consistency only; we are going to get rid of ServiceNodes in the future
                         .build();
 
-        Object[] parameters = {sff};
-        Class[] parameterTypes = {ServiceFunctionForwarder.class};
-
-        executor.submit(SfcProviderServiceForwarderAPI
-                .getPut(parameters, parameterTypes)).get();
-
-        Object[] parameters2 = {name};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceForwarderAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunctionForwarder sff2 = (ServiceFunctionForwarder) result;
-
+        SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
+        ServiceFunctionForwarder sff2 = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(name);
         assertNotNull("Must be not null", sff2);
         assertEquals("Must be equal", sff2.getSffDataPlaneLocator(), locatorList);
         assertThat("Must contain first dictionary entry", sff2.getServiceFunctionDictionary(), hasItem(firstDictEntry));
@@ -141,18 +137,8 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         sff2.getServiceFunctionDictionary().add(newDictEntry);
         dictionary.add(newDictEntry);
 
-        Object[] parameters3 = {sff};
-        Class[] parameterTypes3 = {ServiceFunctionForwarder.class};
-
-        executor.submit(SfcProviderServiceForwarderAPI
-                .getPut(parameters3, parameterTypes3)).get();
-
-        Object[] parameters4 = {name};
-        Class[] parameterTypes4 = {String.class};
-        Object result4 = executor.submit(SfcProviderServiceForwarderAPI
-                .getRead(parameters4, parameterTypes4)).get();
-        ServiceFunctionForwarder sff4 = (ServiceFunctionForwarder) result4;
-
+        SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
+        ServiceFunctionForwarder sff4 = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(name);
         assertNotNull("Must be not null", sff4);
         assertThat("Must contain first dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(firstDictEntry));
         assertThat("Must contain new dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(newDictEntry));

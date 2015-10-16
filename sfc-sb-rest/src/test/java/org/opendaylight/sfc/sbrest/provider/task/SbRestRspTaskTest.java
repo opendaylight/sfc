@@ -62,7 +62,7 @@ public class SbRestRspTaskTest {
         executorService = Executors.newFixedThreadPool(10);
 
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
+        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
             .thenReturn(this.buildServiceFunctionForwarder());
     }
 
@@ -89,7 +89,7 @@ public class SbRestRspTaskTest {
     @Test
     public void testSbRestRspTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(SFF_NAME))
+        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
             .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestRspTask sbRestRspTask =

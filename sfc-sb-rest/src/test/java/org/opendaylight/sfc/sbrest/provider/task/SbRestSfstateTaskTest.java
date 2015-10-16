@@ -58,7 +58,7 @@ public class SbRestSfstateTaskTest {
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(SFSTATE_NAME))
+        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
             .thenReturn(this.buildServiceFunction());
     }
 
@@ -87,7 +87,7 @@ public class SbRestSfstateTaskTest {
         SbRestSfstateTask sbRestSfstateTask =
                 new SbRestSfstateTask(RestOperation.PUT, new ServiceFunctionStateBuilder().build(), executorService);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(SFSTATE_NAME))
+        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
             .thenReturn(new ServiceFunctionBuilder().build());
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);

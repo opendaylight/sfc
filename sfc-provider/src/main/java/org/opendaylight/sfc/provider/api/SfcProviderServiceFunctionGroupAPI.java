@@ -13,8 +13,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -40,125 +38,9 @@ import org.slf4j.LoggerFactory;
  *          <p>
  * @since 2015-02-14
  */
-public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
+public class SfcProviderServiceFunctionGroupAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAPI.class);
-
-    SfcProviderServiceFunctionGroupAPI(Object[] params, String m) {
-        super(params, m);
-    }
-
-    @SuppressWarnings("rawtypes")
-    SfcProviderServiceFunctionGroupAPI(Object[] params, Class[] paramsTypes, String m) {
-        super(params, paramsTypes, m);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getPut(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "putServiceFunctionGroup");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "readServiceFunctionGroup");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getByType(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "getServiceFunctionGroupByType");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getDelete(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "deleteServiceFunctionGroup");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getAddSF(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "addServiceFunctionToGroup");
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static SfcProviderServiceFunctionGroupAPI getRemoveSF(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceFunctionGroupAPI(params, paramsTypes, "removeServiceFunctionFromGroup");
-    }
-
-    public static ServiceFunctionGroup getServiceFunctionGroupbyTypeExecutor(
-            Class<? extends ServiceFunctionTypeIdentity> sft) {
-
-        printTraceStart(LOG);
-        ServiceFunctionGroup ret = null;
-        Object[] servicePathObj = {sft.getName()};
-        Class[] servicePathClass = {String.class};
-        SfcProviderServiceFunctionGroupAPI sfcProviderServiceFunctionGroupAPI =
-                SfcProviderServiceFunctionGroupAPI.getByType(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionGroupAPI);
-        try {
-            ret = (ServiceFunctionGroup) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * Puts a SFG in the datastore
-     * <p>
-     *
-     * @param sfg the ServiceFunctionGroup to put
-     * @return boolean success or failure
-     */
-    public static boolean putServiceFunctionGroupExecutor(ServiceFunctionGroup sfg) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        Object[] servicePathObj = {sfg};
-        Class[] servicePathClass = {ServiceFunctionGroup.class};
-        SfcProviderServiceFunctionGroupAPI sfcProviderServiceFunctionGroupAPI =
-                SfcProviderServiceFunctionGroupAPI.getPut(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceFunctionGroupAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads the service function group corresponding to the name.
-     *
-     * @param serviceFunctionGroupName SFG name
-     * @return service function group corresponding to the name
-     */
-    @SuppressWarnings("rawtypes")
-    public static ServiceFunctionGroup readServiceFunctionGroupExecutor(String serviceFunctionGroupName) {
-
-        printTraceStart(LOG);
-        ServiceFunctionGroup ret = null;
-        Object[] sfgObj = {serviceFunctionGroupName};
-        Class[] sfgClass = {String.class};
-        SfcProviderServiceFunctionGroupAPI sfgAPI = SfcProviderServiceFunctionGroupAPI.getRead(sfgObj, sfgClass);
-        Future future = ODL_SFC.getExecutor().submit(sfgAPI);
-        try {
-            ret = (ServiceFunctionGroup) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
 
     public static List<String> getSfgNameList(ServiceFunctionChain serviceFunctionChain) {
         List<String> ret = new ArrayList<>();
@@ -168,7 +50,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
         if (sfcServiceFunction != null) {
             for (SfcServiceFunction sf : sfcServiceFunction) {
                 ServiceFunctionGroup sfg =
-                        SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(sf.getType());
+                        SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(sf.getType());
                 LOG.debug("look for service function group of type {} and found {}", sf.getType(), sfg);
                 if (sfg != null) {
                     ret.add(sfg.getName());
@@ -187,7 +69,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionGroupName name
      * @return ServiceFunctionGroup object or null if not found
      */
-    protected ServiceFunctionGroup readServiceFunctionGroup(String serviceFunctionGroupName) {
+    public static ServiceFunctionGroup readServiceFunctionGroup(String serviceFunctionGroupName) {
         printTraceStart(LOG);
         ServiceFunctionGroup sfg;
         InstanceIdentifier<ServiceFunctionGroup> sfgIID;
@@ -208,7 +90,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionType function type
      * @return ServiceFunctionGroup object or null if not found
      */
-    protected ServiceFunctionGroup getServiceFunctionGroupByType(String serviceFunctionType) {
+    protected static ServiceFunctionGroup getServiceFunctionGroupByType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
         ServiceFunctionGroup sfg = null;
         InstanceIdentifier<ServiceFunctionGroups> sfgIID;
@@ -218,7 +100,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
 
         if (sfgs != null) {
             for (ServiceFunctionGroup element : sfgs.getServiceFunctionGroup()) {
-                if (element.getType().getName().equals(serviceFunctionType)) {
+                if (element.getType().equals(serviceFunctionType)) {
                     sfg = element;
                     LOG.debug("found group " + sfg + " that matches type " + serviceFunctionType);
                     break;
@@ -239,7 +121,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param sfg the ServiceFunctionGroup to put
      * @return boolean success or failure
      */
-    protected boolean putServiceFunctionGroup(ServiceFunctionGroup sfg) {
+    public static boolean putServiceFunctionGroup(ServiceFunctionGroup sfg) {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
@@ -259,7 +141,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionGroupName SFG name
      * @return boolean success of failure
      */
-    protected boolean deleteServiceFunctionGroup(String serviceFunctionGroupName) {
+    protected static boolean deleteServiceFunctionGroup(String serviceFunctionGroupName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionGroupKey serviceFunctionGroupKey = new ServiceFunctionGroupKey(serviceFunctionGroupName);
@@ -285,7 +167,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionName name of SF to add
      * @return boolean success of failure
      */
-    protected boolean addServiceFunctionToGroup(String serviceFunctionGroupName, String serviceFunctionName) {
+    protected static boolean addServiceFunctionToGroup(String serviceFunctionGroupName, String serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -303,7 +185,7 @@ public class SfcProviderServiceFunctionGroupAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionName name of SF to remove
      * @return boolean success of failure
      */
-    protected boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName, String serviceFunctionName) {
+    protected static boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName, String serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 

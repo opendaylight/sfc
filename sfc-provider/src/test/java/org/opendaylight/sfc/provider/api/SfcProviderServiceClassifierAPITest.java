@@ -9,11 +9,9 @@
 package org.opendaylight.sfc.provider.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,11 +84,11 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
 
         assertClsfStateDoesNotExist(clsfName);
         assertTrue("Failed to update clsf state.",
-                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(clsfName, rspName1));
+                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(clsfName, rspName1));
         readAndAssertClsfState(clsfName, rspName1);
         // update classifier state with another rendered service path
         assertTrue("Failed to update clsf state.",
-                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(clsfName, rspName2));
+                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(clsfName, rspName2));
         readAndAssertClsfState(clsfName, rspName2);
     }
 
@@ -132,12 +130,12 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
     }
 
     private static void assertClassifierDoesNotExists(String clsfName) {
-        ServiceFunctionClassifier clsf = SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(clsfName);
+        ServiceFunctionClassifier clsf = SfcProviderServiceClassifierAPI.readServiceClassifier(clsfName);
         assertNull("Unexpected classifier found.", clsf);
     }
 
     private static void readAndAssertClassifier(ServiceFunctionClassifier expectedClsf) {
-        ServiceFunctionClassifier clsf = SfcProviderServiceClassifierAPI.readServiceClassifierExecutor(expectedClsf.getName());
+        ServiceFunctionClassifier clsf = SfcProviderServiceClassifierAPI.readServiceClassifier(expectedClsf.getName());
         assertNotNull("Classifier not found.", clsf);
         assertEquals(expectedClsf.getName(), clsf.getName());
         assertEquals(expectedClsf.getKey().getName(), clsf.getKey().getName());
@@ -145,29 +143,4 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
         assertEquals(expectedClsf.getSclServiceFunctionForwarder(), clsf.getSclServiceFunctionForwarder());
     }
 
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void getReadTest() throws Exception {
-        Object[] params = {"funcParam0", "funcParam1"};
-        Class[] paramTypes = {String.class, String.class};
-        SfcProviderServiceClassifierAPI api = SfcProviderServiceClassifierAPI.getRead(params, paramTypes);
-        assertApiInitialization(api, params, paramTypes);
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void getAddRenderedPathToServiceClassifierStateExecutorTest() throws Exception {
-        Object[] params = {"funcParam0", "funcParam1"};
-        Class[] paramTypes = {String.class, String.class};
-        SfcProviderServiceClassifierAPI api = SfcProviderServiceClassifierAPI.getAddRenderedPathToServiceClassifierStateExecutor(params, paramTypes);
-        assertApiInitialization(api, params, paramTypes);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private void assertApiInitialization(SfcProviderServiceClassifierAPI api,
-                                         Object[] expectedParams, Class[] expectedParamTypes) {
-        assertArrayEquals(expectedParams, api.getParameters());
-        assertArrayEquals(expectedParamTypes, api.getParameterTypes());
-        assertFalse(api.getMethodName().isEmpty());
-    }
 }

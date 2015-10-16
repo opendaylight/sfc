@@ -8,6 +8,14 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,12 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
-
 public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreManager {
 
     private static final String ALGORITHM = "algorithm";
@@ -61,37 +63,29 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
     }
 
     @Test
-    public void testPutReadDeleteServiceFunctionGroupAlgorithm() throws ExecutionException, InterruptedException {
+    public void testPutReadDeleteServiceFunctionGroupAlgorithm() {
 
         // Create:
         String sfgAlgName = "testServiceFunctionGroupAlgorithm";
         ServiceFunctionGroupAlgorithm sfgAlg = SimpleTestEntityBuilder.buildServiceFunctionGroupAlgorithm(sfgAlgName);
 
         // Put:
-        Object[] params = {sfgAlg};
-        Class[] paramsTypes = {ServiceFunctionGroupAlgorithm.class};
-        executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getPut(params, paramsTypes)).get();
+        SfcProviderServiceFunctionGroupAlgAPI.putServiceFunctionGroupAlgorithm(sfgAlg);
 
         // Read:
-        Object[] params2 = {sfgAlgName};
-        Class[] paramsTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getRead(params2, paramsTypes2)).get();
-        ServiceFunctionGroupAlgorithm sfgAlg2 = (ServiceFunctionGroupAlgorithm) result;
+        ServiceFunctionGroupAlgorithm sfgAlg2 = SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlg(sfgAlgName);
 
         assertNotNull("Must be not null", sfgAlg2);
         assertEquals("Must be equal", sfgAlg2.getName(), sfgAlgName);
 
         // Delete:
-        executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getDelete(params2, paramsTypes2));
-        Thread.sleep(1000);
-        result = executor.submit(SfcProviderServiceFunctionGroupAlgAPI.getRead(params2, paramsTypes2)).get();
-        sfgAlg2 = (ServiceFunctionGroupAlgorithm) result;
-
+        SfcProviderServiceFunctionGroupAlgAPI.deleteServiceFunctionGroupAlgorithm(sfgAlgName);
+        sfgAlg2 = SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlgorithm(sfgAlgName);
         assertNull("Must be null", sfgAlg2); // TODO: test passes locally but fails on Jenkins
     }
 
     @Test
-    public void testPutReadDeleteServiceFunctionGroup() throws ExecutionException, InterruptedException {
+    public void testPutReadDeleteServiceFunctionGroup() {
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
@@ -99,32 +93,25 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Put:
-        Object[] params = {sfg};
-        Class[] paramsTypes = {ServiceFunctionGroup.class};
-        executor.submit(SfcProviderServiceFunctionGroupAPI.getPut(params, paramsTypes)).get();
+        SfcProviderServiceFunctionGroupAPI.putServiceFunctionGroup(sfg);
 
         // Read:
-        Object[] params2 = {sfgName};
-        Class[] paramsTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceFunctionGroupAPI.getRead(params2, paramsTypes2)).get();
-        ServiceFunctionGroup sfg2 = (ServiceFunctionGroup) result;
+        ServiceFunctionGroup sfg2 = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(sfgName);
 
         assertNotNull("Must be not null", sfg2);
         assertEquals("Must be equal", sfg2.getName(), sfgName);
         assertEquals("Must be equal", sfg2.getAlgorithm(), sfgAlgName);
 
         // Delete:
-        executor.submit(SfcProviderServiceFunctionGroupAPI.getDelete(params2, paramsTypes2));
-        Thread.sleep(1000);
-        result = executor.submit(SfcProviderServiceFunctionGroupAPI.getRead(params2, paramsTypes2)).get();
-        sfg2 = (ServiceFunctionGroup) result;
+        SfcProviderServiceFunctionGroupAPI.deleteServiceFunctionGroup(sfgName);
+        sfg2 = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(sfgName);
 
-        assertNull("Must be null", sfg2); // TODO: test passes locally but fails on Jenkins
+        assertNull("Must be null", sfg2);
     }
 
     @Test
     @Ignore
-    public void testAddRemoveFunctionFromServiceFunctionGroup() throws ExecutionException, InterruptedException {
+    public void testAddRemoveFunctionFromServiceFunctionGroup() {
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
@@ -133,14 +120,11 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
 
         // Add Service Function:
         ServiceFunction sf = sfList.get(0);
-        Object[] params = {sfg.getName(), sf.getName()};
-        Class[] paramsTypes = {String.class, String.class};
-        executor.submit(SfcProviderServiceFunctionGroupAPI.getAddSF(params, paramsTypes)).get();
-
+        SfcProviderServiceFunctionGroupAPI.addServiceFunctionToGroup(sfg.getName(), sf.getName());
         assertNotNull("Must be not null", sfg.getSfcServiceFunction().get(0));
 
         // Delete Service Function:
-        executor.submit(SfcProviderServiceFunctionGroupAPI.getDelete(params, paramsTypes));
+        SfcProviderServiceFunctionGroupAPI.removeServiceFunctionFromGroup(sfg.getName(), sf.getName());
         assertNull("Must be null", sfg.getSfcServiceFunction().get(0));
     }
 
@@ -161,27 +145,27 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         assertTrue("Must be true", transactionSuccessful);
 
         //get service function by type
-        ServiceFunctionGroup serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(Firewall.class);
+        ServiceFunctionGroup serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(Firewall.class);
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(), IP_V4_ADDRESS);
         assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
 
-        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupbyTypeExecutor(Dpi.class);
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(Dpi.class);
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv6Address().getValue(), IP_V6_ADDRESS);
         assertEquals("Must be equal", serviceFunctionGroup.getType(), Dpi.class);
 
         //get service function group by name
-        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(SFG_NAME + 1);
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(SFG_NAME + 1);
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 1);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(), IP_V4_ADDRESS);
         assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
 
-        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(SFG_NAME + 2);
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(SFG_NAME + 2);
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 2);

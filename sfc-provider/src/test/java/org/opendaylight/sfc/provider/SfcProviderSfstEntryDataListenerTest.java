@@ -8,6 +8,18 @@
 
 package org.opendaylight.sfc.provider;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,25 +28,21 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.api.*;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.Future;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 
 
@@ -82,7 +90,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = build_service_function_scheduler_type();
 
-        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType));
+        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(serviceFunctionSchedulerType));
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID = InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).
                 child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
 
@@ -98,12 +106,12 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
         sfstEntryDataListener.onDataChanged(dataChangeEvent);
         Thread.sleep(500);
 
-        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI.readServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType.getType());
+        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI.readServiceFunctionScheduleType(serviceFunctionSchedulerType.getType());
         assertNotNull(sfst);
         assertEquals(serviceFunctionSchedulerType, sfst);
         Thread.sleep(500);
         //Clean-up
-        assertTrue(SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType.getType()));
+        assertTrue(SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleType(serviceFunctionSchedulerType.getType()));
         Thread.sleep(500);
     }
 
@@ -140,7 +148,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
         sfstEntryDataListener.onDataChanged(dataChangeEvent);
         Thread.sleep(500);
-        assertNull(SfcProviderScheduleTypeAPI.readServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType.getType()));
+        assertNull(SfcProviderScheduleTypeAPI.readServiceFunctionScheduleType(serviceFunctionSchedulerType.getType()));
     }
 
     /**
@@ -167,7 +175,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID = InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).
                 child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
-        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType));
+        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(serviceFunctionSchedulerType));
 
         originalData.put(sfstEntryIID, serviceFunctionSchedulerType);
 
@@ -175,7 +183,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
         updatedServiceFunctionSchedulerTypeBuilder.setName(SchedulerTypeName);
         ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = updatedServiceFunctionSchedulerTypeBuilder.build();
-        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleTypeExecutor(updatedServiceFunctionSchedulerType));
+        assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(updatedServiceFunctionSchedulerType));
         updatedData.put(sfstEntryIID, updatedServiceFunctionSchedulerType);
 
         when(dataChangeEvent.getUpdatedData()).thenReturn(updatedData);
@@ -188,12 +196,12 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
          */
         sfstEntryDataListener.onDataChanged(dataChangeEvent);
         Thread.sleep(500);
-        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI.readServiceFunctionScheduleTypeExecutor(updatedServiceFunctionSchedulerType.getType());
+        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI.readServiceFunctionScheduleType(updatedServiceFunctionSchedulerType.getType());
         assertNotNull(sfst);
         assertEquals(updatedServiceFunctionSchedulerType.getName(), sfst.getName());
 
         //Clean-up
-        assertTrue(SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType.getType()));
+        assertTrue(SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleType(serviceFunctionSchedulerType.getType()));
         Thread.sleep(500);
     }
 
@@ -266,7 +274,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
             ServiceFunctionSchedulerType serviceFunctionSchedulerType = sfstBuilder.build();
 
-            assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleTypeExecutor(serviceFunctionSchedulerType));
+            assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(serviceFunctionSchedulerType));
             InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID = InstanceIdentifier.builder(ServiceFunctionSchedulerTypes.class).
                 child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
 
@@ -286,14 +294,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
     public int countNumOfEnabledAlgorithmType() throws Exception  {
         int count = 0;
-        OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-        Object[] serviceScheduleTypeObj = {};
-        Class[] serviceScheduleTypeClass = {};
-        SfcProviderScheduleTypeAPI sfcProviderScheduleTypeAPI = SfcProviderScheduleTypeAPI
-                .getReadAll(serviceScheduleTypeObj, serviceScheduleTypeClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderScheduleTypeAPI);
-
-        ServiceFunctionSchedulerTypes sfsts = (ServiceFunctionSchedulerTypes) future.get();
+        ServiceFunctionSchedulerTypes sfsts = SfcProviderScheduleTypeAPI.readAllServiceFunctionScheduleTypes();
         List<ServiceFunctionSchedulerType> sfstList = sfsts.getServiceFunctionSchedulerType();
 
         for (ServiceFunctionSchedulerType sfst: sfstList) {

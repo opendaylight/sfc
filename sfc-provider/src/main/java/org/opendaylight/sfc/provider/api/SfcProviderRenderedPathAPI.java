@@ -15,13 +15,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.provider.SfcReflection;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
@@ -75,13 +71,11 @@ import org.slf4j.LoggerFactory;
  *          <p>
  * @since 2014-11-04
  */
-public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
+public class SfcProviderRenderedPathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
-    private static final String FAILED_TO_STR = "failed to ...";
     private static final int MAX_STARTING_INDEX = 255;
     private static AtomicInteger numCreatedPath = new AtomicInteger(0);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static SfcServiceFunctionSchedulerAPI defaultScheduler;
 
     static final Comparator<SfcServiceFunction> SF_ORDER = new Comparator<SfcServiceFunction>() {
@@ -123,7 +117,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
         try {
             serviceFunctionSchedulerType =
-                    SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntryExecutor().getType();
+                    SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntry().getType();
         } catch (Exception e) {
             serviceFunctionSchedulerType = Random.class;
         }
@@ -132,7 +126,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         LOG.info("Selected SF Schdedule Type: {}", serviceFunctionSchedulerType);
     }
 
-    @SuppressWarnings("unused")
     public static int numCreatedPathGetValue() {
         return numCreatedPath.get();
     }
@@ -141,100 +134,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return numCreatedPath.incrementAndGet();
     }
 
-    @SuppressWarnings("unused")
     public int numCreatedPathDecrementGet() {
         return numCreatedPath.decrementAndGet();
-    }
-
-    SfcProviderRenderedPathAPI(Object[] params, String m) {
-        super(params, m);
-        // initDefaultServiceFunctionScheduler();
-    }
-
-    SfcProviderRenderedPathAPI(Object[] params, Class[] paramsTypes, String m) {
-        super(params, paramsTypes, m);
-        // initDefaultServiceFunctionScheduler();
-    }
-
-    public static SfcProviderRenderedPathAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
-    }
-
-    public static SfcProviderRenderedPathAPI getReadRenderedServicePath(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "readRenderedServicePath");
-    }
-
-    public static SfcProviderRenderedPathAPI getCreateRenderedServicePathEntryAPI(Object[] params,
-            Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "createRenderedServicePathEntry");
-    }
-
-    public static SfcProviderRenderedPathAPI getCreateReverseRenderedServicePathEntryAPI(Object[] params,
-            Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "createReverseRenderedServicePathEntry");
-    }
-
-    @SuppressWarnings("unused")
-    public static SfcProviderRenderedPathAPI getDeleteRenderedServicePath(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "deleteRenderedServicePath");
-    }
-
-    @SuppressWarnings("unused")
-    public static SfcProviderRenderedPathAPI getDeleteRenderedServicePaths(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "deleteRenderedServicePaths");
-    }
-
-    @SuppressWarnings("unused")
-    public static SfcProviderRenderedPathAPI getUpdateRenderedServicePathAPI(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderRenderedPathAPI(params, paramsTypes, "updateRenderedServicePathEntry");
-    }
-
-    @SuppressWarnings("unused")
-    /*
-     * protected void updateRenderedServicePathEntry (ServiceFunctionPath serviceFunctionPath) {
-     * this.createRenderedServicePathEntry(serviceFunctionPath);
-     * }
-     */
-
-    public static RenderedServicePath createRenderedServicePathEntryExecutor(ServiceFunctionPath serviceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
-        RenderedServicePath ret = null;
-        Object[] servicePathObj = {serviceFunctionPath, createRenderedPathInput, scheduler};
-        Class[] servicePathClass =
-                {ServiceFunctionPath.class, CreateRenderedPathInput.class, SfcServiceFunctionSchedulerAPI.class};
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI =
-                SfcProviderRenderedPathAPI.getCreateRenderedServicePathEntryAPI(servicePathObj, servicePathClass);
-        Future futureCreateRSP = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
-        try {
-            ret = (RenderedServicePath) futureCreateRSP.get();
-            LOG.debug("createRenderedServicePathEntryExecutor: {}", ret);
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        }
-        return ret;
-    }
-
-    public static RenderedServicePath createReverseRenderedServicePathEntryExecutor(
-            RenderedServicePath renderedServicePath) {
-        RenderedServicePath ret = null;
-        Object[] servicePathObj = {renderedServicePath};
-        Class[] servicePathClass = {RenderedServicePath.class};
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = SfcProviderRenderedPathAPI
-            .getCreateReverseRenderedServicePathEntryAPI(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
-        try {
-            ret = (RenderedServicePath) future.get();
-            LOG.debug("getCreateRenderedServicePathEntryAPI: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        return ret;
     }
 
     /**
@@ -262,7 +163,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         // Create RSP
-        if ((renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntryExecutor(
+        if ((renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
                 createdServiceFunctionPath, createRenderedPathInput, scheduler)) != null) {
             rspSuccessful = true;
 
@@ -273,37 +174,37 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
         // Add Path name to SFF operational state
         if (rspSuccessful
-                && SfcProviderServiceForwarderAPI.addPathToServiceForwarderStateExecutor(renderedServicePath)) {
+                && SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(renderedServicePath)) {
             addPathToSffStateSuccessful = true;
         } else {
             if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(renderedServicePath.getName());
+                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
             }
         }
 
         // Add Path to SF operational state
         if (addPathToSffStateSuccessful
-                && SfcProviderServiceFunctionAPI.addPathToServiceFunctionStateExecutor(renderedServicePath)) {
+                && SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath)) {
 
             addPathToSfStateSuccessful = true;
         } else {
-            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
+            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
             if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(renderedServicePath.getName());
+                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
             }
         }
 
         // Add RSP to SFP operational state
-        if (addPathToSfStateSuccessful && SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor(
+        if (addPathToSfStateSuccessful && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
                 createdServiceFunctionPath.getName(), renderedServicePath.getName())) {
             addPathtoSfpStateSuccessful = true;
 
         } else {
             SfcProviderServiceFunctionAPI
-                .deleteServicePathFromServiceFunctionStateExecutor(createdServiceFunctionPath.getName());
-            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderStateExecutor(createdServiceFunctionPath);
+                .deleteServicePathFromServiceFunctionState(createdServiceFunctionPath.getName());
+            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
             if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(renderedServicePath.getName());
+                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
             }
         }
 
@@ -351,7 +252,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         // Reverse Path
 
         if ((revRenderedServicePath = SfcProviderRenderedPathAPI
-            .createReverseRenderedServicePathEntryExecutor(renderedServicePath)) != null) {
+            .createReverseRenderedServicePathEntry(renderedServicePath)) != null) {
             revRspSuccessful = true;
         } else {
             LOG.error("Could not create Reverse RSP {}", renderedServicePath.getName());
@@ -359,15 +260,15 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
         // Add Path name to SFF operational state
         if (revRspSuccessful
-                && SfcProviderServiceForwarderAPI.addPathToServiceForwarderStateExecutor(revRenderedServicePath)) {
+                && SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(revRenderedServicePath)) {
             addRevPathToSffStateSuccessul = true;
         } else {
-            SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
         }
 
         // Add Path to SF operational state
         if (addRevPathToSffStateSuccessul
-                && SfcProviderServiceFunctionAPI.addPathToServiceFunctionStateExecutor(revRenderedServicePath)) {
+                && SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(revRenderedServicePath)) {
 
             addRevPathToSfStateSuccessul = true;
             // Send to SB REST
@@ -377,21 +278,21 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
              */
         } else {
             SfcProviderServiceForwarderAPI
-                .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());
-            SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
+                .deletePathFromServiceForwarderState(revRenderedServicePath.getName());
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
 
         }
         // Add RSP to SFP operational state
-        if (addRevPathToSfStateSuccessul && SfcProviderServicePathAPI.addRenderedPathToServicePathStateExecutor(
+        if (addRevPathToSfStateSuccessul && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
                 renderedServicePath.getParentServiceFunctionPath(), revRenderedServicePath.getName())) {
             addRevPathToSfpStateSuccessul = true;
 
         } else {
             SfcProviderServiceFunctionAPI
-                .deleteServicePathFromServiceFunctionStateExecutor(revRenderedServicePath.getName());
+                .deleteServicePathFromServiceFunctionState(revRenderedServicePath.getName());
             SfcProviderServiceForwarderAPI
-                .deletePathFromServiceForwarderStateExecutor(revRenderedServicePath.getName());
-            SfcProviderRenderedPathAPI.deleteRenderedServicePathExecutor(revRenderedServicePath.getName());
+                .deletePathFromServiceForwarderState(revRenderedServicePath.getName());
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
 
         }
         return revRenderedServicePath;
@@ -405,7 +306,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param serviceIndex Starting index
      * @return List of {@link RenderedServicePathHop}
      */
-    protected List<RenderedServicePathHop> createRenderedServicePathHopList(List<String> serviceFunctionNameList,
+    protected static List<RenderedServicePathHop> createRenderedServicePathHopList(List<String> serviceFunctionNameList,
             List<String> sfgNameList, int serviceIndex) {
         List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
         RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
@@ -421,14 +322,14 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         if (sfgNameList != null) {
             boolean loopBroken = false;
             for (String sfgName : sfgNameList) {
-                ServiceFunctionGroup sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroupExecutor(sfgName);
+                ServiceFunctionGroup sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(sfgName);
                 if (sfg == null) {
                     LOG.error("Could not find suitable SFG in data store by name: {}", sfgName);
                     loopBroken = true;
                     break;
                 }
                 ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
-                    .readServiceFunctionExecutor(sfg.getSfcServiceFunction().get(0).getName());
+                    .readServiceFunction(sfg.getSfcServiceFunction().get(0).getName());
                 if (serviceFunction == null) {
                     LOG.error("Could not find suitable SF in data store by name: {}",
                             sfg.getSfcServiceFunction().get(0).getName());
@@ -449,7 +350,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         } else {
             for (String serviceFunctionName : serviceFunctionNameList) {
                 ServiceFunction serviceFunction =
-                        SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionName);
+                        SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionName);
                 if (serviceFunction == null) {
                     LOG.error("Could not find suitable SF in data store by name: {}", serviceFunctionName);
                     return null;
@@ -465,25 +366,25 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         return renderedServicePathHopArrayList;
     }
 
-    private void createSFHopBuilder(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
+    private static void createSFHopBuilder(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
             short posIndex, String serviceFunctionName, ServiceFunction serviceFunction) {
         createHopBuilderInternal(serviceIndex, renderedServicePathHopBuilder, posIndex, serviceFunction);
         renderedServicePathHopBuilder.setServiceFunctionName(serviceFunctionName);
     }
 
-    private void createSFGHopBuilder(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
+    private static void createSFGHopBuilder(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
             short posIndex, String serviceFunctionGroupName, ServiceFunction serviceFunction) {
         createHopBuilderInternal(serviceIndex, renderedServicePathHopBuilder, posIndex, serviceFunction);
         renderedServicePathHopBuilder.setServiceFunctionGroupName(serviceFunctionGroupName);
     }
 
-    private void createHopBuilderInternal(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
+    private static void createHopBuilderInternal(int serviceIndex, RenderedServicePathHopBuilder renderedServicePathHopBuilder,
             short posIndex, ServiceFunction serviceFunction) {
         String serviceFunctionForwarderName =
                 serviceFunction.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
 
         ServiceFunctionForwarder serviceFunctionForwarder =
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarderExecutor(serviceFunctionForwarderName);
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(serviceFunctionForwarderName);
         if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null
                 && serviceFunctionForwarder.getSffDataPlaneLocator().get(0) != null) {
             renderedServicePathHopBuilder
@@ -505,7 +406,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param scheduler SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath
      */
-    protected RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
+    protected static RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
 
         printTraceStart(LOG);
@@ -628,8 +529,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param renderedServicePath RSP object
      * @return Nothing
      */
-    @SfcReflection
-    public RenderedServicePath createReverseRenderedServicePathEntry(RenderedServicePath renderedServicePath) {
+    public static RenderedServicePath createReverseRenderedServicePathEntry(RenderedServicePath renderedServicePath) {
 
         RenderedServicePath ret = null;
         String revPathName;
@@ -712,30 +612,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
 
     }
 
-    @SuppressWarnings("unused")
-    public static RenderedServicePath readRenderedServicePathExecutor(String rspName) {
-
-        printTraceStart(LOG);
-        RenderedServicePath ret = null;
-
-        Object[] rspNameObj = {rspName};
-        Class[] rspNameClass = {String.class};
-
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI =
-                SfcProviderRenderedPathAPI.getReadRenderedServicePath(rspNameObj, rspNameClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
-        try {
-            ret = (RenderedServicePath) future.get();
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        return ret;
-    }
-
     /**
      * This function reads a RSP from the datastore
      * <p>
@@ -765,8 +641,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
      * @param servicePaths SffServicePath object
      * @return Nothing.
      */
-    @SuppressWarnings("unused")
-    @SfcReflection
     public static boolean deleteRenderedServicePaths(List<String> servicePaths) {
 
         printTraceStart(LOG);
@@ -784,40 +658,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
                 LOG.debug("RSP {} already deleted by another thread or client", rspName);
                 ret = true;
             }
-        }
-        return ret;
-    }
-
-    /**
-     * Wrapper API to deletes a list of Service Paths. It includes Executor creation
-     * and response management
-     * <p>
-     *
-     * @param servicePaths SffServicePath object
-     * @return Nothing.
-     */
-    @SuppressWarnings("unused")
-    public static boolean deleteRenderedServicePathsExecutor(List<String> servicePaths) {
-
-        printTraceStart(LOG);
-        boolean ret = true;
-
-        // SFF deletion is a critical event. If a SFF is deleted we delete all associated SFPs
-        Object[] servicePathObj = {servicePaths};
-        Class[] servicePathClass = {List.class};
-
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI =
-                SfcProviderRenderedPathAPI.getDeleteRenderedServicePaths(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteRenderedServicePaths: {}", ret);
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
         }
         return ret;
     }
@@ -852,40 +692,6 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             }
         } else {
             ret = true;
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method is an executor wrapper around a method that
-     * deletes a RSP from the datastore
-     * <p>
-     *
-     * @param renderedServicePathName RSP name
-     * @return Nothing.
-     */
-    public static boolean deleteRenderedServicePathExecutor(String renderedServicePathName) {
-        boolean ret = false;
-        printTraceStart(LOG);
-        Object[] servicePathObj = {renderedServicePathName};
-        Class[] servicePathClass = {String.class};
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI =
-                SfcProviderRenderedPathAPI.getDeleteRenderedServicePath(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderRenderedPathAPI);
-        try {
-            ret = (boolean) future.get();
-            LOG.debug("getDeleteRenderedServicePath: {}", future.get());
-        } catch (InterruptedException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception", e);
-        }
-        if (!ret) {
-            LOG.error("{}: Failed to delete RSP {}", Thread.currentThread().getStackTrace()[1],
-                    renderedServicePathName);
         }
         printTraceStop(LOG);
         return ret;
@@ -1030,7 +836,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         /* Read service chain sfcName if it exists */
-        serviceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChainExecutor(sfcName);
+        serviceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(sfcName);
 
         /* Create service chain sfcName if it doesn't exist */
         if (serviceFunctionChain == null) {
@@ -1038,7 +844,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
             sfcBuilder.setName(sfcName).setSfcServiceFunction(sfcServiceFunctionArrayList);
             serviceFunctionChain = sfcBuilder.build();
-            ret = SfcProviderServiceChainAPI.putServiceFunctionChainExecutor(serviceFunctionChain);
+            ret = SfcProviderServiceChainAPI.putServiceFunctionChain(serviceFunctionChain);
             if (ret == false) {
                 LOG.error("Failed to create ServiceFunctionChain: {}", sfcName);
                 return null;
@@ -1046,7 +852,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         /* Read ServiceFunctionPath pathName if it exists */
-        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPathExecutor(pathName);
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(pathName);
 
         /* Create ServiceFunctionPath pathName if it doesn't exist */
         if (serviceFunctionPath == null) {
@@ -1054,7 +860,7 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
             pathBuilder.setName(pathName).setServiceChainName(sfcName);
             serviceFunctionPath = pathBuilder.build();
-            ret = SfcProviderServicePathAPI.putServiceFunctionPathExecutor(serviceFunctionPath);
+            ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
             if (ret == false) {
                 LOG.error("Failed to create ServiceFunctionPath: {}", pathName);
                 return null;
@@ -1078,8 +884,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
         }
 
         if ((serviceFunctionPath.getClassifier() != null) && SfcProviderServiceClassifierAPI
-            .readServiceClassifierExecutor(serviceFunctionPath.getClassifier()) != null) {
-            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(
+            .readServiceClassifier(serviceFunctionPath.getClassifier()) != null) {
+            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(
                     serviceFunctionPath.getClassifier(), renderedServicePath.getName());
         } else {
             LOG.warn("Classifier not provided or does not exist");
@@ -1091,8 +897,8 @@ public class SfcProviderRenderedPathAPI extends SfcProviderAbstractAPI {
             if (revRenderedServicePath == null) {
                 LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
             } else if ((serviceFunctionPath.getSymmetricClassifier() != null) && SfcProviderServiceClassifierAPI
-                .readServiceClassifierExecutor(serviceFunctionPath.getSymmetricClassifier()) != null) {
-                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierStateExecutor(
+                .readServiceClassifier(serviceFunctionPath.getSymmetricClassifier()) != null) {
+                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(
                         serviceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
             } else {
                 LOG.warn("Symmetric Classifier not provided or does not exist");

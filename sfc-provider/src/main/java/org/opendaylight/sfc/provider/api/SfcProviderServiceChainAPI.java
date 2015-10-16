@@ -11,11 +11,7 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -43,77 +39,9 @@ import org.slf4j.LoggerFactory;
  * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
  * @since 2014-06-30
  */
-public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
+public class SfcProviderServiceChainAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPI.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-    private static final String FAILED_TO_STR = "failed to ...";
-
-    SfcProviderServiceChainAPI(Object[] params, String m) {
-        super(params, m);
-    }
-
-    SfcProviderServiceChainAPI(Object[] params, Class[] paramsTypes, String m) {
-        super(params, paramsTypes, m);
-    }
-
-    public static SfcProviderServiceChainAPI getPut(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "putServiceFunctionChain");
-    }
-
-    public static SfcProviderServiceChainAPI getRead(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "readServiceFunctionChain");
-    }
-
-    public static SfcProviderServiceChainAPI getDelete(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "deleteServiceFunctionChain");
-    }
-
-    public static SfcProviderServiceChainAPI getPutAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "putAllServiceFunctionChains");
-    }
-
-    public static SfcProviderServiceChainAPI getReadAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "readAllServiceFunctionChains");
-    }
-
-    public static SfcProviderServiceChainAPI getDeleteAll(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "deleteAllServiceFunctionChains");
-    }
-
-    public static SfcProviderServiceChainAPI getSfcRef(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "getServiceFunctionChainsRef");
-    }
-
-    public static SfcProviderServiceChainAPI getSfcStateRef(Object[] params, Class[] paramsTypes) {
-        return new SfcProviderServiceChainAPI(params, paramsTypes, "getServiceFunctionChainsStateRef");
-    }
-
-    /**
-     * This method creates a service chain by Executor, it includes
-     * Executor creation and response management.
-     *
-     * @param serviceFunctionChain a ServiceFunctionChain object
-     * @return true if serviceFunctionChain was created, false otherwise
-     */
-    @SuppressWarnings("unused")
-    public static boolean putServiceFunctionChainExecutor(ServiceFunctionChain serviceFunctionChain) {
-        boolean ret = false;
-        Object[] sfcParameters = {serviceFunctionChain};
-        Class[] sfcParameterTypes = {ServiceFunctionChain.class};
-
-        printTraceStart(LOG);
-        try {
-            Object result = ODL_SFC.getExecutor()
-                .submit(SfcProviderServiceChainAPI.getPut(sfcParameters, sfcParameterTypes))
-                .get();
-            ret = (boolean) result;
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn(FAILED_TO_STR, e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
 
     /**
      * This method reads the service function chain specified by the given name from
@@ -139,32 +67,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
     }
 
     /**
-     * This method reads the operational state for a service function.
-     *
-     * @param serviceFunctionName SF name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     *         this service function, null otherwise
-     */
-    public static ServiceFunctionChain readServiceFunctionChainExecutor(String serviceFunctionName) {
-
-        printTraceStart(LOG);
-        ServiceFunctionChain ret = null;
-        Object[] servicePathObj = {serviceFunctionName};
-        Class[] servicePathClass = {String.class};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
-                SfcProviderServiceChainAPI.getRead(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
-        try {
-            ret = (ServiceFunctionChain) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
      * This method deletes a single service path name from the Service Function
      * Chain operational data store
      *
@@ -173,7 +75,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    @SuppressWarnings("unused")
     public static boolean deletePathFromServiceFunctionChainState(String serviceFunctionChainName,
             String servicePathName) {
 
@@ -203,7 +104,6 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    @SuppressWarnings("unused")
     public static boolean addPathToServiceFunctionChainState(String serviceFunctionChainName, String servicePathName) {
 
         printTraceStart(LOG);
@@ -228,49 +128,13 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    public static ServiceFunctionChains getServiceFunctionChainsRefExecutor() {
-        printTraceStart(LOG);
-        ServiceFunctionChains ret = null;
-        Object[] servicePathObj = {};
-        Class[] servicePathClass = {};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
-                SfcProviderServiceChainAPI.getSfcRef(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
-        try {
-            ret = (ServiceFunctionChains) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    public static ServiceFunctionChainsState getServiceFunctionChainsStateRefExecutor() {
-        printTraceStart(LOG);
-        ServiceFunctionChainsState ret = null;
-        Object[] servicePathObj = {};
-        Class[] servicePathClass = {};
-        SfcProviderServiceChainAPI sfcProviderServiceChainAPI =
-                SfcProviderServiceChainAPI.getSfcStateRef(servicePathObj, servicePathClass);
-        Future future = ODL_SFC.getExecutor().submit(sfcProviderServiceChainAPI);
-        try {
-            ret = (ServiceFunctionChainsState) future.get();
-            LOG.debug("getRead: {}", future.get());
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("failed to ....", e);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
     /**
      * This method creates a SFC from the datastore.
      *
      * @param serviceFunctionChain SFC object
      * @return true if SFC was created, false otherwise
      */
-    protected boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
+    public static boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -295,8 +159,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      * @param serviceFunctionChainName SFC name
      * @return true if SF was deleted, false otherwise
      */
-    @SuppressWarnings("unused")
-    protected boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
+    protected static boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
@@ -321,8 +184,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    @SuppressWarnings("unused")
-    protected boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
+    protected static boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -342,8 +204,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
      *
      * @return ServiceFunctionChains A object that contains all Service Functions Object
      */
-    @SuppressWarnings("unused")
-    protected ServiceFunctionChains readAllServiceFunctionChains() {
+    protected static ServiceFunctionChains readAllServiceFunctionChains() {
         ServiceFunctionChains sfcs;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionChains> sfcsIID =
@@ -370,7 +231,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return ret;
     }
 
-    public ServiceFunctionChains getServiceFunctionChainsRef() {
+    public static ServiceFunctionChains getServiceFunctionChainsRef() {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionChains> sfcsIID;
@@ -383,7 +244,7 @@ public class SfcProviderServiceChainAPI extends SfcProviderAbstractAPI {
         return sfc;
     }
 
-    protected ServiceFunctionChainsState getServiceFunctionChainsStateRef() {
+    protected static ServiceFunctionChainsState getServiceFunctionChainsStateRef() {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;

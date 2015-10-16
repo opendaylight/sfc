@@ -8,10 +8,16 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
@@ -28,7 +34,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
@@ -49,12 +62,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
-
 public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractDataStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionShortestPathSchedulerAPITest.class);
@@ -64,7 +71,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
     private SfcServiceFunctionShortestPathSchedulerAPI scheduler;
 
     @Before
-    public void before() throws ExecutionException, InterruptedException {
+    public void before() {
         setOdlSfc();
 
         scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
@@ -115,16 +122,14 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         /* Must create ServiceFunctionType first */
         for (ServiceFunction serviceFunction : sfList) {
-            boolean ret = SfcProviderServiceTypeAPI.createServiceFunctionTypeEntryExecutor(serviceFunction);
+            boolean ret = SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
             LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
             assertTrue("Must be true", ret);
         }
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        executor.submit(SfcProviderServiceFunctionAPI.getPutAll
-                (new Object[]{sfsBuilder.build()}, new Class[]{ServiceFunctions.class})).get();
-        Thread.sleep(1000); // Wait they are really created
+        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
 
         String sfcName = "ShortestPath-unittest-chain-1";
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -207,29 +212,23 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
                     .setConnectedSffDictionary(sffDictionaryList)
                     .setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
-            executor.submit(SfcProviderServiceForwarderAPI.getPut(new Object[]{sff}, new Class[]{ServiceFunctionForwarder.class})).get();
+            SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         }
-        Thread.sleep(1000); // Wait they are really created
     }
 
     @Test
-    public void testSfcServiceFunctionShortestPathScheduler() throws ExecutionException, InterruptedException {
+    public void testSfcServiceFunctionShortestPathScheduler() {
         int maxTries;
 
         for (ServiceFunction serviceFunction : sfList) {
             maxTries = 10;
             ServiceFunction sf2 = null;
             while (maxTries > 0) {
-                Object[] parameters2 = {serviceFunction.getName()};
-                Class[] parameterTypes2 = {String.class};
-                Object result = executor.submit(SfcProviderServiceFunctionAPI
-                        .getRead(parameters2, parameterTypes2)).get();
-                sf2 = (ServiceFunction) result;
+                sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunction.getName());
                 maxTries--;
                 if (sf2 != null) {
                     break;
                 }
-                Thread.sleep(1000);
             }
             LOG.debug("SfcServiceFunctionShortestPathSchedulerAPITest: getRead ServiceFunction {} {} times: {}", serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
@@ -237,24 +236,15 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());
         }
 
-        Object[] parameters = {sfChain};
-        Class[] parameterTypes = {ServiceFunctionChain.class};
-
-        executor.submit(SfcProviderServiceChainAPI
-                .getPut(parameters, parameterTypes)).get();
-
-        Object[] parameters2 = {sfChain.getName()};
-        Class[] parameterTypes2 = {String.class};
-        Object result = executor.submit(SfcProviderServiceChainAPI
-                .getRead(parameters2, parameterTypes2)).get();
-        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
+        SfcProviderServiceChainAPI.putServiceFunctionChain(sfChain);
+        ServiceFunctionChain sfc2 = SfcProviderServiceChainAPI.readServiceFunctionChain(sfChain.getName());
 
         assertNotNull("Must be not null", sfc2);
         assertNotNull("Must be not null", sfChain.getSfcServiceFunction());
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfChain.getSfcServiceFunction());
         for (SfcServiceFunction sfcServiceFunction : sfChain.getSfcServiceFunction()) {
             LOG.debug("sfcServiceFunction.name = {}", sfcServiceFunction.getName());
-            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             assertNotNull("Must be not null", serviceFunctionType);
         }
 
@@ -263,23 +253,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         List<String> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
-        Object[] parametersHop = {serviceFunctionNameArrayList.get(0)};
-        Class[] parameterTypesHop = {String.class};
-        Object resultHop = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parametersHop, parameterTypesHop)).get();
-        ServiceFunction sfHop0 = (ServiceFunction) resultHop;
-
-        Object[] parametersHop1 = {serviceFunctionNameArrayList.get(1)};
-        Class[] parameterTypesHop1 = {String.class};
-        Object resultHop1 = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parametersHop1, parameterTypesHop1)).get();
-        ServiceFunction sfHop1 = (ServiceFunction) resultHop1;
-
-        Object[] parametersHop2 = {serviceFunctionNameArrayList.get(2)};
-        Class[] parameterTypesHop2 = {String.class};
-        Object resultHop2 = executor.submit(SfcProviderServiceFunctionAPI
-                .getRead(parametersHop2, parameterTypesHop2)).get();
-        ServiceFunction sfHop2 = (ServiceFunction) resultHop2;
+        ServiceFunction sfHop0 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(0));
+        ServiceFunction sfHop1 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(1));
+        ServiceFunction sfHop2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(2));
 
         assertNotNull("Must be not null", sfHop0);
         assertNotNull("Must be not null", sfHop1);

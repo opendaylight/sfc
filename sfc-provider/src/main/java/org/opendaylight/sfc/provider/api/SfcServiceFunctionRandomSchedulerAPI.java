@@ -48,7 +48,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
 
         while (maxTries > 0) {
             serviceFunctionName = sftServiceFunctionNameList.get(start).getName();
-            serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunctionExecutor(serviceFunctionName);
+            serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionName);
             if (serviceFunction != null) {
                 break;
             } else {
@@ -90,7 +90,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
              */
 
             ServiceFunctionType serviceFunctionType;
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionTypeExecutor(sfcServiceFunction.getType());
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
                 List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {

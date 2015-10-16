@@ -104,6 +104,24 @@
       "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_8c79bb95",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-10-16T07:22:47Z",
+      "side": 1,
+      "message": "Here is the link for the ovs patch.\nhttp://openvswitch.org/pipermail/dev/2015-September/060678.html",
+      "parentUuid": "fad0f9df_6c26d7bc",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

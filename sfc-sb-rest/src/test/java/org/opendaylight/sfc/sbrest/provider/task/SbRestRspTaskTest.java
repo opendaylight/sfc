@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sbrest.json.RspExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -51,8 +53,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @PrepareForTest(SfcProviderServiceForwarderAPI.class)
 public class SbRestRspTaskTest {
 
-    private static final String RSP_NAME = "Dummy_RSP";
-    private static final String SFF_NAME = "Dummy_SFF";
+    private static final RspName RSP_NAME = new RspName("Dummy_RSP");
+    private static final SffName SFF_NAME = new SffName("Dummy_SFF");
     private static final String REST_URI = "http://localhost:5000";
     private final ObjectMapper mapper = new ObjectMapper();
     private ExecutorService executorService;
@@ -128,10 +130,10 @@ public class SbRestRspTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode rspNode = mapper.createObjectNode();
-        rspNode.put(RspExporterFactory._NAME, RSP_NAME);
+        rspNode.put(RspExporterFactory._NAME, RSP_NAME.getValue());
 
         ObjectNode hopNode = mapper.createObjectNode();
-        hopNode.put(RspExporterFactory._SERVICE_FUNCTION_FORWARDER, SFF_NAME);
+        hopNode.put(RspExporterFactory._SERVICE_FUNCTION_FORWARDER, SFF_NAME.getValue());
 
         ArrayNode hopArrayNode = mapper.createArrayNode();
         hopArrayNode.add(hopNode);
@@ -150,7 +152,7 @@ public class SbRestRspTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode rspNode = mapper.createObjectNode();
-        rspNode.put(RspExporterFactory._NAME, RSP_NAME);
+        rspNode.put(RspExporterFactory._NAME, RSP_NAME.getValue());
 
         ArrayNode rspArrayNode = mapper.createArrayNode();
         rspArrayNode.add(rspNode);

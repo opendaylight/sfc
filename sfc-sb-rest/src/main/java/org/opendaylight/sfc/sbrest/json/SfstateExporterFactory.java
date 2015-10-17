@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Corp. and others.  All rights reserved.
+ * Copyright (c) 2015 Intel Corp. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,27 +7,28 @@
  */
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.PortsBandwidth;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.description.capabilities.ports.bandwidth.PortBandwidth;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilization;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.SFPortsBandwidthUtilization;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilization;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfstateExporterFactory  implements ExporterFactory {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+public class SfstateExporterFactory implements ExporterFactory {
 
     public static final String _SERVICE_FUNCTION_STATE = SfstateExporter._SERVICE_FUNCTION_STATE;
     public static final String _NAME = SfstateExporter._NAME;
@@ -37,6 +38,7 @@ public class SfstateExporterFactory  implements ExporterFactory {
         return new SfstateExporter();
     }
 }
+
 
 class SfstateExporter extends AbstractExporter implements Exporter {
 
@@ -101,7 +103,9 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             ArrayNode sfstateArray = mapper.createArrayNode();
             ObjectNode sfstateNode = mapper.createObjectNode();
 
-            sfstateNode.put(_NAME, sfstate.getName());
+            if (sfstate.getName() != null && sfstate.getName().getValue() != null) {
+                sfstateNode.put(_NAME, sfstate.getName().getValue());
+            }
             if (sfstate.getServiceStatistics() != null) {
                 sfstateNode.put(_SERVICE_STATISTICS, getServiceStatisticsObjectNode(sfstate.getServiceStatistics()));
             }
@@ -115,7 +119,8 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 sfstateNode.putArray(_SF_SERVICE_PATH).addAll(servicePathArray);
             }
 
-            sfstateNode.put(SERVICE_FUNCTION_DESCRIPTION_MONITOR_PREFIX+_SFC_SF_DESC_MON, getSfDescriptionMonitorObjectNode(sfstate));
+            sfstateNode.put(SERVICE_FUNCTION_DESCRIPTION_MONITOR_PREFIX + _SFC_SF_DESC_MON,
+                    getSfDescriptionMonitorObjectNode(sfstate));
 
             sfstateArray.add(sfstateNode);
 
@@ -142,7 +147,9 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             ServiceFunctionState obj = (ServiceFunctionState) dataObject;
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(_NAME, obj.getName());
+            if (obj.getName() != null) {
+                node.put(_NAME, obj.getName().getValue());
+            }
             ArrayNode sfstateArray = mapper.createArrayNode();
             sfstateArray.add(node);
             ret = "{\"" + _SERVICE_FUNCTION_STATE + "\":" + sfstateArray.toString() + "}";
@@ -153,7 +160,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
         return ret;
     }
 
-    private ObjectNode getSfDescriptionMonitorObjectNode (ServiceFunctionState sfstate) {
+    private ObjectNode getSfDescriptionMonitorObjectNode(ServiceFunctionState sfstate) {
         if (sfstate == null || sfstate.getAugmentation(ServiceFunctionState1.class) == null) {
             return null;
         }
@@ -166,17 +173,18 @@ class SfstateExporter extends AbstractExporter implements Exporter {
         return null;
     }
 
-    private ObjectNode getDescriptionMonitorObjectNode (SfcSfDescMon sfcSfDescMon) {
+    private ObjectNode getDescriptionMonitorObjectNode(SfcSfDescMon sfcSfDescMon) {
         if (sfcSfDescMon == null) {
             return null;
         }
         ObjectNode sfcSfDescMonNode = mapper.createObjectNode();
 
-        if (sfcSfDescMon.getDescriptionInfo()!=null) {
+        if (sfcSfDescMon.getDescriptionInfo() != null) {
             ObjectNode sfDescriptionInfoNode = mapper.createObjectNode();
             DescriptionInfo sfDescriptionInfo = sfcSfDescMon.getDescriptionInfo();
             if (sfDescriptionInfo.getDataPlaneIp() != null) {
-                sfDescriptionInfoNode.put(_DATA_PLANE_IP, sfDescriptionInfo.getDataPlaneIp().getIpv4Address().getValue());
+                sfDescriptionInfoNode.put(_DATA_PLANE_IP,
+                        sfDescriptionInfo.getDataPlaneIp().getIpv4Address().getValue());
             }
 
             if (sfDescriptionInfo.getDataPlanePort() != null) {
@@ -191,7 +199,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 sfDescriptionInfoNode.put(_NUMBER_OF_DATAPORTS, sfDescriptionInfo.getNumberOfDataports());
             }
 
-            if (sfDescriptionInfo.getCapabilities()!=null) {
+            if (sfDescriptionInfo.getCapabilities() != null) {
                 ObjectNode capabilitiesNode = mapper.createObjectNode();
                 Capabilities capabilities = sfDescriptionInfo.getCapabilities();
 
@@ -201,7 +209,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 capabilitiesNode.put(_RIB_SIZE, capabilities.getRIBSize());
                 capabilitiesNode.put(_FIB_SIZE, capabilities.getFIBSize());
 
-                if (capabilities.getPortsBandwidth()!=null) {
+                if (capabilities.getPortsBandwidth() != null) {
                     ArrayNode portsBandwidthArray = mapper.createArrayNode();
                     ObjectNode portBandwidthArrayNode = mapper.createObjectNode();
                     PortsBandwidth portsBandwidth = capabilities.getPortsBandwidth();
@@ -218,10 +226,10 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 }
                 sfDescriptionInfoNode.put(_CAPABILITIES, capabilitiesNode);
             }
-            sfcSfDescMonNode.put(_DESCRIPTION_INFO,sfDescriptionInfoNode);
+            sfcSfDescMonNode.put(_DESCRIPTION_INFO, sfDescriptionInfoNode);
         }
 
-        if (sfcSfDescMon.getMonitoringInfo()!=null) {
+        if (sfcSfDescMon.getMonitoringInfo() != null) {
             ObjectNode sfMonitoringInfoNode = mapper.createObjectNode();
             MonitoringInfo sfMonitoringInfo = sfcSfDescMon.getMonitoringInfo();
 
@@ -229,7 +237,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 sfMonitoringInfoNode.put(_LIVENESS, sfMonitoringInfo.isLiveness());
             }
 
-            if (sfMonitoringInfo.getResourceUtilization()!=null) {
+            if (sfMonitoringInfo.getResourceUtilization() != null) {
                 ObjectNode resourceUtilizationNode = mapper.createObjectNode();
                 ResourceUtilization resourceUtilization = sfMonitoringInfo.getResourceUtilization();
 
@@ -242,22 +250,29 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 resourceUtilizationNode.put(_FIB_UTILIZATION, resourceUtilization.getFIBUtilization());
                 resourceUtilizationNode.put(_POWER_UTILIZATION, resourceUtilization.getPowerUtilization());
 
-                if (resourceUtilization.getSFPortsBandwidthUtilization()!=null) {
+                if (resourceUtilization.getSFPortsBandwidthUtilization() != null) {
                     ArrayNode portsBandwidthUtilizationArray = mapper.createArrayNode();
                     ObjectNode portBandwidthUtilizationArrayNode = mapper.createObjectNode();
-                    SFPortsBandwidthUtilization portsBandwidthUtilization = resourceUtilization.getSFPortsBandwidthUtilization();
-                    for (PortBandwidthUtilization portBandwidthUtilization : portsBandwidthUtilization.getPortBandwidthUtilization()) {
+                    SFPortsBandwidthUtilization portsBandwidthUtilization =
+                            resourceUtilization.getSFPortsBandwidthUtilization();
+                    for (PortBandwidthUtilization portBandwidthUtilization : portsBandwidthUtilization
+                        .getPortBandwidthUtilization()) {
                         ObjectNode portBandwidthUtilizationNode = mapper.createObjectNode();
                         portBandwidthUtilizationNode.put(_PORT_ID, portBandwidthUtilization.getPortId());
-                        portBandwidthUtilizationNode.put(_RX_PACKET, portBandwidthUtilization.getRxPacket().getValue().intValue());
-                        portBandwidthUtilizationNode.put(_TX_PACKET, portBandwidthUtilization.getTxPacket().getValue().intValue());
-                        portBandwidthUtilizationNode.put(_RX_BYTES, portBandwidthUtilization.getRxBytes().getValue().intValue());
-                        portBandwidthUtilizationNode.put(_TX_BYTES, portBandwidthUtilization.getTxBytes().getValue().intValue());
+                        portBandwidthUtilizationNode.put(_RX_PACKET,
+                                portBandwidthUtilization.getRxPacket().getValue().intValue());
+                        portBandwidthUtilizationNode.put(_TX_PACKET,
+                                portBandwidthUtilization.getTxPacket().getValue().intValue());
+                        portBandwidthUtilizationNode.put(_RX_BYTES,
+                                portBandwidthUtilization.getRxBytes().getValue().intValue());
+                        portBandwidthUtilizationNode.put(_TX_BYTES,
+                                portBandwidthUtilization.getTxBytes().getValue().intValue());
                         portBandwidthUtilizationNode.put(_RX_BYTES_RATE, portBandwidthUtilization.getRxBytesRate());
                         portBandwidthUtilizationNode.put(_TX_BYTES_RATE, portBandwidthUtilization.getTxBytesRate());
                         portBandwidthUtilizationNode.put(_RX_PACKET_RATE, portBandwidthUtilization.getRxPacketRate());
                         portBandwidthUtilizationNode.put(_TX_PACKET_RATE, portBandwidthUtilization.getTxPacketRate());
-                        portBandwidthUtilizationNode.put(_BANDWIDTH_UTILIZATION, portBandwidthUtilization.getBandwidthUtilization());
+                        portBandwidthUtilizationNode.put(_BANDWIDTH_UTILIZATION,
+                                portBandwidthUtilization.getBandwidthUtilization());
                         portsBandwidthUtilizationArray.add(portBandwidthUtilizationNode);
                     }
                     portBandwidthUtilizationArrayNode.put(_PORT_BANDWIDTH_UTILIZATION, portsBandwidthUtilizationArray);
@@ -265,13 +280,13 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 }
                 sfMonitoringInfoNode.put(_RESOURCE_UTILIZATION, resourceUtilizationNode);
             }
-            sfcSfDescMonNode.put(_MONITOR_INFO,sfMonitoringInfoNode);
+            sfcSfDescMonNode.put(_MONITOR_INFO, sfMonitoringInfoNode);
         }
 
         return sfcSfDescMonNode;
     }
 
-    private ObjectNode getServiceStatisticsObjectNode (ServiceStatistics serviceStatistics) {
+    private ObjectNode getServiceStatisticsObjectNode(ServiceStatistics serviceStatistics) {
         if (serviceStatistics == null) {
             return null;
         }
@@ -297,18 +312,18 @@ class SfstateExporter extends AbstractExporter implements Exporter {
         return serviceStatisticsNode;
     }
 
-    private ObjectNode getSfServicePathObjectNode (SfServicePath sfServicePath) {
+    private ObjectNode getSfServicePathObjectNode(SfServicePath sfServicePath) {
         if (sfServicePath == null) {
             return null;
         }
 
         ObjectNode sfServicePathNode = mapper.createObjectNode();
 
-        if (sfServicePath.getName() != null) {
-            sfServicePathNode.put(_NAME, sfServicePath.getName());
+        if (sfServicePath.getName() != null && sfServicePath.getName().getValue() != null) {
+            sfServicePathNode.put(_NAME, sfServicePath.getName().getValue());
         }
 
-        if (sfServicePath.getServiceStatistics()!=null) {
+        if (sfServicePath.getServiceStatistics() != null) {
             ObjectNode serviceStatisticsNode = mapper.createObjectNode();
             ServiceStatistics serviceStatistics = sfServicePath.getServiceStatistics();
 

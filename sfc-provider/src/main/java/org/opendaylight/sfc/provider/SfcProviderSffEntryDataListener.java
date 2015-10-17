@@ -22,6 +22,9 @@ import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -74,10 +77,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
 
                         LOG.debug("{}: SFF {} deletion", Thread.currentThread().getStackTrace()[1],
                                 serviceFunctionForwarder.getName());
-                        String sffName = serviceFunctionForwarder.getName();
-                        List<String> rspList = new ArrayList<>();
-                        List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffState(sffName);
+                        SffName sffName = serviceFunctionForwarder.getName();
+                        List<RspName> rspList = new ArrayList<>();
+                        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
                             if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
 
@@ -86,9 +88,13 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                                         Thread.currentThread().getStackTrace()[1], sffName);
                             }
                             for (SffServicePath sffServicePath : sffServicePathList) {
-                                String rspName = sffServicePath.getName();
+                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                                RspName rspName = new RspName(sffServicePath.getName().getValue());
+                                // XXX Another example of Method Overloading confusion brought about
+                                // by Strings
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionState(rspName);
+                                    .deleteServicePathFromServiceFunctionState(new SfpName(rspName.getValue()));
                                 rspList.add(rspName);
                             }
                             SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
@@ -123,20 +129,23 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                          * references in the SFF/SF operational trees
                          */
 
-                        String sffName = serviceFunctionForwarder.getName();
+                        SffName sffName = serviceFunctionForwarder.getName();
                         LOG.debug("{}: SFF {} update", Thread.currentThread().getStackTrace()[1], sffName);
-                        List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffState(sffName);
-                        List<String> rspList = new ArrayList<>();
+                        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+                        List<RspName> rspList = new ArrayList<>();
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
                             if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
                                 LOG.error("{}: Failed to delete SFF {} operational state",
                                         Thread.currentThread().getStackTrace()[1], sffName);
                             }
                             for (SffServicePath sffServicePath : sffServicePathList) {
-                                String rspName = sffServicePath.getName();
+                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                                RspName rspName = new RspName(sffServicePath.getName().getValue());
+                                // XXX Another example of Method Overloading confusion brought about
+                                // by Strings
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionState(rspName);
+                                    .deleteServicePathFromServiceFunctionState(new SfpName(rspName.getValue()));
                                 rspList.add(rspName);
                             }
                             SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);

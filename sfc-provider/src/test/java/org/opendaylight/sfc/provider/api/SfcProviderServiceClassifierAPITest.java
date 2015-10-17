@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
@@ -44,8 +45,8 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
     @Test
     public void addRenderedPathToServiceClassifierStateTest() throws Exception {
         final String clsfName = "clsfName";
-        final String rspName1 = "rspName1";
-        final String rspName2 = "rspName2";
+        final RspName rspName1 = new RspName("rspName1");
+        final RspName rspName2 = new RspName("rspName2");
 
         assertClsfStateDoesNotExist(clsfName);
         assertTrue("Failed to update clsf state.",
@@ -59,28 +60,33 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
 
     private static void assertClsfStateDoesNotExist(String clsfName) {
         ServiceFunctionClassifierStateKey clsfStateKey = new ServiceFunctionClassifierStateKey(clsfName);
-        InstanceIdentifier<ServiceFunctionClassifierState> rspId = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
-                .child(ServiceFunctionClassifierState.class, clsfStateKey).build();
-        ServiceFunctionClassifierState clsfState = SfcDataStoreAPI.readTransactionAPI(rspId, LogicalDatastoreType.OPERATIONAL);
+        InstanceIdentifier<ServiceFunctionClassifierState> rspId =
+                InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
+                    .child(ServiceFunctionClassifierState.class, clsfStateKey)
+                    .build();
+        ServiceFunctionClassifierState clsfState =
+                SfcDataStoreAPI.readTransactionAPI(rspId, LogicalDatastoreType.OPERATIONAL);
         assertNull("Unexpected clsf state found.", clsfState);
     }
 
-    private static void readAndAssertClsfState(String clsfName, String rspName) {
+    private static void readAndAssertClsfState(String clsfName, RspName rspName) {
         ServiceFunctionClassifierStateKey clsfStateKey = new ServiceFunctionClassifierStateKey(clsfName);
-        SclRenderedServicePathKey rspKey = new SclRenderedServicePathKey(rspName);
-        InstanceIdentifier<SclRenderedServicePath> rspId = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
-                .child(ServiceFunctionClassifierState.class, clsfStateKey)
-                .child(SclRenderedServicePath.class, rspKey).build();
+        SclRenderedServicePathKey rspKey = new SclRenderedServicePathKey(rspName.getValue());
+        InstanceIdentifier<SclRenderedServicePath> rspId =
+                InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
+                    .child(ServiceFunctionClassifierState.class, clsfStateKey)
+                    .child(SclRenderedServicePath.class, rspKey)
+                    .build();
         SclRenderedServicePath rsp = SfcDataStoreAPI.readTransactionAPI(rspId, LogicalDatastoreType.OPERATIONAL);
         assertNotNull("Scl rendered service path not found.", rsp);
-        assertEquals("Unexpected scl rendered service path name.", rspName, rsp.getName());
+        assertEquals("Unexpected scl rendered service path name.", rspName.getValue(), rsp.getName());
     }
 
     @Test
     public void addRenderedPathToServiceClassifierStateExecutorTest() throws Exception {
         final String clsfName = "clsfName";
-        final String rspName1 = "rspName1";
-        final String rspName2 = "rspName2";
+        final RspName rspName1 = new RspName("rspName1");
+        final RspName rspName2 = new RspName("rspName2");
 
         assertClsfStateDoesNotExist(clsfName);
         assertTrue("Failed to update clsf state.",
@@ -108,8 +114,10 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
     }
 
     private void writeClassifierToStore(ServiceFunctionClassifier clsf) {
-        InstanceIdentifier<ServiceFunctionClassifier> clsfId = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(clsf.getName())).build();
+        InstanceIdentifier<ServiceFunctionClassifier> clsfId =
+                InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
+                    .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(clsf.getName()))
+                    .build();
         boolean result = SfcDataStoreAPI.writePutTransactionAPI(clsfId, clsf, LogicalDatastoreType.CONFIGURATION);
         assertTrue("Failed to write classifier to data store.", result);
     }

@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -119,7 +122,7 @@ public class SfExporterTest {
 
     private ServiceFunction buildServiceFunctionNameOnly() {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(SfTestValues.NAME.getValue());
+        serviceFunctionBuilder.setName(new SfName(SfTestValues.NAME.getValue()));
 
         return serviceFunctionBuilder.build();
     }
@@ -127,7 +130,7 @@ public class SfExporterTest {
     private ServiceFunction buildServiceFunction() {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         // noinspection unchecked
-        serviceFunctionBuilder.setName(SfTestValues.NAME.getValue())
+        serviceFunctionBuilder.setName(new SfName(SfTestValues.NAME.getValue()))
             .setType(SfTestValues.TYPE.getIdentity())
             .setRestUri(new Uri(SfTestValues.REST_URI.getValue()))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfTestValues.IP_MGMT_ADDRESS.getValue())))
@@ -146,8 +149,8 @@ public class SfExporterTest {
         ipBuilder.setPort(new PortNumber(Integer.valueOf(SfTestValues.PORT1.getValue())));
 
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
-        sfDataPlaneLocatorBuilder.setName(SfTestValues.SF_LOCATOR_NAME.getValue())
-            .setServiceFunctionForwarder(SfTestValues.SF_LOCATOR_SERVICE_FUNCTION_FORWARDER.getValue())
+        sfDataPlaneLocatorBuilder.setName(new SfDataPlaneLocatorName(SfTestValues.SF_LOCATOR_NAME.getValue()))
+            .setServiceFunctionForwarder(new SffName(SfTestValues.SF_LOCATOR_SERVICE_FUNCTION_FORWARDER.getValue()))
             .setLocatorType(ipBuilder.build());
 
         sfDataPlaneLocatorList.add(sfDataPlaneLocatorBuilder.build());
@@ -157,8 +160,8 @@ public class SfExporterTest {
         ipBuilder.setPort(new PortNumber(Integer.valueOf(SfTestValues.PORT2.getValue())));
 
         sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
-        sfDataPlaneLocatorBuilder.setName(SfTestValues.SF_LOCATOR_NAME.getValue())
-            .setServiceFunctionForwarder(SfTestValues.SF_LOCATOR_SERVICE_FUNCTION_FORWARDER.getValue())
+        sfDataPlaneLocatorBuilder.setName(new SfDataPlaneLocatorName(SfTestValues.SF_LOCATOR_NAME.getValue()))
+            .setServiceFunctionForwarder(new SffName(SfTestValues.SF_LOCATOR_SERVICE_FUNCTION_FORWARDER.getValue()))
             .setLocatorType(ipBuilder.build());
 
         sfDataPlaneLocatorList.add(sfDataPlaneLocatorBuilder.build());

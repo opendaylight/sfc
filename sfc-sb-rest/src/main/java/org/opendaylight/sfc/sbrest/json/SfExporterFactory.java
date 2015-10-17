@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,14 +8,15 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SfExporterFactory implements ExporterFactory {
 
@@ -28,6 +29,7 @@ public class SfExporterFactory implements ExporterFactory {
         return new SfExporter();
     }
 }
+
 
 class SfExporter extends AbstractExporter implements Exporter {
 
@@ -54,7 +56,9 @@ class SfExporter extends AbstractExporter implements Exporter {
 
             ArrayNode sfArray = mapper.createArrayNode();
             ObjectNode sfNode = mapper.createObjectNode();
-            sfNode.put(_NAME, sf.getName());
+            if (sf.getName() != null && sf.getName().getValue() != null) {
+                sfNode.put(_NAME, sf.getName().getValue());
+            }
             sfNode.put(_IP_MGMT_ADDRESS, ExporterUtil.convertIpAddress(sf.getIpMgmtAddress()));
             if (sf.getRestUri() != null) {
                 sfNode.put(_REST_URI, sf.getRestUri().getValue());
@@ -99,7 +103,7 @@ class SfExporter extends AbstractExporter implements Exporter {
             ServiceFunction obj = (ServiceFunction) dataObject;
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(_NAME, obj.getName());
+            node.put(_NAME, obj.getName().getValue());
             ArrayNode sfArray = mapper.createArrayNode();
             sfArray.add(node);
             ret = "{\"" + _SERVICE_FUNCTION + "\":" + sfArray.toString() + "}";
@@ -117,8 +121,8 @@ class SfExporter extends AbstractExporter implements Exporter {
             sfLocatorNode = mapper.createObjectNode();
         }
 
-        sfLocatorNode.put(_NAME, locator.getName());
-        sfLocatorNode.put(_SERVICE_FUNCTION_FORWARDER, locator.getServiceFunctionForwarder());
+        sfLocatorNode.put(_NAME, locator.getName().getValue());
+        sfLocatorNode.put(_SERVICE_FUNCTION_FORWARDER, locator.getServiceFunctionForwarder().getValue());
 
         return sfLocatorNode;
     }

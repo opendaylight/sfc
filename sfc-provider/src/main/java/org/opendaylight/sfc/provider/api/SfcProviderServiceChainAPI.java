@@ -12,6 +12,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -51,7 +53,7 @@ public class SfcProviderServiceChainAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    public static ServiceFunctionChain readServiceFunctionChain(String serviceFunctionChainName) {
+    public static ServiceFunctionChain readServiceFunctionChain(SfcName serviceFunctionChainName) {
         printTraceStart(LOG);
         ServiceFunctionChain sfc;
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
@@ -75,8 +77,8 @@ public class SfcProviderServiceChainAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    public static boolean deletePathFromServiceFunctionChainState(String serviceFunctionChainName,
-            String servicePathName) {
+    public static boolean deletePathFromServiceFunctionChainState(SfcName serviceFunctionChainName,
+            SfpName servicePathName) {
 
         printTraceStart(LOG);
         boolean ret = false;
@@ -104,7 +106,8 @@ public class SfcProviderServiceChainAPI {
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
-    public static boolean addPathToServiceFunctionChainState(String serviceFunctionChainName, String servicePathName) {
+    public static boolean addPathToServiceFunctionChainState(SfcName serviceFunctionChainName,
+            SfpName servicePathName) {
 
         printTraceStart(LOG);
         boolean ret = false;
@@ -159,7 +162,7 @@ public class SfcProviderServiceChainAPI {
      * @param serviceFunctionChainName SFC name
      * @return true if SF was deleted, false otherwise
      */
-    protected static boolean deleteServiceFunctionChain(String serviceFunctionChainName) {
+    protected static boolean deleteServiceFunctionChain(SfcName serviceFunctionChainName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);

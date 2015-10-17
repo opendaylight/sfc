@@ -114,7 +114,7 @@ public class SfcOvsToSffMappingAPITest {
         serviceFunctionForwarder = SfcOvsToSffMappingAPI.buildServiceFunctionForwarderFromNode(nodeBuilder.build());
 
         assertNotNull("Must be not null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getName(), nodeId);
+        assertEquals("Must be equal", serviceFunctionForwarder.getName().getValue(), nodeId);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class SfcOvsToSffMappingAPITest {
         sffDataPlaneLocatorList = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "buildSffDataPlaneLocatorList",
                 ovsdbBridgeAugmentationBuilder.build(), terminationPointList);
 
-        assertEquals("Must be equal", sffDataPlaneLocatorList.get(0).getName(), testName);
+        assertEquals("Must be equal", sffDataPlaneLocatorList.get(0).getName().getValue(), testName);
     }
 
     @Test

@@ -31,6 +31,13 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
@@ -125,35 +132,171 @@ import org.slf4j.LoggerFactory;
 
 public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
-    private final String[] sffNames = {"sff1", "sff2", "sff3", "sff4"};
-    private final String[] sffDplNames = {"sffDpl1", "sffDpl2", "sffDpl3", "sffDpl4"};
-    private final String[] sfNames = {"sf1", "sf2", "sf3", "sf4", "sf5", "sf6", "sf7", "sf8"};
-    private final String[] sfDplNames = {"sfDpl1", "sfDpl2", "sfDpl3", "sfDpl4", "sfDpl5", "sfDpl6", "sfDpl7", "sfDpl8"};
-    private final String[] groupNames = {"group1", "group2", "group3", "group4"};
-    private final String[] chainNames = {"chain1", "chain2", "chain3"};
-    private final String[] pathNames = {"path1", "path2", "path3"};
+    private final List<SffName> sffNames = new ArrayList<SffName>() {
 
-    private static final String[] LOCATOR_IP_ADDRESS =
-            {"196.168.55.1", "196.168.55.2", "196.168.55.3",
-                    "196.168.55.4", "196.168.55.5"};
-    private static final String[] IP_MGMT_ADDRESS =
-            {"196.168.55.101", "196.168.55.102", "196.168.55.103",
-                    "196.168.55.104", "196.168.55.105"};
-    private static final int[] PORT = {1111, 2222, 3333, 4444, 5555};
-    private static final Class[] sfTypes = {Firewall.class, Dpi.class, Napt44.class, HttpHeaderEnrichment.class, Qos.class};
-    private static final String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
-    private static final String SFC_NAME = "unittest-chain-1";
-    private static final String SFP_NAME = "unittest-sfp-1";
-    private static final String RSP_NAME = "unittest-rsp-1";
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
-    private static final String[] sfNames2 = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1", "unittest-qos-1"};
-    private final String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
+        {
+            add(new SffName("sff1"));
+            add(new SffName("sff2"));
+            add(new SffName("sff3"));
+            add(new SffName("sff4"));
+        }
+    };
+
+    // XXX TODO Why can't we consolidate these two SFF lists ?
+    private final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+
+        {
+            add(new SffName("SFF1"));
+            add(new SffName("SFF2"));
+            add(new SffName("SFF3"));
+            add(new SffName("SFF4"));
+            add(new SffName("SFF4"));
+        }
+    };
     private final String[][] TO_SFF_NAMES =
             {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
     private final String[] SFF_LOCATOR_IP =
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
+
+    private final List<SffDataPlaneLocatorName> sffDplNames = new ArrayList<SffDataPlaneLocatorName>() {
+
+        {
+            add(new SffDataPlaneLocatorName("sffDpl1"));
+            add(new SffDataPlaneLocatorName("sffDpl2"));
+            add(new SffDataPlaneLocatorName("sffDpl3"));
+            add(new SffDataPlaneLocatorName("sffDpl4"));
+        }
+    };
+
+    private final List<SfName> sfNames = new ArrayList<SfName>() {
+
+        {
+            add(new SfName("sf1"));
+            add(new SfName("sf2"));
+            add(new SfName("sf3"));
+            add(new SfName("sf4"));
+            add(new SfName("sf5"));
+            add(new SfName("sf6"));
+            add(new SfName("sf7"));
+            add(new SfName("sf8"));
+        }
+    };
+
+    private static final List<SfName> sfNames2 = new ArrayList<SfName>() {
+
+        {
+            add(new SfName("unittest-fw-1"));
+            add(new SfName("unittest-dpi-1"));
+            add(new SfName("unittest-napt-1"));
+            add(new SfName("unittest-http-header-enrichment-1"));
+            add(new SfName("unittest-qos-1"));
+        }
+    };
+
+    private final List<SfDataPlaneLocatorName> sfDplNames = new ArrayList<SfDataPlaneLocatorName>() {
+
+        {
+            add(new SfDataPlaneLocatorName("sfDpl1"));
+            add(new SfDataPlaneLocatorName("sfDpl2"));
+            add(new SfDataPlaneLocatorName("sfDpl3"));
+            add(new SfDataPlaneLocatorName("sfDpl4"));
+            add(new SfDataPlaneLocatorName("sfDpl5"));
+            add(new SfDataPlaneLocatorName("sfDpl6"));
+            add(new SfDataPlaneLocatorName("sfDpl7"));
+            add(new SfDataPlaneLocatorName("sfDpl8"));
+        }
+    };
+
+    private final List<String> groupNames = new ArrayList<String>() {
+
+        {
+            add("group1");
+            add("group2");
+            add("group3");
+            add("group4");
+        }
+    };
+
+    private final List<SfcName> chainNames = new ArrayList<SfcName>() {
+
+        {
+            add(new SfcName("chain1"));
+            add(new SfcName("chain2"));
+            add(new SfcName("chain3"));
+        }
+    };
+
+    private final List<SfpName> pathNames = new ArrayList<SfpName>() {
+
+        {
+            add(new SfpName("path1"));
+            add(new SfpName("path2"));
+            add(new SfpName("path3"));
+        }
+    };
+
+    private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.1");
+            add("196.168.55.2");
+            add("196.168.55.3");
+            add("196.168.55.4");
+            add("196.168.55.5");
+        }
+    };
+
+    private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.101");
+            add("196.168.55.102");
+            add("196.168.55.103");
+            add("196.168.55.104");
+            add("196.168.55.105");
+        }
+    };
+
+    private static final List<Integer> PORT = new ArrayList<Integer>() {
+
+        {
+            add(1111);
+            add(2222);
+            add(3333);
+            add(4444);
+            add(5555);
+        }
+    };
+
+    private static final List<Class> sfTypes = new ArrayList<Class>() {
+
+        {
+            add(Firewall.class);
+            add(Dpi.class);
+            add(Napt44.class);
+            add(HttpHeaderEnrichment.class);
+            add(Qos.class);
+        }
+    };
+    private static final List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
+
+        {
+            add("firewall");
+            add("dpi");
+            add("napt");
+            add("http-header-enrichment");
+            add("qos");
+        }
+    };
+
+    private static final SfcName SFC_NAME = new SfcName("unittest-chain-1");
+    private static final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
+    private static final RspName RSP_NAME = new RspName("unittest-rsp-1");
+
     private final List<ServiceFunction> sfList = new ArrayList<>();
+
     SfcProviderRpc sfcProviderRpc;
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
 
     @Before
     public void setUp() {
@@ -161,40 +304,42 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         sfcProviderRpc = new SfcProviderRpc();
     }
 
-    //auxiliary method
+    // auxiliary method
     private void init() {
         // Create Service Functions
-        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames2.length];
-        final IpAddress[] locatorIpAddress = new IpAddress[sfNames2.length];
-        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames2.length];
-        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames2.length];
-        for (int i = 0; i < sfNames2.length; i++) {
-            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
-            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0]));
-            PortNumber portNumber = new PortNumber(PORT[i]);
-            key[i] = new ServiceFunctionKey(sfNames2[i]);
+        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames2.size()];
+        final IpAddress[] locatorIpAddress = new IpAddress[sfNames2.size()];
+        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames2.size()];
+        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames2.size()];
+        for (int i = 0; i < sfNames2.size(); i++) {
+            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
+            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
+            PortNumber portNumber = new PortNumber(PORT.get(i));
+            key[i] = new ServiceFunctionKey(sfNames2.get(i));
 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(LOCATOR_IP_ADDRESS[i]).setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(SFF_NAMES[i]);
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
+                .setLocatorType(ipBuilder.build())
+                .setServiceFunctionForwarder(SFF_NAMES.get(i));
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(sfNames2[i]).setKey(key[i])
-                    .setType(sfTypes[i])
-                    .setIpMgmtAddress(ipMgmtAddress[i])
-                    .setSfDataPlaneLocator(dataPlaneLocatorList);
+            sfBuilder.setName(sfNames2.get(i))
+                .setKey(key[i])
+                .setType(sfTypes.get(i))
+                .setIpMgmtAddress(ipMgmtAddress[i])
+                .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        InstanceIdentifier<ServiceFunctions> sfsIID =
-                InstanceIdentifier.builder(ServiceFunctions.class).build();
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
         SfcDataStoreAPI.writePutTransactionAPI(sfsIID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
@@ -205,16 +350,17 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         }
 
         // Create Service Function Forwarders
-        for (int i = 0; i < SFF_NAMES.length; i++) {
-            //ServiceFunctionForwarders connected to SFF_NAMES[i]
+        for (int i = 0; i < SFF_NAMES.size(); i++) {
+            // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(TO_SFF_NAMES[i][j]).build();
+                ConnectedSffDictionary sffDictEntry =
+                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
                 sffDictionaryList.add(sffDictEntry);
             }
 
-            //ServiceFunctions attached to SFF_NAMES[i]
+            // ServiceFunctions attached to SFF_NAMES[i]
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             ServiceFunction serviceFunction = sfList.get(i);
             SfDataPlaneLocator sfDPLocator = serviceFunction.getSfDataPlaneLocator().get(0);
@@ -222,62 +368,60 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                    .setType(serviceFunction.getType())
-                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                    .setFailmode(Open.class)
-                    .setSffInterfaces(null);
+                .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                .setType(serviceFunction.getType())
+                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
+                .setFailmode(Open.class)
+                .setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
 
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[i])))
-                    .setPort(new PortNumber(PORT[i]));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[i]))).setPort(new PortNumber(PORT.get(i)));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
-            sffLocatorBuilder.setLocatorType(ipBuilder.build())
-                    .setTransport(VxlanGpe.class);
+            sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(SFF_LOCATOR_IP[i])
-                    .setKey(new SffDataPlaneLocatorKey(SFF_LOCATOR_IP[i]))
-                    .setDataPlaneLocator(sffLocatorBuilder.build());
+            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i]))
+                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i])))
+                .setDataPlaneLocator(sffLocatorBuilder.build());
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(SFF_NAMES[i])
-                    .setKey(new ServiceFunctionForwarderKey(SFF_NAMES[i]))
-                    .setSffDataPlaneLocator(locatorList)
-                    .setServiceFunctionDictionary(sfDictionaryList)
-                    .setConnectedSffDictionary(sffDictionaryList)
-                    .setServiceNode(null);
+            sffBuilder.setName(SFF_NAMES.get(i))
+                .setKey(new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
+                .setSffDataPlaneLocator(locatorList)
+                .setServiceFunctionDictionary(sfDictionaryList)
+                .setConnectedSffDictionary(sffDictionaryList)
+                .setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
-            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class).
-                    child(ServiceFunctionForwarder.class, new ServiceFunctionForwarderKey(SFF_NAMES[i])).build();
+            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
+                .builder(ServiceFunctionForwarders.class)
+                .child(ServiceFunctionForwarder.class, new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
+                .build();
             SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
         }
 
-        //Create Service Function Chain
+        // Create Service Function Chain
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        for (int i = 0; i < SF_ABSTRACT_NAMES.length; i++) {
+        for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                    sfcSfBuilder.setName(SF_ABSTRACT_NAMES[i])
-                            .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES[i]))
-                            .setType(sfTypes[i])
-                            .build();
+            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
+                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i)))
+                .setType(sfTypes.get(i))
+                .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey)
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(true);
+        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
 
         InstanceIdentifier<ServiceFunctionChain> sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-                .child(ServiceFunctionChain.class, sfcKey).build();
+            .child(ServiceFunctionChain.class, sfcKey)
+            .build();
         SfcDataStoreAPI.writePutTransactionAPI(sfcIID, sfcBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
-        //Check if Service Function Chain was created
+        // Check if Service Function Chain was created
         Object result = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
         ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
 
@@ -287,8 +431,10 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         /* Create ServiceFunctionPath */
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(SFP_NAME)
-                .setServiceChainName(SFC_NAME)
-                .setSymmetric(true).setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME);
+            .setServiceChainName(SFC_NAME)
+            .setSymmetric(true)
+            .setClassifier(SFP_NAME.getValue())
+            .setSymmetricClassifier(SFP_NAME.getValue());
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         boolean ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
@@ -296,45 +442,51 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     }
 
     @Test
-    public void createRenderedPathTest() throws Exception{
+    public void createRenderedPathTest() throws Exception {
         init();
 
-        ServiceFunctionPath serviceFunctionPath =
-                SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME).setParentServiceFunctionPath(SFP_NAME)
-                .setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME).setSymmetric(true);
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue())
+            .setParentServiceFunctionPath(SFP_NAME.getValue())
+            .setClassifier(SFP_NAME.getValue())
+            .setSymmetricClassifier(SFP_NAME.getValue())
+            .setSymmetric(true);
 
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
-        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(
-                serviceFunctionPath, createRenderedPathInput);
+        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
 
-        //check if SFF oper contains RSP
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(SFF_NAMES[1]);
+        // check if SFF oper contains RSP
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(SFF_NAMES.get(0));
         assertNotNull("Must be not null", sffServicePathList);
-        assertEquals(sffServicePathList.get(0).getName(), RSP_NAME);
+        // XXX TODO ... same problem... why equivalence between these two things? Its hidden in RPC.
+        assertEquals(sffServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
-        //check if SF oper contains RSP
-        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState("unittest-fw-1");
-        assertEquals(sfServicePathList.get(0).getName(), RSP_NAME);
+        // check if SF oper contains RSP
+        // XXX TODO why refer to string directly when it appears in variables initialised at top ?
+        List<SfServicePath> sfServicePathList =
+                SfcProviderServiceFunctionAPI.readServiceFunctionState(new SfName("unittest-fw-1"));
+        assertEquals(sfServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
-        //check if SFP oper contains RSP
-        List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
-        assertEquals(sfpRenderedServicePathList.get(0).getName(), RSP_NAME);
+        // check if SFP oper contains RSP
+        List<SfpRenderedServicePath> sfpRenderedServicePathList =
+                SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
+        assertEquals(sfpRenderedServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
 
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
-        serviceFunctionClassifierBuilder.setName(SFP_NAME);
+        serviceFunctionClassifierBuilder.setName(SFP_NAME.getValue());
         ServiceFunctionClassifier serviceFunctionClassifier = serviceFunctionClassifierBuilder.build();
 
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
-        ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(SFP_NAME);
+        ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(SFP_NAME.getValue());
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
+            .child(ServiceFunctionClassifier.class, serviceFunctionKey)
+            .build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sclIID, serviceFunctionClassifier, LogicalDatastoreType.CONFIGURATION);
 
@@ -350,57 +502,62 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertEquals(renderedServicePath.getName(), RSP_NAME);
         assertEquals(5, renderedServicePath.getRenderedServicePathHop().size());
 
-        assertHop(0, "SFF1", renderedServicePath.getRenderedServicePathHop().get(0));
-        assertHop(1, "SFF2", renderedServicePath.getRenderedServicePathHop().get(1));
+        assertHop(0, new SffName("SFF1"), renderedServicePath.getRenderedServicePathHop().get(0));
+        assertHop(1, new SffName("SFF2"), renderedServicePath.getRenderedServicePathHop().get(1));
 
-        ServiceFunctionClassifier serviceFunctionClassifierFromDataStore = SfcDataStoreAPI.readTransactionAPI(sclIID, LogicalDatastoreType.CONFIGURATION);
-        assertEquals(SFP_NAME, serviceFunctionClassifierFromDataStore.getName());
+        ServiceFunctionClassifier serviceFunctionClassifierFromDataStore =
+                SfcDataStoreAPI.readTransactionAPI(sclIID, LogicalDatastoreType.CONFIGURATION);
+        assertEquals(SFP_NAME.getValue(), serviceFunctionClassifierFromDataStore.getName());
     }
 
-    private void assertHop(long hopNumber, String name, RenderedServicePathHop hop) {
-        assertEquals(hopNumber, (long)hop.getHopNumber());
+    private void assertHop(long hopNumber, SffName name, RenderedServicePathHop hop) {
+        assertEquals(hopNumber, (long) hop.getHopNumber());
         assertEquals(name, hop.getServiceFunctionForwarder());
     }
 
-    private void writeRSP() throws Exception{
+    private void writeRSP() throws Exception {
         init();
 
-        ServiceFunctionPath serviceFunctionPath =
-                SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME).setParentServiceFunctionPath(SFP_NAME)
-                .setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME).setSymmetric(true);
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue())
+            .setParentServiceFunctionPath(SFP_NAME.getValue())
+            .setClassifier(SFP_NAME.getValue())
+            .setSymmetricClassifier(SFP_NAME.getValue())
+            .setSymmetric(true);
 
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
-        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(
-                serviceFunctionPath, createRenderedPathInput);
+        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
 
-        //check if SFF oper contains RSP
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(SFF_NAMES[1]);
+        // check if SFF oper contains RSP
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(SFF_NAMES.get(1));
         assertNotNull("Must be not null", sffServicePathList);
-        assertEquals(sffServicePathList.get(0).getName(), RSP_NAME);
+        assertEquals(sffServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
-        //check if SF oper contains RSP
-        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState("unittest-fw-1");
-        assertEquals(sfServicePathList.get(0).getName(), RSP_NAME);
+        // check if SF oper contains RSP
+        List<SfServicePath> sfServicePathList =
+                SfcProviderServiceFunctionAPI.readServiceFunctionState(new SfName("unittest-fw-1"));
+        assertEquals(sfServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
-        //check if SFP oper contains RSP
-        List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
+        // check if SFP oper contains RSP
+        List<SfpRenderedServicePath> sfpRenderedServicePathList =
+                SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName(), RSP_NAME);
 
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
 
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
-        serviceFunctionClassifierBuilder.setName(SFP_NAME);
+        serviceFunctionClassifierBuilder.setName(SFP_NAME.getValue());
         ServiceFunctionClassifier serviceFunctionClassifier = serviceFunctionClassifierBuilder.build();
 
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
-        ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(SFP_NAME);
+        ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(SFP_NAME.getValue());
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
+            .child(ServiceFunctionClassifier.class, serviceFunctionKey)
+            .build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sclIID, serviceFunctionClassifier, LogicalDatastoreType.CONFIGURATION);
 
@@ -410,12 +567,15 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     @Test
     public void readRenderedServicePathFirstHopTest() throws Exception {
         writeRSP();
-        ReadRenderedServicePathFirstHopInputBuilder readRenderedServicePathFirstHopInputBuilder = new ReadRenderedServicePathFirstHopInputBuilder();
-        readRenderedServicePathFirstHopInputBuilder.setName(RSP_NAME);
-        ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput = readRenderedServicePathFirstHopInputBuilder.build();
+        ReadRenderedServicePathFirstHopInputBuilder readRenderedServicePathFirstHopInputBuilder =
+                new ReadRenderedServicePathFirstHopInputBuilder();
+        readRenderedServicePathFirstHopInputBuilder.setName(RSP_NAME.getValue());
+        ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput =
+                readRenderedServicePathFirstHopInputBuilder.build();
 
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
-        Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result = sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
+        Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result =
+                sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
         assertNotNull(result);
         assertNotNull(result.get());
         assertNotNull(result.get().getResult());
@@ -425,12 +585,15 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     @Test
     public void readRenderedServicePathFirstHopElseTest() throws Exception {
-        ReadRenderedServicePathFirstHopInputBuilder readRenderedServicePathFirstHopInputBuilder = new ReadRenderedServicePathFirstHopInputBuilder();
-        readRenderedServicePathFirstHopInputBuilder.setName(RSP_NAME);
-        ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput = readRenderedServicePathFirstHopInputBuilder.build();
+        ReadRenderedServicePathFirstHopInputBuilder readRenderedServicePathFirstHopInputBuilder =
+                new ReadRenderedServicePathFirstHopInputBuilder();
+        readRenderedServicePathFirstHopInputBuilder.setName(RSP_NAME.getValue());
+        ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput =
+                readRenderedServicePathFirstHopInputBuilder.build();
 
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
-        Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result = sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
+        Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result =
+                sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
         assertNotNull(result);
         assertNotNull(result.get());
         assertFalse(result.get().getErrors().isEmpty());
@@ -438,9 +601,12 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     @Test
     public void putServiceFunctionChainsTest() {
-        PutServiceFunctionChainsInputBuilder putServiceFunctionChainsInputBuilder = new PutServiceFunctionChainsInputBuilder();
+        PutServiceFunctionChainsInputBuilder putServiceFunctionChainsInputBuilder =
+                new PutServiceFunctionChainsInputBuilder();
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
-        serviceFunctionChainBuilder.setName("SFC1").setKey(new ServiceFunctionChainKey("SFC1")).setSymmetric(false);
+        serviceFunctionChainBuilder.setName(new SfcName("SFC1"))
+            .setKey(new ServiceFunctionChainKey(new SfcName("SFC1")))
+            .setSymmetric(false);
         ServiceFunctionChain serviceFunctionChain = serviceFunctionChainBuilder.build();
         List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
         serviceFunctionChainList.add(serviceFunctionChain);
@@ -451,38 +617,44 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
         serviceFunctionChainsBuilder = serviceFunctionChainsBuilder
-                .setServiceFunctionChain(putServiceFunctionChainsInput.getServiceFunctionChain());
+            .setServiceFunctionChain(putServiceFunctionChainsInput.getServiceFunctionChain());
         ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
-        InstanceIdentifier<ServiceFunctionChains> SFC_IID = InstanceIdentifier.builder(
-                ServiceFunctionChains.class).build();
-        ServiceFunctionChains serviceFunctionChainsFromDataStore = SfcDataStoreAPI.readTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
+        InstanceIdentifier<ServiceFunctionChains> SFC_IID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        ServiceFunctionChains serviceFunctionChainsFromDataStore =
+                SfcDataStoreAPI.readTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
         assertNotNull(serviceFunctionChainsFromDataStore);
-        assertEquals("SFC1", serviceFunctionChainsFromDataStore.getServiceFunctionChain().get(0).getName());
+        assertEquals(new SfcName("SFC1"),
+                serviceFunctionChainsFromDataStore.getServiceFunctionChain().get(0).getName());
     }
 
     @Test
     public void instantiateServiceFunctionChainTest() {
-        InstantiateServiceFunctionChainInputBuilder instantiateServiceFunctionChainInput = new InstantiateServiceFunctionChainInputBuilder();
+        InstantiateServiceFunctionChainInputBuilder instantiateServiceFunctionChainInput =
+                new InstantiateServiceFunctionChainInputBuilder();
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         assertNull(sfcProviderRpc.instantiateServiceFunctionChain(instantiateServiceFunctionChainInput.build()));
     }
 
     @Test
-    public void getSfcProviderRpcTest(){
+    public void getSfcProviderRpcTest() {
         assertNotNull(SfcProviderRpc.getSfcProviderRpc());
     }
 
     @Test
-    public void readRspFirstHopBySftListTest() throws Exception{
+    public void readRspFirstHopBySftListTest() throws Exception {
         writeRSP();
-        ReadRspFirstHopBySftListInputBuilder readRspFirstHopBySftListInputBuilder = new ReadRspFirstHopBySftListInputBuilder();
-        List<java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity>> firewallList = new ArrayList<>();
+        ReadRspFirstHopBySftListInputBuilder readRspFirstHopBySftListInputBuilder =
+                new ReadRspFirstHopBySftListInputBuilder();
+        List<java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity>> firewallList =
+                new ArrayList<>();
         firewallList.add(Firewall.class);
         readRspFirstHopBySftListInputBuilder.setSftList(firewallList);
         ReadRspFirstHopBySftListInput readRspFirstHopBySftListInput = readRspFirstHopBySftListInputBuilder.build();
 
         SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
-        Future<RpcResult<ReadRspFirstHopBySftListOutput>> result = sfcProviderRpc.readRspFirstHopBySftList(readRspFirstHopBySftListInput);
+        Future<RpcResult<ReadRspFirstHopBySftListOutput>> result =
+                sfcProviderRpc.readRspFirstHopBySftList(readRspFirstHopBySftListInput);
         assertNotNull(result);
         assertEquals((long) 255, (long) result.get().getResult().getRenderedServicePathFirstHop().getStartingIndex());
         assertTrue(result.get().getErrors().isEmpty());
@@ -493,8 +665,8 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     public void deleteRenderedPathTest() throws Exception {
         init();
 
-        final String pathName1 = "rspName1";
-        final String pathName2 = "rspName2";
+        final RspName pathName1 = new RspName("rspName1");
+        final RspName pathName2 = new RspName("rspName2");
 
         // create and delete one rendered service path
         assertRenderedServicePathDoesNotExist(pathName1);
@@ -523,42 +695,42 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertRenderedServicePathDoesNotExist(pathName1);
     }
 
-    private void createRenderedServicePath(String pathName) throws Exception {
+    private void createRenderedServicePath(RspName pathName) throws Exception {
         CreateRenderedPathInputBuilder inputBuilder = new CreateRenderedPathInputBuilder();
-        inputBuilder.setName(pathName).setParentServiceFunctionPath(SFP_NAME);
+        inputBuilder.setName(pathName.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue());
         CreateRenderedPathInput input = inputBuilder.build();
         Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(input);
         assertTrue("Failed to create rendered service path.",
                 result != null && result.get() != null && result.get().isSuccessful());
     }
 
-    private void deleteRenderedServicePath(String pathName) throws Exception {
+    private void deleteRenderedServicePath(RspName pathName) throws Exception {
         DeleteRenderedPathInputBuilder inputBuilder = new DeleteRenderedPathInputBuilder();
-        inputBuilder.setName(pathName);
+        inputBuilder.setName(pathName.getValue());
         DeleteRenderedPathInput input = inputBuilder.build();
         Future<RpcResult<DeleteRenderedPathOutput>> result = sfcProviderRpc.deleteRenderedPath(input);
         assertTrue("Failed to delete rendered service path.",
                 result != null && result.get() != null && result.get().isSuccessful());
     }
 
-    private static void assertRenderedServicePathExists(String pathName) {
+    private static void assertRenderedServicePathExists(RspName pathName) {
         RenderedServicePath path = SfcProviderRenderedPathAPI.readRenderedServicePath(pathName);
         assertNotNull("Rendered service path not found.", path);
         assertEquals("Unexpected rendered service path name.", pathName, path.getName());
     }
 
-    private static void assertRenderedServicePathDoesNotExist(String pathName) {
+    private static void assertRenderedServicePathDoesNotExist(RspName pathName) {
         RenderedServicePath path = SfcProviderRenderedPathAPI.readRenderedServicePath(pathName);
         assertNull("Unexpected rendered service path found.", path);
     }
 
     @Test
     public void putAndReadServiceFunctionTest() throws Exception {
-        PutServiceFunctionInput putSfInput1 = createPutServiceFunctionInput("sfName1",
-                Firewall.class, "192.168.50.80", "192.168.50.85", 6644, "dpLocatorKey1");
+        PutServiceFunctionInput putSfInput1 = createPutServiceFunctionInput(new SfName("sfName1"), Firewall.class,
+                "192.168.50.80", "192.168.50.85", 6644, new SfDataPlaneLocatorName("dpLocatorKey1"));
 
-        PutServiceFunctionInput putSfInput2 = createPutServiceFunctionInput("sfName2",
-                Dpi.class, "192.168.50.90", "192.168.50.95", 6655, "dpLocatorKey2");
+        PutServiceFunctionInput putSfInput2 = createPutServiceFunctionInput(new SfName("sfName2"), Dpi.class,
+                "192.168.50.90", "192.168.50.95", 6655, new SfDataPlaneLocatorName("dpLocatorKey2"));
 
         assertServiceFunctionDoesNotExist(putSfInput1.getName());
         putServiceFunction(putSfInput1);
@@ -570,12 +742,9 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         readAndAssertServiceFunction(putSfInput2);
     }
 
-    private static PutServiceFunctionInput createPutServiceFunctionInput(String sfName,
-                                                                         Class<? extends ServiceFunctionTypeIdentity> sfType,
-                                                                         String ipMgmtAddress,
-                                                                         String dpLocatorIpAddress,
-                                                                         int dpLocatorPort,
-                                                                         String dpLocatorKey) {
+    private static PutServiceFunctionInput createPutServiceFunctionInput(SfName sfName,
+            Class<? extends ServiceFunctionTypeIdentity> sfType, String ipMgmtAddress, String dpLocatorIpAddress,
+            int dpLocatorPort, SfDataPlaneLocatorName dpLocatorKey) {
 
         // prepare ip builder for data plane locator
         IpAddress ipAddress = new IpAddress(dpLocatorIpAddress.toCharArray());
@@ -593,9 +762,10 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         // create PutServiceFunctionInput
         PutServiceFunctionInputBuilder putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
-        putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName(sfName).setType(sfType)
-                .setIpMgmtAddress(new IpAddress(ipMgmtAddress.toCharArray()))
-                .setSfDataPlaneLocator(sfDataPlaneLocators);
+        putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName(sfName)
+            .setType(sfType)
+            .setIpMgmtAddress(new IpAddress(ipMgmtAddress.toCharArray()))
+            .setSfDataPlaneLocator(sfDataPlaneLocators);
         return putServiceFunctionInputBuilder.build();
     }
 
@@ -611,10 +781,9 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     private void readAndAssertServiceFunction(PutServiceFunctionInput putSfInput) throws Exception {
         ReadServiceFunctionInputBuilder readInputBuilder = new ReadServiceFunctionInputBuilder();
-        readInputBuilder.setName(putSfInput.getName());
+        readInputBuilder.setName(putSfInput.getName().getValue());
         ReadServiceFunctionInput readSfInput = readInputBuilder.build();
-        Future<RpcResult<ReadServiceFunctionOutput>> readSfResult = sfcProviderRpc
-                .readServiceFunction(readSfInput);
+        Future<RpcResult<ReadServiceFunctionOutput>> readSfResult = sfcProviderRpc.readServiceFunction(readSfInput);
         assertNotNull("Failed to read service function",
                 readSfResult != null && readSfResult.get() != null && readSfResult.get().isSuccessful());
         assert readSfResult != null;
@@ -627,193 +796,212 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertEquals("Unexpected SF type.", putSfInput.getType(), readSfOutput.getType());
         assertEquals("Unexpected IP mgmt address.", putSfInput.getIpMgmtAddress().getIpv4Address().getValue(),
                 readSfOutput.getIpMgmtAddress().getIpv4Address().getValue());
-        assertEquals("Bad number of data plane locators.",
-                putSfInput.getSfDataPlaneLocator().size(), readSfOutput.getSfDataPlaneLocator().size());
-        assertEquals("Unexpected data plane locator item value(s).",
-                putSfInput.getSfDataPlaneLocator().get(0), readSfOutput.getSfDataPlaneLocator().get(0));
+        assertEquals("Bad number of data plane locators.", putSfInput.getSfDataPlaneLocator().size(),
+                readSfOutput.getSfDataPlaneLocator().size());
+        assertEquals("Unexpected data plane locator item value(s).", putSfInput.getSfDataPlaneLocator().get(0),
+                readSfOutput.getSfDataPlaneLocator().get(0));
     }
 
-    private static void assertServiceFunctionDoesNotExist(String sfName) {
+    private static void assertServiceFunctionDoesNotExist(SfName sfName) {
         InstanceIdentifier<ServiceFunction> sfId = createServiceFunctionId(sfName);
         ServiceFunction sf = SfcDataStoreAPI.readTransactionAPI(sfId, LogicalDatastoreType.CONFIGURATION);
         assertNull("Service function must not exist.", sf);
     }
 
-    private static InstanceIdentifier<ServiceFunction> createServiceFunctionId(String sfName) {
+    private static InstanceIdentifier<ServiceFunction> createServiceFunctionId(SfName sfName) {
         ServiceFunctionKey sfKey = new ServiceFunctionKey(sfName);
-        return InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, sfKey).build();
+        return InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfKey).build();
     }
 
     /*
-     * This test creates 3 rendered service paths, one symmetric, one asymmetric and the last one also symmetric with
+     * This test creates 3 rendered service paths, one symmetric, one asymmetric and the last one
+     * also symmetric with
      * reverse classifier only
      */
     @Test
     public void testMultipleRsp() {
-        List<String> firewallSfs = new ArrayList<>(); //list of all firewalls
-        List<String> dpiSfs = new ArrayList<>(); //list of all dpi-s
-        List<String> qosSfs = new ArrayList<>(); //list of all qos-s
-        List<String> napt44Sfs = new ArrayList<>(); //list of all napt44
-        List<String> chainSf1 = new ArrayList<>(); // list of Sf-s in chain 1
-        List<String> chainSf2 = new ArrayList<>(); // list of Sf-s in chain 2
-        List<String> chainSf3 = new ArrayList<>(); // list of Sf-s in chain 3
+        List<SfName> firewallSfs = new ArrayList<>(); // list of all firewalls
+        List<SfName> dpiSfs = new ArrayList<>(); // list of all dpi-s
+        List<SfName> qosSfs = new ArrayList<>(); // list of all qos-s
+        List<SfName> napt44Sfs = new ArrayList<>(); // list of all napt44
+        List<SfName> chainSf1 = new ArrayList<>(); // list of Sf-s in chain 1
+        List<SfName> chainSf2 = new ArrayList<>(); // list of Sf-s in chain 2
+        List<SfName> chainSf3 = new ArrayList<>(); // list of Sf-s in chain 3
         Future futureTask1, futureTask2, futureTask3;
         RpcResult<CreateRenderedPathOutput> rpcResult1 = null, rpcResult2 = null, rpcResult3 = null;
         RenderedServicePath createdRsp1 = null, createdRsp2 = null, createdRsp3 = null;
 
-        //classifiers
+        // classifiers
         String classifier = "classifier";
         assertTrue("Must be true", createClassifier(classifier));
         String reversedClassifier = "classifierRev";
         assertTrue("Must be true", createClassifier(reversedClassifier));
 
-        //4x forwarder
-        assertTrue("Must be true", createServiceFunctionForwarder(sffNames[0], sffDplNames[0]));
-        assertTrue("Must be true", createServiceFunctionForwarder(sffNames[1], sffDplNames[1]));
-        assertTrue("Must be true", createServiceFunctionForwarder(sffNames[2], sffDplNames[2]));
-        assertTrue("Must be true", createServiceFunctionForwarder(sffNames[3], sffDplNames[3]));
+        // 4x forwarder
+        assertTrue("Must be true", createServiceFunctionForwarder(sffNames.get(0), sffDplNames.get(0)));
+        assertTrue("Must be true", createServiceFunctionForwarder(sffNames.get(1), sffDplNames.get(1)));
+        assertTrue("Must be true", createServiceFunctionForwarder(sffNames.get(2), sffDplNames.get(2)));
+        assertTrue("Must be true", createServiceFunctionForwarder(sffNames.get(3), sffDplNames.get(3)));
 
-        //8 functions + lists
-        //SFF1
-        assertTrue("Must be true", createServiceFunction(sfNames[0], Firewall.class, sfDplNames[0], sffNames[0]));
-        assertTrue("Must be true", createServiceFunction(sfNames[1], Dpi.class, sfDplNames[1], sffNames[0]));
-        //SFF2
-        assertTrue("Must be true", createServiceFunction(sfNames[2], Qos.class, sfDplNames[2], sffNames[1]));
-        assertTrue("Must be true", createServiceFunction(sfNames[3], Napt44.class, sfDplNames[3], sffNames[1]));
-        //SFF3
-        assertTrue("Must be true", createServiceFunction(sfNames[4], Firewall.class, sfDplNames[4], sffNames[2]));
-        assertTrue("Must be true", createServiceFunction(sfNames[5], Dpi.class, sfDplNames[5], sffNames[2]));
-        //SFF4
-        assertTrue("Must be true", createServiceFunction(sfNames[6], Qos.class, sfDplNames[6], sffNames[3]));
-        assertTrue("Must be true", createServiceFunction(sfNames[7], Firewall.class, sfDplNames[7], sffNames[3]));
+        // 8 functions + lists
+        // SFF1
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(0), Firewall.class, sfDplNames.get(0), sffNames.get(0)));
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(1), Dpi.class, sfDplNames.get(1), sffNames.get(0)));
+        // SFF2
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(2), Qos.class, sfDplNames.get(2), sffNames.get(1)));
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(3), Napt44.class, sfDplNames.get(3), sffNames.get(1)));
+        // SFF3
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(4), Firewall.class, sfDplNames.get(4), sffNames.get(2)));
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(5), Dpi.class, sfDplNames.get(5), sffNames.get(2)));
+        // SFF4
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(6), Qos.class, sfDplNames.get(6), sffNames.get(3)));
+        assertTrue("Must be true",
+                createServiceFunction(sfNames.get(7), Firewall.class, sfDplNames.get(7), sffNames.get(3)));
 
-        firewallSfs.add(sfNames[0]);
-        firewallSfs.add(sfNames[4]);
-        firewallSfs.add(sfNames[7]);
-        dpiSfs.add(sfNames[1]);
-        dpiSfs.add(sfNames[5]);
-        qosSfs.add(sfNames[2]);
-        qosSfs.add(sfNames[6]);
-        napt44Sfs.add(sfNames[3]);
+        firewallSfs.add(sfNames.get(0));
+        firewallSfs.add(sfNames.get(4));
+        firewallSfs.add(sfNames.get(7));
+        dpiSfs.add(sfNames.get(1));
+        dpiSfs.add(sfNames.get(5));
+        qosSfs.add(sfNames.get(2));
+        qosSfs.add(sfNames.get(6));
+        napt44Sfs.add(sfNames.get(3));
 
-        //types
+        // types
         assertTrue("Must be true", createServiceFunctionType(Firewall.class, firewallSfs));
         assertTrue("Must be true", createServiceFunctionType(Dpi.class, dpiSfs));
         assertTrue("Must be true", createServiceFunctionType(Qos.class, qosSfs));
         assertTrue("Must be true", createServiceFunctionType(Napt44.class, napt44Sfs));
 
-        //groups
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames[0], firewallSfs, Firewall.class));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames[1], dpiSfs, Dpi.class));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames[2], qosSfs, Qos.class));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames[3], qosSfs, Napt44.class));
+        // groups
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(0), firewallSfs, Firewall.class));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(1), dpiSfs, Dpi.class));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(2), qosSfs, Qos.class));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(3), qosSfs, Napt44.class));
 
-        //chain + path 1 (SFF1 & SFF2)
-        chainSf1.add(sfNames[0]);
-        chainSf1.add(sfNames[1]);
-        chainSf1.add(sfNames[2]);
-        chainSf1.add(sfNames[3]);
-        assertTrue("Must be true", createServiceFunctionChain(chainNames[0], chainSf1));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[0], chainNames[0], classifier, null));
+        // chain + path 1 (SFF1 & SFF2)
+        chainSf1.add(sfNames.get(0));
+        chainSf1.add(sfNames.get(1));
+        chainSf1.add(sfNames.get(2));
+        chainSf1.add(sfNames.get(3));
+        assertTrue("Must be true", createServiceFunctionChain(chainNames.get(0), chainSf1));
+        assertTrue("Must be true", createServiceFunctionPath(pathNames.get(0), chainNames.get(0), classifier, null));
 
-        //chain + path 2 (SFF3 & SFF4)
-        chainSf2.add(sfNames[4]);
-        chainSf2.add(sfNames[5]);
-        chainSf2.add(sfNames[6]);
-        chainSf2.add(sfNames[7]);
-        assertTrue("Must be true", createServiceFunctionChain(chainNames[1], chainSf2));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[1], chainNames[1], reversedClassifier, null));
+        // chain + path 2 (SFF3 & SFF4)
+        chainSf2.add(sfNames.get(4));
+        chainSf2.add(sfNames.get(5));
+        chainSf2.add(sfNames.get(6));
+        chainSf2.add(sfNames.get(7));
+        assertTrue("Must be true", createServiceFunctionChain(chainNames.get(1), chainSf2));
+        assertTrue("Must be true",
+                createServiceFunctionPath(pathNames.get(1), chainNames.get(1), reversedClassifier, null));
 
-        //chain + path 3 (all SF & SFF)
-        chainSf3.add(sfNames[0]);
-        chainSf3.add(sfNames[1]);
-        chainSf3.add(sfNames[2]);
-        chainSf3.add(sfNames[3]);
-        chainSf3.add(sfNames[4]);
-        chainSf3.add(sfNames[5]);
-        chainSf3.add(sfNames[6]);
-        chainSf3.add(sfNames[7]);
-        assertTrue("Must be true", createServiceFunctionChain(chainNames[2], chainSf3));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[2], chainNames[2], classifier, reversedClassifier));
+        // chain + path 3 (all SF & SFF)
+        for (SfName sfName : sfNames) {
+            chainSf3.add(sfName);
+        }
+        assertTrue("Must be true", createServiceFunctionChain(chainNames.get(2), chainSf3));
+        assertTrue("Must be true",
+                createServiceFunctionPath(pathNames.get(2), chainNames.get(2), classifier, reversedClassifier));
 
-        //create rendered service paths
-        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[0], classifier, null));
-        futureTask2 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[1], reversedClassifier, null));
-        futureTask3 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[2], classifier, reversedClassifier));
+        // create rendered service paths
+        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(0), classifier, null));
+        futureTask2 =
+                sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(1), reversedClassifier, null));
+        futureTask3 = sfcProviderRpc
+            .createRenderedPath(createRenderedPathInput(pathNames.get(2), classifier, reversedClassifier));
 
-        //test
+        // test
         try {
-            //noinspection unchecked
+            // noinspection unchecked
             rpcResult1 = (RpcResult<CreateRenderedPathOutput>) futureTask1.get();
             assertTrue("Must be true", rpcResult1.isSuccessful());
-            //noinspection unchecked
+            // noinspection unchecked
             rpcResult2 = (RpcResult<CreateRenderedPathOutput>) futureTask2.get();
             assertTrue("Must be true", rpcResult2.isSuccessful());
-            //noinspection unchecked
+            // noinspection unchecked
             rpcResult3 = (RpcResult<CreateRenderedPathOutput>) futureTask3.get();
             assertTrue("Must be true", rpcResult3.isSuccessful());
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("failed to ....", e);
         }
 
-        //get created rendered service paths
-        if(rpcResult1 != null)
-            createdRsp1 = SfcProviderRenderedPathAPI.readRenderedServicePath(rpcResult1.getResult().getName());
-        if(rpcResult2 != null)
-            createdRsp2 = SfcProviderRenderedPathAPI.readRenderedServicePath(rpcResult2.getResult().getName());
-        if(rpcResult3 != null)
-            createdRsp3 = SfcProviderRenderedPathAPI.readRenderedServicePath(rpcResult3.getResult().getName());
+        // get created rendered service paths
+        if (rpcResult1 != null)
+            createdRsp1 =
+                    SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult1.getResult().getName()));
+        if (rpcResult2 != null)
+            createdRsp2 =
+                    SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult2.getResult().getName()));
+        if (rpcResult3 != null)
+            createdRsp3 =
+                    SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult3.getResult().getName()));
 
         assertNotNull("Must not be null", createdRsp1);
         assertNotNull("Must not be null", createdRsp2);
         assertNotNull("Must not be null", createdRsp3);
 
-        //check hops
+        // check hops
         assertEquals("Must be equal", createdRsp1.getRenderedServicePathHop().size(), 4);
         assertEquals("Must be equal", createdRsp2.getRenderedServicePathHop().size(), 4);
         assertEquals("Must be equal", createdRsp3.getRenderedServicePathHop().size(), 8);
 
-        //check symmetry and classifiers
-        //path 1
-        ServiceFunctionPath serviceFunctionPath1 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[0]);
+        // check symmetry and classifiers
+        // path 1
+        ServiceFunctionPath serviceFunctionPath1 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(0));
         assertNotNull("Must not be null", serviceFunctionPath1);
-        assertFalse("Must be false", serviceFunctionPath1.isSymmetric()); //path is not symmetric
-        assertNull("Must be null", serviceFunctionPath1.getSymmetricClassifier()); //no symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath1.getClassifier(), classifier); //classifier
+        assertFalse("Must be false", serviceFunctionPath1.isSymmetric()); // path is not symmetric
+        assertNull("Must be null", serviceFunctionPath1.getSymmetricClassifier()); // no symmetric
+                                                                                   // classifier
+        assertEquals("Must be equal", serviceFunctionPath1.getClassifier(), classifier); // classifier
 
-        //path 2
-        ServiceFunctionPath serviceFunctionPath2 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[1]);
+        // path 2
+        ServiceFunctionPath serviceFunctionPath2 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(1));
         assertNotNull("Must not be null", serviceFunctionPath2);
-        assertFalse("Must be false", serviceFunctionPath2.isSymmetric()); //path is not symmetric
-        assertNull("Must be null", serviceFunctionPath2.getSymmetricClassifier()); //no symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath2.getClassifier(), reversedClassifier); //classifier
+        assertFalse("Must be false", serviceFunctionPath2.isSymmetric()); // path is not symmetric
+        assertNull("Must be null", serviceFunctionPath2.getSymmetricClassifier()); // no symmetric
+                                                                                   // classifier
+        assertEquals("Must be equal", serviceFunctionPath2.getClassifier(), reversedClassifier); // classifier
 
-        //path 3
-        ServiceFunctionPath serviceFunctionPath3 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[2]);
+        // path 3
+        ServiceFunctionPath serviceFunctionPath3 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(2));
         assertNotNull("Must not be null", serviceFunctionPath3);
-        assertTrue("Must be true", serviceFunctionPath3.isSymmetric()); //path not symmetric
-        assertEquals("Must be equal", serviceFunctionPath3.getSymmetricClassifier(), reversedClassifier); //symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath3.getClassifier(), classifier); //classifier
+        assertTrue("Must be true", serviceFunctionPath3.isSymmetric()); // path not symmetric
+        assertEquals("Must be equal", serviceFunctionPath3.getSymmetricClassifier(), reversedClassifier); // symmetric
+                                                                                                          // classifier
+        assertEquals("Must be equal", serviceFunctionPath3.getClassifier(), classifier); // classifier
 
-        //read paths in classifier
+        // read paths in classifier
         SclRenderedServicePath path = readClassifierRsp(classifier, rpcResult1.getResult().getName(), false);
-        assertNotNull("Must not be null", path); //path 1 exists in classifier
+        assertNotNull("Must not be null", path); // path 1 exists in classifier
         path = readClassifierRsp(classifier, rpcResult2.getResult().getName(), false);
-        assertNull("Must be null", path); //path 2 does NOT exists in classifier
+        assertNull("Must be null", path); // path 2 does NOT exists in classifier
         path = readClassifierRsp(classifier, rpcResult3.getResult().getName(), false);
-        assertNotNull("Must not be null", path); //path 3 exists in classifier
+        assertNotNull("Must not be null", path); // path 3 exists in classifier
 
-        //read paths in classifier
+        // read paths in classifier
         path = readClassifierRsp(reversedClassifier, rpcResult1.getResult().getName(), true);
-        assertNull("Must be null", path); //path 1 does NOT exists in classifier
-        path = readClassifierRsp(reversedClassifier, rpcResult2.getResult().getName(), false); //this classifier is not reversed for rsp2
-        assertNotNull("Must not be null", path); //path 2 exists in classifier
+        assertNull("Must be null", path); // path 1 does NOT exists in classifier
+        path = readClassifierRsp(reversedClassifier, rpcResult2.getResult().getName(), false); // this
+                                                                                               // classifier
+                                                                                               // is
+                                                                                               // not
+                                                                                               // reversed
+                                                                                               // for
+                                                                                               // rsp2
+        assertNotNull("Must not be null", path); // path 2 exists in classifier
         path = readClassifierRsp(reversedClassifier, rpcResult3.getResult().getName(), true);
-        assertNotNull("Must not be null", path); //path 3 exists both classifiers
+        assertNotNull("Must not be null", path); // path 3 exists both classifiers
     }
 
-    //auxiliary methods below
+    // auxiliary methods below
 
     /*
      * create classifier and write into data store, the only parameter is classifier name
@@ -821,27 +1009,32 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     private boolean createClassifier(String classifierName) {
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
         serviceFunctionClassifierBuilder.setName(classifierName)
-                .setKey(new ServiceFunctionClassifierKey(classifierName));
+            .setKey(new ServiceFunctionClassifierKey(classifierName));
 
-        InstanceIdentifier<ServiceFunctionClassifier> sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(classifierName)).build();
+        InstanceIdentifier<ServiceFunctionClassifier> sclIID =
+                InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
+                    .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(classifierName))
+                    .build();
 
-       return SfcDataStoreAPI.writePutTransactionAPI(sclIID,
-               serviceFunctionClassifierBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        return SfcDataStoreAPI.writePutTransactionAPI(sclIID, serviceFunctionClassifierBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
     }
 
     /*
      * read all rendered service paths operating with classifier
-     * method needs classifier name, rendered service path name and whether the classifier is reversed or not
+     * method needs classifier name, rendered service path name and whether the classifier is
+     * reversed or not
      */
     private SclRenderedServicePath readClassifierRsp(String classifierName, String rpcName, boolean reversed) {
 
-        if(reversed)
+        if (reversed)
             rpcName += "-Reverse";
 
-        InstanceIdentifier<SclRenderedServicePath> sclRspIID = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
-                .child(ServiceFunctionClassifierState.class, new ServiceFunctionClassifierStateKey(classifierName))
-                .child(SclRenderedServicePath.class, new SclRenderedServicePathKey(rpcName)).build();
+        InstanceIdentifier<SclRenderedServicePath> sclRspIID =
+                InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
+                    .child(ServiceFunctionClassifierState.class, new ServiceFunctionClassifierStateKey(classifierName))
+                    .child(SclRenderedServicePath.class, new SclRenderedServicePathKey(rpcName))
+                    .build();
 
         return SfcDataStoreAPI.readTransactionAPI(sclRspIID, LogicalDatastoreType.OPERATIONAL);
     }
@@ -850,20 +1043,21 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function type
      * put type, and list of all service functions with that type
      */
-    private boolean createServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceType, List<String> sfNames) {
+    private boolean createServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceType,
+            List<SfName> sfNames) {
         List<SftServiceFunctionName> sftServiceFunctionNames = new ArrayList<>();
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder;
 
-        for (String sfName : sfNames) {
+        for (SfName sfName : sfNames) {
             sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-            sftServiceFunctionNameBuilder.setName(sfName)
-                    .setKey(new SftServiceFunctionNameKey(sfName));
+            sftServiceFunctionNameBuilder.setName(sfName.getValue())
+                .setKey(new SftServiceFunctionNameKey(sfName.getValue()));
             sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
         }
 
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceType))
-                .setSftServiceFunctionName(sftServiceFunctionNames);
+            .setSftServiceFunctionName(sftServiceFunctionNames);
         return SfcProviderServiceTypeAPI.putServiceFunctionType(serviceFunctionTypeBuilder.build());
     }
 
@@ -871,19 +1065,18 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * build service function forwarder with data plane locator
      * method needs forwarder name & data plane locator name
      */
-    private boolean createServiceFunctionForwarder(String forwarderName, String locatorName) {
+    private boolean createServiceFunctionForwarder(SffName forwarderName, SffDataPlaneLocatorName locatorName) {
         List<SffDataPlaneLocator> sffDataPlaneLocator = new ArrayList<>();
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
 
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        sffDataPlaneLocatorBuilder.setName(locatorName)
-                .setKey(new SffDataPlaneLocatorKey(locatorName));
+        sffDataPlaneLocatorBuilder.setName(locatorName).setKey(new SffDataPlaneLocatorKey(locatorName));
         sffDataPlaneLocator.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(forwarderName)
-                .setKey(new ServiceFunctionForwarderKey(forwarderName))
-                .setSffDataPlaneLocator(sffDataPlaneLocator);
+            .setKey(new ServiceFunctionForwarderKey(forwarderName))
+            .setSffDataPlaneLocator(sffDataPlaneLocator);
         return SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceFunctionForwarderBuilder.build());
     }
 
@@ -891,20 +1084,22 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * build service function with data plane locator
      * specify function name, type, locator name and name of appropriate forwarder
      */
-    private boolean createServiceFunction(String functionName, Class<? extends ServiceFunctionTypeIdentity> functionType, String locatorName, String forwarderName) {
+    private boolean createServiceFunction(SfName functionName,
+            Class<? extends ServiceFunctionTypeIdentity> functionType, SfDataPlaneLocatorName locatorName,
+            SffName forwarderName) {
         List<SfDataPlaneLocator> sfDataPlaneLocator = new ArrayList<>();
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
 
         sfDataPlaneLocatorBuilder.setName(locatorName)
-                .setKey(new SfDataPlaneLocatorKey(locatorName))
-                .setServiceFunctionForwarder(forwarderName);
+            .setKey(new SfDataPlaneLocatorKey(locatorName))
+            .setServiceFunctionForwarder(forwarderName);
         sfDataPlaneLocator.add(sfDataPlaneLocatorBuilder.build());
 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(functionName)
-                .setKey(new ServiceFunctionKey(functionName))
-                .setSfDataPlaneLocator(sfDataPlaneLocator)
-                .setType(functionType);
+            .setKey(new ServiceFunctionKey(functionName))
+            .setSfDataPlaneLocator(sfDataPlaneLocator)
+            .setType(functionType);
 
         return SfcProviderServiceFunctionAPI.putServiceFunction(serviceFunctionBuilder.build());
     }
@@ -913,7 +1108,8 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function group containing service functions of specific type
      * specify group name, list of service functions and type (should match with sf type) of group
      */
-    private boolean createServiceFunctionGroup(String groupName, List<String> sfNames, Class<? extends ServiceFunctionTypeIdentity> groupType) {
+    private boolean createServiceFunctionGroup(String groupName, List<SfName> sfNames,
+            Class<? extends ServiceFunctionTypeIdentity> groupType) {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
 
         /*
@@ -921,89 +1117,96 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
          * this is necessary for service function group
          * there is no info about service function type, it is specified in service function group
          */
-        List<org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+        List<org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction> sfcServiceFunctionList =
+                new ArrayList<>();
         org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder sfcServiceFunctionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder();
 
-        for (String sfName : sfNames) {
-            sfcServiceFunctionBuilder.setName(sfName)
-                    .setKey(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionKey(sfName));
+        for (SfName sfName : sfNames) {
+            sfcServiceFunctionBuilder.setName(sfName.getValue())
+                .setKey(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionKey(
+                        sfName.getValue()));
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
         serviceFunctionGroupBuilder.setName(groupName)
-                .setKey(new ServiceFunctionGroupKey(groupName))
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setType(groupType);
+            .setKey(new ServiceFunctionGroupKey(groupName))
+            .setSfcServiceFunction(sfcServiceFunctionList)
+            .setType(groupType);
 
         return SfcProviderServiceFunctionGroupAPI.putServiceFunctionGroup(serviceFunctionGroupBuilder.build());
     }
 
     /*
      * create service function chain
-     * specify chain name, list of service functions (all functions should be written into data store and contain info
+     * specify chain name, list of service functions (all functions should be written into data
+     * store and contain info
      * about type) and whether the chain si symmetric or not
      */
-    private boolean createServiceFunctionChain(String chainName, List<String> sfNames) {
+    private boolean createServiceFunctionChain(SfcName chainName, List<SfName> sfNames) {
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
 
         /*
          * create service function list, using type SfcServiceFunction rev14071
          * this is necessary for service function chain
-         * there is also info about service function type, because we cannot put this info directly to chain
+         * there is also info about service function type, because we cannot put this info directly
+         * to chain
          */
         List<SfcServiceFunction> sfcSfgServiceFunctionList = new ArrayList<>();
 
         SfcServiceFunctionBuilder sfcSfgServiceFunctionBuilder = new SfcServiceFunctionBuilder();
 
-        for (String sfName : sfNames) {
-            sfcSfgServiceFunctionBuilder.setName(sfName)
-                    .setKey(new SfcServiceFunctionKey(sfName))
-                    .setType(SfcProviderServiceFunctionAPI.readServiceFunction(sfName).getType());
+        for (SfName sfName : sfNames) {
+            sfcSfgServiceFunctionBuilder.setName(sfName.getValue())
+                .setKey(new SfcServiceFunctionKey(sfName.getValue()))
+                .setType(SfcProviderServiceFunctionAPI.readServiceFunction(sfName).getType());
 
             sfcSfgServiceFunctionList.add(sfcSfgServiceFunctionBuilder.build());
         }
 
         serviceFunctionChainBuilder.setName(chainName)
-                .setKey(new ServiceFunctionChainKey(chainName))
-                .setSfcServiceFunction(sfcSfgServiceFunctionList);
+            .setKey(new ServiceFunctionChainKey(chainName))
+            .setSfcServiceFunction(sfcSfgServiceFunctionList);
 
         return SfcProviderServiceChainAPI.putServiceFunctionChain(serviceFunctionChainBuilder.build());
     }
 
     /*
      * create service function path
-     * specify path name, name of used chain, classifier name, reverse classifier name and whether the path is symmetric or not
+     * specify path name, name of used chain, classifier name, reverse classifier name and whether
+     * the path is symmetric or not
      */
-    private boolean createServiceFunctionPath(String pathName, String chainName, String classifierName, String classifierRevName) {
+    private boolean createServiceFunctionPath(SfpName pathName, SfcName chainName, String classifierName,
+            String classifierRevName) {
         boolean symmetric = false;
-        if(classifierRevName != null)
+        if (classifierRevName != null)
             symmetric = true;
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(pathName)
-                .setKey(new ServiceFunctionPathKey(pathName))
-                .setServiceChainName(chainName)
-                .setClassifier(classifierName)
-                .setSymmetricClassifier(classifierRevName)
-                .setSymmetric(symmetric);
+            .setKey(new ServiceFunctionPathKey(pathName))
+            .setServiceChainName(chainName)
+            .setClassifier(classifierName)
+            .setSymmetricClassifier(classifierRevName)
+            .setSymmetric(symmetric);
         return SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPathBuilder.build());
     }
 
     /*
      * input parameter, needs path name, classifiers and if path is symmetric or not
      */
-    private CreateRenderedPathInput createRenderedPathInput(String pathName, String classifierName, String classifierRevName) {
+    private CreateRenderedPathInput createRenderedPathInput(SfpName pathName, String classifierName,
+            String classifierRevName) {
         boolean symmetric = false;
 
-        if(classifierName != null)
+        if (classifierName != null)
             symmetric = true;
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName)
-                .setClassifier(classifierName)
-                .setSymmetricClassifier(classifierRevName)
-                .setSymmetric(symmetric);
+        createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName.getValue())
+            .setClassifier(classifierName)
+            .setSymmetricClassifier(classifierRevName)
+            .setSymmetric(symmetric);
 
         return createRenderedPathInputBuilder.build();
     }

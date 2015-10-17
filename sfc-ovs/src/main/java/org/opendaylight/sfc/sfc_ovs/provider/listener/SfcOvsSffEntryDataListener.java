@@ -29,6 +29,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
@@ -98,10 +99,11 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                         (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
                 if (keyedInstanceIdentifier != null) {
                     ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-                    String sffName = sffKey.getName();
+                    SffName sffName = sffKey.getName();
 
                     // delete OvsdbNode
-                    SfcOvsUtil.deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName), opendaylightSfc.getExecutor());
+                    SfcOvsUtil.deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName.getValue()),
+                            opendaylightSfc.getExecutor());
                 }
 
             } else if (dataObject instanceof SffDataPlaneLocator) {
@@ -112,11 +114,12 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                         (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
                 if (keyedInstanceIdentifier != null) {
                     ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-                    String sffName = sffKey.getName();
+                    String sffNameAsString = sffKey.getName().getValue();
+                    String sffDataPlaneLocatorNameAsString = sffDataPlaneLocator.getName().getValue();
 
                     // delete OvsdbTerminationPoint
                     SfcOvsUtil.deleteOvsdbTerminationPoint(
-                            SfcOvsUtil.buildOvsdbTerminationPointIID(sffName, sffDataPlaneLocator.getName()),
+                            SfcOvsUtil.buildOvsdbTerminationPointIID(sffNameAsString, sffDataPlaneLocatorNameAsString),
                             opendaylightSfc.getExecutor());
                 }
             }

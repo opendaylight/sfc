@@ -60,7 +60,9 @@ public class SfcProviderServiceTypeAPI {
 
         // Build the instance identifier all the way down to the bottom child
 
-        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
+        // TODO As part of typedef refactoring, not messing with SFT's
+        SftServiceFunctionNameKey sftServiceFunctionNameKey =
+                new SftServiceFunctionNameKey(serviceFunction.getName().getValue());
 
         InstanceIdentifier<SftServiceFunctionName> sftentryIID;
         sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
@@ -70,7 +72,7 @@ public class SfcProviderServiceTypeAPI {
 
         // Create a item in the list keyed by service function name
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-        sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName());
+        sftServiceFunctionNameBuilder = sftServiceFunctionNameBuilder.setName(serviceFunction.getName().getValue());
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sftentryIID, sftServiceFunctionName,
@@ -136,7 +138,9 @@ public class SfcProviderServiceTypeAPI {
 
         // Build the instance identifier all the way down to the bottom child
         InstanceIdentifier<SftServiceFunctionName> sftentryIID;
-        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
+        // TODO As part of typedef refactoring not messing with SFTs
+        SftServiceFunctionNameKey sftServiceFunctionNameKey =
+                new SftServiceFunctionNameKey(serviceFunction.getName().getValue());
         sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
             .child(ServiceFunctionType.class, serviceFunctionTypeKey)
             .child(SftServiceFunctionName.class, sftServiceFunctionNameKey)
@@ -250,8 +254,9 @@ public class SfcProviderServiceTypeAPI {
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
 
         // Build the instance identifier all the way down to the bottom child
-
-        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(serviceFunction.getName());
+        // TODO as part of typedef refactoring not messing with SFTs
+        SftServiceFunctionNameKey sftServiceFunctionNameKey =
+                new SftServiceFunctionNameKey(serviceFunction.getName().getValue());
 
         InstanceIdentifier<SftServiceFunctionName> sftentryIID;
         sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)

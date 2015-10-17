@@ -23,6 +23,8 @@ import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -86,8 +88,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                     if (dataObject instanceof ServiceFunction) {
                         ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
 
-                        if (!SfcProviderServiceTypeAPI
-                            .deleteServiceFunctionTypeEntry(originalServiceFunction)) {
+                        if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction)) {
                             LOG.error("Failed to delete Service Function Type for SF: {}",
                                     originalServiceFunction.getName());
                         }
@@ -96,9 +97,8 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                          * Before removing RSPs used by this Service Function, we need to remove all
                          * references in the SFF/SF operational trees
                          */
-                        String sfName = originalServiceFunction.getName();
-                        List<String> rspList =
-                                SfcProviderServiceFunctionAPI.readServiceFunctionStateAsStringList(sfName);
+                        SfName sfName = originalServiceFunction.getName();
+                        List<RspName> rspList = SfcProviderServiceFunctionAPI.getRspsBySfName(sfName);
                         if ((rspList != null) && (!rspList.isEmpty())) {
                             if (SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
                             } else {
@@ -133,17 +133,19 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                          * Before removing RSPs used by this Service Function, we need to remove all
                          * references in the SFF/SF operational trees
                          */
-                        String sfName = originalServiceFunction.getName();
+                        SfName sfName = originalServiceFunction.getName();
                         List<SfServicePath> sfServicePathList =
                                 SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
-                        List<String> rspList = new ArrayList<>();
+                        List<RspName> rspList = new ArrayList<>();
                         if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
                             if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
                                 LOG.error("{}: Failed to delete SF {} operational state",
                                         Thread.currentThread().getStackTrace()[1], sfName);
                             }
                             for (SfServicePath sfServicePath : sfServicePathList) {
-                                String rspName = sfServicePath.getName();
+                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                                RspName rspName = new RspName(sfServicePath.getName().getValue());
                                 SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
                                 rspList.add(rspName);
                             }

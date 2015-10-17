@@ -307,7 +307,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         Thread.sleep(500);
         assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
         List<String> sfpNameList = SfcProviderServiceFunctionAPI.
-                readServiceFunctionStateAsStringList(serviceFunction.getName());
+                getRspsBySfName(serviceFunction.getName());
         if (sfpNameList != null) {
             for (String sfpName : sfpNameList) {
                 assertNotEquals(sfpName, renderedServicePath.getName());
@@ -386,7 +386,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
         assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
         List<String> sfpNameList = SfcProviderServiceFunctionAPI.
-                readServiceFunctionStateAsStringList(originalServiceFunction.getName());
+                getRspsBySfName(originalServiceFunction.getName());
         if (sfpNameList != null) {
             for (String sfpName : sfpNameList) {
                 assertNotEquals(sfpName, renderedServicePath.getName());

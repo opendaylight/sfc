@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
@@ -48,7 +49,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @PrepareForTest(SfcProviderServiceFunctionAPI.class)
 public class SbRestSfstateTaskTest {
 
-    private static final String SFSTATE_NAME = "Dummy_SFSTATE";
+    private static final SfName SFSTATE_NAME = new SfName("Dummy_SFSTATE");
     private static final String REST_URI = "http://localhost:5000";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -115,7 +116,7 @@ public class SbRestSfstateTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfstateNode = mapper.createObjectNode();
-        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME);
+        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfstateNode);
@@ -129,7 +130,7 @@ public class SbRestSfstateTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfstateNode = mapper.createObjectNode();
-        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME);
+        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfstateNode);

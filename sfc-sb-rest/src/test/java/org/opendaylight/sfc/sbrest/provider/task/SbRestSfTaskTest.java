@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.sbrest.json.SfExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SbRestSfTaskTest {
 
-    private static final String SF_NAME = "Dummy_SF";
+    private static final SfName SF_NAME = new SfName("Dummy_SF");
     private static final String REST_URI = "http://localhost:5000";
     private final ObjectMapper mapper = new ObjectMapper();
     private ExecutorService executorService;
@@ -90,7 +91,7 @@ public class SbRestSfTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfNode = mapper.createObjectNode();
-        sfNode.put(SfExporterFactory._NAME, SF_NAME);
+        sfNode.put(SfExporterFactory._NAME, SF_NAME.getValue());
         sfNode.put(SfExporterFactory._REST_URI, REST_URI);
 
         ArrayNode arrayNode = mapper.createArrayNode();
@@ -105,7 +106,7 @@ public class SbRestSfTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfNode = mapper.createObjectNode();
-        sfNode.put(SfExporterFactory._NAME, SF_NAME);
+        sfNode.put(SfExporterFactory._NAME, SF_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfNode);

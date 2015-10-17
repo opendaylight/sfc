@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,12 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -18,35 +24,33 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-
 /**
  * This class implements a round robin SF scheduling mode.
  * <p>
  *
  * @author Johnson Li (johnson.li@intel.com)
  * @version 0.1
- * <p>
+ *          <p>
  * @since 2015-03-04
  */
 public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRoundRobinSchedulerAPI.class);
-    private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin = new HashMap<>();
+    private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin =
+            new HashMap<>();
+
     SfcServiceFunctionRoundRobinSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(RoundRobin.class);
     }
 
-    private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
+    private SfName getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         int countRoundRobin = 0;
 
-        if(mapCountRoundRobin.size() != 0){
-            for(java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType: mapCountRoundRobin.keySet()){
-                if(sfType.equals(serviceFunctionType.getType())){
+        if (mapCountRoundRobin.size() != 0) {
+            for (java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType : mapCountRoundRobin
+                .keySet()) {
+                if (sfType.equals(serviceFunctionType.getType())) {
                     countRoundRobin = mapCountRoundRobin.get(sfType);
                     LOG.debug("countRoundRobin: {}", countRoundRobin);
                     break;
@@ -57,15 +61,17 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameList.get(countRoundRobin);
         countRoundRobin = (countRoundRobin + 1) % sftServiceFunctionNameList.size();
         mapCountRoundRobin.put(serviceFunctionType.getType(), countRoundRobin);
-        return sftServiceFunctionName.getName();
+        return new SfName(sftServiceFunctionName.getName());
     }
 
-    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex, ServiceFunctionPath sfp) {
-        List<String> sfNameList = new ArrayList<>();
+    @Override
+    public List<SfName> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
+            ServiceFunctionPath sfp) {
+        List<SfName> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
         short index = 0;
-        Map<Short, String> sfpMapping = getSFPHopSfMapping(sfp);
+        Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
          * For each ServiceFunction type in the list of ServiceFunctions we select a specific
@@ -73,8 +79,8 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.info("ServiceFunction name: {}", sfcServiceFunction.getName());
-            String hopSf = sfpMapping.get(index++);
-            if(hopSf != null){
+            SfName hopSf = sfpMapping.get(index++);
+            if (hopSf != null) {
                 sfNameList.add(hopSf);
                 continue;
             }
@@ -86,9 +92,10 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
             ServiceFunctionType serviceFunctionType;
             serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+                List<SftServiceFunctionName> sftServiceFunctionNameList =
+                        serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
-                    String sfName = getServiceFunctionByType(serviceFunctionType);
+                    SfName sfName = getServiceFunctionByType(serviceFunctionType);
                     sfNameList.add(sfName);
                 } else {
                     LOG.error("Could not create path because there are no configured SFs of type: {}",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,6 +12,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
@@ -25,7 +26,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This class has the APIs to operate on the Service Classifier datastore.
  * <p>
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * <p>
+ *          <p>
  * @since 2014-11-04
  */
 public class SfcProviderServiceClassifierAPI {
@@ -46,32 +46,35 @@ public class SfcProviderServiceClassifierAPI {
      * We iterate through all service paths that use this service function and if
      * necessary, remove them.
      * <p>
+     * 
      * @param serviceClassifierName Service Function Classifier name
-     * @param renderedPathName Rendered Path name
+     * @param rspName Rendered Path name
      * @return Nothing.
      */
-    public static boolean addRenderedPathToServiceClassifierState(String serviceClassifierName, String renderedPathName) {
+    public static boolean addRenderedPathToServiceClassifierState(String serviceClassifierName, RspName rspName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<SclRenderedServicePath> sclIID;
         boolean ret = false;
 
         SclRenderedServicePathBuilder sclRenderedServicePathBuilder = new SclRenderedServicePathBuilder();
-        SclRenderedServicePathKey sclRenderedServicePathKey = new SclRenderedServicePathKey(renderedPathName);
-        sclRenderedServicePathBuilder.setKey(sclRenderedServicePathKey).setName(renderedPathName);
+        SclRenderedServicePathKey sclRenderedServicePathKey = new SclRenderedServicePathKey(rspName.getValue());
+        sclRenderedServicePathBuilder.setKey(sclRenderedServicePathKey).setName(rspName.getValue());
 
-        ServiceFunctionClassifierStateKey serviceFunctionClassifierStateKey = new ServiceFunctionClassifierStateKey(serviceClassifierName);
+        ServiceFunctionClassifierStateKey serviceFunctionClassifierStateKey =
+                new ServiceFunctionClassifierStateKey(serviceClassifierName);
 
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
-                .child(ServiceFunctionClassifierState.class, serviceFunctionClassifierStateKey)
-                .child(SclRenderedServicePath.class, sclRenderedServicePathKey).toInstance();
+            .child(ServiceFunctionClassifierState.class, serviceFunctionClassifierStateKey)
+            .child(SclRenderedServicePath.class, sclRenderedServicePathKey)
+            .toInstance();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sclIID, sclRenderedServicePathBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL)) {
             ret = true;
         } else {
             LOG.error("{}: Failed to create Service Function Classifier {} state. Rendered Service Path: {}",
-                    Thread.currentThread().getStackTrace()[1], serviceClassifierName, renderedPathName);
+                    Thread.currentThread().getStackTrace()[1], serviceClassifierName, rspName);
         }
         printTraceStop(LOG);
         return ret;
@@ -80,6 +83,7 @@ public class SfcProviderServiceClassifierAPI {
     /**
      * This method reads a classifier from DataStore
      * <p>
+     * 
      * @param serviceClassifierName Classifier name
      * @return SF object or null if not found
      */
@@ -89,13 +93,13 @@ public class SfcProviderServiceClassifierAPI {
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
         ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(serviceClassifierName);
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
+            .child(ServiceFunctionClassifier.class, serviceFunctionKey)
+            .build();
 
         scl = SfcDataStoreAPI.readTransactionAPI(sclIID, LogicalDatastoreType.CONFIGURATION);
 
         printTraceStop(LOG);
         return scl;
     }
-
 
 }

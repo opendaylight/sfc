@@ -4,10 +4,11 @@ module service-function-forwarder {
 
   prefix sfc-sff;
 
-  import ietf-inet-types        { prefix inet;}
-  import service-locator        { prefix sfc-sl;  }
-  import service-function-type  { prefix sfc-sft; }
-  import service-statistics     { prefix sfc-ss;  }
+  import ietf-inet-types        {prefix inet;}
+  import service-locator        {prefix sfc-sl;  }
+  import service-function-type  {prefix sfc-sft; }
+  import service-statistics     {prefix sfc-ss;  }
+  import sfc-common {prefix sfc-common; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -72,18 +73,6 @@ module service-function-forwarder {
        function, packets will be forwarded";
   }
 
-  typedef service-function-forwarder-locator-ref {
-    type leafref {
-      path "/sfc-sff:service-function-forwarders/"
-          + "sfc-sff:service-function-forwarder/"
-          + "sfc-sff:sff-data-plane-locator/sfc-sff:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       the SFF data plane locator.";
-  }
-
-
   container service-function-forwarders {
     description
       "A service function forwarder is
@@ -96,14 +85,16 @@ module service-function-forwarder {
       description
         "A list that holds configuration of all SFFs in the domain";
       leaf name {
-        type string;
+//        type sff-name;
+          type string;
         description
           "The unique name of this service function forwarder, such
            as SFF1";
       }
 
       leaf service-node {
-        type string;
+//        type sfc-sn:sn-name-ref;
+          type string;
         description "The service node that hosts this SFF";
       }
 
@@ -124,9 +115,10 @@ module service-function-forwarder {
         description
           "A list of all data-plane-locators of this SFF.";
         leaf name {
-          type string;
+//          type sff-data-plane-locator-name;
+            type string;
           description
-            "A unique string that represents this
+            "A unique name that represents this
              data-plane-locator";
         }
 
@@ -142,7 +134,7 @@ module service-function-forwarder {
       list service-function-dictionary {
         key "name";
         leaf name {
-          type string;
+          type sfc-common:sf-name;
           description
               "The name of the service function.";
         }
@@ -175,7 +167,6 @@ module service-function-forwarder {
           description
             "This leaf defines what should the SFF do if it can not
              send packets to the SF";
-
         }
         description
           "A list of all Service Functions attached to this SFF.";
@@ -184,7 +175,8 @@ module service-function-forwarder {
       list connected-sff-dictionary {
         key "name";
         leaf name {
-          type string;
+//          type sff-name-ref;
+            type string;
           description
             "The name of the SFF connected to this SFF";
         }
@@ -228,7 +220,8 @@ module service-function-forwarder {
         "This list holds operational data for all service functions
          forwarders in the domain";
       leaf name {
-        type string;
+//        type sff-name-ref;
+          type string;
         description
           "the name of the service function forwarder";
       }
@@ -239,7 +232,8 @@ module service-function-forwarder {
       list sff-service-path {
         key "name";
         leaf name {
-          type string;
+//          type sfc-sfp:sfp-name-ref;
+            type string;
           description
             "The name of the Service Path";
         }

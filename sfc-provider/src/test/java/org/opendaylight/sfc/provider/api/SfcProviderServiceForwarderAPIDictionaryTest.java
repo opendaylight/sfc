@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,6 +19,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
@@ -55,38 +59,42 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         setOdlSfc();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.6")), 555);
-        SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator("kyiv-5.5.5.6:555-vxlan", dummyIp, "sff-kyiv", VxlanGpe.class);
+        SffName sffName = new SffName("sff-kyiv");
+        SfDataPlaneLocatorName sfDplName = new SfDataPlaneLocatorName("kyiv-5.5.5.6:555-vxlan");
+        SfDataPlaneLocator dummyLocator =
+                SimpleTestEntityBuilder.buildSfDataPlaneLocator(sfDplName, dummyIp, sffName, VxlanGpe.class);
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("dict_fw_101", Firewall.class,
+        SfName sfName = new SfName("dict_fw_101");
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
                 new IpAddress(new Ipv4Address("192.168.100.111")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("dict_fw_102", Firewall.class,
+        sfName = new SfName("dict_fw_102");
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
                 new IpAddress(new Ipv4Address("192.168.100.112")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction("dict_fw_103", Firewall.class,
+        sfName = new SfName("dict_fw_103");
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
                 new IpAddress(new Ipv4Address("192.168.100.113")), dummyLocator, Boolean.FALSE));
     }
 
     @Test
     public void testUpdateDictionary() {
 
-        String name = sffName[0];
+        SffName name = new SffName(sffName[0]);
+        SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("locator-1");
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
 
-
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(new IpAddress(new Ipv4Address("10.1.1.101")))
-                .setPort(new PortNumber(555));
+        ipBuilder.setIp(new IpAddress(new Ipv4Address("10.1.1.101"))).setPort(new PortNumber(555));
 
         DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
-        sffLocatorBuilder.setLocatorType(ipBuilder.build())
-                .setTransport(VxlanGpe.class);
+        sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
 
         SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-        locatorBuilder.setName("locator-1").setKey(new SffDataPlaneLocatorKey("locator-1"))
-                .setDataPlaneLocator(sffLocatorBuilder.build());
+        locatorBuilder.setName(sffDplName)
+            .setKey(new SffDataPlaneLocatorKey(sffDplName))
+            .setDataPlaneLocator(sffLocatorBuilder.build());
 
         locatorList.add(locatorBuilder.build());
-
 
         List<ServiceFunctionDictionary> dictionary = new ArrayList<>();
 
@@ -95,24 +103,25 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder0 = new SffSfDataPlaneLocatorBuilder(sfDPLocator0);
         SffSfDataPlaneLocator sffSfDataPlaneLocator0 = sffSfDataPlaneLocatorBuilder0.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder0 = new ServiceFunctionDictionaryBuilder();
-        dictionaryEntryBuilder0
-                .setName(sf0.getName()).setKey(new ServiceFunctionDictionaryKey(sf0.getName()))
-                .setType(sf0.getType())
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator0)
-                .setFailmode(Open.class)
-                .setSffInterfaces(null);
+        dictionaryEntryBuilder0.setName(sf0.getName())
+            .setKey(new ServiceFunctionDictionaryKey(sf0.getName()))
+            .setType(sf0.getType())
+            .setSffSfDataPlaneLocator(sffSfDataPlaneLocator0)
+            .setFailmode(Open.class)
+            .setSffInterfaces(null);
 
         ServiceFunctionDictionary firstDictEntry = dictionaryEntryBuilder0.build();
         dictionary.add(firstDictEntry);
 
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
 
-        ServiceFunctionForwarder sff =
-                sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
-                        .setSffDataPlaneLocator(locatorList)
-                        .setServiceFunctionDictionary(dictionary)
-                        .setServiceNode(null) // for consistency only; we are going to get rid of ServiceNodes in the future
-                        .build();
+        ServiceFunctionForwarder sff = sffBuilder.setName(name)
+            .setKey(new ServiceFunctionForwarderKey(name))
+            .setSffDataPlaneLocator(locatorList)
+            .setServiceFunctionDictionary(dictionary)
+            .setServiceNode(null) // for consistency only; we are going to get rid of ServiceNodes
+                                  // in the future
+            .build();
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         ServiceFunctionForwarder sff2 = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(name);
@@ -125,12 +134,12 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder1 = new SffSfDataPlaneLocatorBuilder(sfDPLocator1);
         SffSfDataPlaneLocator sffSfDataPlaneLocator1 = sffSfDataPlaneLocatorBuilder1.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder1 = new ServiceFunctionDictionaryBuilder();
-        dictionaryEntryBuilder1
-                .setName(sf1.getName()).setKey(new ServiceFunctionDictionaryKey(sf1.getName()))
-                .setType(sf1.getType())
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator1)
-                .setFailmode(Open.class)
-                .setSffInterfaces(null);
+        dictionaryEntryBuilder1.setName(sf1.getName())
+            .setKey(new ServiceFunctionDictionaryKey(sf1.getName()))
+            .setType(sf1.getType())
+            .setSffSfDataPlaneLocator(sffSfDataPlaneLocator1)
+            .setFailmode(Open.class)
+            .setSffInterfaces(null);
 
         ServiceFunctionDictionary newDictEntry = dictionaryEntryBuilder1.build();
 
@@ -143,6 +152,5 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         assertThat("Must contain first dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(firstDictEntry));
         assertThat("Must contain new dictionary entry", sff4.getServiceFunctionDictionary(), hasItem(newDictEntry));
     }
-
 
 }

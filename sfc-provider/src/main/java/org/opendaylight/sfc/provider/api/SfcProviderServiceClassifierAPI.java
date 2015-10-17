@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,7 +19,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This class has the APIs to operate on the Service Classifier datastore.
  * <p>
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
- * <p>
+ *          <p>
  * @since 2014-11-04
  */
 public class SfcProviderServiceClassifierAPI {
@@ -39,6 +38,7 @@ public class SfcProviderServiceClassifierAPI {
     /**
      * This method reads a classifier from DataStore
      * <p>
+     *
      * @param serviceClassifierName Classifier name
      * @return SF object or null if not found
      */
@@ -48,13 +48,13 @@ public class SfcProviderServiceClassifierAPI {
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
         ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(serviceClassifierName);
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
+            .child(ServiceFunctionClassifier.class, serviceFunctionKey)
+            .build();
 
         scl = SfcDataStoreAPI.readTransactionAPI(sclIID, LogicalDatastoreType.CONFIGURATION);
 
         printTraceStop(LOG);
         return scl;
     }
-
 
 }

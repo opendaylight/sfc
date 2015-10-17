@@ -36,8 +36,10 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
     }
 
     private void writeClassifierToStore(ServiceFunctionClassifier clsf) {
-        InstanceIdentifier<ServiceFunctionClassifier> clsfId = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(clsf.getName())).build();
+        InstanceIdentifier<ServiceFunctionClassifier> clsfId =
+                InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
+                    .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(clsf.getName()))
+                    .build();
         boolean result = SfcDataStoreAPI.writePutTransactionAPI(clsfId, clsf, LogicalDatastoreType.CONFIGURATION);
         assertTrue("Failed to write classifier to data store.", result);
     }
@@ -70,4 +72,5 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
         assertEquals(expectedClsf.getAccessList(), clsf.getAccessList());
         assertEquals(expectedClsf.getSclServiceFunctionForwarder(), clsf.getSclServiceFunctionForwarder());
     }
+
 }

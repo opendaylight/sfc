@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
@@ -28,9 +29,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -39,8 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdk;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdkvhost;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdkvhostuser;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeSystem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeInternal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeSystem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
@@ -185,7 +186,7 @@ public class SfcSffToOvsMappingAPI {
             OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointBuilder =
                     new OvsdbTerminationPointAugmentationBuilder();
 
-            ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName());
+            ovsdbTerminationPointBuilder.setName(sffDataPlaneLocator.getName().getValue());
             ovsdbTerminationPointBuilder
                 .setInterfaceType(getDataPlaneLocatorInterfaceType(sffDataPlaneLocator.getDataPlaneLocator()));
 
@@ -420,8 +421,10 @@ public class SfcSffToOvsMappingAPI {
 
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         // the name will be e.g. RSP1-vxlan-0to1
-        sffDataPlaneLocatorBuilder.setName(buildVxlanTunnelDataPlaneLocatorName(renderedServicePath,
-                hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo));
+        String stringDpl =
+                buildVxlanTunnelDataPlaneLocatorName(renderedServicePath, hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo);
+        SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName(stringDpl);
+        sffDataPlaneLocatorBuilder.setName(sffDplName);
 
         // build IP:Port locator
         IpAddress ipAddress = SfcOvsToSffMappingAPI.getOvsBridgeLocalIp(hopOvsdbBridgePairFrom.ovsdbBridgeAugmentation);
@@ -471,7 +474,8 @@ public class SfcSffToOvsMappingAPI {
                 "Cannot build VxlanTunnel DataPlane locator Name, destination Hop is null");
 
         // the name will be e.g. RSP1-vxlan-0to1
-        return (renderedServicePath.getName() + VXLAN + hopOvsdbBridgePairFrom.renderedServicePathHop.getHopNumber()
-                + TO + hopOvsdbBridgePairTo.renderedServicePathHop.getHopNumber());
+        return (renderedServicePath.getName().getValue() + VXLAN
+                + hopOvsdbBridgePairFrom.renderedServicePathHop.getHopNumber() + TO
+                + hopOvsdbBridgePairTo.renderedServicePathHop.getHopNumber());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,16 +8,17 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class RspExporterFactory implements ExporterFactory {
 
@@ -31,6 +32,7 @@ public class RspExporterFactory implements ExporterFactory {
         return new RspExporter();
     }
 }
+
 
 class RspExporter extends AbstractExporter implements Exporter {
 
@@ -60,12 +62,20 @@ class RspExporter extends AbstractExporter implements Exporter {
 
             ObjectNode node = mapper.createObjectNode();
             node.put(_CONTEXT_METADATA, rsp.getContextMetadata());
-            node.put(_NAME, rsp.getName());
+            if (rsp.getName() != null) {
+                node.put(_NAME, rsp.getName().getValue());
+            }
             node.put(_PATH_ID, rsp.getPathId());
-            node.put(_PARENT_SERVICE_FUNCTION_PATH, rsp.getParentServiceFunctionPath());
-            node.put(_SERVICE_CHAIN_NAME, rsp.getServiceChainName());
+            if (rsp.getParentServiceFunctionPath() != null) {
+                node.put(_PARENT_SERVICE_FUNCTION_PATH, rsp.getParentServiceFunctionPath().getValue());
+            }
+            if (rsp.getServiceChainName() != null) {
+                node.put(_SERVICE_CHAIN_NAME, rsp.getServiceChainName().getValue());
+            }
             node.put(_STARTING_INDEX, rsp.getStartingIndex());
-            node.put(_VARIABLE_METADATA, rsp.getVariableMetadata());
+            if (rsp.getVariableMetadata() != null) {
+                node.put(_VARIABLE_METADATA, rsp.getVariableMetadata());
+            }
 
             List<RenderedServicePathHop> hopList = rsp.getRenderedServicePathHop();
             if (hopList != null) {
@@ -73,8 +83,12 @@ class RspExporter extends AbstractExporter implements Exporter {
                 for (RenderedServicePathHop e : hopList) {
                     ObjectNode o = mapper.createObjectNode();
                     o.put(_HOP_NUMBER, e.getHopNumber());
-                    o.put(_SERVICE_FUNCTION_FORWARDER, e.getServiceFunctionForwarder());
-                    o.put(_SERVICE_FUNCTION_NAME, e.getServiceFunctionName());
+                    if (e.getServiceFunctionForwarder() != null) {
+                        o.put(_SERVICE_FUNCTION_FORWARDER, e.getServiceFunctionForwarder().getValue());
+                    }
+                    if (e.getServiceFunctionName() != null) {
+                        o.put(_SERVICE_FUNCTION_NAME, e.getServiceFunctionName().getValue());
+                    }
                     o.put(_SERVICE_INDEX, e.getServiceIndex());
                     hopArray.add(o);
                 }
@@ -106,7 +120,7 @@ class RspExporter extends AbstractExporter implements Exporter {
             RenderedServicePath obj = (RenderedServicePath) dataObject;
 
             ObjectNode node = mapper.createObjectNode();
-            node.put("name", obj.getName());
+            node.put("name", obj.getName().getValue());
             ArrayNode rspArray = mapper.createArrayNode();
             rspArray.add(node);
             ret = "{\"" + _RENDERED_SERVICE_PATH + "\":" + rspArray.toString() + "}";

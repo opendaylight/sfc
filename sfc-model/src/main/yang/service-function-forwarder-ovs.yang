@@ -5,22 +5,17 @@ module service-function-forwarder-ovs {
 
   prefix sfc-sff-ovs;
 
-  import service-function-forwarder {
-    prefix "sfc-sff";
-  }
-
+  import service-function-forwarder {prefix sfc-sff;}
+  import sfc-common {prefix sfc-common; }
+  import yang-ext { prefix "ext"; }
   import ietf-yang-types {
     prefix "yang";
     revision-date 2013-07-15;
   }
-
-  import yang-ext { prefix "ext"; }
-
   import ovsdb {
     prefix "ovsdb";
     revision-date 2015-01-05;
   }
-
   import overlay {
     prefix "ovsdb-overlay";
     revision-date 2015-01-05;
@@ -137,7 +132,7 @@ module service-function-forwarder-ovs {
           + " overlay or facing virtual machines respectively";
       }
       leaf name {
-        type string;
+        type sfc-common:sff-name;
         description
           "The unique name of this service function forwarder, such
            as SFF1";

@@ -233,7 +233,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         //read service function state with its name
         //list of Strings representing paths will be returned
-        List<String> rspList = SfcProviderServiceFunctionAPI.readServiceFunctionStateAsStringList(SF_STATE_NAME);
+        List<String> rspList = SfcProviderServiceFunctionAPI.getRspsBySfName(SF_STATE_NAME);
 
         assertNotNull("Must not be null", rspList);
         assertEquals("Must be equal", rspList.get(0), SF_SERVICE_PATH);

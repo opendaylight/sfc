@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
@@ -146,7 +148,7 @@ public class SfstateExporterTest {
 
     private ServiceFunctionState buildServiceFunctionStateNameOnly() {
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
-        serviceFunctionStateBuilder.setName(SfstateTestValues.NAME.getValue());
+        serviceFunctionStateBuilder.setName(new SfName(SfstateTestValues.NAME.getValue()));
 
         return serviceFunctionStateBuilder.build();
     }
@@ -181,16 +183,16 @@ public class SfstateExporterTest {
                     .setPacketsIn(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
                     .build();
-        SfServicePathKey servicePathKey = new SfServicePathKey(SfstateTestValues.PATH_NAME.getValue());
+        SfServicePathKey servicePathKey = new SfServicePathKey(new SfpName(SfstateTestValues.PATH_NAME.getValue()));
 
         SfServicePath sfServicePath = new SfServicePathBuilder().setKey(servicePathKey)
-            .setName(SfstateTestValues.PATH_NAME.getValue())
+            .setName(new SfpName(SfstateTestValues.PATH_NAME.getValue()))
             .setServiceStatistics(pathserviceStatistics)
             .build();
         sfServicePaths.add(sfServicePath);
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
         ServiceFunctionStateKey serviceFunctionStateKey =
-                new ServiceFunctionStateKey(SfstateTestValues.NAME.getValue());
+                new ServiceFunctionStateKey(new SfName(SfstateTestValues.NAME.getValue()));
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
             .setServiceStatistics(serviceStatistics)
             .setSfServicePath(sfServicePaths)

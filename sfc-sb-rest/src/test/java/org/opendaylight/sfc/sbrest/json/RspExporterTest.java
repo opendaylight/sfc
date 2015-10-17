@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -113,7 +118,7 @@ public class RspExporterTest {
 
     private RenderedServicePath buildRenderedServicePathNameOnly() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
-        renderedServicePathBuilder.setName(RspTestValues.NAME.getValue());
+        renderedServicePathBuilder.setName(new RspName(RspTestValues.NAME.getValue()));
 
         return renderedServicePathBuilder.build();
     }
@@ -121,11 +126,11 @@ public class RspExporterTest {
     private RenderedServicePath buildRenderedServicePath() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
 
-        renderedServicePathBuilder.setName(RspTestValues.NAME.getValue())
+        renderedServicePathBuilder.setName(new RspName(RspTestValues.NAME.getValue()))
             .setContextMetadata(RspTestValues.CONTEXT_METADATA.getValue())
-            .setParentServiceFunctionPath(RspTestValues.PARENT_SERVICE_FUNCTION_PATH.getValue())
+            .setParentServiceFunctionPath(new SfpName(RspTestValues.PARENT_SERVICE_FUNCTION_PATH.getValue()))
             .setPathId(Long.parseLong(RspTestValues.PATH_ID.getValue()))
-            .setServiceChainName(RspTestValues.SERVICE_CHAIN_NAME.getValue())
+            .setServiceChainName(new SfcName(RspTestValues.SERVICE_CHAIN_NAME.getValue()))
             .setStartingIndex(Short.parseShort(RspTestValues.STARTING_INDEX.getValue()))
             .setRenderedServicePathHop(this.buildRenderedServicePathHops());
 
@@ -140,7 +145,7 @@ public class RspExporterTest {
             RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
             renderedServicePathHopBuilder.setHopNumber((short) index)
-                .setServiceFunctionName(RspTestValues.SERVICE_FUNCTION_NAME.getValue() + index)
+                .setServiceFunctionName(new SfName(RspTestValues.SERVICE_FUNCTION_NAME.getValue() + index))
                 .setServiceFunctionForwarder(createServiceFunctionForwarder(index).getName())
                 .setServiceIndex(Short.parseShort(RspTestValues.SERVICE_INDEX.getValue()));
 
@@ -152,7 +157,8 @@ public class RspExporterTest {
 
     private ServiceFunctionForwarder createServiceFunctionForwarder(int index) {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(RspTestValues.SERVICE_FUNCTION_FORWARDER.getValue() + index);
+        serviceFunctionForwarderBuilder
+            .setName(new SffName(RspTestValues.SERVICE_FUNCTION_FORWARDER.getValue() + index));
         return serviceFunctionForwarderBuilder.build();
     }
 

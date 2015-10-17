@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,6 +23,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
@@ -60,8 +61,8 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final String IP_MGMT_ADDRESS = "192.168.1.2";
     private static final int DP_PORT = 6633;
-    private static final String SF_NAME = "dummySF";
-    private static final String SF_STATE_NAME = "dummySFS";
+    private static final SfName SF_NAME = new SfName("dummySF");
+    private static final SfName SF_STATE_NAME = new SfName("dummySFS");
 
     @Before
     public void before() {
@@ -70,53 +71,49 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     }
 
     public void testCreateReadServiceFunctionDescription() {
-        ServiceFunctionStateKey serviceFunctionStateKey =
-                new ServiceFunctionStateKey("unittest-fw-1");
+        ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(new SfName("unittest-fw-1"));
         SfcSfDescMon sfDescMon;
         List<PortBandwidth> portBandwidthList = new ArrayList<>();
 
         Long[] data;
         data = new Long[10];
-        for(int i = 0; i < 10; i++){
-            data[i] = Long.parseLong(Integer.toString(i+1));
+        for (int i = 0; i < 10; i++) {
+            data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
-        PortBandwidth portBandwidth= new PortBandwidthBuilder()
-                .setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
-                .setKey(portBandwidthKey)
-                .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
-                .setPortId(data[0])
-                .setSupportedBandwidth(data[1]).build();
+        PortBandwidth portBandwidth = new PortBandwidthBuilder().setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
+            .setKey(portBandwidthKey)
+            .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
+            .setPortId(data[0])
+            .setSupportedBandwidth(data[1])
+            .build();
         portBandwidthList.add(portBandwidth);
 
-        PortsBandwidth portsBandwidth = new PortsBandwidthBuilder()
-                .setPortBandwidth(portBandwidthList).build();
-        //sf cap
-        Capabilities cap = new CapabilitiesBuilder()
-                .setPortsBandwidth(portsBandwidth)
-                .setFIBSize(data[2])
-                .setRIBSize(data[3])
-                .setSupportedACLNumber(data[4])
-                .setSupportedBandwidth(data[5])
-                .setSupportedPacketRate(data[6]).build();
+        PortsBandwidth portsBandwidth = new PortsBandwidthBuilder().setPortBandwidth(portBandwidthList).build();
+        // sf cap
+        Capabilities cap = new CapabilitiesBuilder().setPortsBandwidth(portsBandwidth)
+            .setFIBSize(data[2])
+            .setRIBSize(data[3])
+            .setSupportedACLNumber(data[4])
+            .setSupportedBandwidth(data[5])
+            .setSupportedPacketRate(data[6])
+            .build();
 
-        //sf description
+        // sf description
         long numberOfDataports = 1;
-        DescriptionInfo descInfo = new DescriptionInfoBuilder()
-                .setCapabilities(cap)
-                .setNumberOfDataports(numberOfDataports).build();
+        DescriptionInfo descInfo =
+                new DescriptionInfoBuilder().setCapabilities(cap).setNumberOfDataports(numberOfDataports).build();
 
-        sfDescMon = new SfcSfDescMonBuilder()
-                .setDescriptionInfo(descInfo).build();
+        sfDescMon = new SfcSfDescMonBuilder().setDescriptionInfo(descInfo).build();
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey)
-                .addAugmentation(ServiceFunctionState1.class, sfState1).build();
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
+            .addAugmentation(ServiceFunctionState1.class, sfState1)
+            .build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
 
         SfcSfDescMon readSfcSfDescMon =
-                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor("unittest-fw-1");
+                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(new SfName("unittest-fw-1"));
         Long numPorts = 1L;
         assertNotNull("Must be not null", readSfcSfDescMon);
         assertEquals("Must be equal", cap, readSfcSfDescMon.getDescriptionInfo().getCapabilities());
@@ -127,52 +124,47 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void testCreateReadServiceFunctionMonitor() {
         SfcSfDescMon sfDescMon;
 
-        ServiceFunctionStateKey serviceFunctionStateKey =
-                new ServiceFunctionStateKey("unittest-fw-2");
+        ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(new SfName("unittest-fw-2"));
 
         List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<>();
 
         Long[] data;
         data = new Long[10];
-        for(int i = 0; i < 10; i++){
-            data[i] = Long.parseLong(Integer.toString(i+1));
+        for (int i = 0; i < 10; i++) {
+            data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-                .setBandwidthUtilization(data[2])
-                .setKey(portBandwidthUtilKey)
-                .setPortId(data[0]).build();
+            .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey).setPortId(data[0]).build();
         portBandwidthUtilList.add(portBandwidthUtil);
 
-        SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
-                .setPortBandwidthUtilization(portBandwidthUtilList).build();
+        SFPortsBandwidthUtilization sfPortsBandwidthUtil =
+                new SFPortsBandwidthUtilizationBuilder().setPortBandwidthUtilization(portBandwidthUtilList).build();
 
-        ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                .setAvailableMemory(data[1])
-                .setBandwidthUtilization(data[2])
-                .setCPUUtilization(data[3])
-                .setFIBUtilization(data[4])
-                .setRIBUtilization(data[5])
-                .setMemoryUtilization(data[6])
-                .setPacketRateUtilization(data[7])
-                .setPowerUtilization(data[8])
-                .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
+        ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setAvailableMemory(data[1])
+            .setBandwidthUtilization(data[2])
+            .setCPUUtilization(data[3])
+            .setFIBUtilization(data[4])
+            .setRIBUtilization(data[5])
+            .setMemoryUtilization(data[6])
+            .setPacketRateUtilization(data[7])
+            .setPowerUtilization(data[8])
+            .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil)
+            .build();
 
-        //sf monitor data
-        MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                .setResourceUtilization(resrcUtil)
-                .setLiveness(true).build();
+        // sf monitor data
+        MonitoringInfo monInfo =
+                new MonitoringInfoBuilder().setResourceUtilization(resrcUtil).setLiveness(true).build();
 
-        sfDescMon = new SfcSfDescMonBuilder()
-                .setMonitoringInfo(monInfo).build();
+        sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey)
-                .addAugmentation(ServiceFunctionState1.class,sfState1).build();
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
+            .addAugmentation(ServiceFunctionState1.class, sfState1)
+            .build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         SfcSfDescMon readSfcSfDescMon =
-                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor("unittest-fw-2");
+                SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(new SfName("unittest-fw-2"));
         assertNotNull("Must be not null", readSfcSfDescMon);
         assertEquals("Must be equal", resrcUtil, readSfcSfDescMon.getMonitoringInfo().getResourceUtilization());
         assertTrue("Must be true", readSfcSfDescMon.getMonitoringInfo().isLiveness());
@@ -188,65 +180,62 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         Long[] data;
 
         data = new Long[10];
-        for(int i = 0; i < 10; i++){
-            data[i] = Long.parseLong(Integer.toString(i+1));
+        for (int i = 0; i < 10; i++) {
+            data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
-        PortBandwidth portBandwidth= new PortBandwidthBuilder()
-                .setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
-                .setKey(portBandwidthKey)
-                .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
-                .setPortId(data[0])
-                .setSupportedBandwidth(data[1]).build();
+        PortBandwidth portBandwidth = new PortBandwidthBuilder().setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
+            .setKey(portBandwidthKey)
+            .setMacaddress(new MacAddress("00:1e:67:a2:5f:f4"))
+            .setPortId(data[0])
+            .setSupportedBandwidth(data[1])
+            .build();
         portBandwidthList.add(portBandwidth);
 
-        PortsBandwidth portsBandwidth = new PortsBandwidthBuilder()
-                .setPortBandwidth(portBandwidthList).build();
-        //sf cap
-        Capabilities cap = new CapabilitiesBuilder()
-                .setPortsBandwidth(portsBandwidth)
-                .setFIBSize(data[2])
-                .setRIBSize(data[3])
-                .setSupportedACLNumber(data[4])
-                .setSupportedBandwidth(data[5])
-                .setSupportedPacketRate(data[6]).build();
+        PortsBandwidth portsBandwidth = new PortsBandwidthBuilder().setPortBandwidth(portBandwidthList).build();
+        // sf cap
+        Capabilities cap = new CapabilitiesBuilder().setPortsBandwidth(portsBandwidth)
+            .setFIBSize(data[2])
+            .setRIBSize(data[3])
+            .setSupportedACLNumber(data[4])
+            .setSupportedBandwidth(data[5])
+            .setSupportedPacketRate(data[6])
+            .build();
 
         long numberOfDataports = 1;
-        DescriptionInfo descInfo = new DescriptionInfoBuilder()
-                .setDataPlaneIp(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS)))
-                .setDataPlanePort(new PortNumber(DP_PORT))
-                .setType("firewall")
-                .setCapabilities(cap)
-                .setNumberOfDataports(numberOfDataports).build();
+        DescriptionInfo descInfo =
+                new DescriptionInfoBuilder().setDataPlaneIp(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS)))
+                    .setDataPlanePort(new PortNumber(DP_PORT))
+                    .setType("firewall")
+                    .setCapabilities(cap)
+                    .setNumberOfDataports(numberOfDataports)
+                    .build();
 
         /* Build MonitoringInfo, reuse data[] from the above part */
         List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<>();
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-                .setBandwidthUtilization(data[2])
-                .setKey(portBandwidthUtilKey)
-                .setPortId(data[0]).build();
+            .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey).setPortId(data[0]).build();
         portBandwidthUtilList.add(portBandwidthUtil);
 
-        SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
-                .setPortBandwidthUtilization(portBandwidthUtilList).build();
+        SFPortsBandwidthUtilization sfPortsBandwidthUtil =
+                new SFPortsBandwidthUtilizationBuilder().setPortBandwidthUtilization(portBandwidthUtilList).build();
 
-        ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-                .setAvailableMemory(data[1])
-                .setBandwidthUtilization(data[2])
-                .setCPUUtilization(data[3])
-                .setFIBUtilization(data[4])
-                .setRIBUtilization(data[5])
-                .setMemoryUtilization(data[6])
-                .setPacketRateUtilization(data[7])
-                .setPowerUtilization(data[8])
-                .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
+        ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setAvailableMemory(data[1])
+            .setBandwidthUtilization(data[2])
+            .setCPUUtilization(data[3])
+            .setFIBUtilization(data[4])
+            .setRIBUtilization(data[5])
+            .setMemoryUtilization(data[6])
+            .setPacketRateUtilization(data[7])
+            .setPowerUtilization(data[8])
+            .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil)
+            .build();
 
-        MonitoringInfo monInfo = new MonitoringInfoBuilder()
-                .setResourceUtilization(resrcUtil)
-                .setLiveness(true).build();
+        MonitoringInfo monInfo =
+                new MonitoringInfoBuilder().setResourceUtilization(resrcUtil).setLiveness(true).build();
 
-        //push service function state with augmentation into data store
+        // push service function state with augmentation into data store
         boolean transactionSuccessful = writeServiceFunctionStateAugmentation();
         assertTrue("Must be true", transactionSuccessful);
 
@@ -258,30 +247,29 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     }
 
     /**
-      * Write service function state with augmentation
-      */
+     * Write service function state with augmentation
+     */
     private boolean writeServiceFunctionStateAugmentation() {
 
         MonitoringInfoBuilder monitoringInfoBuilder1 = new MonitoringInfoBuilder();
         DescriptionInfoBuilder descriptionInfoBuilder1 = new DescriptionInfoBuilder();
         SfcSfDescMonBuilder sfcSfDescMonBuilder = new SfcSfDescMonBuilder();
         sfcSfDescMonBuilder.setMonitoringInfo(monitoringInfoBuilder1.build())
-                .setDescriptionInfo(descriptionInfoBuilder1.build());
+            .setDescriptionInfo(descriptionInfoBuilder1.build());
 
         ServiceFunctionState1Builder serviceFunctionState1Builder = new ServiceFunctionState1Builder();
         serviceFunctionState1Builder.setSfcSfDescMon(sfcSfDescMonBuilder.build());
 
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-                .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
-                .addAugmentation(ServiceFunctionState1.class, serviceFunctionState1Builder.build());
+            .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+            .addAugmentation(ServiceFunctionState1.class, serviceFunctionState1Builder.build());
 
-        InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
-                .builder(ServiceFunctionsState.class)
-                .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
-                .build();
+        InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
+            .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
+            .build();
 
-
-        return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
     }
 }

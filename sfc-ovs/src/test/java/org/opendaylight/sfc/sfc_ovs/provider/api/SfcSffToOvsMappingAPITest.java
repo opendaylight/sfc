@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
@@ -158,7 +161,7 @@ public class SfcSffToOvsMappingAPITest {
         ovsBridgeBuilder.setBridgeName(bridgeName).setUuid(new Uuid(uuid));
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
-        serviceFunctionForwarderBuilder.setName(testString)
+        serviceFunctionForwarderBuilder.setName(new SffName(testString))
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
             .addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
 
@@ -184,7 +187,7 @@ public class SfcSffToOvsMappingAPITest {
         ovsBridgeBuilder.setBridgeName(bridgeName).setUuid(new Uuid(uuid));
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
-        serviceFunctionForwarderBuilder.setName(testString).addAugmentation(SffOvsBridgeAugmentation.class,
+        serviceFunctionForwarderBuilder.setName(new SffName(testString)).addAugmentation(SffOvsBridgeAugmentation.class,
                 sffOvsBridgeAugmentationBuilder.build());
 
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsdbNodeAugmentation"))
@@ -213,7 +216,7 @@ public class SfcSffToOvsMappingAPITest {
         ovsBridgeBuilder.setBridgeName(bridgeName).setUuid(new Uuid(uuid));
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
-        serviceFunctionForwarderBuilder.setName(testString).addAugmentation(SffOvsBridgeAugmentation.class,
+        serviceFunctionForwarderBuilder.setName(new SffName(testString)).addAugmentation(SffOvsBridgeAugmentation.class,
                 sffOvsBridgeAugmentationBuilder.build());
 
         // create node
@@ -253,7 +256,7 @@ public class SfcSffToOvsMappingAPITest {
         ovsNodeBuilder.setNodeId(new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(testString)));
         sffOvsNodeAugmentationBuilder.setOvsNode(ovsNodeBuilder.build());
 
-        serviceFunctionForwarderBuilder.setName(testString)
+        serviceFunctionForwarderBuilder.setName(new SffName(testString))
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
             .addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
 
@@ -278,7 +281,7 @@ public class SfcSffToOvsMappingAPITest {
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffOvsLocatorOptionsAugmentationBuilder = new SffOvsLocatorOptionsAugmentationBuilder();
 
-        sffDataPlaneLocatorBuilder.setName(testString);
+        sffDataPlaneLocatorBuilder.setName(new SffDataPlaneLocatorName(testString));
 
         ovsOptionsBuilder.setLocalIp(OVSDB_OPTION_LOCAL_IP_VALUE)
             .setRemoteIp(OVSDB_OPTION_REMOTE_IP_VALUE)
@@ -430,7 +433,7 @@ public class SfcSffToOvsMappingAPITest {
         renderedServicePathHopBuilderTo = new RenderedServicePathHopBuilder();
         SffDataPlaneLocator sffDataPlaneLocator;
 
-        renderedServicePathBuilder.setName(renderedServicePathName).setPathId(pathId);
+        renderedServicePathBuilder.setName(new RspName(renderedServicePathName)).setPathId(pathId);
 
         renderedServicePathHopBuilderFrom.setHopNumber(hopNumberFrom).setServiceIndex(serviceIndex);
 
@@ -450,7 +453,7 @@ public class SfcSffToOvsMappingAPITest {
         sffDataPlaneLocator = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(renderedServicePathBuilder.build(),
                 hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo);
 
-        Assert.assertEquals("Must be Equal", sffDataPlaneLocator.getName(),
+        Assert.assertEquals("Must be Equal", sffDataPlaneLocator.getName().getValue(),
                 renderedServicePathName + "-vxlan-" + hopNumberFrom + "to" + hopNumberTo);
         Assert.assertEquals("Must be Equal",
                 sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class).getOvsOptions().getNsi(),
@@ -486,7 +489,7 @@ public class SfcSffToOvsMappingAPITest {
         renderedServicePathHopBuilderTo = new RenderedServicePathHopBuilder();
         String result;
 
-        renderedServicePathBuilder.setName(renderedServicePathName);
+        renderedServicePathBuilder.setName(new RspName(renderedServicePathName));
         renderedServicePathHopBuilderFrom.setHopNumber(hopNumberFrom);
         renderedServicePathHopBuilderTo.setHopNumber(hopNumberTo);
         hopOvsdbBridgePairFrom = new HopOvsdbBridgePair(renderedServicePathHopBuilderFrom.build(),

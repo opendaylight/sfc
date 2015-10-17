@@ -58,7 +58,7 @@ public class HopOvsdbBridgePair {
         List<HopOvsdbBridgePair> hopOvsdbBridgePairList = new ArrayList<>();
 
         for (RenderedServicePathHop hop : renderedServicePath.getRenderedServicePathHop()) {
-            Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(hop.getServiceFunctionForwarder())};
+            Object[] methodParams = {SfcOvsUtil.buildOvsdbBridgeIID(hop.getServiceFunctionForwarder().getValue())};
             SfcOvsDataStoreAPI readOvsdbBridge =
                     new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE, methodParams);
 

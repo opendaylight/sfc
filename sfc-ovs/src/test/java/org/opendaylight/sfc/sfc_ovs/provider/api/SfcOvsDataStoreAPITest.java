@@ -22,6 +22,8 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -75,7 +77,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
     private static final String bridgeName = "bridge_name";
     private final Object[] methodParams = new Object[2];
-    private final String dplName = "dpl name";
+    private final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("dpl name");
     private final String testIpv4 = "10.0.0.1";
     private final String testIpv6 = "01:23:45:67:89:AB:CD:EF";
     private final InstanceIdentifier<Node> nodeIID = createNodeIID();
@@ -163,7 +165,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
         // delete tp
         methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT;
-        methodParams[0] = createOvsdbTerminationPointIID(testIpv4, sffDataPlaneLocator.getName());
+        methodParams[0] = createOvsdbTerminationPointIID(new SffName(testIpv4), sffDataPlaneLocator.getName());
 
         sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
         testResult = sfcOvsDataStoreAPIObject.call();
@@ -382,15 +384,15 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     }
 
     // create ovsdb termination point IID
-    private InstanceIdentifier<OvsdbTerminationPointAugmentation> createOvsdbTerminationPointIID(String sffName,
-            String sffDataPlaneLocatorName) {
+    private InstanceIdentifier<OvsdbTerminationPointAugmentation> createOvsdbTerminationPointIID(SffName sffName,
+            SffDataPlaneLocatorName sffDataPlaneLocatorName) {
         String BRIDGE_PREFIX = "/bridge/";
         String TERMINATION_POINT_PREFIX = "/terminationpoint/";
         return InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-            .child(Node.class, new NodeKey(new NodeId(sffName + BRIDGE_PREFIX + bridgeName)))
-            .child(TerminationPoint.class, new TerminationPointKey(new TpId(
-                    sffName + BRIDGE_PREFIX + bridgeName + TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName)))
+            .child(Node.class, new NodeKey(new NodeId(sffName.getValue() + BRIDGE_PREFIX + bridgeName)))
+            .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffName.getValue() + BRIDGE_PREFIX
+                    + bridgeName + TERMINATION_POINT_PREFIX + sffDataPlaneLocatorName.getValue())))
             .augmentation(OvsdbTerminationPointAugmentation.class);
 
     }

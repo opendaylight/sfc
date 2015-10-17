@@ -29,6 +29,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
@@ -93,9 +95,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final String ipv6Address = "0F:ED:CB:A9:87:65:43:21";
     private static final String testBridgeName = "Bridge Name";
     private static final String testString = "Test string";
-    private static final String sffDataPlaneLocator = "sffDataPlaneLocator test";
+    private static final SffDataPlaneLocatorName sffDataPlaneLocator =
+            new SffDataPlaneLocatorName("sffDataPlaneLocator test");
     private static final String testDataPath = "12:34:56:78:9A:BC:DE:F0";
-    private static final String dplName = "sffdpl";
+    private static final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("sffdpl");
     private static final String testIpAddress = "170.0.0.1";
     private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
     private OpendaylightSfc opendaylightSfc;
@@ -291,7 +294,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // locator name are available
     public void testBuildOvsdbTerminationPointIIDFromStrings() {
         InstanceIdentifier<TerminationPoint> terminationPointIID =
-                SfcOvsUtil.buildOvsdbTerminationPointIID(testString, sffDataPlaneLocator);
+                SfcOvsUtil.buildOvsdbTerminationPointIID(new SffName(testString), sffDataPlaneLocator);
 
         assertEquals(InstanceIdentifier.keyOf(terminationPointIID).getTpId().getValue(), sffDataPlaneLocator);
     }
@@ -337,11 +340,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
 
-        String sffName = testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName;
+        SffName sffName = new SffName(testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
 
         // delete created ovsdb termination point
-        result = SfcOvsUtil.deleteOvsdbTerminationPoint(SfcOvsUtil.buildOvsdbTerminationPointIID(sffName, "Dpl"),
-                executorService);
+        result = SfcOvsUtil.deleteOvsdbTerminationPoint(
+                SfcOvsUtil.buildOvsdbTerminationPointIID(sffName, new SffDataPlaneLocatorName("Dpl")), executorService);
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
@@ -404,7 +407,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // existing sff should be augmented with openflow node id
     public void testAugmentSffWithOpenFlowNodeId() throws Exception {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(testString);
+        serviceFunctionForwarderBuilder.setName(new SffName(testString));
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         IpBuilder ipBuilder = new IpBuilder();
@@ -426,7 +429,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         // create sff with all parameters
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()))
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(testIpAddress));
+            .setKey(new ServiceFunctionForwarderKey(new SffName(testIpAddress)));
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
@@ -465,7 +468,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertTrue("Must be true", transactionSuccessful);
 
         // create service function forwarder
-        serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(testString))
+        serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(new SffName(testString)))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(testIpAddress)));
 
         ServiceFunctionForwarder serviceFunctionForwarder = serviceFunctionForwarderBuilder.build();
@@ -497,8 +500,9 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         List<SffDataPlaneLocator> sffDataPlaneLocators = new ArrayList<>();
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        sffDataPlaneLocatorBuilder.setName("sffLocator")
-            .setKey(new SffDataPlaneLocatorKey("sffLocator"))
+        SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("sffLocator");
+        sffDataPlaneLocatorBuilder.setName(sffDplName)
+            .setKey(new SffDataPlaneLocatorKey(sffDplName))
             .setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         sffDataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
@@ -511,7 +515,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(testString))
+            .setKey(new ServiceFunctionForwarderKey(new SffName(testString)))
             .setSffDataPlaneLocator(sffDataPlaneLocators);
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());

@@ -15,6 +15,8 @@ import java.util.Random;
 
 import org.opendaylight.sfc.provider.topology.SfcProviderGraph;
 import org.opendaylight.sfc.provider.topology.SfcProviderTopologyNode;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -57,9 +59,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * @param sfcProviderGraph Topology graph comprised of all the SFs and SFFs
      * @return String Name of the Service Function with type serviceFunctionType
      */
-    private String getServiceFunctionByType(ServiceFunctionType serviceFunctionType, String preSfName,
+    private SfName getServiceFunctionByType(ServiceFunctionType serviceFunctionType, SfName preSfName,
             SfcProviderGraph sfcProviderGraph) {
-        String sfcProviderTopologyNodeName = null;
+        SfName sfcProviderTopologyNodeName = null;
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         int maxTries = sftServiceFunctionNameList.size();
 
@@ -79,8 +81,13 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             int start = rad.nextInt(sftServiceFunctionNameList.size());
             SfcProviderTopologyNode firstHopNode = null;
             while (maxTries > 0) {
-                sfcProviderTopologyNodeName = sftServiceFunctionNameList.get(start).getName();
-                firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName);
+                sfcProviderTopologyNodeName = new SfName(sftServiceFunctionNameList.get(start).getName());
+                /*
+                 * XXX noticed that SfcProviderGraph sometimes refers to SFFs as well so leaving
+                 * that alone for now until a general discussion
+                 * about Schedulers can be had.
+                 */
+                firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName.getValue());
                 if (firstHopNode != null) {
                     break;
                 } else {
@@ -94,7 +101,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             return sfcProviderTopologyNodeName; // The first hop
         }
 
-        SfcProviderTopologyNode preSfcProviderTopologyNode = sfcProviderGraph.getNode(preSfName);
+        SfcProviderTopologyNode preSfcProviderTopologyNode = sfcProviderGraph.getNode(preSfName.getValue());
 
         /* return null if preSfName doesn't exist in sfcProviderGraph */
         if (preSfcProviderTopologyNode == null) {
@@ -107,14 +114,14 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         int length = 0;
         sfcProviderTopologyNodeName = null;
         for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
-            String curSfName = sftServiceFunctionName.getName();
-            SfcProviderTopologyNode curSfcProviderTopologyNode = sfcProviderGraph.getNode(curSfName);
+            SfName curSfName = new SfName(sftServiceFunctionName.getName());
+            SfcProviderTopologyNode curSfcProviderTopologyNode = sfcProviderGraph.getNode(curSfName.getValue());
             if (curSfcProviderTopologyNode == null) {
                 // curSfName doesn't exist in sfcProviderGraph, so skip it
                 continue;
             }
             List<SfcProviderTopologyNode> sfcProviderTopologyNodeList =
-                    sfcProviderGraph.getShortestPath(preSfName, curSfName);
+                    sfcProviderGraph.getShortestPath(preSfName.getValue(), curSfName.getValue());
             length = sfcProviderTopologyNodeList.size();
             if (length <= 1) {
                 LOG.debug("No path from {} to {}", preSfName, curSfName);
@@ -145,16 +152,16 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * @param sfcProviderGraph input and output of this method
      */
     private void buildTopologyGraph(SfcProviderGraph sfcProviderGraph) {
-        String sfName;
-        String sffName;
-        String toSffName;
+        SfName sfName;
+        SffName sffName;
+        SffName toSffName;
 
         /* Add all the ServiceFunction nodes */
         ServiceFunctions sfs = SfcProviderServiceFunctionAPI.readAllServiceFunctions();
         List<ServiceFunction> serviceFunctionList = sfs.getServiceFunction();
         for (ServiceFunction serviceFunction : serviceFunctionList) {
             sfName = serviceFunction.getName();
-            sfcProviderGraph.addNode(sfName);
+            sfcProviderGraph.addNode(sfName.getValue());
             LOG.debug("Add ServiceFunction: {}", sfName);
         }
 
@@ -165,7 +172,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
             /* Add ServiceFunctionForwarder node */
             sffName = serviceFunctionForwarder.getName();
-            sfcProviderGraph.addNode(sffName);
+            sfcProviderGraph.addNode(sffName.getValue());
             LOG.debug("Add ServiceFunctionForwarder: {}", sffName);
 
             List<ServiceFunctionDictionary> serviceFunctionDictionaryList =
@@ -177,7 +184,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
              */
             for (ServiceFunctionDictionary serviceFunctionDictionary : serviceFunctionDictionaryList) {
                 sfName = serviceFunctionDictionary.getName();
-                sfcProviderGraph.addEdge(sfName, sffName);
+                sfcProviderGraph.addEdge(sfName.getValue(), sffName.getValue());
                 LOG.debug("Add SF-to-SFF edge: {} => {}", sfName, sffName);
             }
 
@@ -190,7 +197,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
              */
             for (ConnectedSffDictionary connectedSffDictionary : connectedSffDictionaryList) {
                 toSffName = connectedSffDictionary.getName();
-                sfcProviderGraph.addEdge(sffName, toSffName);
+                sfcProviderGraph.addEdge(sffName.getValue(), toSffName.getValue());
                 LOG.debug("Add SFF-to-SFF edge: {} => {}", sffName, toSffName);
             }
         }
@@ -209,16 +216,16 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
      * @return List&lt;String&gt; Service Function name list in the shortest path
      */
     @Override
-    public List<String> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
+    public List<SfName> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
             ServiceFunctionPath sfp) {
-        String preSfName = null;
-        String sfName = null;
-        List<String> sfNameList = new ArrayList<>();
+        SfName preSfName = null;
+        SfName sfName = null;
+        List<SfName> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());
         SfcProviderGraph sfcProviderGraph = new SfcProviderGraph();
         short index = 0;
-        Map<Short, String> sfpMapping = getSFPHopSfMapping(sfp);
+        Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
          * Build topology graph for all the nodes,
@@ -232,7 +239,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
-            String hopSf = sfpMapping.get(index++);
+            SfName hopSf = sfpMapping.get(index++);
             if (hopSf != null) {
                 sfNameList.add(hopSf);
                 continue;

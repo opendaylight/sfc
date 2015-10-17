@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
@@ -90,7 +91,8 @@ public class SfcProviderServiceFunctionGroupAPI {
      * @param serviceFunctionType function type
      * @return ServiceFunctionGroup object or null if not found
      */
-    protected static ServiceFunctionGroup getServiceFunctionGroupByType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+    protected static ServiceFunctionGroup getServiceFunctionGroupByType(
+            Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
         printTraceStart(LOG);
         ServiceFunctionGroup sfg = null;
         InstanceIdentifier<ServiceFunctionGroups> sfgIID;
@@ -167,7 +169,7 @@ public class SfcProviderServiceFunctionGroupAPI {
      * @param serviceFunctionName name of SF to add
      * @return boolean success of failure
      */
-    protected static boolean addServiceFunctionToGroup(String serviceFunctionGroupName, String serviceFunctionName) {
+    protected static boolean addServiceFunctionToGroup(String serviceFunctionGroupName, SfName serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -185,7 +187,8 @@ public class SfcProviderServiceFunctionGroupAPI {
      * @param serviceFunctionName name of SF to remove
      * @return boolean success of failure
      */
-    protected static boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName, String serviceFunctionName) {
+    protected static boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName,
+            SfName serviceFunctionName) {
         boolean ret = false;
         printTraceStart(LOG);
 

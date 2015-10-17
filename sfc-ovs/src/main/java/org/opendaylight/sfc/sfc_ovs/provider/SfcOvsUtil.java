@@ -27,6 +27,8 @@ import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
@@ -298,12 +300,12 @@ public class SfcOvsUtil {
      * @param sffDataPlaneLocatorName Service Function Forwarder Data Plane locator name
      * @return InstanceIdentifier&lt;TerminationPoint&gt;
      */
-    public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(String sffName,
-            String sffDataPlaneLocatorName) {
+    public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(SffName sffName,
+            SffDataPlaneLocatorName sffDataPlaneLocatorName) {
         InstanceIdentifier<TerminationPoint> terminationPointIID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-            .child(Node.class, new NodeKey(new NodeId(sffName)))
-            .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffDataPlaneLocatorName)));
+            .child(Node.class, new NodeKey(new NodeId(sffName.getValue())))
+            .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffDataPlaneLocatorName.getValue())));
 
         return terminationPointIID;
     }

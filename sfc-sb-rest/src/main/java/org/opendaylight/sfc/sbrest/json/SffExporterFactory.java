@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,9 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
@@ -23,6 +20,10 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class SffExporterFactory implements ExporterFactory {
 
     public static final String _SERVICE_FUNCTION_FORWARDER = SffExporter._SERVICE_FUNCTION_FORWARDER;
@@ -34,6 +35,7 @@ public class SffExporterFactory implements ExporterFactory {
         return new SffExporter();
     }
 }
+
 
 class SffExporter extends AbstractExporter implements Exporter {
 
@@ -71,15 +73,18 @@ class SffExporter extends AbstractExporter implements Exporter {
             ArrayNode sffArray = mapper.createArrayNode();
 
             ObjectNode sffNode = mapper.createObjectNode();
-            sffNode.put(_NAME, sff.getName());
+            if (sff.getName() != null) {
+                sffNode.put(_NAME, sff.getName().getValue());
+            }
             if (sff.getIpMgmtAddress() != null) {
                 sffNode.put(_IP_MGMT_ADDRESS, ExporterUtil.convertIpAddress(sff.getIpMgmtAddress()));
             }
             if (sff.getRestUri() != null) {
                 sffNode.put(_REST_URI, sff.getRestUri().getValue());
             }
-            sffNode.put(_SERVICE_NODE, sff.getServiceNode());
-
+            if (sff.getServiceNode() != null) {
+                sffNode.put(_SERVICE_NODE, sff.getServiceNode().getValue());
+            }
             if (sff.getSffDataPlaneLocator() != null) {
                 ArrayNode locatorArray = mapper.createArrayNode();
                 for (SffDataPlaneLocator sffDataPlaneLocator : sff.getSffDataPlaneLocator()) {
@@ -122,7 +127,7 @@ class SffExporter extends AbstractExporter implements Exporter {
             ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(_NAME, obj.getName());
+            node.put(_NAME, obj.getName().getValue());
             ArrayNode sffArray = mapper.createArrayNode();
             sffArray.add(node);
             ret = "{\"" + _SERVICE_FUNCTION_FORWARDER + "\":" + sffArray.toString() + "}";
@@ -139,7 +144,7 @@ class SffExporter extends AbstractExporter implements Exporter {
         }
 
         ObjectNode sffDataPlaneLocatorNode = mapper.createObjectNode();
-        sffDataPlaneLocatorNode.put(_NAME, sffDataPlaneLocator.getName());
+        sffDataPlaneLocatorNode.put(_NAME, sffDataPlaneLocator.getName().getValue());
 
         sffDataPlaneLocatorNode.put(_DATA_PLANE_LOCATOR,
                 ExporterUtil.getDataPlaneLocatorObjectNode(sffDataPlaneLocator.getDataPlaneLocator()));
@@ -151,11 +156,13 @@ class SffExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSffDataPlaneLocatorOvsBridgeObjectNode(SffDataPlaneLocator sffDataPlaneLocator) {
-        if (sffDataPlaneLocator == null || sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class) == null) {
+        if (sffDataPlaneLocator == null
+                || sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class) == null) {
             return null;
         }
 
-        SffOvsLocatorBridgeAugmentation sffDataPlaneLocator1 = sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class);
+        SffOvsLocatorBridgeAugmentation sffDataPlaneLocator1 =
+                sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class);
 
         if (sffDataPlaneLocator1 != null) {
             return this.getOvsBridgeObjectNode(sffDataPlaneLocator1.getOvsBridge());
@@ -171,7 +178,6 @@ class SffExporter extends AbstractExporter implements Exporter {
 
         ObjectNode ovsBridgeNode = mapper.createObjectNode();
         ovsBridgeNode.put(_BRIDGE_NAME, ovsBridge.getBridgeName());
-
 
         try {
             if (ovsBridge.getUuid() != null && !ovsBridge.getUuid().getValue().isEmpty()) {
@@ -201,7 +207,7 @@ class SffExporter extends AbstractExporter implements Exporter {
         }
 
         ObjectNode sfObjectNode = mapper.createObjectNode();
-        sfObjectNode.put(_NAME, serviceFunctionDictionary.getName());
+        sfObjectNode.put(_NAME, serviceFunctionDictionary.getName().getValue());
 
         if (serviceFunctionDictionary.getType() != null) {
             sfObjectNode.put(_TYPE,
@@ -212,14 +218,13 @@ class SffExporter extends AbstractExporter implements Exporter {
                 ExporterUtil.getDataPlaneLocatorObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator());
 
         if (sffSfDataPlaneLocatorNode != null) {
-            sffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE,
-                    this.getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
+            sffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE, this
+                .getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
             sfObjectNode.put(_SFF_SF_DATA_PLANE_LOCATOR, sffSfDataPlaneLocatorNode);
-        }
-        else {
+        } else {
             ObjectNode emptySffSfDataPlaneLocatorNode = mapper.createObjectNode();
-            emptySffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE,
-                    this.getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
+            emptySffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE, this
+                .getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
             sfObjectNode.put(_SFF_SF_DATA_PLANE_LOCATOR, emptySffSfDataPlaneLocatorNode);
         }
 
@@ -227,11 +232,13 @@ class SffExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSffSfDataPlaneLocatorOvsBridgeObjectNode(SffSfDataPlaneLocator sffSfDataPlaneLocator) {
-        if (sffSfDataPlaneLocator == null || sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class) == null) {
+        if (sffSfDataPlaneLocator == null
+                || sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class) == null) {
             return null;
         }
 
-        SffSfOvsLocatorBridgeAugmentation sffSfDataPlaneLocator1 = sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class);
+        SffSfOvsLocatorBridgeAugmentation sffSfDataPlaneLocator1 =
+                sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class);
 
         if (sffSfDataPlaneLocator1 != null) {
             return this.getOvsBridgeObjectNode(sffSfDataPlaneLocator1.getOvsBridge());

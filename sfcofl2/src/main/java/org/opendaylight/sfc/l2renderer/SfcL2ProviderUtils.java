@@ -16,6 +16,8 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
@@ -25,28 +27,32 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
     // Since this class can be called by multiple threads,
     // store these objects per RSP id to avoid collisions
     private class RspContext {
+
         // store the SFs and SFFs internally so we dont have to
         // query the DataStore repeatedly for the same thing
-        private Map<String, ServiceFunction> serviceFunctions;
+        private Map<SfName, ServiceFunction> serviceFunctions;
         private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
-        private Map<String, ServiceFunctionForwarder> serviceFunctionFowarders;
+        private Map<SffName, ServiceFunctionForwarder> serviceFunctionFowarders;
 
         public RspContext() {
-            serviceFunctions = Collections.synchronizedMap(new HashMap<String, ServiceFunction>());
+            serviceFunctions = Collections.synchronizedMap(new HashMap<SfName, ServiceFunction>());
             serviceFunctionGroups = Collections.synchronizedMap(new HashMap<String, ServiceFunctionGroup>());
-            serviceFunctionFowarders = Collections.synchronizedMap(new HashMap<String, ServiceFunctionForwarder>());
+            serviceFunctionFowarders = Collections.synchronizedMap(new HashMap<SffName, ServiceFunctionForwarder>());
         }
     }
+
     private Map<Long, RspContext> rspIdToContext;
 
     public SfcL2ProviderUtils() {
         rspIdToContext = new HashMap<Long, RspContext>();
     }
 
+    @Override
     public void addRsp(long rspId) {
         rspIdToContext.put(rspId, new RspContext());
     }
 
+    @Override
     public void removeRsp(long rspId) {
         rspIdToContext.remove(rspId);
     }
@@ -60,13 +66,14 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
      * @param sfName - The SF Name to search for
      * @return - The ServiceFunction object, or null if not found
      */
-    public ServiceFunction getServiceFunction(final String sfName, long rspId) {
+    @Override
+    public ServiceFunction getServiceFunction(final SfName sfName, long rspId) {
         RspContext rspContext = rspIdToContext.get(rspId);
 
         ServiceFunction sf = rspContext.serviceFunctions.get(sfName);
-        if(sf == null) {
+        if (sf == null) {
             sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
-            if(sf != null) {
+            if (sf != null) {
                 rspContext.serviceFunctions.put(sfName, sf);
             }
         }
@@ -83,13 +90,14 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
      * @param sffName - The SFF Name to search for
      * @return The ServiceFunctionForwarder object, or null if not found
      */
-    public ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName, long rspId) {
+    @Override
+    public ServiceFunctionForwarder getServiceFunctionForwarder(final SffName sffName, long rspId) {
         RspContext rspContext = rspIdToContext.get(rspId);
 
         ServiceFunctionForwarder sff = rspContext.serviceFunctionFowarders.get(sffName);
-        if(sff == null) {
+        if (sff == null) {
             sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
-            if(sff != null) {
+            if (sff != null) {
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 rspContext.serviceFunctionFowarders.put(sffName, sff);
             }
@@ -98,6 +106,7 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
         return sff;
     }
 
+    @Override
     public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId) {
         RspContext rspContext = rspIdToContext.get(rspId);
 

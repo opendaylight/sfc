@@ -23,6 +23,8 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAlgAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -107,10 +109,11 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
     private void buildGroup(ServiceFunctionGroup sfg, boolean isAdd) {
         try {
             List<SfcServiceFunction> sfs = sfg.getSfcServiceFunction();
-            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfs.get(0).getName());
+            SfName sfName = new SfName(sfs.get(0).getName());
+            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             // assuming all SF's have the same SFF
             // should use the ovs id
-            String sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
+            SffName sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
             String sffNodeId = null;
             sffNodeId = getSffOpenFlowNodeName(sffName);
 
@@ -128,14 +131,14 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
 
             int index = 0;
             for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
-                sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfcServiceFunction.getName());
-                ServiceFunctionDictionary sffSfDict =
-                        sfcL2ProviderUtils.getSffSfDictionary(sff, sfcServiceFunction.getName());
+                sfName = new SfName(sfcServiceFunction.getName());
+                sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+                ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sff, sfName);
                 String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sffSfDict);
                 bucketsInfo.add(buildBucket(sf, outPort, index));
                 index++;
             }
-            this.sfcL2FlowProgrammer.configureGroup(sffName, sffNodeId, sfg.getName(), sfg.getGroupId(),
+            this.sfcL2FlowProgrammer.configureGroup(sffName.getValue(), sffNodeId, sfg.getName(), sfg.getGroupId(),
                     algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
 
         } catch (Exception e) {
@@ -186,7 +189,7 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
         return sfIp;
     }
 
-    private String getSffOpenFlowNodeName(final String sffName) {
+    private String getSffOpenFlowNodeName(final SffName sffName) {
         ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
         return sfcL2ProviderUtils.getSffOpenFlowNodeName(sff);
     }

@@ -10,6 +10,9 @@ package org.opendaylight.sfc.l2renderer;
 
 import java.util.List;
 
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
@@ -46,9 +49,9 @@ public abstract class SfcL2BaseProviderUtils {
 
     abstract public void removeRsp(long rspId);
 
-    abstract public ServiceFunction getServiceFunction(final String sfName, long rspId);
+    abstract public ServiceFunction getServiceFunction(final SfName sfName, long rspId);
 
-    abstract public ServiceFunctionForwarder getServiceFunctionForwarder(final String sffName, long rspId);
+    abstract public ServiceFunctionForwarder getServiceFunctionForwarder(final SffName sffName, long rspId);
 
     abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
@@ -59,7 +62,7 @@ public abstract class SfcL2BaseProviderUtils {
      * @param dplName - The name of the DPL to look for
      * @return SffDataPlaneLocator or null if not found
      */
-    public SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, String dplName) {
+    public SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, SffDataPlaneLocatorName dplName) {
         SffDataPlaneLocator sffDpl = null;
 
         List<SffDataPlaneLocator> sffDataPlanelocatorList = sff.getSffDataPlaneLocator();
@@ -80,7 +83,7 @@ public abstract class SfcL2BaseProviderUtils {
      * @param sffName
      * @return SfDataPlaneLocator
      */
-    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final String sffName) {
+    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final SffName sffName) {
         List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
         for (SfDataPlaneLocator sfDpl : sfDataPlanelocatorList) {
             if (sfDpl.getServiceFunctionForwarder().equals(sffName)) {
@@ -98,7 +101,7 @@ public abstract class SfcL2BaseProviderUtils {
      * @param sfName - The name of the DPL to look for
      * @return SffSfDataPlaneLocator or null if not found
      */
-    public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, String sfName) {
+    public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, SfName sfName) {
         SffSfDataPlaneLocator sffSfDpl = null;
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
@@ -111,7 +114,7 @@ public abstract class SfcL2BaseProviderUtils {
         return sffSfDpl;
     }
 
-    public ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, String sfName) {
+    public ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, SfName sfName) {
         ServiceFunctionDictionary sffSfDict = null;
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
@@ -241,7 +244,7 @@ public abstract class SfcL2BaseProviderUtils {
         return macStr;
     }
 
-    public String getSffOpenFlowNodeName(final String sffName, long rspId) {
+    public String getSffOpenFlowNodeName(final SffName sffName, long rspId) {
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
         return getSffOpenFlowNodeName(sff);
     }
@@ -261,7 +264,7 @@ public abstract class SfcL2BaseProviderUtils {
         }
 
         // it its not an sff-ovs, then just return the ServiceNode
-        return sff.getServiceNode();
+        return sff.getServiceNode().getValue();
     }
 
 }

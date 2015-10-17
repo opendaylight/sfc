@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
@@ -86,7 +88,7 @@ public class SfcOvsToSffMappingAPI {
         if (ovsdbBridgeAugmentation != null) {
 
             ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-            serviceFunctionForwarderBuilder.setName(getServiceForwarderNameFromNode(node));
+            serviceFunctionForwarderBuilder.setName(new SffName(getServiceForwarderNameFromNode(node)));
 
             // add OVS Node ref to SFF
             SffOvsNodeAugmentationBuilder sffOvsNodeAugmentationBuilder = new SffOvsNodeAugmentationBuilder();
@@ -154,7 +156,9 @@ public class SfcOvsToSffMappingAPI {
 
                 if (terminationPointAugmentation != null) {
                     SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-                    sffDataPlaneLocatorBuilder.setName(terminationPointAugmentation.getName());
+                    SffDataPlaneLocatorName sffDplName =
+                            new SffDataPlaneLocatorName(terminationPointAugmentation.getName());
+                    sffDataPlaneLocatorBuilder.setName(sffDplName);
                     DataPlaneLocator dataPlaneLocator =
                             buildDataPlaneLocatorFromTerminationPoint(terminationPointAugmentation);
                     if (dataPlaneLocator != null) {

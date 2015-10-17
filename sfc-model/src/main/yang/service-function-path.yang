@@ -6,6 +6,10 @@ module service-function-path {
 
   import service-function-path-metadata {prefix sfc-md; }
   import service-locator {prefix sfc-sl; }
+  import service-function {prefix sfc-sf; }
+  import service-function-forwarder {prefix sfc-sff; }
+  import rendered-service-path {prefix sfc-rsp; }
+
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -40,10 +44,17 @@ module service-function-path {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-  typedef service-function-path-ref {
+  // typedefs for Service Function Path
+  typedef sfp-name {
+      type string;
+      description "Service Function Path Name Type";
+  }
+
+  typedef sfp-name-ref {
     type leafref {
       path "/sfc-sfp:service-function-paths/" +
-        "sfc-sfp:service-function-path/sfc-sfp:name";
+        "sfc-sfp:service-function-path/" +
+        "sfc-sfp:name";
     }
     description
       "This type is used by data models that need to reference
@@ -69,7 +80,7 @@ module service-function-path {
         "A list that holds configuration data for all SFPs in the
          domain";
       leaf name {
-        type string;
+        type sfp-name;
         description
           "The name of this service function path";
       }
@@ -123,7 +134,7 @@ module service-function-path {
             "A Monotonically increasing number";
         }
         leaf service-function-name {
-          type string;
+          type sfc-sf:sf-name-ref;
           description
             "Service Function name";
         }
@@ -133,7 +144,7 @@ module service-function-path {
             "Service Function group name";
         }
         leaf service-function-forwarder {
-          type string;
+          type sfc-sff:sff-name-ref;
           description
             "Service Function Forwarder name";
         }
@@ -191,14 +202,14 @@ module service-function-path {
         "This list holds operational data for all service function
          paths in the domain";
       leaf name {
-        type string;
+        type sfp-name-ref;
         description
           "The name of the service function path";
       }
       list sfp-rendered-service-path {
         key "name";
         leaf name {
-          type string;
+          type sfc-rsp:rsp-name-ref;
           description
             "The name of the Rendered Service Path";
         }

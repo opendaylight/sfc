@@ -5,7 +5,8 @@ module service-function-chain {
   prefix sfc-sfc;
 
   import service-function-type {prefix sfc-sft;}
-
+  import service-function-path {prefix sfc-sfp;}
+  
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -39,14 +40,28 @@ module service-function-chain {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-  grouping service-function-chain-grouping {
+  // typedefs for Service Function Chain
+  typedef sfc-name {
+      type string;
+  }
+  
+ typedef sfc-name-ref {
+        type leafref {
+            path "/sfc-sfc:service-function-chains/" + 
+                            "sfc-sfc:service-function-chain/" +
+                            "sfc-sfc:name";
+        }
+    }
+
+
+   grouping service-function-chain-grouping {
     list service-function-chain {
       key "name";
       description
         "A list that holds all service function chains in the
          domain";
       leaf name {
-        type string;
+        type sfc-name;
         description
           "the name of the service function chain";
       }
@@ -115,14 +130,14 @@ module service-function-chain {
         "A list that contains operational service function
          chain state";
       leaf name {
-        type string;
+        type sfc-name-ref;
         description
           "the name of the service function chain";
       }
       list sfc-service-path {
         key "name";
         leaf name {
-          type string;
+          type sfc-sfp:sfp-name-ref;
           description
             "The name of the Service Path";
         }
@@ -145,7 +160,7 @@ module service-function-chain {
       "Instantiates a single service function";
     input {
       leaf name {
-        type string;
+        type sfc-name;
           mandatory true;
           description
           "The name of the service function chain to be
@@ -154,7 +169,7 @@ module service-function-chain {
     }
     output {
       leaf name {
-        type string;
+        type sfc-name;
         description
           "The name of the created service function path.";
       }

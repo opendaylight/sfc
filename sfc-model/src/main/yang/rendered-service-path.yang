@@ -7,9 +7,12 @@ module rendered-service-path {
   import service-function-type {prefix sfc-sft; }
   import service-function-scheduler-type {prefix sfc-sfst;}
   import service-function-path-metadata {prefix sfc-md; }
-  import service-function-forwarder {prefix sfc-sff; }
   import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
+  import service-function-path {prefix sfc-sfp; }
+  import service-function {prefix sfc-sf; }
+  import service-function-forwarder {prefix sfc-sff; }
+  import service-function-chain {prefix sfc-sfc; }
 
 
   organization "Cisco Systems, Inc.";
@@ -45,15 +48,24 @@ module rendered-service-path {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-  typedef rendered-service-path-ref {
+  // typedefs for Rendererd Service Paths
+  typedef rsp-name {
+      type string;
+      description
+          "Rendererd Service Path Name Type";
+  }
+
+  typedef rsp-name-ref {
     type leafref {
       path "/sfc-rsp:rendered-service-paths/" +
-        "sfc-rsp:rendered-service-path/sfc-rsp:name";
+        "sfc-rsp:rendered-service-path/" + 
+        "sfc-rsp:name";
     }
     description
       "This type is used by data models that need to reference
        rendered service paths.";
   }
+
 
   // Rendered Service Path
 
@@ -68,13 +80,13 @@ module rendered-service-path {
         "A list that holds operational data for all RSPs in the
          domain";
       leaf name {
-        type string;
+        type rsp-name;
         description
           "The name of this rendered function path. This is the same
            name as the associated SFP";
       }
       leaf parent-service-function-path {
-        type string;
+        type sfc-sfp:sfp-name-ref;
         description
           "Service Function Path from which this RSP was
            instantiated";
@@ -113,7 +125,7 @@ module rendered-service-path {
             "A Monotonically increasing number";
         }
         leaf service-function-name {
-          type string;
+          type sfc-sf:sf-name-ref;
           description
             "Service Function name";
         }
@@ -123,12 +135,12 @@ module rendered-service-path {
             "Service Function group name";
         }
         leaf service-function-forwarder {
-          type string;
+          type sfc-sff:sff-name-ref;
           description
             "Service Function Forwarder name";
         }
         leaf service-function-forwarder-locator {
-          type sfc-sff:service-function-forwarder-locator-ref;
+          type sfc-sff:sff-data-plane-locator-name-ref;
           description
             "The name of the SFF data plane locator";
         }
@@ -150,7 +162,7 @@ module rendered-service-path {
            service path";
       }
       leaf service-chain-name {
-        type string;
+        type sfc-sfc:sfc-name-ref;
         mandatory true;
         description
           "The Service Function Chain used as blueprint for this

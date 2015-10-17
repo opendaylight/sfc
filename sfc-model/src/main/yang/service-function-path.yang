@@ -7,6 +7,9 @@ module service-function-path {
   import service-function-path-metadata {prefix sfc-md; }
   import service-locator {prefix sfc-sl; }
 
+  import sfc-common {prefix sfc-common;}
+
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
@@ -40,16 +43,6 @@ module service-function-path {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-  typedef service-function-path-ref {
-    type leafref {
-      path "/sfc-sfp:service-function-paths/" +
-        "sfc-sfp:service-function-path/sfc-sfp:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       configured service functions.";
-  }
-
   // Service Function Path
 
   container service-function-paths {
@@ -69,7 +62,7 @@ module service-function-path {
         "A list that holds configuration data for all SFPs in the
          domain";
       leaf name {
-        type string;
+        type sfc-common:sfp-name;
         description
           "The name of this service function path";
       }
@@ -123,7 +116,7 @@ module service-function-path {
             "A Monotonically increasing number";
         }
         leaf service-function-name {
-          type string;
+          type sfc-common:sf-name;
           description
             "Service Function name";
         }
@@ -133,7 +126,7 @@ module service-function-path {
             "Service Function group name";
         }
         leaf service-function-forwarder {
-          type string;
+          type sfc-common:sff-name;
           description
             "Service Function Forwarder name";
         }
@@ -191,14 +184,14 @@ module service-function-path {
         "This list holds operational data for all service function
          paths in the domain";
       leaf name {
-        type string;
+        type sfc-common:sfp-name;
         description
           "The name of the service function path";
       }
       list sfp-rendered-service-path {
         key "name";
         leaf name {
-          type string;
+          type sfc-common:rsp-name;
           description
             "The name of the Rendered Service Path";
         }

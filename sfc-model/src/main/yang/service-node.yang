@@ -5,8 +5,10 @@ module service-node {
   prefix sfc-sn;
 
   import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
+  import ietf-yang-types {prefix yang; }
+
+  import sfc-common {prefix sfc-common; }
+
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -40,26 +42,13 @@ module service-node {
       "Revision based on Opendaylight project feedback";
   }
 
-
-
-    // Service Nodes
-
-  typedef service-node-ref {
-    type leafref {
-      path "/sfc-sn:service-nodes/sfc-sn:service-node/sfc-sn:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       configured service functions.";
-  }
-
-
   grouping service-node-grouping {
     description
       "This group bundle together the information that comprises
        a service-node";
     leaf name {
-      type string;
+//      type sn-name;
+        type string;
       description
         "The name of the service node";
     }
@@ -69,13 +58,15 @@ module service-node {
         "The IP and port used to configure this service-node";
     }
     leaf-list service-function-forwarder {
-      type string;
+//      type sfc-sff:sff-name-ref;
+        type string;
       description
         "A list of service function forwarders resident in this
          service node";
     }
     leaf-list service-function {
-      type sfc-sf:service-function-ref;
+//      type sfc-common:sf-name-ref;
+        type string;
       description
           "A list of service functions resident in this service
            node";

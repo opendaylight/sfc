@@ -1,0 +1,147 @@
+module sfc-common {
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-common";
+
+  prefix sfc-common;
+
+  description
+    "Common typedefs and leafrefs for project";
+
+  revision 2015-10-17 {
+    description
+      "Initial revision";
+  }
+
+//  // typedef for Service Node
+//  typedef service-node-ref {
+//    type leafref {
+//      path "/sfc-sn:service-nodes/" +
+//              "sfc-sn:service-node/" +
+//              "sfc-sn:name";
+//    }
+//    description
+//      "This type is used by data models that need to reference
+//       configured service functions.";
+//  }
+//
+//  typedef sn-name {
+//      type string;
+//      description "Service Node Name Type";
+//  }
+
+//  // typedefs for Service Function Chain
+//  typedef sfc-name {
+//      type string;
+//  }
+//
+// typedef sfc-name-ref {
+//        type leafref {
+//            path "/sfc-sfc:service-function-chains/" +
+//                            "sfc-sfc:service-function-chain/" +
+//                            "sfc-sfc:name";
+//        }
+//    }
+//
+  // typedefs for Service Function
+  typedef sf-name {
+      type string;
+      description "Service Function Name";
+  }
+
+  typedef sf-data-plane-locator-name {
+      type string;
+      description
+                "A unique name for SF data-plane-locator";
+  }
+
+  typedef sf-data-plane-locator-name-ref {
+      type leafref {
+        path "/service-functions/"
+            + "service-function/"
+            + "sf-data-plane-locator/"
+            + "name";
+      }
+      description
+        "Reference to SF data plane locator.";
+    }
+
+//  typedef sf-name-ref {
+//    type leafref {
+//      path "/service-functions/" +
+//                  "service-function/" +
+//                  "name";
+//    }
+//    description
+//      "This type is used by data models that need to reference
+//       configured service functions.";
+//  }
+
+//  // typedefs for Rendererd Service Paths
+//  typedef rsp-name {
+//      type string;
+//      description
+//          "Rendererd Service Path Name Type";
+//  }
+//
+//  typedef rsp-name-ref {
+//    type leafref {
+//      path "/sfc-rsp:rendered-service-paths/" +
+//        "sfc-rsp:rendered-service-path/" +
+//        "sfc-rsp:name";
+//    }
+//    description
+//      "This type is used by data models that need to reference
+//       rendered service paths.";
+//  }
+//
+//  // typedefs for Service Function Path
+//  typedef sfp-name {
+//      type string;
+//      description "Service Function Path Name Type";
+//  }
+//
+//  typedef sfp-name-ref {
+//    type leafref {
+//      path "/sfc-sfp:service-function-paths/" +
+//        "sfc-sfp:service-function-path/" +
+//        "sfc-sfp:name";
+//    }
+//    description
+//      "This type is used by data models that need to reference
+//       configured service functions.";
+//  }
+//
+//  // typedefs for sff names
+//  typedef sff-data-plane-locator-name {
+//      type string;
+//      description
+//                "Service Function Forwarder data-plane-locator name type";
+//  }
+//
+//  typedef sff-name {
+//      type string;
+//      description "Service Function Forwarder Name type";
+//  }
+//
+//  typedef sff-data-plane-locator-name-ref {
+//      type leafref {
+//        path "/sfc-sff:service-function-forwarders/" +
+//            "sfc-sff:service-function-forwarder/" +
+//            "sfc-sff:sff-data-plane-locator/" +
+//           "sfc-sff:name";
+//      }
+//      description
+//        "This type is used by data models that need to reference
+//         the SFF data plane locator.";
+//    }
+//
+//    typedef sff-name-ref {
+//        type leafref {
+//            path "/sfc-sff:service-function-forwarders/" +
+//                "sfc-sff:service-function-forwarder/" +
+//                "sfc-sff:name";
+//          }
+//          description
+//            "Reference to SFF name.";
+//    }
+}

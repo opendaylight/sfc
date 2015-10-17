@@ -4,10 +4,13 @@ module service-function {
 
   prefix sfc-sf;
 
-  import ietf-inet-types { prefix inet; }
+  import ietf-inet-types {prefix inet; }
   import service-function-type {prefix sfc-sft;}
   import service-locator {prefix sfc-sl;}
   import service-statistics {prefix sfc-ss; }
+//  import service-function-forwarder {prefix sfc-sff; }
+//  import service-function-path {prefix sfc-sfp; }
+  import sfc-common {prefix sfc-common; }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -45,23 +48,13 @@ module service-function {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-
-  typedef service-function-ref {
-    type leafref {
-      path "/sfc-sf:service-functions/sfc-sf:service-function/"
-          + "sfc-sf:name";
-    }
-    description
-      "This type is used by data models that need to reference
-       configured service functions.";
-  }
-
   grouping service-function-entry {
     description
       "This group bundles together all information related to a
        single service function";
     leaf name {
-      type string;
+      type sfc-common:sf-name;
+//        type string;
       description
           "The name of the service function.";
     }
@@ -101,14 +94,16 @@ module service-function {
       description
         "A network data-plane locator";
       leaf name {
-        type string;
+//        type string;
+          type sfc-common:sf-data-plane-locator-name;
         description
           "A unique string that represents this
            data-plane-locator";
       }
       uses sfc-sl:data-plane-locator;
       leaf service-function-forwarder {
-        type string;
+//        type sfc-sff:sff-name;
+          type string;
         description
           "The service function forwarder associated with this
            locator";
@@ -160,7 +155,8 @@ module service-function {
         "This list holds operational data for all service functions
          in the domain";
       leaf name {
-        type string;
+//        type sfc-common:sf-name-ref;
+          type string;
         description
           "the name of the service function";
       }
@@ -170,7 +166,8 @@ module service-function {
       list sf-service-path {
         key "name";
         leaf name {
-          type string;
+//          type sfc-sfp:sfp-name-ref;
+            type string;
           description
             "The name of the Service Path";
         }
@@ -199,7 +196,8 @@ module service-function {
       "Reads a service function";
     input {
       leaf name {
-        type string;
+        type sfc-common:sf-name;
+//          type string;
         mandatory true;
         description "The name of the service function.";
       }
@@ -213,7 +211,8 @@ module service-function {
       "Deletes a service function";
     input {
       leaf name {
-        type string;
+        type sfc-common:sf-name;
+//          type string;
         mandatory true;
         description "The name of the service function.";
       }

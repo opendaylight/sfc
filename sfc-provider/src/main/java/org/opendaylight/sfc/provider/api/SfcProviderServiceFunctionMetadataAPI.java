@@ -38,7 +38,7 @@ public class SfcProviderServiceFunctionMetadataAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionMetadataAPI.class);
 
-    protected static boolean putContextMetadata(ContextMetadata md) {
+    public static boolean putContextMetadata(ContextMetadata md) {
         boolean ret = false;
         InstanceIdentifier<ContextMetadata> mdIID;
 
@@ -52,7 +52,7 @@ public class SfcProviderServiceFunctionMetadataAPI {
         return ret;
     }
 
-    protected static ContextMetadata readContextMetadata(String mdName) {
+    public static ContextMetadata readContextMetadata(String mdName) {
         printTraceStart(LOG);
         ContextMetadata md;
         InstanceIdentifier<ContextMetadata> mdIID;
@@ -85,7 +85,7 @@ public class SfcProviderServiceFunctionMetadataAPI {
         return ret;
     }
 
-    protected static boolean putVariableMetadata(VariableMetadata md) {
+    public static boolean putVariableMetadata(VariableMetadata md) {
         boolean ret = false;
         InstanceIdentifier<VariableMetadata> mdIID;
 
@@ -99,7 +99,7 @@ public class SfcProviderServiceFunctionMetadataAPI {
         return ret;
     }
 
-    protected static VariableMetadata readVariableMetadata(String mdName) {
+    public static VariableMetadata readVariableMetadata(String mdName) {
         VariableMetadata md;
         InstanceIdentifier<VariableMetadata> mdIID;
 

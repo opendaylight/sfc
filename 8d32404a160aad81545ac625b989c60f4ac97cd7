@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad0f9df_d27d19b3",
+        "filename": "sfc-model/src/main/yang/rendered-service-path.yang",
+        "patchSetId": 13
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-19T09:53:21Z",
+      "side": 1,
+      "message": "heads up- you removed constraint by removing leafref. now it is referenced by value not by reference to existing instance. It\u0027s ok, if it was intent.",
+      "range": {
+        "startLine": 121,
+        "startChar": 15,
+        "endLine": 121,
+        "endChar": 53
+      },
+      "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_b280958c",
+        "filename": "sfc-model/src/main/yang/service-node.yang",
+        "patchSetId": 13
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-19T09:53:21Z",
+      "side": 1,
+      "message": "heads up- you removed constraint by removing leafref. now it is referenced by value not by reference to existing instance. It\u0027s ok, if it was intent.",
+      "range": {
+        "startLine": 66,
+        "startChar": 6,
+        "endLine": 66,
+        "endChar": 30
+      },
+      "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_127401ce",
+        "filename": "sfc-model/src/main/yang/sfc-common.yang",
+        "patchSetId": 13
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-19T09:53:21Z",
+      "side": 1,
+      "message": "all derived types based on leafref in this yang will not work.\nyou should remove them and use leafref directly on places where you wanted to use derived types.",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 25,
+        "endChar": 3
+      },
+      "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_9268f1f6",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 657,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-19T09:53:21Z",
+      "side": 1,
+      "message": "I am not sure whether it is possible to decide if there should be RspName(based on name of parameter) or it should be SfpName(based on javadoc). This looks like real pain....\n\nMy ultimate goal is to remove entire sfc.provider.api package. Only yang API will be used from other apps.",
+      "range": {
+        "startLine": 657,
+        "startChar": 62,
+        "endLine": 657,
+        "endChar": 77
+      },
+      "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

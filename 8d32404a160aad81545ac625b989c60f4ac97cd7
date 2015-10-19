@@ -91,6 +91,29 @@
       "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_2d920658",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-19T15:22:17Z",
+      "side": 1,
+      "message": "you could change it like:\n\nprivate final SffName[] sffNames \u003d {new SffName(\"sff1\"), new SffName(\"sff2\"), new SffName(\"sff3\"), new SffName(\"sff4\")};",
+      "range": {
+        "startLine": 135,
+        "startChar": 4,
+        "endLine": 135,
+        "endChar": 69
+      },
+      "revId": "8d32404a160aad81545ac625b989c60f4ac97cd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

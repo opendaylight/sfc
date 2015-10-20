@@ -14,6 +14,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
@@ -66,7 +68,7 @@ public class SfcProviderServicePathAPI {
      * @param servicePathName Service Path Name
      * @return List of RSP name objects
      */
-    public static List<SfpRenderedServicePath> readServicePathState(String servicePathName) {
+    public static List<SfpRenderedServicePath> readServicePathState(SfpName servicePathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
@@ -94,7 +96,7 @@ public class SfcProviderServicePathAPI {
      * @param servicePathName Service Path Name
      * @return Nothing.
      */
-    protected static boolean deleteServicePathState(String servicePathName) {
+    protected static boolean deleteServicePathState(SfpName servicePathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
@@ -124,7 +126,7 @@ public class SfcProviderServicePathAPI {
      * @param renderedPathName Rendered Path name
      * @return Nothing.
      */
-    public static boolean addRenderedPathToServicePathState(String servicePathName, String renderedPathName) {
+    public static boolean addRenderedPathToServicePathState(SfpName servicePathName, RspName renderedPathName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<SfpRenderedServicePath> rspIID;
@@ -158,7 +160,7 @@ public class SfcProviderServicePathAPI {
      * @param serviceFunctionPathName RSP name
      * @return Nothing.
      */
-    public static ServiceFunctionPath readServiceFunctionPath(String serviceFunctionPathName) {
+    public static ServiceFunctionPath readServiceFunctionPath(SfpName serviceFunctionPathName) {
         printTraceStart(LOG);
         ServiceFunctionPath sfp;
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
@@ -178,7 +180,7 @@ public class SfcProviderServicePathAPI {
      * @param serviceFunctionPathName SFP name
      * @return Nothing.
      */
-    public static boolean deleteServiceFunctionPath(String serviceFunctionPathName) {
+    public static boolean deleteServiceFunctionPath(SfpName serviceFunctionPathName) {
         boolean ret = false;
         printTraceStart(LOG);
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
@@ -270,8 +272,8 @@ public class SfcProviderServicePathAPI {
         sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(serviceFunction.getName());
         if (sfServicePathList != null) {
             for (SfServicePath sfServicePath : sfServicePathList) {
-
-                String rspName = sfServicePath.getName();
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                RspName rspName = new RspName(sfServicePath.getName().getValue());
                 if (SfcProviderRenderedPathAPI.readRenderedServicePath(rspName) != null) {
                     if (SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName)) {
                         ret = true;

@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
@@ -39,7 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(SfcOvsUtil.class)
 public class HopOvsdbBridgePairTest {
 
-    private static final String sff = "sff";
+    private static final SffName sff = new SffName("sff");
     private RenderedServicePathHopBuilder renderedServicePathHopBuilder;
     private OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder;
 

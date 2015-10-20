@@ -58,80 +58,56 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVxlanGpePathMapperFlow(final String sffNodeName, long nsp, short nsi, long pathId);
 
-
     //
     // Table 3, NextHop
     //
-    public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac, final String dstMac);
+    public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
+            final String dstMac);
 
-    public void configureGroupNextHopFlow(
-            final String sffNodeName, final long sfpId, final String srcMac, final long groupId, final String groupName);
+    public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
+            final long groupId, final String groupName);
 
-    public void configureVxlanGpeNextHopFlow(
-            final String sffNodeName, final String dstIp, final long nsp, final short nsi);
+    public void configureVxlanGpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
+            final short nsi);
 
     //
     // Table 10, Transport Egress
     //
-    public void configureMacTransportEgressFlow(
-            final String sffNodeName,
-            final String srcMac,
-            final String dstMac,
-            final String port,
-            final long pathId,
-            final boolean setDscp,
-            final boolean isLastHop,
+    public void configureMacTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final String port, final long pathId, final boolean setDscp, final boolean isLastHop,
             final boolean doPktIn);
 
-    public void configureVlanTransportEgressFlow(
-            final String sffNodeName,
-            final String srcMac,
-            final String dstMac,
-            final int dstVlan,
-            final String port,
-            final long pathId,
-            final boolean setDscp,
-            final boolean isLastHop,
+    public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final int dstVlan, final String port, final long pathId, final boolean setDscp, final boolean isLastHop,
             final boolean doPktIn);
 
-    public void configureVxlanGpeTransportEgressFlow(
-            final String sffNodeName,
-            final long nshNsp,
-            final short nshNsi,
-            final String port,
-            final boolean isLastHop,
+    public void configureVxlanGpeTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
+            final String port, final boolean isLastHop, final boolean doPktIn);
+
+    public void configureMplsTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final long mplsLabel, final String port, final long pathId, boolean setDscp, final boolean isLastHop,
             final boolean doPktIn);
 
-    public void configureMplsTransportEgressFlow(
-            final String sffNodeName,
-            final String srcMac,
-            final String dstMac,
-            final long mplsLabel,
-            final String port,
-            final long pathId,
-            boolean setDscp,
-            final boolean isLastHop,
-            final boolean doPktIn);
-
-    public void configureNshNscTransportEgressFlow(
-            String sffNodeName,
-            final long nshNsp,
-            final short nshNsi,
+    public void configureNshNscTransportEgressFlow(String sffNodeName, final long nshNsp, final short nshNsi,
             String switchPort);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // If doDrop == False
-    //      Classifier       MatchAny will go to Ingress
-    //      TransportIngress MatchAny will go to PathMapper
-    //      PathMapper       MatchAny will go to PathMapperAcl
-    //      PathMapperAcl    MatchAny will go to NextHop
-    //      NextHop          MatchAny will go to TransportEgress
+    // Classifier MatchAny will go to Ingress
+    // TransportIngress MatchAny will go to PathMapper
+    // PathMapper MatchAny will go to PathMapperAcl
+    // PathMapperAcl MatchAny will go to NextHop
+    // NextHop MatchAny will go to TransportEgress
     //
     public void configureClassifierTableMatchAny(final String sffNodeName, final boolean doDrop);
+
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop);
+
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop);
+
     public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop);
+
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop);
 
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop);

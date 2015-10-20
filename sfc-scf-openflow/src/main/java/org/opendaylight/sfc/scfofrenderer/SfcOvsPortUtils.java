@@ -149,6 +149,6 @@ public class SfcOvsPortUtils {
         }
 
         // it its not an sff-ovs, then just return the ServiceNode
-        return sff.getServiceNode();
+        return sff.getServiceNode().getValue();
     }
 }

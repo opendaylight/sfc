@@ -36,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
@@ -258,7 +260,7 @@ public class SfcScfOfScfProcessor {
             String sffName = sclsff.getName();
             NodeConnectorId inPort = null;
 
-            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(new SffName(sffName));
             sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
             String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
             int outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
@@ -282,7 +284,7 @@ public class SfcScfOfScfProcessor {
                 Actions1 a1 = actions.getAugmentation(Actions1.class);
                 AclRenderedServicePath path = (AclRenderedServicePath)a1.getSfcAction();
                 String rspName = path.getRenderedServicePath();
-                SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
+                SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(new RspName(rspName));
 
                 FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, ruleName, match, nsh, outPort);
                 writeFlowToConfig(nodeName, flow);
@@ -306,7 +308,7 @@ public class SfcScfOfScfProcessor {
                 String ruleName = ace.getRuleName();
                 String sffName = sclsff.getName();
 
-                ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+                ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(new SffName(sffName));
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
 

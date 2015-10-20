@@ -25,6 +25,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sbrest.json.AclExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
@@ -61,7 +62,7 @@ public class SbRestAclTaskTest {
 
     private static final String ACL_NAME = "Dummy_ACL";
     private static final String CLASSIFIER_NAME = "Dummy_Classifier";
-    private static final String SFF_NAME = "Dummy_SFF";
+    private static final SffName SFF_NAME = new SffName("Dummy_SFF");
     private static final String REST_URI = "http://localhost:5000";
 
     private ExecutorService executorService;
@@ -75,12 +76,12 @@ public class SbRestAclTaskTest {
         PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class))
             .toReturn(this.buildAccessListState());
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifier",
-                String.class))
+        PowerMockito
+            .stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifier", String.class))
             .toReturn(this.buildServiceFunctionClassifier());
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class,
-                "readServiceFunctionForwarder", String.class))
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder",
+                SffName.class))
             .toReturn(this.buildServiceFunctionForwarder());
     }
 
@@ -138,7 +139,7 @@ public class SbRestAclTaskTest {
     public void testSbRestAclTaskForwarderListEmpty() throws IOException {
         SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder =
                 new SclServiceFunctionForwarderBuilder();
-        sclServiceFunctionForwarderBuilder.setName(SFF_NAME);
+        sclServiceFunctionForwarderBuilder.setName(SFF_NAME.getValue());
 
         List<SclServiceFunctionForwarder> sclServiceFunctionForwarderList = new ArrayList<>();
         sclServiceFunctionForwarderList.add(sclServiceFunctionForwarderBuilder.build());
@@ -182,7 +183,7 @@ public class SbRestAclTaskTest {
 
         SclServiceFunctionForwarderBuilder sclServiceFunctionForwarderBuilder =
                 new SclServiceFunctionForwarderBuilder();
-        sclServiceFunctionForwarderBuilder.setName(SFF_NAME);
+        sclServiceFunctionForwarderBuilder.setName(SFF_NAME.getValue());
 
         List<SclServiceFunctionForwarder> sclServiceFunctionForwarderList = new ArrayList<>();
         sclServiceFunctionForwarderList.add(sclServiceFunctionForwarderBuilder.build());

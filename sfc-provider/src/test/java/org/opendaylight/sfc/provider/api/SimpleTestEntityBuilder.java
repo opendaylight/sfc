@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,6 +11,9 @@ package org.opendaylight.sfc.provider.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorKey;
@@ -38,7 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 
 public class SimpleTestEntityBuilder {
 
-    static ServiceFunction buildServiceFunction(String name, Class<? extends ServiceFunctionTypeIdentity> type, IpAddress ipMgmtAddress, SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
+    static ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
+            IpAddress ipMgmtAddress, SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
         dsfDataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -46,10 +50,16 @@ public class SimpleTestEntityBuilder {
         return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
     }
 
-    static ServiceFunction buildServiceFunction(String name, Class<? extends ServiceFunctionTypeIdentity> type, IpAddress ipMgmtAddress, List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
+    static ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
+            IpAddress ipMgmtAddress, List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name).setKey(new ServiceFunctionKey(name)).setType(type).setIpMgmtAddress(ipMgmtAddress).setSfDataPlaneLocator(dsfDataPlaneLocatorList).setNshAware(nshAware);
+        sfBuilder.setName(name)
+            .setKey(new ServiceFunctionKey(name))
+            .setType(type)
+            .setIpMgmtAddress(ipMgmtAddress)
+            .setSfDataPlaneLocator(dsfDataPlaneLocatorList)
+            .setNshAware(nshAware);
 
         return sfBuilder.build();
     }
@@ -62,17 +72,28 @@ public class SimpleTestEntityBuilder {
         return ipBuilder.build();
     }
 
-    static SfDataPlaneLocator buildSfDataPlaneLocator(String name, LocatorType locatorType, String serviseFunctionForwarder, Class<? extends SlTransportType> transport) {
+    static SfDataPlaneLocator buildSfDataPlaneLocator(SfDataPlaneLocatorName name, LocatorType locatorType,
+            SffName serviceFunctionForwarder, Class<? extends SlTransportType> transport) {
 
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(name).setKey(new SfDataPlaneLocatorKey(name)).setLocatorType(locatorType).setServiceFunctionForwarder(serviseFunctionForwarder).setTransport(transport);
+        locatorBuilder.setName(name)
+            .setKey(new SfDataPlaneLocatorKey(name))
+            .setLocatorType(locatorType)
+            .setServiceFunctionForwarder(serviceFunctionForwarder)
+            .setTransport(transport);
 
         return locatorBuilder.build();
     }
 
-    static ServiceFunctionForwarder buildServiceFunctionForwarder(String name, List<SffDataPlaneLocator> sffDataplaneLocatorList, List<ServiceFunctionDictionary> dictionaryList, String classifier) {
+    static ServiceFunctionForwarder buildServiceFunctionForwarder(SffName name,
+            List<SffDataPlaneLocator> sffDataplaneLocatorList, List<ServiceFunctionDictionary> dictionaryList,
+            String classifier) {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name)).setSffDataPlaneLocator(sffDataplaneLocatorList).setServiceFunctionDictionary(dictionaryList).setServiceNode(null);
+        sffBuilder.setName(name)
+            .setKey(new ServiceFunctionForwarderKey(name))
+            .setSffDataPlaneLocator(sffDataplaneLocatorList)
+            .setServiceFunctionDictionary(dictionaryList)
+            .setServiceNode(null);
 
         return sffBuilder.build();
     }

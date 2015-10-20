@@ -249,16 +249,6 @@ module rendered-service-path {
            the egress service path in the reverse order of the
            ingress path";
       }
-      leaf classifier {
-        type string;
-        description "The classifier responsible for directing"
-          + "packets to this service path";
-      }
-      leaf symmetric-classifier {
-        type string;
-        description "The classifier responsible for directing"
-          + "packets to this service path";
-      }
       choice context-header-allocation-type-1 {
         case vxlan-classifier {
           leaf vxlan-classifier-enabled {

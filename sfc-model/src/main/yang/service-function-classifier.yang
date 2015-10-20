@@ -78,33 +78,4 @@ module service-function-classifier {
       }
     }
   }
-
-  container service-function-classifiers-state {
-    config false;
-    description
-      "This container hold operational state for all service
-       function classifiers";
-    list service-function-classifier-state {
-      key "name";
-      description
-        "This list holds operational data for all service function
-         classifiers in the domain";
-      leaf name {
-        type string;
-        description
-          "The name of the service function classifier";
-      }
-      list scl-rendered-service-path {
-        key "name";
-        leaf name {
-          type string;
-          description
-            "The name of the Rendered Service Path";
-        }
-        description
-        "A list of all rendered service paths that use this
-         classifier";
-      }
-    }
-  }
 }

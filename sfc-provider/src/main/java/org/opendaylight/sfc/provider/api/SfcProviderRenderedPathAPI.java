@@ -888,25 +888,11 @@ public class SfcProviderRenderedPathAPI {
             return null;
         }
 
-        if ((serviceFunctionPath.getClassifier() != null) && SfcProviderServiceClassifierAPI
-            .readServiceClassifier(serviceFunctionPath.getClassifier()) != null) {
-            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(
-                    serviceFunctionPath.getClassifier(), renderedServicePath.getName());
-        } else {
-            LOG.warn("Classifier not provided or does not exist");
-        }
-
         if ((serviceFunctionPath.isSymmetric() != null) && serviceFunctionPath.isSymmetric()) {
             revRenderedServicePath =
                     SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
             if (revRenderedServicePath == null) {
                 LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
-            } else if ((serviceFunctionPath.getSymmetricClassifier() != null) && SfcProviderServiceClassifierAPI
-                .readServiceClassifier(serviceFunctionPath.getSymmetricClassifier()) != null) {
-                SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState(
-                        serviceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
-            } else {
-                LOG.warn("Symmetric Classifier not provided or does not exist");
             }
         }
 

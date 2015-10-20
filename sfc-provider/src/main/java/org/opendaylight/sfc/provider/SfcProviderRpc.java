@@ -214,15 +214,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
                 createRenderedPathOutputBuilder.setName(retRspName);
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
 
-                if ((createdServiceFunctionPath.getClassifier() != null) &&
-                        SfcProviderServiceClassifierAPI.readServiceClassifier
-                                (createdServiceFunctionPath.getClassifier()) != null) {
-                    SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState
-                            (createdServiceFunctionPath.getClassifier(), renderedServicePath.getName());
-                } else {
-                    LOG.warn("Classifier not provided or does not exist");
-                }
-
                 if ((createdServiceFunctionPath.isSymmetric() != null) && createdServiceFunctionPath.isSymmetric()) {
 
                     revRenderedServicePath = SfcProviderRenderedPathAPI.
@@ -231,16 +222,6 @@ public class SfcProviderRpc implements ServiceFunctionService,
                         LOG.error("Failed to create symmetric service path: {}");
                     } else {
                         SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
-                        if ((createdServiceFunctionPath.getSymmetricClassifier() != null) &&
-                                SfcProviderServiceClassifierAPI
-                                        .readServiceClassifier
-                                                (createdServiceFunctionPath.getSymmetricClassifier()) != null) {
-                            SfcProviderServiceClassifierAPI.addRenderedPathToServiceClassifierState
-                                    (createdServiceFunctionPath.getSymmetricClassifier(), revRenderedServicePath.getName());
-
-                        } else {
-                            LOG.warn("Symmetric Classifier not provided or does not exist");
-                        }
                     }
                 }
             } else {

@@ -46,14 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.ServiceFunctionClassifierStateKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.state.service.function.classifier.state.SclRenderedServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInput;
@@ -288,7 +283,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(SFP_NAME)
                 .setServiceChainName(SFC_NAME)
-                .setSymmetric(true).setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME);
+                .setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         boolean ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
@@ -305,7 +300,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setName(RSP_NAME).setParentServiceFunctionPath(SFP_NAME)
-                .setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME).setSymmetric(true);
+                .setSymmetric(true);
 
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
@@ -371,7 +366,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setName(RSP_NAME).setParentServiceFunctionPath(SFP_NAME)
-                .setClassifier(SFP_NAME).setSymmetricClassifier(SFP_NAME).setSymmetric(true);
+                .setSymmetric(true);
 
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
@@ -662,12 +657,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         RpcResult<CreateRenderedPathOutput> rpcResult1 = null, rpcResult2 = null, rpcResult3 = null;
         RenderedServicePath createdRsp1 = null, createdRsp2 = null, createdRsp3 = null;
 
-        //classifiers
-        String classifier = "classifier";
-        assertTrue("Must be true", createClassifier(classifier));
-        String reversedClassifier = "classifierRev";
-        assertTrue("Must be true", createClassifier(reversedClassifier));
-
         //4x forwarder
         assertTrue("Must be true", createServiceFunctionForwarder(sffNames[0], sffDplNames[0]));
         assertTrue("Must be true", createServiceFunctionForwarder(sffNames[1], sffDplNames[1]));
@@ -715,7 +704,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         chainSf1.add(sfNames[2]);
         chainSf1.add(sfNames[3]);
         assertTrue("Must be true", createServiceFunctionChain(chainNames[0], chainSf1));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[0], chainNames[0], classifier, null));
+        assertTrue("Must be true", createServiceFunctionPath(pathNames[0], chainNames[0], false));
 
         //chain + path 2 (SFF3 & SFF4)
         chainSf2.add(sfNames[4]);
@@ -723,7 +712,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         chainSf2.add(sfNames[6]);
         chainSf2.add(sfNames[7]);
         assertTrue("Must be true", createServiceFunctionChain(chainNames[1], chainSf2));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[1], chainNames[1], reversedClassifier, null));
+        assertTrue("Must be true", createServiceFunctionPath(pathNames[1], chainNames[1], false));
 
         //chain + path 3 (all SF & SFF)
         chainSf3.add(sfNames[0]);
@@ -735,12 +724,12 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         chainSf3.add(sfNames[6]);
         chainSf3.add(sfNames[7]);
         assertTrue("Must be true", createServiceFunctionChain(chainNames[2], chainSf3));
-        assertTrue("Must be true", createServiceFunctionPath(pathNames[2], chainNames[2], classifier, reversedClassifier));
+        assertTrue("Must be true", createServiceFunctionPath(pathNames[2], chainNames[2], true));
 
         //create rendered service paths
-        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[0], classifier, null));
-        futureTask2 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[1], reversedClassifier, null));
-        futureTask3 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[2], classifier, reversedClassifier));
+        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[0], true));
+        futureTask2 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[1], true));
+        futureTask3 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames[2], true));
 
         //test
         try {
@@ -779,72 +768,19 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         ServiceFunctionPath serviceFunctionPath1 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[0]);
         assertNotNull("Must not be null", serviceFunctionPath1);
         assertFalse("Must be false", serviceFunctionPath1.isSymmetric()); //path is not symmetric
-        assertNull("Must be null", serviceFunctionPath1.getSymmetricClassifier()); //no symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath1.getClassifier(), classifier); //classifier
 
         //path 2
         ServiceFunctionPath serviceFunctionPath2 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[1]);
         assertNotNull("Must not be null", serviceFunctionPath2);
         assertFalse("Must be false", serviceFunctionPath2.isSymmetric()); //path is not symmetric
-        assertNull("Must be null", serviceFunctionPath2.getSymmetricClassifier()); //no symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath2.getClassifier(), reversedClassifier); //classifier
 
         //path 3
         ServiceFunctionPath serviceFunctionPath3 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames[2]);
         assertNotNull("Must not be null", serviceFunctionPath3);
         assertTrue("Must be true", serviceFunctionPath3.isSymmetric()); //path not symmetric
-        assertEquals("Must be equal", serviceFunctionPath3.getSymmetricClassifier(), reversedClassifier); //symmetric classifier
-        assertEquals("Must be equal", serviceFunctionPath3.getClassifier(), classifier); //classifier
-
-        //read paths in classifier
-        SclRenderedServicePath path = readClassifierRsp(classifier, rpcResult1.getResult().getName(), false);
-        assertNotNull("Must not be null", path); //path 1 exists in classifier
-        path = readClassifierRsp(classifier, rpcResult2.getResult().getName(), false);
-        assertNull("Must be null", path); //path 2 does NOT exists in classifier
-        path = readClassifierRsp(classifier, rpcResult3.getResult().getName(), false);
-        assertNotNull("Must not be null", path); //path 3 exists in classifier
-
-        //read paths in classifier
-        path = readClassifierRsp(reversedClassifier, rpcResult1.getResult().getName(), true);
-        assertNull("Must be null", path); //path 1 does NOT exists in classifier
-        path = readClassifierRsp(reversedClassifier, rpcResult2.getResult().getName(), false); //this classifier is not reversed for rsp2
-        assertNotNull("Must not be null", path); //path 2 exists in classifier
-        path = readClassifierRsp(reversedClassifier, rpcResult3.getResult().getName(), true);
-        assertNotNull("Must not be null", path); //path 3 exists both classifiers
     }
 
     //auxiliary methods below
-
-    /*
-     * create classifier and write into data store, the only parameter is classifier name
-     */
-    private boolean createClassifier(String classifierName) {
-        ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
-        serviceFunctionClassifierBuilder.setName(classifierName)
-                .setKey(new ServiceFunctionClassifierKey(classifierName));
-
-        InstanceIdentifier<ServiceFunctionClassifier> sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-                .child(ServiceFunctionClassifier.class, new ServiceFunctionClassifierKey(classifierName)).build();
-
-       return SfcDataStoreAPI.writePutTransactionAPI(sclIID,
-               serviceFunctionClassifierBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-    }
-
-    /*
-     * read all rendered service paths operating with classifier
-     * method needs classifier name, rendered service path name and whether the classifier is reversed or not
-     */
-    private SclRenderedServicePath readClassifierRsp(String classifierName, String rpcName, boolean reversed) {
-
-        if(reversed)
-            rpcName += "-Reverse";
-
-        InstanceIdentifier<SclRenderedServicePath> sclRspIID = InstanceIdentifier.builder(ServiceFunctionClassifiersState.class)
-                .child(ServiceFunctionClassifierState.class, new ServiceFunctionClassifierStateKey(classifierName))
-                .child(SclRenderedServicePath.class, new SclRenderedServicePathKey(rpcName)).build();
-
-        return SfcDataStoreAPI.readTransactionAPI(sclRspIID, LogicalDatastoreType.OPERATIONAL);
-    }
 
     /*
      * create service function type
@@ -973,19 +909,14 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     /*
      * create service function path
-     * specify path name, name of used chain, classifier name, reverse classifier name and whether the path is symmetric or not
+     * specify path name, name of used chain and whether the path is symmetric or not
      */
-    private boolean createServiceFunctionPath(String pathName, String chainName, String classifierName, String classifierRevName) {
-        boolean symmetric = false;
-        if(classifierRevName != null)
-            symmetric = true;
+    private boolean createServiceFunctionPath(String pathName, String chainName, boolean symmetric) {
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(pathName)
                 .setKey(new ServiceFunctionPathKey(pathName))
                 .setServiceChainName(chainName)
-                .setClassifier(classifierName)
-                .setSymmetricClassifier(classifierRevName)
                 .setSymmetric(symmetric);
         return SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPathBuilder.build());
     }
@@ -993,16 +924,10 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     /*
      * input parameter, needs path name, classifiers and if path is symmetric or not
      */
-    private CreateRenderedPathInput createRenderedPathInput(String pathName, String classifierName, String classifierRevName) {
-        boolean symmetric = false;
-
-        if(classifierName != null)
-            symmetric = true;
+    private CreateRenderedPathInput createRenderedPathInput(String pathName, boolean symmetric) {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName)
-                .setClassifier(classifierName)
-                .setSymmetricClassifier(classifierRevName)
                 .setSymmetric(symmetric);
 
         return createRenderedPathInputBuilder.build();

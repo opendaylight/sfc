@@ -301,10 +301,12 @@ def compute_internet_checksum(data):
     # data padding
     pad = bytearray('', encoding='UTF-8')
     if n == 1:
-        pad = bytearray('\x00')
+        pad = bytearray(b'\x00')
     # for i in range(0, len(data + pad) - n, 2):
-    for i in range(0, len(data + pad), 2):
+    for i in range(0, len(data)-1, 2):
         checksum += (data[i] << 8) + (data[i + 1])
+    if n == 1:
+        checksum += (data[len(data)-1] << 8) + (pad[0])
     while checksum >> 16:
         checksum = (checksum & 0xFFFF) + (checksum >> 16)
     checksum = ~checksum & 0xffff

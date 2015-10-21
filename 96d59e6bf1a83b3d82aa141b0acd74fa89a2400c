@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad0f9df_49a09790",
+        "filename": "sfc-model/src/main/yang/sfc-common.yang",
+        "patchSetId": 19
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-10-21T16:06:22Z",
+      "side": 1,
+      "message": "The namespace is not important but better take care of the others.\n\nsfc-common.yang:1: error: IETF rule (RFC 6087: 4.7): statement \"module\" must have a \"contact\" substatement\nsfc-common.yang:1: error: IETF rule (RFC 6087: 4.7): statement \"module\" must have a \"organization\" substatement\nsfc-common.yang:3: warning: IETF rule (RFC 6087: 4.8): namespace value should be \"urn:ietf:params:xml:ns:yang:sfc-common\"\nsfc-common.yang:10: error: IETF rule (RFC 6087: 4.7): statement \"revision\" must have a \"reference\" substatement\nsfc-common.yang:22: error: IETF rule (RFC 6087: 4.11,4.12): statement \"typedef\" must have a \"description\" substatement\nsfc-common.yang:55: warning: IETF rule (RFC formatting): line length 75 exceeds 70 characters",
+      "revId": "96d59e6bf1a83b3d82aa141b0acd74fa89a2400c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

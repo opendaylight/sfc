@@ -9,8 +9,6 @@
 package org.opendaylight.sfc.scfofrenderer;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -27,8 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfcOvsPortUtils {
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsPortUtils.class);
 
     private static String getLongFromDpid(String dpid) {
@@ -37,7 +38,7 @@ public class SfcOvsPortUtils {
         Long address = (Long.decode(HEX + addressInBytes[2]) << 40) | (Long.decode(HEX + addressInBytes[3]) << 32)
                 | (Long.decode(HEX + addressInBytes[4]) << 24) | (Long.decode(HEX + addressInBytes[5]) << 16)
                 | (Long.decode(HEX + addressInBytes[6]) << 8) | (Long.decode(HEX + addressInBytes[7]));
-       return "openflow:" + String.valueOf(address);
+        return "openflow:" + String.valueOf(address);
     }
 
     public static NodeConnectorId getOfPortByName(String nodeName, String portName) {
@@ -71,7 +72,7 @@ public class SfcOvsPortUtils {
 
             String dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
             if (nodeName.equals(dpid)) {
-                for (TerminationPoint tp: tpList) {
+                for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
                     if (otp == null) {
                         continue;
@@ -119,7 +120,7 @@ public class SfcOvsPortUtils {
 
             String dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
             if (nodeName.equals(dpid)) {
-                for (TerminationPoint tp: tpList) {
+                for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
                     if (otp == null) {
                         continue;
@@ -135,20 +136,20 @@ public class SfcOvsPortUtils {
     }
 
     public static String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
-        if(sff == null) {
+        if (sff == null) {
             return null;
         }
 
         // Check if its an service-function-forwarder-ovs augmentation
         // if it is, then get the open flow node id there
         SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-        if(ovsSff != null) {
-            if(ovsSff.getOvsBridge() != null) {
+        if (ovsSff != null) {
+            if (ovsSff.getOvsBridge() != null) {
                 return ovsSff.getOvsBridge().getOpenflowNodeId();
             }
         }
 
         // it its not an sff-ovs, then just return the ServiceNode
-        return sff.getServiceNode();
+        return sff.getServiceNode().getValue();
     }
 }

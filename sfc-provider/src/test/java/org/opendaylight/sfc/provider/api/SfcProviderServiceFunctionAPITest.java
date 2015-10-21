@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,10 +8,23 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -42,26 +55,17 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
-
 public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager {
 
-    private static final String[] LOCATOR_IP_ADDRESS =
-            {"196.168.55.1",
-                    "196.168.55.2",
-                    "196.168.55.3"};
-    private static final String[] IP_MGMT_ADDRESS =
-            {"196.168.55.101",
-                    "196.168.55.102",
-                    "196.168.55.103"};
-    private static final String SF_NAME = "dummySF";
-    private static final String SF_STATE_NAME = "dummySFS";
-    private static final String SF_SERVICE_PATH = "dummySFSP";
-    private static final String RSP_NAME = "dummyRSP";
+    private static final String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3"};
+    private static final String[] IP_MGMT_ADDRESS = {"196.168.55.101", "196.168.55.102", "196.168.55.103"};
+    private static final SfName SF_STATE_NAME = new SfName("dummySFS");
+    private static final SfpName SF_SERVICE_PATH = new SfpName("dummySFSP");
+    private static final SfName SF_NAME = new SfName("dummySF");
+    private static final SfName SF_NAME1 = new SfName("dummySF1");
+    private static final RspName RSP_NAME1 = new RspName("dummyRSP1");
+    private static final SfName SF_NAME2 = new SfName("dummySF2");
+    private static final RspName RSP_NAME2 = new RspName("dummyRSP2");
     private static final int PORT = 555;
 
     @Before
@@ -72,7 +76,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testCreateReadServiceFunction() {
 
-        String name = "unittest-fw-1";
+        SfName name = new SfName("unittest-fw-1");
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
@@ -83,16 +87,17 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(LOCATOR_IP_ADDRESS[0]).setLocatorType(ipBuilder.build());
+        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[0])).setLocatorType(ipBuilder.build());
         sfDataPlaneLocator = locatorBuilder.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name).setKey(key)
-                .setType(type)
-                .setIpMgmtAddress(ipMgmtAddress)
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
+        sfBuilder.setName(name)
+            .setKey(key)
+            .setType(type)
+            .setIpMgmtAddress(ipMgmtAddress)
+            .setSfDataPlaneLocator(dataPlaneLocatorList);
 
         SfcProviderServiceFunctionAPI.putServiceFunction(sfBuilder.build());
         ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(name);
@@ -106,7 +111,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testDeleteServiceFunction() {
 
-        String name = "unittest-fw-1";
+        SfName name = new SfName("unittest-fw-1");
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
@@ -117,16 +122,17 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(LOCATOR_IP_ADDRESS[0]).setLocatorType(ipBuilder.build());
+        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[0])).setLocatorType(ipBuilder.build());
         sfDataPlaneLocator = locatorBuilder.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name).setKey(key)
-                .setType(type)
-                .setIpMgmtAddress(ipMgmtAddress)
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
+        sfBuilder.setName(name)
+            .setKey(key)
+            .setType(type)
+            .setIpMgmtAddress(ipMgmtAddress)
+            .setSfDataPlaneLocator(dataPlaneLocatorList);
 
         SfcProviderServiceFunctionAPI.putServiceFunction(sfBuilder.build());
         assertNotNull("Must be not null", SfcProviderServiceFunctionAPI.readServiceFunction(name));
@@ -140,14 +146,12 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
         final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;
-        final IpAddress[] ipMgmtAddress =
-                {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
-                        new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])),
-                        new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[2]))};
+        final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
+                new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])), new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[2]))};
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[3];
         ServiceFunctionKey[] key = new ServiceFunctionKey[3];
         for (int i = 0; i < 3; i++) {
-            key[i] = new ServiceFunctionKey(sfName[i]);
+            key[i] = new ServiceFunctionKey(new SfName(sfName[i]));
         }
 
         final IpAddress[] locatorIpAddress = {new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0])),
@@ -161,16 +165,17 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(LOCATOR_IP_ADDRESS[i]).setLocatorType(ipBuilder.build());
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[i])).setLocatorType(ipBuilder.build());
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(sfName[i]).setKey(key[i])
-                    .setType(sfType)
-                    .setIpMgmtAddress(ipMgmtAddress[i])
-                    .setSfDataPlaneLocator(dataPlaneLocatorList);
+            sfBuilder.setName(new SfName(sfName[i]))
+                .setKey(key[i])
+                .setType(sfType)
+                .setIpMgmtAddress(ipMgmtAddress[i])
+                .setSfDataPlaneLocator(dataPlaneLocatorList);
             list.add(sfBuilder.build());
         }
 
@@ -178,7 +183,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         sfsBuilder.setServiceFunction(list);
 
         SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
-        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(sfName[1]);
+        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(new SfName(sfName[1]));
 
         assertNotNull("Must be not null", sf2);
         assertEquals("Must be equal", sf2.getIpMgmtAddress(), ipMgmtAddress[1]);
@@ -195,18 +200,19 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testCreateReadDeleteServiceFunction() throws Exception {
 
-        //create service function and put it to data store
+        // create service function and put it to data store
         boolean transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS[1], true);
 
         assertTrue("Must be true", transactionSuccessful);
 
-        //read service function with its name and return it
+        // read service function with its name and return it
         ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(SF_NAME);
 
         assertNotNull("Must be not null", serviceFunction);
-        assertEquals("Must be equal", serviceFunction.getIpMgmtAddress().getIpv4Address().getValue(), IP_MGMT_ADDRESS[1]);
+        assertEquals("Must be equal", serviceFunction.getIpMgmtAddress().getIpv4Address().getValue(),
+                IP_MGMT_ADDRESS[1]);
 
-        //now we delete that service function and check whether it was deleted or not
+        // now we delete that service function and check whether it was deleted or not
         transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS[1], false);
 
         assertTrue("Must be true", transactionSuccessful);
@@ -219,26 +225,26 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testCreateReadDeleteServiceFunctionState() throws Exception {
 
-        //create service function state and put it to data store
+        // create service function state and put it to data store
         boolean transactionSuccessful = writeRemoveServiceFunctionState(true);
 
         assertTrue("Must be true", transactionSuccessful);
 
-        //read service function state with its name
-        //list of SfServicePath will be returned
+        // read service function state with its name
+        // list of SfServicePath will be returned
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(SF_STATE_NAME);
 
         assertNotNull("Must not be null", sfServicePathList);
         assertEquals("Must be equal", sfServicePathList.get(0).getName(), SF_SERVICE_PATH);
 
-        //read service function state with its name
-        //list of Strings representing paths will be returned
-        List<String> rspList = SfcProviderServiceFunctionAPI.readServiceFunctionStateAsStringList(SF_STATE_NAME);
+        // read service function state with its name
+        // list of Strings representing paths will be returned
+        List<RspName> rspList = SfcProviderServiceFunctionAPI.getRspsBySfName(SF_STATE_NAME);
 
         assertNotNull("Must not be null", rspList);
-        assertEquals("Must be equal", rspList.get(0), SF_SERVICE_PATH);
+        assertEquals("Must be equal", rspList.get(0).getValue(), SF_SERVICE_PATH.getValue());
 
-        //now we delete that service function state and check whether it was deleted or not
+        // now we delete that service function state and check whether it was deleted or not
         transactionSuccessful = writeRemoveServiceFunctionState(false);
 
         assertTrue("Must be true", transactionSuccessful);
@@ -251,20 +257,22 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testReadAllServiceFunctionsExecutor() throws Exception {
 
-        //create service functions
+        // create service functions
         boolean transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[0], Firewall.class, true);
 
         assertTrue("Must be true", transactionSuccessful);
 
-        //read all service functions from data store
+        // read all service functions from data store
         ServiceFunctions serviceFunctionsResult = SfcProviderServiceFunctionAPI.readAllServiceFunctions();
 
         assertNotNull("Must not be null", serviceFunctionsResult);
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getName(), SF_NAME);
-        assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getIpMgmtAddress().getIpv4Address().getValue(), IP_MGMT_ADDRESS[0]);
+        assertEquals("Must be equal",
+                serviceFunctionsResult.getServiceFunction().get(0).getIpMgmtAddress().getIpv4Address().getValue(),
+                IP_MGMT_ADDRESS[0]);
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getType(), Firewall.class);
 
-        //delete these functions
+        // delete these functions
         transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[1], Firewall.class, false);
 
         assertTrue("Must be true", transactionSuccessful);
@@ -277,146 +285,152 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testAddPathToServiceFunctionStateExecutorString() throws Exception {
 
-        //first, create service function state without paths
+        // first, create service function state without paths
         boolean transactionSuccessful = writeRemoveServiceFunctionState();
 
         assertTrue("Must be true", transactionSuccessful);
 
-        //second, create path and write it into data store
-        transactionSuccessful = (boolean) writeReturnPath(RSP_NAME + 1, SF_NAME + 1, true);
+        // second, create path and write it into data store
+        transactionSuccessful = (boolean) writeReturnPath(RSP_NAME1, SF_NAME1, true);
 
         assertTrue("Must be true", transactionSuccessful);
 
-        //add this path to service function, a name of service path is used
-        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(RSP_NAME + 1);
+        // add this path to service function, a name of service path is used
+        // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(new SfpName(RSP_NAME1.getValue()));
 
         assertTrue("Must be true", result);
 
-        //now create another path, and put object as a parameter
-        RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME + 2, SF_NAME + 2, false);
+        // now create another path, and put object as a parameter
+        RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME2, SF_NAME2, false);
 
-        //add this path to service function, an object of service path is used
+        // add this path to service function, an object of service path is used
         result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath);
 
         assertTrue("Must be true", result);
 
-        //create path object
+        // create path object
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setName(RSP_NAME + 1);
+        serviceFunctionPathBuilder.setName(new SfpName(RSP_NAME1.getValue()));
 
-        //delete both paths; first through created path object, second through path name
-        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(serviceFunctionPathBuilder.build());
+        // delete both paths; first through created path object, second through path name
+        result = SfcProviderServiceFunctionAPI
+            .deleteServicePathFromServiceFunctionState(serviceFunctionPathBuilder.build());
 
         assertTrue("Must be true", result);
 
-        result = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(RSP_NAME + 2);
+        result = SfcProviderServiceFunctionAPI
+            .deleteServicePathFromServiceFunctionState(new SfpName(RSP_NAME2.getValue()));
 
         assertTrue("Must be true", result);
     }
 
-    //write or remove service function
+    // write or remove service function
     private boolean writeRemoveServiceFunction(String ipAddress, boolean write) {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SF_NAME)
-                .setKey(new ServiceFunctionKey(SF_NAME))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)));
+            .setKey(new ServiceFunctionKey(SF_NAME))
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)));
 
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, new ServiceFunctionKey(SF_NAME)).build();
+            .child(ServiceFunction.class, new ServiceFunctionKey(SF_NAME))
+            .build();
 
         if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+            return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(),
+                    LogicalDatastoreType.CONFIGURATION);
         else
             return SfcDataStoreAPI.deleteTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
     }
 
-    //write or remove service functions
-    private boolean writeRemoveServiceFunctions(String ipAddress, Class<? extends ServiceFunctionTypeIdentity> type, boolean write) {
+    // write or remove service functions
+    private boolean writeRemoveServiceFunctions(String ipAddress, Class<? extends ServiceFunctionTypeIdentity> type,
+            boolean write) {
         ServiceFunctionsBuilder serviceFunctionsBuilder = new ServiceFunctionsBuilder();
         List<ServiceFunction> serviceFunctions = new ArrayList<>();
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
 
         serviceFunctionBuilder.setName(SF_NAME)
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
-                .setKey(new ServiceFunctionKey(SF_NAME))
-                .setNshAware(true)
-                .setType(type);
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
+            .setKey(new ServiceFunctionKey(SF_NAME))
+            .setNshAware(true)
+            .setType(type);
         serviceFunctions.add(serviceFunctionBuilder.build());
         serviceFunctionsBuilder.setServiceFunction(serviceFunctions);
 
-        InstanceIdentifier<ServiceFunctions> sfsIID =
-                InstanceIdentifier.builder(ServiceFunctions.class).build();
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
 
         if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(sfsIID, serviceFunctionsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+            return SfcDataStoreAPI.writePutTransactionAPI(sfsIID, serviceFunctionsBuilder.build(),
+                    LogicalDatastoreType.CONFIGURATION);
         else
             return SfcDataStoreAPI.deleteTransactionAPI(sfsIID, LogicalDatastoreType.CONFIGURATION);
     }
 
-    //write or remove service function state
+    // write or remove service function state
     private boolean writeRemoveServiceFunctionState() {
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         List<SfServicePath> sfServicePathList = new ArrayList<>();
 
         serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-                .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
-                .setSfServicePath(sfServicePathList);
+            .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+            .setSfServicePath(sfServicePathList);
 
-        InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                InstanceIdentifier.builder(ServiceFunctionsState.class)
-                        .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
-                        .build();
+        InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
+            .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
+            .build();
 
-        return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
     }
 
-    //write or remove service function state with path
+    // write or remove service function state with path
     private boolean writeRemoveServiceFunctionState(boolean write) {
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         List<SfServicePath> sfServicePathList = new ArrayList<>();
 
         SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
-        sfServicePathBuilder.setName(SF_SERVICE_PATH)
-                .setKey(new SfServicePathKey(SF_SERVICE_PATH));
+        sfServicePathBuilder.setName(SF_SERVICE_PATH).setKey(new SfServicePathKey(SF_SERVICE_PATH));
         sfServicePathList.add(sfServicePathBuilder.build());
 
         serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-                .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
-                .setSfServicePath(sfServicePathList);
+            .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+            .setSfServicePath(sfServicePathList);
 
-        InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                InstanceIdentifier.builder(ServiceFunctionsState.class)
-                        .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
-                        .build();
+        InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
+            .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
+            .build();
         if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+            return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
+                    LogicalDatastoreType.OPERATIONAL);
         else
             return SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
     }
 
-    //write path or write path and return path object
-    private Object writeReturnPath(String pathName, String sfName, boolean write) {
+    // write path or write path and return path object
+    private Object writeReturnPath(RspName pathName, SfName sfName, boolean write) {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         List<RenderedServicePathHop> renderedServicePathHops = new ArrayList<>();
         RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
         renderedServicePathHopBuilder.setServiceFunctionName(sfName)
-                .setKey(new RenderedServicePathHopKey(Short.valueOf("1")));
+            .setKey(new RenderedServicePathHopKey(Short.valueOf("1")));
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
         renderedServicePathBuilder.setName(pathName)
-                .setKey(new RenderedServicePathKey(pathName))
-                .setRenderedServicePathHop(renderedServicePathHops);
+            .setKey(new RenderedServicePathKey(pathName))
+            .setRenderedServicePathHop(renderedServicePathHops);
 
-        InstanceIdentifier<RenderedServicePath> rspIID =
-                InstanceIdentifier.builder(RenderedServicePaths.class)
-                        .child(RenderedServicePath.class, new RenderedServicePathKey(pathName))
-                        .build();
+        InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
+            .child(RenderedServicePath.class, new RenderedServicePathKey(pathName))
+            .build();
 
         if (write)
-            return SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+            return SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
+                    LogicalDatastoreType.OPERATIONAL);
         else {
-            SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+            SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
+                    LogicalDatastoreType.OPERATIONAL);
             return renderedServicePathBuilder.build();
         }
     }

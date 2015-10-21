@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SfcLispUtil {
+
     private final static Logger LOG = LoggerFactory.getLogger(SfcLispUtil.class);
 
     public static Object submitCallable(Callable<Object> callable, ExecutorService executor) {
@@ -53,17 +55,18 @@ public class SfcLispUtil {
     public static InstanceIdentifier<Mapping> buildMappingIid(Mapping mapping) {
         LispAddressContainer eid = mapping.getLispAddressContainer();
         InstanceIdKey iidKey = new InstanceIdKey(new IidUri(Long.toString(LispUtil.getLispInstanceId(eid))));
-        MappingKey eidKey = new MappingKey(new EidUri(LispUtil.getAddressString(eid)),MappingOrigin.Northbound);
-        return InstanceIdentifier.create(MappingDatabase.class)
-                .child(InstanceId.class, iidKey).child(Mapping.class, eidKey);
+        MappingKey eidKey = new MappingKey(new EidUri(LispUtil.getAddressString(eid)), MappingOrigin.Northbound);
+        return InstanceIdentifier.create(MappingDatabase.class).child(InstanceId.class, iidKey).child(Mapping.class,
+                eidKey);
     }
 
-    public static Acl getServiceFunctionAcl(String sfPathName) {
+    public static Acl getServiceFunctionAcl(SfpName sfPathName) {
         ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(sfPathName);
         String classifierName = serviceFunctionPath.getClassifier();
         Acl acl = null;
-        if(classifierName != null) {
-            ServiceFunctionClassifier classifier = SfcProviderServiceClassifierAPI.readServiceClassifier(classifierName);
+        if (classifierName != null) {
+            ServiceFunctionClassifier classifier =
+                    SfcProviderServiceClassifierAPI.readServiceClassifier(classifierName);
             String aclName = classifier.getAccessList();
             acl = SfcProviderAclAPI.readAccessList(aclName);
         }

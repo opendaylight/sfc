@@ -8,12 +8,23 @@
 
 package org.opendaylight.sfc.provider;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.SffVxlanClassifierType1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.service.function.forwarders.service.function.forwarder.VxlanClassifierType1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -22,14 +33,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class is the DataListener for SFF changes.
@@ -76,10 +79,9 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
 
                         LOG.debug("{}: SFF {} deletion", Thread.currentThread().getStackTrace()[1],
                                 serviceFunctionForwarder.getName());
-                        String sffName = serviceFunctionForwarder.getName();
-                        List<String> rspList = new ArrayList<>();
-                        List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffState(sffName);
+                        SffName sffName = serviceFunctionForwarder.getName();
+                        List<RspName> rspList = new ArrayList<>();
+                        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
                             if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
 
@@ -88,9 +90,13 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                                         Thread.currentThread().getStackTrace()[1], sffName);
                             }
                             for (SffServicePath sffServicePath : sffServicePathList) {
-                                String rspName = sffServicePath.getName();
+                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                                RspName rspName = new RspName(sffServicePath.getName().getValue());
+                                // XXX Another example of Method Overloading confusion brought about
+                                // by Strings
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionState(rspName);
+                                    .deleteServicePathFromServiceFunctionState(new SfpName(rspName.getValue()));
                                 rspList.add(rspName);
                             }
                             SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
@@ -106,11 +112,11 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                     if (entry.getValue() instanceof ServiceFunctionForwarder) {
                         ServiceFunctionForwarder createdServiceFunctionForwarder =
                                 (ServiceFunctionForwarder) entry.getValue();
-                        SffVxlanClassifierType1 sffVxlanOverlayClassifierType1 = createdServiceFunctionForwarder.
-                                getAugmentation(SffVxlanClassifierType1.class);
+                        SffVxlanClassifierType1 sffVxlanOverlayClassifierType1 =
+                                createdServiceFunctionForwarder.getAugmentation(SffVxlanClassifierType1.class);
                         if (sffVxlanOverlayClassifierType1 != null) {
-                            VxlanClassifierType1 vxlanClassifierType1 = sffVxlanOverlayClassifierType1.
-                                    getVxlanClassifierType1();
+                            VxlanClassifierType1 vxlanClassifierType1 =
+                                    sffVxlanOverlayClassifierType1.getVxlanClassifierType1();
                         }
                         LOG.debug("{}: SFF {} create", Thread.currentThread().getStackTrace()[1],
                                 createdServiceFunctionForwarder.getName());
@@ -131,20 +137,23 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                          * references in the SFF/SF operational trees
                          */
 
-                        String sffName = serviceFunctionForwarder.getName();
+                        SffName sffName = serviceFunctionForwarder.getName();
                         LOG.debug("{}: SFF {} update", Thread.currentThread().getStackTrace()[1], sffName);
-                        List<SffServicePath> sffServicePathList =
-                                SfcProviderServiceForwarderAPI.readSffState(sffName);
-                        List<String> rspList = new ArrayList<>();
+                        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+                        List<RspName> rspList = new ArrayList<>();
                         if ((sffServicePathList != null) && !sffServicePathList.isEmpty()) {
                             if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(sffName)) {
                                 LOG.error("{}: Failed to delete SFF {} operational state",
                                         Thread.currentThread().getStackTrace()[1], sffName);
                             }
                             for (SffServicePath sffServicePath : sffServicePathList) {
-                                String rspName = sffServicePath.getName();
+                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                                RspName rspName = new RspName(sffServicePath.getName().getValue());
+                                // XXX Another example of Method Overloading confusion brought about
+                                // by Strings
                                 SfcProviderServiceFunctionAPI
-                                    .deleteServicePathFromServiceFunctionState(rspName);
+                                    .deleteServicePathFromServiceFunctionState(new SfpName(rspName.getValue()));
                                 rspList.add(rspName);
                             }
                             SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);

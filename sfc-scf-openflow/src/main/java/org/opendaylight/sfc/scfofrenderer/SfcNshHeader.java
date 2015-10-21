@@ -8,23 +8,22 @@
 
 package org.opendaylight.sfc.scfofrenderer;
 
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionMetadataAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.ContextMetadata;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 
-import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionMetadataAPI;
-
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.ContextMetadata;
-
 public class SfcNshHeader {
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcNshHeader.class);
 
     private final Ipv4Address nshTunIpDst;
@@ -52,13 +51,20 @@ public class SfcNshHeader {
     }
 
     public boolean isValid(SfcNshHeader sfcNshHeader) {
-        if (sfcNshHeader.nshTunIpDst == null) return false;
-        if (sfcNshHeader.nshNspToChain == null) return false;
-        if (sfcNshHeader.nshNspFromChain == null) return false;
-        if (sfcNshHeader.nshNsiToChain == null) return false;
-        if (sfcNshHeader.nshNsiFromChain == null) return false;
-        if (sfcNshHeader.nshMetaC1 == null) return false;
-        if (sfcNshHeader.nshMetaC2 == null) return false;
+        if (sfcNshHeader.nshTunIpDst == null)
+            return false;
+        if (sfcNshHeader.nshNspToChain == null)
+            return false;
+        if (sfcNshHeader.nshNspFromChain == null)
+            return false;
+        if (sfcNshHeader.nshNsiToChain == null)
+            return false;
+        if (sfcNshHeader.nshNsiFromChain == null)
+            return false;
+        if (sfcNshHeader.nshMetaC1 == null)
+            return false;
+        if (sfcNshHeader.nshMetaC2 == null)
+            return false;
         return true;
     }
 
@@ -66,11 +72,9 @@ public class SfcNshHeader {
         return nshTunIpDst;
     }
 
-
     public PortNumber getNshTunUdpPort() {
         return nshTunUdpPort;
     }
-
 
     public Long getNshNspToChain() {
         return nshNspToChain;
@@ -104,7 +108,7 @@ public class SfcNshHeader {
         return nshMetaC4;
     }
 
-    public static SfcNshHeader getSfcNshHeader(String rspName) {
+    public static SfcNshHeader getSfcNshHeader(RspName rspName) {
         RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(rspName);
         if (!isValidRspFirstHop(rspFirstHop)) {
@@ -112,7 +116,7 @@ public class SfcNshHeader {
             return null;
         }
         String context = renderedServicePath.getContextMetadata();
-        //String context = "NSH1";
+        // String context = "NSH1";
         ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
 
         RenderedServicePathHop firstRspHop = renderedServicePath.getRenderedServicePathHop().get(0);
@@ -160,10 +164,11 @@ public class SfcNshHeader {
     }
 
     private static class SfcNshHeaderBuilder {
+
         private Ipv4Address nshTunIpDst;
         private PortNumber nshTunUdpPort;
         private Long nshNspToChain;
-        private  Short nshNsiToChain;
+        private Short nshNsiToChain;
         private Long nshNspFromChain;
         private Short nshNsiFromChain;
         private Long nshMetaC1;

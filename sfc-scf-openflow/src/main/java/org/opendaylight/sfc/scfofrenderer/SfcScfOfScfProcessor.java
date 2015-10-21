@@ -150,14 +150,17 @@ public class SfcScfOfScfProcessor {
             // don't support port range
             switch (aceip.getProtocol()) {
                 case SfcOpenflowUtils.IP_PROTOCOL_UDP:
-                    //SfcOpenflowUtils.addMatchSrcUdpPort(mb, aceip.getSourcePortRange().getLowerPort().getValue());
-                    //SfcOpenflowUtils.addMatchDstUdpPort(mb, aceip.getDestinationPortRange().getLowerPort().getValue());
+                    SfcOpenflowUtils.addMatchSrcUdpPort(mb, aceip.getSourcePortRange().getLowerPort().getValue().intValue());
+                    SfcOpenflowUtils.addMatchDstUdpPort(mb, aceip.getDestinationPortRange().getLowerPort().getValue().intValue());
                     break;
                 case SfcOpenflowUtils.IP_PROTOCOL_TCP:
-                    //SfcOpenflowUtils.addMatchSrcTcpPort(mb, aceip.getSourcePortRange().getLowerPort().getValue());
-                    //SfcOpenflowUtils.addMatchDstTcpPort(mb, aceip.getDestinationPortRange().getLowerPort().getValue());
+                    SfcOpenflowUtils.addMatchSrcTcpPort(mb, aceip.getSourcePortRange().getLowerPort().getValue().intValue());
+                    SfcOpenflowUtils.addMatchDstTcpPort(mb, aceip.getDestinationPortRange().getLowerPort().getValue().intValue());
                     break;
-               //case SCTP later
+                case SfcOpenflowUtils.IP_PROTOCOL_SCTP:
+                    SfcOpenflowUtils.addMatchSrcSctpPort(mb, aceip.getSourcePortRange().getLowerPort().getValue().intValue());
+                    SfcOpenflowUtils.addMatchDstSctpPort(mb, aceip.getDestinationPortRange().getLowerPort().getValue().intValue());
+                    break;
             }
 
             if (aceip.getAceIpVersion() instanceof AceIpv4) {
@@ -177,12 +180,19 @@ public class SfcScfOfScfProcessor {
                 }
             } if (aceip.getAceIpVersion() instanceof AceIpv6) {
                 AceIpv6 ipv6 = (AceIpv6) aceip.getAceIpVersion();
-                Ipv6Prefix prefix = ipv6.getDestinationIpv6Network();
-                String s[] = prefix.getValue().split("/");
+                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
 
-                //support later
-                //SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
-                //SfcOpenflowUtils.addMatchDstIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
+                Ipv6Prefix src = ipv6.getSourceIpv6Network();
+                if (src != null) {
+                    String s[] = src.getValue().split("/");
+                    SfcOpenflowUtils.addMatchSrcIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
+                }
+
+                Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
+                if (dst != null ) {
+                    String d[] = dst.getValue().split("/");
+                    SfcOpenflowUtils.addMatchDstIpv6(mb, d[0], Integer.valueOf(d[1]).intValue());
+                }
             }
         }
         return mb.build();

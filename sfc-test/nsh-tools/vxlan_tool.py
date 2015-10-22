@@ -26,8 +26,14 @@ NSH_NEXT_PROTO_ETH = int('00000011', 2)
 NSH_FLAG_ZERO = int('00000000', 2)
 
 IP_HEADER_LEN = 5
+IPV4_HEADER_LEN_BYTES = 20
 IPV4_VERSION = 4
+IPV4_PACKET_ID = 54321
+IPV4_TTL = 255
+IPV4_TOS = 0
 IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
+
+UDP_HEADER_LEN_BYTES = 8
 
 class VXLAN(Structure):
     _fields_ = [('flags', c_ubyte),
@@ -187,6 +193,22 @@ class UDPHEADER(Structure):
                                self.udp_sum)
         return udp_header_pack
 
+class PSEUDO_UDPHEADER(Structure):
+    """ Pseudoheader used in the UDP checksum."""
+
+    def __init__(self):
+        self.src_ip = 0
+        self.dest_ip = 0
+        self.zeroes = 0
+        self.protocol = 17
+        self.length = 0
+
+    def build(self):
+        """ Create a string from a pseudoheader """
+        p_udp_header_pack = pack('!I I B B H', self.src_ip, self.dest_ip,
+                                 self.zeroes, self.protocol, self.length)
+        return p_udp_header_pack
+
 def decode_eth(payload, eth_header_values):
     eth_header = payload[0:14]
 
@@ -271,86 +293,233 @@ def decode_nsh_contextheader(payload, nsh_context_header_values):
     nsh_context_header_values.service_platform = _header_values[2]
     nsh_context_header_values.service_shared = _header_values[3]
 
+def compute_internet_checksum(data):
+    """
+    Function for Internet checksum calculation. Works
+    for both IP and UDP.
+
+    """
+    checksum = 0
+    n = len(data) % 2
+    # data padding
+    pad = bytearray('', encoding='UTF-8')
+    if n == 1:
+        pad = bytearray(b'\x00')
+    # for i in range(0, len(data + pad) - n, 2):
+    for i in range(0, len(data)-1, 2):
+        checksum += (data[i] << 8) + (data[i + 1])
+    if n == 1:
+        checksum += (data[len(data)-1] << 8) + (pad[0])
+    while checksum >> 16:
+        checksum = (checksum & 0xFFFF) + (checksum >> 16)
+    checksum = ~checksum & 0xffff
+    return checksum
+
+def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
+    """
+    Builds a complete IP header including checksum
+    """
+
+    if src_ip:
+        ip_saddr = socket.inet_aton(src_ip)
+    else:
+        ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
+
+    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
+    ip_daddr = socket.inet_aton(dest_ip)
+    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+
+    ip_header = IP4HEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0, ip_saddr, ip_daddr)
+
+    checksum = compute_internet_checksum(ip_header.build())
+    ip_header.set_ip_checksum(checksum)
+    ip_header_pack = ip_header.build()
+
+    return ip_header, ip_header_pack
+
+
+def build_udp_header(src_port, dest_port, ip_header, data):
+    """
+    Building an UDP header requires fields from
+    IP header in order to perform checksum calculation
+    """
+
+    # build UDP header with sum = 0
+    udp_header = UDPHEADER(src_port, dest_port, UDP_HEADER_LEN_BYTES + len(data), 0)
+    udp_header_pack = udp_header.build()
+
+    # build Pseudo Header
+    p_header = PSEUDO_UDPHEADER()
+    p_header.dest_ip = ip_header.ip_daddr
+    p_header.src_ip = ip_header.ip_saddr
+    p_header.length = udp_header.udp_len
+
+    p_header_pack = p_header.build()
+
+    udp_checksum = compute_internet_checksum(p_header_pack + udp_header_pack + data)
+    udp_header.udp_sum = udp_checksum
+    # pack UDP header again but this time with checksum
+    udp_header_pack = udp_header.build()
+
+    return udp_header, udp_header_pack
+
+def build_udp_packet(src_ip, dest_ip, src_port, dest_port, data):
+    """
+    Data needs to encoded as Python bytes. In the case of strings
+    this means a bytearray of an UTF-8 encoding
+    """
+
+    total_len = len(data) + IPV4_HEADER_LEN_BYTES + UDP_HEADER_LEN_BYTES
+    # First we build the IP header
+    ip_header, ip_header_pack = build_ipv4_header(total_len, socket.IPPROTO_UDP, src_ip, dest_ip)
+
+    # Build UDP header
+    udp_header, udp_header_pack = build_udp_header(src_port, dest_port, ip_header, data)
+
+    udp_packet = ip_header_pack + udp_header_pack + data
+
+    return udp_packet
+
+def getmac(interface):
+  try:
+    mac = open('/sys/class/net/'+interface+'/address').readline()
+  except:
+    mac = None
+  return mac
+
 def main():
-    parser = argparse.ArgumentParser(description='VxLAN dump',
-                                     usage=("\npython3 vxlan_dump.py [-i ethn | --interface=ethn]")
-                                    )
+    parser = argparse.ArgumentParser(description='This is a VxLAN/VxLAN-gpe + NSH dump and forward tool, you can use it to dump and forward VxLAN/VxLAN-gpe + NSH packets, it can also act as an NSH-aware SF for SFC test when you use --forward option, in that case, it will automatically decrease nsi by one.', prog='vxlan_tool.py')
     parser.add_argument('-i', '--interface',
-                        help='Dump VxLAN packet from the specified interface')
+                        help='Specify the interface to listen')
+    parser.add_argument('-d', '--do', choices=['dump', 'forward'],
+                        help='dump/foward VxLAN/VxLAN-gpe + NSH packet')
     args = parser.parse_args()
-    
+    macaddr = None
+
     try:
         s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
         if args.interface is not None:
             s.bind((args.interface, 0))
+        if (args.do == "forward"):
+            if args.interface is None:
+                print("Error: you must specify the interface by -i or --interface for forward")
+                sys.exit(-1)
+            send_s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
+            send_s.bind((args.interface, 0))
+        if args.interface is not None:
+            macstring = getmac(args.interface)
+            if (macstring is not None):
+                macaddr = macstring.split(':')
+
     except OSError as e:
         print("{}".format(e) + " '%s'" % args.interface)
-        sys.exit()
-    
+        sys.exit(-1)
+
     # receive a packet
     pktnum=0
     while True:
         packet = s.recvfrom(65565)
-    
+
         #packet string from tuple
         packet = packet[0]
-    
-        #parse ethernet header
+
+        #header len
         eth_length = 14
         ip_length = 20
         udp_length = 8
         vxlan_length = 8
-    
+        nshbase_length = 8
+        nshcontext_length = 16
+
         myethheader = ETHHEADER()
         myipheader = IP4HEADER()
         myudpheader = UDPHEADER()
         myvxlanheader = VXLAN()
         mynshbaseheader = BASEHEADER()
         mynshcontextheader = CONTEXTHEADER()
-    
+
         """ Decode ethernet header """
         decode_eth(packet, myethheader)
         if ((myethheader.ethertype0 != 0x08) or (myethheader.ethertype1 != 0x00)):
             continue
-    
+        if (macaddr is not None):
+            if ((myethheader.dmac4 != int(macaddr[4], 16)) or (myethheader.dmac5 != int(macaddr[5], 16))):
+                continue
+
         """ Decode IP header """
         decode_ip(packet, myipheader)
         if (myipheader.ip_proto != 17):
             continue
-    
+
         """ Decode UDP header """
         decode_udp(packet, myudpheader)
         if ((myudpheader.udp_dport != 4789) and (myudpheader.udp_dport != 4790)):
             continue
-    
+
         pktnum = pktnum + 1
-    
+
         """ Decode VxLAN/VxLAN-gpe header """
         decode_vxlan(packet, myvxlanheader)
         print("\n\nPacket #%d" % pktnum)
-    
+
         """ Print ethernet header """
         print("Eth Dst MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Src MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Ethertype: 0x%.4x" % (myethheader.dmac0, myethheader.dmac1, myethheader.dmac2, myethheader.dmac3, myethheader.dmac4, myethheader.dmac5, myethheader.smac0, myethheader.smac1, myethheader.smac2, myethheader.smac3, myethheader.smac4, myethheader.smac5, (myethheader.ethertype0<<8) | myethheader.ethertype1))
-    
+
         """ Print IP header """
         print("IP Version: %s IP Header Length: %s, TTL: %s, Protocol: %s, Src IP: %s, Dst IP: %s" % (myipheader.ip_ver, myipheader.ip_ihl, myipheader.ip_ttl, myipheader.ip_proto, str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr)))))
-    
+
         """ Print UDP header """
         print ("UDP Src Port: %s, Dst Port: %s, Length: %s, Checksum: %s" % (myudpheader.udp_sport, myudpheader.udp_dport, myudpheader.udp_len, myudpheader.udp_sum))
-    
+
         """ Print VxLAN/VxLAN-gpe header """
         print("VxLAN/VxLAN-gpe VNI: %s, flags: %.2x, Next: %s" % (myvxlanheader.vni, myvxlanheader.flags, myvxlanheader.next_protocol))
-    
+
         """ Print NSH header """
         if (myudpheader.udp_dport == 4790):
             decode_nsh_baseheader(packet, mynshbaseheader)
             decode_nsh_contextheader(packet, mynshcontextheader)
-         
+
             """ Print NSH base header """
             print("NSH base nsp: %s, nsi: %s" % (mynshbaseheader.service_path, mynshbaseheader.service_index))
-    
+
             """ Print NSH context header """
             print("NSH context c1: 0x%.8x, c2: 0x%.8x, c3: 0x%.8x, c4: 0x%.8x" % (mynshcontextheader.network_platform, mynshcontextheader.network_shared, mynshcontextheader.service_platform, mynshcontextheader.service_shared))
+
+            if ((args.do == "forward") and (args.interface is not None)):
+                """ Build IP packet"""
+                if (myudpheader.udp_dport == 4790):
+                    """ nsi minus one """
+                    mynshbaseheader.service_index = mynshbaseheader.service_index - 1
+                    ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[eth_length+ip_length+udp_length+vxlan_length+nshbase_length+nshcontext_length:])
+                else:
+                    ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, packet[eth_length+ip_length+udp_length:])
+
+                """ Build Ethernet header """
+                newethheader=ETHHEADER()
+                newethheader.smac0 = myethheader.dmac0
+                newethheader.smac1 = myethheader.dmac1
+                newethheader.smac2 = myethheader.dmac2
+                newethheader.smac3 = myethheader.dmac3
+                newethheader.smac4 = myethheader.dmac4
+                newethheader.smac5 = myethheader.dmac5
+
+                newethheader.dmac0 = myethheader.smac0
+                newethheader.dmac1 = myethheader.smac1
+                newethheader.dmac2 = myethheader.smac2
+                newethheader.dmac3 = myethheader.smac3
+                newethheader.dmac4 = myethheader.smac4
+                newethheader.dmac5 = myethheader.smac5
+
+                newethheader.ethertype0 = myethheader.ethertype0
+                newethheader.ethertype1 = myethheader.ethertype1
+
+                """ Build Ethernet packet """
+                pkt = newethheader.build() + ippack
+
+                """ Send it and make sure all the data is sent out """
+                while pkt:
+                    sent = send_s.send(pkt)
+                    pkt = pkt[sent:]
 
 if __name__ == "__main__":
     main()

@@ -124,14 +124,25 @@ public class SfcScfOfScfProcessor {
     private static Match getMatch(NodeConnectorId inPort, Matches matches) {
         MatchBuilder mb = new MatchBuilder();
 
-        mb.setInPort(inPort);
+        if (inPort != null) {
+            mb.setInPort(inPort);
+        }
+
+        if (matches == null) {
+            return mb.build();
+        }
 
         if (matches.getAceType() instanceof AceEth) {
             AceEth eth = (AceEth) matches.getAceType();
 
             // don't support mac mask
-            SfcOpenflowUtils.addMatchSrcMac(mb, eth.getSourceMacAddress().getValue());
-            SfcOpenflowUtils.addMatchDstMac(mb, eth.getDestinationMacAddress().getValue());
+
+            if (eth.getSourceMacAddress() != null) {
+                SfcOpenflowUtils.addMatchSrcMac(mb, eth.getSourceMacAddress().getValue());
+            }
+            if (eth.getDestinationMacAddress() != null) {
+                SfcOpenflowUtils.addMatchDstMac(mb, eth.getDestinationMacAddress().getValue());
+            }
 
         } else if (matches.getAceType() instanceof AceIp) {
             AceIp aceip = (AceIp) matches.getAceType();
@@ -139,25 +150,55 @@ public class SfcScfOfScfProcessor {
             if (aceip.getDscp() != null) {
                 SfcOpenflowUtils.addMatchDscp(mb, aceip.getDscp().getValue());
             }
+
             if (aceip.getProtocol() != null) {
                 SfcOpenflowUtils.addMatchIpProtocol(mb, aceip.getProtocol());
-            }
 
-            // don't support port range
-            switch (aceip.getProtocol()) {
-                case SfcOpenflowUtils.IP_PROTOCOL_UDP:
-                    // SfcOpenflowUtils.addMatchSrcUdpPort(mb,
-                    // aceip.getSourcePortRange().getLowerPort().getValue());
-                    // SfcOpenflowUtils.addMatchDstUdpPort(mb,
-                    // aceip.getDestinationPortRange().getLowerPort().getValue());
-                    break;
-                case SfcOpenflowUtils.IP_PROTOCOL_TCP:
-                    // SfcOpenflowUtils.addMatchSrcTcpPort(mb,
-                    // aceip.getSourcePortRange().getLowerPort().getValue());
-                    // SfcOpenflowUtils.addMatchDstTcpPort(mb,
-                    // aceip.getDestinationPortRange().getLowerPort().getValue());
-                    break;
-                // case SCTP later
+                Integer srcPort = null;
+                Integer dstPort = null;
+
+                if (aceip.getSourcePortRange() != null &&
+                    aceip.getSourcePortRange().getLowerPort() != null &&
+                    aceip.getSourcePortRange().getLowerPort().getValue() != null) {
+                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
+                }
+                if (aceip.getDestinationPortRange() != null &&
+                    aceip.getDestinationPortRange().getLowerPort() != null &&
+                    aceip.getDestinationPortRange().getLowerPort().getValue() != null) {
+                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
+                }
+
+                // don't support port range
+                switch (aceip.getProtocol()) {
+                    case SfcOpenflowUtils.IP_PROTOCOL_UDP:
+
+                        if (srcPort != null) {
+                            SfcOpenflowUtils.addMatchSrcUdpPort(mb, srcPort.intValue());
+                        }
+                        if (dstPort != null) {
+                            SfcOpenflowUtils.addMatchDstUdpPort(mb, dstPort.intValue());
+                        }
+                        break;
+
+                    case SfcOpenflowUtils.IP_PROTOCOL_TCP:
+
+                        if (srcPort != null) {
+                            SfcOpenflowUtils.addMatchSrcTcpPort(mb, srcPort.intValue());
+                        }
+                        if (dstPort != null) {
+                            SfcOpenflowUtils.addMatchDstTcpPort(mb, dstPort.intValue());
+                        }
+                        break;
+
+                    case SfcOpenflowUtils.IP_PROTOCOL_SCTP:
+                        if (srcPort != null) {
+                            SfcOpenflowUtils.addMatchSrcSctpPort(mb, srcPort.intValue());
+                        }
+                        if (dstPort != null) {
+                            SfcOpenflowUtils.addMatchDstSctpPort(mb, dstPort.intValue());
+                        }
+                        break;
+                }
             }
 
             if (aceip.getAceIpVersion() instanceof AceIpv4) {
@@ -178,12 +219,19 @@ public class SfcScfOfScfProcessor {
             }
             if (aceip.getAceIpVersion() instanceof AceIpv6) {
                 AceIpv6 ipv6 = (AceIpv6) aceip.getAceIpVersion();
-                Ipv6Prefix prefix = ipv6.getDestinationIpv6Network();
-                String s[] = prefix.getValue().split("/");
+                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
 
-                // support later
-                // SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
-                // SfcOpenflowUtils.addMatchDstIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
+                Ipv6Prefix src = ipv6.getSourceIpv6Network();
+                if (src != null) {
+                    String s[] = src.getValue().split("/");
+                    SfcOpenflowUtils.addMatchSrcIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
+                }
+
+                Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
+                if (dst != null ) {
+                    String d[] = dst.getValue().split("/");
+                    SfcOpenflowUtils.addMatchDstIpv6(mb, d[0], Integer.valueOf(d[1]).intValue());
+                }
             }
         }
         return mb.build();
@@ -194,10 +242,10 @@ public class SfcScfOfScfProcessor {
         int order = 0;
         Integer priority = 1000;
 
-        String dstIp = sfcNshHeader.getNshTunIpDst().getValue();
+        String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
         Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
-        Action setNsp = SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNspToChain(), order++);
-        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshNsiToChain(), order++);
+        Action setNsp = SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), order++);
+        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshNsi(), order++);
         Action setC1 = SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), order++);
         Action setC2 = SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++);
         Action setC3 = SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++);
@@ -241,72 +289,208 @@ public class SfcScfOfScfProcessor {
     }
 
     public void createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+        if (scf == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: scf is null");
+            return;
+        }
+
         LOG.debug("\ncreate ServiceFunctionClassifier name: {} ACL: {} SFF: {}", scf.getName(), scf.getAccessList(),
                 scf.getSclServiceFunctionForwarder());
 
         Acl acl = SfcProviderAclAPI.readAccessList(scf.getAccessList());
+        if (acl == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: acl is null");
+            return;
+        }
+
+        String aclName = acl.getAclName();
+        if (aclName == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: aclName is null");
+            return;
+        }
+
         AccessListEntries accessListEntries = acl.getAccessListEntries();
+        if (accessListEntries == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: accessListEntries is null");
+            return;
+        }
+
         List<Ace> acesList = accessListEntries.getAce();
+        if (acesList == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: acesList is null");
+            return;
+        }
 
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
+        if (sfflist == null) {
+            LOG.error("\ncreatedServiceFunctionClassifier: sfflist is null");
+            return;
+        }
 
         for (SclServiceFunctionForwarder sclsff : sfflist) {
             SffName sffName = new SffName(sclsff.getName());
             NodeConnectorId inPort = null;
 
             ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+            if (sff == null) {
+                LOG.error("\ncreatedServiceFunctionClassifier: sff is null");
+                continue;
+            }
+
             sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
+            if (sff == null) {
+                LOG.error("\ncreatedServiceFunctionClassifier: sff augment is null");
+                continue;
+            }
             String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
+            if (nodeName == null) {
+                LOG.error("\ncreatedServiceFunctionClassifier: nodeName is null");
+                continue;
+            }
+
             int outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
             initClassifierTable(nodeName);
 
             if (sclsff.getAttachmentPointType() instanceof Interface) {
                 Interface itf = (Interface) sclsff.getAttachmentPointType();
+                if (itf == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: attachment point is null");
+                    continue;
+                }
+
                 String itfName = itf.getInterface();
+                if (itf == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: interface is null");
+                    continue;
+                }
                 inPort = SfcOvsPortUtils.getOfPortByName(nodeName, itfName);
+                if (inPort == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: port is null");
+                    continue;
+                }
             }
 
             for (Ace ace : acesList) {
+
                 String ruleName = ace.getRuleName();
-                Matches matches = ace.getMatches();
-                Actions actions = ace.getActions();
+                if (ruleName == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: ruleName is null");
+                    continue;
+                }
+
 
                 // Match
+                Matches matches = ace.getMatches();
                 Match match = getMatch(inPort, matches);
 
                 // Action
+                Actions actions = ace.getActions();
+                if (ruleName == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: action is null");
+                    continue;
+                }
+
                 Actions1 a1 = actions.getAugmentation(Actions1.class);
+                if (a1 == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: action augment is null");
+                    continue;
+                }
+
                 AclRenderedServicePath path = (AclRenderedServicePath) a1.getSfcAction();
+                if (path == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: sfc action is null");
+                    continue;
+                }
+
                 RspName rspName = new RspName(path.getRenderedServicePath());
                 SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
 
-                FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, ruleName, match, nsh, outPort);
+                if (nsh == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: nsh is null");
+                    continue;
+                }
+
+                StringBuffer key = new StringBuffer();
+                key.append(scf.getName()).append(aclName).append(ruleName);
+                FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
+                if (flow == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: flow is null");
+                    continue;
+                }
                 writeFlowToConfig(nodeName, flow);
             }
         }
     }
 
     public void deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+        if (scf == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: scf is null");
+            return;
+        }
         LOG.debug("\ndelete ServiceFunctionClassifier name: {} ACL: {} SFF: {}", scf.getName(), scf.getAccessList(),
                 scf.getSclServiceFunctionForwarder());
 
         Acl acl = SfcProviderAclAPI.readAccessList(scf.getAccessList());
+        if (acl == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: acl is null");
+            return;
+        }
+
+        String aclName = acl.getAclName();
+        if (aclName == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: aclName is null");
+            return;
+        }
+
         AccessListEntries accessListEntries = acl.getAccessListEntries();
+        if (accessListEntries == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: accessListEntries is null");
+            return;
+        }
         List<Ace> acesList = accessListEntries.getAce();
+        if (acesList == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: acesList is null");
+            return;
+        }
 
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
+        if (sfflist == null) {
+            LOG.error("\ndeletedServiceFunctionClassifier: sfflist is null");
+            return;
+        }
 
         for (SclServiceFunctionForwarder sclsff : sfflist) {
             for (Ace ace : acesList) {
 
                 String ruleName = ace.getRuleName();
+                if (ruleName == null) {
+                    LOG.error("\ndeletedServiceFunctionClassifier: ruleName is null");
+                    continue;
+                }
+
                 SffName sffName = new SffName(sclsff.getName());
 
                 ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+                if (sff == null) {
+                    LOG.error("\ndeletedServiceFunctionClassifier: sff is null");
+                    continue;
+                }
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
+                if (sff == null) {
+                    LOG.error("\ndeletedServiceFunctionClassifier: sff augment is null");
+                    continue;
+                }
                 String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
+                if (nodeName == null) {
+                    LOG.error("\ndeletedServiceFunctionClassifier: nodeName is null");
+                    continue;
+                }
 
-                removeFlowFromConfig(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER), new FlowKey(new FlowId(ruleName)));
+                StringBuffer key = new StringBuffer();
+                key.append(scf.getName()).append(aclName).append(ruleName);
+
+                removeFlowFromConfig(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
+                                                            new FlowKey(new FlowId(key.toString())));
             }
         }
     }

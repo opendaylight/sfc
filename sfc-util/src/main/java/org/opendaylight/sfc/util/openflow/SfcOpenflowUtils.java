@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -83,7 +84,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
 // Import Nicira extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.DstChoice;
@@ -160,10 +165,14 @@ import com.google.common.net.InetAddresses;
 public class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
+    public static final int ETHERTYPE_IPV6 = 0x86dd;
     public static final int ETHERTYPE_MPLS_UCAST = 0x8847;
+    public static final int ETHERTYPE_MPLS_MCAST = 0x8848;
     public static final int ETHERTYPE_ARP = 0x0806;
+    public static final short IP_PROTOCOL_ICMP = (short) 1;
     public static final short IP_PROTOCOL_TCP = (short) 6;
     public static final short IP_PROTOCOL_UDP = (short) 17;
+    public static final short IP_PROTOCOL_SCTP = (short) 132;
     public static final int PKT_LENGTH_IP_HEADER = 20+14; // ether + IP header
     public static final int TCP_FLAG_SYN = 0x0002;
     public static final int ARP_REQUEST = 1;
@@ -321,11 +330,52 @@ public class SfcOpenflowUtils {
         match.setIpMatch(mergeIpMatch(match, ipMatch));
     }
 
-    public static void addMatchDstUdpPort(MatchBuilder match, PortNumber port) {
-        UdpMatchBuilder udpMatch = new UdpMatchBuilder(); //UDP
+    public static void addMatchSrcUdpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        UdpMatchBuilder udpMatch = new UdpMatchBuilder();
+        udpMatch.setUdpSourcePort(port);
+
+        match.setLayer4Match(udpMatch.build());
+    }
+
+    public static void addMatchDstUdpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        UdpMatchBuilder udpMatch = new UdpMatchBuilder();
         udpMatch.setUdpDestinationPort(port);
 
         match.setLayer4Match(udpMatch.build());
+    }
+
+    public static void addMatchSrcTcpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
+        tcpMatch.setTcpSourcePort(port);
+
+        match.setLayer4Match(tcpMatch.build());
+    }
+
+    public static void addMatchDstTcpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
+        tcpMatch.setTcpDestinationPort(port);
+
+        match.setLayer4Match(tcpMatch.build());
+    }
+
+    public static void addMatchSrcSctpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        SctpMatchBuilder sctpMatch = new SctpMatchBuilder();
+        sctpMatch.setSctpSourcePort(port);
+
+        match.setLayer4Match(sctpMatch.build());
+    }
+
+    public static void addMatchDstSctpPort(MatchBuilder match, int portNum) {
+        PortNumber port = new PortNumber(portNum);
+        SctpMatchBuilder sctpMatch = new SctpMatchBuilder();
+        sctpMatch.setSctpDestinationPort(port);
+
+        match.setLayer4Match(sctpMatch.build());
     }
 
     public static void addMatchMplsLabel(MatchBuilder match, long label) {
@@ -361,7 +411,7 @@ public class SfcOpenflowUtils {
     // If we call multiple Layer3 match methods, the MatchBuilder
     // Ipv4Match object gets overwritten each time, when we actually
     // want to set additional fields on the existing Ipv4Match object
-    private static Ipv4Match mergeLayer3Match(MatchBuilder match, Ipv4MatchBuilder ipMatchBuilder) {
+    private static Ipv4Match mergeIpv4Match(MatchBuilder match, Ipv4MatchBuilder ipMatchBuilder) {
         Ipv4Match ipv4Match = (Ipv4Match) match.getLayer3Match();
         if(ipv4Match == null) {
             return ipMatchBuilder.build();
@@ -385,7 +435,7 @@ public class SfcOpenflowUtils {
     public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Source(srcIp);
-        match.setLayer3Match(mergeLayer3Match(match, ipv4match));
+        match.setLayer3Match(mergeIpv4Match(match, ipv4match));
     }
 
     public static void addMatchDstIpv4(MatchBuilder match, String dstIpStr, int netmask) {
@@ -395,7 +445,47 @@ public class SfcOpenflowUtils {
     public static void addMatchDstIpv4(MatchBuilder match, Ipv4Prefix dstIp) {
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Destination(dstIp);
-        match.setLayer3Match(mergeLayer3Match(match, ipv4match));
+        match.setLayer3Match(mergeIpv4Match(match, ipv4match));
+    }
+
+    // If we call multiple Layer3 match methods, the MatchBuilder
+    // Ipv6Match object gets overwritten each time, when we actually
+    // want to set additional fields on the existing Ipv6Match object
+    private static Ipv6Match mergeIpv6Match(MatchBuilder match, Ipv6MatchBuilder ipMatchBuilder) {
+        Ipv6Match ipv6Match = (Ipv6Match) match.getLayer3Match();
+        if(ipv6Match == null) {
+            return ipMatchBuilder.build();
+        }
+
+        if(ipv6Match.getIpv6Destination() != null) {
+            ipMatchBuilder.setIpv6Destination(ipv6Match.getIpv6Destination());
+        }
+
+        if(ipv6Match.getIpv6Source() != null) {
+            ipMatchBuilder.setIpv6Source(ipv6Match.getIpv6Source());
+        }
+
+        return ipMatchBuilder.build();
+    }
+
+    public static void addMatchSrcIpv6(MatchBuilder match, String srcIpStr, int netmask) {
+        addMatchSrcIpv6(match, new Ipv6Prefix(srcIpStr + "/" + String.valueOf(netmask)));
+    }
+
+    public static void addMatchSrcIpv6(MatchBuilder match, Ipv6Prefix srcIp) {
+        Ipv6MatchBuilder ipv6match = new Ipv6MatchBuilder();
+        ipv6match.setIpv6Source(srcIp);
+        match.setLayer3Match(mergeIpv6Match(match, ipv6match));
+    }
+
+    public static void addMatchDstIpv6(MatchBuilder match, String dstIpStr, int netmask) {
+        addMatchDstIpv6(match, new Ipv6Prefix(dstIpStr + "/" + String.valueOf(netmask)));
+    }
+
+    public static void addMatchDstIpv6(MatchBuilder match, Ipv6Prefix dstIp) {
+        Ipv6MatchBuilder ipv6match = new Ipv6MatchBuilder();
+        ipv6match.setIpv6Destination(dstIp);
+        match.setLayer3Match(mergeIpv6Match(match, ipv6match));
     }
 
     public static void addMatchMetada(MatchBuilder match, BigInteger metadataValue, BigInteger metadataMask) {

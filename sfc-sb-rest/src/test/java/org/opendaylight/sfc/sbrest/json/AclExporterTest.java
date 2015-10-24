@@ -44,11 +44,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRangeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -159,7 +159,7 @@ public class AclExporterTest {
         aclBuilder.setAclName(AclTestValues.ACL_NAME.getValue());
         aclBuilder.setAccessListEntries(this.buildAccessListEntries(accessListTestType));
 
-         //build access list
+        // build access list
         return aclBuilder.build();
     }
 
@@ -262,10 +262,10 @@ public class AclExporterTest {
         AceBuilder aceBuilder = new AceBuilder();
         aceBuilder.setRuleName(AclTestValues.RULE_NAME.getValue());
 
-        //build matches
+        // build matches
         aceBuilder.setMatches(this.buildMatches(accessListTestType));
 
-        //build actions
+        // build actions
         aceBuilder.setActions(this.buildActions());
 
         List<Ace> aceList = new ArrayList<>();

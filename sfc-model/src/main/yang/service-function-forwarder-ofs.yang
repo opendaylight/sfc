@@ -5,10 +5,13 @@ module service-function-forwarder-ofs {
 
   prefix sfc-sff-ofs;
 
-  import service-function-forwarder { prefix "sfc-sff"; }
+  import service-function-forwarder {
+      prefix sfc-sff;
+      revision-date 2014-07-01;
+      }
   import ietf-yang-types {
     prefix "yang";
-    revision-date 2013-07-15;
+    revision-date 2010-09-24;
   }
 
   organization "Ericsson, Inc.";

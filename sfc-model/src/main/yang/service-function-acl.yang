@@ -6,10 +6,12 @@ module service-function-acl {
   prefix sfc-acl;
 
   import ietf-access-control-list {
-    prefix "ietf-acl";
+    prefix ietf-acl;
+    revision-date 2015-03-17;
   }
   import ipfix-application-information {
-    prefix "ipfix-application-information";
+    prefix ipfix-application-information;
+    revision-date 2015-04-10;
   }
 
   organization "Cisco Systems, Inc.";

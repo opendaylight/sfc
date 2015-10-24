@@ -4,13 +4,20 @@ module service-function-forwarder-metadata-features {
 
   prefix sfc-sff-md-features;
 
-  import ietf-inet-types        { prefix inet;}
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+
+  import yang-ext {
+      prefix ext;
+      revision-date 2013-07-09;
+      }
 
   import service-function-forwarder {
-    prefix "sfc-sff";
-  }
-
-  import yang-ext { prefix "ext"; }
+      prefix "sfc-sff";
+      revision-date 2014-07-01;
+    }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

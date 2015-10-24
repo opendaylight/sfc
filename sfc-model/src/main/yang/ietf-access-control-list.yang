@@ -4,9 +4,11 @@ module ietf-access-control-list {
   prefix acl;
   import ietf-yang-types {
     prefix yang;
+    revision-date 2010-09-24;
   }
   import ietf-packet-fields {
     prefix packet-fields;
+    revision-date 2015-06-11;
   }
   organization "IETF NETMOD (NETCONF Data Modeling Language)
            Working Group";

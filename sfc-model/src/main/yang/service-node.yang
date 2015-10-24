@@ -4,10 +4,19 @@ module service-node {
 
   prefix sfc-sn;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types {prefix yang; }
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2010-09-24;
+      }
 
-  import sfc-common {prefix sfc-common; }
+  import sfc-common {
+      prefix sfc-common;
+      revision-date 2015-10-17;
+      }
 
 
   organization "Cisco Systems, Inc.";

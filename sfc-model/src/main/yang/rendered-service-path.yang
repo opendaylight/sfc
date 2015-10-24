@@ -4,13 +4,30 @@ module rendered-service-path {
 
   prefix sfc-rsp;
 
-  import service-function-type {prefix sfc-sft; }
-  import service-function-scheduler-type {prefix sfc-sfst;}
-  import service-function-path-metadata {prefix sfc-md; }
-  import service-locator {prefix sfc-sl;}
-  import service-statistics {prefix sfc-ss; }
-
-  import sfc-common {prefix sfc-common;}
+  import service-function-type {
+      prefix sfc-sft;
+      revision-date 2014-07-01;
+      }
+  import service-function-scheduler-type {
+      prefix sfc-sfst;
+      revision-date 2015-03-12;
+      }
+  import service-function-path-metadata {
+      prefix sfc-md;
+      revision-date 2014-07-01;
+      }
+  import service-locator {
+      prefix sfc-sl;
+      revision-date 2014-07-01;
+      }
+  import service-statistics {
+      prefix sfc-ss;
+      revision-date 2014-07-01;
+      }
+  import sfc-common {
+      prefix sfc-common;
+      revision-date 2015-10-17;
+      }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

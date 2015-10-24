@@ -4,8 +4,14 @@ module service-function-mapping {
 
   prefix sfc-sf-map;
 
-  import service-function-type {prefix sfc-sft;}
-  import service-locator {prefix sfc-sl;}
+  import service-function-type {
+      prefix sfc-sft;
+      revision-date 2014-07-01;
+      }
+  import service-locator {
+      prefix sfc-sl;
+      revision-date 2014-07-01;
+      }
 
   organization "Ericsson Inc.";
   contact "Brady Johnson <brady.allen.johnson@ericsson.com>";

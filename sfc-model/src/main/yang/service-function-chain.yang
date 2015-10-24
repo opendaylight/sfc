@@ -4,8 +4,14 @@ module service-function-chain {
 
   prefix sfc-sfc;
 
-  import service-function-type {prefix sfc-sft;}
-  import sfc-common {prefix sfc-common; }
+  import service-function-type {
+      prefix sfc-sft;
+      revision-date 2014-07-01;
+}
+  import sfc-common {
+      prefix sfc-common;
+      revision-date 2015-10-17;
+      }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

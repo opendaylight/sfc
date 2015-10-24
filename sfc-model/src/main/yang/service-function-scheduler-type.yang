@@ -4,8 +4,10 @@ module service-function-scheduler-type {
 
   prefix sfc-sfst;
 
-  import ietf-yang-types { prefix yang; }
-
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2010-09-24;
+}
 
   organization "Intel, Inc.";
   contact "Johnson Li <johnson.li@intel.com>";

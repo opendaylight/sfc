@@ -4,8 +4,14 @@ module service-locator {
 
   prefix sfc-sl;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2010-09-24;
+      }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

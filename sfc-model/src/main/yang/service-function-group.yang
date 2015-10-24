@@ -4,11 +4,26 @@ module service-function-group {
 
   prefix sfc-sfg;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-  import service-function {prefix sfc-sf; }
-  import service-function-type {prefix sfc-sft; }
-  import service-function-group-algorithm {prefix sfc-sfg-alg; }
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2010-09-24;
+      }
+  import service-function {
+      prefix sfc-sf;
+      revision-date 2014-07-01;
+      }
+  import service-function-type {
+      prefix sfc-sft;
+      revision-date 2014-07-01;
+      }
+  import service-function-group-algorithm {
+      prefix sfc-sfg-alg;
+      revision-date 2015-02-14;
+      }
 
   organization "Contextream, Inc.";
   contact "Kfir Yeshayahu <kfir.yeshayahu@contextream.com>";

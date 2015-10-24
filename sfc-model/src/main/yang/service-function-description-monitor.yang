@@ -2,8 +2,15 @@ module service-function-description-monitor {
     namespace "urn.intel.params:xml:ns:sf-desc-mon";
     prefix sf-desc-mon;
 
-    import service-function { prefix sfc-sf;}
-    import service-function-description-monitor-report { prefix sf-desc-mon-rpt;}
+    import service-function {
+        prefix sfc-sf;
+        revision-date 2014-07-01;
+        }
+    import service-function-description-monitor-report {
+        prefix sf-desc-mon-rpt;
+        revision-date 2014-11-05;
+        }
+
     organization "Intel Inc.";
     contact "honglix.chen@intel.com";
     description

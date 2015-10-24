@@ -4,11 +4,15 @@ module service-statistics {
 
   prefix sfc-ss;
 
-  import ietf-inet-types { prefix inet; }
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+
   import ietf-yang-types {
-    prefix "yang";
-    revision-date 2013-07-15;
-  }
+    prefix yang;
+    revision-date 2010-09-24;
+    }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

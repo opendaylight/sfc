@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad0f9df_bb8f0223",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestRspTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-26T08:28:22Z",
+      "side": 1,
+      "message": "Possible NULL exception in getName().getValue()",
+      "revId": "bc93c43c6230f2eae9b151ea8de63305086393c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_db944639",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-26T08:28:22Z",
+      "side": 1,
+      "message": "Possibly NULL exception in getName().getValue()",
+      "revId": "bc93c43c6230f2eae9b151ea8de63305086393c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_7b999a6d",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSffTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-26T08:28:22Z",
+      "side": 1,
+      "message": "Possibly NULL exception in getName().getValue()",
+      "revId": "bc93c43c6230f2eae9b151ea8de63305086393c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_9b9ebe55",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestSfstateTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-26T08:28:22Z",
+      "side": 1,
+      "message": "Possibly NULL exception in getName().getValue()",
+      "revId": "bc93c43c6230f2eae9b151ea8de63305086393c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -8,6 +8,7 @@
 package org.opendaylight.sfc.sbrest.provider.task;
 
 import org.opendaylight.sfc.sbrest.json.SffExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -39,10 +40,13 @@ public class SbRestSffTask extends SbRestAbstractTask {
         ServiceFunctionForwarder obj = (ServiceFunctionForwarder) dataObject;
 
         if (obj.getRestUri() != null) {
-            String restUri = obj.getRestUri().getValue() + SFF_REST_URI + obj.getName();
-            this.restUriList = new ArrayList<>();
-            this.restUriList.add(restUri);
-            LOG.info("SFF will be send to REST URI {}", restUri);
+            SffName sffName = obj.getName();
+            if (sffName != null) {
+                String restUri = obj.getRestUri().getValue() + SFF_REST_URI + sffName.getValue();
+                this.restUriList = new ArrayList<>();
+                this.restUriList.add(restUri);
+                LOG.info("SFF will be send to REST URI {}", restUri);
+            }
         } else {
             this.restUriList = null;
         }

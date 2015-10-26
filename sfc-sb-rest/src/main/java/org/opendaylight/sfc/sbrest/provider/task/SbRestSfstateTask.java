@@ -9,6 +9,7 @@ package org.opendaylight.sfc.sbrest.provider.task;
 
 import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -39,12 +40,15 @@ public class SbRestSfstateTask extends SbRestAbstractTask {
 
         this.restUriList = new ArrayList<>();
 
-        if(SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName())!=null) {
+        if (SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName())!=null) {
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName());
             if (serviceFunction.getRestUri() != null) {
-                String restUri = serviceFunction.getRestUri().getValue() + SFSTATE_REST_URI + obj.getName();
-                this.restUriList.add(restUri);
-                LOG.info("Service Function state will be sent to REST URI {}", restUri);
+                SfName sfName = obj.getName();
+                if (sfName != null) {
+                    String restUri = serviceFunction.getRestUri().getValue() + SFSTATE_REST_URI + sfName.getValue();
+                    this.restUriList.add(restUri);
+                    LOG.info("Service Function state will be sent to REST URI {}", restUri);
+                }
             } else {
                 this.restUriList = null;
             }

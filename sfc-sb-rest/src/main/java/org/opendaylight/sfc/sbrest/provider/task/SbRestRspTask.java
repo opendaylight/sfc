@@ -9,6 +9,7 @@ package org.opendaylight.sfc.sbrest.provider.task;
 
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sbrest.json.RspExporterFactory;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -50,9 +51,12 @@ public class SbRestRspTask extends SbRestAbstractTask {
                         SfcProviderServiceForwarderAPI
                                 .readServiceFunctionForwarder(hop.getServiceFunctionForwarder());
                 if (sff != null && sff.getRestUri() != null) {
-                    String restUri = sff.getRestUri().getValue() + RSP_REST_URI + obj.getName();
-                    this.restUriList.add(restUri);
-                    LOG.info("RSP will be send to REST URI {}", restUri);
+                    RspName rspName = obj.getName();
+                    if (rspName != null) {
+                        String restUri = sff.getRestUri().getValue() + RSP_REST_URI + rspName.getValue();
+                        this.restUriList.add(restUri);
+                        LOG.info("RSP will be send to REST URI {}", restUri);
+                    }
                 }
             }
         }

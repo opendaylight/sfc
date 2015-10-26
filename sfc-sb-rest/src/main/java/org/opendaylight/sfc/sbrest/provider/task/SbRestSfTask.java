@@ -37,7 +37,7 @@ public class SbRestSfTask extends SbRestAbstractTask {
         ServiceFunction obj = (ServiceFunction) dataObject;
 
         if (obj.getRestUri() != null) {
-            String restUri = obj.getRestUri().getValue() + SF_REST_URI + obj.getName();
+            String restUri = obj.getRestUri().getValue() + SF_REST_URI + obj.getName().getValue();
             this.restUriList = new ArrayList<>();
             this.restUriList.add(restUri);
             LOG.info("SF will be send to REST URI {}", restUri);

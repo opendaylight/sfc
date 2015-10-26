@@ -1,9 +1,9 @@
 // vi: set smarttab et sw=4 tabstop=4:
-module sfc-scf-ofrenderer-impl {
+module sfc-scf-openflow-provider-impl {
 
   yang-version 1;
-  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-ofrenderer:impl";
-  prefix "sfc-scf-ofrenderer-impl";
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-openflow-provider:impl";
+  prefix "sfc-scf-openflow-provider-impl";
 
   import config { prefix config; revision-date 2013-04-05; }
   import rpc-context { prefix rpcx; revision-date 2013-06-17; }
@@ -20,7 +20,7 @@ module sfc-scf-ofrenderer-impl {
   }
 
   // This is the definition of the service implementation as a module identity
-  identity sfc-scf-ofrenderer-impl {
+  identity sfc-scf-openflow-provider-impl {
       base config:module-type;
 
       // Specifies the prefix for generated java classes.
@@ -30,8 +30,8 @@ module sfc-scf-ofrenderer-impl {
 
   // Augments the 'configuration' choice node under modules/module.
   augment "/config:modules/config:module/config:configuration" {
-    case sfc-scf-ofrenderer-impl {
-      when "/config:modules/config:module/config:type = 'sfc-scf-ofrenderer-impl'";
+    case sfc-scf-openflow-provider-impl {
+      when "/config:modules/config:module/config:type = 'sfc-scf-openflow-provider-impl'";
 
       //wires in the data-broker service
       container data-broker {

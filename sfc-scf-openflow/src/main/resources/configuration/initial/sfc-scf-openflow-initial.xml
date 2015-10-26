@@ -4,10 +4,10 @@
         <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
             <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
                 <module>
-                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-ofrenderer:impl">
-                        sfc:sfc-scf-ofrenderer-impl
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-openflow-provider:impl">
+                        sfc:sfc-scf-openflow-provider-impl
                     </type>
-                    <name>sfc-scf-ofrenderer-impl</name>
+                    <name>sfc-scf-openflow-provider-impl</name>
 
                     <rpc-registry>
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
@@ -34,7 +34,7 @@
     <required-capabilities>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-ofrenderer:impl?module=sfc-scf-ofrenderer-impl&amp;revision=2014-09-01</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-scf-openflow-provider:impl?module=sfc-scf-openflow-provider-impl&amp;revision=2014-09-01</capability>
     </required-capabilities>
 
 </snapshot>

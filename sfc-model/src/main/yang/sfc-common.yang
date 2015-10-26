@@ -4,12 +4,16 @@ module sfc-common {
 
   prefix sfc-common;
 
+  organization "Cisco Systems, Inc.";
+  contact "Keith Burns <krb@cisco.com>";
+
   description
     "Common typedefs and leafrefs for project";
 
   revision 2015-10-17 {
     description
       "Initial revision";
+    reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
   // typedef for Service Node
@@ -21,6 +25,7 @@ module sfc-common {
   // typedefs for Service Function Chain
   typedef sfc-name {
       type string;
+      description "Service Function Chain Name";
   }
 
   // typedefs for Service Function
@@ -32,14 +37,14 @@ module sfc-common {
   typedef sf-data-plane-locator-name {
       type string;
       description
-                "A unique name for SF data-plane-locator";
+        "A unique name for SF data-plane-locator";
   }
 
   // typedefs for Rendererd Service Paths
   typedef rsp-name {
       type string;
       description
-          "Rendererd Service Path Name Type";
+        "Rendererd Service Path Name Type";
   }
 
   // typedefs for Service Function Path
@@ -52,7 +57,7 @@ module sfc-common {
   typedef sff-data-plane-locator-name {
       type string;
       description
-                "Service Function Forwarder data-plane-locator name type";
+        "Service Function Forwarder data-plane-locator name type";
   }
 
   typedef sff-name {

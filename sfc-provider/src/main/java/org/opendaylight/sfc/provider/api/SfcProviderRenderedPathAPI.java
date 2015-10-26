@@ -780,7 +780,12 @@ public class SfcProviderRenderedPathAPI {
             SffDataPlaneLocator sffDataPlaneLocator = SfcProviderServiceForwarderAPI
                 .readServiceFunctionForwarderDataPlaneLocator(sffName, sffLocatorName);
 
-            if (sffDataPlaneLocator != null) {
+            if ((sffDataPlaneLocator != null) &&
+                (sffDataPlaneLocator.getDataPlaneLocator() != null) &&
+                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType() != null) &&
+                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface() != null) &&
+                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface().getSimpleName() != null)) {
+
                 String type = sffDataPlaneLocator.getDataPlaneLocator()
                     .getLocatorType()
                     .getImplementedInterface()

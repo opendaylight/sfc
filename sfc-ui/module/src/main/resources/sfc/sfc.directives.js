@@ -7,7 +7,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       scope: {},  // for watch need isolated scope - specialy for destroying the watch
       link: function (scope, el, attrs, formCtrl) {
         // wait for initial model update & interpolation
-        //$timeout(function () {
+        $timeout(function () {
           // find the text box element, which has the 'name' attribute
           var inputEl = el[0].querySelector("[name]");
           // convert the native text box element to an angular element
@@ -23,7 +23,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             el.toggleClass('has-error', newVal);
           });
 
-        //}, 500);
+        }, 500);
 
         // only apply the has-error class after the user leaves the text box
 //        inputNgEl.bind('change', function () {

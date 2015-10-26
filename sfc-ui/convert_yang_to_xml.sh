@@ -6,5 +6,5 @@ for filePath in $FILES
 do
   fileName=${filePath##*/}
   echo "Converting $filePath file to ${fileName}.xml"
-  pyang $filePath --ignore-errors -f yin -o module/src/main/resources/sfc/assets/yang2xml/${fileName}.xml
+  pyang $filePath -f yin -o module/src/main/resources/sfc/assets/yang2xml/${fileName}.xml
 done

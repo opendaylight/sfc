@@ -391,7 +391,7 @@
             <feature>odl-sfc-core</feature>
             <feature>odl-sfc-ui</feature>
             <feature>odl-sfcofl2</feature>
-            <feature>odl-sfc-scf-openflow</feature>
+            <feature>odl-sfc-scfof</feature>
             <feature>odl-sfc-sb-rest</feature>
             <feature>odl-sfclisp</feature>
             <feature>odl-sfc-ovs</feature>

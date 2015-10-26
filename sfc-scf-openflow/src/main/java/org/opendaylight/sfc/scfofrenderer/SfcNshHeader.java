@@ -132,8 +132,13 @@ public class SfcNshHeader {
             return null;
         }
 
+        if (rspFirstHop.getIp() == null) {
+            LOG.error("\ngetSfcNshHeader: ip address of rsp first hop is null");
+            return null;
+        }
+
         RenderedServicePathHop firstRspHop = renderedServicePath.getRenderedServicePathHop().get(0);
-        if (rspFirstHop == null) {
+        if (firstRspHop == null) {
             LOG.error("\ngetSfcNshHeader: first rsp hop is null");
             return null;
         }

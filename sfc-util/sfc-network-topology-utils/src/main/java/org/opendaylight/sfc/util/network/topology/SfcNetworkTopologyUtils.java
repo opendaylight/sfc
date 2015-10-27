@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider.util;
+package org.opendaylight.sfc.util.network.topology;
 
 import java.util.List;
 

@@ -140,6 +140,24 @@
       "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_ca9552e5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3280
+      },
+      "writtenOn": "2015-10-27T03:03:28Z",
+      "side": 1,
+      "message": "I\u0027ve looked at the patch and I don\u0027t find support in the Linux kernel dataplane to support decap of only vxlan header and not NSH headers. I see this support only in DPDK based netdev dataplane.\nRef: Patch 1/7: /datapath/linux/compat/vxlan.c b/datapath/linux/compat/vxlan.c: vxlan_udp_encap_recv().\n\nDoes this mean that IP-less NSH aware VNF can only be suported with OVS-DPDK in the hypervisor?\nLet me know if my interpretation is wrong.",
+      "parentUuid": "fad0f9df_595cf425",
+      "revId": "ee894f72c7d2e7db2b0b66c8813595c6f01c7945",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

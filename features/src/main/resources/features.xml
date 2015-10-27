@@ -63,7 +63,7 @@
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${feature.openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.sfc/sfc-util/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-scf-openflow-initial.xml">mvn:org.opendaylight.sfc/sfc-scf-openflow/${project.version}/xml/config</configfile>
     </feature>
 
@@ -72,7 +72,7 @@
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${feature.openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.sfc/sfc-util/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfcofl2-initial.xml">mvn:org.opendaylight.sfc/sfcofl2/${project.version}/xml/config</configfile>
     </feature>
 

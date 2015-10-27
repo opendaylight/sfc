@@ -132,7 +132,7 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-util</artifactId>
+        <artifactId>sfc-openflow-utils</artifactId>
         <version>${project.version}</version>
     </dependency>
     <dependency>

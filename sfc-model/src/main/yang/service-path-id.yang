@@ -75,6 +75,25 @@ module service-path-id {
       "Determines the state of the path-id";
   }
 
+  // Generation algorithm
+
+  typedef generation-algorithm-enum {
+    type enumeration {
+      enum random {
+        value 1;
+        description
+          "Random Path-id generation";
+      }
+      enum sequential {
+        value 2;
+        description
+          "Sequential Path-id generation";
+      }
+    }
+    description
+      "The path-id generation algorithm";
+  }
+
   container service-path-ids {
     config false;
     description
@@ -86,7 +105,7 @@ module service-path-id {
         }
     }
     leaf generation-algorithm {
-       type uint8;
+       type generation-algorithm-enum;
        description
          "The algorithm used to generate path-ids";
     }
@@ -214,4 +233,23 @@ module service-path-id {
       }
     }
   }
+
+  rpc set-generation-algorithm {
+    description
+      "Set the path-id generation algorithm to be used";
+    input {
+      leaf generation-algorithm {
+        type generation-algorithm-enum;
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if the generation-algorithm was set successfully,
+           otherwise false";
+      }
+    }
+  }
+
 }

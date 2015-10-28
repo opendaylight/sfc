@@ -2,6 +2,121 @@
   "comments": [
     {
       "key": {
+        "uuid": "dad5f5cf_e5409e37",
+        "filename": "features-sfc-vnfm/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "sfc-vnfm should not be a feature. Impls of sfc-vnfm should be feature, for instance sfc-vnfm-tacker or sfc-vnfm-armoury",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_053e02b9",
+        "filename": "features-sfc-vnfm/src/main/resources/features.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "This should not be a feature.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 47
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_a54a9653",
+        "filename": "features/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "Not a feature, its an interface which is implemented.",
+      "range": {
+        "startLine": 178,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 45
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_c5479a4a",
+        "filename": "pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "Not a feature.",
+      "range": {
+        "startLine": 171,
+        "startChar": 20,
+        "endLine": 171,
+        "endChar": 24
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_6574ae9c",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/controller/config/yang/config/sfc_vnfm/impl/SfcVnfmModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "Don\u0027t need this.",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 5
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dad5f5cf_1a0c2194",
         "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
         "patchSetId": 5
@@ -13,6 +128,30 @@
       "writtenOn": "2015-10-28T09:20:51Z",
       "side": 1,
       "message": "this interface should be SPI not API",
+      "range": {
+        "startLine": 9,
+        "startChar": 55,
+        "endLine": 9,
+        "endChar": 58
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_85799295",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "Correct, it should be defined as a Java Interface",
+      "parentUuid": "dad5f5cf_1a0c2194",
       "range": {
         "startLine": 9,
         "startChar": 55,
@@ -71,6 +210,29 @@
     },
     {
       "key": {
+        "uuid": "dad5f5cf_e5673ee9",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "Not only should these be interfaces, but this CANNOT be implemented without Abstract Type Definition being proposed either first or as part of this patch. The intent as per the doc was that\na) a VNFM can define abstract type characteristics via the datastore. This can be done via REST or via its impl.\nb) sfc-vnfm interfaces would be implemented per VNFM and the methods request an abstract type with hints based on available SFF and their DPLs and the Abstract Type Definition characteristics DPLs to work out a match. As it turns out this becomes vital with an existing use case where an SFF may only be located on a certain compute node in OpenStack and we need to give Tacker hints as to where the SF of the AbstractType needs to go. The fact that is a nova availability-zone is an implementation detail between the implementation of sfc-vnfm Interface (is sfc-vnfm-tacker) and OpenStack.",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 27,
+        "endChar": 1
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dad5f5cf_3a11e5ac",
         "filename": "sfc-vnfm/src/main/java/org/opendaylight/sfc/sfc_vnfm/provider/SfcVnfmDataProvider.java",
         "patchSetId": 5
@@ -87,6 +249,29 @@
         "startChar": 33,
         "endLine": 15,
         "endChar": 64
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_c55eba12",
+        "filename": "sfc-vnfm/src/test/java/org/opendaylight/sfc/sfc_vnfm/provider/api/SfcVnfmAPITest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-10-28T11:12:35Z",
+      "side": 1,
+      "message": "SPI and this should be instantiating an Abstract Type Definition to instantiate an SF with a dummy impl of sfc-vnfm methods.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 5
       },
       "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

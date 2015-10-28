@@ -26,6 +26,19 @@ import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.sfc.provider.api.SfcServicePathId;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.AllocatePathIdInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.AllocatePathIdOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.DeletePathIdInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.DeletePathIdOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ReadPathIdInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ReadPathIdOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ReservePathIdRangeInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ReservePathIdRangeOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIdService;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.SetGenerationAlgorithmInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.SetGenerationAlgorithmOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.SetGenerationAlgorithmOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
@@ -88,7 +101,7 @@ import com.google.common.util.concurrent.Futures;
  * @since 2014-06-30
  */
 
-public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService {
+public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService, ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
@@ -367,6 +380,48 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     public Future<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(
             TraceRenderedServicePathInput input) {
         return null;
+    }
+
+    @Override
+    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(
+            ReservePathIdRangeInput input) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<ReadPathIdOutput>> readPathId(ReadPathIdInput input) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(
+            AllocatePathIdInput input) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<DeletePathIdOutput>> deletePathId(
+            DeletePathIdInput input) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(
+            SetGenerationAlgorithmInput input) {
+
+        boolean result = SfcServicePathId.setGenerationAlgorithm(input.getGenerationAlgorithm());
+
+        SetGenerationAlgorithmOutputBuilder setGenerationAlgorithmOutputBuilder =
+                new SetGenerationAlgorithmOutputBuilder();
+        setGenerationAlgorithmOutputBuilder.setResult(result);
+        RpcResultBuilder<SetGenerationAlgorithmOutput> rpcResultBuilder =
+                RpcResultBuilder.success(setGenerationAlgorithmOutputBuilder.build());
+
+        return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
 }

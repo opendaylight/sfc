@@ -10,7 +10,9 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.GenerationAlgorithmEnum;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIds;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIdsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathIdKey;
@@ -37,8 +39,8 @@ public class SfcServicePathId {
      */
     private final static int MAX_PATH_ID = (int) Math.pow(2, 12) - 1;
     private final static int MIN_PATH_ID = 0;
+    private final static int DEFAULT_GENERATION_ALGORITHM = GenerationAlgorithmEnum.Random.getIntValue();
     private static final Random randomGenerator = new Random();
-    //private static int next_pathid = (randomGenerator.nextInt() % (MAX_PATH_ID + 1));
     private static int next_pathid = 0;
     private final static int num_pathid = MAX_PATH_ID -  MIN_PATH_ID + 1;
 
@@ -54,17 +56,40 @@ public class SfcServicePathId {
      * @return Pathid or error if none available
      */
     public static int generatePathIdRandomIncrements() {
-
         int pathid;
-
         int count = num_pathid;
 
         do {
             next_pathid = next_pathid + (randomGenerator.nextInt(num_pathid) % N) + 1;
             pathid = MIN_PATH_ID + (next_pathid % num_pathid);
 
-            if (check_suitable_pathid(pathid))
+            if (check_suitable_pathid(pathid)) {
                 return pathid;
+            }
+
+            count--;
+        } while (count > 0);
+
+        return -1;
+    }
+
+    /**
+     * Algorithm to sequentially generate pathIds.
+     *
+     * <p>
+     * @return Pathid or error if none available
+     */
+    public static int generatePathIdSequentialIncrements() {
+        int pathid;
+        int count = num_pathid;
+
+        do {
+            next_pathid = next_pathid + 1;
+            pathid = MIN_PATH_ID + next_pathid;
+
+            if (check_suitable_pathid(pathid) && allocate_pathid(pathid)) {
+                return pathid;
+            }
 
             count--;
         } while (count > 0);
@@ -95,7 +120,6 @@ public class SfcServicePathId {
         }
     }
 
-
     /**
      * Check and allocate symmetric Pathid if available
      *
@@ -106,8 +130,18 @@ public class SfcServicePathId {
     public static long check_and_allocate_symmetric_pathid(long pathid) {
         if (SfcConcurrencyAPI.getPathIdLock()) {
             try {
-                long symmetric_id = pathid ^ (1 << 23);
-                if (check_suitable_pathid(symmetric_id) && allocate_pathid(symmetric_id)) {
+                long symmetric_id = -1;
+                GenerationAlgorithmEnum genAlg = getGenerationAlgorithm();
+                if(genAlg == GenerationAlgorithmEnum.Random) {
+                    symmetric_id = pathid ^ (1 << 23);
+                    if(!check_suitable_pathid(symmetric_id)) {
+                        symmetric_id = -1;
+                    }
+                } else if(genAlg == GenerationAlgorithmEnum.Sequential) {
+                    symmetric_id = generatePathIdSequentialIncrements();
+                }
+
+                if ((symmetric_id >= MIN_PATH_ID) && allocate_pathid(symmetric_id)) {
                     return symmetric_id;
                 } else {
                     return -1;
@@ -129,7 +163,14 @@ public class SfcServicePathId {
     public static long check_and_allocate_pathid() {
         if (SfcConcurrencyAPI.getPathIdLock()) {
             try {
-                long pathId = generatePathIdRandomIncrements();
+                long pathId = -1;
+                GenerationAlgorithmEnum genAlg = getGenerationAlgorithm();
+                if(genAlg == GenerationAlgorithmEnum.Random) {
+                    pathId = generatePathIdRandomIncrements();
+                } else if(genAlg == GenerationAlgorithmEnum.Sequential) {
+                    pathId = generatePathIdSequentialIncrements();
+                }
+
                 if ((pathId >= MIN_PATH_ID) && allocate_pathid(pathId)) {
                     return pathId;
                 } else {
@@ -238,4 +279,64 @@ public class SfcServicePathId {
         }
         return false;
     }
+
+    /**
+     * Get the Path-Id Generation-algorithm from the data-store.
+     *
+     * If its not present, create it with the default value.
+     *
+     * <p>
+     * @return generation-algorithm enum value
+     */
+    public static GenerationAlgorithmEnum getGenerationAlgorithm() {
+        InstanceIdentifier<ServicePathIds> spIID =
+                InstanceIdentifier.builder(ServicePathIds.class).build();
+        ServicePathIds servicePathIds =
+                SfcDataStoreAPI.
+                    readTransactionAPI(spIID, LogicalDatastoreType.OPERATIONAL);
+
+        if(servicePathIds == null) {
+            setGenerationAlgorithm(DEFAULT_GENERATION_ALGORITHM);
+            return GenerationAlgorithmEnum.forValue(DEFAULT_GENERATION_ALGORITHM);
+        }
+
+        GenerationAlgorithmEnum genAlgorithm = servicePathIds.getGenerationAlgorithm();
+
+        if(genAlgorithm == null) {
+            setGenerationAlgorithm(DEFAULT_GENERATION_ALGORITHM);
+            return GenerationAlgorithmEnum.forValue(DEFAULT_GENERATION_ALGORITHM);
+        } else {
+            return genAlgorithm;
+        }
+    }
+
+    /**
+     * Set the PathId Generate-algorithm in the data-store.
+     *
+     * <p>
+     * @param genAlgorithm integer value as taken from service-path-id.yang
+     * @return True if successful, otherwise false
+     */
+    public static boolean setGenerationAlgorithm(int genAlgorithm) {
+        return setGenerationAlgorithm(GenerationAlgorithmEnum.forValue(genAlgorithm));
+    }
+
+    /**
+     * Set the PathId Generate-algorithm in the data-store.
+     *
+     * <p>
+     * @param genAlgorithm enum string value as taken from service-path-id.yang
+     * @return True if successful, otherwise false
+     */
+    public static boolean setGenerationAlgorithm(GenerationAlgorithmEnum genAlgorithm) {
+        InstanceIdentifier<ServicePathIds> spIID
+            = InstanceIdentifier.builder(ServicePathIds.class).build();
+
+        ServicePathIdsBuilder servicePathIdsBuilder = new ServicePathIdsBuilder();
+        servicePathIdsBuilder.setGenerationAlgorithm(genAlgorithm);
+
+        return SfcDataStoreAPI.
+                writeMergeTransactionAPI(spIID, servicePathIdsBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+    }
+
 }

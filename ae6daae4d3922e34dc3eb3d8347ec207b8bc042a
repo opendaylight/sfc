@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_3a9ec557",
+        "filename": "features-sfc-vnfm/src/main/resources/features.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-28T08:03:49Z",
+      "side": 1,
+      "message": "cleanup?",
+      "revId": "ae6daae4d3922e34dc3eb3d8347ec207b8bc042a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_7a944d37",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/controller/config/yang/config/sfc_vnfm/impl/SfcVnfmModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-28T08:03:49Z",
+      "side": 1,
+      "message": "SFC Vnf",
+      "revId": "ae6daae4d3922e34dc3eb3d8347ec207b8bc042a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_1a99816e",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/controller/config/yang/config/sfc_vnfm/impl/SfcVnfmModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-28T08:03:49Z",
+      "side": 1,
+      "message": "SfcVnf",
+      "revId": "ae6daae4d3922e34dc3eb3d8347ec207b8bc042a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_5a8f0924",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/controller/config/yang/config/sfc_vnfm/impl/SfcVnfmModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-10-28T08:03:49Z",
+      "side": 1,
+      "message": "SfcVnfm",
+      "revId": "ae6daae4d3922e34dc3eb3d8347ec207b8bc042a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

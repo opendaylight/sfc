@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIdService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
@@ -108,6 +109,11 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                         .addRpcImplementation(RenderedServicePathService.class,
                                 sfcProviderRpc);
 
+        final BindingAwareBroker.RpcRegistration<ServicePathIdService> srvPathIdRpcRegistration =
+                getRpcRegistryDependency()
+                        .addRpcImplementation(ServicePathIdService.class,
+                                sfcProviderRpc);
+
         // close()
         final class AutoCloseableSfc implements AutoCloseable {
 
@@ -120,6 +126,7 @@ public class SfcProviderModule extends org.opendaylight.controller.config.yang.c
                 sfRpcRegistration.close();
                 sfcRpcRegistration.close();
                 rspRpcRegistration.close();
+                srvPathIdRpcRegistration.close();
 
                 try
                 {

@@ -10,6 +10,7 @@
 package org.opendaylight.sfc.provider.api;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.GenerationAlgorithmEnum;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -164,4 +165,49 @@ public class SfcServicePathIdTest  extends AbstractSfcRendererServicePathAPITest
             assertTrue(SfcServicePathId.check_suitable_pathid(pathId));
         }
     }
+
+    /**
+    *
+    * Method: setGenerationAlgorithm(), check_and_allocate_pathid()
+    *
+    */
+   @Test
+   public void testSequentialGenerationAlgorithm() throws Exception {
+       SfcServicePathId.setGenerationAlgorithm(GenerationAlgorithmEnum.Sequential);
+       long firstPathId = SfcServicePathId.check_and_allocate_pathid();
+       int numPathIds = 20;
+
+       // Verify the pathIds are created sequentially
+       for (long pathId = firstPathId+1; pathId < firstPathId+numPathIds; ++pathId) {
+           assertEquals(SfcServicePathId.check_and_allocate_pathid(), pathId);
+       }
+       // Free the previously allocated pathIds
+       for (long pathId = firstPathId; pathId < firstPathId+numPathIds+1; ++pathId) {
+           assertTrue(SfcServicePathId.free_pathid(pathId));
+       }
+   }
+
+   /**
+   *
+   * Method: setGenerationAlgorithm(), check_and_allocate_pathid(), check_and_allocate_symmetric_pathid()
+   *
+   */
+  @Test
+  public void testSequentialGenerationAlgorithmSymmetric() throws Exception {
+      SfcServicePathId.setGenerationAlgorithm(GenerationAlgorithmEnum.Sequential);
+      long firstPathId = SfcServicePathId.check_and_allocate_pathid();
+      int numPathIds = 40;
+
+      // Verify the pathIds are created sequentially both for the normal and the symmetric cases
+      for (long pathId = firstPathId+1; pathId < firstPathId+numPathIds; pathId+=2) {
+          long id = SfcServicePathId.check_and_allocate_pathid();
+          assertEquals(id, pathId);
+          assertEquals(SfcServicePathId.check_and_allocate_symmetric_pathid(id), pathId+1);
+      }
+      // Free the previously allocated pathIds
+      for (long pathId = firstPathId; pathId < firstPathId+numPathIds+1; ++pathId) {
+          assertTrue(SfcServicePathId.free_pathid(pathId));
+      }
+  }
+
 }

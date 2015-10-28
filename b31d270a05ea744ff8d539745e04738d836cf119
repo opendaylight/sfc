@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_1a0c2194",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-28T09:20:51Z",
+      "side": 1,
+      "message": "this interface should be SPI not API",
+      "range": {
+        "startLine": 9,
+        "startChar": 55,
+        "endLine": 9,
+        "endChar": 58
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_daf7798b",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-28T09:20:51Z",
+      "side": 1,
+      "message": "these methods are not ready to go because:\n- we already have type SfcName so you should use it instead of String\n- missing javadoc\n- I do not think that parameters in these methods are sufficient in order to provide enough information to implementation",
+      "range": {
+        "startLine": 22,
+        "startChar": 17,
+        "endLine": 22,
+        "endChar": 36
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_faf4bd88",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/org/opendaylight/sfc/sfc_vnfm/api/ServiceFunctionVnfm.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-28T09:20:51Z",
+      "side": 1,
+      "message": "get method usually returns something",
+      "range": {
+        "startLine": 25,
+        "startChar": 4,
+        "endLine": 25,
+        "endChar": 8
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_3a11e5ac",
+        "filename": "sfc-vnfm/src/main/java/org/opendaylight/sfc/sfc_vnfm/provider/SfcVnfmDataProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-28T09:20:51Z",
+      "side": 1,
+      "message": "why you use this besides wiring via config subsystem?",
+      "range": {
+        "startLine": 15,
+        "startChar": 33,
+        "endLine": 15,
+        "endChar": 64
+      },
+      "revId": "b31d270a05ea744ff8d539745e04738d836cf119",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -14,7 +14,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -41,7 +40,7 @@ public class SfcOvsPortUtils {
         return "openflow:" + String.valueOf(address);
     }
 
-    public static NodeConnectorId getOfPortByName(String nodeName, String portName) {
+    public static Long getOfPortByName(String nodeName, String portName) {
 
         if (nodeName == null || portName == null) {
             return null;
@@ -78,19 +77,17 @@ public class SfcOvsPortUtils {
                         continue;
                     }
                     if (otp.getName().equals(portName)) {
-                        sb.append(String.valueOf(otp.getOfport()));
-                        return new NodeConnectorId(sb.toString());
+                        return otp.getOfport();
                     }
                 }
             }
         }
-        sb.append("IN_PORT");
-        return new NodeConnectorId(sb.toString());
+        return null;
     }
 
-    public static int getVxlanOfPort(String nodeName) {
+    public static Long getVxlanOfPort(String nodeName) {
         if (nodeName == null) {
-            return 0;
+            return null;
         }
 
         LOG.debug("\ngetVxlanOfPort node: {}", nodeName);
@@ -101,13 +98,13 @@ public class SfcOvsPortUtils {
 
         if (topo == null) {
             LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-            return 0;
+            return null;
         }
 
         List<Node> nodes = topo.getNode();
         if (nodes == null) {
             LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-            return 0;
+            return null;
         }
 
         for (Node node : nodes) {
@@ -126,13 +123,13 @@ public class SfcOvsPortUtils {
                         continue;
                     }
                     if (otp.getInterfaceType() == InterfaceTypeVxlan.class) {
-                        return otp.getOfport().intValue();
+                        return otp.getOfport();
                     }
                 }
             }
         }
         LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-        return 0;
+        return null;
     }
 
     public static String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {

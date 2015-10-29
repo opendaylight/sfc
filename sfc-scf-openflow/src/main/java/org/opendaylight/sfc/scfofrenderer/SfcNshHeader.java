@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.scfofrenderer;
 
+import com.google.common.collect.Iterables;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionMetadataAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -27,7 +28,8 @@ public class SfcNshHeader {
     private Ipv4Address vxlanIpDst = null;
     private PortNumber vxlanUdpPort = null;
     private Long nshNsp = null;
-    private Short nshNsi = null;
+    private Short nshStartNsi = null;
+    private Short nshEndNsi = null;
     private Long nshMetaC1 = null;
     private Long nshMetaC2 = null;
     private Long nshMetaC3 = null;
@@ -63,12 +65,21 @@ public class SfcNshHeader {
         return this;
     }
 
-    public Short getNshNsi() {
-        return nshNsi;
+    public Short getNshStartNsi() {
+        return nshStartNsi;
     }
 
-    public SfcNshHeader setNshNsi(Short nshNsi) {
-        this.nshNsi = nshNsi;
+    public SfcNshHeader setNshStartNsi(Short nshStartNsi) {
+        this.nshStartNsi = nshStartNsi;
+        return this;
+    }
+
+    public Short getNshEndNsi() {
+        return nshEndNsi;
+    }
+
+    public SfcNshHeader setNshEndNsi(Short nshEndNsi) {
+        this.nshEndNsi = nshEndNsi;
         return this;
     }
 
@@ -137,17 +148,20 @@ public class SfcNshHeader {
             return null;
         }
 
-        RenderedServicePathHop firstRspHop = renderedServicePath.getRenderedServicePathHop().get(0);
-        if (firstRspHop == null) {
-            LOG.error("\ngetSfcNshHeader: first rsp hop is null");
+
+        RenderedServicePathHop lastRspHop = Iterables.getLast(renderedServicePath.getRenderedServicePathHop());
+
+        if (lastRspHop == null) {
+            LOG.error("\ngetSfcNshHeader: last rsp hop is null");
             return null;
         }
 
         SfcNshHeader sfcNshHeader = new SfcNshHeader()
             .setVxlanIpDst(rspFirstHop.getIp().getIpv4Address())
             .setVxlanUdpPort(rspFirstHop.getPort())
-            .setNshNsi(firstRspHop.getServiceIndex())
-            .setNshNsp(renderedServicePath.getPathId());
+            .setNshNsp(renderedServicePath.getPathId())
+            .setNshStartNsi(rspFirstHop.getStartingIndex())
+            .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1));
 
         String context = renderedServicePath.getContextMetadata();
         if (context == null) {

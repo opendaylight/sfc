@@ -121,10 +121,14 @@ public class SfcScfOfScfProcessor {
         }
     }
 
-    private static Match getMatch(NodeConnectorId inPort, Matches matches) {
+    private static Match getMatch(String nodeName, Long port, Matches matches) {
         MatchBuilder mb = new MatchBuilder();
 
-        if (inPort != null) {
+        if (port != null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(nodeName).append(":");
+            sb.append(String.valueOf(port));
+            NodeConnectorId inPort = new NodeConnectorId(sb.toString());
             mb.setInPort(inPort);
         }
 
@@ -237,20 +241,20 @@ public class SfcScfOfScfProcessor {
         return mb.build();
     }
 
-    private static FlowBuilder createClassifierFlow(short tableId, String flow, Match match, SfcNshHeader sfcNshHeader,
-            int outPort) {
+    private static FlowBuilder createClassifierOutFlow(short tableId, String flow, Match match, SfcNshHeader sfcNshHeader,
+            Long outPort) {
         int order = 0;
         Integer priority = 1000;
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
         Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
         Action setNsp = SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), order++);
-        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshNsi(), order++);
+        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), order++);
         Action setC1 = SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), order++);
         Action setC2 = SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++);
         Action setC3 = SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++);
         Action setC4 = SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), order++);
-        Action out = SfcOpenflowUtils.createActionOutPort(outPort, order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(outPort.intValue(), order++);
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flow))
@@ -260,6 +264,29 @@ public class SfcScfOfScfProcessor {
             .setMatch(match)
             .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
                 .createActionsInstructionBuilder(setTunIpDst, setNsp, setNsi, setC1, setC2, setC3, setC4, out))
+                .build());
+        return flowb;
+    }
+
+    private static FlowBuilder createClassifierInFlow(short tableId, String flow, SfcNshHeader sfcNshHeader, Long port) {
+        int order = 0;
+        Integer priority = 1000;
+
+        MatchBuilder mb = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchNshNsp(mb, sfcNshHeader.getNshNsp());
+        SfcOpenflowUtils.addMatchNshNsi(mb, sfcNshHeader.getNshEndNsi());
+
+        Action out = SfcOpenflowUtils.createActionOutPort(port.intValue(), order++);
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flow))
+            .setTableId(tableId)
+            .setKey(new FlowKey(new FlowId(flow)))
+            .setPriority(Integer.valueOf(priority))
+            .setMatch(mb.build())
+            .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                .createActionsInstructionBuilder(out))
                 .build());
         return flowb;
     }
@@ -329,7 +356,7 @@ public class SfcScfOfScfProcessor {
 
         for (SclServiceFunctionForwarder sclsff : sfflist) {
             SffName sffName = new SffName(sclsff.getName());
-            NodeConnectorId inPort = null;
+            Long inPort = null;
 
             ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
             if (sff == null) {
@@ -348,7 +375,7 @@ public class SfcScfOfScfProcessor {
                 continue;
             }
 
-            int outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
+            Long outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
             initClassifierTable(nodeName);
 
             if (sclsff.getAttachmentPointType() instanceof Interface) {
@@ -381,7 +408,7 @@ public class SfcScfOfScfProcessor {
 
                 // Match
                 Matches matches = ace.getMatches();
-                Match match = getMatch(inPort, matches);
+                Match match = getMatch(nodeName, inPort, matches);
 
                 // Action
                 Actions actions = ace.getActions();
@@ -405,19 +432,38 @@ public class SfcScfOfScfProcessor {
                 RspName rspName = new RspName(path.getRenderedServicePath());
                 SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
 
+
                 if (nsh == null) {
                     LOG.error("\ncreatedServiceFunctionClassifier: nsh is null");
                     continue;
                 }
 
                 StringBuffer key = new StringBuffer();
-                key.append(scf.getName()).append(aclName).append(ruleName);
-                FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
-                if (flow == null) {
-                    LOG.error("\ncreatedServiceFunctionClassifier: flow is null");
+                key.append(scf.getName()).append(aclName).append(ruleName).append("out");
+                FlowBuilder outFlow = createClassifierOutFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
+                if (outFlow == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: out flow is null");
                     continue;
                 }
-                writeFlowToConfig(nodeName, flow);
+                writeFlowToConfig(nodeName, outFlow);
+
+                RspName reverseRspName = null;
+                if (path.getRenderedServicePath().endsWith("-Reverse")) {
+                    reverseRspName = new RspName(path.getRenderedServicePath().replaceFirst("-Reverse", ""));
+                } else {
+                    reverseRspName = new RspName(path.getRenderedServicePath() + "-Reverse");
+                }
+
+                SfcNshHeader reverseNsh = SfcNshHeader.getSfcNshHeader(reverseRspName);
+
+                if (reverseNsh == null) {
+                    LOG.debug("\ncreatedServiceFunctionClassifier: reverseNsh is null");
+                } else {
+                    key = new StringBuffer();
+                    key.append(scf.getName()).append(aclName).append(ruleName).append("in");
+                    FlowBuilder inFlow = createClassifierInFlow(TABLE_INDEX_CLASSIFIER, key.toString(), reverseNsh, inPort);
+                    writeFlowToConfig(nodeName, inFlow);
+                }
             }
         }
     }

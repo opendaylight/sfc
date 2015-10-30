@@ -13,7 +13,7 @@ module sfc-bootstrap-impl {
         base config:module-type;
         config:java-name-prefix SfcBootstrap;
     }
-    
+
     augment "/config:modules/config:module/config:configuration" {
         case sfc-bootstrap {
             when "/config:modules/config:module/config:type = 'sfc-bootstrap'";

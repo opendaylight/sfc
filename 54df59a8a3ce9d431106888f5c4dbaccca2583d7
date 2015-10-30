@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_bfda9a15",
+        "filename": "sfc-jsonconfig/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-30T21:42:38Z",
+      "side": 1,
+      "message": "please remove instead of commenting it out - we have git history\n\nsome below",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 8
+      },
+      "revId": "54df59a8a3ce9d431106888f5c4dbaccca2583d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_9f09d697",
+        "filename": "sfc-scf-openflow/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-30T21:42:38Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 42,
+        "startChar": 18,
+        "endLine": 42,
+        "endChar": 51
+      },
+      "revId": "54df59a8a3ce9d431106888f5c4dbaccca2583d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_7f04327e",
+        "filename": "sfc-scf-openflow/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-10-30T21:42:38Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 45,
+        "startChar": 17,
+        "endLine": 46,
+        "endChar": 57
+      },
+      "revId": "54df59a8a3ce9d431106888f5c4dbaccca2583d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

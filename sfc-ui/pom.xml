@@ -21,7 +21,7 @@
   <description>Resources</description>
   <packaging>pom</packaging>
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>${maven.prereq.version}</maven>
   </prerequisites>
   <modules>
     <module>module</module>

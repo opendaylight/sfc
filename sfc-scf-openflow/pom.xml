@@ -10,7 +10,6 @@
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfc-scf-openflow</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
         <configfile>configuration/initial/sfc-scf-openflow-initial.xml</configfile>
@@ -20,212 +19,59 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-provider</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-ovs</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>yang-jmx-generator</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <!-- version>4.8.1</version -->
-            <!-- version>4.11</version -->
-            <!--version>${junit.version}</version-->
-            <version>[4.8.1, 4.11]</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/classes/${configfile}</file>
-                                    <type>xml</type>
-                                    <classifier>config</classifier>
-                                </artifact>
-                                <!--
-                                  Optional TODO: Add additional config files
-                                    You may need to add more than one config file
-                                    if so, you just need to add additional <artifact> entries
-                                    here WITH DIFFERENT CLASSIFIERS
-                                    Example:
-                                    <artifact>
-                                      <file>${project.build.directory}/classes/<another-configfile></file>
-                                      <type>xml</type>
-                                      <classifier>config-<meaningful suffix to describe your other configfile></classifier>
-                                    </artifact>
-                                -->
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Embed-Dependency>jersey</Embed-Dependency>
                         <Export-Package>org.opendaylight.sfc-scf-openflow.*;</Export-Package>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <failsOnError>true</failsOnError>
-                    <configLocation>../checkstyle.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <sourceDirectory>${project.basedir}</sourceDirectory>
-                    <includes>**\/*.yang,**\/*.java,**\/*.xml,**\/*.ini,**\/*.sh,**\/*.bat</includes>
-                    <excludes>**\/target\/,**\/bin\/,**\/third-party,**\/yang-gen-sal\/</excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
-                <version>${yangtools.version}</version>
-                <executions>
-                    <execution>
-                        <id>config</id>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                        <configuration>
-                            <codeGenerators>
-                                <generator>
-                                    <codeGeneratorClass>
-                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${jmxGeneratorPath}</outputBaseDir>
-                                    <additionalConfiguration>
-                                        <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
-                                        </namespaceToPackage1>
-                                    </additionalConfiguration>
-                                </generator>
-                                <generator>
-                                    <codeGeneratorClass>
-                                        org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
-                                    </codeGeneratorClass>
-                                    <outputBaseDir>${salGeneratorPath}</outputBaseDir>
-                                </generator>
-                            </codeGenerators>
-                            <inspectDependencies>true</inspectDependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.opendaylight.controller</groupId>
-                        <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>${config.version}</version>
-                        <scope>compile</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.opendaylight.mdsal</groupId>
-                        <artifactId>maven-sal-api-gen-plugin</artifactId>
-                        <version>${yangtools.version}</version>
-                        <scope>compile</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.osgi</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                        <version>${osgi.core.version}</version>
-                        <scope>compile</scope>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                    <executions>
+                       <execution>
+                           <id>attach-artifacts</id>
+                           <goals>
+                              <goal>attach-artifact</goal>
+                           </goals>
+                           <phase>package</phase>
+                           <configuration>
+                             <artifacts>
+                                <artifact>
+                                   <file>${project.build.directory}/classes/${configfile}</file>
+                                   <type>xml</type>
+                                   <classifier>config</classifier>
+                               </artifact>
+                             </artifacts>
+                           </configuration>
+                       </execution>
+                    </executions>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.opendaylight.yangtools</groupId>
-                    <artifactId>yang-maven-plugin</artifactId>
-                    <version>${yangtools.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
-    <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
-    </scm>
 </project>

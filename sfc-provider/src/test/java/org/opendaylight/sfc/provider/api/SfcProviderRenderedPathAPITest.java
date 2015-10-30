@@ -221,6 +221,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method using partial mock
      */
     public void testCreateRenderedServicePathEntryUnsuccessful() throws Exception {
+        setOdlSfc();
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
@@ -257,6 +258,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method
      */
     public void testCreateRenderedServicePathEntryUnsuccessful1() throws Exception {
+        setOdlSfc();
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
@@ -278,6 +280,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method
      */
     public void testCreateRenderedServicePathEntryUnsuccessful2() throws Exception {
+        setOdlSfc();
         Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();

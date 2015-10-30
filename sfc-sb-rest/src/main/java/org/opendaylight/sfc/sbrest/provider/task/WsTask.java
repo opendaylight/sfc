@@ -7,13 +7,18 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
+import java.net.ConnectException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.ConnectException;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 public class WsTask implements Runnable {
 

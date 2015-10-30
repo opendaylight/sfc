@@ -100,14 +100,14 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features-sfclisp</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
-    </dependency>
+    </dependency -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features-sfcofl2</artifactId>
@@ -393,7 +393,7 @@
             <feature>odl-sfcofl2</feature>
             <feature>odl-sfc-scf-openflow</feature>
             <feature>odl-sfc-sb-rest</feature>
-            <feature>odl-sfclisp</feature>
+            <!--  feature>odl-sfclisp</feature-->
             <feature>odl-sfc-ovs</feature>
             <feature>odl-sfc-netconf</feature>
             <!-- 

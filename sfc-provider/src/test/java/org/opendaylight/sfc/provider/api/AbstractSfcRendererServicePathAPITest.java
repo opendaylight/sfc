@@ -99,14 +99,10 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
     protected final List<ServiceFunction> sfList = new ArrayList<>();
 
-    @Before
-    public void before() {
-        setOdlSfc();
-    }
-
     // auxiliary method
 
     protected void init() {
+        setOdlSfc();
         // Create Service Functions
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.length];
         final IpAddress[] locatorIpAddress = new IpAddress[sfNames.length];

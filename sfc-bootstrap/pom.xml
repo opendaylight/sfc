@@ -14,7 +14,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <powermock.version>1.5.6</powermock.version>
+        <powermock.version>${powermock.version}</powermock.version>
     </properties>
 
     <dependencyManagement>
@@ -22,14 +22,14 @@
       <dependency>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>mdsal-artifacts</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+<!--         <version>2.0.0-SNAPSHOT</version> -->
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.opendaylight.mdsal.model</groupId>
         <artifactId>mdsal-model-artifacts</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+<!--         <version>0.8.0-SNAPSHOT</version> -->
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-provider</artifactId>
-            <version>${project.version}</version>
+<!--             <version>${project.version}</version> -->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${osgi.core.version}</version>
+<!--             <version>${osgi.core.version}</version> -->
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -103,12 +103,12 @@
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>concepts</artifactId>
-            <version>${yangtools.version}</version>
+<!--             <version>${yangtools.version}</version> -->
         </dependency>
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-common</artifactId>
-            <version>${yangtools.version}</version>
+<!--             <version>${yangtools.version}</version> -->
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
@@ -121,114 +121,109 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>munge-maven-plugin</artifactId>
-            <version>1.0</version>
-        </dependency> -->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${jersey.client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-json-org</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>com.sun.jersey</groupId> -->
+<!--             <artifactId>jersey-client</artifactId> -->
+<!--             <version>${jersey.client.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.sun.jersey</groupId> -->
+<!--             <artifactId>jersey-json</artifactId> -->
+<!--             <version>${jersey.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.google.code.gson</groupId> -->
+<!--             <artifactId>gson</artifactId> -->
+<!--             <version>${gson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-annotations</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-core</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-databind</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.datatype</groupId> -->
+<!--             <artifactId>jackson-datatype-json-org</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-core-api</artifactId>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.jaxrs</groupId> -->
+<!--             <artifactId>jackson-jaxrs-base</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.jaxrs</groupId> -->
+<!--             <artifactId>jackson-jaxrs-json-provider</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.module</groupId> -->
+<!--             <artifactId>jackson-module-jaxb-annotations</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.glassfish</groupId> -->
+<!--             <artifactId>javax.json</artifactId> -->
+<!--             <version>1.0.4</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>ch.qos.logback</groupId> -->
+<!--             <artifactId>logback-classic</artifactId> -->
+<!--             <version>${logback.version}</version> -->
+<!--             <type>jar</type> -->
+<!--             <scope>compile</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.opendaylight.controller</groupId> -->
+<!--             <artifactId>sal-core-api</artifactId> -->
+<!--         </dependency> -->
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-data-api</artifactId>
-            <version>${yangtools.version}</version>
+<!--             <version>${yangtools.version}</version> -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <!-- version>4.8.1</version -->
-            <version>[4.8.1, 4.11]</version>
+<!--             <version>[4.8.1, 4.11]</version> -->
             <!-- version>4.11</version -->
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>org.mockito</groupId> -->
+<!--             <artifactId>mockito-all</artifactId> -->
+<!--             <version>${mockito.version}</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.powermock</groupId> -->
+<!--             <artifactId>powermock-module-junit4</artifactId> -->
+<!--             <version>${powermock.version}</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.powermock</groupId> -->
+<!--             <artifactId>powermock-api-mockito</artifactId> -->
+<!--             <version>${powermock.version}</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
     </dependencies>
-    <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
-    </scm>
+<!--     <scm> -->
+<!--         <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection> -->
+<!--         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection> -->
+<!--         <tag>HEAD</tag> -->
+<!--         <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url> -->
+<!--     </scm> -->
 </project>

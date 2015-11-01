@@ -22,6 +22,30 @@
       "revId": "3850985948a2cb59477804f1deb8a41a25be8cd6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bada0100_d03e7c29",
+        "filename": "sfcofl2/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-01T15:16:34Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "bada0100_10e724e6",
+      "range": {
+        "startLine": 16,
+        "startChar": 9,
+        "endLine": 16,
+        "endChar": 19
+      },
+      "revId": "3850985948a2cb59477804f1deb8a41a25be8cd6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bada0100_10e724e6",
+        "filename": "sfcofl2/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-11-01T10:21:30Z",
+      "side": 0,
+      "message": "This line is needed to load sfcofl2. If its removed, how will the things be loaded from this file?\n\nsrc/main/resources/configuration/initial/sfcofl2-initial.xml",
+      "range": {
+        "startLine": 16,
+        "startChar": 9,
+        "endLine": 16,
+        "endChar": 19
+      },
+      "revId": "3850985948a2cb59477804f1deb8a41a25be8cd6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

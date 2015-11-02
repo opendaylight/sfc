@@ -34,6 +34,15 @@
       <!-- Optional TODO: Rename your configfile to taste -->
       <configfile>80-sfc.xml</configfile>
   </properties>
+
+  <dependencies>
+        <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
         <plugin>

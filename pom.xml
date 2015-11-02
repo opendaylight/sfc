@@ -161,7 +161,11 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
+            <dependency>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>slf4j-simple</artifactId>
+                 <version>${slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.opendaylight.ovsdb</groupId>
                 <artifactId>southbound-api</artifactId>
@@ -197,12 +201,6 @@
         <module>sfc-netconf</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
-        <module>features-sfc-sb-rest</module>
-        <module>features-sfclisp</module>
-        <module>features-sfcofl2</module>
-        <module>features-sfc-scf-openflow</module>
-        <module>features-sfc-ovs</module>
-        <module>features-sfc-netconf</module>
         <module>features</module>
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>

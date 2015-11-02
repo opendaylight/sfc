@@ -40,13 +40,6 @@
       <type>xml</type>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>org.apache.karaf.webconsole</groupId>-->
-      <!--<artifactId>webconsole</artifactId>-->
-      <!--<version>${webconsole.version}</version>-->
-      <!--<type>pom</type>-->
-    <!--</dependency>-->
-
     <!-- ODL Branding -->
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -61,6 +54,8 @@
       <artifactId>opendaylight-karaf-resources</artifactId>
       <version>${karaf.resources.version}</version>
     </dependency>
+
+    <!-- Project local feautures -->
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>features-mdsal</artifactId>
@@ -71,54 +66,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfc-sb-rest</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfc-ovs</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfc-netconf</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfclisp</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfcofl2</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfc-scf-openflow</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
@@ -159,116 +106,20 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
-
-      <dependency>
+    <dependency>
         <groupId>org.ops4j.pax.swissbox</groupId>
         <artifactId>pax-swissbox-bnd</artifactId>
         <version>1.8.0</version>
-      </dependency>
-
-    <!-- Start -->
-    <!--<dependency>-->
-        <!--<groupId>com.sun.jersey</groupId>-->
-        <!--<artifactId>jersey-client</artifactId>-->
-        <!--<version>${jersey.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.sun.jersey</groupId>-->
-        <!--<artifactId>jersey-json</artifactId>-->
-        <!--<version>1.18.1</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.google.code.gson</groupId>-->
-        <!--<artifactId>gson</artifactId>-->
-        <!--<version>${gson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--<artifactId>jackson-annotations</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--<artifactId>jackson-core</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--<artifactId>jackson-databind</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.datatype</groupId>-->
-        <!--<artifactId>jackson-datatype-json-org</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
-        <!--<artifactId>jackson-jaxrs-base</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
-        <!--<artifactId>jackson-jaxrs-json-provider</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>com.fasterxml.jackson.module</groupId>-->
-        <!--<artifactId>jackson-module-jaxb-annotations</artifactId>-->
-        <!--<version>${jackson.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-        <!--<groupId>org.glassfish</groupId>-->
-        <!--<artifactId>javax.json</artifactId>-->
-        <!--<version>1.0.4</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.ops4j.pax.logging</groupId>-->
-      <!--<artifactId>pax-logging-api</artifactId>-->
-      <!--<version>${pax.logging.api.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.ops4j.pax.logging</groupId>-->
-      <!--<artifactId>pax-logging-service</artifactId>-->
-      <!--<version>${pax.logging.service.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.opendaylight.ovsdb</groupId>-->
-      <!--<artifactId>southbound-api</artifactId>-->
-      <!--<version>${ovsdb.southbound.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.opendaylight.ovsdb</groupId>-->
-      <!--<artifactId>southbound-impl</artifactId>-->
-      <!--<version>${ovsdb.southbound.version}</version>-->
-    <!--</dependency>-->
-
-    <!-- Project local feautures -->
-    <!--
-      Put your features here.
-
-      Note: they will need to be <type>xml</xml>
-      and <classifier>features</classifier>.
-
-      Note: they must be <scope>runtime</scope>
-
-      Note: usually you would only need to depend
-      on your own feature file here for your local distro,
-      and possible the features-mdsal for odl-restconf
-      (although, strange situations do exist :) )
-    -->
+    </dependency>
   </dependencies>
 
   <build>
@@ -385,9 +236,6 @@
         <configuration>
           <bootFeatures>
             <feature>standard</feature>
-            <!--<feature>webconsole</feature>-->
-            <!--<feature>odl-restconf</feature>-->
-            <!--<feature>odl-mdsal-apidocs</feature>-->
             <feature>odl-sfc-core</feature>
             <feature>odl-sfc-ui</feature>
             <feature>odl-sfcofl2</feature>

@@ -18,7 +18,6 @@
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <!-- Move these properties to your parent pom and possibly DependencyManagement section of your parent pom -->
    </properties>
    <dependencies>
     <!--
@@ -33,7 +32,6 @@
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>features-yangtools</artifactId>
-      <version>${yangtools.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
@@ -49,22 +47,13 @@
       <version>${mdsal.model.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>runtime</scope>
+<!--       <scope>runtime</scope> -->
     </dependency>
     <dependency>
       <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-restconf</artifactId>
-      <version>${restconf.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.netconf</groupId>
-      <artifactId>features-netconf-connector</artifactId>
-      <version>${netconf.parent.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
         <groupId>org.opendaylight.ovsdb</groupId>
@@ -72,7 +61,7 @@
         <version>${ovsdb.southbound.version}</version>
         <classifier>features</classifier>
         <type>xml</type>
-        <scope>runtime</scope>
+<!--         <scope>runtime</scope> -->
     </dependency>
     <dependency>
         <groupId>org.opendaylight.l2switch</groupId>
@@ -81,37 +70,86 @@
         <classifier>features</classifier>
         <type>xml</type>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.netconf</groupId>
+      <artifactId>features-netconf-connector</artifactId>
+      <classifier>features</classifier>
+      <type>xml</type>
+<!--       <scope>runtime</scope> -->
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>features-openflowplugin</artifactId>
+        <version>${feature.openflowplugin.version}</version>
+        <classifier>features</classifier>
+        <type>xml</type>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>features-openflowplugin-extension</artifactId>
+        <version>${feature.openflowplugin.version}</version>
+        <classifier>features</classifier>
+        <type>xml</type>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.lispflowmapping</groupId>
+        <artifactId>features-lispflowmapping</artifactId>
+        <version>${lispflowmapping.version}</version>
+        <classifier>features</classifier>
+        <type>xml</type>
+    </dependency>
 
     <!--
+                    BUNDLES SECTION
       Put dependencies for bundles directly referenced in your features.xml file.
       For every <bundle> reference in your features.xml file, you need a corresponding dependency here.
-    -->
-   <dependency>
-       <groupId>org.opendaylight.netconf</groupId>
-       <artifactId>sal-rest-docgen</artifactId>
-       <version>${restconf.version}</version>
-   </dependency>
-
-    <!--
-      Put dependencies for configfiles directly referenced in your features.xml file.
-      For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
     -->
 
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-provider</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-bootstrap</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-model</artifactId>
         <version>${project.version}</version>
-      </dependency>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-provider</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-netconf</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-ovs</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-scf-openflow</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-util</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfcofl2</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfclisp</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-sb-rest</artifactId>
+        <version>${project.version}</version>
+    </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-test-consumer</artifactId>
@@ -124,17 +162,147 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-bootstrap</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    <!--  Used in odl-sfc-bootstrp and odl-sfc-sb-rest -->
+    <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-client</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.codehaus.jettison</groupId>
+        <artifactId>jettison</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-json-org</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-base</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.json</artifactId>
+        <version>1.0.4</version>
+    </dependency>
+
+    <!--  END BUNDLES SECTION -->
+    <!-- 
+            CONFIGFILES SECTION
+      Put dependencies for configfiles directly referenced in your features.xml file.
+      For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
+    -->
+    <!-- odl-sfc-provider config files -->
+   <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-config</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-netconf config files -->
+    <dependency>
+       <groupId>org.opendaylight.sfc</groupId>
+       <artifactId>sfc-netconf</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-ovs config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-ovs</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-scf-openflow config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-scf-openflow</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfcofl2 config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfcofl2</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfclisp config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfclisp</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-sb-rest config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-sb-rest</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+       <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config</classifier>
       </dependency>
+    <!-- odl-sfc-bootstrap and odl-sfc-test-consumer config files -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config-sff</classifier>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-jsonconfig</artifactId>
+        <version>${project.version}</version>
+        <type>xml</type>
+        <classifier>config-sf</classifier>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -155,109 +323,32 @@
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
-        <classifier>config-sf</classifier>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
         <classifier>config-ipfix-class-id</classifier>
       </dependency>
       <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-config</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config</classifier>
-      </dependency>
-       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-test-consumer</artifactId>
         <version>${project.version}</version>
         <type>xml</type>
         <classifier>config</classifier>
       </dependency>
+    <!--  END CONFIG FILES SECTION -->
+
+
+    <!--  OTHER STUFF SECTION -->
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
-        <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-core</artifactId>
-        <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>${org.json.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.codehaus.jettison</groupId>
-        <artifactId>jettison</artifactId>
-        <version>${jettison.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-json-org</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
 
-    <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-base</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-jaxb-annotations</artifactId>
-        <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>1.0.4</version>
-    </dependency>
     <!-- test to validate features.xml -->
     <dependency>
       <groupId>org.opendaylight.odlparent</groupId>
@@ -276,25 +367,241 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
-<!--    <dependency>
-       <groupId>org.opendaylight.ovsdb</groupId>
-       <artifactId>southbound-impl</artifactId>
-       <version>${ovsdb.southbound.version}</version>
-       <classifier>config</classifier>
-       <type>xml</type>
-    </dependency>-->
-    <dependency>
-       <groupId>org.opendaylight.ovsdb</groupId>
-       <artifactId>southbound-api</artifactId>
-       <version>${ovsdb.southbound.version}</version>
+    <!--  dependency for webconsole used in odl-sfc-ui. Stops config pusher issues -->
+     <dependency>
+      <groupId>org.apache.karaf.webconsole</groupId>
+      <artifactId>webconsole</artifactId>
+      <version>${webconsole.version}</version>
+<!--       <type>pom</type> -->
     </dependency>
-    <dependency>
-       <groupId>org.opendaylight.ovsdb</groupId>
-       <artifactId>southbound-impl</artifactId>
-       <version>${ovsdb.southbound.version}</version>
-    </dependency>
+    <!--  END OTHER STUFF SECTION -->
+
+    <!--  TBD ... comment as I go -->
+<!--     <dependency> -->
+<!--        <groupId>org.opendaylight.ovsdb</groupId> -->
+<!--        <artifactId>southbound-impl</artifactId> -->
+<!--        <version>${ovsdb.southbound.version}</version> -->
+<!--     </dependency> -->
+<!--    <dependency> -->
+<!--        <groupId>org.opendaylight.ovsdb</groupId> -->
+<!--        <artifactId>southbound-impl</artifactId> -->
+<!--        <version>${ovsdb.southbound.version}</version> -->
+<!--        <classifier>config</classifier> -->
+<!--        <type>xml</type> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--        <groupId>org.opendaylight.ovsdb</groupId> -->
+<!--        <artifactId>southbound-api</artifactId> -->
+<!--     </dependency> -->
+
+
+
+
+
+
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.controller.model</groupId> -->
+<!--         <artifactId>model-inventory</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.netconf</groupId> -->
+<!--         <artifactId>features-netconf-connector</artifactId> -->
+<!--         <version>${netconf.parent.version}</version> -->
+<!--     </dependency> -->
+
+
+
+<!--         <dependency> -->
+<!--             <groupId>org.opendaylight.ovsdb</groupId> -->
+<!--             <artifactId>southbound-features</artifactId> -->
+<!--             <version>${ovsdb.southbound.version}</version> -->
+<!--             <classifier>features</classifier> -->
+<!--             <type>xml</type> -->
+<!--         </dependency> -->
+ 
+
+
+<!--         <dependency> -->
+<!--             <groupId>${project.groupId}</groupId> -->
+<!--             <artifactId>sfc-provider</artifactId> -->
+<!--             <version>${project.version}</version> -->
+<!--         </dependency> -->
+
+<!--         <dependency> -->
+<!--             <groupId>${project.groupId}</groupId> -->
+<!--             <artifactId>sfc-ovs</artifactId> -->
+<!--             <version>${project.version}</version> -->
+<!--         </dependency> -->
+
+ 
+
+
+
+
+
+
+
+ 
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.openflowplugin.model</groupId> -->
+<!--         <artifactId>model-flow-base</artifactId> -->
+<!--         <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.openflowplugin.model</groupId> -->
+<!--         <artifactId>model-flow-service</artifactId> -->
+<!--         <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-api</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-extension-api</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-extension-nicira</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowjava-extension-nicira-api</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowjava-extension-nicira</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin</artifactId> -->
+<!--       <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+
+
+ 
+
+
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.lispflowmapping</groupId> -->
+<!--       <artifactId>mappingservice.southbound</artifactId> -->
+<!--       <version>${lispflowmapping.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>junit</groupId> -->
+<!--       <artifactId>junit</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>junit</groupId> -->
+<!--       <artifactId>junit-dep</artifactId> -->
+<!--       <version>${junit.version}</version> -->
+<!--       <scope>test</scope> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>${project.groupId}</groupId> -->
+<!--       <artifactId>features-sfc</artifactId> -->
+<!--       <version>${project.version}</version> -->
+<!--       <classifier>features</classifier> -->
+<!--       <type>xml</type> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>${project.groupId}</groupId> -->
+<!--       <artifactId>sfclisp</artifactId> -->
+<!--       <version>${project.version}</version> -->
+<!--     </dependency> -->
+
+<!--     <dependency> -->
+<!--       <groupId>${project.groupId}</groupId> -->
+<!--       <artifactId>sfc-provider</artifactId> -->
+<!--       <version>${project.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.sonatype.sisu</groupId> -->
+<!--         <artifactId>sisu-guava</artifactId> -->
+<!--         <version>0.9.9</version> -->
+<!--      </dependency> -->
+
+
+
+
+
+
+
+<!--     <dependency> -->
+<!--        <groupId>${project.groupId}</groupId> -->
+<!--        <artifactId>sfc-provider</artifactId> -->
+<!--        <version>${project.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--        <groupId>${project.groupId}</groupId> -->
+<!--        <artifactId>sfc-ovs</artifactId> -->
+<!--        <version>${project.version}</version> -->
+<!--     </dependency> -->
+
+<!--     <dependency> -->
+<!--        <groupId>${project.groupId}</groupId> -->
+<!--        <artifactId>sfcofl2</artifactId> -->
+<!--        <version>${project.version}</version> -->
+<!--        <exclusions> -->
+<!--           <exclusion> -->
+<!--              <groupId>org.slf4j</groupId> -->
+<!--              <artifactId>slf4j-log4j12</artifactId> -->
+<!--           </exclusion> -->
+<!--           <exclusion> -->
+<!--              <groupId>log4j</groupId> -->
+<!--              <artifactId>log4j</artifactId> -->
+<!--           </exclusion> -->
+<!--        </exclusions> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.openflowplugin.model</groupId> -->
+<!--         <artifactId>model-flow-base</artifactId> -->
+<!--         <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.opendaylight.openflowplugin.model</groupId> -->
+<!--         <artifactId>model-flow-service</artifactId> -->
+<!--         <version>${feature.openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-api</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-extension-api</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin-extension-nicira</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowjava-extension-nicira-api</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowjava-extension-nicira</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.openflowplugin</groupId> -->
+<!--       <artifactId>openflowplugin</artifactId> -->
+<!--       <version>${openflowplugin.version}</version> -->
+<!--     </dependency> -->
+
+
+
    </dependencies>
    <build>
       <resources>
@@ -320,7 +627,6 @@
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
-            <version>${maven.helper.version}</version>
             <executions>
                <execution>
                   <id>attach-artifacts</id>

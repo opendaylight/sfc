@@ -74,6 +74,7 @@
         <pax.logging.api.version>1.8.2</pax.logging.api.version>
         <apache.felix.osgi.compendium.version>1.4.0</apache.felix.osgi.compendium.version>
         <dlux.version>0.3.0-SNAPSHOT</dlux.version>
+        <webconsole.version>3.0.3</webconsole.version>
 
         <!-- Test Libraries -->
         <powermock.version>1.5.6</powermock.version>
@@ -161,7 +162,11 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
+            <dependency>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>slf4j-simple</artifactId>
+                 <version>${slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.opendaylight.ovsdb</groupId>
                 <artifactId>southbound-api</artifactId>
@@ -197,12 +202,6 @@
         <module>sfc-netconf</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
-        <module>features-sfc-sb-rest</module>
-        <module>features-sfclisp</module>
-        <module>features-sfcofl2</module>
-        <module>features-sfc-scf-openflow</module>
-        <module>features-sfc-ovs</module>
-        <module>features-sfc-netconf</module>
         <module>features</module>
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>

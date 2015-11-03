@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bada0100_fff4ab88",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T11:50:06Z",
+      "side": 1,
+      "message": "I am sure you do not need all these dependencies",
+      "range": {
+        "startLine": 22,
+        "startChar": 3,
+        "endLine": 22,
+        "endChar": 17
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bada0100_df3e8729",
+        "filename": "sfc-config/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T11:50:06Z",
+      "side": 1,
+      "message": "you do not need version. actually why do you need this dependency?",
+      "range": {
+        "startLine": 42,
+        "startChar": 6,
+        "endLine": 42,
+        "endChar": 41
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

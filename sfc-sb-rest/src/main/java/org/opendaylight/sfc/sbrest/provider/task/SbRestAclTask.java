@@ -7,6 +7,10 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -22,13 +26,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
 public class SbRestAclTask extends SbRestAbstractTask {
 
-    private static final String ACL_REST_URI = "/config/ietf-acl:access-lists/access-list/";
+    private static final String ACL_REST_URI = "/config/ietf-access-control-list:access-lists/acl/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclTask.class);
 
     public SbRestAclTask(RestOperation restOperation, Acl dataObject, ExecutorService odlExecutor) {

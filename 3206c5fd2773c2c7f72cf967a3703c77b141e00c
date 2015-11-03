@@ -25,6 +25,98 @@
     },
     {
       "key": {
+        "uuid": "bada0100_bf02a309",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T12:59:39Z",
+      "side": 1,
+      "message": "whitespaces",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 6
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bada0100_5f185784",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T12:59:39Z",
+      "side": 1,
+      "message": "what do you want to fix here?",
+      "range": {
+        "startLine": 30,
+        "startChar": 91,
+        "endLine": 30,
+        "endChar": 107
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bada0100_ff082b2f",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T12:59:39Z",
+      "side": 1,
+      "message": "whitespaces",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 1
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bada0100_9f055f16",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-03T12:59:39Z",
+      "side": 1,
+      "message": "whitespaces",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 4
+      },
+      "revId": "3206c5fd2773c2c7f72cf967a3703c77b141e00c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bada0100_df3e8729",
         "filename": "sfc-config/pom.xml",
         "patchSetId": 2

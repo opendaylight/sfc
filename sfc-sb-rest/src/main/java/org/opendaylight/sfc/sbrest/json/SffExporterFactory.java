@@ -215,7 +215,9 @@ class SffExporter extends AbstractExporter implements Exporter {
         }
 
         ObjectNode sffSfDataPlaneLocatorNode =
-                ExporterUtil.getDataPlaneLocatorObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator());
+                ExporterUtil.getDataPlaneLocatorObjectNode(
+                        serviceFunctionDictionary.getName(),
+                        serviceFunctionDictionary.getSffSfDataPlaneLocator().getSfDplName());
 
         if (sffSfDataPlaneLocatorNode != null) {
             sffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE, this

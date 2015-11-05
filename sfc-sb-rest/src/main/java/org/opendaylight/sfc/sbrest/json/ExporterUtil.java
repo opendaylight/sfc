@@ -10,6 +10,8 @@ package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Function;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -29,6 +31,8 @@ public class ExporterUtil {
     public static final String _VXLAN_GPE = "vxlan-gpe";
     public static final String _GRE = "gre";
     public static final String _OTHER = "other";
+    public static final String _SF_DPL_NAME = "sf-dpl-name";
+    public static final String _SFF_DPL_NAME = "sff-dpl-name";
 
     public static final String FUNCTION = "function";
     public static final String IP = "ip";
@@ -50,6 +54,25 @@ public class ExporterUtil {
             }
         }
         return ret;
+    }
+
+    protected static ObjectNode getSffSfDataPlaneLocatorObjectNode(SffSfDataPlaneLocator sffSfDpl) {
+        if (sffSfDpl == null) {
+            return null;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode sffSfDplNode = mapper.createObjectNode();
+
+        if(sffSfDpl.getSfDplName() != null) {
+            sffSfDplNode.put(_SF_DPL_NAME, sffSfDpl.getSfDplName().getValue());
+        }
+
+        if(sffSfDpl.getSffDplName() != null) {
+            sffSfDplNode.put(_SFF_DPL_NAME, sffSfDpl.getSffDplName().getValue());
+        }
+
+        return sffSfDplNode;
     }
 
     protected static ObjectNode getDataPlaneLocatorObjectNode(DataPlaneLocator dataPlaneLocator) {

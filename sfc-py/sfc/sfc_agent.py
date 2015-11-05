@@ -147,16 +147,21 @@ def find_sf_locator(sf_name, sff_name):
         return sf_locator
 
     service_dict = local_sff_topo[sff_name]['service-function-dictionary']
-    for service_function in service_dict:
-        if sf_name == service_function['name']:
-            _sf_locator = service_function['sff-sf-data-plane-locator']
+    sf_dict_entry = service_dict.get(sf_name, None)
+    if sf_dict_entry:
+        _sf_sff_locator = sf_dict_entry['sff-sf-data-plane-locator']
 
-            # A locator might use something other than IP
-            if 'ip' in _sf_locator:
-                sf_locator['ip'] = _sf_locator['ip']
-                sf_locator['port'] = _sf_locator['port']
-
-            return sf_locator
+        # A locator might use something other than IP
+        if 'sf-dpl-name' in _sf_sff_locator:
+            local_sf_topo = sfc_globals.get_sf_topo()
+            sf_dpl_list = local_sf_topo[sf_name]['sf-data-plane-locator']
+            #for sf_dpl in sf_dpl_list:
+            sf_dpl = sf_dpl_list.get(sf_dpl_name, None)
+            if sf_dpl:
+                if 'ip' in sf_dpl:
+                    sf_locator['ip'] = _sf_sff_locator['ip']
+                    sf_locator['port'] = _sf_sff_locator['port']
+                    return sf_locator
 
     if not sf_locator:
         logger.error("Failed to find data plane locator for SF: %s", sf_name)

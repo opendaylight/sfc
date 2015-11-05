@@ -122,6 +122,8 @@ public class SfcL2RspProcessor {
             // Populate the SFF ingress and egress DPLs from the sffGraph
             //
             processSffDpls(sffGraph, rsp.getTransportType().getName());
+            sffGraph.logDpls();
+            sffGraph.logEgressDpls();
 
             //
             // Internally calculate and set the RSP transport values
@@ -272,7 +274,9 @@ public class SfcL2RspProcessor {
 
         // Configure the SF related flows
         if (entry.getSf() != null) {
-            SffSfDataPlaneLocator sfDpl = sfcL2ProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
+            SffSfDataPlaneLocator sffSfDpl = sfcL2ProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
+            ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
+            SfDataPlaneLocator sfDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sf, sffSfDpl);
             if (sfDpl == null) {
                 throw new RuntimeException(
                         "Cant find SFF [" + sffDstName + "] to SF [" + entry.getSf() + "] DataPlaneLocator");
@@ -284,8 +288,10 @@ public class SfcL2RspProcessor {
             List<SfcServiceFunction> sfgSfs = sfg.getSfcServiceFunction();
             for (SfcServiceFunction sfgSf : sfgSfs) {
                 LOG.debug("configure ingress flow for SF {}", sfgSf);
-                SffSfDataPlaneLocator sfDpl =
+                SffSfDataPlaneLocator sffSfDpl =
                         sfcL2ProviderUtils.getSffSfDataPlaneLocator(sffDst, new SfName(sfgSf.getName()));
+                ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
+                SfDataPlaneLocator sfDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sf, sffSfDpl);
                 if (sfDpl == null) {
                     throw new RuntimeException(
                             "Cant find SFF [" + sffDstName + "] to SF [" + sfgSf + "] DataPlaneLocator");
@@ -299,7 +305,7 @@ public class SfcL2RspProcessor {
         ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
         if (sf.getType() == TcpProxy.class) {
             ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sffDst, entry.getSf());
-            String sffMac = sfcL2ProviderUtils.getDictPortInfoMac(sffSfDict);
+            String sffMac = sfcL2ProviderUtils.getDictPortInfoMac(sffDst, sffSfDict);
             // If the SF is a TCP Proxy, then we need to reply to the ARP Request messages
             if (sffMac != null) {
                 this.sfcL2FlowProgrammer.configureArpTransportIngressFlow(
@@ -318,7 +324,7 @@ public class SfcL2RspProcessor {
     }
 
     private void configureSingleSfIngressFlow(SffGraph.SffGraphEntry entry, final SffName sffDstName,
-            DataPlaneLocator dstHopIngressDpl, SffSfDataPlaneLocator sfDpl) {
+            DataPlaneLocator dstHopIngressDpl, SfDataPlaneLocator sfDpl) {
         // configure the Ingress-SFF-SF ingress Flow
         configureSffPathMapperFlow(sffDstName, false, dstHopIngressDpl, entry.getPathId(), entry.getServiceIndex());
         // configure the SF Transport Ingress Flow
@@ -630,25 +636,27 @@ public class SfcL2RspProcessor {
     // and srcMac from the srcSffSfDict, and the dstMac from the dstDpl
     private void configureSffTransportEgressFlow(final SffName sffName, ServiceFunctionDictionary srcSffSfDict,
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl, long pathId, short serviceIndex) {
-        DataPlaneLocator srcDpl = srcSffSfDict.getSffSfDataPlaneLocator();
-        String srcOfsPortStr = sfcL2ProviderUtils.getDictPortInfoPort(srcSffSfDict);
+        ServiceFunctionForwarder sff = sfcL2ProviderUtils.getServiceFunctionForwarder(sffName, pathId);
+        SffSfDataPlaneLocator srcSffSfDpl = srcSffSfDict.getSffSfDataPlaneLocator();
+        DataPlaneLocator srcSffDpl = sfcL2ProviderUtils.getSffDataPlaneLocator(sff, srcSffSfDpl.getSffDplName()).getDataPlaneLocator();
+        String srcOfsPortStr = sfcL2ProviderUtils.getDictPortInfoPort(sff, srcSffSfDict);
         if (srcOfsPortStr == null) {
             throw new RuntimeException("configureSffTransportEgressFlow OFS port not avail for SFF ["
                     + sffName.getValue() + "] sffSfDict [" + srcSffSfDict.getName() + "]");
         }
-        String srcMac = sfcL2ProviderUtils.getDictPortInfoMac(srcSffSfDict);
+        String srcMac = sfcL2ProviderUtils.getDictPortInfoMac(sff, srcSffSfDict);
         String dstMac = sfcL2ProviderUtils.getSfDplMac(dstSfDpl);
 
         ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(srcSffSfDict.getName(), pathId);
         if (sf.getType() == TcpProxy.class) {
             // If the SF is a TCP Proxy, we need this additional flow for the SF:
             // - a flow that will also check for TCP Syn and do a PktIn
-            configureSffTransportEgressFlow(sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId,
+            configureSffTransportEgressFlow(sffName, srcSffDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId,
                     serviceIndex, true, false, true);
         } else {
             // TODO since TCP SYN is not supported until OpenFlow 1.5,
             // for now write one or the other of these flows
-            configureSffTransportEgressFlow(sffName, srcDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId,
+            configureSffTransportEgressFlow(sffName, srcSffDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId,
                     serviceIndex, true, false, false);
         }
     }

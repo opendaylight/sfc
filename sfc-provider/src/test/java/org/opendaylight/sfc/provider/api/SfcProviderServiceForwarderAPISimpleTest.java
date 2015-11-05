@@ -158,8 +158,8 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         sfList.add(sfBuilder.build());
 
         ServiceFunction sf = sfList.get(0);
-        SfDataPlaneLocator sfDPLocator = sf.getSfDataPlaneLocator().get(0);
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder(sfDPLocator);
+        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+        sffSfDataPlaneLocatorBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName());
         SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
         dictionaryEntryBuilder.setName(sf.getName())

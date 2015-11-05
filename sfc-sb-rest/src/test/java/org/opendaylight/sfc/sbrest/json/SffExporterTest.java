@@ -12,7 +12,6 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -20,14 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
@@ -39,17 +37,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * This class contains unit tests for SffExporter
@@ -63,11 +57,6 @@ public class SffExporterTest {
 
     private static final String FULL_JSON = "/SffJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SffJsonStrings/NameOnly.json";
-    private SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
-    private ObjectNode objectNode;
-    private Method method;
-    private SffExporterFactory sffExporterFactory;
-    private String result;
 
     // create string, that represents .json file
     private String gatherServiceFunctionForwardersJsonStringFromFile(String testFileName) {
@@ -193,68 +182,37 @@ public class SffExporterTest {
         // noinspection unchecked
         serviceFunctionDictionaryBuilder.setName(new SfName(SffTestValues.SF_DICTIONARY_NAME.getValue()))
             .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
-            .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv4());
-
-        serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
-
-        serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-        // noinspection unchecked
-        serviceFunctionDictionaryBuilder.setName(new SfName(SffTestValues.SF_DICTIONARY_NAME.getValue()))
-            .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
-            .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv6());
+            .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocator());
 
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
 
         return serviceFunctionDictionaryList;
     }
 
-    private SffSfDataPlaneLocator buildSffSfDataPlaneLocatorIpv4() {
-
-        IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(new IpAddress(new Ipv4Address(SffTestValues.IP_V4_ADDRESS.getValue())));
-        ipBuilder.setPort(new PortNumber(Integer.valueOf(SffTestValues.PORT1.getValue())));
+    private SffSfDataPlaneLocator buildSffSfDataPlaneLocator() {
 
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder
-            .addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
-            .setLocatorType(ipBuilder.build());
+        sffSfDataPlaneLocatorBuilder.setSfDplName(
+                new SfDataPlaneLocatorName(
+                        SffTestValues.SF_DATA_PLANE_LOCATOR_NAME.getValue()));
+        sffSfDataPlaneLocatorBuilder.setSffDplName(
+                new SffDataPlaneLocatorName(
+                        SffTestValues.SFF_DATA_PLANE_LOCATOR_NAME.getValue()));
 
         return sffSfDataPlaneLocatorBuilder.build();
-    }
-
-    private SffSfDataPlaneLocator buildSffSfDataPlaneLocatorIpv6() {
-
-        IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(new IpAddress(new Ipv6Address(SffTestValues.IP_V6_ADDRESS.getValue())));
-        ipBuilder.setPort(new PortNumber(Integer.valueOf(SffTestValues.PORT2.getValue())));
-
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder
-            .addAugmentation(SffSfOvsLocatorBridgeAugmentation.class, this.buildSffSfOvsLocatorBridgeAugmentation())
-            .setLocatorType(ipBuilder.build());
-
-        return sffSfDataPlaneLocatorBuilder.build();
-    }
-
-    private SffSfOvsLocatorBridgeAugmentation buildSffSfOvsLocatorBridgeAugmentation() {
-        OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
-        ovsBridgeBuilder.setBridgeName(SffTestValues.SF_DATA_PLANE_LOCATOR_BRIDGE_NAME.getValue());
-
-        SffSfOvsLocatorBridgeAugmentationBuilder sffSfOvsLocatorBridgeAugmentationBuilder =
-                new SffSfOvsLocatorBridgeAugmentationBuilder();
-        sffSfOvsLocatorBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
-
-        return sffSfOvsLocatorBridgeAugmentationBuilder.build();
     }
 
     public enum SffTestValues {
-        NAME("SFF1"), SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"), SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME(
-                "br-int"), SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"), SF_DICTIONARY_NAME(
-                        "SF1"), SF_DICTIONARY_TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi",
-                                Dpi.class), SF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-tun"), REST_URI(
-                                        "http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), SERVICE_NODE(
-                                                "SN1"), IP_V4_ADDRESS("192.168.10.5"), IP_V6_ADDRESS(
-                                                        "01:23:45:67:89:AB:CD:EF"), PORT1("6640"), PORT2("6633");
+        NAME("SFF1"),
+        SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"),
+        SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-int"),
+        SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"),
+        SF_DICTIONARY_NAME("SF1"),
+        SF_DICTIONARY_TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi", Dpi.class),
+        SF_DATA_PLANE_LOCATOR_NAME("SF1_DP1"),
+        REST_URI("http://localhost:5000/"),
+        IP_MGMT_ADDRESS("10.0.0.1"),
+        SERVICE_NODE("SN1");
 
         private final String value;
         private Class identity;

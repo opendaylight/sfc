@@ -134,7 +134,7 @@ public class SfcL2SfgDataListener extends SfcL2AbstractDataListener {
                 sfName = new SfName(sfcServiceFunction.getName());
                 sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
                 ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sff, sfName);
-                String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sffSfDict);
+                String outPort = sfcL2ProviderUtils.getDictPortInfoPort(sff, sffSfDict);
                 bucketsInfo.add(buildBucket(sf, outPort, index));
                 index++;
             }

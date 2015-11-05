@@ -169,9 +169,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             for (int j = 0; j < 3; j++) {
                 ServiceFunction serviceFunction = sfList.get(i * 3 + j);
-                SfDataPlaneLocator sfDPLocator = serviceFunction.getSfDataPlaneLocator().get(0);
                 SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder =
-                        new SffSfDataPlaneLocatorBuilder(sfDPLocator);
+                        new SffSfDataPlaneLocatorBuilder();
+                sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
                 SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
                 ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
                 dictionaryEntryBuilder.setName(serviceFunction.getName())

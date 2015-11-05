@@ -99,8 +99,8 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         List<ServiceFunctionDictionary> dictionary = new ArrayList<>();
 
         ServiceFunction sf0 = sfList.get(0);
-        SfDataPlaneLocator sfDPLocator0 = sf0.getSfDataPlaneLocator().get(0);
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder0 = new SffSfDataPlaneLocatorBuilder(sfDPLocator0);
+        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder0 = new SffSfDataPlaneLocatorBuilder();
+        sffSfDataPlaneLocatorBuilder0.setSfDplName(sf0.getSfDataPlaneLocator().get(0).getName());
         SffSfDataPlaneLocator sffSfDataPlaneLocator0 = sffSfDataPlaneLocatorBuilder0.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder0 = new ServiceFunctionDictionaryBuilder();
         dictionaryEntryBuilder0.setName(sf0.getName())
@@ -130,8 +130,8 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         assertThat("Must contain first dictionary entry", sff2.getServiceFunctionDictionary(), hasItem(firstDictEntry));
 
         ServiceFunction sf1 = sfList.get(1);
-        SfDataPlaneLocator sfDPLocator1 = sf1.getSfDataPlaneLocator().get(0);
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder1 = new SffSfDataPlaneLocatorBuilder(sfDPLocator1);
+        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder1 = new SffSfDataPlaneLocatorBuilder();
+        sffSfDataPlaneLocatorBuilder1.setSfDplName(sf1.getSfDataPlaneLocator().get(0).getName());
         SffSfDataPlaneLocator sffSfDataPlaneLocator1 = sffSfDataPlaneLocatorBuilder1.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder1 = new ServiceFunctionDictionaryBuilder();
         dictionaryEntryBuilder1.setName(sf1.getName())

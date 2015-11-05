@@ -61,8 +61,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MplsBuilder;
-import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1;
-import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.ServiceFunctionDictionary1Builder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1Builder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPortBuilder;
@@ -202,7 +200,7 @@ public class RspBuilder {
     public ServiceFunctionForwarder createServiceFunctionForwarder(SffName sffName, ServiceFunction sf,
             Class<? extends SlTransportType> transportType) {
         List<SffDataPlaneLocator> sffDpls = createSffDpls(transportType);
-        List<ServiceFunctionDictionary> sfDictList = createSfDictList(sf, transportType);
+        List<ServiceFunctionDictionary> sfDictList = createSfDictList(sf, sffDpls.get(0).getName());
 
         ServiceFunctionForwarder sff = buildServiceFunctionForwarder(sffName, sffDpls, sfDictList, "");
         sfcUtilsTestMock.addServiceFunctionForwarder(sffName, sff);
@@ -276,32 +274,16 @@ public class RspBuilder {
         return sffDpls;
     }
 
-    private List<ServiceFunctionDictionary> createSfDictList(ServiceFunction sf,
-            Class<? extends SlTransportType> transportType) {
-        // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
-        Class<? extends SlTransportType> sfTransportType =
-                (transportType.equals(VxlanGpe.class) ? transportType : Mac.class);
-
+    private List<ServiceFunctionDictionary> createSfDictList(ServiceFunction sf, SffDataPlaneLocatorName sffDplName) {
         SffSfDataPlaneLocatorBuilder sffSfDplBuilder = new SffSfDataPlaneLocatorBuilder();
-        // TODO the vlanId needs to be the same as on the SF
-        sffSfDplBuilder.setLocatorType(buildSfLocatorType(sfTransportType));
-        sffSfDplBuilder.setTransport(sfTransportType);
+        sffSfDplBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName());    // TODO what if there is more than one DPL?
+        sffSfDplBuilder.setSffDplName(sffDplName);
 
         ServiceFunctionDictionaryBuilder sfDictBuilder = new ServiceFunctionDictionaryBuilder();
         sfDictBuilder.setName(sf.getName());
         sfDictBuilder.setType(sf.getType());
         sfDictBuilder.setSffSfDataPlaneLocator(sffSfDplBuilder.build());
         sfDictBuilder.setKey(new ServiceFunctionDictionaryKey(sf.getName()));
-
-        // Augment the dictionary with an OfsPortBuilder if its not VxLan
-        if (!transportType.equals(VxlanGpe.class)) {
-            ServiceFunctionDictionary1Builder ofsSfDictBuilder = new ServiceFunctionDictionary1Builder();
-            OfsPortBuilder ofsPortBuilder = new OfsPortBuilder();
-            ofsPortBuilder.setMacAddress(new MacAddress(getNextMacAddress()));
-            ofsPortBuilder.setPortId(SWITCH_PORT_STR);
-            ofsSfDictBuilder.setOfsPort(ofsPortBuilder.build());
-            sfDictBuilder.addAugmentation(ServiceFunctionDictionary1.class, ofsSfDictBuilder.build());
-        }
 
         List<ServiceFunctionDictionary> sfDictList = new ArrayList<ServiceFunctionDictionary>();
         sfDictList.add(sfDictBuilder.build());

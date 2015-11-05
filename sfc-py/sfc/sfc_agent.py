@@ -74,6 +74,29 @@ def _sff_present(sff_name, local_sff_topo):
     return sff_present
 
 
+def _get_sf(sf_name):
+    """
+    First try to get the SF from the local SF topology.
+    If its not present locally, get it from the ODL and
+    store it locally
+
+    :param sf_name: SF name
+    :type sf_name: str
+
+    :return sf dictionary, may be None if not found
+
+    """
+    local_sf_topo = sfc_globals.get_sf_topo()
+    sf = local_sf_topo.get(sf_name, None)
+    if sf:
+        return sf
+
+    if get_sf_from_odl(sfc_globals.get_odl_locator(), sf_name) == 0:
+        sf = local_sf_topo.get(sf_name, None)
+
+    return sf
+
+
 def _sf_local_host(sf_name):
     """
     Check if SFC agent controls this SF. The check is done based on the
@@ -147,16 +170,23 @@ def find_sf_locator(sf_name, sff_name):
         return sf_locator
 
     service_dict = local_sff_topo[sff_name]['service-function-dictionary']
-    for service_function in service_dict:
-        if sf_name == service_function['name']:
-            _sf_locator = service_function['sff-sf-data-plane-locator']
+    sf_dict_entry = service_dict.get(sf_name, None)
+    if sf_dict_entry:
+        _sf_sff_locator = sf_dict_entry['sff-sf-data-plane-locator']
 
-            # A locator might use something other than IP
-            if 'ip' in _sf_locator:
-                sf_locator['ip'] = _sf_locator['ip']
-                sf_locator['port'] = _sf_locator['port']
+        # A locator might use something other than IP
+        if 'sf-dpl-name' in _sf_sff_locator:
+            local_sf = _get_sf(sf_name)
+            if not local_sf:
+                return None
 
-            return sf_locator
+            sf_dpl_list = local_sf['sf-data-plane-locator']
+            sf_dpl = sf_dpl_list.get('sf-dpl-name', None)
+            if sf_dpl:
+                if 'ip' in sf_dpl:
+                    sf_locator['ip'] = _sf_sff_locator['ip']
+                    sf_locator['port'] = _sf_sff_locator['port']
+                    return sf_locator
 
     if not sf_locator:
         logger.error("Failed to find data plane locator for SF: %s", sf_name)
@@ -495,7 +525,8 @@ def create_sff(sffname):
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
     sff_port = (local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['port'])
     sff_ip = (local_sff_topo[sffname]['sff-data-plane-locator'][0]['data-plane-locator']['ip'])
-    nfq_classifier.set_fwd_socket(sff_ip)
+    if nfq_classifier.nfq_running():
+        nfq_classifier.set_fwd_socket(sff_ip)
     start_sff(sffname, sff_ip, sff_port)
 
     return flask.jsonify({'sff': sfc_globals.get_sff_topo()}), 201

@@ -10,51 +10,51 @@ SERVICE_FUNCTIONS_JSON = """
   "service-functions": {
     "service-function": [
       {
-        "name": "SF1",
+        "name": "sfc-common:SF1",
         "sf-data-plane-locator": [
           {
-            "name": "vxlan",
-            "ip": "10.0.2.101",
+            "name": "sfc-common:sf1-dpl",
+            "ip": "192.168.1.7",
             "port": 40000,
             "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF1"
+            "service-function-forwarder": "sfc-common:SFF1"
           }
         ],
-        "rest-uri": "http://10.0.2.101:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.101",
+        "ip-mgmt-address": "192.168.1.7",
         "type": "service-function-type:dpi"
       },
       {
-        "name": "SF2",
+        "name": "sfc-common:SF2",
         "sf-data-plane-locator": [
           {
-            "name": "vxlan",
-            "ip": "10.0.2.102",
-            "port": 40000,
+            "name": "sfc-common:sf2-dpl",
+            "ip": "192.168.1.7",
+            "port": 40001,
             "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF2"
+            "service-function-forwarder": "sfc-common:SFF1"
           }
         ],
-        "rest-uri": "http://10.0.2.102:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.102",
+        "ip-mgmt-address": "192.168.1.7",
         "type": "service-function-type:napt44"
       },
       {
-        "name": "SF3",
+        "name": "sfc-common:SF3",
         "sf-data-plane-locator": [
           {
-            "name": "vxlan",
-            "ip": "10.0.2.103",
-            "port": 40000,
+            "name": "sfc-common:sf3-dpl",
+            "ip": "192.168.1.7",
+            "port": 40002,
             "transport": "service-locator:vxlan-gpe",
-            "service-function-forwarder": "SFF3"
+            "service-function-forwarder": "sfc-common:SFF1"
           }
         ],
-        "rest-uri": "http://10.0.2.103:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.103",
+        "ip-mgmt-address": "192.168.1.7",
         "type": "service-function-type:firewall"
       }
     ]
@@ -65,118 +65,80 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
-      {  
-        "name": "SFF1",
+      {
+        "name": "sfc-common:SFF1",
         "sff-data-plane-locator": [
           {
-            "name": "eth0",
+            "name": "sfc-common:sff1-dpl",
             "data-plane-locator": {
               "port": 30000,
-              "ip": "10.0.2.101",
+              "ip": "192.168.1.7",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.101:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "service-function-dictionary": [
           {
-            "name": "SF1",
-            "type": "service-function-type:dpi",
+            "name": "sfc-common:SF1",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.101",
-              "transport": "service-locator:vxlan-gpe"
+              "sf-dpl-name": "sfc-common:sf1-dpl",
+              "sff-dpl-name": "sfc-common:sff1-dpl"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.101",
+        "ip-mgmt-address": "192.168.1.7",
         "service-node": "Xubuntu-1"
       },
       {
-        "name": "SFF2",
+        "name": "sfc-common:SFF2",
         "sff-data-plane-locator": [
           {
-            "name": "eth0",
+            "name": "sfc-common:sff2-dpl",
             "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.102",
+              "port": 30001,
+              "ip": "192.168.1.7",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.102:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "service-function-dictionary": [
           {
-            "name": "SF2",
-            "type": "service-function-type:napt44",
+            "name": "sfc-common:SF1",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.102",
-              "transport": "service-locator:vxlan-gpe"
+              "sf-dpl-name": "sfc-common:sf1-dpl",
+              "sff-dpl-name": "sfc-common:sff2-dpl"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.102",
+        "ip-mgmt-address": "192.168.1.7",
         "service-node": "Xubuntu-2"
       },
       {
-        "name": "SFF3",
+        "name": "sfc-common:SFF3",
         "sff-data-plane-locator": [
           {
-            "name": "eth0",
+            "name": "sfc-common:ssf3-dpl",
             "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.103",
+              "port": 30002,
+              "ip": "192.168.1.7",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.103:5000",
+        "rest-uri": "http://192.168.1.7:5000",
         "service-function-dictionary": [
           {
-            "name": "SF3",
-            "type": "service-function-type:firewall",
+            "name": "sfc-common:SF1",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.103",
-              "transport": "service-locator:vxlan-gpe"
+              "sf-dpl-name": "sfc-common:sf1-dpl",
+              "sff-dpl-name": "sfc-common:sff3-dpl"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.103",
+        "ip-mgmt-address": "192.168.1.7",
         "service-node": "Xubuntu-3"
-      },
-      {
-        "name": "SFF-classifier",
-        "sff-data-plane-locator": [
-          {
-            "name": "eth0",
-            "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.10",
-              "transport": "service-locator:vxlan-gpe"
-            }
-          }
-        ],
-        "rest-uri": "http://10.0.2.10:5000",
-        "ip-mgmt-address": "10.0.2.10",
-        "service-node": "Xubuntu-class"
-      },
-      {
-        "name": "SFF-classifier-Reverse",
-        "sff-data-plane-locator": [
-          {
-            "name": "eth0",
-            "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.20",
-              "transport": "service-locator:vxlan-gpe"
-            }
-          }
-        ],
-        "rest-uri": "http://10.0.2.20:5000",
-        "ip-mgmt-address": "10.0.2.20",
-        "service-node": "Xubuntu-rev-class"
       }
     ]
   }
@@ -187,7 +149,7 @@ SERVICE_CHAINS_JSON = """
   "service-function-chains": {
     "service-function-chain": [
       {
-        "name": "SFC1",
+        "name": "sfc-common:SFC1",
         "sfc-service-function": [
           {
             "name": "dpi-abstract",
@@ -215,7 +177,7 @@ SERVICE_PATH_JSON = """
   "service-function-paths": {
     "service-function-path": [
       {
-        "name": "SFC1-SFP1",
+        "name": "sfc-common:SFC1-SFP1",
         "service-chain-name": "SFC1",
         "symmetric": true
       }

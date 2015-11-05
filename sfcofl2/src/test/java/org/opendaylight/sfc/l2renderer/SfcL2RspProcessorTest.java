@@ -56,12 +56,12 @@ public class SfcL2RspProcessorTest {
 
     private void assertMatchAnyMethodsCalled() {
         // Default values
+        // Each of the MatchAny methods is called once per SFF, and there are 2 SFFs
         assertMatchAnyMethodsCalled(2, 2, 2, 2, 2);
     }
 
     private void assertMatchAnyMethodsCalled(
             int transportIngressCount, int pathMapperCount, int pathMapperAclCount, int nextHopCount, int transportEgressCount) {
-        // Each of these is called once per SFF, and there are 2 SFFs
         assertMethodCallCount(
                 SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex,
                 transportIngressCount);

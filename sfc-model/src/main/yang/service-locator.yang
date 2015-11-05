@@ -202,5 +202,10 @@ module service-locator {
       description
         "The encapsulation used to carry NSH packets";
     }
+    leaf weight {
+      type int32;
+      description
+        "The weight associated with this locator";
+    }
   }
 }

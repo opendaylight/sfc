@@ -9,13 +9,11 @@
 package org.opendaylight.sfc.sbrest.json;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffSfOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.ovs.bridge.ExternalIds;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,35 +213,15 @@ class SffExporter extends AbstractExporter implements Exporter {
         }
 
         ObjectNode sffSfDataPlaneLocatorNode =
-                ExporterUtil.getDataPlaneLocatorObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator());
-
+                ExporterUtil.getSffSfDataPlaneLocatorObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator());
         if (sffSfDataPlaneLocatorNode != null) {
-            sffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE, this
-                .getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
             sfObjectNode.put(_SFF_SF_DATA_PLANE_LOCATOR, sffSfDataPlaneLocatorNode);
         } else {
             ObjectNode emptySffSfDataPlaneLocatorNode = mapper.createObjectNode();
-            emptySffSfDataPlaneLocatorNode.put(SERVICE_FUNCTION_FORWARDER_PREFIX + _OVS_BRIDGE, this
-                .getSffSfDataPlaneLocatorOvsBridgeObjectNode(serviceFunctionDictionary.getSffSfDataPlaneLocator()));
             sfObjectNode.put(_SFF_SF_DATA_PLANE_LOCATOR, emptySffSfDataPlaneLocatorNode);
         }
 
         return sfObjectNode;
     }
 
-    private ObjectNode getSffSfDataPlaneLocatorOvsBridgeObjectNode(SffSfDataPlaneLocator sffSfDataPlaneLocator) {
-        if (sffSfDataPlaneLocator == null
-                || sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class) == null) {
-            return null;
-        }
-
-        SffSfOvsLocatorBridgeAugmentation sffSfDataPlaneLocator1 =
-                sffSfDataPlaneLocator.getAugmentation(SffSfOvsLocatorBridgeAugmentation.class);
-
-        if (sffSfDataPlaneLocator1 != null) {
-            return this.getOvsBridgeObjectNode(sffSfDataPlaneLocator1.getOvsBridge());
-        }
-
-        return null;
-    }
 }

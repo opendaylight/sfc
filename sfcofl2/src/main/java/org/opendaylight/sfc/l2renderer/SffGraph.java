@@ -166,7 +166,7 @@ public class SffGraph {
         graphEntries.add(entry);
 
         LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
-                srcSff, dstSff, sf, sfg, pathId, serviceIndex);
+                srcSff.getValue(), dstSff.getValue(), sf.getValue(), sfg, pathId, serviceIndex);
 
         return entry;
     }
@@ -197,8 +197,8 @@ public class SffGraph {
 
         Map<SffName, SffDataPlaneLocators> sffToDpls = pathIdToSffDataPlaneLocators.get(pathId);
 
-        LOG.debug("SffGraphEntry addSffDpls sff [{}] path [{}] ingressDpl [{}] egressDpl [{}]", sffName, pathId,
-                ingressDpl, egressDpl);
+        LOG.debug("SffGraphEntry addSffDpls sff [{}] path [{}] ingressDpl [{}] egressDpl [{}]",
+                sffName.getValue(), pathId, ingressDpl.getValue(), egressDpl.getValue());
 
         if (sffToDpls == null) {
             sffToDpls = new HashMap<SffName, SffDataPlaneLocators>();
@@ -216,7 +216,8 @@ public class SffGraph {
         Map<SffName, SffDataPlaneLocators> sffToDpls = pathIdToSffDataPlaneLocators.get(pathId);
         if (sffToDpls == null) {
             if (!createEntry) {
-                LOG.debug("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]", sffName, pathId);
+                LOG.debug("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]",
+                        sffName.getValue(), pathId);
 
                 return null;
             }
@@ -237,13 +238,13 @@ public class SffGraph {
     public void setSffIngressDpl(final SffName sffName, final long pathId,
             final SffDataPlaneLocatorName ingressDplName) {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId, true);
-        LOG.debug("setSffIngressDpl sff [{}] pathId [{}] dpl [{}]", sffName, pathId, ingressDplName);
+        LOG.debug("setSffIngressDpl sff [{}] pathId [{}] dpl [{}]", sffName.getValue(), pathId, ingressDplName);
         sffDpl.ingressDplName = ingressDplName;
     }
 
     public void setSffEgressDpl(final SffName sffName, final long pathId, final SffDataPlaneLocatorName egressDplName) {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId, true);
-        LOG.debug("setSffEgressDpl sff [{}] pathId [{}] dpl [{}]", sffName, pathId, egressDplName);
+        LOG.debug("setSffEgressDpl sff [{}] pathId [{}] dpl [{}]", sffName.getValue(), pathId, egressDplName);
         sffDpl.egressDplName = egressDplName;
     }
 
@@ -251,7 +252,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if (sffDpl == null) {
-            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName.getValue(), pathId);
             return null;
         }
 
@@ -262,7 +263,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if (sffDpl == null) {
-            LOG.debug("SffGraph getSffEgressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffEgressDpl cant find sffDpl for sff [{}] path [{}]", sffName.getValue(), pathId);
             return null;
         }
 
@@ -278,7 +279,7 @@ public class SffGraph {
         SffDataPlaneLocators sffDpl = getSffDpl(sffName, pathId);
 
         if (sffDpl == null) {
-            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName, pathId);
+            LOG.debug("SffGraph getSffIngressDpl cant find sffDpl for sff [{}] path [{}]", sffName.getValue(), pathId);
             return null;
         }
 
@@ -286,6 +287,7 @@ public class SffGraph {
     }
 
     public void logDpls() {
+        LOG.info("SffGraph.logDpls [{}] entries", pathIdToSffDataPlaneLocators.size());
         // Print the SFF DPLs
         Set<Long> dplKeys = this.getSffDplKeys();
         for (Long key : dplKeys) {
@@ -322,6 +324,7 @@ public class SffGraph {
     }
 
     public void logEgressDpls() {
+        LOG.info("SffGraph.logEgressDpls [{}] entries", pathIdToPathEgressLocators.size());
         // Print the Path Egress DPLs
         Set<Long> egressDplKeys = this.getEgressLocatorKeys();
         for (Long pathId : egressDplKeys) {

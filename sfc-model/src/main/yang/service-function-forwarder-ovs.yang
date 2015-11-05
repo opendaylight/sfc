@@ -255,29 +255,6 @@ module service-function-forwarder-ovs {
     uses options;
   }
 
-  augment "/sfc-sff:service-function-forwarders/"
-        + "sfc-sff:service-function-forwarder/"
-        + "sfc-sff:service-function-dictionary/"
-        + "sfc-sff:sff-sf-data-plane-locator" {
-    description
-      "Augments the data plane locator between SFF and SF with
-       bridge specific information";
-    ext:augment-identifier "sff-sf-ovs-locator-bridge-augmentation";
-    uses bridge;
-  }
-
-  augment "/sfc-sff:service-function-forwarders/"
-        + "sfc-sff:service-function-forwarder/"
-        + "sfc-sff:service-function-dictionary/"
-        + "sfc-sff:sff-sf-data-plane-locator" {
-
-    description
-      "Augments the data plane locator between SFF and SF with
-       options specific to OVS such as context headers";
-    ext:augment-identifier "sff-sf-ovs-locator-options-augmentation";
-    uses options;
-  }
-
   rpc create-ovs-bridge {
     description
       "Creates OVS Bridge on specified OVS Node";

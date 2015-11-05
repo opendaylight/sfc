@@ -127,38 +127,38 @@ public class SfcL2RspProcessorTest {
         verify(this.flowProgrammerTestMoc, times(1)).
             configureVlanPathMapperFlow("SFF_0", 100, 0, false);
         verify(this.flowProgrammerTestMoc, times(1)).
-            configureVlanPathMapperFlow("SFF_0", 3, 0, true);
+            configureVlanPathMapperFlow("SFF_0", 2, 0, true);
         verify(this.flowProgrammerTestMoc, times(2)).
             configureVlanPathMapperFlow("SFF_1", 101, 0, false);
         verify(this.flowProgrammerTestMoc, times(1)).
-            configureVlanPathMapperFlow("SFF_1", 5, 0, true);
+            configureVlanPathMapperFlow("SFF_1", 3, 0, true);
 
         // Verify calls to configureNextHopFlow
         verify(this.flowProgrammerTestMoc, times(1)).
             configureNextHopFlow("SFF_0", 0, null, "00:00:00:00:00:00");
         verify(this.flowProgrammerTestMoc, times(1)).
-            configureNextHopFlow("SFF_0", 0, "00:00:00:00:00:00", "00:00:00:00:00:09");
+            configureNextHopFlow("SFF_0", 0, "00:00:00:00:00:00", "00:00:00:00:00:07");
         verify(this.flowProgrammerTestMoc, times(1)).
-            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:04", "00:00:00:00:00:07");
+            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:04", "00:00:00:00:00:05");
         verify(this.flowProgrammerTestMoc, times(1)).
-            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:07", null);
+            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:05", null);
 
         // Verify calls to configureVlanTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(1)).
             configureVlanTransportEgressFlow(
-                "SFF_0", "00:00:00:00:00:06", "00:00:00:00:00:00",
+                "SFF_0", "00:00:00:00:00:02", "00:00:00:00:00:00",
                 2, "1", 0, true, false, false);
         verify(this.flowProgrammerTestMoc, times(1)).
             configureVlanTransportEgressFlow(
-                "SFF_0", "00:00:00:00:00:04", "00:00:00:00:00:09",
+                "SFF_0", "00:00:00:00:00:04", "00:00:00:00:00:07",
                 101, "1", 0, false, false, false);
         verify(this.flowProgrammerTestMoc, times(1)).
             configureVlanTransportEgressFlow(
-                "SFF_1", "00:00:00:00:00:13", "00:00:00:00:00:07",
-                4, "1", 0, true, false, false);
+                "SFF_1", "00:00:00:00:00:07", "00:00:00:00:00:05",
+                3, "1", 0, true, false, false);
         verify(this.flowProgrammerTestMoc, times(1)).
             configureVlanTransportEgressFlow(
-                "SFF_1", "00:00:00:00:00:11", null,
+                "SFF_1", "00:00:00:00:00:09", null,
                 102, "1", 0, false, true, false);
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);

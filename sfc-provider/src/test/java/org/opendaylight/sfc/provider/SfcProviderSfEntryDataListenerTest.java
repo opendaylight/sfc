@@ -619,13 +619,12 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
             // ServiceFunctions attached to SFF_NAMES[i]
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             ServiceFunction serviceFunction = sfList.get(i);
-            SfDataPlaneLocator sfDPLocator = serviceFunction.getSfDataPlaneLocator().get(0);
-            SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder(sfDPLocator);
+            SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+            sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
                 .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                .setType(serviceFunction.getType())
                 .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
                 .setFailmode(Open.class)
                 .setSffInterfaces(null);

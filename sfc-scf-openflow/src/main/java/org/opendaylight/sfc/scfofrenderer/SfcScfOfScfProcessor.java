@@ -21,6 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev1510
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
@@ -29,14 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.Actions;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.Matches;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceEth;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -52,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -61,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 
 public class SfcScfOfScfProcessor {
 
@@ -121,136 +117,21 @@ public class SfcScfOfScfProcessor {
         }
     }
 
-    private static Match getMatch(NodeConnectorId inPort, Matches matches) {
-        MatchBuilder mb = new MatchBuilder();
 
-        if (inPort != null) {
-            mb.setInPort(inPort);
-        }
-
-        if (matches == null) {
-            return mb.build();
-        }
-
-        if (matches.getAceType() instanceof AceEth) {
-            AceEth eth = (AceEth) matches.getAceType();
-
-            // don't support mac mask
-
-            if (eth.getSourceMacAddress() != null) {
-                SfcOpenflowUtils.addMatchSrcMac(mb, eth.getSourceMacAddress().getValue());
-            }
-            if (eth.getDestinationMacAddress() != null) {
-                SfcOpenflowUtils.addMatchDstMac(mb, eth.getDestinationMacAddress().getValue());
-            }
-
-        } else if (matches.getAceType() instanceof AceIp) {
-            AceIp aceip = (AceIp) matches.getAceType();
-
-            if (aceip.getDscp() != null) {
-                SfcOpenflowUtils.addMatchDscp(mb, aceip.getDscp().getValue());
-            }
-
-            if (aceip.getProtocol() != null) {
-                SfcOpenflowUtils.addMatchIpProtocol(mb, aceip.getProtocol());
-
-                Integer srcPort = null;
-                Integer dstPort = null;
-
-                if (aceip.getSourcePortRange() != null &&
-                    aceip.getSourcePortRange().getLowerPort() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != null) {
-                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
-                }
-                if (aceip.getDestinationPortRange() != null &&
-                    aceip.getDestinationPortRange().getLowerPort() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != null) {
-                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
-                }
-
-                // don't support port range
-                switch (aceip.getProtocol()) {
-                    case SfcOpenflowUtils.IP_PROTOCOL_UDP:
-
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcUdpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstUdpPort(mb, dstPort.intValue());
-                        }
-                        break;
-
-                    case SfcOpenflowUtils.IP_PROTOCOL_TCP:
-
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcTcpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstTcpPort(mb, dstPort.intValue());
-                        }
-                        break;
-
-                    case SfcOpenflowUtils.IP_PROTOCOL_SCTP:
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcSctpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstSctpPort(mb, dstPort.intValue());
-                        }
-                        break;
-                }
-            }
-
-            if (aceip.getAceIpVersion() instanceof AceIpv4) {
-                AceIpv4 ipv4 = (AceIpv4) aceip.getAceIpVersion();
-                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV4);
-
-                Ipv4Prefix src = ipv4.getSourceIpv4Network();
-                if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv4(mb, s[0], Integer.valueOf(s[1]).intValue());
-                }
-
-                Ipv4Prefix dst = ipv4.getDestinationIpv4Network();
-                if (dst != null) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv4(mb, d[0], Integer.valueOf(d[1]).intValue());
-                }
-            }
-            if (aceip.getAceIpVersion() instanceof AceIpv6) {
-                AceIpv6 ipv6 = (AceIpv6) aceip.getAceIpVersion();
-                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
-
-                Ipv6Prefix src = ipv6.getSourceIpv6Network();
-                if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
-                }
-
-                Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
-                if (dst != null ) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv6(mb, d[0], Integer.valueOf(d[1]).intValue());
-                }
-            }
-        }
-        return mb.build();
-    }
-
-    private static FlowBuilder createClassifierFlow(short tableId, String flow, Match match, SfcNshHeader sfcNshHeader,
-            int outPort) {
+    private static FlowBuilder createClassifierOutFlow(short tableId, String flow, Match match, SfcNshHeader sfcNshHeader,
+            Long outPort) {
         int order = 0;
         Integer priority = 1000;
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
         Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
         Action setNsp = SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), order++);
-        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshNsi(), order++);
+        Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), order++);
         Action setC1 = SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), order++);
         Action setC2 = SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++);
         Action setC3 = SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++);
         Action setC4 = SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), order++);
-        Action out = SfcOpenflowUtils.createActionOutPort(outPort, order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(outPort.intValue(), order++);
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flow))
@@ -260,6 +141,58 @@ public class SfcScfOfScfProcessor {
             .setMatch(match)
             .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
                 .createActionsInstructionBuilder(setTunIpDst, setNsp, setNsi, setC1, setC2, setC3, setC4, out))
+                .build());
+        return flowb;
+    }
+
+    private static FlowBuilder createClassifierInFlow(short tableId, String flow, SfcNshHeader sfcNshHeader, Long port) {
+        int order = 0;
+        Integer priority = 1000;
+
+        MatchBuilder mb = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchNshNsp(mb, sfcNshHeader.getNshNsp());
+        SfcOpenflowUtils.addMatchNshNsi(mb, sfcNshHeader.getNshEndNsi());
+
+        Action out = SfcOpenflowUtils.createActionOutPort(port.intValue(), order++);
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flow))
+            .setTableId(tableId)
+            .setKey(new FlowKey(new FlowId(flow)))
+            .setPriority(Integer.valueOf(priority))
+            .setMatch(mb.build())
+            .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                .createActionsInstructionBuilder(out))
+                .build());
+        return flowb;
+    }
+
+    private static FlowBuilder createClassifierRelayFlow(short tableId, String flow, SfcNshHeader sfcNshHeader, Long port) {
+        int order = 0;
+        Integer priority = 1000;
+
+        MatchBuilder mb = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchNshNsp(mb, sfcNshHeader.getNshNsp());
+        SfcOpenflowUtils.addMatchNshNsi(mb, sfcNshHeader.getNshEndNsi());
+
+        String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
+        Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
+        Action mvNsp = SfcOpenflowUtils.createActionNxMoveNsp(order++);
+        Action mvNsi = SfcOpenflowUtils.createActionNxMoveNsi(order++);
+        Action mvC1 = SfcOpenflowUtils.createActionNxMoveNsc1(order++);
+        Action mvC2 = SfcOpenflowUtils.createActionNxMoveNsc2(order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++);
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flow))
+            .setTableId(tableId)
+            .setKey(new FlowKey(new FlowId(flow)))
+            .setPriority(Integer.valueOf(priority))
+            .setMatch(mb.build())
+            .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                .createActionsInstructionBuilder(setTunIpDst, mvNsp, mvNsi, mvC1, mvC2, out))
                 .build());
         return flowb;
     }
@@ -329,7 +262,8 @@ public class SfcScfOfScfProcessor {
 
         for (SclServiceFunctionForwarder sclsff : sfflist) {
             SffName sffName = new SffName(sclsff.getName());
-            NodeConnectorId inPort = null;
+
+            Long inPort = null;
 
             ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
             if (sff == null) {
@@ -337,18 +271,13 @@ public class SfcScfOfScfProcessor {
                 continue;
             }
 
-            sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
-            if (sff == null) {
-                LOG.error("\ncreatedServiceFunctionClassifier: sff augment is null");
-                continue;
-            }
             String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
             if (nodeName == null) {
                 LOG.error("\ncreatedServiceFunctionClassifier: nodeName is null");
                 continue;
             }
 
-            int outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
+            Long outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
             initClassifierTable(nodeName);
 
             if (sclsff.getAttachmentPointType() instanceof Interface) {
@@ -378,10 +307,16 @@ public class SfcScfOfScfProcessor {
                     continue;
                 }
 
+                StringBuffer sb = new StringBuffer();
+                sb.append(nodeName).append(":");
+                sb.append(String.valueOf(inPort));
+                NodeConnectorId port = new NodeConnectorId(sb.toString());
 
                 // Match
-                Matches matches = ace.getMatches();
-                Match match = getMatch(inPort, matches);
+                Match match = new SfcMatch()
+                                  .setPortMatch(port)
+                                  .setAclMatch(ace.getMatches())
+                                  .build();
 
                 // Action
                 Actions actions = ace.getActions();
@@ -405,19 +340,56 @@ public class SfcScfOfScfProcessor {
                 RspName rspName = new RspName(path.getRenderedServicePath());
                 SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
 
+
                 if (nsh == null) {
                     LOG.error("\ncreatedServiceFunctionClassifier: nsh is null");
                     continue;
                 }
 
                 StringBuffer key = new StringBuffer();
-                key.append(scf.getName()).append(aclName).append(ruleName);
-                FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
-                if (flow == null) {
-                    LOG.error("\ncreatedServiceFunctionClassifier: flow is null");
+                key.append(scf.getName()).append(aclName).append(ruleName).append("out");
+                FlowBuilder outFlow = createClassifierOutFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
+                if (outFlow == null) {
+                    LOG.error("\ncreatedServiceFunctionClassifier: out flow is null");
                     continue;
                 }
-                writeFlowToConfig(nodeName, flow);
+                writeFlowToConfig(nodeName, outFlow);
+
+                RspName reverseRspName = null;
+                if (path.getRenderedServicePath().endsWith("-Reverse")) {
+                    reverseRspName = new RspName(path.getRenderedServicePath().replaceFirst("-Reverse", ""));
+                } else {
+                    reverseRspName = new RspName(path.getRenderedServicePath() + "-Reverse");
+                }
+
+                SfcNshHeader reverseNsh = SfcNshHeader.getSfcNshHeader(reverseRspName);
+
+                if (reverseNsh == null) {
+                    LOG.debug("\ncreatedServiceFunctionClassifier: reverseNsh is null");
+                } else {
+                    key = new StringBuffer();
+                    key.append(scf.getName()).append(aclName).append(ruleName).append("in");
+                    FlowBuilder inFlow = createClassifierInFlow(TABLE_INDEX_CLASSIFIER, key.toString(), reverseNsh, inPort);
+                    writeFlowToConfig(nodeName, inFlow);
+
+                    SffName lastSffName = reverseNsh.getSffName();
+                    if (lastSffName != null &&
+                        !reverseNsh.getSffName().equals(sffName)) {
+                        ServiceFunctionForwarder lastSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
+                        String lastNodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(lastSff);
+                        if (lastNodeName == null) {
+                            LOG.error("\ncreatedServiceFunctionClassifier: lastNodeName is null");
+                        }
+                        outPort = SfcOvsPortUtils.getVxlanOfPort(lastNodeName);
+                        key = new StringBuffer();
+                        key.append(scf.getName()).append(aclName).append(ruleName).append("relay");
+                        Ip ip = SfcOvsPortUtils.getSffIpDataLocator(sff, VxlanGpe.class);
+                        reverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address());
+                        reverseNsh.setVxlanUdpPort(ip.getPort());
+                        FlowBuilder relayFlow = createClassifierRelayFlow(TABLE_INDEX_CLASSIFIER, key.toString(), reverseNsh, outPort);
+                        writeFlowToConfig(lastNodeName, relayFlow);
+                    }
+                }
             }
         }
     }
@@ -487,7 +459,12 @@ public class SfcScfOfScfProcessor {
                 }
 
                 StringBuffer key = new StringBuffer();
-                key.append(scf.getName()).append(aclName).append(ruleName);
+                key.append(scf.getName()).append(aclName).append(ruleName).append(".out");
+
+                removeFlowFromConfig(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
+                                                            new FlowKey(new FlowId(key.toString())));
+                key = new StringBuffer();
+                key.append(scf.getName()).append(aclName).append(ruleName).append(".in");
 
                 removeFlowFromConfig(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
                                                             new FlowKey(new FlowId(key.toString())));

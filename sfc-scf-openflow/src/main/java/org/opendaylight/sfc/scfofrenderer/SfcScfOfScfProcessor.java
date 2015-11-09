@@ -121,121 +121,6 @@ public class SfcScfOfScfProcessor {
         }
     }
 
-    private static Match getMatch(NodeConnectorId inPort, Matches matches) {
-        MatchBuilder mb = new MatchBuilder();
-
-        if (inPort != null) {
-            mb.setInPort(inPort);
-        }
-
-        if (matches == null) {
-            return mb.build();
-        }
-
-        if (matches.getAceType() instanceof AceEth) {
-            AceEth eth = (AceEth) matches.getAceType();
-
-            // don't support mac mask
-
-            if (eth.getSourceMacAddress() != null) {
-                SfcOpenflowUtils.addMatchSrcMac(mb, eth.getSourceMacAddress().getValue());
-            }
-            if (eth.getDestinationMacAddress() != null) {
-                SfcOpenflowUtils.addMatchDstMac(mb, eth.getDestinationMacAddress().getValue());
-            }
-
-        } else if (matches.getAceType() instanceof AceIp) {
-            AceIp aceip = (AceIp) matches.getAceType();
-
-            if (aceip.getDscp() != null) {
-                SfcOpenflowUtils.addMatchDscp(mb, aceip.getDscp().getValue());
-            }
-
-            if (aceip.getProtocol() != null) {
-                SfcOpenflowUtils.addMatchIpProtocol(mb, aceip.getProtocol());
-
-                Integer srcPort = null;
-                Integer dstPort = null;
-
-                if (aceip.getSourcePortRange() != null &&
-                    aceip.getSourcePortRange().getLowerPort() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != null) {
-                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
-                }
-                if (aceip.getDestinationPortRange() != null &&
-                    aceip.getDestinationPortRange().getLowerPort() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != null) {
-                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
-                }
-
-                // don't support port range
-                switch (aceip.getProtocol()) {
-                    case SfcOpenflowUtils.IP_PROTOCOL_UDP:
-
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcUdpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstUdpPort(mb, dstPort.intValue());
-                        }
-                        break;
-
-                    case SfcOpenflowUtils.IP_PROTOCOL_TCP:
-
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcTcpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstTcpPort(mb, dstPort.intValue());
-                        }
-                        break;
-
-                    case SfcOpenflowUtils.IP_PROTOCOL_SCTP:
-                        if (srcPort != null) {
-                            SfcOpenflowUtils.addMatchSrcSctpPort(mb, srcPort.intValue());
-                        }
-                        if (dstPort != null) {
-                            SfcOpenflowUtils.addMatchDstSctpPort(mb, dstPort.intValue());
-                        }
-                        break;
-                }
-            }
-
-            if (aceip.getAceIpVersion() instanceof AceIpv4) {
-                AceIpv4 ipv4 = (AceIpv4) aceip.getAceIpVersion();
-                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV4);
-
-                Ipv4Prefix src = ipv4.getSourceIpv4Network();
-                if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv4(mb, s[0], Integer.valueOf(s[1]).intValue());
-                }
-
-                Ipv4Prefix dst = ipv4.getDestinationIpv4Network();
-                if (dst != null) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv4(mb, d[0], Integer.valueOf(d[1]).intValue());
-                }
-            }
-            if (aceip.getAceIpVersion() instanceof AceIpv6) {
-                AceIpv6 ipv6 = (AceIpv6) aceip.getAceIpVersion();
-                SfcOpenflowUtils.addMatchEtherType(mb, SfcOpenflowUtils.ETHERTYPE_IPV6);
-
-                Ipv6Prefix src = ipv6.getSourceIpv6Network();
-                if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv6(mb, s[0], Integer.valueOf(s[1]).intValue());
-                }
-
-                Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
-                if (dst != null ) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv6(mb, d[0], Integer.valueOf(d[1]).intValue());
-                }
-            }
-        }
-        return mb.build();
-    }
 
     private static FlowBuilder createClassifierFlow(short tableId, String flow, Match match, SfcNshHeader sfcNshHeader,
             int outPort) {
@@ -378,10 +263,11 @@ public class SfcScfOfScfProcessor {
                     continue;
                 }
 
-
                 // Match
-                Matches matches = ace.getMatches();
-                Match match = getMatch(inPort, matches);
+                Match match = new SfcMatch()
+                                  .setPortMatch(inPort)
+                                  .setAclMatch(ace.getMatches())
+                                  .build();
 
                 // Action
                 Actions actions = ace.getActions();

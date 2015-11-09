@@ -5,16 +5,20 @@ module service-function-description-monitor {
     import service-function {
         prefix sfc-sf;
         revision-date 2014-07-01;
-        }
+    }
     import service-function-description-monitor-report {
         prefix sf-desc-mon-rpt;
         revision-date 2014-11-05;
-        }
-
+    }
+    import yang-ext {
+      prefix ext;
+      revision-date 2013-07-09;
+    }
     organization "Intel Inc.";
     contact "honglix.chen@intel.com";
     description
-        "Create description and monitoring information of Service Function extensions to service-function model";
+        "Create description and monitoring information of Service" +
+        "Function extensions to service-function model";
 
     revision 2014-12-01 {
         description "Initial revision.";
@@ -22,6 +26,7 @@ module service-function-description-monitor {
 
     augment "/sfc-sf:service-functions-state/sfc-sf:service-function-state" {
         description "Service function description and monitoring information";
+        ext:augment-identifier "sf-state-desc-mon-augmentation";
         container sfc-sf-desc-mon {
             container description-info {
                 uses sf-desc-mon-rpt:SF-description;

@@ -6,17 +6,17 @@ module service-function-forwarder-ovs {
   prefix sfc-sff-ovs;
 
   import service-function-forwarder {
-      prefix sfc-sff;
-      revision-date 2014-07-01;
-      }
+    prefix sfc-sff;
+    revision-date 2014-07-01;
+  }
   import sfc-common {
-      prefix sfc-common;
-      revision-date 2015-10-17;
-      }
+    prefix sfc-common;
+    revision-date 2015-10-17;
+  }
   import yang-ext {
-      prefix ext;
-      revision-date 2013-07-09;
-      }
+    prefix ext;
+    revision-date 2013-07-09;
+  }
   import ietf-yang-types {
     prefix yang;
     revision-date 2013-07-15;

@@ -29,7 +29,7 @@ public class SfcScfOfRenderer implements AutoCloseable {
     public SfcScfOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService) {
         LOG.info("SfcScfOfRenderer starting the SfcScfOfRenderer plugin...");
 
-        this.sfcScfDataListener = new SfcScfOfScfDataListener(dataBroker);
+        this.sfcScfDataListener = new SfcScfOfScfDataListener(dataBroker, new SfcScfOfScfProcessor());
 
         LOG.info("SfcScfOfRenderer successfully started the SfcScfOfRenderer plugin");
     }

@@ -27,11 +27,12 @@ public class SfcScfOfScfDataListener extends SfcScfOfAbstractDataListener {
     private SfcScfOfScfProcessor sfcScfProcessor;
 
     public SfcScfOfScfDataListener(
-            DataBroker dataBroker) {
+            DataBroker dataBroker,
+            SfcScfOfScfProcessor sfcScfProcessor) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.SCF_ENTRY_IID);
         registerAsDataChangeListener();
-        this.sfcScfProcessor = new SfcScfOfScfProcessor();
+        this.sfcScfProcessor = sfcScfProcessor;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SfcScfOfScfDataListener extends SfcScfOfAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionClassifier) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionClassifier scf = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("\nUpdated ServiceFunctionClassifier origin: {}  new: {}", originScf.getName(), scf.getName());
+                LOG.debug("\nUpdated ServiceFunctionClassifier name: {}", scf.getName());
                 //TODO
             }
         }

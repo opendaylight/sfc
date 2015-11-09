@@ -61,7 +61,7 @@ public class SfcNetconfServiceFunctionAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceFunctionAPI.class);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
+    private static SfcNetconfSfDescriptionMonitorAPI getSfDescMon = new SfcNetconfSfDescriptionMonitorAPI();
 
     /**
      * Returns an Service Function object which can be stored

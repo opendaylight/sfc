@@ -8,30 +8,39 @@
 
 package org.opendaylight.sfc.scfofrenderer;
 
-
 import java.util.Map;
 import java.util.Set;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-public class SfcScfOfScfDataListener extends SfcScfOfAbstractDataListener {
+public class SfcScfOfScfDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfScfDataListener.class);
     private SfcScfOfScfProcessor sfcScfProcessor;
+    private ListenerRegistration<DataChangeListener> registerListener;
 
     public SfcScfOfScfDataListener(
-            DataBroker dataBroker) {
-        setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.SCF_ENTRY_IID);
-        registerAsDataChangeListener();
-        this.sfcScfProcessor = new SfcScfOfScfProcessor();
+            DataBroker dataBroker,
+            SfcScfOfScfProcessor sfcScfProcessor) {
+        registerListener = dataBroker.registerDataChangeListener(
+            LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SCF_ENTRY_IID,
+            this, DataBroker.DataChangeScope.SUBTREE);
+        this.sfcScfProcessor = sfcScfProcessor;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (registerListener != null)
+            registerListener.close();
     }
 
     @Override
@@ -64,7 +73,7 @@ public class SfcScfOfScfDataListener extends SfcScfOfAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof ServiceFunctionClassifier) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
                 ServiceFunctionClassifier scf = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("\nUpdated ServiceFunctionClassifier origin: {}  new: {}", originScf.getName(), scf.getName());
+                LOG.debug("\nUpdated ServiceFunctionClassifier name: {}", scf.getName());
                 //TODO
             }
         }

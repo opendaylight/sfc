@@ -8,12 +8,6 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider.api;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -34,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.SfStateDescMonAugmentation;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.SfStateDescMonAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMonBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
@@ -47,6 +41,12 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class has the APIs to map Netconf to SFC Service Function
@@ -61,7 +61,7 @@ public class SfcNetconfServiceFunctionAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceFunctionAPI.class);
     private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
-    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
+    private static SfcNetconfSfDescriptionMonitorAPI getSfDescMon = new SfcNetconfSfDescriptionMonitorAPI();
 
     /**
      * Returns an Service Function object which can be stored
@@ -150,9 +150,9 @@ public class SfcNetconfServiceFunctionAPI {
 
                 dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
 
-                // build the service function capbility and utilization
+                // build the service function capability and utilization
                 if (dataSfcStateObject != null) {
-                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                    SfStateDescMonAugmentation sf1Temp = dataSfcStateObject.getAugmentation(SfStateDescMonAugmentation.class);
                     if (sf1Temp != null) {
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                         sfDescMonBuilder.setMonitoringInfo(sfDescMonTemp.getMonitoringInfo());
@@ -160,9 +160,11 @@ public class SfcNetconfServiceFunctionAPI {
                 }
                 sfDescMon = sfDescMonBuilder.build();
 
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+                SfStateDescMonAugmentation sfStateDescMonAugmentation = new  SfStateDescMonAugmentationBuilder().
+                        setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .setKey(serviceFunctionStateKey).addAugmentation(SfStateDescMonAugmentation.class,
+                                sfStateDescMonAugmentation).build();
 
                 if (dataSfcStateObject != null) {
                     ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
@@ -234,7 +236,7 @@ public class SfcNetconfServiceFunctionAPI {
 
                 // build the service function capbility and utilization
                 if (dataSfcStateObject != null) {
-                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                    SfStateDescMonAugmentation sf1Temp = dataSfcStateObject.getAugmentation(SfStateDescMonAugmentation.class);
                     if (sf1Temp != null) {
                         SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                         sfDescMonBuilder.setDescriptionInfo(sfDescMonTemp.getDescriptionInfo());
@@ -242,9 +244,10 @@ public class SfcNetconfServiceFunctionAPI {
                 }
                 sfDescMon = sfDescMonBuilder.build();
 
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+                SfStateDescMonAugmentation sfState1 = new SfStateDescMonAugmentationBuilder()
+                        .setSfcSfDescMon(sfDescMon).build();
                 ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .setKey(serviceFunctionStateKey).addAugmentation(SfStateDescMonAugmentation.class, sfState1).build();
 
                 if (dataSfcStateObject != null) {
                     ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);

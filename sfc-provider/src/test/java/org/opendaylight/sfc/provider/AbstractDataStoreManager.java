@@ -8,11 +8,8 @@
 
 package org.opendaylight.sfc.provider;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
@@ -25,12 +22,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessLists;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.SfStateDescMonAugmentation;
 import org.opendaylight.yangtools.yang.binding.YangModuleInfo;
 import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * This class contains auxiliary methods to manage abstract data store
@@ -73,7 +72,7 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
         loadModuleInfos(AccessLists.class, moduleInfoSet);
         loadModuleInfos(ServiceFunctionClassifiers.class, moduleInfoSet);
         loadModuleInfos(ServiceFunctionState.class, moduleInfoSet);
-        loadModuleInfos(ServiceFunctionState1.class, moduleInfoSet);
+        loadModuleInfos(SfStateDescMonAugmentation.class, moduleInfoSet);
         return moduleInfoSet.build();
     }
 

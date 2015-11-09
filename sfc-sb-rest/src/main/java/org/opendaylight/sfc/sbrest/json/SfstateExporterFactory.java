@@ -7,10 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.SfStateDescMonAugmentation;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
@@ -23,10 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SfstateExporterFactory implements ExporterFactory {
 
@@ -161,10 +160,10 @@ class SfstateExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSfDescriptionMonitorObjectNode(ServiceFunctionState sfstate) {
-        if (sfstate == null || sfstate.getAugmentation(ServiceFunctionState1.class) == null) {
+        if (sfstate == null || sfstate.getAugmentation(SfStateDescMonAugmentation.class) == null) {
             return null;
         }
-        ServiceFunctionState1 serviceFunctionState1 = sfstate.getAugmentation(ServiceFunctionState1.class);
+        SfStateDescMonAugmentation serviceFunctionState1 = sfstate.getAugmentation(SfStateDescMonAugmentation.class);
 
         if (serviceFunctionState1 != null) {
             return this.getDescriptionMonitorObjectNode(serviceFunctionState1.getSfcSfDescMon());

@@ -37,8 +37,8 @@ import com.google.common.base.Preconditions;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-public class SfcProviderSfDescriptionMonitorAPI{
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
+public class SfcNetconfSfDescriptionMonitorAPI{
+    private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfSfDescriptionMonitorAPI.class);
     private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static ConsumerContext sessionData;
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
@@ -47,7 +47,7 @@ public class SfcProviderSfDescriptionMonitorAPI{
             .child(Topology.class,
                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    public SfcProviderSfDescriptionMonitorAPI() {
+    public SfcNetconfSfDescriptionMonitorAPI() {
             setSessionHelper();
     }
 

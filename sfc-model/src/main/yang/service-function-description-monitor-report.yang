@@ -5,11 +5,11 @@ module service-function-description-monitor-report {
     import ietf-inet-types {
         prefix inet;
         revision-date 2010-09-24;
-        }
+    }
     import ietf-yang-types {
         prefix yang;
         revision-date 2010-09-24;
-        }
+    }
 
     organization "Intel Inc.";
     contact "honglix.chen@intel.com";
@@ -168,14 +168,14 @@ module service-function-description-monitor-report {
         }
     }
 
-    container service-function {
-        container description-info {
-            uses SF-description;
-        }
-        container monitoring-info {
-            uses SF-monitoring-info;
-        }
-    }
+//    container service-function {
+//        container description-info {
+//            uses SF-description;
+//        }
+//        container monitoring-info {
+//            uses SF-monitoring-info;
+//        }
+//    }
 
     rpc get-SF-description {
         description

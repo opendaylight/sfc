@@ -244,7 +244,7 @@
             <feature>odl-sfclisp</feature>
             <feature>odl-sfc-ovs</feature>
             <feature>odl-sfc-netconf</feature>
-            <!-- 
+            <!--
               Add entries here for the features you want in your local distro
               Note: odl-restconf is a separate feature from odl-mdsal-broker.
               If you want restconf, you need to list it here explicitely.

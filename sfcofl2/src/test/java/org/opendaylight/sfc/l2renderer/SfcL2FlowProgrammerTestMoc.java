@@ -1,8 +1,10 @@
 package org.opendaylight.sfc.l2renderer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
@@ -95,6 +97,11 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
 
     @Override
     public void deleteRspFlows(final Long rspId) {
+    }
+
+    @Override
+    public Set<String> clearSffsIfNoRspExists() {
+        return new HashSet<String>();
     }
 
     //---------------------------------------------

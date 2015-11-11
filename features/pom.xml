@@ -221,7 +221,7 @@
     </dependency>
 
     <!--  END BUNDLES SECTION -->
-    <!-- 
+    <!--
             CONFIGFILES SECTION
       Put dependencies for configfiles directly referenced in your features.xml file.
       For every <configfile> reference in your features.xml file, you need a corresponding dependency here.

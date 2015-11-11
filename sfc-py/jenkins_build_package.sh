@@ -38,14 +38,14 @@ echo ++++++++++++++++ Activating virtualenv +++++++++++++++++++
 source "$sfc_py3_venv_dir/bin/activate"
 
 # instal twine
-pip install twine 
+pip install twine
 which twine
 
 # create SFC package
 
 # cd to sfc/sfc-py directory
 cd $curpath
- 
+
 # 3. execute "sudo python3 setup.py sdist" to build the package
 python3 setup.py sdist
 # 4. check if the package 'sfc-0.1.365.tar.gz' was created in sfc/sfc-py/dist
@@ -53,13 +53,13 @@ python3 setup.py sdist
 file="$curpath/dist/sfc-0.1.4.tar.gz"
 if [ -s "$file" ]
 then
-	echo "Sfc Package created and has size greater than zero."
+    echo "Sfc Package created and has size greater than zero."
     # 5. publish the package on PyPI
     # === decided to do this step using Reinaldo Penno login
     #$sfc_twine_executable upload -u $USR -p $PSW dist/*
     twine upload -u $USR -p $PSW dist/*
 else
-	echo "Sfc Package not found."
+    echo "Sfc Package not found."
 fi
 
 

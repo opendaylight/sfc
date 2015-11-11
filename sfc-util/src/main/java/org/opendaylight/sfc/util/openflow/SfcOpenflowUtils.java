@@ -192,7 +192,13 @@ public class SfcOpenflowUtils {
         String idStr = String.valueOf(flowIdInc.getAndIncrement());
         flow.setId(new FlowId(idStr));
         flow.setKey(new FlowKey(new FlowId(idStr)));
-        flow.setTableId(table);
+        short tableNew = table;
+        if (tableNew < 150) {
+            tableNew += 150;
+        } else if (tableNew > 255){
+            tableNew -= 150;
+        }
+        flow.setTableId(tableNew);
         flow.setFlowName(flowName);
         flow.setCookie(new FlowCookie(cookieValue));
         flow.setCookieMask(new FlowCookie(cookieValue));

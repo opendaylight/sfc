@@ -137,7 +137,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
         if (ovsdbBridge != null) {
             // put Bridge
-            SfcOvsUtil.putOvsdbBridge(ovsdbBridge, executor);
+            //SfcOvsUtil.putOvsdbBridge(ovsdbBridge, executor);
 
             // put Termination Points
             SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator(), executor);

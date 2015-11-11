@@ -80,8 +80,13 @@ public class SfcScfOfScfProcessor {
     private static final int FLOW_PRIORITY_NEXT_HOP = 550;
     private static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 650;
     private static final int FLOW_PRIORITY_MATCH_ANY = 5;
+    private static final short tableBase = 150;
 
     public SfcScfOfScfProcessor() {}
+
+    private short getTableId(short tableIndex) {
+        return (short) (tableBase + tableIndex);
+    }
 
     private void removeFlowFromConfig(final String nodeName, TableKey tableKey, FlowKey flowKey) {
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -269,7 +274,8 @@ public class SfcScfOfScfProcessor {
         int order = 0;
 
         List<Instruction> instructions = new ArrayList<Instruction>();
-        GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(TABLE_INDEX_INGRESS_TRANSPORT);
+        GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(
+                getTableId(TABLE_INDEX_INGRESS_TRANSPORT));
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setKey(new InstructionKey(order));
@@ -412,7 +418,7 @@ public class SfcScfOfScfProcessor {
 
                 StringBuffer key = new StringBuffer();
                 key.append(scf.getName()).append(aclName).append(ruleName);
-                FlowBuilder flow = createClassifierFlow(TABLE_INDEX_CLASSIFIER, key.toString(), match, nsh, outPort);
+                FlowBuilder flow = createClassifierFlow(getTableId(TABLE_INDEX_CLASSIFIER), key.toString(), match, nsh, outPort);
                 if (flow == null) {
                     LOG.error("\ncreatedServiceFunctionClassifier: flow is null");
                     continue;
@@ -489,7 +495,7 @@ public class SfcScfOfScfProcessor {
                 StringBuffer key = new StringBuffer();
                 key.append(scf.getName()).append(aclName).append(ruleName);
 
-                removeFlowFromConfig(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
+                removeFlowFromConfig(nodeName, new TableKey(getTableId(TABLE_INDEX_CLASSIFIER)),
                                                             new FlowKey(new FlowId(key.toString())));
             }
         }

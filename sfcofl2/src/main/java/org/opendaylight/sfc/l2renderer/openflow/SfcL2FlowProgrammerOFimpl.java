@@ -135,7 +135,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private Long flowRspId;
 
     public SfcL2FlowProgrammerOFimpl() {
-        this.tableBase = (short) 0;
+        this.tableBase = (short) 150;
         this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
         this.flowRspId = new Long(0);
 
@@ -408,7 +408,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     public void configureVxlanGpeTransportIngressFlow(final String sffNodeName) {
         ConfigureTransportIngressThread configureIngressTransportThread =
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4);
-        configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
+        configureIngressTransportThread.setNextTable((short)(TABLE_INDEX_NEXT_HOP+150));
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -440,7 +440,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.sffNodeName = sffNodeName;
             this.etherType = etherType;
             this.ipProtocol = (short) -1;
-            this.nextTable = TABLE_INDEX_PATH_MAPPER;
+            this.nextTable = getTableId(TABLE_INDEX_PATH_MAPPER);
             this.rspId = flowRspId;
         }
 
@@ -479,7 +479,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Action, goto the nextTable, defaults to Ingress table unless otherwise set
-                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
+                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(this.nextTable);
 
                 InstructionBuilder ib = new InstructionBuilder();
                 ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
@@ -492,7 +492,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder transportIngressFlow =
-                        SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
+                        SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
                                 FLOW_PRIORITY_TRANSPORT_INGRESS, "ingress_Transport_Default_Flow", match, isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
@@ -957,7 +957,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
                 aab.setAction(actionList);
 
-                GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(TABLE_INDEX_TRANSPORT_EGRESS);
+                GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
 
                 InstructionBuilder gotoTbIb = new InstructionBuilder();
                 gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());

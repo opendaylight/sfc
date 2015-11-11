@@ -8,6 +8,7 @@
 package org.opendaylight.sfc.l2renderer;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
@@ -33,6 +34,9 @@ public interface SfcL2FlowProgrammerInterface {
     // Delete all flows created for a particular RSP
     public void deleteRspFlows(final Long rspId);
 
+    // Delete initialization flows from SFF if no RSP exists.
+    // Set of sffNodeNames is returned for cleared SFFs.
+    public Set<String> clearSffsIfNoRspExists();
     //
     // Congfigure Table 0, Transport Ingress
     //

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -155,6 +156,10 @@ public class SfcL2RspProcessor {
 
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
         sfcL2FlowProgrammer.deleteRspFlows(rsp.getPathId());
+        Set<String> clearedSffNodeNames = sfcL2FlowProgrammer.clearSffsIfNoRspExists();
+        for(String sffNodeName : clearedSffNodeNames){
+            setSffInitialized(sffNodeName, false);
+        }
     }
 
     private void configureSffEgressForGroup(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
@@ -476,7 +481,7 @@ public class SfcL2RspProcessor {
                     "initializeSff SFF [" + sffName + "] does not exist");
         }
 
-        if(!getSffInitialized(sffName)) {
+        if(!getSffInitialized(sffNodeName)) {
             LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny( sffNodeName, true);
             this.sfcL2FlowProgrammer.configurePathMapperTableMatchAny(       sffNodeName, false);
@@ -484,7 +489,7 @@ public class SfcL2RspProcessor {
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(          sffNodeName, false);
             this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(  sffNodeName, true);
 
-            setSffInitialized(sffName, true);
+            setSffInitialized(sffNodeName, true);
         }
     }
 

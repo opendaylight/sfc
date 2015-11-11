@@ -10,6 +10,7 @@
 package org.opendaylight.sfc.l2renderer.openflow;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -193,18 +194,30 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         for(FlowDetails flowDetails : flowDetailsList) {
             removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
         }
+    }
 
-        // If there is just one entry left, then all flows for RSPs have
-        // been deleted, and the only flows remaining are those that are
-        // common to all RSPs, which can now be deleted
-        if(rspNameToFlowsMap.size() == 1) {
+
+    /**
+     * Removes initialization flows from SFFs if no RSP exists.
+     *
+     * @return    SFFs from which default flows were removed.
+     */
+    @Override
+    public Set<String> clearSffsIfNoRspExists() {
+        // If there is just one entry left in the rsp-flows mapping, then all flows for RSPs
+        // have been deleted, and the only flows remaining are those that are common to all
+        // RSPs, which can be deleted.
+        Set<String> sffNodeNames = new HashSet<>();
+        if (rspNameToFlowsMap.size() == 1) {
             Set<Entry<Long, List<FlowDetails>>> entries = rspNameToFlowsMap.entrySet();
-            flowDetailsList = entries.iterator().next().getValue();
-            for(FlowDetails flowDetails : flowDetailsList) {
+            List<FlowDetails> flowDetailsList = entries.iterator().next().getValue();
+            for (FlowDetails flowDetails : flowDetailsList) {
                 removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
+                sffNodeNames.add(flowDetails.sffNodeName);
             }
             rspNameToFlowsMap.clear();
         }
+        return sffNodeNames;
     }
 
     //

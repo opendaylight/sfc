@@ -48,7 +48,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 /**
  * This the main SFC Provider class. It is instantiated from the SFCProviderModule class.
  * <p>
- * 
+ *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1

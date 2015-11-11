@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * are, all RPC from consumer YANG, mapped to their Java implementations. When you
  * select one, on the right panel there is a button to invoke that function.
  * <p>
- * 
+ *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
@@ -131,7 +131,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
     /**
      * Puts an SFChain
-     * 
+     *
      * @param name Name for new service function chain
      * @param sfList List of references to service functions (by names)
      * @return Boolean

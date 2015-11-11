@@ -9,7 +9,7 @@
         <property name="directory" value="/sfc"/>
         <property name="requireJs" value="app/sfc/main"/>
         <property name="angularJs" value="app.sfc"/>
-		<property name="cssDependencies">
+        <property name="cssDependencies">
             <list>
                  <value>src/app/sfc/vendor/select2/select2.css</value>
                  <value>src/app/sfc/vendor/select2-bootstrap-css/select2-bootstrap.css</value>

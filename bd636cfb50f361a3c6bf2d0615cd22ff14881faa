@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_263a3637",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerInterface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-12T11:16:27Z",
+      "side": 1,
+      "message": "please, use javadoc. You could also add example how that String looks like.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 56
+      },
+      "revId": "bd636cfb50f361a3c6bf2d0615cd22ff14881faa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_8648cacd",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-12T11:16:27Z",
+      "side": 1,
+      "message": "this is implementation description. Please, move it to the method",
+      "range": {
+        "startLine": 201,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 34
+      },
+      "revId": "bd636cfb50f361a3c6bf2d0615cd22ff14881faa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_a645c6b4",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-11-12T11:16:27Z",
+      "side": 1,
+      "message": "this is not needed.",
+      "range": {
+        "startLine": 215,
+        "startChar": 16,
+        "endLine": 215,
+        "endChar": 70
+      },
+      "revId": "bd636cfb50f361a3c6bf2d0615cd22ff14881faa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -22,6 +22,23 @@
       "revId": "94c3d257eca882a68c5535991dfbf47c6d8b98dd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_f5d7e2bd",
+        "filename": "sfc-py/sfc/sfc_agent.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-11-13T14:11:06Z",
+      "side": 1,
+      "message": "I do not think this will work. I see you fixed the code but the actual code will not work. Before all information was self-contained within the JSON now you only have the reference. \n\nThis means if dpl is not present in agent yet you need to perform a HTTP request to ODL and get it. Agent does that for other pieces of information that use reference. This allows agent to work across ODL reboots.",
+      "revId": "94c3d257eca882a68c5535991dfbf47c6d8b98dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

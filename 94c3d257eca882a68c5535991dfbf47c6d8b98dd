@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_6c632fb2",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-ovs.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-13T13:32:31Z",
+      "side": 1,
+      "message": "Does this matter? Just a thought, but can test..",
+      "range": {
+        "startLine": 268,
+        "startChar": 0,
+        "endLine": 274,
+        "endChar": 7
+      },
+      "revId": "94c3d257eca882a68c5535991dfbf47c6d8b98dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

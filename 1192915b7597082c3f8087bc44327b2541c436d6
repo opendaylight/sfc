@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_575a7084",
+        "filename": "sfc-netconf/src/test/java/org/opendaylight/sfc/sfc_netconf/provider/api/SfcNetconfServiceFunctionAPITest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 3064
+      },
+      "writtenOn": "2015-11-17T07:56:22Z",
+      "side": 1,
+      "message": "Do you mean the following part needs to be deleted, right?",
+      "revId": "1192915b7597082c3f8087bc44327b2541c436d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

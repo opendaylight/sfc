@@ -4,9 +4,16 @@ module service-function-type {
 
   prefix sfc-sft;
 
+  import service-locator {
+      prefix sfc-sl;
+      }
+
+  import sfc-common {
+      prefix sfc-common;
+  }
+
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
-
 
   description
     "This module contains a collection of YANG definitions for
@@ -106,6 +113,46 @@ module service-function-type {
       registered service function types";
   }
 
+  // Service Function Type definitions
+
+  grouping service-function-type-definition {
+    description
+      "List of parameters to define an abstract type of Service Function";
+    //TODO: Expand list to include metadata context template support. ie MD Type1 C3/C4 context, MD Type2 etc.
+
+    leaf type {
+      type sfc-common:sft-type;
+      description "Service Function type names such as firewall, dpi, tcp-proxy, etc";
+    }
+
+    leaf symmetry {
+      type boolean;
+      description "SF is involved in a symmetric service path";
+    }
+
+    leaf bidirectionality {
+      type boolean;
+      description "SF handles uplink and downlink traffic";
+    }
+
+    leaf nsh-aware {
+      type boolean;
+      description "Service Function can handle Network Service Headers";
+    }
+    leaf request-reclassification {
+        type boolean;
+        description "This leaf determines whether SF can request
+          reclassification by the SFF";
+      }
+    list supported-dataplanelocator-types {
+      description "Data Plane Locator types from the Service Function";
+      key "dataplanelocator-type";
+      leaf dataplanelocator-type {
+          type sfc-sl:sl-transport-type-def;
+      }
+    }
+  }
+
   container service-function-types {
     description
       "A list of Service function Types. For each type we keep
@@ -119,6 +166,7 @@ module service-function-type {
             "The service function type";
       }
       list sft-service-function-name {
+        //TODO: should this be sf-name typedef? Also this should be kept in a separate map as an alternate index as it mirrors state.
         key "name";
         leaf name {
           type string;

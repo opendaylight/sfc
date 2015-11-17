@@ -16,6 +16,11 @@ module sfc-common {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
+  // general typedefs
+  typedef tenant-id {
+      type string;
+      description "Tenant ID";
+  }
   // typedef for Service Node
   typedef sn-name {
       type string;
@@ -26,6 +31,12 @@ module sfc-common {
   typedef sfc-name {
       type string;
       description "Service Function Chain Name";
+  }
+
+  // typedefs for Service Function Type
+  typedef sft-type {
+      type string;
+      description "Service function type name";
   }
 
   // typedefs for Service Function

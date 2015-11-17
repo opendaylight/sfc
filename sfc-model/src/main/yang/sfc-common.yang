@@ -28,6 +28,12 @@ module sfc-common {
       description "Service Function Chain Name";
   }
 
+  // typedefs for Service Function Type
+  typedef sft-name {
+      type string;
+      description "Service function type name";
+  }
+
   // typedefs for Service Function
   typedef sf-name {
       type string;

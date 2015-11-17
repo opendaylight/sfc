@@ -24,6 +24,10 @@ module service-function {
       prefix sfc-common;
       revision-date 2015-10-17;
       }
+  import service-abstract-type-definition {
+      prefix sfc-satd;
+      revision-date 2015-11-15;
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -76,11 +80,17 @@ module service-function {
         "This SF was created for a specific tenant-id";
     }
     leaf type {
+      status deprecated;
       type sfc-sft:service-function-type;
       mandatory true;
       description
         "Service Function Type from service-function-type yang
          model";
+    }
+    container abstract-type {
+      uses sfc-satd:service-abstract-type-definition;
+      description
+        "Abstract Type definition for the Service Function";
     }
     leaf rest-uri {
       type inet:uri;
@@ -97,11 +107,13 @@ module service-function {
         reclassification by the SFF";
     }
     leaf nsh-aware {
+      status deprecated;
       type boolean;
       description "Whether this SF can process NSH headers";
     }
 
     list sf-data-plane-locator {
+      status deprecated;
       key "name";
       description
         "A network data-plane locator";

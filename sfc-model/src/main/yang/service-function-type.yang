@@ -7,7 +7,6 @@ module service-function-type {
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
 
-
   description
     "This module contains a collection of YANG definitions for
      managing service function types.

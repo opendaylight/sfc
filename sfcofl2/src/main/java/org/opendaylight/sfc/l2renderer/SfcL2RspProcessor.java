@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -52,7 +53,7 @@ public class SfcL2RspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspProcessor.class);
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private SfcL2BaseProviderUtils sfcL2ProviderUtils;
-    private Map<SffName, Boolean> sffInitialized;
+    private Map<String, Boolean> sffInitialized;
     private int lastMplsLabel;
     private int lastVlanId;
 
@@ -73,7 +74,7 @@ public class SfcL2RspProcessor {
             SfcL2BaseProviderUtils sfcL2ProviderUtils) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
-        this.sffInitialized = new HashMap<SffName, Boolean>();
+        this.sffInitialized = new HashMap<String, Boolean>();
         this.lastMplsLabel = 0;
         this.lastVlanId = 0;
     }
@@ -158,6 +159,10 @@ public class SfcL2RspProcessor {
 
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
         sfcL2FlowProgrammer.deleteRspFlows(rsp.getPathId());
+        Set<String> clearedSffNodeNames = sfcL2FlowProgrammer.clearSffsIfNoRspExists();
+        for(String sffNodeName : clearedSffNodeNames){
+            setSffInitialized(sffNodeName, false);
+        }
     }
 
     private void configureSffEgressForGroup(SffGraph.SffGraphEntry entry, SffGraph sffGraph) {
@@ -452,7 +457,7 @@ public class SfcL2RspProcessor {
             throw new RuntimeException("initializeSff SFF [" + sffName + "] does not exist");
         }
 
-        if (!getSffInitialized(sffName)) {
+        if (!getSffInitialized(sffNodeName)) {
             LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
             this.sfcL2FlowProgrammer.configureClassifierTableMatchAny(sffNodeName, false);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName, true);
@@ -461,7 +466,7 @@ public class SfcL2RspProcessor {
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffNodeName, false);
             this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName, true);
 
-            setSffInitialized(sffName, true);
+            setSffInitialized(sffNodeName, true);
         }
     }
 
@@ -1015,8 +1020,8 @@ public class SfcL2RspProcessor {
      * Internal util methods
      ****************************************************************/
 
-    private boolean getSffInitialized(final SffName sffName) {
-        Boolean isInitialized = sffInitialized.get(sffName);
+    private boolean getSffInitialized(final String sffNodeName) {
+        Boolean isInitialized = sffInitialized.get(sffNodeName);
 
         if (isInitialized == null) {
             return false;
@@ -1025,9 +1030,9 @@ public class SfcL2RspProcessor {
         return isInitialized.booleanValue();
     }
 
-    private void setSffInitialized(final SffName sffName, boolean initialized) {
+    private void setSffInitialized(final String sffNodeName, boolean initialized) {
         // If the value is already in the map, its value will be replaced
-        sffInitialized.put(sffName, initialized);
+        sffInitialized.put(sffNodeName, initialized);
     }
 
 }

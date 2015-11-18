@@ -11,6 +11,7 @@ package org.opendaylight.sfc.l2renderer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +38,7 @@ public class SfcL2RspProcessor {
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private SfcL2BaseProviderUtils sfcL2ProviderUtils;
     private SfcSynchronizer sfcSynchronizer;
-    private Map<SffName, Boolean> sffInitialized;
+    private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
     private static final Long SFC_FLOWS = new Long(0xdeadbeef);
 
@@ -47,7 +49,7 @@ public class SfcL2RspProcessor {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
-        this.sffInitialized = new HashMap<SffName, Boolean>();
+        this.sffInitialized = new HashMap<NodeId, Boolean>();
         this.rspTransportProcessors = new HashMap<String, Class<? extends SfcRspTransportProcessorBase>>();
         this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNsh.class);
         this.rspTransportProcessors.put(Mpls.class.getName(), SfcRspProcessorMpls.class);
@@ -121,7 +123,10 @@ public class SfcL2RspProcessor {
      * @param rsp - the Rendered Service Path to delete
      */
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
-        sfcL2FlowProgrammer.deleteRspFlows(rsp.getPathId());
+        Set<NodeId> clearedSffNodeIDs = sfcL2FlowProgrammer.deleteRspFlowsAndClearSFFsIfNoRspExists(rsp.getPathId());
+        for(NodeId sffNodeId : clearedSffNodeIDs){
+            setSffInitialized(sffNodeId, false);
+        }
     }
 
     /**
@@ -392,7 +397,8 @@ public class SfcL2RspProcessor {
             throw new RuntimeException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
         }
 
-        if (!getSffInitialized(entry.getDstSff())) {
+        NodeId sffNodeId = new NodeId(sffNodeName);
+        if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
             this.sfcL2FlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
@@ -401,7 +407,7 @@ public class SfcL2RspProcessor {
             this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffNodeName);
             this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
 
-            setSffInitialized(entry.getDstSff(), true);
+            setSffInitialized(sffNodeId, true);
         }
     }
 
@@ -418,8 +424,8 @@ public class SfcL2RspProcessor {
      * @param sffName - SFF to check
      * @return true if its been initialized, false otherwise
      */
-    private boolean getSffInitialized(final SffName sffName) {
-        Boolean isInitialized = sffInitialized.get(sffName);
+    private boolean getSffInitialized(final NodeId sffNodeId) {
+        Boolean isInitialized = sffInitialized.get(sffNodeId);
 
         if (isInitialized == null) {
             return false;
@@ -435,8 +441,8 @@ public class SfcL2RspProcessor {
      * @param sffName - the SFF to set
      * @param initialized - boolean value to set the SFF as
      */
-    private void setSffInitialized(final SffName sffName, boolean initialized) {
+    private void setSffInitialized(final NodeId sffNodeId, boolean initialized) {
         // If the value is already in the map, its value will be replaced
-        sffInitialized.put(sffName, initialized);
+        sffInitialized.put(new NodeId(sffNodeId), initialized);
     }
 }

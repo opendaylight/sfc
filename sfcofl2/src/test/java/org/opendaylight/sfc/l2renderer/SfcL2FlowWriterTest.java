@@ -10,11 +10,14 @@ package org.opendaylight.sfc.l2renderer;
 
 import java.util.concurrent.ExecutionException;
 
+import java.util.Set;
+
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * An interface to be implemented by concrete classes that will OpenFlow rules to MD-SAL datastore.
@@ -56,6 +59,11 @@ public class SfcL2FlowWriterTest implements SfcL2FlowWriterInterface {
 
     @Override
     public void deleteRspFlows(Long rspId) {
+    }
+
+    @Override
+    public Set<NodeId> clearSffsIfNoRspExists() {
+        return null;
     }
 
     @Override

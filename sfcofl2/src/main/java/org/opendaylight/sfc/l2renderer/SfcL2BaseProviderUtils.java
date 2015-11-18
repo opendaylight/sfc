@@ -313,6 +313,7 @@ public abstract class SfcL2BaseProviderUtils {
      */
     public String getSffOpenFlowNodeName(final SffName sffName, long rspId) {
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+        // TODO return more addressing type - NodeId
         return getSffOpenFlowNodeName(sff);
     }
 

@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.l2renderer;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
@@ -36,12 +37,27 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void setTableEgress(short tableEgress);
 
-    // Set the RSP Id that subsequent flow creations belong to
+    /**
+     * Set the RSP Id that subsequent flow creations belong to.
+     *
+     * @param rspId the ID of the RSP
+     */
     public void setFlowRspId(Long rspId);
 
-    // Delete all flows created for a particular RSP
+    /**
+     * Delete all flows created for a particular RSP.
+     *
+     * @param rspId the ID of the RSP
+     */
     public void deleteRspFlows(final Long rspId);
 
+    /**
+     * Delete initialization flows from SFF if no RSP exists.
+     *
+     * @return Set of sffNodeNames of cleared SFFs.
+     * Example of name: openflow:99344160872776
+     */
+    public Set<String> clearSffsIfNoRspExists();
     //
     // Congfigure Table 1, Transport Ingress
     //

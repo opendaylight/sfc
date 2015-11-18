@@ -9,9 +9,11 @@
 package org.opendaylight.sfc.l2renderer;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.
@@ -36,12 +38,27 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void setTableEgress(short tableEgress);
 
-    // Set the RSP Id that subsequent flow creations belong to
+    /**
+     * Set the RSP Id that subsequent flow creations belong to.
+     *
+     * @param rspId the ID of the RSP
+     */
     public void setFlowRspId(Long rspId);
 
-    // Delete all flows created for a particular RSP
+    /**
+     * Delete all flows created for a particular RSP.
+     *
+     * @param rspId the ID of the RSP
+     */
     public void deleteRspFlows(final Long rspId);
 
+    /**
+     * Delete initialization flows from SFF if no RSP exists.
+     *
+     * @return Set of NodeIDs of cleared SFFs.
+     * Example of NodeID: openflow:99344160872776
+     */
+    public Set<NodeId> clearSffsIfNoRspExists();
     //
     // Congfigure Table 1, Transport Ingress
     //

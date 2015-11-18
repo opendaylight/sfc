@@ -10,10 +10,13 @@ package org.opendaylight.sfc.l2renderer.openflow;
 
 import java.util.concurrent.ExecutionException;
 
+import java.util.Set;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * An interface to be implemented by concrete classes that will OpenFlow rules to MD-SAL datastore.
@@ -37,13 +40,26 @@ public interface SfcL2FlowWriterInterface {
     //Write group to MD-SAL datastore
     public void writeGroupToDataStore(String sffNodeName, GroupBuilder gb, boolean isAdd);
 
-    // Delete all flows written to this RSP
+    /**
+     * Delete all flows created for a particular RSP.
+     *
+     * @param rspId the ID of the RSP
+     */
     public void deleteRspFlows(final Long rspId);
+
+    /**
+     * Delete initialization flows from SFF if no RSP exists.
+     *
+     * @return Set of NodeIDs of cleared SFFs.
+     * Example of NodeID: openflow:99344160872776
+     */
+    public Set<NodeId> clearSffsIfNoRspExists();
 
     //Get flow
     public FlowBuilder getFlowBuilder();
 
     // If the impl uses threads, shut it down
     public void shutdown() throws ExecutionException, InterruptedException;
+
 
 }

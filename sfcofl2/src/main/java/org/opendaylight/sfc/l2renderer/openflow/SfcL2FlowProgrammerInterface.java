@@ -9,9 +9,11 @@
 package org.opendaylight.sfc.l2renderer.openflow;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**
  * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.
@@ -39,8 +41,15 @@ public interface SfcL2FlowProgrammerInterface {
     // Set the RSP Id that subsequent flow creations belong to
     public void setFlowRspId(Long rspId);
 
-    // Delete all flows created for a particular RSP
-    public void deleteRspFlows(final Long rspId);
+    /**
+     * Deletes all flows created for a particular RSP and removes
+     * initialization flows from SFFs if the last RSP was removed.
+     *
+     * @param rspId ID of RSP
+     *
+     * @return Node IDs from which initialization flows were removed.
+     */
+    public Set<NodeId> deleteRspFlowsAndClearSFFsIfNoRspExists(final Long rspId);
 
     //Set FlowWriter implementation
     public void setFlowWriter(SfcL2FlowWriterInterface sfcL2FlowWriter);

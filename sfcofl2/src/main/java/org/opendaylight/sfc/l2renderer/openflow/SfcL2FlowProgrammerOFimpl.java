@@ -11,6 +11,7 @@ package org.opendaylight.sfc.l2renderer.openflow;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
@@ -40,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.slf4j.Logger;
@@ -146,8 +148,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     }
 
     @Override
-    public void deleteRspFlows(final Long rspId) {
-        this.sfcL2FlowWriter.deleteRspFlows(rspId);
+    public Set<NodeId> deleteRspFlowsAndClearSFFsIfNoRspExists(final Long rspId) {
+        sfcL2FlowWriter.deleteRspFlows(rspId);
+        return sfcL2FlowWriter.clearSffsIfNoRspExists();
     }
 
     /**

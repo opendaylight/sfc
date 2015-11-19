@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.ZeroBasedCounter64;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1Builder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
@@ -134,8 +136,14 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
             data[i] = Long.parseLong(Integer.toString(i + 1));
         }
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
+        ZeroBasedCounter64 defaultZero = new ZeroBasedCounter64(BigInteger.ZERO);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-            .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey).setPortId(data[0]).build();
+            .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey)
+            .setRxBytes(defaultZero)
+            .setRxPacket(defaultZero)
+            .setTxBytes(defaultZero)
+            .setTxPacket(defaultZero)
+            .setPortId(data[0]).build();
         portBandwidthUtilList.add(portBandwidthUtil);
 
         SFPortsBandwidthUtilization sfPortsBandwidthUtil =

@@ -153,6 +153,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
             sfcArray[i] = sfcBuilder.setName(name)
                 .setKey(new ServiceFunctionChainKey(name))
                 .setSfcServiceFunction(sfcServiceFunctionList)
+                .setSymmetric(false)
                 .build();
             sfcList.add(sfcArray[i]);
             i++;

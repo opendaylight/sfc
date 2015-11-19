@@ -204,12 +204,14 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(sfpName1)
             .setKey(new ServiceFunctionPathKey(sfpName1))
+            .setSymmetric(false)
             .setTransportType(VxlanGpe.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(sfpName2)
             .setKey(new ServiceFunctionPathKey(sfpName2))
+            .setSymmetric(false)
             .setTransportType(Gre.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
@@ -224,7 +226,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // read all paths
         ServiceFunctionPaths getPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
         assertNotNull("Must not be null", getPaths);
-        assertTrue("Must be true", getPaths.equals(writtenPaths));
+        assertEquals(writtenPaths, getPaths);
 
         transactionSuccessful = SfcProviderServicePathAPI.deleteAllServiceFunctionPaths();
         assertTrue("Must be true", transactionSuccessful);

@@ -4,13 +4,8 @@ module service-function-chain {
 
   prefix sfc-sfc;
 
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
-}
   import sfc-common {
       prefix sfc-common;
-      revision-date 2015-10-17;
       }
 
   organization "Cisco Systems, Inc.";
@@ -76,7 +71,7 @@ module service-function-chain {
              ingress-dpi. This is not the service function name";
         }
         leaf type {
-          type sfc-sft:service-function-type;
+          type sfc-common:sft-type;
           mandatory true;
           description
             "Service Function Type from service-function-type.yang";

@@ -19,17 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +47,6 @@ public class SfgExporterTest {
     private static final String SERVICE_FUNCTION_GROUP_TYPE_PREFIX = "service-function-type:";
     private static final String FULL_JSON = "/SfgJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SfgJsonStrings/NameOnly.json";
-    private ServiceFunctionBuilder serviceFunctionBuilder;
 
     // read .json in resources/SfgJsonStrings and create a string
     private String gatherServiceFunctionGroupJsonStringFromFile(String testFileName) {
@@ -139,7 +137,7 @@ public class SfgExporterTest {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
         // noinspection unchecked
         serviceFunctionGroupBuilder.setName(SfgTestValues.NAME.getValue())
-            .setType(SfgTestValues.TYPE.getIdentity())
+            .setType(SfgTestValues.TYPE.getSftType())
             .setRestUri(new Uri(SfgTestValues.REST_URI.getValue()))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfgTestValues.IP_MGMT_ADDRESS.getValue())))
             .setAlgorithm(SfgTestValues.ALGORITHM.getValue())
@@ -153,10 +151,9 @@ public class SfgExporterTest {
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-
         for (int i = 1; i <= 3; i++) {
-            sfcServiceFunctionBuilder.setName(SfgTestValues.SERVICE_FUNCTION_NAME.getValue() + String.valueOf(i));
+            sfcServiceFunctionBuilder
+                .setName(new SfName(SfgTestValues.SERVICE_FUNCTION_NAME.getValue() + String.valueOf(i)));
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
@@ -167,27 +164,27 @@ public class SfgExporterTest {
     // these enums are used here an also in respective .json in resources/SfgJsonStrings
     public enum SfgTestValues {
         NAME("SFG"), REST_URI("http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), ALGORITHM("Alg1"), TYPE(
-                SERVICE_FUNCTION_GROUP_TYPE_PREFIX + Firewall.class.getName().toLowerCase(),
-                Firewall.class), SERVICE_FUNCTION_NAME("SffName"), SERVICE_FUNCTION_KEY("SffKey");
+                SERVICE_FUNCTION_GROUP_TYPE_PREFIX + "firewall",
+                new SftType("firewall")), SERVICE_FUNCTION_NAME("SffName"), SERVICE_FUNCTION_KEY("SffKey");
 
         private final String value;
-        private Class identity;
+        private SftType sftType;
 
         SfgTestValues(String value) {
             this.value = value;
         }
 
-        SfgTestValues(String value, Class identity) {
+        SfgTestValues(String value, SftType sftType) {
             this.value = value;
-            this.identity = identity;
+            this.sftType = sftType;
         }
 
         public String getValue() {
             return this.value;
         }
 
-        public Class getIdentity() {
-            return this.identity;
+        public SftType getSftType() {
+            return this.sftType;
         }
     }
 }

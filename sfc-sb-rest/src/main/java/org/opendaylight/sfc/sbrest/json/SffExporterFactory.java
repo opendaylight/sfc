@@ -211,7 +211,7 @@ class SffExporter extends AbstractExporter implements Exporter {
 
         if (serviceFunctionDictionary.getType() != null) {
             sfObjectNode.put(_TYPE,
-                    SERVICE_FUNCTION_TYPE_PREFIX + serviceFunctionDictionary.getType().getSimpleName().toLowerCase());
+                    SERVICE_FUNCTION_TYPE_PREFIX + serviceFunctionDictionary.getType().getValue().toLowerCase());
         }
 
         ObjectNode sffSfDataPlaneLocatorNode =

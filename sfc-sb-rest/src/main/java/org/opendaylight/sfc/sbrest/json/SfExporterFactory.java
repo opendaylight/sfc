@@ -64,7 +64,7 @@ class SfExporter extends AbstractExporter implements Exporter {
                 sfNode.put(_REST_URI, sf.getRestUri().getValue());
             }
             if (sf.getType() != null) {
-                sfNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sf.getType().getSimpleName().toLowerCase());
+                sfNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sf.getType().getValue().toLowerCase());
             }
             sfNode.put(_NSH_AWARE, sf.isNshAware());
             sfNode.put(_REQUEST_RECLASSIFICATION, sf.isRequestReclassification());

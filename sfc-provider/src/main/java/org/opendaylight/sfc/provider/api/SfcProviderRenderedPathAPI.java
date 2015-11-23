@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
@@ -47,13 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Ids;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
@@ -780,11 +775,13 @@ public class SfcProviderRenderedPathAPI {
             SffDataPlaneLocator sffDataPlaneLocator = SfcProviderServiceForwarderAPI
                 .readServiceFunctionForwarderDataPlaneLocator(sffName, sffLocatorName);
 
-            if ((sffDataPlaneLocator != null) &&
-                (sffDataPlaneLocator.getDataPlaneLocator() != null) &&
-                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType() != null) &&
-                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface() != null) &&
-                (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface().getSimpleName() != null)) {
+            if ((sffDataPlaneLocator != null) && (sffDataPlaneLocator.getDataPlaneLocator() != null)
+                    && (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType() != null)
+                    && (sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface() != null)
+                    && (sffDataPlaneLocator.getDataPlaneLocator()
+                        .getLocatorType()
+                        .getImplementedInterface()
+                        .getSimpleName() != null)) {
 
                 String type = sffDataPlaneLocator.getDataPlaneLocator()
                     .getLocatorType()
@@ -824,29 +821,6 @@ public class SfcProviderRenderedPathAPI {
         return renderedServicePathFirstHop;
     }
 
-    private static String getServiceTypeName(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
-        String serviceTypeName = null;
-
-        printTraceStart(LOG);
-        if (serviceFunctionType == Dpi.class) {
-            serviceTypeName = "dpi";
-        } else if (serviceFunctionType == Firewall.class) {
-            serviceTypeName = "firewall";
-        } else if (serviceFunctionType == HttpHeaderEnrichment.class) {
-            serviceTypeName = "http-header-enrichment";
-        } else if (serviceFunctionType == Ids.class) {
-            serviceTypeName = "ids";
-        } else if (serviceFunctionType == Napt44.class) {
-            serviceTypeName = "napt44";
-        } else if (serviceFunctionType == Qos.class) {
-            serviceTypeName = "qos";
-        } else {
-            LOG.error("Unknown ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
-        }
-        printTraceStop(LOG);
-        return serviceTypeName;
-    }
-
     /**
      * This method gets all necessary information for a system to construct
      * a NSH header and associated overlay packet to target the first
@@ -860,10 +834,10 @@ public class SfcProviderRenderedPathAPI {
      */
     public static RenderedServicePathFirstHop readRspFirstHopBySftList(
             Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType,
-            List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
+            List<SftType> serviceFunctionTypeList) {
         int i;
         String serviceTypeName;
-        Class serviceFunctionType = null;
+        ServiceFunctionType serviceFunctionType = null;
         List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
         // TODO Not sure why we need references to GBP in here. The way the integration was done, we
         // can add our own strings. This maybe an artifact of
@@ -883,17 +857,17 @@ public class SfcProviderRenderedPathAPI {
 
         /* Build sfcName, pathName and ServiceFunction list */
         for (i = 0; i < serviceFunctionTypeList.size(); i++) {
-            serviceFunctionType = serviceFunctionTypeList.get(i);
-            serviceTypeName = getServiceTypeName(serviceFunctionType);
+            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(serviceFunctionTypeList.get(i));
+            serviceTypeName = serviceFunctionType.getType().getValue();
             if (serviceTypeName == null) {
-                LOG.error("Unknowed ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
+                LOG.error("Unknowed ServiceFunctionType: {}", serviceFunctionType.getType());
                 return null;
             }
             sfcName = new SfcName(sfcName.getValue() + "-" + serviceTypeName);
             pathName = new SfpName(pathName.getValue() + "-" + serviceTypeName);
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
             sfcServiceFunctionArrayList.add(sfcServiceFunctionBuilder.setName(serviceTypeName + "-gbp-sfc")
-                .setType(serviceFunctionType)
+                .setType(serviceFunctionType.getType())
                 .build());
         }
 

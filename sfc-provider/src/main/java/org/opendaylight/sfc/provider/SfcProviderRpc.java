@@ -88,6 +88,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 
@@ -101,7 +102,8 @@ import com.google.common.util.concurrent.Futures;
  * @since 2014-06-30
  */
 
-public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService, ServicePathIdService {
+public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService,
+        ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
@@ -126,33 +128,36 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         printTraceStart(LOG);
         LOG.info("\n####### Input: " + input);
 
-        if (dataBroker != null) {
-
-            // Data PLane Locator
-            List<SfDataPlaneLocator> sfDataPlaneLocatorList = input.getSfDataPlaneLocator();
-
-            ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
-            ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
-            ServiceFunction sf = sfbuilder.setName(input.getName())
-                .setType(input.getType())
-                .setKey(sfkey)
-                .setIpMgmtAddress(input.getIpMgmtAddress())
-                .setSfDataPlaneLocator(sfDataPlaneLocatorList)
-                .build();
-
-            InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, sf.getKey())
-                .toInstance();
-
-            WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
-            writeTx.commit();
-
-        } else {
-            LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
+        if (dataBroker == null) {
+            return Futures.immediateFuture(
+                    RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, "No data provider.").build());
         }
+
+        // Data PLane Locator
+        List<SfDataPlaneLocator> sfDataPlaneLocatorList = input.getSfDataPlaneLocator();
+
+        ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
+        ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
+        ServiceFunction sf = sfbuilder.setName(input.getName())
+            .setType(input.getType())
+            .setKey(sfkey)
+            .setIpMgmtAddress(input.getIpMgmtAddress())
+            .setSfDataPlaneLocator(sfDataPlaneLocatorList)
+            .build();
+
+        InstanceIdentifier<ServiceFunction> sfEntryIID =
+                InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sf.getKey()).build();
+
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
-        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true, Collections.<RpcError>emptySet()));
+        return Futures.transform(writeTx.submit(), new Function<Void, RpcResult<Void>>() {
+
+            @Override
+            public RpcResult<Void> apply(Void input) {
+                return RpcResultBuilder.<Void>success().build();
+            }
+        });
     }
 
     @Override
@@ -163,7 +168,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         if (dataBroker != null) {
             ServiceFunctionKey sfkey = new ServiceFunctionKey(new SfName(input.getName()));
             InstanceIdentifier<ServiceFunction> sfIID;
-            sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).toInstance();
+            sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).build();
 
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunction> dataObject = null;
@@ -383,8 +388,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(
-            ReservePathIdRangeInput input) {
+    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(ReservePathIdRangeInput input) {
         return null;
     }
 
@@ -394,20 +398,17 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(
-            AllocatePathIdInput input) {
+    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(AllocatePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<DeletePathIdOutput>> deletePathId(
-            DeletePathIdInput input) {
+    public Future<RpcResult<DeletePathIdOutput>> deletePathId(DeletePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(
-            SetGenerationAlgorithmInput input) {
+    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(SetGenerationAlgorithmInput input) {
 
         boolean result = SfcServicePathId.setGenerationAlgorithm(input.getGenerationAlgorithm());
 

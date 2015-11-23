@@ -47,99 +47,24 @@ module service-function-type {
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 
-
-  // Service Function
-
-  // Service Function Type definitions
-
-  identity service-function-type-identity {
-    description
-      "Base identity from which specific service function
-       types are derived.";
-  }
-
-  identity firewall {
-    base "service-function-type-identity";
-    description "Firewall";
-  }
-
-  identity dpi {
-    base "service-function-type-identity";
-    description "Deep Packet Inspection";
-  }
-
-  identity napt44 {
-    base "service-function-type-identity";
-    description "Network Address and Port Translation 44";
-  }
-
-  identity qos {
-    base "service-function-type-identity";
-    description "Quality of Service";
-  }
-
-  identity ids {
-    base "service-function-type-identity";
-    description "Intrusion Detection System";
-  }
-
-  identity http-header-enrichment {
-    base "service-function-type-identity";
-    description
-      "HTTP services that add HTTP headers for charging and adding
-       subscriber metadata";
-  }
-
-  identity tcp-proxy {
-    base "service-function-type-identity";
-    description "A TCP Proxy sets up a connection with the
-                 client and another one with the server.";
-  }
-  identity Cisco-vASA {
-    base "service-function-type-identity";
-    description "Cisco vASA";
-  }
-
-  identity Cisco-vNBAR {
-    base "service-function-type-identity";
-    description "Cisco vNBAR";
-  }
-
-  typedef service-function-type {
-    type identityref {
-      base "service-function-type-identity";
-    }
-    description "This type is used to reference all
-      registered service function types";
-  }
-
   // Service Function Type definitions
 
   grouping service-function-type-definition {
     description
       "List of parameters to define an abstract type of Service Function";
     //TODO: Expand list to include metadata context template support. ie MD Type1 C3/C4 context, MD Type2 etc.
-
-<<<<<<< HEAD
     leaf type {
       type sfc-common:sft-type;
-=======
-    leaf name {
-      type sfc-common:sft-name;
->>>>>>> Yang model for Abstract Type Definition of Service Functions
       description "Service Function type names such as firewall, dpi, tcp-proxy, etc";
     }
-
     leaf symmetry {
       type boolean;
       description "SF is involved in a symmetric service path";
     }
-
     leaf bidirectionality {
       type boolean;
       description "SF handles uplink and downlink traffic";
     }
-
     leaf nsh-aware {
       type boolean;
       description "Service Function can handle Network Service Headers";
@@ -165,11 +90,8 @@ module service-function-type {
 
     list service-function-type {
       key "type";
-      leaf type {
-        type service-function-type;
-        description
-            "The service function type";
-      }
+      uses service-function-type-definition;
+
       list sft-service-function-name {
         //TODO: should this be sf-name typedef? Also this should be kept in a separate map as an alternate index as it mirrors state.
         key "name";

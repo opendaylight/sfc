@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
@@ -56,9 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -89,8 +87,21 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         final int PORT = 555;
         final String[] SF_NAMES = {"simple_firewall_100", "simple_napt_100", "simple_dpi_100", "simple_firewall_110",
                 "simple_napt_110", "simple_dpi_110", "simple_firewall_120", "simple_napt_120", "simple_dpi_120"};
-        final Class[] SF_TYPES = {Firewall.class, Napt44.class, Dpi.class, Firewall.class, Napt44.class, Dpi.class,
-                Firewall.class, Napt44.class, Dpi.class};
+        @SuppressWarnings("serial")
+        List<SftType> sfTypes = new ArrayList<SftType>() {
+
+            {
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
+            }
+        };
 
         PortNumber portNumber = new PortNumber(PORT);
         for (int i = 0; i < SF_NAMES.length; i++) {
@@ -107,7 +118,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(SF_NAMES[i]));
             sfBuilder.setName(new SfName(SF_NAMES[i]))
                 .setKey(serviceFunctonKey)
-                .setType(SF_TYPES[i])
+                .setType(sfTypes.get(i))
                 .setIpMgmtAddress(ipMgmtAddr)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
@@ -126,13 +137,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         SfcName sfcName = new SfcName("ShortestPath-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-        String[] sftNames = {"firewall", "napt", "dpi"};
-        Class[] sftClasses = {Firewall.class, Napt44.class, Dpi.class};
+        String[] sftNames = {"firewall", "napt44", "dpi"};
         for (int i = 0; i < sftNames.length; i++) {
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
             sfcServiceFunctionBuilder.setName(sftNames[i]);
             sfcServiceFunctionBuilder.setKey(new SfcServiceFunctionKey(sftNames[i]));
-            sfcServiceFunctionBuilder.setType(sftClasses[i]);
+            sfcServiceFunctionBuilder.setType(new SftType(sftNames[i]));
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 

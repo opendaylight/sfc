@@ -151,7 +151,7 @@ module service-function-forwarder {
               "The name of the service function.";
         }
         leaf type {
-          type sfc-sft:service-function-type;
+          type sfc-common:sft-type;
           description
             "Service Function Type from service-function-type yang
              model";

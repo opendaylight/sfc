@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -47,8 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -78,7 +77,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testCreateReadServiceFunction() {
 
         SfName name = new SfName("unittest-fw-1");
-        Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
+        SftType type = new SftType("firewall");
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
@@ -115,7 +114,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testDeleteServiceFunction() {
 
         SfName name = new SfName("unittest-fw-1");
-        Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
+        SftType type = new SftType("firewall");
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
@@ -148,7 +147,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testCreateReadServiceFunctions() throws ExecutionException, InterruptedException {
 
         final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
-        final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;
+        SftType sfType = new SftType("firewall");
         final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
                 new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])), new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[2]))};
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[3];
@@ -263,7 +262,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testReadAllServiceFunctionsExecutor() throws Exception {
 
         // create service functions
-        boolean transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[0], Firewall.class, true);
+        boolean transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[0], new SftType("firewall"), true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -275,10 +274,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         assertEquals("Must be equal",
                 serviceFunctionsResult.getServiceFunction().get(0).getIpMgmtAddress().getIpv4Address().getValue(),
                 IP_MGMT_ADDRESS[0]);
-        assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getType(), Firewall.class);
+        assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getType(),
+                new SftType("firewall"));
 
         // delete these functions
-        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[1], Firewall.class, false);
+        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[1], new SftType("firewall"), false);
 
         assertTrue("Must be true", transactionSuccessful);
     }
@@ -349,8 +349,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     }
 
     // write or remove service functions
-    private boolean writeRemoveServiceFunctions(String ipAddress, Class<? extends ServiceFunctionTypeIdentity> type,
-            boolean write) {
+    private boolean writeRemoveServiceFunctions(String ipAddress, SftType type, boolean write) {
         ServiceFunctionsBuilder serviceFunctionsBuilder = new ServiceFunctionsBuilder();
         List<ServiceFunction> serviceFunctions = new ArrayList<>();
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();

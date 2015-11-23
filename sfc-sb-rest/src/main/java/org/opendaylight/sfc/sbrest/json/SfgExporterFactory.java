@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -29,6 +29,7 @@ public class SfgExporterFactory implements ExporterFactory {
         return new SfgExporter();
     }
 }
+
 
 class SfgExporter extends AbstractExporter implements Exporter {
 
@@ -61,15 +62,15 @@ class SfgExporter extends AbstractExporter implements Exporter {
                 sfgNode.put(_REST_URI, sfg.getRestUri().getValue());
             }
             if (sfg.getType() != null) {
-                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getName().toLowerCase());
+                sfgNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getValue().toLowerCase());
             }
 
-            //this should be revamped
+            // this should be revamped
             if (sfg.getSfcServiceFunction() != null) {
                 ArrayNode sfArray = mapper.createArrayNode();
-                for(SfcServiceFunction entry : sfg.getSfcServiceFunction()) {
+                for (SfcServiceFunction entry : sfg.getSfcServiceFunction()) {
                     ObjectNode o = mapper.createObjectNode();
-                    o.put(_NAME, entry.getName());
+                    o.put(_NAME, entry.getName().getValue());
                     sfArray.add(o);
                 }
                 sfgNode.putArray(_SERVICE_FUNCTION).addAll(sfArray);

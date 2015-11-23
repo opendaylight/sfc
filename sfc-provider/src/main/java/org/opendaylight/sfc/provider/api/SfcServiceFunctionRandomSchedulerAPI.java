@@ -63,8 +63,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
             }
         }
         if (serviceFunctionName == null) {
-            LOG.error("Could not find an existing ServiceFunction for {}",
-                    serviceFunctionType.getType().getSimpleName());
+            LOG.error("Could not find an existing ServiceFunction for {}", serviceFunctionType.getType());
         }
         return serviceFunctionName;
     }
@@ -103,8 +102,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
                         serviceFunctionType.getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     SfName sfName = getServiceFunctionByType(serviceFunctionType);
-                    LOG.info("sfName {} for serviceFunctionType {}", sfName,
-                            serviceFunctionType.getType().getSimpleName());
+                    LOG.info("sfName {} for serviceFunctionType {}", sfName, serviceFunctionType.getType());
                     sfNameList.add(sfName);
                 } else {
                     LOG.error("Could not create path because there are no configured SFs of type: {}",

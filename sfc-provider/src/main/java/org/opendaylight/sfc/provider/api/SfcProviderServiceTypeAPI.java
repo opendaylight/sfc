@@ -14,8 +14,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeKey;
@@ -55,8 +55,7 @@ public class SfcProviderServiceTypeAPI {
         printTraceStart(LOG);
 
         boolean ret = false;
-        Class<? extends ServiceFunctionTypeIdentity> sfkey = serviceFunction.getType();
-        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
 
         // Build the instance identifier all the way down to the bottom child
 
@@ -105,8 +104,7 @@ public class SfcProviderServiceTypeAPI {
      * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object which contains a list of SF of this type
      */
-    public static ServiceFunctionType readServiceFunctionType(
-            Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+    public static ServiceFunctionType readServiceFunctionType(SftType serviceFunctionType) {
         printTraceStart(LOG);
         ServiceFunctionType sft;
         InstanceIdentifier<ServiceFunctionType> sftIID;
@@ -133,8 +131,7 @@ public class SfcProviderServiceTypeAPI {
 
         printTraceStart(LOG);
         boolean ret = false;
-        Class<? extends ServiceFunctionTypeIdentity> sfkey = serviceFunction.getType();
-        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
 
         // Build the instance identifier all the way down to the bottom child
         InstanceIdentifier<SftServiceFunctionName> sftentryIID;
@@ -166,6 +163,19 @@ public class SfcProviderServiceTypeAPI {
     }
 
     /**
+     * Delete a ServiceFunctionType based on SftType (key)
+     */
+
+    public static boolean deleteServiceFunctionType(SftType sftType) {
+        ServiceFunctionType serviceFunctionType = readServiceFunctionType(sftType);
+        if (serviceFunctionType != null) {
+            return deleteServiceFunctionType(serviceFunctionType);
+        }
+        LOG.warn("deleteServiceFunctionType: Could not find ServiceFunctionType for {}", sftType);
+        return false;
+    }
+
+    /**
      * This method is used to delete all Service Function names under a
      * Service Function Type list. It basically removes the list of all service
      * functions of a given type. The Service Functions themselves are not touched
@@ -174,11 +184,11 @@ public class SfcProviderServiceTypeAPI {
      * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object
      */
-    public static boolean deleteServiceFunctionType(Class<? extends ServiceFunctionTypeIdentity> serviceFunctionType) {
+    public static boolean deleteServiceFunctionType(ServiceFunctionType serviceFunctionType) {
         printTraceStart(LOG);
         boolean ret = false;
 
-        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunctionType);
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunctionType.getType());
         InstanceIdentifier<ServiceFunctionType> sftEntryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
             .child(ServiceFunctionType.class, serviceFunctionTypeKey)
             .build();
@@ -250,8 +260,7 @@ public class SfcProviderServiceTypeAPI {
         printTraceStart(LOG);
 
         boolean ret = false;
-        Class<? extends ServiceFunctionTypeIdentity> sfkey = serviceFunction.getType();
-        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(sfkey);
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
 
         // Build the instance identifier all the way down to the bottom child
         // TODO as part of typedef refactoring not messing with SFTs

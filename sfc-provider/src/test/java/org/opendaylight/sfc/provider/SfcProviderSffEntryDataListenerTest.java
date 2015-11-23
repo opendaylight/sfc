@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
@@ -77,11 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -372,7 +368,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         dataPlaneLocatorList.add(sfDataPlaneLocator);
         sfBuilder.setName(new SfName(sfNames[0]))
             .setKey(new ServiceFunctionKey(new SfName("unittest-fw-1")))
-            .setType(Firewall.class)
+            .setType(new SftType("firewall"))
             .setIpMgmtAddress(ipMgmtAddress[0])
             .setSfDataPlaneLocator(dataPlaneLocatorList);
         sfList.add(sfBuilder.build());
@@ -418,7 +414,18 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         String[] IP_MGMT_ADDRESS =
                 {"196.168.55.101", "196.168.55.102", "196.168.55.103", "196.168.55.104", "196.168.55.105"};
         int[] PORT = {1111, 2222, 3333, 4444, 5555};
-        Class[] sfTypes = {Firewall.class, Dpi.class, Napt44.class, HttpHeaderEnrichment.class, Qos.class};
+        @SuppressWarnings("serial")
+        List<SftType> sfTypes = new ArrayList<SftType>() {
+
+            {
+                add(new SftType("firewall"));
+                add(new SftType("dpi"));
+                add(new SftType("napt44"));
+                add(new SftType("http-header-enrichment"));
+                add(new SftType("qos"));
+
+            }
+        };
         String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
         SfcName SFC_NAME = new SfcName("unittest-chain-1");
         SfpName SFP_NAME = new SfpName("unittest-sfp-1");
@@ -456,7 +463,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
             sfBuilder.setName(new SfName(sfNames[i]))
                 .setKey(key[i])
-                .setType(sfTypes[i])
+                .setType(sfTypes.get(i))
                 .setIpMgmtAddress(ipMgmtAddress[i])
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
@@ -535,7 +542,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES[i])
                 .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES[i]))
-                .setType(sfTypes[i])
+                .setType(sfTypes.get(i))
                 .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }

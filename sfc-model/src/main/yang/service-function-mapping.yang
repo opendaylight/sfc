@@ -4,9 +4,8 @@ module service-function-mapping {
 
   prefix sfc-sf-map;
 
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
+  import sfc-common {
+      prefix sfc-common;
       }
   import service-locator {
       prefix sfc-sl;
@@ -53,7 +52,7 @@ module service-function-mapping {
       list service-function-types {
         key "sf-type";
         leaf sf-type {
-          type sfc-sft:service-function-type;
+          type sfc-common:sft-type;
           description
               "The service function type";
         }
@@ -61,7 +60,7 @@ module service-function-mapping {
         list service-functions {
           key "sf-name";
           leaf sf-name {
-            type string;
+            type sfc-common:sf-name;
             description
               "the name of the service function";
           }
@@ -69,7 +68,7 @@ module service-function-mapping {
           list service-function-forwarders {
             key "sff-name";
             leaf sff-name {
-              type string;
+              type sfc-common:sff-name;
               description
                 "the name of the service function forwarder";
             }

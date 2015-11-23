@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRoundRobinSchedulerAPI.class);
-    private static Map<java.lang.Class<? extends ServiceFunctionTypeIdentity>, Integer> mapCountRoundRobin =
-            new HashMap<>();
+
+    private static Map<SftType, Integer> mapCountRoundRobin = new HashMap<>();
 
     SfcServiceFunctionRoundRobinSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(RoundRobin.class);
@@ -48,8 +48,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         int countRoundRobin = 0;
 
         if (mapCountRoundRobin.size() != 0) {
-            for (java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity> sfType : mapCountRoundRobin
-                .keySet()) {
+            for (SftType sfType : mapCountRoundRobin.keySet()) {
                 if (sfType.equals(serviceFunctionType.getType())) {
                     countRoundRobin = mapCountRoundRobin.get(sfType);
                     LOG.debug("countRoundRobin: {}", countRoundRobin);

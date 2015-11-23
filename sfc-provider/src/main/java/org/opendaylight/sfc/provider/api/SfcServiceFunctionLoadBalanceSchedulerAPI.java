@@ -90,8 +90,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
         }
 
         if (sftServiceFunctionName == null) {
-            LOG.error("Failed to get one available ServiceFunction for {}",
-                    serviceFunctionType.getType().getSimpleName());
+            LOG.error("Failed to get one available ServiceFunction for {}", serviceFunctionType.getType());
         }
 
         return sftServiceFunctionName;

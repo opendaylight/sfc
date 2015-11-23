@@ -8,10 +8,6 @@ module service-function {
       prefix inet;
       revision-date 2010-09-24;
       }
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
-      }
   import service-locator {
       prefix sfc-sl;
       revision-date 2014-07-01;
@@ -22,7 +18,6 @@ module service-function {
       }
   import sfc-common {
       prefix sfc-common;
-      revision-date 2015-10-17;
       }
 
 
@@ -54,7 +49,7 @@ module service-function {
         "This SF was created for a specific tenant-id";
     }
     leaf type {
-      type sfc-sft:service-function-type;
+      type sfc-common:sft-type;
       mandatory true;
       description
         "Service Function Type from service-function-type yang

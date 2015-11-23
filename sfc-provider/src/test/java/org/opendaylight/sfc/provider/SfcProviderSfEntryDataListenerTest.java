@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -77,12 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -239,7 +234,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
 
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
         IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(UPDATED_IP_MGMT_ADDRESS));
-        Class<? extends ServiceFunctionTypeIdentity> updatedType = Dpi.class;
+        SftType updatedType = new SftType("dpi");
         updatedServiceFunctionBuilder.setIpMgmtAddress(updatedIpMgmtAddress).setType(updatedType);
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
         updatedData.put(sfEntryIID, updatedServiceFunction);
@@ -371,7 +366,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
 
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
         IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(UPDATED_IP_MGMT_ADDRESS));
-        Class<? extends ServiceFunctionTypeIdentity> updatedType = Dpi.class;
+        SftType updatedType = new SftType("dpi");
         updatedServiceFunctionBuilder.setIpMgmtAddress(updatedIpMgmtAddress).setType(updatedType);
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
         updatedData.put(sfEntryIID, updatedServiceFunction);
@@ -434,7 +429,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         };
         String SF_NAME = "listernerSF";
         int PORT = 555;
-        Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
+        SftType type = new SftType("firewall");
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(new SfName(SF_NAME));
@@ -489,6 +484,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         };
 
         List<Integer> PORT = new ArrayList<Integer>() {
+
             {
                 add(1111);
                 add(2222);
@@ -498,14 +494,14 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
             }
         };
 
-        List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+        List<SftType> sfTypes = new ArrayList<SftType>() {
 
             {
-                add(Firewall.class);
-                add(Dpi.class);
-                add(Napt44.class);
-                add(HttpHeaderEnrichment.class);
-                add(Qos.class);
+                add(new SftType("firewall"));
+                add(new SftType("dpi"));
+                add(new SftType("napt44"));
+                add(new SftType("http-header-enrichment"));
+                add(new SftType("qos"));
             }
         };
 

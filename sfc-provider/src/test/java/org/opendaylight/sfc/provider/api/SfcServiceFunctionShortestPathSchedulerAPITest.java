@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
@@ -56,16 +57,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,21 +128,20 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
 
-        final List<Class<? extends ServiceFunctionTypeIdentity>> SF_TYPES = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+        final List<SftType> SF_TYPES = new ArrayList<SftType>() {
 
             {
-                add(Firewall.class);
-                add(Napt44.class);
-                add(Dpi.class);
-                add(Firewall.class);
-                add(Napt44.class);
-                add(Dpi.class);
-                add(Firewall.class);
-                add(Napt44.class);
-                add(Dpi.class);
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
             }
         };
-
 
         PortNumber portNumber = new PortNumber(PORT);
         for (int i = 0; i < SF_NAMES.size(); i++) {
@@ -154,7 +150,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(dplIpAddr).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i))).setLocatorType(ipBuilder.build());
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
+                .setLocatorType(ipBuilder.build());
             SfDataPlaneLocator sfDataPlaneLocator = locatorBuilder.build();
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
@@ -181,8 +178,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         SfcName sfcName = new SfcName("ShortestPath-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-
-        List<String> sftNames = new ArrayList<String>(){
+        List<String> sftNames = new ArrayList<String>() {
 
             {
                 add("firewall");
@@ -190,12 +186,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
                 add("dpi");
             }
         };
-        List<Class<? extends ServiceFunctionTypeIdentity>> sftClasses = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+        List<SftType> sftClasses = new ArrayList<SftType>() {
 
             {
-                add(Firewall.class);
-                add(Napt44.class);
-                add(Dpi.class);
+                add(new SftType("firewall"));
+                add(new SftType("napt44"));
+                add(new SftType("dpi"));
             }
         };
         for (int i = 0; i < sftNames.size(); i++) {
@@ -233,6 +229,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         };
 
         List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+
             {
                 add("196.168.66.101");
                 add("196.168.66.102");

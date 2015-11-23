@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentationBuilder;
@@ -190,45 +191,38 @@ public class SffExporterTest {
     private SffSfDataPlaneLocator buildSffSfDataPlaneLocator() {
 
         SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDataPlaneLocatorBuilder.setSfDplName(
-                new SfDataPlaneLocatorName(
-                        SffTestValues.SF_DATA_PLANE_LOCATOR_NAME.getValue()));
-        sffSfDataPlaneLocatorBuilder.setSffDplName(
-                new SffDataPlaneLocatorName(
-                        SffTestValues.SFF_DATA_PLANE_LOCATOR_NAME.getValue()));
+        sffSfDataPlaneLocatorBuilder
+            .setSfDplName(new SfDataPlaneLocatorName(SffTestValues.SF_DATA_PLANE_LOCATOR_NAME.getValue()));
+        sffSfDataPlaneLocatorBuilder
+            .setSffDplName(new SffDataPlaneLocatorName(SffTestValues.SFF_DATA_PLANE_LOCATOR_NAME.getValue()));
 
         return sffSfDataPlaneLocatorBuilder.build();
     }
 
     public enum SffTestValues {
-        NAME("SFF1"),
-        SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"),
-        SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-int"),
-        SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"),
-        SF_DICTIONARY_NAME("SF1"),
-        SF_DATA_PLANE_LOCATOR_NAME("SF1_DP1"),
-        REST_URI("http://localhost:5000/"),
-        IP_MGMT_ADDRESS("10.0.0.1"),
-        SERVICE_NODE("SN1");
+        NAME("SFF1"), SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"), SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME(
+                "br-int"), SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"), SF_DICTIONARY_NAME(
+                        "SF1"), SF_DATA_PLANE_LOCATOR_NAME("SF1_DP1"), REST_URI(
+                                "http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), SERVICE_NODE("SN1");
 
         private final String value;
-        private Class identity;
+        private SftType sftType;
 
         SffTestValues(String value) {
             this.value = value;
         }
 
-        SffTestValues(String value, Class identity) {
+        SffTestValues(String value, SftType sftType) {
             this.value = value;
-            this.identity = identity;
+            this.sftType = sftType;
         }
 
         public String getValue() {
             return this.value;
         }
 
-        public Class getIdentity() {
-            return this.identity;
+        public SftType getSftType() {
+            return this.sftType;
         }
     }
 }

@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
@@ -39,9 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -162,17 +160,17 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         sfcServiceFunctionBuilder.setName(SF_NAME1.getValue())
             .setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
-            .setType(Firewall.class);
+            .setType(new SftType("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         sfcServiceFunctionBuilder.setName(SF_NAME2.getValue())
             .setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
-            .setType(Dpi.class);
+            .setType(new SftType("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         sfcServiceFunctionBuilder.setName(SF_NAME3.getValue())
             .setKey(new SfcServiceFunctionKey(SF_NAME3.getValue()))
-            .setType(Qos.class);
+            .setType(new SftType("qos"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         serviceFunctionChainBuilder.setName(SFC_NAME)
@@ -227,15 +225,17 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Firewall"))
-            .setType(Firewall.class);
+            .setType(new SftType("firewall"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
         serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Dpi")).setType(Dpi.class);
+        serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Dpi"))
+            .setType(new SftType("dpi"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
         serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Qos")).setType(Qos.class);
+        serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Qos"))
+            .setType(new SftType("qos"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
         serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
@@ -255,7 +255,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(new SfName(SF_NAME_BASE + sfType))
             .setKey(new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType)))
-            .setType(Firewall.class);
+            .setType(new SftType("firewall"));
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
             .child(ServiceFunction.class, new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType)))
             .build();

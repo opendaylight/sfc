@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -39,9 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.service.function.path.ServicePathHopBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -79,15 +77,15 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("firewall")
             .setKey(new SfcServiceFunctionKey("firewall"))
-            .setType(Firewall.class)
+            .setType(new SftType("firewall"))
             .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("dpi")
             .setKey(new SfcServiceFunctionKey("dpi"))
-            .setType(Dpi.class)
+            .setType(new SftType("dpi"))
             .build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("nat")
             .setKey(new SfcServiceFunctionKey("nat"))
-            .setType(Napt44.class)
+            .setType(new SftType("napt44"))
             .build());
 
         sfChain = new ServiceFunctionChainBuilder().setName(sfcName)
@@ -121,25 +119,25 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
                 SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("7.7.7.7")), 777), sffName,
                 VxlanGpe.class));
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.101")), sfDPLList.get(0), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.110.101")), sfDPLList.get(1), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.120.101")), sfDPLList.get(2), Boolean.FALSE));
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_100"), Dpi.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_100"), new SftType("dpi"),
                 new IpAddress(new Ipv4Address("192.168.100.102")), sfDPLList.get(0), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_110"), Dpi.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_110"), new SftType("dpi"),
                 new IpAddress(new Ipv4Address("192.168.110.102")), sfDPLList.get(1), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_120"), Dpi.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_120"), new SftType("dpi"),
                 new IpAddress(new Ipv4Address("192.168.120.102")), sfDPLList.get(2), Boolean.FALSE));
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_100"), Napt44.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_100"), new SftType("napt44"),
                 new IpAddress(new Ipv4Address("192.168.100.103")), sfDPLList.get(0), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_110"), Napt44.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_110"), new SftType("napt44"),
                 new IpAddress(new Ipv4Address("192.168.110.103")), sfDPLList.get(1), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_120"), Napt44.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_nat_120"), new SftType("napt44"),
                 new IpAddress(new Ipv4Address("192.168.120.103")), sfDPLList.get(2), Boolean.FALSE));
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
@@ -225,27 +223,27 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         ServiceFunctionType serviceFunctionType;
         List<SftServiceFunctionName> sftServiceFunctionNameList;
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("firewall"));
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("dpi"));
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("napt44"));
         sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
         int serviceIndex = 255;
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Firewall.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("firewall"));
         List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Dpi.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("dpi"));
         List<SftServiceFunctionName> sftDpiList = serviceFunctionType.getSftServiceFunctionName();
-        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(Napt44.class);
+        serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType("napt44"));
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
         List<SfName> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);

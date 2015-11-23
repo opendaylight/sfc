@@ -27,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
@@ -301,7 +300,9 @@ public class SfcL2RspProcessor {
 
         // ARP flows for TcpProxy type of SFF
         ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        if (sf.getType() == TcpProxy.class) {
+        // FIXME: I would caution against this approach. Instead you may want to see if
+        // ServiceFunctionType has "bidirectional" = True in future.
+        if (sf.getType().getValue().equals("tcp-proxy")) {
             ServiceFunctionDictionary sffSfDict = sfcL2ProviderUtils.getSffSfDictionary(sffDst, entry.getSf());
             String sffMac = sfcL2ProviderUtils.getDictPortInfoMac(sffDst, sffSfDict);
             // If the SF is a TCP Proxy, then we need to reply to the ARP Request messages
@@ -646,7 +647,9 @@ public class SfcL2RspProcessor {
         String dstMac = sfcL2ProviderUtils.getSfDplMac(dstSfDpl);
 
         ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(srcSffSfDict.getName(), pathId);
-        if (sf.getType() == TcpProxy.class) {
+        // FIXME: I would caution against this approach. Instead you may want to see if
+        // ServiceFunctionType has "bidirectional" = True in future.
+        if (sf.getType().getValue().equals("tcp-proxy")) {
             // If the SF is a TCP Proxy, we need this additional flow for the SF:
             // - a flow that will also check for TCP Syn and do a PktIn
             configureSffTransportEgressFlow(sffName, srcSffDpl, dstSfDpl, hopDpl, srcOfsPortStr, srcMac, dstMac, pathId,

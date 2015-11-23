@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -51,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
@@ -103,13 +103,13 @@ public class RspBuilder {
         this.sfcUtilsTestMock = sfcUtilsTestMock;
     }
 
-    public RenderedServicePath createRspFromSfTypes(List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes,
+    public RenderedServicePath createRspFromSfTypes(List<SftType> sfTypes,
             Class<? extends SlTransportType> transportType) {
 
         List<ServiceFunction> sfList = new ArrayList<ServiceFunction>();
         List<ServiceFunctionForwarder> sffList = new ArrayList<ServiceFunctionForwarder>();
 
-        for (Class<? extends ServiceFunctionTypeIdentity> sfType : sfTypes) {
+        for (SftType sfType : sfTypes) {
             SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(SF_NAME_INDEX++));
             SffName sffName = new SffName(SFF_NAME_PREFIX + String.valueOf(SFF_NAME_INDEX++));
 
@@ -125,12 +125,12 @@ public class RspBuilder {
         return rsp;
     }
 
-    public ServiceFunctionChain createServiceFunctionChain(List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes) {
+    public ServiceFunctionChain createServiceFunctionChain(List<SftType> sfTypes) {
 
         short order = 0;
         List<SfcServiceFunction> sfcSfs = new ArrayList<SfcServiceFunction>();
-        for (Class<? extends ServiceFunctionTypeIdentity> sfType : sfTypes) {
-            String name = sfType.getName() + "Abstract";
+        for (SftType sfType : sfTypes) {
+            String name = sfType.getValue() + "Abstract";
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             sfcSfBuilder.setKey(new SfcServiceFunctionKey(name));
             sfcSfBuilder.setName(name);
@@ -208,8 +208,8 @@ public class RspBuilder {
         return sff;
     }
 
-    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName,
-            Class<? extends ServiceFunctionTypeIdentity> sfType, Class<? extends SlTransportType> transportType) {
+    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftType sfType,
+            Class<? extends SlTransportType> transportType) {
 
         // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
         Class<? extends SlTransportType> sfTransportType =
@@ -383,8 +383,8 @@ public class RspBuilder {
         return locatorBuilder.build();
     }
 
-    private ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
-            IpAddress ipMgmtAddress, SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
+    private ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+            SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
         dsfDataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -392,8 +392,8 @@ public class RspBuilder {
         return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
     }
 
-    private ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
-            IpAddress ipMgmtAddress, List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
+    private ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+            List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         sfBuilder.setName(name)

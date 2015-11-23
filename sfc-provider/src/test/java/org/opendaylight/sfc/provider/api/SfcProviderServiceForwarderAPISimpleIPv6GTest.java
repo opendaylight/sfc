@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
@@ -53,12 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -74,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataStoreManager {
 
+    @SuppressWarnings("serial")
     private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
 
         {
@@ -85,6 +81,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         }
     };
 
+    @SuppressWarnings("serial")
     private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
 
         {
@@ -96,7 +93,9 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         }
     };
 
+    @SuppressWarnings("serial")
     private static final List<Integer> PORT = new ArrayList<Integer>() {
+
         {
             add(1111);
             add(2222);
@@ -106,17 +105,19 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         }
     };
 
-    private static final List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+    @SuppressWarnings("serial")
+    private static final List<SftType> sfTypes = new ArrayList<SftType>() {
 
         {
-            add(Firewall.class);
-            add(Dpi.class);
-            add(Napt44.class);
-            add(HttpHeaderEnrichment.class);
-            add(Qos.class);
+            add(new SftType("firewall"));
+            add(new SftType("dpi"));
+            add(new SftType("napt44"));
+            add(new SftType("http-header-enrichment"));
+            add(new SftType("qos"));
         }
     };
 
+    @SuppressWarnings("serial")
     private static final List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
 
         {
@@ -131,6 +132,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
     private static final SfcName SFC_NAME = new SfcName("unittest-chain-1");
     private static final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
 
+    @SuppressWarnings("serial")
     private static final List<SfName> sfNames = new ArrayList<SfName>() {
 
         {
@@ -142,6 +144,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         }
     };
 
+    @SuppressWarnings("serial")
     private final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
 
         {
@@ -154,8 +157,9 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
     };
 
     private final String[][] TO_SFF_NAMES =
-        {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
+            {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
 
+    @SuppressWarnings("serial")
     private final List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
 
         {
@@ -167,6 +171,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         }
     };
 
+    @SuppressWarnings("serial")
     private static final List<SffName> sffName = new ArrayList<SffName>() {
 
         {
@@ -178,7 +183,6 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
 
     private List<ServiceFunction> sfList = new ArrayList<>();
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
-
 
     @Before
     public void before() {

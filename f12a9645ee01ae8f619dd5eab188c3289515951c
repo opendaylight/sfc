@@ -111,6 +111,24 @@
     },
     {
       "key": {
+        "uuid": "7aade967_b9fe276a",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 3838
+      },
+      "writtenOn": "2015-11-23T14:53:29Z",
+      "side": 1,
+      "message": "You\u0027re right, I put status deprecated but it\u0027s not a module\u0027s statement. I\u0027ll fix it.",
+      "parentUuid": "7aade967_198e5b2f",
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aade967_b9994770",
         "filename": "sfc-model/src/main/yang/service-function-type.yang",
         "patchSetId": 2

@@ -1,0 +1,228 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_f9881f24",
+        "filename": "sfc-model/src/main/yang/service-abstract-type-definition.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "I don\u0027t think this needs to be another module... see other comment in service-function-type",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 41
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_d9b0c3f6",
+        "filename": "sfc-model/src/main/yang/service-abstract-type-definition.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "I still have no idea why SFC insists on using corporate entities in the URN for YANG models.... but cest la via",
+      "range": {
+        "startLine": 3,
+        "startChar": 2,
+        "endLine": 3,
+        "endChar": 55
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_599cd369",
+        "filename": "sfc-model/src/main/yang/service-abstract-type-definition.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Create a type in sfc-common please.",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_399f9761",
+        "filename": "sfc-model/src/main/yang/service-abstract-type-definition.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "This should be a list of types. Not actual DPLs, they go into the service-function.",
+      "range": {
+        "startLine": 50,
+        "startChar": 3,
+        "endLine": 52,
+        "endChar": 37
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_198e5b2f",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Whitespace change?",
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_b9994770",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Create new container from your new module.\n\nCall it service-function-types-definitions",
+      "range": {
+        "startLine": 108,
+        "startChar": 2,
+        "endLine": 108,
+        "endChar": 36
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_3976b73f",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Remove. Use key you will define in sfc-common and use in other module which hopefully will be a container in sft.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 3
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_5973734d",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Not deprecated. I think there are better ways of handling this. Like say a choice of container from sft.",
+      "range": {
+        "startLine": 84,
+        "startChar": 19,
+        "endLine": 84,
+        "endChar": 41
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_f98fbf21",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "This could be a choice under type if you move all the stuff under your new module to service-function-type as a container.",
+      "range": {
+        "startLine": 90,
+        "startChar": 2,
+        "endLine": 93,
+        "endChar": 59
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_1995fb32",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T14:15:32Z",
+      "side": 1,
+      "message": "Definitely not deprecated. There is a \"type\" and an \"instance\"",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 116,
+        "endChar": 24
+      },
+      "revId": "f12a9645ee01ae8f619dd5eab188c3289515951c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
@@ -77,12 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.HttpHeaderEnrichment;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Napt44;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Qos;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -381,7 +376,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         dataPlaneLocatorList.add(sfDataPlaneLocator);
         sfBuilder.setName(new SfName(sfNames.get(0)))
             .setKey(new ServiceFunctionKey(new SfName("unittest-fw-1")))
-            .setType(Firewall.class)
+            .setType(new SftType("firewall"))
             .setIpMgmtAddress(ipMgmtAddress[0])
             .setSfDataPlaneLocator(dataPlaneLocatorList);
         sfList.add(sfBuilder.build());
@@ -447,6 +442,7 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
         };
 
         List<Integer> PORT = new ArrayList<Integer>() {
+
             {
                 add(1111);
                 add(2222);
@@ -456,14 +452,14 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
             }
         };
 
-        List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+        List<SftType> sfTypes = new ArrayList<SftType>() {
 
             {
-                add(Firewall.class);
-                add(Dpi.class);
-                add(Napt44.class);
-                add(HttpHeaderEnrichment.class);
-                add(Qos.class);
+                add(new SftType("firewall"));
+                add(new SftType("dpi"));
+                add(new SftType("napt44"));
+                add(new SftType("http-header-enrichment"));
+                add(new SftType("qos"));
             }
         };
 

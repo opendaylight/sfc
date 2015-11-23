@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
@@ -38,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -73,13 +73,13 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
                 SimpleTestEntityBuilder.buildSfDataPlaneLocator(sfDplName, dummyIp, sffName, VxlanGpe.class);
 
         SfName sfName = new SfName("dict_fw_101");
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.111")), dummyLocator, Boolean.FALSE));
         sfName = new SfName("dict_fw_102");
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.112")), dummyLocator, Boolean.FALSE));
         sfName = new SfName("dict_fw_103");
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(sfName, new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.113")), dummyLocator, Boolean.FALSE));
     }
 

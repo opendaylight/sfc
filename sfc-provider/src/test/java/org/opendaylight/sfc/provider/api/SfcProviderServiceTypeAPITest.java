@@ -21,10 +21,10 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -48,9 +48,13 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
     @Test
     public void testPutServiceFunctionType() throws Exception {
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity))
-            .setType(serviceFunctionTypeIdentity);
+        SftType sftType = new SftType("firewall");
+        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
+            .setType(sftType)
+            .setBidirectionality(false)
+            .setNshAware(false)
+            .setRequestReclassification(false)
+            .setSymmetry(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
 
         assertTrue(sfcProviderServiceTypeAPILocal.putServiceFunctionType(serviceFunctionType));
@@ -68,14 +72,14 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         SfName sfName = new SfName("SF1");
 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName)).setType(Firewall.class);
+        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName)).setType(new SftType("firewall"));
         ServiceFunction serviceFunction = serviceFunctionBuilder.build();
 
         SftServiceFunctionNameKey sftServiceFunctionNameKey =
                 new SftServiceFunctionNameKey(serviceFunction.getName().getValue());
 
         ServiceFunctionTypeKey serviceFunctionTypeKey =
-                new ServiceFunctionTypeKey(new ServiceFunctionTypeKey(Firewall.class));
+                new ServiceFunctionTypeKey(new ServiceFunctionTypeKey(new SftType("firewall")));
         InstanceIdentifier<SftServiceFunctionName> sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
             .child(ServiceFunctionType.class, serviceFunctionTypeKey)
             .child(SftServiceFunctionName.class, sftServiceFunctionNameKey)
@@ -97,9 +101,13 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity))
-            .setType(serviceFunctionTypeIdentity);
+        SftType sftType = new SftType("firewall");
+        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
+            .setType(sftType)
+            .setBidirectionality(false)
+            .setNshAware(false)
+            .setRequestReclassification(false)
+            .setSymmetry(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
         serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
@@ -118,9 +126,13 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity))
-            .setType(serviceFunctionTypeIdentity);
+        SftType sftType = new SftType("firewall");
+        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
+            .setType(sftType)
+            .setBidirectionality(false)
+            .setNshAware(false)
+            .setRequestReclassification(false)
+            .setSymmetry(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
         serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
@@ -137,9 +149,13 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        Class<Firewall> serviceFunctionTypeIdentity = Firewall.class;
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceFunctionTypeIdentity))
-            .setType(serviceFunctionTypeIdentity);
+        SftType sftType = new SftType("firewall");
+        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
+            .setType(sftType)
+            .setBidirectionality(false)
+            .setNshAware(false)
+            .setRequestReclassification(false)
+            .setSymmetry(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
         serviceFunctionTypeList.add(serviceFunctionType);
         serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);

@@ -22,12 +22,12 @@ import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -131,7 +131,7 @@ public class SfExporterTest {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         // noinspection unchecked
         serviceFunctionBuilder.setName(new SfName(SfTestValues.NAME.getValue()))
-            .setType(SfTestValues.TYPE.getIdentity())
+            .setType(SfTestValues.TYPE.getSftType())
             .setRestUri(new Uri(SfTestValues.REST_URI.getValue()))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfTestValues.IP_MGMT_ADDRESS.getValue())))
             .setRequestReclassification(Boolean.parseBoolean(SfTestValues.REQUEST_RECLASSIFICATION.getValue()))
@@ -170,30 +170,30 @@ public class SfExporterTest {
     }
 
     public enum SfTestValues {
-        NAME("SF1"), TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi",
-                Dpi.class), REST_URI("http://localhost:5000/"), IP_MGMT_ADDRESS("127.0.0.1"), REQUEST_RECLASSIFICATION(
-                        "true"), NSH_AWARE("true"), SF_LOCATOR_NAME("SF1-DP1"), SF_LOCATOR_SERVICE_FUNCTION_FORWARDER(
+        NAME("SF1"), TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi", new SftType("dpi")), REST_URI(
+                "http://localhost:5000/"), IP_MGMT_ADDRESS("127.0.0.1"), REQUEST_RECLASSIFICATION("true"), NSH_AWARE(
+                        "true"), SF_LOCATOR_NAME("SF1-DP1"), SF_LOCATOR_SERVICE_FUNCTION_FORWARDER(
                                 "SFF1"), IP_V4_ADDRESS("192.168.10.5"), IP_V6_ADDRESS("01:23:45:67:89:AB:CD:EF"), PORT1(
                                         "6640"), PORT2("6633");
 
         private final String value;
-        private Class identity;
+        private SftType sftType;
 
         SfTestValues(String value) {
             this.value = value;
         }
 
-        SfTestValues(String value, Class identity) {
+        SfTestValues(String value, SftType sftType) {
             this.value = value;
-            this.identity = identity;
+            this.sftType = sftType;
         }
 
         public String getValue() {
             return this.value;
         }
 
-        public Class getIdentity() {
-            return this.identity;
+        public SftType getSftType() {
+            return this.sftType;
         }
     }
 }

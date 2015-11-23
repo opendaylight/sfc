@@ -8,23 +8,13 @@ module service-function-group {
       prefix inet;
       revision-date 2010-09-24;
       }
-  import ietf-yang-types {
-      prefix yang;
-      revision-date 2010-09-24;
-      }
-  import service-function {
-      prefix sfc-sf;
-      revision-date 2014-07-01;
-      }
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
-      }
   import service-function-group-algorithm {
       prefix sfc-sfg-alg;
       revision-date 2015-02-14;
       }
-
+  import sfc-common {
+      prefix sfc-common;
+      }
   organization "Contextream, Inc.";
   contact "Kfir Yeshayahu <kfir.yeshayahu@contextream.com>";
 
@@ -85,7 +75,7 @@ module service-function-group {
           "The IP and port used to configure this service-function";
       }
       leaf type {
-        type sfc-sft:service-function-type;
+        type sfc-common:sft-type;
         mandatory true;
         description
           "Service Function Type from service-function-type yang
@@ -94,7 +84,7 @@ module service-function-group {
       list sfc-service-function {
         key "name";
         leaf name {
-          type string;
+          type sfc-common:sf-name;
           description
             "The name of the Service Function";
         }

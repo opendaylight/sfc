@@ -4,10 +4,6 @@ module rendered-service-path {
 
   prefix sfc-rsp;
 
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
-      }
   import service-function-scheduler-type {
       prefix sfc-sfst;
       revision-date 2015-03-12;
@@ -26,7 +22,6 @@ module rendered-service-path {
       }
   import sfc-common {
       prefix sfc-common;
-      revision-date 2015-10-17;
       }
 
   organization "Cisco Systems, Inc.";
@@ -362,7 +357,7 @@ module rendered-service-path {
         description "Service function scheduler type for RSP";
       }
       leaf-list sft-list {
-        type sfc-sft:service-function-type;
+        type sfc-common:sft-type;
         description "List of service function type";
 
       }

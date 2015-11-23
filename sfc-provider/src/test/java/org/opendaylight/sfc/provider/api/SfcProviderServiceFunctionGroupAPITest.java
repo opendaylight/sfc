@@ -24,6 +24,7 @@ import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
@@ -36,8 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -64,9 +63,9 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
                 SimpleTestEntityBuilder.buildSfDataPlaneLocator(new SfDataPlaneLocatorName("moscow-5.5.5.5:555-vxlan"),
                         dummyIp, new SffName("sff-moscow"), VxlanGpe.class);
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_101"), Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_101"), new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.101")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_102"), Firewall.class,
+        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_102"), new SftType("firewall"),
                 new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
     }
 
@@ -159,19 +158,19 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
 
         // get service function by type
         ServiceFunctionGroup serviceFunctionGroup =
-                SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(Firewall.class);
+                SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(new SftType("firewall"));
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(),
                 IP_V4_ADDRESS);
-        assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), new SftType("firewall"));
 
-        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(Dpi.class);
+        serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(new SftType("dpi"));
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv6Address().getValue(),
                 IP_V6_ADDRESS);
-        assertEquals("Must be equal", serviceFunctionGroup.getType(), Dpi.class);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), new SftType("dpi"));
 
         // get service function group by name
         serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(SFG_NAME + 1);
@@ -180,7 +179,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 1);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(),
                 IP_V4_ADDRESS);
-        assertEquals("Must be equal", serviceFunctionGroup.getType(), Firewall.class);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), new SftType("firewall"));
 
         serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(SFG_NAME + 2);
 
@@ -188,7 +187,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         assertEquals("Must be equal", serviceFunctionGroup.getName(), SFG_NAME + 2);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv6Address().getValue(),
                 IP_V6_ADDRESS);
-        assertEquals("Must be equal", serviceFunctionGroup.getType(), Dpi.class);
+        assertEquals("Must be equal", serviceFunctionGroup.getType(), new SftType("dpi"));
 
         // delete transaction
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(sfgIID, LogicalDatastoreType.CONFIGURATION);
@@ -234,7 +233,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_V4_ADDRESS)))
             .setAlgorithm(ALGORITHM + 1)
             .setGroupId(100L)
-            .setType(Firewall.class);
+            .setType(new SftType("firewall"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
 
         // ipv6 group
@@ -243,7 +242,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
             .setIpMgmtAddress(new IpAddress(new Ipv6Address(IP_V6_ADDRESS)))
             .setAlgorithm(ALGORITHM + 2)
             .setGroupId(101L)
-            .setType(Dpi.class);
+            .setType(new SftType("dpi"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
 
         return serviceFunctionGroupList;
@@ -261,14 +260,14 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         sfcServiceFunctionBuilder.setName(SF_NAME1.getValue())
             .setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
-            .setType(Firewall.class);
+            .setType(new SftType("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         // second entry
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         sfcServiceFunctionBuilder.setName(SF_NAME2.getValue())
             .setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
-            .setType(Dpi.class);
+            .setType(new SftType("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         return sfcServiceFunctionList;

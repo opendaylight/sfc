@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorBridgeAugmentationBuilder;
@@ -38,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Dpi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -192,7 +192,7 @@ public class SffExporterTest {
         ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
         // noinspection unchecked
         serviceFunctionDictionaryBuilder.setName(new SfName(SffTestValues.SF_DICTIONARY_NAME.getValue()))
-            .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
+            .setType(SffTestValues.SF_DICTIONARY_TYPE.getSftType())
             .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv4());
 
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
@@ -200,7 +200,7 @@ public class SffExporterTest {
         serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
         // noinspection unchecked
         serviceFunctionDictionaryBuilder.setName(new SfName(SffTestValues.SF_DICTIONARY_NAME.getValue()))
-            .setType(SffTestValues.SF_DICTIONARY_TYPE.getIdentity())
+            .setType(SffTestValues.SF_DICTIONARY_TYPE.getSftType())
             .setSffSfDataPlaneLocator(this.buildSffSfDataPlaneLocatorIpv6());
 
         serviceFunctionDictionaryList.add(serviceFunctionDictionaryBuilder.build());
@@ -251,29 +251,29 @@ public class SffExporterTest {
         NAME("SFF1"), SFF_DATA_PLANE_LOCATOR_NAME("SFF1_DP1"), SFF_DATA_PLANE_LOCATOR_BRIDGE_NAME(
                 "br-int"), SFF_DATA_PLANE_LOCATOR_UUID("4c3778e4-840d-47f4-b45e-0988e514d26c"), SF_DICTIONARY_NAME(
                         "SF1"), SF_DICTIONARY_TYPE(SfExporter.SERVICE_FUNCTION_TYPE_PREFIX + "dpi",
-                                Dpi.class), SF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-tun"), REST_URI(
+                                new SftType("dpi")), SF_DATA_PLANE_LOCATOR_BRIDGE_NAME("br-tun"), REST_URI(
                                         "http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), SERVICE_NODE(
                                                 "SN1"), IP_V4_ADDRESS("192.168.10.5"), IP_V6_ADDRESS(
                                                         "01:23:45:67:89:AB:CD:EF"), PORT1("6640"), PORT2("6633");
 
         private final String value;
-        private Class identity;
+        private SftType sftType;
 
         SffTestValues(String value) {
             this.value = value;
         }
 
-        SffTestValues(String value, Class identity) {
+        SffTestValues(String value, SftType sftType) {
             this.value = value;
-            this.identity = identity;
+            this.sftType = sftType;
         }
 
         public String getValue() {
             return this.value;
         }
 
-        public Class getIdentity() {
-            return this.identity;
+        public SftType getSftType() {
+            return this.sftType;
         }
     }
 }

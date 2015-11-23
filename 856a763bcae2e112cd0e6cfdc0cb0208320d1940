@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_995b2b54",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T17:07:22Z",
+      "side": 1,
+      "message": "Will move all these identities to some bootstrap java to populate the data store ahead of time so that we have backwards compatibility.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 3
+      },
+      "revId": "856a763bcae2e112cd0e6cfdc0cb0208320d1940",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_795e6f47",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T17:07:22Z",
+      "side": 1,
+      "message": "This will use the grouping above but then a lot of Java needs to change hands as well",
+      "range": {
+        "startLine": 160,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 35
+      },
+      "revId": "856a763bcae2e112cd0e6cfdc0cb0208320d1940",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_f931ff0b",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T17:07:22Z",
+      "side": 1,
+      "message": "Should be typedef... adding now.",
+      "range": {
+        "startLine": 52,
+        "startChar": 17,
+        "endLine": 52,
+        "endChar": 18
+      },
+      "revId": "856a763bcae2e112cd0e6cfdc0cb0208320d1940",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_5955b31b",
+        "filename": "sfc-model/src/main/yang/service-function.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-11-23T17:07:22Z",
+      "side": 1,
+      "message": "This should be moved to service-function-type-definition --- doing that now.",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 5
+      },
+      "revId": "856a763bcae2e112cd0e6cfdc0cb0208320d1940",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

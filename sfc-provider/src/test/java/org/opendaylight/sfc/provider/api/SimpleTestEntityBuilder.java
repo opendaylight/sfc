@@ -14,6 +14,7 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.entry.SfDataPlaneLocatorKey;
@@ -31,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -41,8 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 
 public class SimpleTestEntityBuilder {
 
-    static ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
-            IpAddress ipMgmtAddress, SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
+    static ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+            SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
         dsfDataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -50,8 +50,8 @@ public class SimpleTestEntityBuilder {
         return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
     }
 
-    static ServiceFunction buildServiceFunction(SfName name, Class<? extends ServiceFunctionTypeIdentity> type,
-            IpAddress ipMgmtAddress, List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
+    static ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+            List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         sfBuilder.setName(name)

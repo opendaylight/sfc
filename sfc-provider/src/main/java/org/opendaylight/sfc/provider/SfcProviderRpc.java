@@ -101,7 +101,8 @@ import com.google.common.util.concurrent.Futures;
  * @since 2014-06-30
  */
 
-public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService, ServicePathIdService {
+public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService,
+        ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
@@ -142,11 +143,10 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, sf.getKey())
-                .toInstance();
+                .build();
 
             WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
-            writeTx.commit();
 
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
@@ -163,7 +163,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         if (dataBroker != null) {
             ServiceFunctionKey sfkey = new ServiceFunctionKey(new SfName(input.getName()));
             InstanceIdentifier<ServiceFunction> sfIID;
-            sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).toInstance();
+            sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).build();
 
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunction> dataObject = null;
@@ -383,8 +383,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(
-            ReservePathIdRangeInput input) {
+    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(ReservePathIdRangeInput input) {
         return null;
     }
 
@@ -394,20 +393,17 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(
-            AllocatePathIdInput input) {
+    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(AllocatePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<DeletePathIdOutput>> deletePathId(
-            DeletePathIdInput input) {
+    public Future<RpcResult<DeletePathIdOutput>> deletePathId(DeletePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(
-            SetGenerationAlgorithmInput input) {
+    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(SetGenerationAlgorithmInput input) {
 
         boolean result = SfcServicePathId.setGenerationAlgorithm(input.getGenerationAlgorithm());
 

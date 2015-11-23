@@ -7,6 +7,7 @@
  */
 package org.opendaylight.sfc.provider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +19,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
@@ -35,6 +37,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.type.definition.SupportedDataplanelocatorTypes;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.type.definition.SupportedDataplanelocatorTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Gre;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
@@ -126,6 +139,56 @@ public class OpendaylightSfc implements AutoCloseable {
     }
 
     /* Accessors */
+
+    public void initServiceFunctionTypes() {
+        @SuppressWarnings("serial")
+        List<SupportedDataplanelocatorTypes> supportedDplTypes = new ArrayList<SupportedDataplanelocatorTypes>() {
+
+            {
+                add(new SupportedDataplanelocatorTypesBuilder().setDataplanelocatorType(VxlanGpe.class).build());
+                add(new SupportedDataplanelocatorTypesBuilder().setDataplanelocatorType(Mac.class).build());
+                add(new SupportedDataplanelocatorTypesBuilder().setDataplanelocatorType(Gre.class).build());
+                add(new SupportedDataplanelocatorTypesBuilder().setDataplanelocatorType(Mpls.class).build());
+                add(new SupportedDataplanelocatorTypesBuilder().setDataplanelocatorType(Other.class).build());
+            }
+        };
+
+        @SuppressWarnings("serial")
+        List<String> types = new ArrayList<String>() {
+
+            {
+                add("firewall");
+                add("dpi");
+                add("napt44");
+                add("qos");
+                add("ids");
+                add("http-header-enrichment");
+                add("tcp-proxy");
+            }
+        };
+
+        List<ServiceFunctionType> sftList = new ArrayList<>();
+
+        for (String type : types) {
+            SftType sftType = new SftType(type);
+            ServiceFunctionTypeBuilder sftBuilder = new ServiceFunctionTypeBuilder()
+                .setKey(new ServiceFunctionTypeKey(sftType))
+                .setNshAware(true)
+                .setSymmetry(true)
+                .setBidirectionality(true)
+                .setRequestReclassification(true)
+                .setSupportedDataplanelocatorTypes(supportedDplTypes)
+                .setType(sftType);
+            sftList.add(sftBuilder.build());
+        }
+        ServiceFunctionTypesBuilder sftTypesBuilder = new ServiceFunctionTypesBuilder().setServiceFunctionType(sftList);
+        if (SfcDataStoreAPI.writePutTransactionAPI(SFT_IID, sftTypesBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION)) {
+            LOG.info("Initialised Service Function Types");
+        } else {
+            LOG.error("Could not initialise Service Function Types");
+        }
+    }
 
     public ExecutorService getExecutor() {
         return executor;

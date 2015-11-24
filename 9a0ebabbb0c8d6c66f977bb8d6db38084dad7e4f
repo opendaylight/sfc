@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_74daf179",
+        "filename": "sfc-util/sfc-openflow-utils/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T13:29:23Z",
+      "side": 1,
+      "message": "If possible, we may move these dependency to root pom",
+      "revId": "9a0ebabbb0c8d6c66f977bb8d6db38084dad7e4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_54dd756f",
+        "filename": "sfc-util/sfc-openflow-utils/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T13:29:23Z",
+      "side": 1,
+      "message": "can we move this block to root pom? I assume we can delete this block.",
+      "revId": "9a0ebabbb0c8d6c66f977bb8d6db38084dad7e4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

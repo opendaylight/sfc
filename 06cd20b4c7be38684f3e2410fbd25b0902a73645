@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "7aade967_9f1d4b12",
+        "filename": "sfc-scf-openflow/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "It is not in base pom. The following module still use junit:\n\nfind . | grep pom.xml | xargs egrep -l junit\n\n./sfc-ovs/pom.xml\n./sfcofl2/pom.xml\n./sfc-provider/pom.xml\n./sfc-util/pom.xml\n./sfc-sb-rest/pom.xml",
+      "parentUuid": "7aade967_99a00b92",
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aade967_39ad5789",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcNshHeader.java",
         "patchSetId": 5
@@ -71,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7aade967_dfe2e302",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcOvsPortUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "Only copy static function getLongFromDpid in SfcOvsUtil.java . The copyright also add other inc. The plan is to move all functions in this file to SfcOvsUtil.java",
+      "parentUuid": "7aade967_19bc1bbb",
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aade967_b9b067de",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcOvsPortUtils.java",
         "patchSetId": 5
@@ -88,6 +124,24 @@
         "endLine": 96,
         "endChar": 22
       },
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_3f1a1718",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcOvsPortUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "already fixed",
+      "parentUuid": "7aade967_b9b067de",
       "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -117,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "7aade967_ffa1dfa9",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcOvsPortUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "We need to get IP Locator",
+      "parentUuid": "7aade967_d9b523ce",
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aade967_99c7ab45",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfDataListener.java",
         "patchSetId": 5
@@ -134,6 +206,24 @@
         "endLine": 36,
         "endChar": 54
       },
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_ffba3fe0",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfDataListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "fix to BASE",
+      "parentUuid": "7aade967_99c7ab45",
       "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -163,6 +253,24 @@
     },
     {
       "key": {
+        "uuid": "7aade967_dfb983ea",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "The plan is to define YANG after we resolve multi-writer for SFC/GBP/Netvirt.",
+      "parentUuid": "7aade967_39c4773f",
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aade967_f9dd7f15",
         "filename": "sfc-scf-openflow/src/test/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfProcessorTest.java",
         "patchSetId": 5
@@ -180,6 +288,24 @@
         "endLine": 61,
         "endChar": 1
       },
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_bfb4c7f2",
+        "filename": "sfc-scf-openflow/src/test/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfProcessorTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "it is test framework",
+      "parentUuid": "7aade967_f9dd7f15",
       "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -226,6 +352,24 @@
         "endLine": 1195,
         "endChar": 52
       },
+      "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_9f79cb31",
+        "filename": "sfc-util/src/main/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 1195,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-24T03:30:19Z",
+      "side": 1,
+      "message": "This is existing SFF implementation in writeFlowToConfig in SfcL2FlowProgrammerOFimpl.java. will tune it later",
+      "parentUuid": "7aade967_19e3bbda",
       "revId": "06cd20b4c7be38684f3e2410fbd25b0902a73645",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

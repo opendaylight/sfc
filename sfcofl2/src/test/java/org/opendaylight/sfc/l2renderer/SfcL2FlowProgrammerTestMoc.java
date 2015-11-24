@@ -99,6 +99,20 @@ public class SfcL2FlowProgrammerTestMoc implements SfcL2FlowProgrammerInterface 
     }
 
     @Override
+    public short getMaxTableOffset() {
+        return 0;
+    }
+
+    @Override
+    public short getTableEgress() {
+        return 0;
+    }
+
+    @Override
+    public void setTableEgress(short tableEgress) {
+    }
+
+    @Override
     public void setFlowRspId(final Long rspId) {
     }
 

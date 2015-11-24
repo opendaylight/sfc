@@ -1,0 +1,36 @@
+module sfc-of-renderer {
+  yang-version 1;
+
+  namespace "urn:ericsson:params:xml:ns:yang:sfc-of-renderer";
+  prefix "sfcofrenderer";
+
+  organization "Ericsson, Inc.";
+  contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
+
+  revision 2015-11-23 {
+    description
+      "This module defines the SFC OpenFlow renderer configuration model.";
+  }
+
+  container sfc-of-renderer-config {
+    description
+      "Configuration values for the SFC OpenFlow Renderer that are set
+       in config subsystem";
+
+    leaf sfc-of-table-offset {
+      description
+        "Used to offset pipeline to start at offset+1. Table0 is required.
+        This allows the end-user to configure where the SFC pipeline starts.";
+      type uint8;
+    }
+
+    leaf sfc-of-app-egress-table-offset {
+      description
+        "When SFC co-exists with other applications on the same OpenFlow
+         switch, and the packets should be handed-off to the application
+         instead of egressing them, this is the OpenFlow table to send the
+         packets to for further processing.";
+      type uint8;
+    }
+  }
+}

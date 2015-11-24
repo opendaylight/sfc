@@ -71,11 +71,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreManager {
 
     SffName sffName = new SffName("SFF1");
-    private final ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
     private final RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
     private final RenderedServicePathHop renderedServicePathHop = renderedServicePathHopBuilder
         .setKey(new RenderedServicePathHopKey((short) 3)).setServiceFunctionForwarder(sffName).build();
-    SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = new SfcProviderServiceForwarderAPI();
     ServiceFunctionForwarder sff;
 
     @Before
@@ -221,20 +219,18 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         sffServicePathTestList.add(createRenderedServicePath(rsp3, sff, (short) 3));
         sffServicePathTestList.add(createRenderedServicePath(rsp4, sff, (short) 4));
 
-        // add two paths to service function forwarder state via rsp objects
+        // add four paths to service function forwarder state via rsp objects
         transactionSuccessful =
                 SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(sffServicePathTestList.get(0));
         assertTrue("Must be true", transactionSuccessful);
         transactionSuccessful =
                 SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(sffServicePathTestList.get(1));
         assertTrue("Must be true", transactionSuccessful);
-
-        // add another two paths to service function forwarder state via rsp name
-        transactionSuccessful = SfcProviderServiceForwarderAPI
-            .addPathToServiceForwarderState(new SfpName(sffServicePathTestList.get(2).getName().getValue()));
+        transactionSuccessful = 
+        		SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(sffServicePathTestList.get(2));
         assertTrue("Must be true", transactionSuccessful);
-        transactionSuccessful = SfcProviderServiceForwarderAPI
-            .addPathToServiceForwarderState(new SfpName(sffServicePathTestList.get(3).getName().getValue()));
+        transactionSuccessful = 
+        		SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(sffServicePathTestList.get(3));
         assertTrue("Must be true", transactionSuccessful);
 
         // read service function forwarder state from data store, it should return list of all four
@@ -273,54 +269,6 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
     }
 
     @Test
-    public void testUpdateServiceFunctionForwarderExecutor() {
-        SffName sffName = new SffName("SFF1");
-
-        sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
-        ServiceFunctionForwarder sff = sffBuilder.build();
-        assertTrue(SfcProviderServiceForwarderAPI.updateServiceFunctionForwarder(sff));
-    }
-
-    /*
-     * test creates service function forwarder and rendered service path, then add path to sff state
-     * after this, path will be removed and checked if deletion was successful
-     */
-    @Test
-    public void testDeleteRenderedPathsUsedByServiceForwarder() {
-        SffName sffName = new SffName("sffName");
-        SfpName sffPath = new SfpName("sffPath");
-
-        // create service function forwarder and write into data store
-        ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
-        ServiceFunctionForwarder serviceFunctionForwarder = serviceFunctionForwarderBuilder.build();
-
-        boolean transactionSuccessful =
-                SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceFunctionForwarder);
-        assertTrue("Must be true", transactionSuccessful);
-
-        // create rendered service path and add it to service function forwarder state
-        // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        transactionSuccessful = SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(
-                createRenderedServicePath(new RspName(sffPath.getValue()), sffName, (short) 1));
-        assertTrue("Must be true", transactionSuccessful);
-
-        // check if rendered service path exists
-        RenderedServicePath renderedServicePath =
-                SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(sffPath.getValue()));
-        assertNotNull("Must not be null", renderedServicePath);
-
-        // delete rendered path used by service function forwarder
-        transactionSuccessful =
-                SfcProviderServiceForwarderAPI.deleteRenderedPathsUsedByServiceForwarder(serviceFunctionForwarder);
-        assertTrue("Must be true", transactionSuccessful);
-
-        // check if rendered service path has been deleted
-        renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(sffPath.getValue()));
-        assertNull("Must be null", renderedServicePath);
-    }
-
-    @Test
     public void testPutServiceFunctionForwarderExecutor() {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
         SffName sffName = new SffName("SFF1");
@@ -330,129 +278,9 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
     }
 
     @Test
-    public void testDeleteSffDataPlaneLocator() {
-        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        SffName sffName = new SffName("SFF1");
-        SffDataPlaneLocatorName sffDplKey = new SffDataPlaneLocatorName("SFFLoc1");
-        SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("SFFDPL1");
-
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(sffName);
-        // XXX Shouldn't the Key and the Name be the same?
-        SffDataPlaneLocatorKey sffDataPlaneLocatorKey = new SffDataPlaneLocatorKey(sffDplKey);
-        SffDataPlaneLocator sffDataPlaneLocator =
-                sffDataPlaneLocatorBuilder.setName(sffDplName).setKey(sffDataPlaneLocatorKey).build();
-
-        InstanceIdentifier<SffDataPlaneLocator> sffDataPlaneLocatorIID =
-                InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-                    .child(SffDataPlaneLocator.class, sffDataPlaneLocatorKey)
-                    .build();
-
-        SfcDataStoreAPI.writePutTransactionAPI(sffDataPlaneLocatorIID, sffDataPlaneLocator,
-                LogicalDatastoreType.CONFIGURATION);
-
-        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = new SfcProviderServiceForwarderAPI();
-        assertTrue(sfcProviderServiceForwarderAPI.deleteSffDataPlaneLocator(sffName, sffDplKey));
-    }
-
-    @Test
-    public void testDeleteSffDataPlaneLocatorExecutor() {
-        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        SffName sffName = new SffName("SFF1");
-        SffDataPlaneLocatorName sffDplKey = new SffDataPlaneLocatorName("SFFLoc1");
-        SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("SFFDPL1");
-
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(sffName);
-        SffDataPlaneLocatorKey sffDataPlaneLocatorKey = new SffDataPlaneLocatorKey(sffDplKey);
-        SffDataPlaneLocator sffDataPlaneLocator =
-                sffDataPlaneLocatorBuilder.setName(sffDplName).setKey(sffDataPlaneLocatorKey).build();
-
-        InstanceIdentifier<SffDataPlaneLocator> sffDataPlaneLocatorIID =
-                InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-                    .child(SffDataPlaneLocator.class, sffDataPlaneLocatorKey)
-                    .build();
-
-        SfcDataStoreAPI.writePutTransactionAPI(sffDataPlaneLocatorIID, sffDataPlaneLocator,
-                LogicalDatastoreType.CONFIGURATION);
-
-        assertTrue(SfcProviderServiceForwarderAPI.deleteSffDataPlaneLocator(sffName, sffDplKey));
-    }
-
-    @Test
     public void testDeleteServiceFunctionForwarder() {
         SffName sffName = new SffName("SFF1");
-        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = new SfcProviderServiceForwarderAPI();
-        assertTrue(sfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(sffName));
-    }
-
-    @Test
-    public void testDeleteServiceFunctionForwarderExecutor() {
-        SffName sffName = new SffName("SFF1");
         assertTrue(SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(sffName));
-    }
-
-    @Test
-    public void testPutAllServiceFunctionForwarders() {
-        ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        SffName sffName = new SffName("SFF1");
-
-        sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
-        ServiceFunctionForwarder sff = sffBuilder.build();
-
-        List<ServiceFunctionForwarder> serviceFunctionForwarderList = new ArrayList<>();
-        serviceFunctionForwarderList.add(sff);
-        ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
-
-        serviceFunctionForwardersBuilder.setServiceFunctionForwarder(serviceFunctionForwarderList);
-        ServiceFunctionForwarders sffs = serviceFunctionForwardersBuilder.build();
-
-        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = new SfcProviderServiceForwarderAPI();
-        assertTrue(sfcProviderServiceForwarderAPI.putAllServiceFunctionForwarders(sffs));
-    }
-
-    @Test
-    public void testDeleteServiceFunctionFromForwarder() {
-        SffName sffName = new SffName("SFF1");
-        SfDataPlaneLocatorName sfDplName = new SfDataPlaneLocatorName("SFDPL1");
-        SfName sfName = new SfName("SFD1");
-
-        SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
-        SfDataPlaneLocator sfDataPlaneLocator = sfDataPlaneLocatorBuilder.setName(sfDplName)
-            .setKey(new SfDataPlaneLocatorKey(sfDplName))
-            .setServiceFunctionForwarder(sffName)
-            .build();
-        List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<>();
-        sfDataPlaneLocatorList.add(sfDataPlaneLocator);
-
-        ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(sfName)
-            .setKey(new ServiceFunctionKey(sfName))
-            .setSfDataPlaneLocator(sfDataPlaneLocatorList);
-        ServiceFunction serviceFunction = serviceFunctionBuilder.build();
-
-        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-        SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
-
-        ServiceFunctionDictionaryBuilder serviceFunctionDictionaryBuilder = new ServiceFunctionDictionaryBuilder();
-        ServiceFunctionDictionary serviceFunctionDictionary = serviceFunctionDictionaryBuilder.setName(sfName)
-            .setKey(new ServiceFunctionDictionaryKey(sfName))
-            .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-            .build();
-
-        InstanceIdentifier<ServiceFunctionDictionary> sffIID;
-        ServiceFunctionDictionaryKey serviceFunctionDictionaryKey =
-                new ServiceFunctionDictionaryKey(serviceFunction.getName());
-        ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(sffName);
-        sffIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-            .child(ServiceFunctionForwarder.class, serviceFunctionForwarderKey)
-            .child(ServiceFunctionDictionary.class, serviceFunctionDictionaryKey)
-            .build();
-
-        SfcDataStoreAPI.writePutTransactionAPI(sffIID, serviceFunctionDictionary, LogicalDatastoreType.CONFIGURATION);
-
-        SfcProviderServiceForwarderAPI sfcProviderServiceForwarderAPI = new SfcProviderServiceForwarderAPI();
-        assertTrue(sfcProviderServiceForwarderAPI.deleteServiceFunctionFromForwarder(serviceFunction));
     }
 
     private RenderedServicePath createRenderedServicePath(RspName rspName, SffName sffName, short pathKey) {

@@ -79,7 +79,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             /* Randomly find one instance of serviceFunctionType */
             Random rad = new Random();
             int start = rad.nextInt(sftServiceFunctionNameList.size());
-            SfcProviderTopologyNode firstHopNode = null;
+            SfcProviderTopologyNode firstHopNode;
             while (maxTries > 0) {
                 sfcProviderTopologyNodeName = new SfName(sftServiceFunctionNameList.get(start).getName());
                 /*
@@ -111,7 +111,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
 
         /* Find one instance of serviceFunctionType closest to preSfName */
         int minLength = Integer.MAX_VALUE;
-        int length = 0;
+        int length;
         sfcProviderTopologyNodeName = null;
         for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
             SfName curSfName = new SfName(sftServiceFunctionName.getName());
@@ -219,7 +219,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
     public List<SfName> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
             ServiceFunctionPath sfp) {
         SfName preSfName = null;
-        SfName sfName = null;
+        SfName sfName;
         List<SfName> sfNameList = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.addAll(chain.getSfcServiceFunction());

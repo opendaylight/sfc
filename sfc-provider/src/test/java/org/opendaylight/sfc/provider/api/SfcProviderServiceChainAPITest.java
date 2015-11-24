@@ -10,7 +10,6 @@ package org.opendaylight.sfc.provider.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -85,36 +84,6 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
     }
 
     @Test
-    public void testDeleteServiceFunctionChain() {
-
-        SfcName name = new SfcName("unittest-chain-2");
-        ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
-
-        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-
-        for (ServiceFunction serviceFunction : sfList) {
-
-            SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                    sfcServiceFunctionBuilder.setName(serviceFunction.getName().getValue())
-                        .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
-                        .setType(serviceFunction.getType())
-                        .build();
-            sfcServiceFunctionList.add(sfcServiceFunction);
-        }
-        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(name).setKey(key).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false);
-
-        SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build());
-        ServiceFunctionChain result = SfcProviderServiceChainAPI.readServiceFunctionChain(name);
-        assertNotNull("Must be not null", result);
-
-        SfcProviderServiceChainAPI.deleteServiceFunctionChain(name);
-        result = SfcProviderServiceChainAPI.readServiceFunctionChain(name);
-        assertNull("Must be null", result);
-    }
-
-    @Test
     public void testCreateReadServiceFunctionChains() {
 
         List<SfcServiceFunction> sfcAllServiceFunctionList = new ArrayList<>();
@@ -160,59 +129,16 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
         ServiceFunctionChainsBuilder sfcsBuilder = new ServiceFunctionChainsBuilder();
         sfcsBuilder.setServiceFunctionChain(sfcList);
-        SfcProviderServiceChainAPI.putAllServiceFunctionChains(sfcsBuilder.build());
+        
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
+                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, sfcsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         final int INDEX_TO_READ = 1;
         ServiceFunctionChain sfc2 = SfcProviderServiceChainAPI.readServiceFunctionChain(sfcName.get(INDEX_TO_READ));
 
         assertNotNull("Must be not null", sfc2);
         assertEquals("Must be equal", sfc2, sfcArray[INDEX_TO_READ]);
-    }
-
-    @Test
-    public void testReadAllServiceFunctionChains() {
-        SfcName sfcName = new SfcName("SFC1");
-        ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
-        ServiceFunctionChain serviceFunctionChain =
-                serviceFunctionChainBuilder.setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName)).build();
-
-        ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
-        List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
-        serviceFunctionChainList.add(serviceFunctionChain);
-        serviceFunctionChainsBuilder.setServiceFunctionChain(serviceFunctionChainList);
-        ServiceFunctionChains serviceFunctionChains = serviceFunctionChainsBuilder.build();
-
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-        SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, serviceFunctionChains, LogicalDatastoreType.CONFIGURATION);
-
-        ServiceFunctionChains returnedSfc = SfcProviderServiceChainAPI.readAllServiceFunctionChains();
-        assertNotNull("Returned variable is missing.", returnedSfc);
-    }
-
-    @Test
-    public void testDeletePathFromServiceFunctionChainState() throws Exception {
-        SfcName sfcName = new SfcName("SFC1");
-        SfpName sfpName = new SfpName("SP1");
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey = new ServiceFunctionChainStateKey(sfcName);
-        SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
-        sfcServicePathBuilder.setName(sfpName).setKey(new SfcServicePathKey(sfpName));
-        SfcServicePath sfcServicePath = sfcServicePathBuilder.build();
-        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
-            .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-            .child(SfcServicePath.class, new SfcServicePathKey(sfpName))
-            .build();
-
-        SfcDataStoreAPI.writePutTransactionAPI(sfcoIID, sfcServicePath, LogicalDatastoreType.OPERATIONAL);
-        assertTrue(SfcProviderServiceChainAPI.deletePathFromServiceFunctionChainState(sfcName, sfpName));
-    }
-
-    @Test
-    public void testAddPathToServiceFunctionChainState() {
-        SfcName sfcName = new SfcName("SFC1");
-        SfpName sfpName = new SfpName("SP1");
-        assertTrue(SfcProviderServiceChainAPI.addPathToServiceFunctionChainState(sfcName, sfpName));
     }
 
     /*
@@ -255,7 +181,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         assertTrue("Must be true", transactionSuccessful);
 
         // get service function chains
-        ServiceFunctionChains serviceFunctionChains = SfcProviderServiceChainAPI.getServiceFunctionChainsRef();
+        ServiceFunctionChains serviceFunctionChains = SfcDataStoreAPI.readTransactionAPI(InstanceIdentifier.builder(ServiceFunctionChains.class).build(), LogicalDatastoreType.CONFIGURATION);
         assertNotNull("Must not be null", serviceFunctionChains);
         assertEquals("Must be equal", serviceFunctionChains.getServiceFunctionChain().get(0).getName(), sfcName);
         assertEquals("Must be equal",
@@ -307,7 +233,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
         // get data
         ServiceFunctionChainsState serviceFunctionChainsState =
-                SfcProviderServiceChainAPI.getServiceFunctionChainsStateRef();
+        		SfcDataStoreAPI.readTransactionAPI(InstanceIdentifier.builder(ServiceFunctionChainsState.class).build(), LogicalDatastoreType.OPERATIONAL);
         assertNotNull("Must not be null", serviceFunctionChainsState);
         assertEquals("Must be equal", serviceFunctionChainsState.getServiceFunctionChainState().get(0).getName(),
                 sfcName);

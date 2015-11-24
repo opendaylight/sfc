@@ -16,8 +16,6 @@ import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPathsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -48,21 +46,6 @@ public class SfcProviderServicePathAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
 
     /**
-     * This function checks if the Service Path has any constraints
-     *
-     * @param serviceFunctionPath Service Path object
-     * @return List of RSP name objects
-     */
-    public static boolean isDefaultServicePath(ServiceFunctionPath serviceFunctionPath) {
-        boolean ret = true;
-        if ((serviceFunctionPath.getServicePathHop() != null) || (serviceFunctionPath.getTransportType() != null)
-                || (serviceFunctionPath.getStartingIndex() != null) || (serviceFunctionPath.getPathId() != null)) {
-            ret = false;
-        }
-        return ret;
-    }
-
-    /**
      * API to read the Service Function Path operational state
      *
      * @param servicePathName Service Path Name
@@ -87,34 +70,6 @@ public class SfcProviderServicePathAPI {
         }
         printTraceStop(LOG);
 
-        return ret;
-    }
-
-    /**
-     * Wrapper API to delete the Service Function Path operational state
-     *
-     * @param servicePathName Service Path Name
-     * @return Nothing.
-     */
-    protected static boolean deleteServicePathState(SfpName servicePathName) {
-
-        printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionPathState> sfpIID;
-        boolean ret = false;
-
-        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
-
-        sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-            .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
-            .build();
-
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL)) {
-            ret = true;
-        } else {
-            LOG.error("{}: Failed to delete Service Function Path {} state.", Thread.currentThread().getStackTrace()[1],
-                    servicePathName);
-        }
-        printTraceStop(LOG);
         return ret;
     }
 
@@ -174,29 +129,6 @@ public class SfcProviderServicePathAPI {
         return sfp;
     }
 
-    /**
-     * This function deletes a SFP from the datastore
-     *
-     * @param serviceFunctionPathName SFP name
-     * @return Nothing.
-     */
-    public static boolean deleteServiceFunctionPath(SfpName serviceFunctionPathName) {
-        boolean ret = false;
-        printTraceStart(LOG);
-        ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
-        InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-            .child(ServiceFunctionPath.class, serviceFunctionPathKey)
-            .build();
-
-        if (!SfcDataStoreAPI.deleteTransactionAPI(sfpEntryIID, LogicalDatastoreType.CONFIGURATION)) {
-            LOG.error("Failed to delete SFP: {}", serviceFunctionPathName);
-        } else {
-            ret = true;
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
     public static ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps;
         printTraceStart(LOG);
@@ -224,72 +156,6 @@ public class SfcProviderServicePathAPI {
             LOG.error("Failed to create Service Function Path: {}", sfp.getName());
         }
 
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    protected static boolean putAllServiceFunctionPaths(ServiceFunctionPaths sfps) {
-        boolean ret = false;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
-
-        if (SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, sfps, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    protected static boolean deleteAllServiceFunctionPaths() {
-        boolean ret = false;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
-
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * We iterate through all service paths that use this service function and if
-     * necessary, remove them. Additionally, since we are delete the RSP, we also
-     *
-     * @param serviceFunction Service Function Object
-     * @return Nothing.
-     */
-    public static boolean deleteServicePathContainingFunction(ServiceFunction serviceFunction) {
-
-        printTraceStart(LOG);
-        boolean ret = true;
-        List<SfServicePath> sfServicePathList;
-
-        sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(serviceFunction.getName());
-        if (sfServicePathList != null) {
-            for (SfServicePath sfServicePath : sfServicePathList) {
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-                RspName rspName = new RspName(sfServicePath.getName().getValue());
-                if (SfcProviderRenderedPathAPI.readRenderedServicePath(rspName) != null) {
-                    if (SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName)) {
-                        ret = true;
-                    } else {
-                        LOG.error("Failed to delete Path {} from Service Function {} state", rspName,
-                                serviceFunction.getName());
-                        ret = false;
-                    }
-                } else {
-                    LOG.debug("{}: SFP {} already deleted by another thread or client",
-                            Thread.currentThread().getStackTrace()[1], rspName);
-                }
-            }
-        } else {
-            LOG.debug("Could not find Service function Paths using Service Function: {} ", serviceFunction.getName());
-        }
         printTraceStop(LOG);
         return ret;
     }

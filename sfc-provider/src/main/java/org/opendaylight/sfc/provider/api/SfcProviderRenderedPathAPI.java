@@ -12,10 +12,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -82,24 +80,7 @@ public class SfcProviderRenderedPathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
     private static final int MAX_STARTING_INDEX = 255;
-    private static AtomicInteger numCreatedPath = new AtomicInteger(0);
     private static SfcServiceFunctionSchedulerAPI defaultScheduler;
-
-    static final Comparator<SfcServiceFunction> SF_ORDER = new Comparator<SfcServiceFunction>() {
-
-        @Override
-        public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
-            return e2.getOrder().compareTo(e1.getOrder());
-        }
-    };
-
-    static final Comparator<SfcServiceFunction> SF_ORDER_REV = new Comparator<SfcServiceFunction>() {
-
-        @Override
-        public int compare(SfcServiceFunction e1, SfcServiceFunction e2) {
-            return e1.getOrder().compareTo(e2.getOrder());
-        }
-    };
 
     private static SfcServiceFunctionSchedulerAPI getServiceFunctionScheduler(
             Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
@@ -133,18 +114,6 @@ public class SfcProviderRenderedPathAPI {
         LOG.info("Selected SF Schdedule Type: {}", serviceFunctionSchedulerType);
     }
 
-    public static int numCreatedPathGetValue() {
-        return numCreatedPath.get();
-    }
-
-    public int numCreatedPathIncrementGet() {
-        return numCreatedPath.incrementAndGet();
-    }
-
-    public int numCreatedPathDecrementGet() {
-        return numCreatedPath.decrementAndGet();
-    }
-
     /**
      * Creates a RSP and all the associated operational state based on the
      * given service function path and scheduler
@@ -157,12 +126,11 @@ public class SfcProviderRenderedPathAPI {
      */
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
-        RenderedServicePath renderedServicePath = null;
+        RenderedServicePath renderedServicePath;
 
         boolean rspSuccessful = false;
         boolean addPathToSffStateSuccessful = false;
         boolean addPathToSfStateSuccessful = false;
-        boolean addPathtoSfpStateSuccessful = false;
 
         if (scheduler == null) {// Fall back to defaultScheduler
             SfcProviderRenderedPathAPI.initDefaultServiceFunctionScheduler();
@@ -201,11 +169,8 @@ public class SfcProviderRenderedPathAPI {
         }
 
         // Add RSP to SFP operational state
-        if (addPathToSfStateSuccessful && SfcProviderServicePathAPI
-            .addRenderedPathToServicePathState(createdServiceFunctionPath.getName(), renderedServicePath.getName())) {
-            addPathtoSfpStateSuccessful = true;
-
-        } else {
+        if (!(addPathToSfStateSuccessful && SfcProviderServicePathAPI
+            .addRenderedPathToServicePathState(createdServiceFunctionPath.getName(), renderedServicePath.getName()))) {
             SfcProviderServiceFunctionAPI
                 .deleteServicePathFromServiceFunctionState(createdServiceFunctionPath.getName());
             SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
@@ -249,11 +214,10 @@ public class SfcProviderRenderedPathAPI {
     public static RenderedServicePath createSymmetricRenderedServicePathAndState(
             RenderedServicePath renderedServicePath) {
 
-        RenderedServicePath revRenderedServicePath = null;
+        RenderedServicePath revRenderedServicePath;
         boolean revRspSuccessful = false;
-        boolean addRevPathToSffStateSuccessul = false;
-        boolean addRevPathToSfStateSuccessul = false;
-        boolean addRevPathToSfpStateSuccessul = false;
+        boolean addRevPathToSffStateSuccessful = false;
+        boolean addRevPathToSfStateSuccessful = false;
 
         // Reverse Path
 
@@ -266,16 +230,16 @@ public class SfcProviderRenderedPathAPI {
 
         // Add Path name to SFF operational state
         if (revRspSuccessful && SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(revRenderedServicePath)) {
-            addRevPathToSffStateSuccessul = true;
+            addRevPathToSffStateSuccessful = true;
         } else {
             SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
         }
 
         // Add Path to SF operational state
-        if (addRevPathToSffStateSuccessul
+        if (addRevPathToSffStateSuccessful
                 && SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(revRenderedServicePath)) {
 
-            addRevPathToSfStateSuccessul = true;
+            addRevPathToSfStateSuccessful = true;
             // Send to SB REST
             /*
              * SfcProviderServicePathAPI.checkServiceFunctionPathExecutor
@@ -287,11 +251,8 @@ public class SfcProviderRenderedPathAPI {
 
         }
         // Add RSP to SFP operational state
-        if (addRevPathToSfStateSuccessul && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
-                renderedServicePath.getParentServiceFunctionPath(), revRenderedServicePath.getName())) {
-            addRevPathToSfpStateSuccessul = true;
-
-        } else {
+        if (!(addRevPathToSfStateSuccessful && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
+                renderedServicePath.getParentServiceFunctionPath(), revRenderedServicePath.getName()))) {
             // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
             /*
              * XXX TODO this exemplifies the issue. There is no method called
@@ -329,7 +290,6 @@ public class SfcProviderRenderedPathAPI {
         List<RenderedServicePathHop> renderedServicePathHopArrayList = new ArrayList<>();
         RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
-        int initialServiceIndex = serviceIndex;
         short posIndex = 0;
 
         if (serviceFunctionNameList == null && sfgNameList == null) {
@@ -338,12 +298,11 @@ public class SfcProviderRenderedPathAPI {
         }
 
         if (sfgNameList != null) {
-            boolean loopBroken = false;
             for (String sfgName : sfgNameList) {
                 ServiceFunctionGroup sfg = SfcProviderServiceFunctionGroupAPI.readServiceFunctionGroup(sfgName);
                 if (sfg == null) {
                     LOG.error("Could not find suitable SFG in data store by name: {}", sfgName);
-                    loopBroken = true;
+                    renderedServicePathHopArrayList.clear();
                     break;
                 }
                 // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
@@ -357,7 +316,7 @@ public class SfcProviderRenderedPathAPI {
                 if (serviceFunction == null) {
                     LOG.error("Could not find suitable SF in data store by name: {}",
                             sfg.getSfcServiceFunction().get(0).getName());
-                    loopBroken = true;
+                    renderedServicePathHopArrayList.clear();
                     break;
                 }
                 createSFGHopBuilder(serviceIndex, renderedServicePathHopBuilder, posIndex, sfg.getName(),
@@ -366,11 +325,7 @@ public class SfcProviderRenderedPathAPI {
                 serviceIndex--;
                 posIndex++;
             }
-            if (loopBroken) {
-                renderedServicePathHopArrayList.clear();
-                posIndex = 0;
-                serviceIndex = initialServiceIndex;
-            }
+
         } else {
             for (SfName serviceFunctionName : serviceFunctionNameList) {
                 ServiceFunction serviceFunction =
@@ -438,7 +393,7 @@ public class SfcProviderRenderedPathAPI {
 
         printTraceStart(LOG);
 
-        long pathId = -1;
+        long pathId;
         int serviceIndex;
         RenderedServicePath ret = null;
 
@@ -461,7 +416,7 @@ public class SfcProviderRenderedPathAPI {
             .readServiceFunctionChain(serviceFunctionChainName) : null;
         if (serviceFunctionChain == null) {
             LOG.error("ServiceFunctionChain name for Path {} not provided", serviceFunctionPath.getName());
-            return ret;
+            return null;
         }
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
@@ -554,20 +509,6 @@ public class SfcProviderRenderedPathAPI {
         }
         printTraceStop(LOG);
         return ret;
-    }
-
-    /**
-     * Create a Rendered Path and all the associated operational state based on the
-     * given rendered service path
-     * <p>
-     *
-     * @param serviceFunctionPath RSP Object
-     * @param createRenderedPathInput CreateRenderedPathInput object
-     * @return RenderedServicePath
-     */
-    protected RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput) {
-        return createRenderedServicePathEntry(serviceFunctionPath, createRenderedPathInput, defaultScheduler);
     }
 
     /**
@@ -722,7 +663,7 @@ public class SfcProviderRenderedPathAPI {
     public static boolean deleteRenderedServicePath(RspName renderedServicePathName) {
         boolean ret = false;
         printTraceStart(LOG);
-        long pathId = -1;
+        long pathId;
         RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(renderedServicePathName);
         InstanceIdentifier<RenderedServicePath> rspEntryIID = InstanceIdentifier.builder(RenderedServicePaths.class)
             .child(RenderedServicePath.class, renderedServicePathKey)
@@ -863,7 +804,7 @@ public class SfcProviderRenderedPathAPI {
             List<Class<? extends ServiceFunctionTypeIdentity>> serviceFunctionTypeList) {
         int i;
         String serviceTypeName;
-        Class serviceFunctionType = null;
+        Class serviceFunctionType;
         List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
         // TODO Not sure why we need references to GBP in here. The way the integration was done, we
         // can add our own strings. This maybe an artifact of
@@ -873,9 +814,9 @@ public class SfcProviderRenderedPathAPI {
         // work
         SfcName sfcName = new SfcName("chain-sfc-gbp");
         SfpName pathName = new SfpName("path-sfc-gbp");
-        ServiceFunctionChain serviceFunctionChain = null;
-        boolean ret = false;
-        RenderedServicePathFirstHop firstHop = null;
+        ServiceFunctionChain serviceFunctionChain;
+        boolean ret;
+        RenderedServicePathFirstHop firstHop;
         SfcServiceFunctionSchedulerAPI scheduler;
 
         printTraceStart(LOG);
@@ -886,7 +827,7 @@ public class SfcProviderRenderedPathAPI {
             serviceFunctionType = serviceFunctionTypeList.get(i);
             serviceTypeName = getServiceTypeName(serviceFunctionType);
             if (serviceTypeName == null) {
-                LOG.error("Unknowed ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
+                LOG.error("Unknown ServiceFunctionTypeIdentity: {}", serviceFunctionType.getName());
                 return null;
             }
             sfcName = new SfcName(sfcName.getValue() + "-" + serviceTypeName);
@@ -907,7 +848,7 @@ public class SfcProviderRenderedPathAPI {
             sfcBuilder.setName(sfcName).setSfcServiceFunction(sfcServiceFunctionArrayList);
             serviceFunctionChain = sfcBuilder.build();
             ret = SfcProviderServiceChainAPI.putServiceFunctionChain(serviceFunctionChain);
-            if (ret == false) {
+            if (!ret) {
                 LOG.error("Failed to create ServiceFunctionChain: {}", sfcName);
                 return null;
             }
@@ -923,7 +864,7 @@ public class SfcProviderRenderedPathAPI {
             sfpBuilder.setName(pathName).setServiceChainName(sfcName);
             serviceFunctionPath = sfpBuilder.build();
             ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
-            if (ret == false) {
+            if (!ret) {
                 LOG.error("Failed to create ServiceFunctionPath: {}", pathName);
                 return null;
             }

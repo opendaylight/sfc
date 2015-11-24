@@ -23,12 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.sfc_ovs.provider.util.HopOvsdbBridgePair;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
@@ -44,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Other;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
@@ -52,12 +47,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeInternal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigs;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.bridge.attributes.BridgeOtherConfigsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.node.attributes.ConnectionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
@@ -87,25 +79,16 @@ public class SfcSffToOvsMappingAPITest {
     private static final String OVSDB_OPTION_NSHC2 = "Nshc2";
     private static final String OVSDB_OPTION_NSHC3 = "Nshc3";
     private static final String OVSDB_OPTION_NSHC4 = "Nshc4";
-    private static final Long pathId = 25L;
-    private static final Short hopNumberFrom = 10, hopNumberTo = 5, serviceIndex = 15;
-    private static final String renderedServicePathName = "Test name";
-    private static final String ipAddress = "170.0.0.1";
-    private static final String ip6Address = "00:00:00:00:00:00:00:00";
     private static final String testString = "testString";
     private static final String bridgeName = "bridge name";
     private static final String uuid = "00000000-0000-0000-0000-000000000000";
     private Class<? extends InterfaceTypeBase> interfaceTypeClass;
     private DataPlaneLocatorBuilder dataPlaneLocatorBuilder;
-    private HopOvsdbBridgePair hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo;
     private List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options> optionsList;
     private List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointAugmentationList;
     private OvsBridgeBuilder ovsBridgeBuilder;
     private OvsdbBridgeAugmentation ovsdbBridgeAugmentation;
-    private OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder;
     private OvsOptionsBuilder ovsOptionsBuilder;
-    private RenderedServicePathBuilder renderedServicePathBuilder;
-    private RenderedServicePathHopBuilder renderedServicePathHopBuilderFrom, renderedServicePathHopBuilderTo;
     private ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder;
     private SffOvsNodeAugmentationBuilder sffOvsNodeAugmentationBuilder;
     private SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder;
@@ -303,33 +286,9 @@ public class SfcSffToOvsMappingAPITest {
     }
 
     @Test
-    public void testGetDataPlaneLocatorOptions_nullDpl() throws Exception {
-        dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-
-        optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorOptions",
-                dataPlaneLocatorBuilder.build());
-
-        assertEquals("Must be equal", optionsList, Collections.emptyList());
-    }
-
-    @Test
-    public void testGetDataPlaneLocatorOptions() throws Exception {
-        IpBuilder ipBuilder = new IpBuilder();
-        dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-        optionsList = new ArrayList<>();
-
-        ipBuilder.setIp(SfcOvsUtil.convertStringToIpAddress(OVSDB_OPTION_LOCAL_IP_VALUE));
-        dataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
-        optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorOptions",
-                dataPlaneLocatorBuilder.build());
-
-        assertEquals("Must be equal", optionsList.get(0).getValue(), OVSDB_OPTION_LOCAL_IP_VALUE);
-    }
-
-    @Test
     public void testGetSffDataPlaneLocatorOptions_nullSffDplOvsOptions() throws Exception {
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-
+        // TODO Remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -346,7 +305,7 @@ public class SfcSffToOvsMappingAPITest {
         sffOvsLocatorOptionsAugmentationBuilder.setOvsOptions(ovsOptionsBuilder.build());
         sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class,
                 sffOvsLocatorOptionsAugmentationBuilder.build());
-
+        // TODO Remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -375,6 +334,8 @@ public class SfcSffToOvsMappingAPITest {
         sffOvsLocatorOptionsAugmentationBuilder.setOvsOptions(ovsOptionsBuilder.build());
         sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class,
                 sffOvsLocatorOptionsAugmentationBuilder.build());
+
+        // TODO Remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -395,6 +356,7 @@ public class SfcSffToOvsMappingAPITest {
     public void testGetDataPlaneLocatorInterfaceType_NoTransport() throws Exception {
         dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
+        // TODO Remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 
@@ -406,6 +368,8 @@ public class SfcSffToOvsMappingAPITest {
         dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
         dataPlaneLocatorBuilder.setTransport(Other.class);
+
+        // TODO Remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 
@@ -417,89 +381,11 @@ public class SfcSffToOvsMappingAPITest {
         dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
         dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
+
+        // TODO Remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 
         assertEquals("Must be Equal", interfaceTypeClass, InterfaceTypeVxlan.class);
-    }
-
-    @Test
-    public void testBuildVxlanTunnelDataPlaneLocator() throws Exception {
-        List<BridgeOtherConfigs> bridgeOtherConfigsList = new ArrayList<>();
-        BridgeOtherConfigsBuilder bridgeOtherConfigsBuilder = new BridgeOtherConfigsBuilder();
-        ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        renderedServicePathBuilder = new RenderedServicePathBuilder();
-        renderedServicePathHopBuilderFrom = new RenderedServicePathHopBuilder();
-        renderedServicePathHopBuilderTo = new RenderedServicePathHopBuilder();
-        SffDataPlaneLocator sffDataPlaneLocator;
-
-        renderedServicePathBuilder.setName(new RspName(renderedServicePathName)).setPathId(pathId);
-
-        renderedServicePathHopBuilderFrom.setHopNumber(hopNumberFrom).setServiceIndex(serviceIndex);
-
-        renderedServicePathHopBuilderTo.setHopNumber(hopNumberTo);
-
-        bridgeOtherConfigsBuilder.setBridgeOtherConfigKey(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP)
-            .setBridgeOtherConfigValue(ip6Address);
-        bridgeOtherConfigsList.add(bridgeOtherConfigsBuilder.build());
-
-        ovsdbBridgeAugmentationBuilder.setBridgeOtherConfigs(bridgeOtherConfigsList);
-
-        hopOvsdbBridgePairFrom = new HopOvsdbBridgePair(renderedServicePathHopBuilderFrom.build(),
-                ovsdbBridgeAugmentationBuilder.build());
-        hopOvsdbBridgePairTo =
-                new HopOvsdbBridgePair(renderedServicePathHopBuilderTo.build(), ovsdbBridgeAugmentationBuilder.build());
-
-        sffDataPlaneLocator = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(renderedServicePathBuilder.build(),
-                hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo);
-
-        Assert.assertEquals("Must be Equal", sffDataPlaneLocator.getName().getValue(),
-                renderedServicePathName + "-vxlan-" + hopNumberFrom + "to" + hopNumberTo);
-        Assert.assertEquals("Must be Equal",
-                sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class).getOvsOptions().getNsi(),
-                serviceIndex.toString());
-        Assert.assertEquals("Must be Equal",
-                sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class).getOvsOptions().getNsp(),
-                pathId.toString());
-        Assert.assertEquals("Must be Equal", sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class)
-            .getOvsOptions()
-            .getLocalIp(), ip6Address);
-
-        bridgeOtherConfigsBuilder.setBridgeOtherConfigKey(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP)
-            .setBridgeOtherConfigValue(ipAddress);
-        bridgeOtherConfigsList.clear();
-        bridgeOtherConfigsList.add(bridgeOtherConfigsBuilder.build());
-
-        ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        ovsdbBridgeAugmentationBuilder.setBridgeOtherConfigs(bridgeOtherConfigsList);
-
-        sffDataPlaneLocator = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocator(renderedServicePathBuilder.build(),
-                hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo);
-
-        Assert.assertEquals("Must be Equal", sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class)
-            .getOvsOptions()
-            .getLocalIp(), ipAddress);
-    }
-
-    @Test
-    public void testBuildVxlanTunnelDataPlaneLocatorName() throws Exception {
-        ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        renderedServicePathBuilder = new RenderedServicePathBuilder();
-        renderedServicePathHopBuilderFrom = new RenderedServicePathHopBuilder();
-        renderedServicePathHopBuilderTo = new RenderedServicePathHopBuilder();
-        String result;
-
-        renderedServicePathBuilder.setName(new RspName(renderedServicePathName));
-        renderedServicePathHopBuilderFrom.setHopNumber(hopNumberFrom);
-        renderedServicePathHopBuilderTo.setHopNumber(hopNumberTo);
-        hopOvsdbBridgePairFrom = new HopOvsdbBridgePair(renderedServicePathHopBuilderFrom.build(),
-                ovsdbBridgeAugmentationBuilder.build());
-        hopOvsdbBridgePairTo =
-                new HopOvsdbBridgePair(renderedServicePathHopBuilderTo.build(), ovsdbBridgeAugmentationBuilder.build());
-
-        result = SfcSffToOvsMappingAPI.buildVxlanTunnelDataPlaneLocatorName(renderedServicePathBuilder.build(),
-                hopOvsdbBridgePairFrom, hopOvsdbBridgePairTo);
-
-        assertEquals("Must be Equal", result, renderedServicePathName + "-vxlan-" + hopNumberFrom + "to" + hopNumberTo);
     }
 }

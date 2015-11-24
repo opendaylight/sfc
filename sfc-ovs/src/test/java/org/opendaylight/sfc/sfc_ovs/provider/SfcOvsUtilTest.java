@@ -185,6 +185,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(testBridgeName))
             .setManagedBy(new OvsdbNodeRef(nodeIID));
 
+        // TODO Remove reflection for "getManagedByNodeId"
         NodeId nodeId =
                 Whitebox.invokeMethod(SfcOvsUtil.class, "getManagedByNodeId", ovsdbBridgeAugmentationBuilder.build());
 
@@ -533,10 +534,12 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetOvsDataPathId() throws Exception {
 
         // id does not exist, should return null
+        // TODO Remove reflection for "getOvsDataPathId"
         DatapathId datapathId = Whitebox.invokeMethod(SfcOvsUtil.class, "getOvsDataPathId", new NodeId("fake id"));
 
         assertNull("Must be null", datapathId);
 
+        // TODO Remove reflection for "getOvsDataPathId"
         datapathId = Whitebox.invokeMethod(SfcOvsUtil.class, "getOvsDataPathId",
                 InstanceIdentifier.keyOf(nodeIID).getNodeId());
 
@@ -551,6 +554,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         // this test will not pass!
         Long expectedResult = 95075992133360L;
 
+        // TODO Remove reflection for "getLongFromDpid"
         result = Whitebox.invokeMethod(SfcOvsUtil.class, "getLongFromDpid", testDataPath);
 
         assertNotNull("Must not be null", result);

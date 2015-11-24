@@ -58,8 +58,23 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager {
 
-    private static final String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3"};
-    private static final String[] IP_MGMT_ADDRESS = {"196.168.55.101", "196.168.55.102", "196.168.55.103"};
+    private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.1");
+            add("196.168.55.2");
+            add("196.168.55.3");
+        }
+    };
+
+    private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.101");
+            add("196.168.55.102");
+            add("196.168.55.103");
+        }
+    };
     private static final SfName SF_STATE_NAME = new SfName("dummySFS");
     private static final SfpName SF_SERVICE_PATH = new SfpName("dummySFSP");
     private static final SfName SF_NAME = new SfName("dummySF");
@@ -79,16 +94,16 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         SfName name = new SfName("unittest-fw-1");
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
+        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
 
-        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0]));
+        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
         PortNumber portNumber = new PortNumber(PORT);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[0]))
+        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(0)))
             .setLocatorType(ipBuilder.build())
             .setTransport(SlTransportType.class);
         sfDataPlaneLocator = locatorBuilder.build();
@@ -116,16 +131,16 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         SfName name = new SfName("unittest-fw-1");
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
+        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
 
-        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0]));
+        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
         PortNumber portNumber = new PortNumber(PORT);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[0])).setLocatorType(ipBuilder.build());
+        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(0))).setLocatorType(ipBuilder.build());
         sfDataPlaneLocator = locatorBuilder.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -147,19 +162,26 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     @Test
     public void testCreateReadServiceFunctions() throws ExecutionException, InterruptedException {
 
-        final String[] sfName = {"unittest-fw-1", "unittest-fw-2", "unittest-fw-3"};
+        final List<SfName> sfName = new ArrayList<SfName>() {
+
+            {
+                add(new SfName("unittest-fw-1"));
+                add(new SfName("unittest-fw-2"));
+                add(new SfName("unittest-fw-3"));
+            }
+        };
         final Class<? extends ServiceFunctionTypeIdentity> sfType = Firewall.class;
-        final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0])),
-                new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[1])), new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[2]))};
+        final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))),
+                new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(1))), new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(2)))};
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[3];
         ServiceFunctionKey[] key = new ServiceFunctionKey[3];
         for (int i = 0; i < 3; i++) {
-            key[i] = new ServiceFunctionKey(new SfName(sfName[i]));
+            key[i] = new ServiceFunctionKey(new SfName(sfName.get(i)));
         }
 
-        final IpAddress[] locatorIpAddress = {new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0])),
-                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[1])),
-                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[2]))};
+        final IpAddress[] locatorIpAddress = {new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0))),
+                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(1))),
+                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(2)))};
         PortNumber portNumber = new PortNumber(PORT);
 
         List<ServiceFunction> list = new ArrayList<>();
@@ -168,7 +190,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[i]))
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
                 .setLocatorType(ipBuilder.build())
                 .setTransport(SlTransportType.class);
             sfDataPlaneLocator[i] = locatorBuilder.build();
@@ -176,7 +198,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(sfName[i]))
+            sfBuilder.setName(new SfName(sfName.get(i)))
                 .setKey(key[i])
                 .setType(sfType)
                 .setIpMgmtAddress(ipMgmtAddress[i])
@@ -188,7 +210,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         sfsBuilder.setServiceFunction(list);
 
         SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
-        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(new SfName(sfName[1]));
+        ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(new SfName(sfName.get(1)));
 
         assertNotNull("Must be not null", sf2);
         assertEquals("Must be equal", sf2.getIpMgmtAddress(), ipMgmtAddress[1]);
@@ -206,7 +228,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testCreateReadDeleteServiceFunction() throws Exception {
 
         // create service function and put it to data store
-        boolean transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS[1], true);
+        boolean transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS.get(1), true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -215,10 +237,10 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         assertNotNull("Must be not null", serviceFunction);
         assertEquals("Must be equal", serviceFunction.getIpMgmtAddress().getIpv4Address().getValue(),
-                IP_MGMT_ADDRESS[1]);
+                IP_MGMT_ADDRESS.get(1));
 
         // now we delete that service function and check whether it was deleted or not
-        transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS[1], false);
+        transactionSuccessful = writeRemoveServiceFunction(IP_MGMT_ADDRESS.get(1), false);
 
         assertTrue("Must be true", transactionSuccessful);
     }
@@ -263,7 +285,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testReadAllServiceFunctionsExecutor() throws Exception {
 
         // create service functions
-        boolean transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[0], Firewall.class, true);
+        boolean transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(0), Firewall.class, true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -274,11 +296,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getName(), SF_NAME);
         assertEquals("Must be equal",
                 serviceFunctionsResult.getServiceFunction().get(0).getIpMgmtAddress().getIpv4Address().getValue(),
-                IP_MGMT_ADDRESS[0]);
+                IP_MGMT_ADDRESS.get(0));
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getType(), Firewall.class);
 
         // delete these functions
-        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS[1], Firewall.class, false);
+        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(1), Firewall.class, false);
 
         assertTrue("Must be true", transactionSuccessful);
     }

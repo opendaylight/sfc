@@ -54,9 +54,31 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
     private final String ACL_NAME = "aclName";
     private final String CLASSIFIER_NAME = "classifier";
-    private final String[] IP_V4_ADDRESS = {"192.168.1.", "10.66.20."};
-    private final String[] IP_PREFIX = {"/16", "/32", "/48"};
-    private final String[] IP_V6_ADDRESS = {"12:34:56:78:90:AB:AD:E", "12:34:56:78:90:AB:AD:E"};
+
+    private final List<String> IP_V4_ADDRESS = new ArrayList<String>(){
+
+        {
+            add("192.168.1.");
+            add("10.66.20.");
+        }
+    };
+
+    private final List<String> IP_PREFIX = new ArrayList<String>(){
+
+        {
+            add("/16");
+            add("/32");
+            add("/48");
+        }
+    };
+
+    private final List<String> IP_V6_ADDRESS = new ArrayList<String>(){
+
+        {
+            add("12:34:56:78:90:AB:AD:E");
+            add("12:34:56:78:90:AB:AD:E");
+        }
+    };
 
     @Before
     public void init() {
@@ -192,16 +214,16 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
             if (i <= 2) {
                 //create ip address & prefix
                 AceIpv4Builder aceIpv4Builder = new AceIpv4Builder();
-                aceIpv4Builder.setSourceIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS[0] + i + IP_PREFIX[0]))
-                        .setDestinationIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS[1] + i + IP_PREFIX[1]));
+                aceIpv4Builder.setSourceIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS.get(0) + i + IP_PREFIX.get(0)))
+                        .setDestinationIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS.get(1) + i + IP_PREFIX.get(1)));
                 aceIpBuilder.setAceIpVersion(aceIpv4Builder.build())
                         .setProtocol((short) 4);
 
             } else {
                 //create ip address & prefix
                 AceIpv6Builder aceIpv6Builder = new AceIpv6Builder();
-                aceIpv6Builder.setSourceIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS[0] + i + IP_PREFIX[1]))
-                        .setDestinationIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS[1] + i + IP_PREFIX[2]));
+                aceIpv6Builder.setSourceIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS.get(0) + i + IP_PREFIX.get(1)))
+                        .setDestinationIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS.get(1) + i + IP_PREFIX.get(2)));
                 aceIpBuilder.setAceIpVersion(aceIpv6Builder.build())
                         .setProtocol((short) 41);
             }

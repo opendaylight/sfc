@@ -51,7 +51,15 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
  */
 public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataStoreManager {
 
-    private String[] sffName = {"unittest-forwarder-1", "unittest-forwarder-2", "unittest-forwarder-3"};
+    private List<SffName> sffName = new ArrayList<SffName>() {
+
+        {
+            add(new SffName("unittest-forwarder-1"));
+            add(new SffName("unittest-forwarder-2"));
+            add(new SffName("unittest-forwarder-3"));
+        }
+    };
+
     private List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before
@@ -78,7 +86,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
     @Test
     public void testUpdateDictionary() {
 
-        SffName name = new SffName(sffName[0]);
+        SffName name = new SffName(sffName.get(0));
         SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("locator-1");
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();

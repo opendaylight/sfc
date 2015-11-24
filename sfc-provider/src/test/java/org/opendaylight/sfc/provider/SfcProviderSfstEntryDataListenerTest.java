@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -260,11 +261,17 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
      * Builds a complete service Function Schedule Types Object
      */
     public void build_service_function_scheduler_types() throws Exception {
-        String[] SFST_NAMES = {"listernerSFST1", "listernerSFST2", "listernerSFST3"};
+        List<String> SFST_NAMES = new ArrayList<String>() {
+            {
+                add("listernerSFST1");
+                add("listernerSFST2");
+                add("listernerSFST3");
+            }
+        };
         Class[] schedulerTypes = {Random.class, RoundRobin.class, LoadBalance.class};
         Boolean enabledStatus = true;
 
-        for (int i = 0; i < SFST_NAMES.length; i++) {
+        for (int i = 0; i < SFST_NAMES.size(); i++) {
             AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                     Mockito.mock(AsyncDataChangeEvent.class);
             Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
@@ -274,7 +281,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
 
             ServiceFunctionSchedulerTypeKey key = new ServiceFunctionSchedulerTypeKey(schedulerTypes[i]);
             ServiceFunctionSchedulerTypeBuilder sfstBuilder = new ServiceFunctionSchedulerTypeBuilder();
-            sfstBuilder.setName(SFST_NAMES[i]).setKey(key).setType(schedulerTypes[i]).setEnabled(enabledStatus);
+            sfstBuilder.setName(SFST_NAMES.get(i)).setKey(key).setType(schedulerTypes[i]).setEnabled(enabledStatus);
 
             ServiceFunctionSchedulerType serviceFunctionSchedulerType = sfstBuilder.build();
 

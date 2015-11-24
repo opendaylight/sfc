@@ -107,11 +107,11 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         assertNotNull("Must be not null", lastHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
         LOG.debug("Last hop IP: {}, port: {}", lastHop.getIp().toString(), lastHop.getPort());
-        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
-        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(0))));
+        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT.get(0)));
         assertEquals("Must be equal", lastHop.getIp(),
-                new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[SFF_LOCATOR_IP.length - 1])));
-        assertEquals("Must be equal", lastHop.getPort(), new PortNumber(PORT[PORT.length - 1]));
+                new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(SFF_LOCATOR_IP.size() - 1))));
+        assertEquals("Must be equal", lastHop.getPort(), new PortNumber(PORT.get(PORT.size() - 1)));
         SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
         SfcProviderRenderedPathAPI.deleteRenderedServicePath(revRenderedServicePath.getName());
     }
@@ -135,8 +135,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         }
         assertNotNull("Must be not null", firstHop);
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
-        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[0])));
-        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT[0]));
+        assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(0))));
+        assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT.get(0)));
     }
 
     @SuppressWarnings(value = {"serial", "static-access"})
@@ -200,7 +200,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         // check if SFF oper contains RSP
         List<SffServicePath> sffServicePathList =
-                SfcProviderServiceForwarderAPI.readSffState(new SffName(SFF_NAMES[1]));
+                SfcProviderServiceForwarderAPI.readSffState(new SffName(SFF_NAMES.get(1)));
         assertNotNull("Must be not null", sffServicePathList);
         assertEquals(sffServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 

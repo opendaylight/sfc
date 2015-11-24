@@ -52,6 +52,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     public void testGetServiceFunctionScheduler() throws Exception {
         SfcServiceFunctionSchedulerAPI rrResult, lbResult, rnResult, spResult, rsResult;
 
+        // TODO remove reflection for "getServiceFunctionScheduler"
         rrResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler",
                 RoundRobin.class);
         lbResult = Whitebox.invokeMethod(SfcProviderRenderedPathAPI.class, "getServiceFunctionScheduler",
@@ -222,19 +223,12 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      */
     public void testCreateRenderedServicePathEntryUnsuccessful() throws Exception {
         setOdlSfc();
-        Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         RenderedServicePath testRenderedServicePath;
 
         serviceFunctionPathBuilder.setServiceChainName(null);
-
-        testRenderedServicePath = sfcProviderRenderedPathAPI
-            .createRenderedServicePathEntry(serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build());
-
-        // SFC does not exist, should be null
-        assertNull("Must be null", testRenderedServicePath);
 
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
@@ -259,7 +253,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      */
     public void testCreateRenderedServicePathEntryUnsuccessful1() throws Exception {
         setOdlSfc();
-        Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
@@ -281,7 +274,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      */
     public void testCreateRenderedServicePathEntryUnsuccessful2() throws Exception {
         setOdlSfc();
-        Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
@@ -305,7 +297,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     public void testCreateRenderedServicePathEntrySuccessful() throws Exception {
         init();
 
-        Object[] params = new Object[0];
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();

@@ -52,6 +52,7 @@ public class SfcL2RspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspProcessor.class);
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private SfcL2BaseProviderUtils sfcL2ProviderUtils;
+    private SfcSynchronizer sfcSynchronizer;
     private Map<SffName, Boolean> sffInitialized;
     private int lastMplsLabel;
     private int lastVlanId;
@@ -69,10 +70,13 @@ public class SfcL2RspProcessor {
     private static final String MPLS = "mpls";
     private static final Long SFC_FLOWS = new Long(0xdeadbeef);
 
-    public SfcL2RspProcessor(SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
-            SfcL2BaseProviderUtils sfcL2ProviderUtils) {
+    public SfcL2RspProcessor(
+            SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
+            SfcL2BaseProviderUtils sfcL2ProviderUtils,
+            SfcSynchronizer sfcSynchronizer) {
         this.sfcL2FlowProgrammer = sfcL2FlowProgrammer;
         this.sfcL2ProviderUtils = sfcL2ProviderUtils;
+        this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<SffName, Boolean>();
         this.lastMplsLabel = 0;
         this.lastVlanId = 0;
@@ -80,13 +84,16 @@ public class SfcL2RspProcessor {
 
     // if this method takes too long, consider launching it in a thread
     public void processRenderedServicePath(RenderedServicePath rsp) {
-        sfcL2ProviderUtils.addRsp(rsp.getPathId());
-
         // Setting to INGRESS for the first graph entry, which is the RSP Ingress
         SffName prevSffName = new SffName(SffGraph.INGRESS);
         SffGraph sffGraph = new SffGraph();
 
         try {
+            // This call blocks until the lock is obtained
+            sfcSynchronizer.lock();
+
+            sfcL2ProviderUtils.addRsp(rsp.getPathId());
+
             //
             // Populate the SFF Connection Graph
             //
@@ -151,9 +158,10 @@ public class SfcL2RspProcessor {
 
         } catch (RuntimeException e) {
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
+        } finally {
+            sfcSynchronizer.unlock();
+            sfcL2ProviderUtils.removeRsp(rsp.getPathId());
         }
-
-        sfcL2ProviderUtils.removeRsp(rsp.getPathId());
     }
 
     public void deleteRenderedServicePath(RenderedServicePath rsp) {

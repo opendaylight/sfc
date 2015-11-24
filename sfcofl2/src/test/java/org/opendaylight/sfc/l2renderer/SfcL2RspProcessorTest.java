@@ -67,7 +67,10 @@ public class SfcL2RspProcessorTest {
 
         this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
         this.sfcUtilsTestMock = new SfcL2ProviderUtilsTestMock();
-        this.sfcL2RspProcessor = new SfcL2RspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock);
+        this.sfcL2RspProcessor = new SfcL2RspProcessor(
+                this.flowProgrammerTestMoc,
+                this.sfcUtilsTestMock,
+                new SfcSynchronizer());
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>();

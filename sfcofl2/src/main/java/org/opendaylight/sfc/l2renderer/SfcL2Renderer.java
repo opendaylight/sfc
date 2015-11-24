@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
 import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
 import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
 
@@ -30,19 +31,24 @@ import org.slf4j.LoggerFactory;
 public class SfcL2Renderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
-    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer = null;
-    private Registration pktInRegistration = null;
+    private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
+    private Registration pktInRegistration;
+    private SfcSynchronizer sfcSynchronizer;
+
     SfcL2RspDataListener openflowRspDataListener = null;
     SfcL2SfgDataListener sfcL2SfgDataListener = null;
     SfcIpv4PacketInHandler packetInHandler = null;
+    SfcL2OfRendererDataListener sfcOfRendererListener = null;
 
     public SfcL2Renderer(DataBroker dataBroker, NotificationProviderService notificationService) {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
+        this.sfcSynchronizer = new SfcSynchronizer();
         this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl();
         SfcL2BaseProviderUtils sfcL2ProviderUtils = new SfcL2ProviderUtils();
-        this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils);
+        this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils, sfcSynchronizer);
         this.sfcL2SfgDataListener = new SfcL2SfgDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils);
+        this.sfcOfRendererListener = new SfcL2OfRendererDataListener(dataBroker, sfcL2FlowProgrammer, sfcSynchronizer);
 
         this.packetInHandler = new SfcIpv4PacketInHandler((SfcL2FlowProgrammerOFimpl) sfcL2FlowProgrammer);
         this.pktInRegistration = notificationService.registerNotificationListener(packetInHandler);

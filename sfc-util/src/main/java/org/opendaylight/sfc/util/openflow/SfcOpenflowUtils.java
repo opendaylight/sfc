@@ -48,9 +48,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -1165,6 +1169,54 @@ public class SfcOpenflowUtils {
         actionsIb.setKey(new InstructionKey(0));
         actionsIb.setOrder(0);
         return actionsIb;
+    }
+
+   /**
+     * Write a flow to the DataStore
+     *
+     * @param nodeName - which node to write the flow to
+     * @param flow - details of the flow to be written
+     */
+    public static boolean writeFlowToDataStore(final String nodeName, FlowBuilder flow) {
+        // Create the NodeBuilder
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setId(new NodeId(nodeName));
+        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+
+        // Create the flow path, which will include the Node, Table, and Flow
+        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class, nodeBuilder.getKey())
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(flow.getTableId()))
+            .child(Flow.class, flow.getKey())
+            .build();
+
+        return SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(),
+                LogicalDatastoreType.CONFIGURATION);
+    }
+
+
+   /**
+     * remove a flow from the DataStore
+     *
+     * @param nodeName - which node to write the flow to
+     * @param tableKey - table Key
+     * @param flowKey  - flow key
+     */
+    public static boolean removeFlowFromDataStore(final String nodeName, TableKey tableKey, FlowKey flowKey) {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        nodeBuilder.setId(new NodeId(nodeName));
+        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+
+        // Create the flow path
+        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class, nodeBuilder.getKey())
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, tableKey)
+            .child(Flow.class, flowKey)
+            .build();
+
+        return SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION);
     }
 
     // Only configure OpenFlow Capable SFFs

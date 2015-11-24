@@ -98,6 +98,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final short TABLE_INDEX_PATH_MAPPER_ACL = 3;
     private static final short TABLE_INDEX_NEXT_HOP = 4;
     private static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
+    private static final short TABLE_INDEX_MAX_OFFSET = TABLE_INDEX_TRANSPORT_EGRESS;
 
     private static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 250;
     private static final int FLOW_PRIORITY_ARP_TRANSPORT_INGRESS = 300;
@@ -130,12 +131,16 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     // Instance variables
     private short tableBase;
+    // TODO tableEgress is not implemented yet
+    // Used for app-coexistence
+    private short tableEgress;
     private ExecutorService threadPoolExecutorService;
     private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
     private Long flowRspId;
 
     public SfcL2FlowProgrammerOFimpl() {
         this.tableBase = (short) 0;
+        this.tableEgress = (short) 0;
         this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
         this.flowRspId = new Long(0);
 
@@ -169,6 +174,21 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     @Override
     public void setTableBase(short tableBase) {
         this.tableBase = tableBase;
+    }
+
+    @Override
+    public short getTableEgress() {
+        return tableEgress;
+    }
+
+    @Override
+    public void setTableEgress(short tableEgress) {
+        this.tableEgress = tableEgress;
+    }
+
+    @Override
+    public short getMaxTableOffset() {
+        return TABLE_INDEX_MAX_OFFSET;
     }
 
     @Override
@@ -219,8 +239,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         ConfigureTableMatchAnyThread configureTableMatchAnyThread =
                 new ConfigureTableMatchAnyThread(
                         sffNodeName,
-                        getTableId(TABLE_INDEX_CLASSIFIER_TABLE),
-                        getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
+                        TABLE_INDEX_CLASSIFIER_TABLE,
+                        TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
                         doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
@@ -239,8 +259,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     //
     @Override
     public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread = new ConfigureTableMatchAnyThread(sffNodeName,
-                getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE), getTableId(TABLE_INDEX_PATH_MAPPER), doDrop);
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                   new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
+                        TABLE_INDEX_PATH_MAPPER,
+                        doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -250,8 +274,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread = new ConfigureTableMatchAnyThread(sffNodeName,
-                getTableId(TABLE_INDEX_PATH_MAPPER), getTableId(TABLE_INDEX_PATH_MAPPER_ACL), doDrop);
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        TABLE_INDEX_PATH_MAPPER,
+                        TABLE_INDEX_PATH_MAPPER_ACL,
+                        doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -261,8 +289,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread = new ConfigureTableMatchAnyThread(sffNodeName,
-                getTableId(TABLE_INDEX_PATH_MAPPER_ACL), getTableId(TABLE_INDEX_NEXT_HOP), doDrop);
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        TABLE_INDEX_PATH_MAPPER_ACL,
+                        TABLE_INDEX_NEXT_HOP,
+                        doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -272,8 +304,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     @Override
     public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop) {
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread = new ConfigureTableMatchAnyThread(sffNodeName,
-                getTableId(TABLE_INDEX_NEXT_HOP), getTableId(TABLE_INDEX_TRANSPORT_EGRESS), doDrop);
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(sffNodeName,
+                        TABLE_INDEX_NEXT_HOP,
+                        TABLE_INDEX_TRANSPORT_EGRESS,
+                        doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -284,8 +319,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     @Override
     public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop) {
         // This is the last table, cant set next table AND doDrop should be false
-        ConfigureTableMatchAnyThread configureTableMatchAnyThread = new ConfigureTableMatchAnyThread(sffNodeName,
-                getTableId(TABLE_INDEX_TRANSPORT_EGRESS), (short) -1, doDrop);
+        ConfigureTableMatchAnyThread configureTableMatchAnyThread =
+                new ConfigureTableMatchAnyThread(
+                        sffNodeName,
+                        TABLE_INDEX_TRANSPORT_EGRESS,
+                        (short) -1,
+                        doDrop);
         try {
             threadPoolExecutorService.execute(configureTableMatchAnyThread);
         } catch (Exception ex) {
@@ -293,19 +332,26 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         }
     }
 
+    /**
+     * Configure MatchAny rules for the different tables used. When passing
+     * a tableIndex, it will be converted to the correct table internally.
+     *
+     * @author ebrjohn
+     *
+     */
     private class ConfigureTableMatchAnyThread implements Runnable {
 
         private String sffNodeName;
         private boolean doDrop;
-        private short tableId;
-        private short nextTableId;
+        private short tableIdIndex;
+        private short nextTableIdIndex;
         private Long rspId;
 
-        public ConfigureTableMatchAnyThread(final String sffNodeName, final short tableId, final short nextTableId,
+        public ConfigureTableMatchAnyThread(final String sffNodeName, final short tableIdIndex, final short nextTableIdIndex,
                 final boolean doDrop) {
             this.sffNodeName = sffNodeName;
-            this.tableId = tableId;
-            this.nextTableId = nextTableId;
+            this.tableIdIndex = tableIdIndex;
+            this.nextTableIdIndex = nextTableIdIndex;
             this.doDrop = doDrop;
             this.rspId = flowRspId;
         }
@@ -314,8 +360,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         public void run() {
             try {
                 LOG.debug(
-                        "SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableId [{}] nextTableId [{}] doDrop {}",
-                        this.sffNodeName, this.tableId, this.nextTableId, this.doDrop);
+                        "SfcProviderSffFlowWriter.ConfigureTableMatchAnyThread, sff [{}] tableIndex [{}] nextTableIndex [{}] doDrop {}",
+                        this.sffNodeName, this.tableIdIndex, this.nextTableIdIndex, this.doDrop);
 
                 //
                 // Create the actions
@@ -341,7 +387,9 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 } else {
                     //
                     // Action, goto Ingress table
-                    GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(this.nextTableId);
+                    GoToTableBuilder gotoIngress =
+                            SfcOpenflowUtils.createActionGotoTable(
+                                    getTableId(this.nextTableIdIndex));
 
                     InstructionBuilder ib = new InstructionBuilder();
                     ib.setKey(new InstructionKey(order));
@@ -361,8 +409,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(this.tableId,
-                        FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+                FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(this.tableIdIndex),
+                        FLOW_PRIORITY_MATCH_ANY,
+                        "MatchAny",
+                        match,
+                        isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
@@ -408,7 +460,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     public void configureVxlanGpeTransportIngressFlow(final String sffNodeName) {
         ConfigureTransportIngressThread configureIngressTransportThread =
                 new ConfigureTransportIngressThread(sffNodeName, SfcOpenflowUtils.ETHERTYPE_IPV4);
-        configureIngressTransportThread.setNextTable(TABLE_INDEX_NEXT_HOP);
+        configureIngressTransportThread.setNextTableIndex(TABLE_INDEX_NEXT_HOP);
         try {
             threadPoolExecutorService.execute(configureIngressTransportThread);
         } catch (Exception ex) {
@@ -433,14 +485,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         String sffNodeName;
         long etherType;
         short ipProtocol;
-        short nextTable;
+        short nextTableIndex;
         Long rspId;
 
         public ConfigureTransportIngressThread(final String sffNodeName, long etherType) {
             this.sffNodeName = sffNodeName;
             this.etherType = etherType;
             this.ipProtocol = (short) -1;
-            this.nextTable = TABLE_INDEX_PATH_MAPPER;
+            this.nextTableIndex = TABLE_INDEX_PATH_MAPPER;
             this.rspId = flowRspId;
         }
 
@@ -448,8 +500,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             this.ipProtocol = ipProtocol;
         }
 
-        public void setNextTable(short nextTable) {
-            this.nextTable = nextTable;
+        public void setNextTableIndex(short nextTableIndex) {
+            this.nextTableIndex = nextTableIndex;
         }
 
         @Override
@@ -479,7 +531,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Action, goto the nextTable, defaults to Ingress table unless otherwise set
-                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTable));
+                GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(getTableId(this.nextTableIndex));
 
                 InstructionBuilder ib = new InstructionBuilder();
                 ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
@@ -492,8 +544,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder transportIngressFlow =
-                        SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
-                                FLOW_PRIORITY_TRANSPORT_INGRESS, "ingress_Transport_Default_Flow", match, isb);
+                        SfcOpenflowUtils.createFlowBuilder(
+                                getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
+                                FLOW_PRIORITY_TRANSPORT_INGRESS,
+                                "ingress_Transport_Default_Flow",
+                                match,
+                                isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
@@ -565,8 +621,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 // Create and configure the FlowBuilder
                 FlowBuilder transportIngressFlow =
-                        SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
-                                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, "ingress_Transport_Default_Flow", match, isb);
+                        SfcOpenflowUtils.createFlowBuilder(
+                                getTableId(TABLE_INDEX_INGRESS_TRANSPORT_TABLE),
+                                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
+                                "ingress_Transport_Default_Flow",
+                                match,
+                                isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
@@ -735,8 +795,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_PATH_MAPPER, flowPriority,
-                        "nextHop", match, isb);
+                FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_PATH_MAPPER),
+                        flowPriority,
+                        "nextHop",
+                        match,
+                        isb);
 
                 writeFlowToConfig(rspId, sffNodeName, ingressFlow);
 
@@ -819,8 +883,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_PATH_MAPPER_ACL,
-                        FLOW_PRIORITY_PATH_MAPPER_ACL, "nextHop", match, isb);
+                FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
+                        FLOW_PRIORITY_PATH_MAPPER_ACL,
+                        "nextHop",
+                        match,
+                        isb);
                 // Set an idle timeout on this flow
                 ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
 
@@ -957,7 +1025,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 ApplyActionsBuilder aab = new ApplyActionsBuilder();
                 aab.setAction(actionList);
 
-                GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(TABLE_INDEX_TRANSPORT_EGRESS);
+                GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
 
                 InstructionBuilder gotoTbIb = new InstructionBuilder();
                 gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
@@ -980,7 +1049,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder nextHopFlow =
-                        SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_NEXT_HOP, flowPriority, "nextHop", match, isb);
+                        SfcOpenflowUtils.createFlowBuilder(
+                                getTableId(TABLE_INDEX_NEXT_HOP),
+                                flowPriority,
+                                "nextHop",
+                                match,
+                                isb);
 
                 writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
 
@@ -1203,8 +1277,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 // Put our Instruction in a list of Instructions
                 InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
 
-                FlowBuilder egressTransportFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_TRANSPORT_EGRESS,
-                        flowPriority, TRANSPORT_EGRESS_COOKIE, "default_egress_flow", match, isb);
+                FlowBuilder egressTransportFlow = SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                        flowPriority,
+                        TRANSPORT_EGRESS_COOKIE,
+                        "default_egress_flow",
+                        match,
+                        isb);
 
                 //
                 // Now write the Flow Entry
@@ -1286,8 +1365,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Create and configure the FlowBuilder
-                FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_TRANSPORT_EGRESS,
-                        FLOW_PRIORITY_TRANSPORT_EGRESS + 10, "MatchAny", match, isb);
+                FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                        FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                        "MatchAny",
+                        match,
+                        isb);
 
                 writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
@@ -1595,7 +1678,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 //
                 // Create and configure the FlowBuilder
                 FlowBuilder nextHopFlow =
-                        SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_NEXT_HOP, flowPriority, "nextHop", match, isb);
+                        SfcOpenflowUtils.createFlowBuilder(
+                                getTableId(TABLE_INDEX_NEXT_HOP),
+                                flowPriority,
+                                "nextHop",
+                                match,
+                                isb);
                 LOG.debug("writing group next hop flow: \n{}", nextHopFlow);
                 writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
 

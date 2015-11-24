@@ -414,22 +414,37 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * @return ServiceFunction object
      */
     ServiceFunction build_service_function() {
-        // TODO re-write as Java ArrayList with correct types.
-        String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3"};
-        String[] IP_MGMT_ADDRESS = {"196.168.55.101", "196.168.55.102", "196.168.55.103"};
+
+        List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.1");
+                add("196.168.55.2");
+                add("196.168.55.3");
+            }
+        };
+
+        List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.101");
+                add("196.168.55.102");
+                add("196.168.55.103");
+            }
+        };
         String SF_NAME = "listernerSF";
         int PORT = 555;
         Class<? extends ServiceFunctionTypeIdentity> type = Firewall.class;
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
+        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(new SfName(SF_NAME));
 
-        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0]));
+        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
         PortNumber portNumber = new PortNumber(PORT);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[0])).setLocatorType(ipBuilder.build());
+        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(0))).setLocatorType(ipBuilder.build());
         sfDataPlaneLocator = locatorBuilder.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -451,49 +466,127 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * @return RSP object
      */
     RenderedServicePath build_and_commit_rendered_service_path() throws Exception {
-        String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3", "196.168.55.4", "196.168.55.5"};
-        String[] IP_MGMT_ADDRESS =
-                {"196.168.55.101", "196.168.55.102", "196.168.55.103", "196.168.55.104", "196.168.55.105"};
-        int[] PORT = {1111, 2222, 3333, 4444, 5555};
-        Class[] sfTypes = {Firewall.class, Dpi.class, Napt44.class, HttpHeaderEnrichment.class, Qos.class};
-        String[] SF_ABSTRACT_NAMES = {"firewall", "dpi", "napt", "http-header-enrichment", "qos"};
+        List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.1");
+                add("196.168.55.2");
+                add("196.168.55.3");
+                add("196.168.55.4");
+                add("196.168.55.5");
+            }
+        };
+
+        List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.101");
+                add("196.168.55.102");
+                add("196.168.55.103");
+                add("196.168.55.104");
+                add("196.168.55.105");
+            }
+        };
+
+        List<Integer> PORT = new ArrayList<Integer>() {
+            {
+                add(1111);
+                add(2222);
+                add(3333);
+                add(4444);
+                add(5555);
+            }
+        };
+
+        List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+
+            {
+                add(Firewall.class);
+                add(Dpi.class);
+                add(Napt44.class);
+                add(HttpHeaderEnrichment.class);
+                add(Qos.class);
+            }
+        };
+
+        List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
+
+            {
+                add("firewall");
+                add("dpi");
+                add("napt");
+                add("http-header-enrichment");
+                add("qos");
+            }
+        };
+
         String SFC_NAME = "unittest-chain-1";
         String SFP_NAME = "unittest-sfp-1";
         String RSP_NAME = "unittest-rsp-1";
-        String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1",
-                "unittest-qos-1"};
-        String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3", "SFF4", "SFF5"};
+
+        List<SfName> sfNames = new ArrayList<SfName>() {
+
+            {
+                add(new SfName("unittest-fw-1"));
+                add(new SfName("unittest-dpi-1"));
+                add(new SfName("unittest-napt-1"));
+                add(new SfName("unittest-http-header-enrichment-1"));
+                add(new SfName("unittest-qos-1"));
+            }
+        };
+
+        List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+
+            {
+                add(new SffName("SFF1"));
+                add(new SffName("SFF2"));
+                add(new SffName("SFF3"));
+                add(new SffName("SFF4"));
+                add(new SffName("SFF5"));
+            }
+        };
+
         String[][] TO_SFF_NAMES =
                 {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
-        String[] SFF_LOCATOR_IP =
-                {"196.168.66.101", "196.168.66.102", "196.168.66.103", "196.168.66.104", "196.168.66.105"};
+
+        List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+
+            {
+                add("196.168.66.101");
+                add("196.168.66.102");
+                add("196.168.66.103");
+                add("196.168.66.104");
+                add("196.168.66.105");
+            }
+        };
+
         List<ServiceFunction> sfList = new ArrayList<>();
         List<ServiceFunctionForwarder> sffList = new ArrayList<>();
 
-        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.length];
-        final IpAddress[] locatorIpAddress = new IpAddress[sfNames.length];
-        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames.length];
-        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames.length];
-        for (int i = 0; i < sfNames.length; i++) {
-            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[0]));
-            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[0]));
-            PortNumber portNumber = new PortNumber(PORT[i]);
-            key[i] = new ServiceFunctionKey(new SfName(sfNames[i]));
+        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
+        final IpAddress[] locatorIpAddress = new IpAddress[sfNames.size()];
+        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames.size()];
+        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames.size()];
+        for (int i = 0; i < sfNames.size(); i++) {
+            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
+            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
+            PortNumber portNumber = new PortNumber(PORT.get(i));
+            key[i] = new ServiceFunctionKey(new SfName(sfNames.get(i)));
 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[i]))
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
                 .setLocatorType(ipBuilder.build())
-                .setServiceFunctionForwarder(new SffName(SFF_NAMES[i]));
+                .setServiceFunctionForwarder(new SffName(SFF_NAMES.get(i)));
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(sfNames[i]))
+            sfBuilder.setName(new SfName(sfNames.get(i)))
                 .setKey(key[i])
-                .setType(sfTypes[i])
+                .setType(sfTypes.get(i))
                 .setIpMgmtAddress(ipMgmtAddress[i])
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
@@ -513,7 +606,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         }
 
         // Create Service Function Forwarders
-        for (int i = 0; i < SFF_NAMES.length; i++) {
+        for (int i = 0; i < SFF_NAMES.size(); i++) {
             // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
@@ -541,17 +634,17 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
 
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[i]))).setPort(new PortNumber(PORT[i]));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(PORT.get(i)));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i]))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i])))
+            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
+                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
                 .setDataPlaneLocator(sffLocatorBuilder.build());
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(SFF_NAMES[i]))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES[i])))
+            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
+                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
                 .setSffDataPlaneLocator(locatorList)
                 .setServiceFunctionDictionary(sfDictionaryList)
                 .setConnectedSffDictionary(sffDictionaryList)
@@ -571,11 +664,11 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(new SfcName(SFC_NAME));
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        for (int i = 0; i < SF_ABSTRACT_NAMES.length; i++) {
+        for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES[i])
-                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES[i]))
-                .setType(sfTypes[i])
+            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
+                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i)))
+                .setType(sfTypes.get(i))
                 .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }

@@ -44,9 +44,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
-    public static final String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3"};
-    public static final String[] IP_MGMT_ADDRESS = {"196.168.55.101", "196.168.55.102", "196.168.55.103"};
-    public static final int PORT = 555;
     private List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before

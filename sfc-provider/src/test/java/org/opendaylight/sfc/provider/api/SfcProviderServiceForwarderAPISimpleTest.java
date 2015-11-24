@@ -121,9 +121,17 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         SffName name = new SffName("SFF1");
         SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("locator-1");
         SfDataPlaneLocatorName sfDplName = new SfDataPlaneLocatorName("untitest-fw-1");
-        String[] sfNames = {"unittest-fw-1", "unittest-dpi-1", "unittest-napt-1", "unittest-http-header-enrichment-1",
-                "unittest-qos-1"};
-        IpAddress[] ipMgmtAddress = new IpAddress[sfNames.length];
+        List<SfName> sfNames = new ArrayList<SfName>() {
+
+            {
+                add(new SfName("unittest-fw-1"));
+                add(new SfName("unittest-dpi-1"));
+                add(new SfName("unittest-napt-1"));
+                add(new SfName("unittest-http-header-enrichment-1"));
+                add(new SfName("unittest-qos-1"));
+            }
+        };
+        IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
 
@@ -151,7 +159,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
-        sfBuilder.setName(new SfName(sfNames[0]))
+        sfBuilder.setName(new SfName(sfNames.get(0)))
             .setKey(new ServiceFunctionKey(new SfName("unittest-fw-1")))
             .setType(Firewall.class)
             .setIpMgmtAddress(ipMgmtAddress[0])

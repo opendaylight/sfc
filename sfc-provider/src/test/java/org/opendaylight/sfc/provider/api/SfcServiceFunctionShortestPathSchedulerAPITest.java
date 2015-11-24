@@ -65,6 +65,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypeIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,32 +83,86 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
         // build SFs
-        final String[] LOCATOR_IP_ADDRESS = {"196.168.55.1", "196.168.55.2", "196.168.55.3", "196.168.55.4",
-                "196.168.55.5", "196.168.55.6", "196.168.55.7", "196.168.55.8", "196.168.55.9"};
-        final String[] IP_MGMT_ADDRESS = {"196.168.55.101", "196.168.55.102", "196.168.55.103", "196.168.55.104",
-                "196.168.55.105", "196.168.55.106", "196.168.55.107", "196.168.55.108", "196.168.55.109"};
+
+        final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.1");
+                add("196.168.55.2");
+                add("196.168.55.3");
+                add("196.168.55.4");
+                add("196.168.55.5");
+                add("196.168.55.6");
+                add("196.168.55.7");
+                add("196.168.55.8");
+                add("196.168.55.9");
+            }
+        };
+
+        final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+            {
+                add("196.168.55.101");
+                add("196.168.55.102");
+                add("196.168.55.103");
+                add("196.168.55.104");
+                add("196.168.55.105");
+                add("196.168.55.106");
+                add("196.168.55.107");
+                add("196.168.55.108");
+                add("196.168.55.109");
+            }
+        };
+
         final int PORT = 555;
-        final String[] SF_NAMES = {"simple_firewall_100", "simple_napt_100", "simple_dpi_100", "simple_firewall_110",
-                "simple_napt_110", "simple_dpi_110", "simple_firewall_120", "simple_napt_120", "simple_dpi_120"};
-        final Class[] SF_TYPES = {Firewall.class, Napt44.class, Dpi.class, Firewall.class, Napt44.class, Dpi.class,
-                Firewall.class, Napt44.class, Dpi.class};
+
+        final List<SfName> SF_NAMES = new ArrayList<SfName>() {
+
+            {
+                add(new SfName("simple_firewall_100"));
+                add(new SfName("simple_napt_100"));
+                add(new SfName("simple_dpi_100"));
+                add(new SfName("simple_firewall_110"));
+                add(new SfName("simple_napt_110"));
+                add(new SfName("simple_dpi_110"));
+                add(new SfName("simple_firewall_120"));
+                add(new SfName("simple_napt_120"));
+                add(new SfName("simple_dpi_120"));
+            }
+        };
+
+        final List<Class<? extends ServiceFunctionTypeIdentity>> SF_TYPES = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+
+            {
+                add(Firewall.class);
+                add(Napt44.class);
+                add(Dpi.class);
+                add(Firewall.class);
+                add(Napt44.class);
+                add(Dpi.class);
+                add(Firewall.class);
+                add(Napt44.class);
+                add(Dpi.class);
+            }
+        };
+
 
         PortNumber portNumber = new PortNumber(PORT);
-        for (int i = 0; i < SF_NAMES.length; i++) {
-            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS[i]));
-            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS[i]));
+        for (int i = 0; i < SF_NAMES.size(); i++) {
+            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(i)));
+            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(i)));
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(dplIpAddr).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS[i])).setLocatorType(ipBuilder.build());
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i))).setLocatorType(ipBuilder.build());
             SfDataPlaneLocator sfDataPlaneLocator = locatorBuilder.build();
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator);
-            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(SF_NAMES[i]));
-            sfBuilder.setName(new SfName(SF_NAMES[i]))
+            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(SF_NAMES.get(i)));
+            sfBuilder.setName(new SfName(SF_NAMES.get(i)))
                 .setKey(serviceFunctonKey)
-                .setType(SF_TYPES[i])
+                .setType(SF_TYPES.get(i))
                 .setIpMgmtAddress(ipMgmtAddr)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
@@ -126,13 +181,28 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         SfcName sfcName = new SfcName("ShortestPath-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-        String[] sftNames = {"firewall", "napt", "dpi"};
-        Class[] sftClasses = {Firewall.class, Napt44.class, Dpi.class};
-        for (int i = 0; i < sftNames.length; i++) {
+
+        List<String> sftNames = new ArrayList<String>(){
+
+            {
+                add("firewall");
+                add("napt");
+                add("dpi");
+            }
+        };
+        List<Class<? extends ServiceFunctionTypeIdentity>> sftClasses = new ArrayList<Class<? extends ServiceFunctionTypeIdentity>>() {
+
+            {
+                add(Firewall.class);
+                add(Napt44.class);
+                add(Dpi.class);
+            }
+        };
+        for (int i = 0; i < sftNames.size(); i++) {
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            sfcServiceFunctionBuilder.setName(sftNames[i]);
-            sfcServiceFunctionBuilder.setKey(new SfcServiceFunctionKey(sftNames[i]));
-            sfcServiceFunctionBuilder.setType(sftClasses[i]);
+            sfcServiceFunctionBuilder.setName(sftNames.get(i));
+            sfcServiceFunctionBuilder.setKey(new SfcServiceFunctionKey(sftNames.get(i)));
+            sfcServiceFunctionBuilder.setType(sftClasses.get(i));
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
@@ -151,11 +221,26 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         sfPath = serviceFunctionPathBuilder.build();
 
         // build SFFs
-        String[] SFF_NAMES = {"SFF1", "SFF2", "SFF3"};
         String[][] TO_SFF_NAMES = {{"SFF2", "SFF3"}, {"SFF3", "SFF1"}, {"SFF1", "SFF2"}};
-        String[] SFF_LOCATOR_IP = {"196.168.66.101", "196.168.66.102", "196.168.66.103"};
 
-        for (int i = 0; i < SFF_NAMES.length; i++) {
+        List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+
+            {
+                add(new SffName("SFF1"));
+                add(new SffName("SFF2"));
+                add(new SffName("SFF3"));
+            }
+        };
+
+        List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+            {
+                add("196.168.66.101");
+                add("196.168.66.102");
+                add("196.168.66.103");
+            }
+        };
+
+        for (int i = 0; i < SFF_NAMES.size(); i++) {
             // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
@@ -186,17 +271,17 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP[i]))).setPort(new PortNumber(555));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(555));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i]))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP[i])))
+            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
+                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
                 .setDataPlaneLocator(sffLocatorBuilder.build());
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(SFF_NAMES[i]))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES[i])))
+            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
+                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
                 .setSffDataPlaneLocator(locatorList)
                 .setServiceFunctionDictionary(sfDictionaryList)
                 .setConnectedSffDictionary(sffDictionaryList)

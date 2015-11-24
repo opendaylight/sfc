@@ -24,9 +24,17 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void shutdown() throws ExecutionException, InterruptedException;
 
+    // These table methods are used for app-coexistence
+
     public short getTableBase();
 
     public void setTableBase(short tableBase);
+
+    public short getMaxTableOffset();
+
+    public short getTableEgress();
+
+    public void setTableEgress(short tableEgress);
 
     // Set the RSP Id that subsequent flow creations belong to
     public void setFlowRspId(Long rspId);

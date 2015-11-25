@@ -41,7 +41,6 @@ public class SfcConcurrencyAPI {
 
     public static void releaseLock() {
         SFC_LOCK.unlock();
-        return;
     }
 
     public static boolean getPathIdLock() {
@@ -57,7 +56,6 @@ public class SfcConcurrencyAPI {
 
     public static void releasePathIdLock() {
         SFC_PATHID_LOCK.unlock();
-        return;
     }
 
 }

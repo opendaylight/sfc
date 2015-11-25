@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.l2renderer;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +17,19 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyShort;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
@@ -28,19 +39,33 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 
-//public class SfcL2RspProcessorTest extends AbstractDataBrokerTest {
+/**
+ * Unit Testing for the SfcL2RspProcessor class. The SfcL2RspProcessor receives
+ * a Rendered Service Path (RSP) as input, and as output creates OpenFlow flows.
+ *
+ * These Unit Tests isolate the SfcL2RspProcessor class by mocking the
+ * SfcL2FlowProgrammerOFimpl class with Mockito. Given a particular RSP, the
+ * SfcL2RspProcessor should create several OpenFlow flows by calling into the
+ * SfcL2FlowProgrammerInterface, whose implementation is SfcL2FlowProgrammerOFimpl.
+ * The SfcL2FlowProgrammerOFimpl is mocked with Mockito, which allows us to
+ * verify that exactly the correct Flow creation methods are called with the
+ * expected arguments.
+ *
+ * @author ebrjohn
+ *
+ */
 public class SfcL2RspProcessorTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspProcessorTest.class);
     SfcL2RspProcessor sfcL2RspProcessor;
     RspBuilder rspBuilder;
-    SfcL2FlowProgrammerTestMoc flowProgrammerTestMoc;
+    SfcL2FlowProgrammerInterface flowProgrammerTestMoc;
     SfcL2ProviderUtilsTestMock sfcUtilsTestMock;
     List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes;
 
     public SfcL2RspProcessorTest() {
         LOG.info("SfcL2RspProcessorTest constructor");
 
-        this.flowProgrammerTestMoc = new SfcL2FlowProgrammerTestMoc();
+        this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
         this.sfcUtilsTestMock = new SfcL2ProviderUtilsTestMock();
         this.sfcL2RspProcessor = new SfcL2RspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
@@ -50,42 +75,27 @@ public class SfcL2RspProcessorTest {
         this.sfTypes.add(HttpHeaderEnrichment.class);
     }
 
-    private void assertMethodCallCount(SfcL2FlowProgrammerTestMoc.MethodIndeces methodIndex, int count) {
-        assertEquals(count, flowProgrammerTestMoc.getMethodCalledCount(methodIndex));
-    }
-
-    private void assertMatchAnyMethodsCalled() {
-        // Default values
-        assertMatchAnyMethodsCalled(2, 2, 2, 2, 2);
-    }
-
-    private void assertMatchAnyMethodsCalled(
-            int transportIngressCount, int pathMapperCount, int pathMapperAclCount, int nextHopCount, int transportEgressCount) {
-        // Each of these is called once per SFF, and there are 2 SFFs
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportIngressTableMatchAnyMethodIndex,
-                transportIngressCount);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperTableMatchAnyMethodIndex,
-                pathMapperCount);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configurePathMapperAclTableMatchAnyMethodIndex,
-                pathMapperAclCount);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopTableMatchAnyMethodIndex,
-                nextHopCount);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureTransportEgressTableMatchAnyMethodIndex,
-                transportEgressCount);
-    }
-
     @Before
     public void before() throws ExecutionException, InterruptedException {
         LOG.info("SfcL2RspProcessorTest before()");
 
-        // Reset the methods called before each test
-        flowProgrammerTestMoc.resetCalledMethods();
+        //this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
         sfcUtilsTestMock.resetCache();
+    }
+
+    private void assertMatchAnyMethodsCalled(String sffName) {
+        verify(this.flowProgrammerTestMoc).
+            configureTransportIngressTableMatchAny(eq(sffName), anyBoolean());
+        verify(this.flowProgrammerTestMoc).
+            configurePathMapperTableMatchAny(eq(sffName), anyBoolean());
+        verify(this.flowProgrammerTestMoc).
+            configurePathMapperAclTableMatchAny(eq(sffName), anyBoolean());
+        verify(this.flowProgrammerTestMoc).
+            configureNextHopTableMatchAny(eq(sffName), anyBoolean());
+        verify(this.flowProgrammerTestMoc).
+            configureTransportEgressTableMatchAny(eq(sffName), anyBoolean());
+        verify(this.flowProgrammerTestMoc).
+            configureClassifierTableMatchAny(eq(sffName), anyBoolean());
     }
 
     // TODO tests to add:
@@ -99,16 +109,59 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mac.class);
         this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp);
 
-        assertMatchAnyMethodsCalled();
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportIngressFlowMethodIndex, 3);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanPathMapperFlowMethodIndex, 5);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 4);
-        // TODO need to check that all the rest are 0
+        assertMatchAnyMethodsCalled("SFF_0");
+        assertMatchAnyMethodsCalled("SFF_1");
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+
+        // Verify calls to configureVlanTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVlanTransportIngressFlow("SFF_0");
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportIngressFlow("SFF_1");
+
+        // TODO need to parameterize all these parameter values and use them in
+        //      the RSP creation. As-is now, its pretty ugly to have all these
+        //      explicit values
+
+        // Verify calls to configureVlanPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanPathMapperFlow("SFF_0", 100, 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanPathMapperFlow("SFF_0", 3, 0, true);
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVlanPathMapperFlow("SFF_1", 101, 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanPathMapperFlow("SFF_1", 5, 0, true);
+
+        // Verify calls to configureNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureNextHopFlow("SFF_0", 0, null, "00:00:00:00:00:00");
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureNextHopFlow("SFF_0", 0, "00:00:00:00:00:00", "00:00:00:00:00:09");
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:04", "00:00:00:00:00:07");
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureNextHopFlow("SFF_1", 0, "00:00:00:00:00:07", null);
+
+        // Verify calls to configureVlanTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                "SFF_0", "00:00:00:00:00:06", "00:00:00:00:00:00",
+                2, "1", 0, true, false, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                "SFF_0", "00:00:00:00:00:04", "00:00:00:00:00:09",
+                101, "1", 0, false, false, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                "SFF_1", "00:00:00:00:00:13", "00:00:00:00:00:07",
+                4, "1", 0, true, false, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                "SFF_1", "00:00:00:00:00:11", null,
+                102, "1", 0, false, true, false);
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
     @Test
@@ -118,22 +171,59 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath mplsRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mpls.class);
         this.sfcL2RspProcessor.processRenderedServicePath(mplsRsp);
 
-        assertMatchAnyMethodsCalled();
-        // The calls to teh VLAN methods are for the packets sent between SFF-SF
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportIngressFlowMethodIndex, 2);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureMplsTransportIngressFlowMethodIndex, 1);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanPathMapperFlowMethodIndex, 2);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureMplsPathMapperFlowMethodIndex, 3);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 2);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureMplsTransportEgressFlowMethodIndex, 2);
+        assertMatchAnyMethodsCalled("SFF_0");
+        assertMatchAnyMethodsCalled("SFF_1");
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+
+        // The calls to the VLAN methods are for the packets sent between SFF-SF
+
+        // Verify calls to configureVlanTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportIngressFlow("SFF_0");
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportIngressFlow("SFF_1");
+
+        // Verify calls to configureMplsTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureMplsTransportIngressFlow("SFF_0");
+
+        // Verify calls to configureVlanPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), anyLong(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), anyLong(), anyBoolean());
+
+        // Verify calls to configureMplsPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(3)).
+            configureMplsPathMapperFlow(anyString(), anyLong(), anyLong(), anyBoolean());
+
+        // Verify calls to configureNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureNextHopFlow(eq("SFF_0"), anyLong(), anyString(), anyString());
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureNextHopFlow(eq("SFF_1"), anyLong(), anyString(), anyString());
+
+        // Verify calls to configureVlanTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportEgressFlow(
+                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+
+        // Verify calls to configureMplsTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureMplsTransportEgressFlow(
+                eq("SFF_0"), anyString(), anyString(), anyLong(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureMplsTransportEgressFlow(
+                eq("SFF_1"), anyString(), anyString(), anyLong(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
     @Test
@@ -143,15 +233,35 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, VxlanGpe.class);
         this.sfcL2RspProcessor.processRenderedServicePath(nshRsp);
 
-        assertMatchAnyMethodsCalled();
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex, 3);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpePathMapperFlowMethodIndex, 0);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeNextHopFlowMethodIndex, 3);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 4);
+        assertMatchAnyMethodsCalled("SFF_0");
+        assertMatchAnyMethodsCalled("SFF_1");
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+
+        // Verify calls to configureVxlanGpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVxlanGpeTransportIngressFlow("SFF_0");
+        verify(this.flowProgrammerTestMoc).
+            configureVxlanGpeTransportIngressFlow("SFF_1");
+
+        // Verify calls to configureVxlanGpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVxlanGpeNextHopFlow(eq("SFF_0"), anyString(), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc).
+            configureVxlanGpeNextHopFlow(eq("SFF_1"), anyString(), anyLong(), anyShort());
+
+        // Verify calls to configureVxlanGpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVxlanGpeTransportEgressFlow(
+                eq("SFF_0"), anyLong(), anyShort(), anyString(), anyBoolean(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVxlanGpeTransportEgressFlow(
+                eq("SFF_1"), anyLong(), anyShort(), anyString(), anyBoolean(), anyBoolean());
+
+        // Verify calls to configureNshNscTransportEgressFlow
+        verify(this.flowProgrammerTestMoc).
+            configureNshNscTransportEgressFlow(eq("SFF_1"), anyLong(), anyShort(), anyString());
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
     @Test
@@ -165,15 +275,28 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
         this.sfcL2RspProcessor.processRenderedServicePath(nshRsp);
 
-        assertMatchAnyMethodsCalled(1, 1, 1, 1, 1);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportIngressFlowMethodIndex, 2);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpePathMapperFlowMethodIndex, 0);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeNextHopFlowMethodIndex, 1);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVxlanGpeTransportEgressFlowMethodIndex, 2);
+        assertMatchAnyMethodsCalled("SFF_0");
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+
+        // Verify calls to configureVxlanGpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVxlanGpeTransportIngressFlow("SFF_0");
+
+        // Verify calls to configureVxlanGpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVxlanGpeNextHopFlow("SFF_0", "192.168.0.1", (long) 0, (short) 255);
+
+        // Verify calls to configureVxlanGpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVxlanGpeTransportEgressFlow("SFF_0", (long) 0, (short) 255, "INPORT", false, false);
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVxlanGpeTransportEgressFlow("SFF_0", (long) 0, (short) 254, "INPORT", true, false);
+
+        // Verify calls to configureNshNscTransportEgressFlow
+        verify(this.flowProgrammerTestMoc).
+            configureNshNscTransportEgressFlow("SFF_0", (long) 0, (short) 254, "INPORT");
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
     @Test
@@ -188,18 +311,49 @@ public class SfcL2RspProcessorTest {
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(sfTcpProxyTypes, Mac.class);
         this.sfcL2RspProcessor.processRenderedServicePath(vlanRsp);
 
-        assertMatchAnyMethodsCalled();
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportIngressFlowMethodIndex, 3);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureArpTransportIngressFlowMethodIndex, 2);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanPathMapperFlowMethodIndex, 5);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureNextHopFlowMethodIndex, 4);
-        assertMethodCallCount(
-                SfcL2FlowProgrammerTestMoc.MethodIndeces.configureVlanTransportEgressFlowMethodIndex, 4);
-        // TODO need to check that all the rest are 0
+        // TODO
+        // ArgumentCaptor's can be used to get method argument values
+        // ArgumentCaptor<Integer> intArg = ArgumentCaptor.forClass(Integer.class);
+        // verify(mock).doSomething(intArg.capture());
+        // assertEquals(100, argument.getValue());
+
+        assertMatchAnyMethodsCalled("SFF_0");
+        assertMatchAnyMethodsCalled("SFF_1");
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+
+        // Verify calls to configureVlanTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVlanTransportIngressFlow(eq("SFF_0"));
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureVlanTransportIngressFlow(eq("SFF_1"));
+
+        // Verify calls to configureArpTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureArpTransportIngressFlow(eq("SFF_0"), anyString());
+        verify(this.flowProgrammerTestMoc, times(1)).
+            configureArpTransportIngressFlow(eq("SFF_1"), anyString());
+
+        // Verify calls to configureVlanPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(5)).
+            configureVlanPathMapperFlow(anyString(), anyInt(), anyLong(), anyBoolean());
+
+        // Verify calls to configureNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureNextHopFlow(eq("SFF_0"), anyLong(), anyString(), anyString());
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureNextHopFlow(eq("SFF_1"), anyLong(), anyString(), anyString());
+
+        // Verify calls to configureVlanTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVlanTransportEgressFlow(
+                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(2)).
+            configureVlanTransportEgressFlow(
+                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(),
+                anyLong(), anyBoolean(), anyBoolean(), anyBoolean());
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
 }

@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
-import org.opendaylight.lispflowmapping.lisp.type.AddressFamilyNumberEnum;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_lisp.provider.api.SfcLispFlowMappingApi;
@@ -45,30 +44,28 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.eidtolocatorrecords.EidToLocatorRecord;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.LispAddressContainer;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.LispAddressContainerBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.DistinguishedName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.DistinguishedNameBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.Ipv4;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.Ipv6;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.LcafApplicationData;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.LcafSourceDest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.locatorrecords.LocatorRecord;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.MappingserviceService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.ApplicationData;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.Ipv4;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.Ipv6;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.locatorrecords.LocatorRecord;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.mapping.record.container.MappingRecord;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService;
+import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
+import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.eid.container.Eid;
 
 public class LispUpdater implements ILispUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(LispUpdater.class);
 
     private static LispUpdater lispUpdaterObj;
-    // private static IFlowMapping flowMapping;
-    private MappingserviceService lfmService;
+    private OdlMappingserviceService lfmService;
 
-    public LispUpdater(MappingserviceService lfmService) {
+    public LispUpdater(OdlMappingserviceService lfmService) {
         this.lfmService = lfmService;
         lispUpdaterObj = this;
     }
@@ -77,29 +74,21 @@ public class LispUpdater implements ILispUpdater {
         return LispUpdater.lispUpdaterObj;
     }
 
-    public MappingserviceService getMappingserviceService() {
+    public OdlMappingserviceService getMappingserviceService() {
         return lfmService;
     }
 
     public static void setFlowMapping(IFlowMapping fm) {
         // flowMapping = fm;
     }
-
-    public LispAddressContainer asLispContainer(String rloc) {
-        LispAddressContainerBuilder builder = new LispAddressContainerBuilder();
-        builder.setAddress(buildDistinguishedNameAddress(rloc));
-        return builder.build();
+/*
+    private Rloc buildDistinguishedNameAddress(String rloc) {
+        RlocBuilder dnb = new RlocBuilder();
+        dnb.setAddressType(DistinguishedNameAfi.class);
+        dnb.setAddress(new DistinguishedNameBuilder().setDistinguishedName(new DistinguishedNameType(rloc)).build());
+        return dnb.build();
     }
-
-    private DistinguishedName buildDistinguishedNameAddress(String rloc) {
-        return new DistinguishedNameBuilder().setDistinguishedName(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.lispaddresscontainer.address.distinguishedname.DistinguishedNameBuilder()
-                    .setAfi(AddressFamilyNumberEnum.DISTINGUISHED_NAME.getIanaCode())
-                    .setDistinguishedName(rloc)
-                    .build())
-            .build();
-    }
-
+*/
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
         Lisp lispLocation = getLispLocationFromSff(locations);
@@ -162,20 +151,18 @@ public class LispUpdater implements ILispUpdater {
     }
 
     private ServiceFunction updateLispData(Lisp lispLocation, ServiceFunction serviceFunction) {
-        Object[] methodParameters = {LispUtil.toContainer(lispLocation.getEid())};
-        @SuppressWarnings("unchecked")
-        List<EidToLocatorRecord> reply = (List<EidToLocatorRecord>) SfcLispUtil.submitCallable(
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
-        if (reply == null || reply.isEmpty()) {
+        if (reply == null) {
             return serviceFunction;
         }
-        EidToLocatorRecord etlr = reply.get(0);
-        for (LocatorRecord locator : etlr.getLocatorRecord()) {
-            Address address = locator.getLispAddressContainer().getAddress();
-            if (address instanceof LcafApplicationData) {
-                LcafApplicationData applicationData = (LcafApplicationData) address;
-                Ip locatorType = LispUtil.createLocator(applicationData);
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
+            if (address instanceof ApplicationData) {
+                ApplicationData applicationData = (ApplicationData) address;
+                Ip locatorType = SfcLispUtil.createLocator(applicationData);
                 SfDataPlaneLocatorName name = new SfDataPlaneLocatorName(lispLocation.getEid().toString());
                 SfDataPlaneLocatorKey key = new SfDataPlaneLocatorKey(name);
                 SfDataPlaneLocator loc =
@@ -187,7 +174,6 @@ public class LispUpdater implements ILispUpdater {
 
         }
         return serviceFunction;
-
     }
 
     private ServiceFunctionForwarder updateLispData(Lisp lispLocation,
@@ -197,20 +183,19 @@ public class LispUpdater implements ILispUpdater {
         // if (reply.getEidToLocatorRecord() == null || reply.getEidToLocatorRecord().isEmpty()) {
         // return serviceFunctionForwarder;
         // }
-        Object[] methodParameters = {LispUtil.toContainer(lispLocation.getEid())};
-        @SuppressWarnings("unchecked")
-        List<EidToLocatorRecord> reply = (List<EidToLocatorRecord>) SfcLispUtil.submitCallable(
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
-        if (reply == null || reply.isEmpty()) {
+        if (reply == null ) {
             return serviceFunctionForwarder;
         }
-        EidToLocatorRecord etlr = reply.get(0);
-        for (LocatorRecord locator : etlr.getLocatorRecord()) {
-            Address address = locator.getLispAddressContainer().getAddress();
-            if (address instanceof LcafApplicationData) {
-                LcafApplicationData applicationData = (LcafApplicationData) address;
-                Ip locatorType = LispUtil.createLocator(applicationData);
+
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
+            if (address instanceof ApplicationData) {
+                ApplicationData applicationData = (ApplicationData) address;
+                Ip locatorType = SfcLispUtil.createLocator(applicationData);
                 DataPlaneLocator dpl = new DataPlaneLocatorBuilder().setLocatorType(locatorType).build();
                 SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(lispLocation.getEid().toString());
                 SffDataPlaneLocatorKey key = new SffDataPlaneLocatorKey(name);
@@ -223,7 +208,6 @@ public class LispUpdater implements ILispUpdater {
 
         }
         return serviceFunctionForwarder;
-
     }
 
     public void registerPath(RenderedServicePath rsp) {
@@ -286,7 +270,7 @@ public class LispUpdater implements ILispUpdater {
             Matches matches = aces.getMatches();
             if (matches.getAceType() instanceof AceIp) {
                 AceIp ipMatch = (AceIp) matches.getAceType();
-                LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
+                Eid srcDst = getSrcDstFromAce(ipMatch);
 
                 if (srcDst == null) {
                     LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
@@ -294,9 +278,8 @@ public class LispUpdater implements ILispUpdater {
                 }
 
                 // ... find locator of dst eid ...
-                IpAddress lastHop = findLastHop(
-                        LispUtil.toContainer(srcDst.getLcafSourceDestAddr().getDstAddress().getPrimitiveAddress()),
-                        srcDst.getLcafSourceDestAddr().getDstMaskLength());
+                Eid dstPrefix = SourceDestKeyHelper.getDst(srcDst);
+                IpAddress lastHop = findLastHop(dstPrefix);
                 if (lastHop == null) {
                     LOG.debug("Couldn't find locator for src/dst eid: {}", srcDst);
                     return;
@@ -313,12 +296,9 @@ public class LispUpdater implements ILispUpdater {
                 } else {
                     hopIpList.add(lastHop);
                 }
-                // ... build a TE LCAF with the just found locator as last hop and register it with
-                // lfm.
-                // NOTE: We contemplate only the case when dst has an associated mapping in lfm's
-                // db, as the
-                // insertion of a new src/dst mapping does not affect it. If however, a src/dst
-                // mapping does
+                // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
+                // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
+                // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
                 // exist, we overwrite it lower, thus this might require fixing. XXX
                 buildAndRegisterTeMapping(srcDst, hopIpList);
             }
@@ -345,25 +325,23 @@ public class LispUpdater implements ILispUpdater {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private IpAddress findLastHop(LispAddressContainer eid, int mask) {
-        Object[] methodParameters = {eid, mask};
-        List<EidToLocatorRecord> reply = (List<EidToLocatorRecord>) SfcLispUtil.submitCallable(
+    private IpAddress findLastHop(Eid prefix) {
+        Object[] methodParameters = { prefix };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
-        if (reply == null || reply.isEmpty()) {
+        if (reply == null) {
             return null;
         }
 
-        EidToLocatorRecord etlr = reply.get(0);
-        for (LocatorRecord locator : etlr.getLocatorRecord()) {
-            Address address = locator.getLispAddressContainer().getAddress();
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
             if (address instanceof Ipv4) {
                 Ipv4 ipv4 = (Ipv4) address;
-                return new IpAddress(ipv4.getIpv4Address().getIpv4Address());
+                return new IpAddress(ipv4.getIpv4());
             } else if (address instanceof Ipv6) {
                 Ipv6 ipv6 = (Ipv6) address;
-                return new IpAddress(ipv6.getIpv6Address().getIpv6Address());
+                return new IpAddress(ipv6.getIpv6());
             } else {
                 LOG.debug("Locator address type not supported for TE LCAF: {}", address);
             }
@@ -371,10 +349,10 @@ public class LispUpdater implements ILispUpdater {
         return null;
     }
 
-    private void buildAndRegisterTeMapping(LcafSourceDest eid, List<IpAddress> hopList) {
-        LispAddressContainer locatorPath = LispUtil.asLispContainer(LispUtil.buildTeLcaf(hopList));
-        List<LispAddressContainer> locators = Arrays.asList(locatorPath);
-        Object[] methodParameters = {LispUtil.asLispContainer(eid), locators};
+    private void buildAndRegisterTeMapping(Eid eid, List<IpAddress> hopList) {
+        Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
+        List<Rloc> locators = Arrays.asList(locatorPath);
+        Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
@@ -391,14 +369,14 @@ public class LispUpdater implements ILispUpdater {
                 Matches matches = aces.getMatches();
                 if (matches.getAceType() instanceof AceIp) {
                     AceIp ipMatch = (AceIp) matches.getAceType();
-                    LcafSourceDest srcDst = getSrcDstFromAce(ipMatch);
+                    Eid srcDst = getSrcDstFromAce(ipMatch);
                     removeMapping(srcDst);
                 }
             }
         }
     }
 
-    private LcafSourceDest getSrcDstFromAce(AceIp ipMatch) {
+    private Eid getSrcDstFromAce(AceIp ipMatch) {
         AceIpVersion ipMatchVersion = ipMatch.getAceIpVersion();
         String[] srcPrefixParts = null, dstPrefixParts = null;
 
@@ -414,16 +392,16 @@ public class LispUpdater implements ILispUpdater {
 
         if (srcPrefixParts != null && srcPrefixParts.length == 2 && dstPrefixParts != null
                 && dstPrefixParts.length == 2) {
-            return LispUtil.buildSrcDst(srcPrefixParts[0], dstPrefixParts[0], Integer.parseInt(srcPrefixParts[1]),
-                    Integer.parseInt(dstPrefixParts[1]));
+            return LispAddressUtil.asSrcDstEid(srcPrefixParts[0], dstPrefixParts[0], Integer.parseInt(srcPrefixParts[1]),
+                    Integer.parseInt(dstPrefixParts[1]), 0);
         } else {
             LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
             return null;
         }
     }
 
-    private void removeMapping(LcafSourceDest eid) {
-        Object[] methodParameters = {LispUtil.asLispContainer(eid)};
+    private void removeMapping(Eid eid) {
+        Object[] methodParameters = {eid};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
@@ -465,7 +443,7 @@ public class LispUpdater implements ILispUpdater {
                 continue;
             }
             AceIp ipMatch1 = (AceIp) matches1.getAceType();
-            LcafSourceDest sd1 = getSrcDstFromAce(ipMatch1);
+            Eid sd1 = getSrcDstFromAce(ipMatch1);
 
             boolean found = false;
             for (Ace it2 : aces2) {
@@ -476,7 +454,7 @@ public class LispUpdater implements ILispUpdater {
                         continue;
                     }
                     AceIp ipMatch2 = (AceIp) matches2.getAceType();
-                    LcafSourceDest sd2 = getSrcDstFromAce(ipMatch2);
+                    Eid sd2 = getSrcDstFromAce(ipMatch2);
                     if (!sd1.equals(sd2)) {
                         return false;
                     }

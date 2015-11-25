@@ -29,11 +29,11 @@ public class SfcProviderServiceLispAPI {
             sf = LispUpdater.getLispUpdaterObj().updateLispData(sf);
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                    .child(ServiceFunction.class, sf.getKey()).toInstance();
+                    .child(ServiceFunction.class, sf.getKey()).build();
 
             WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
             writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
-            writeTx.commit();
+            writeTx.submit();
 
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
@@ -46,11 +46,11 @@ public class SfcProviderServiceLispAPI {
             sff = LispUpdater.getLispUpdaterObj().updateLispData(sff);
 
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class, sff.getKey()).toInstance();
+                    .child(ServiceFunctionForwarder.class, sff.getKey()).build();
 
             WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, sff, true);
-            writeTx.commit();
+            writeTx.submit();
 
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);

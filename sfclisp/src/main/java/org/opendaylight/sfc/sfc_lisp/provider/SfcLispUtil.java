@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sfc_lisp.provider;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -19,19 +20,38 @@ import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev150820.lispaddress.LispAddressContainer;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.ApplicationData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.eid.container.Eid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.mapping.record.container.MappingRecordBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.mapping.record.container.MappingRecord.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.AddMappingInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.AddMappingInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.EidUri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.IidUri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.MappingDatabase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.MappingOrigin;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.RemoveMappingInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.RemoveMappingInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.VniUri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.db.instance.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.db.instance.MappingKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.InstanceId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.InstanceIdKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.VirtualNetworkIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.VirtualNetworkIdentifierKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.net.InetAddresses;
+
+import org.opendaylight.lispflowmapping.lisp.util.LispAddressStringifier;
+import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 
 public class SfcLispUtil {
 
@@ -52,12 +72,41 @@ public class SfcLispUtil {
         return result;
     }
 
+    public static Ip createLocator(ApplicationData applicationData) {
+        IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(
+                applicationData.getApplicationData().getIpTos()).getHostAddress()));
+        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getApplicationData().getLocalPortLow())
+                .build();
+        return locatorType;
+    }
+
+    public static GetMappingInput buildGetMappingInput(Eid eid) {
+        return new GetMappingInputBuilder().setEid(eid).build();
+    }
+
+    public static AddMappingInput buildAddMappingInput(Eid eid, List<Rloc> locators, int mask) {
+        MappingRecordBuilder record = new MappingRecordBuilder();
+
+        record.setAction(Action.NoAction).setAuthoritative(true).setEid(eid)
+                .setLocatorRecord(LispAddressUtil.asLocatorRecords(locators)).setMapVersion((short) 0)
+                .setMaskLength((short) mask).setRecordTtl(1440);
+        return new AddMappingInputBuilder().setMappingRecord(record.build()).build();
+    }
+
+    public static RemoveMappingInput buildRemoveMappingInput(Eid eid, int mask) {
+        RemoveMappingInputBuilder rmib = new RemoveMappingInputBuilder();
+        rmib.setEid(eid);
+        return rmib.build();
+    }
+
     public static InstanceIdentifier<Mapping> buildMappingIid(Mapping mapping) {
-        LispAddressContainer eid = mapping.getLispAddressContainer();
-        InstanceIdKey iidKey = new InstanceIdKey(new IidUri(Long.toString(LispUtil.getLispInstanceId(eid))));
-        MappingKey eidKey = new MappingKey(new EidUri(LispUtil.getAddressString(eid)), MappingOrigin.Northbound);
-        return InstanceIdentifier.create(MappingDatabase.class).child(InstanceId.class, iidKey).child(Mapping.class,
-                eidKey);
+        Eid eid = mapping.getMappingRecord().getEid();
+
+        VirtualNetworkIdentifierKey vniKey = new VirtualNetworkIdentifierKey(
+                new VniUri(Long.toString(eid.getVirtualNetworkId().getValue())));
+        MappingKey eidKey = new MappingKey(new EidUri(LispAddressStringifier.getURIString(eid)), MappingOrigin.Northbound);
+        return InstanceIdentifier.create(MappingDatabase.class)
+                .child(VirtualNetworkIdentifier.class, vniKey).child(Mapping.class, eidKey);
     }
 
     public static Acl getServiceFunctionAcl(SfpName sfPathName) {

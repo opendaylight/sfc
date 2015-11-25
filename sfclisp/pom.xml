@@ -26,6 +26,11 @@
             <version>${lispflowmapping.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.lispflowmapping</groupId>
+            <artifactId>mappingservice.lisp-proto</artifactId>
+            <version>${lispflowmapping.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sfc-model</artifactId>
         </dependency>

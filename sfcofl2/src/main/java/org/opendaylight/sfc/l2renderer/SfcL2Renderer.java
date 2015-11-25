@@ -10,6 +10,8 @@ package org.opendaylight.sfc.l2renderer;
 
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterImpl;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
 import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
 
@@ -31,9 +33,11 @@ import org.slf4j.LoggerFactory;
 public class SfcL2Renderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2Renderer.class);
+
     private SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
     private Registration pktInRegistration;
     private SfcSynchronizer sfcSynchronizer;
+    private SfcL2FlowWriterInterface sfcL2FlowWriter = null;
 
     SfcL2RspDataListener openflowRspDataListener = null;
     SfcL2SfgDataListener sfcL2SfgDataListener = null;
@@ -44,7 +48,7 @@ public class SfcL2Renderer implements AutoCloseable {
         LOG.info("SfcL2Renderer starting the SfcL2Renderer plugin...");
 
         this.sfcSynchronizer = new SfcSynchronizer();
-        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl();
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl(new SfcL2FlowWriterImpl());
         SfcL2BaseProviderUtils sfcL2ProviderUtils = new SfcL2ProviderUtils();
         this.openflowRspDataListener = new SfcL2RspDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils, sfcSynchronizer);
         this.sfcL2SfgDataListener = new SfcL2SfgDataListener(dataBroker, sfcL2FlowProgrammer, sfcL2ProviderUtils);

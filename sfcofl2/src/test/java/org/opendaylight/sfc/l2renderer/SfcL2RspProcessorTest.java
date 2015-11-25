@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -24,12 +24,14 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyShort;
+import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.Firewall;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.TcpProxy;
@@ -59,13 +61,16 @@ public class SfcL2RspProcessorTest {
     SfcL2RspProcessor sfcL2RspProcessor;
     RspBuilder rspBuilder;
     SfcL2FlowProgrammerInterface flowProgrammerTestMoc;
+    SfcL2FlowWriterInterface sfcL2FlowWriter;
     SfcL2ProviderUtilsTestMock sfcUtilsTestMock;
     List<Class<? extends ServiceFunctionTypeIdentity>> sfTypes;
 
     public SfcL2RspProcessorTest() {
         LOG.info("SfcL2RspProcessorTest constructor");
 
+        this.sfcL2FlowWriter = new SfcL2FlowWriterTest();
         this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
+        this.flowProgrammerTestMoc.setFlowWriter(sfcL2FlowWriter);
         this.sfcUtilsTestMock = new SfcL2ProviderUtilsTestMock();
         this.sfcL2RspProcessor = new SfcL2RspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
@@ -112,6 +117,7 @@ public class SfcL2RspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVlanTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).
@@ -174,6 +180,7 @@ public class SfcL2RspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // The calls to the VLAN methods are for the packets sent between SFF-SF
 
@@ -236,6 +243,7 @@ public class SfcL2RspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVxlanGpeTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).
@@ -277,6 +285,7 @@ public class SfcL2RspProcessorTest {
 
         assertMatchAnyMethodsCalled("SFF_0");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVxlanGpeTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).
@@ -320,6 +329,7 @@ public class SfcL2RspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVlanTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).

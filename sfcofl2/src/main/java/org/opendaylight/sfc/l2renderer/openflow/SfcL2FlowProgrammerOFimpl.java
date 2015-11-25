@@ -32,9 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -83,7 +81,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammerOFimpl.class);
 
-    private static final int COOKIE_BIGINT_HEX_RADIX = 16;
+    public static final int COOKIE_BIGINT_HEX_RADIX = 16;
     private static final long SHUTDOWN_TIME = 5;
     private static final BigInteger TRANSPORT_EGRESS_COOKIE =
             new BigInteger("BA5EBA11BA5EBA11", COOKIE_BIGINT_HEX_RADIX);
@@ -133,11 +131,13 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private ExecutorService threadPoolExecutorService;
     private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
     private Long flowRspId;
+    private SfcL2FlowWriterInterface sfcL2FlowWriter = null;
 
-    public SfcL2FlowProgrammerOFimpl() {
+    public SfcL2FlowProgrammerOFimpl(SfcL2FlowWriterInterface sfcL2FlowWriter) {
         this.tableBase = (short) 0;
         this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
         this.flowRspId = new Long(0);
+        this.sfcL2FlowWriter = new SfcL2FlowWriterImpl();
 
         // Not using an Executors.newSingleThreadExecutor() here, since it creates
         // an Executor that uses a single worker thread operating off an unbounded
@@ -147,6 +147,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
 
     }
+
+    @Override
+    public void setFlowWriter(SfcL2FlowWriterInterface sfcL2FlowWriter) {
+        this.sfcL2FlowWriter = sfcL2FlowWriter;
+    };
 
     // This method should only be called by SfcL2Renderer.close()
     @Override
@@ -198,7 +203,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         rspNameToFlowsMap.remove(rspId);
         for (FlowDetails flowDetails : flowDetailsList) {
-            removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
+            sfcL2FlowWriter.removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
         }
 
         // If there is just one entry left, then all flows for RSPs have
@@ -208,7 +213,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             Set<Entry<Long, List<FlowDetails>>> entries = rspNameToFlowsMap.entrySet();
             flowDetailsList = entries.iterator().next().getValue();
             for (FlowDetails flowDetails : flowDetailsList) {
-                removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
+                sfcL2FlowWriter.removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
             }
             rspNameToFlowsMap.clear();
         }
@@ -364,7 +369,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(this.tableId,
                         FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureTableMatchAnyThread writer caught an Exception: ", e);
@@ -495,7 +500,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                         SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
                                 FLOW_PRIORITY_TRANSPORT_INGRESS, "ingress_Transport_Default_Flow", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureTransportIngress writer caught an Exception: ", e);
@@ -568,7 +573,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                         SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_INGRESS_TRANSPORT_TABLE,
                                 FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, "ingress_Transport_Default_Flow", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureTransportArpIngress writer caught an Exception: ", e);
@@ -738,7 +743,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_PATH_MAPPER, flowPriority,
                         "nextHop", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, ingressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, ingressFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigurePathMapperFlow writer caught an Exception: ", e);
@@ -824,7 +829,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 // Set an idle timeout on this flow
                 ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
 
-                writeFlowToConfig(rspId, sffNodeName, ingressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, ingressFlow);
 
             } catch (Exception e) {
                 LOG.error("configurePathMapperAclFlow writer caught an Exception: ", e);
@@ -982,7 +987,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder nextHopFlow =
                         SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_NEXT_HOP, flowPriority, "nextHop", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureNextHopFlow writer caught an Exception: ", e);
@@ -1208,7 +1213,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
                 //
                 // Now write the Flow Entry
-                writeFlowToConfig(rspId, sffNodeName, egressTransportFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, egressTransportFlow);
 
             } catch (Exception e) {
                 LOG.error("Caught an exception in ConfigureTransportEgressThread.run() : {}", e);
@@ -1289,7 +1294,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder transportIngressFlow = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_TRANSPORT_EGRESS,
                         FLOW_PRIORITY_TRANSPORT_EGRESS + 10, "MatchAny", match, isb);
 
-                writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, transportIngressFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureNshNscTransportEgressFlowThread writer caught an Exception: ", e);
@@ -1411,60 +1416,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 LOG.warn("Failed to remove group from data store");
             }
         }
-    }
-
-    /**
-     * Remove a Flow from the DataStore
-     *
-     * @param sffNodeName - which SFF the flow is in
-     * @param flowKey - The flow key of the flow to be removed
-     * @param tableKey - The table the flow was written to
-     */
-    private void removeFlowFromConfig(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(sffNodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
-
-        // Create the flow path
-        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, tableKey)
-            .child(Flow.class, flowKey)
-            .build();
-
-        if (!SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
-            LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
-        }
-    }
-
-    /**
-     * Write a flow to the DataStore
-     *
-     * @param sffNodeName - which SFF to write the flow to
-     * @param flow - details of the flow to be written
-     */
-    private void writeFlowToConfig(final Long rspId, final String sffNodeName, FlowBuilder flow) {
-        // Create the NodeBuilder
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(sffNodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
-
-        // Create the flow path, which will include the Node, Table, and Flow
-        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, new TableKey(flow.getTableId()))
-            .child(Flow.class, flow.getKey())
-            .build();
-
-        LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
-
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(),
-                LogicalDatastoreType.CONFIGURATION)) {
-            LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
-        }
-        storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
     }
 
     private static BigInteger getMetadataSFP(long sfpId) {
@@ -1597,7 +1548,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
                 FlowBuilder nextHopFlow =
                         SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_NEXT_HOP, flowPriority, "nextHop", match, isb);
                 LOG.debug("writing group next hop flow: \n{}", nextHopFlow);
-                writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
+                sfcL2FlowWriter.writeFlowToConfig(rspId, sffNodeName, nextHopFlow);
 
             } catch (Exception e) {
                 LOG.error("ConfigureNextHopFlow writer caught an Exception: ", e);

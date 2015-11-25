@@ -11,6 +11,7 @@ package org.opendaylight.sfc.l2renderer;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 
 /**
@@ -33,6 +34,9 @@ public interface SfcL2FlowProgrammerInterface {
 
     // Delete all flows created for a particular RSP
     public void deleteRspFlows(final Long rspId);
+
+    //Set FlowWriter implementation
+    public void setFlowWriter(SfcL2FlowWriterInterface sfcL2FlowWriter);
 
     //
     // Congfigure Table 1, Transport Ingress

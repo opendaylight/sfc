@@ -1,0 +1,18 @@
+diff --git a/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServicePathIdTest.java b/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServicePathIdTest.java
+index 30d8041..56783bd 100644
+--- a/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServicePathIdTest.java
++++ b/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServicePathIdTest.java
+@@ -178,11 +178,11 @@ public class SfcServicePathIdTest  extends AbstractSfcRendererServicePathAPITest
+        int numPathIds = 20;
+ 
+        // Verify the pathIds are created sequentially
+-       for (long pathId = firstPathId+1; pathId < firstPathId+numPathIds; ++pathId) {
++       for (long pathId = firstPathId; pathId < firstPathId+numPathIds; ++pathId) {
+            assertEquals(SfcServicePathId.check_and_allocate_pathid(), pathId);
+        }
+        // Free the previously allocated pathIds
+-       for (long pathId = firstPathId; pathId < firstPathId+numPathIds+1; ++pathId) {
++       for (long pathId = firstPathId; pathId < firstPathId+numPathIds; ++pathId) {
+            assertTrue(SfcServicePathId.free_pathid(pathId));
+        }
+    }

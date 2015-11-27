@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "5aaae553_2e2beb31",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcOvsPortUtils.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-27T00:12:24Z",
+      "side": 1,
+      "message": "removed it",
+      "parentUuid": "5aaae553_6b36b505",
+      "revId": "368d501970935d57044122909efcf226430e5802",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5aaae553_0b3b81ec",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfUtils.java",
         "patchSetId": 9
@@ -42,6 +60,24 @@
         "endLine": 34,
         "endChar": 57
       },
+      "revId": "368d501970935d57044122909efcf226430e5802",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5aaae553_ee1cf315",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfUtils.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-27T00:12:24Z",
+      "side": 1,
+      "message": "https://git.opendaylight.org/gerrit/#/c/30212/1 is addressing the issue. will fix this issue later.\n\nThe plan is:\n\nTo move all TABLE index (possibly priority) to sfc-util/src/main/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtils.java. Then we can use table offset capability.",
+      "parentUuid": "5aaae553_0b3b81ec",
       "revId": "368d501970935d57044122909efcf226430e5802",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

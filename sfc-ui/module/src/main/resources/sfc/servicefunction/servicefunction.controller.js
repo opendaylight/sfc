@@ -30,7 +30,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
           params.total(orderedData.length);
           $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-        }
+        },
+        counts: []
       });
 
     $scope.fetchData = function () {

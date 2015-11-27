@@ -7,34 +7,7 @@
         </button>
     </div>
 
-    <div class="col-md-2" style="padding-left: 0px">
-        <table ng-table="tableParamsSfName" class="footable table" style="margin-top: 0px">
-            <!--<tr ng-hide="sfs.length">-->
-            <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
-            <!--</tr>-->
-            <tr ng-repeat="item in $data track by $index"
-                ui-draggable="true" drag="'sf_' + item.name" class="draggable">
-                <td data-title="'SFC_FUNCTION_NAME' | translate" sortable="'name'">
-            <span style="color:black;"
-                  tooltip-html-unsafe="{{'SFC_TOOLTIP_TYPE' | translate}} {{item.type}} <br/> {{'SFC_TOOLTIP_IP' | translate}} {{item['ip-mgmt-address']}}"
-                  tooltip-placement="right">{{item.name}}</span>
-                </td>
-            </tr>
-        </table>
-        <table ng-table="tableParamsSffName" class="footable table">
-            <!--<tr ng-hide="sfs.length">-->
-            <!--<td colspan="3" class="centerAlign">{{'NO_DATA_FOUND' | translate}}</td>-->
-            <!--</tr>-->
-            <tr ng-repeat="item in $data track by $index"
-                ui-draggable="true" drag="'sff_' + item.name" class="draggable">
-                <td data-title="'SFC_FUNCTION_SFF' | translate" sortable="'name'">
-                    {{item.name}}
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <tabset class="col-md-10">
+    <tabset>
         <tab heading="{{'SFC_SERVICE_PATHS' | translate}}" select="fetchData()">
             <div style="padding-right: 0px">
 

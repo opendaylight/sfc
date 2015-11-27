@@ -25,7 +25,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
           } else {
             $defer.resolve([]);
           }
-        }
+        },
+        counts: []
       }
     );
 

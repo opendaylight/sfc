@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_3bf9c44d",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-27T00:08:11Z",
+      "side": 1,
+      "message": "It is good to move to SfcOpenflowUtils.java",
+      "revId": "2cf854eaf5059547dae22ad03c9f12b6d31f9bdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_db9510e5",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfScfProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-11-27T00:08:11Z",
+      "side": 1,
+      "message": "save comments as above",
+      "revId": "2cf854eaf5059547dae22ad03c9f12b6d31f9bdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

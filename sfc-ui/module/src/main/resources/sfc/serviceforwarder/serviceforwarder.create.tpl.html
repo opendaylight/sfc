@@ -104,9 +104,16 @@
 
         <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants" id-suffix="loc_{{$index}}"></service-locator>
 
+        <div style="text-align: right; margin-bottom: 40px" ng-init="function.defineOVSBridge = (locator['ovs_bridge'].length > 0)">
+            <span class="spanTip pull-left">
+                <input type="checkbox" ng-model="function.defineOVSBridge" id="existentSf">
+                {{ 'SFC_FUNCTION_DEFINE_OVS_BRIDGE' | translate }}
+            </span>
+        </div>
+
         <div sfc-watch-for-reinit="locator"
-             ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};">
-            <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
+             ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};" ng-if="function.defineOVSBridge">
+            <!-- <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4> -->
             <sff-bridge bridge="locator['ovs-bridge']" id-suffix="loc_{{$index}}"></sff-bridge>
             <sff-options options="locator['ovs-options']" id-suffix="loc_{{$index}}"></sff-options>
         </div>
@@ -261,7 +268,7 @@
 </div>
 
 <div class="col-md-12">
-    <button-submit type="submit" form="createForm" function="submit"></button-submit>
+    <button-submit type="submit" form="createForm" function="submit" label="{{'SFC_SAVE' | translate}}"></button-submit>
     <button-cancel type="button" state="main.sfc.serviceforwarder"></button-cancel>
     <span class="error clearfix">{{ error }}</span>
 </div>

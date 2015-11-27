@@ -25,7 +25,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
           } else {
             $defer.resolve([]);
           }
-        }
+        },
+        counts: []
       }
     );
 
@@ -92,7 +93,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
               $scope.sfs;
 
             $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-          }
+          },
+          counts: []
         });
     });
 
@@ -113,7 +115,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
               $scope.sffs;
 
             $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-          }
+          },
+          counts: []
         });
     });
 

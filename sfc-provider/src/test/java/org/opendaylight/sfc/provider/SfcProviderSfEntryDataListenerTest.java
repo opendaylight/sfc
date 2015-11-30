@@ -33,7 +33,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
@@ -100,7 +99,6 @@ import org.slf4j.LoggerFactory;
 public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager {
 
     private static final SfcProviderSfEntryDataListener sfEntryDataListener = new SfcProviderSfEntryDataListener();
-    private static ListenerRegistration<DataChangeListener> sfEntryDataListenerRegistration;
 
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListenerTest.class);
 
@@ -124,7 +122,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * Creates SF object, call listeners explicitly, verify that SF Type was created,
      * cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_CreateData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
@@ -167,7 +165,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * - Call listener explicitly.
      * - Cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_RemoveData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
@@ -208,7 +206,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * - Asserts that the listener has removed the original and created a new entry
      * - Cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_UpdateSFData() throws Exception {
         String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
@@ -256,7 +254,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
 
         // Clean-up
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
-        assertTrue(SfcProviderServiceFunctionAPI.deleteServiceFunction(originalServiceFunction.getName()));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(sfEntryIID, LogicalDatastoreType.CONFIGURATION));
         Thread.sleep(500);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
 
@@ -274,7 +272,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * - Call listener explicitly.
      * - Cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_RemoveDataWithRSP() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
@@ -338,7 +336,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
      * - Call listener explicitly.
      * - Cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_UpdateSFDataWithRSP() throws Exception {
         String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
@@ -591,7 +589,8 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        assertTrue(SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build()));
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION));
+
         // executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new Object[]{sfsBuilder.build()},
         // new Class[]{ServiceFunctions.class})).get();
         Thread.sleep(1000); // Wait they are really created
@@ -653,9 +652,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         }
         ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
         serviceFunctionForwardersBuilder.setServiceFunctionForwarder(sffList);
-        assertTrue(SfcProviderServiceForwarderAPI
-            .putAllServiceFunctionForwarders(serviceFunctionForwardersBuilder.build()));
-
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SFF_IID, serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
         // Create Service Function Chain
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(new SfcName(SFC_NAME));
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();

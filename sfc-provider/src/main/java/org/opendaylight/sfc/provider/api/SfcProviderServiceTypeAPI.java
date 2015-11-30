@@ -201,53 +201,6 @@ public class SfcProviderServiceTypeAPI {
         return ret;
     }
 
-    protected boolean putAllServiceFunctionTypes(ServiceFunctionTypes sfts) {
-        boolean ret;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-        ret = SfcDataStoreAPI.writePutTransactionAPI(sftsIID, sfts, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads and returns an object with all Service Function Types
-     * present in the Data Store
-     *
-     * @return Nothing.
-     */
-    protected ServiceFunctionTypes readAllServiceFunctionTypes() {
-        ServiceFunctionTypes sfts;
-        printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-
-        sfts = SfcDataStoreAPI.readTransactionAPI(sftsIID, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-        return sfts;
-    }
-
-    /**
-     * Delete all Service Function Types from data store
-     *
-     * @return Nothing.
-     */
-    protected boolean deleteAllServiceFunctionTypes() {
-        boolean ret;
-        printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionTypes> sftsIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-
-        ret = SfcDataStoreAPI.deleteTransactionAPI(sftsIID, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
     /**
      * This method reads a Service function Type entry from a Service
      * Function.
@@ -259,7 +212,6 @@ public class SfcProviderServiceTypeAPI {
 
         printTraceStart(LOG);
 
-        boolean ret = false;
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
 
         // Build the instance identifier all the way down to the bottom child

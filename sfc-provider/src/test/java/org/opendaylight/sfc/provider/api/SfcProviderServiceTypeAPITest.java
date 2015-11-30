@@ -9,12 +9,8 @@
 package org.opendaylight.sfc.provider.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeKey;
@@ -57,7 +52,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
             .setSymmetry(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
 
-        assertTrue(sfcProviderServiceTypeAPILocal.putServiceFunctionType(serviceFunctionType));
+        assertTrue(SfcProviderServiceTypeAPI.putServiceFunctionType(serviceFunctionType));
 
         InstanceIdentifier<ServiceFunctionType> sftEntryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
             .child(ServiceFunctionType.class, serviceFunctionType.getKey())
@@ -95,77 +90,4 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(serviceFunction));
         assertNull(SfcDataStoreAPI.readTransactionAPI(sftentryIID, LogicalDatastoreType.CONFIGURATION));
     }
-
-    @Test
-    public void testPutAllServiceFunctionTypes() throws Exception {
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        SftType sftType = new SftType("firewall");
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
-            .setType(sftType)
-            .setBidirectionality(false)
-            .setNshAware(false)
-            .setRequestReclassification(false)
-            .setSymmetry(false);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-        serviceFunctionTypeList.add(serviceFunctionType);
-        serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
-        ServiceFunctionTypes serviceFunctionTypes = serviceFunctionTypesBuilder.build();
-        assertTrue(sfcProviderServiceTypeAPILocal.putAllServiceFunctionTypes(serviceFunctionTypes));
-
-        InstanceIdentifier<ServiceFunctionTypes> sftEntryIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-        ServiceFunctionTypes serviceFunctionTypesRead =
-                SfcDataStoreAPI.readTransactionAPI(sftEntryIID, LogicalDatastoreType.CONFIGURATION);
-        assertEquals(serviceFunctionTypes, serviceFunctionTypesRead);
-    }
-
-    @Test
-    public void testReadAllServiceFunctionTypes() {
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        SftType sftType = new SftType("firewall");
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
-            .setType(sftType)
-            .setBidirectionality(false)
-            .setNshAware(false)
-            .setRequestReclassification(false)
-            .setSymmetry(false);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-        serviceFunctionTypeList.add(serviceFunctionType);
-        serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
-        ServiceFunctionTypes serviceFunctionTypes = serviceFunctionTypesBuilder.build();
-        sfcProviderServiceTypeAPILocal.putAllServiceFunctionTypes(serviceFunctionTypes);
-
-        ServiceFunctionTypes outputSFTypes = sfcProviderServiceTypeAPILocal.readAllServiceFunctionTypes();
-        assertNotNull("Variable has not been set correctly.", outputSFTypes);
-        assertEquals("Types do not match.", serviceFunctionTypes, outputSFTypes);
-    }
-
-    @Test
-    public void testDeleteAllServiceFunctionTypes() {
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
-        List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
-        ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        SftType sftType = new SftType("firewall");
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
-            .setType(sftType)
-            .setBidirectionality(false)
-            .setNshAware(false)
-            .setRequestReclassification(false)
-            .setSymmetry(false);
-        ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
-        serviceFunctionTypeList.add(serviceFunctionType);
-        serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
-        ServiceFunctionTypes serviceFunctionTypes = serviceFunctionTypesBuilder.build();
-        sfcProviderServiceTypeAPILocal.putAllServiceFunctionTypes(serviceFunctionTypes);
-
-        sfcProviderServiceTypeAPILocal.deleteAllServiceFunctionTypes();
-
-        ServiceFunctionTypes outputSFTypes = sfcProviderServiceTypeAPILocal.readAllServiceFunctionTypes();
-        assertNull("Variable has not been set correctly.", outputSFTypes);
-    }
-
 }

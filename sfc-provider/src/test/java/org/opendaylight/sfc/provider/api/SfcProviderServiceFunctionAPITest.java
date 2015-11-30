@@ -10,7 +10,6 @@ package org.opendaylight.sfc.provider.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -47,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
@@ -126,39 +125,6 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     }
 
     @Test
-    public void testDeleteServiceFunction() {
-
-        SfName name = new SfName("unittest-fw-1");
-        SftType type = new SftType("firewall");
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
-        SfDataPlaneLocator sfDataPlaneLocator;
-        ServiceFunctionKey key = new ServiceFunctionKey(name);
-
-        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
-        PortNumber portNumber = new PortNumber(PORT);
-        IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(ipAddress).setPort(portNumber);
-        SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(0))).setLocatorType(ipBuilder.build());
-        sfDataPlaneLocator = locatorBuilder.build();
-        List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
-        dataPlaneLocatorList.add(sfDataPlaneLocator);
-
-        ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name)
-            .setKey(key)
-            .setType(type)
-            .setIpMgmtAddress(ipMgmtAddress)
-            .setSfDataPlaneLocator(dataPlaneLocatorList);
-
-        SfcProviderServiceFunctionAPI.putServiceFunction(sfBuilder.build());
-        assertNotNull("Must be not null", SfcProviderServiceFunctionAPI.readServiceFunction(name));
-
-        SfcProviderServiceFunctionAPI.deleteServiceFunction(name);
-        assertNull("Must be null", SfcProviderServiceFunctionAPI.readServiceFunction(name));
-    }
-
-    @Test
     public void testCreateReadServiceFunctions() throws ExecutionException, InterruptedException {
 
         final List<SfName> sfName = new ArrayList<SfName>() {
@@ -209,7 +175,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(list);
 
-        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
+        SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
         ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(new SfName(sfName.get(1)));
 
         assertNotNull("Must be not null", sf2);
@@ -324,27 +290,23 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         assertTrue("Must be true", transactionSuccessful);
 
-        // add this path to service function, a name of service path is used
-        // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(new SfpName(RSP_NAME1.getValue()));
+        RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME1, SF_NAME1, false);
+        // add this path to service function
+        boolean result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath);
 
         assertTrue("Must be true", result);
 
         // now create another path, and put object as a parameter
-        RenderedServicePath renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME2, SF_NAME2, false);
+        renderedServicePath = (RenderedServicePath) writeReturnPath(RSP_NAME2, SF_NAME2, false);
 
         // add this path to service function, an object of service path is used
         result = SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath);
 
         assertTrue("Must be true", result);
 
-        // create path object
-        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setName(new SfpName(RSP_NAME1.getValue()));
-
-        // delete both paths; first through created path object, second through path name
+        // delete both paths
         result = SfcProviderServiceFunctionAPI
-            .deleteServicePathFromServiceFunctionState(serviceFunctionPathBuilder.build());
+            .deleteServicePathFromServiceFunctionState(new SfpName(RSP_NAME1.getValue()));
 
         assertTrue("Must be true", result);
 

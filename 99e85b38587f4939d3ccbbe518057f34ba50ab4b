@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5aaae553_98bb3cc4",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2Renderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-01T09:41:33Z",
+      "side": 1,
+      "message": "If we\u0027re not going to use this variable for anything else, then we dont need to make it a class variable. Instead of this, you can do the following:\nnew SfcL2FlowProgrammerOFimpl(new SfcL2FlowWriterImpl());",
+      "range": {
+        "startLine": 45,
+        "startChar": 8,
+        "endLine": 45,
+        "endChar": 28
+      },
+      "revId": "99e85b38587f4939d3ccbbe518057f34ba50ab4b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5aaae553_78dd2014",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-01T09:41:33Z",
+      "side": 1,
+      "message": "Why are you allocating a new one, if its passed in?\nIt should be like this instead:\nthis.sfcL2FlowWriter \u003d sfcL2FlowWriter;",
+      "range": {
+        "startLine": 140,
+        "startChar": 31,
+        "endLine": 140,
+        "endChar": 54
+      },
+      "revId": "99e85b38587f4939d3ccbbe518057f34ba50ab4b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

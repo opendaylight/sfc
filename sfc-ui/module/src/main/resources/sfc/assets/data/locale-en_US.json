@@ -1,5 +1,6 @@
 {
     "SFC_SAVE": "Save",
+    "SFC_SEARCH_BY": "Search by",
     "SFC_SERVICE_NODES": "Service Nodes",
     "SFC_SERVICE_FORWARDERS": "Service Function Forwarders",
     "SFC_SERVICE_FUNCTIONS": "Service Functions",

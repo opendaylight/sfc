@@ -13,6 +13,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         sorting: {
           name: 'asc'     // initial sorting
         }
+        
       },
       {
         total: $scope.sffs.length,

@@ -11,12 +11,15 @@
         translate}}
     </button>
 
+    <script type="text/ng-template" id="customFilters/myFilt.html">
+      <input type="text" name="{{name}}" ng-disabled="$filterRow.disabled" ng-model="params.filter()[name]" class="input-filter form-control" maxlengh="3" placeholder="search by {{name}}" />
+    </script>
+
     <tabset>
       <tab heading="{{'SFC_SFF_INVENTORY' | translate}}">
-
         <table ng-table="tableParams" show-filter="true" class="footable table" style="margin-top: 0px">
             <tr ng-repeat="sff in $data track by $index" ng-model="sffs">
-                <td data-title="'SFC_FORWARDER_NAME' | translate" sortable="'name'" filter="{ 'name': 'text' }">
+                <td data-title="'SFC_FORWARDER_NAME' | translate" sortable="'name'" filter="{name: 'text'}">
                     {{sff['name']}}
                 </td>
                 <td data-title="'SFC_FORWARDER_SHORT_IP_MGMT_ADDRESS' | translate"

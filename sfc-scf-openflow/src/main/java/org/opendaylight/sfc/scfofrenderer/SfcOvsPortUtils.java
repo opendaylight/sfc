@@ -12,9 +12,11 @@ import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -27,6 +29,11 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+/*
+ * This class has some overlap function with SfcOvsUtil.java
+ * Todo: will move all functions to SfcOvsUtil.java
+ */
 
 public class SfcOvsPortUtils {
 
@@ -41,13 +48,11 @@ public class SfcOvsPortUtils {
         return "openflow:" + String.valueOf(address);
     }
 
-    public static NodeConnectorId getOfPortByName(String nodeName, String portName) {
+    public static Long getOfPortByName(String nodeName, String portName) {
 
         if (nodeName == null || portName == null) {
             return null;
         }
-
-        LOG.debug("\ngetOfPortByName node: {} port: {}", nodeName, portName);
 
         InstanceIdentifier<Topology> topoIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
                 new TopologyKey(new TopologyId("ovsdb:1")));
@@ -78,36 +83,34 @@ public class SfcOvsPortUtils {
                         continue;
                     }
                     if (otp.getName().equals(portName)) {
-                        sb.append(String.valueOf(otp.getOfport()));
-                        return new NodeConnectorId(sb.toString());
+                        return otp.getOfport();
                     }
                 }
             }
         }
-        sb.append("IN_PORT");
-        return new NodeConnectorId(sb.toString());
+        return null;
     }
 
-    public static int getVxlanOfPort(String nodeName) {
+    public static Long getVxlanOfPort(String nodeName) {
         if (nodeName == null) {
-            return 0;
+            return null;
         }
 
-        LOG.debug("\ngetVxlanOfPort node: {}", nodeName);
+        LOG.debug("getVxlanOfPort node: {}\n", nodeName);
 
         InstanceIdentifier<Topology> topoIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
                 new TopologyKey(new TopologyId("ovsdb:1")));
         Topology topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
 
         if (topo == null) {
-            LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-            return 0;
+            LOG.warn("getVxlanOfPort doesn't find vxlan port in node: {}\n", nodeName);
+            return null;
         }
 
         List<Node> nodes = topo.getNode();
         if (nodes == null) {
-            LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-            return 0;
+            LOG.warn("getVxlanOfPort doesn't find vxlan port in node: {}\n", nodeName);
+            return null;
         }
 
         for (Node node : nodes) {
@@ -126,18 +129,20 @@ public class SfcOvsPortUtils {
                         continue;
                     }
                     if (otp.getInterfaceType() == InterfaceTypeVxlan.class) {
-                        return otp.getOfport().intValue();
+                        return otp.getOfport();
                     }
                 }
             }
         }
-        LOG.warn("\ngetVxlanOfPort doesn't find vxlan port in node: {}", nodeName);
-        return 0;
+        LOG.warn("getVxlanOfPort doesn't find vxlan port in node: {}\n", nodeName);
+        return null;
     }
 
-    public static String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
+    public static String getSffOpenFlowNodeName(ServiceFunctionForwarder sff) {
+
+        sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
         if (sff == null) {
-            return null;
+           return null;
         }
 
         // Check if its an service-function-forwarder-ovs augmentation
@@ -149,7 +154,17 @@ public class SfcOvsPortUtils {
             }
         }
 
-        // it its not an sff-ovs, then just return the ServiceNode
-        return sff.getServiceNode().getValue();
+        return null;
     }
+
+    public static Ip getSffIpDataLocator(ServiceFunctionForwarder sff, java.lang.Class<? extends org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType> type) {
+        List<SffDataPlaneLocator> dplList = sff.getSffDataPlaneLocator();
+        for (SffDataPlaneLocator dpl: dplList) {
+             if (dpl.getDataPlaneLocator() != null &&
+                 dpl.getDataPlaneLocator().getTransport() == type) {
+                 return (Ip) dpl.getDataPlaneLocator().getLocatorType();
+             }
+        }
+        return null;
+   }
 }

@@ -127,6 +127,7 @@ public class SfcOvsToSffMappingAPITest {
         ovsdbTerminationPointAugmentationBuilder = new OvsdbTerminationPointAugmentationBuilder();
 
         // empty list
+        //TODO remove reflection for "buildSffDataPlaneLocatorList"
         sffDataPlaneLocatorList = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "buildSffDataPlaneLocatorList",
                 ovsdbBridgeAugmentationBuilder.build(), null);
 
@@ -140,6 +141,7 @@ public class SfcOvsToSffMappingAPITest {
                 ovsdbTerminationPointAugmentationBuilder.build());
         terminationPointList.add(terminationPointBuilder.build());
 
+        //TODO remove reflection for "buildSffDataPlaneLocatorList"
         sffDataPlaneLocatorList = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "buildSffDataPlaneLocatorList",
                 ovsdbBridgeAugmentationBuilder.build(), terminationPointList);
 
@@ -164,6 +166,8 @@ public class SfcOvsToSffMappingAPITest {
         optionsBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP).setValue(OVSDB_OPTION_REMOTE_IP);
         options.add(optionsBuilder.build());
         ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class).setOptions(options);
+
+        //TODO remove reflection for "buildDataPlaneLocatorFromTerminationPoint"
         dataPlaneLocator = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class,
                 "buildDataPlaneLocatorFromTerminationPoint", ovsdbTerminationPointAugmentationBuilder.build());
 
@@ -172,6 +176,8 @@ public class SfcOvsToSffMappingAPITest {
 
         ovsdbTerminationPointAugmentationBuilder = new OvsdbTerminationPointAugmentationBuilder()
             .setInterfaceType(InterfaceTypePatch.class).setOptions(options);
+
+        //TODO remove reflection for "buildDataPlaneLocatorFromTerminationPoint"
         dataPlaneLocator = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class,
                 "buildDataPlaneLocatorFromTerminationPoint", ovsdbTerminationPointAugmentationBuilder.build());
 
@@ -212,6 +218,7 @@ public class SfcOvsToSffMappingAPITest {
         ovsdbTerminationPointAugmentationBuilder = new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTerminationPointAugmentationBuilder.setOptions(options);
 
+        //TODO remove reflection for "buildOvsOptionsFromTerminationPoint"
         ovsOptions = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "buildOvsOptionsFromTerminationPoint",
                 ovsdbTerminationPointAugmentationBuilder.build());
 
@@ -247,6 +254,7 @@ public class SfcOvsToSffMappingAPITest {
         ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
         ovsdbBridgeAugmentationBuilder.setBridgeOtherConfigs(bridgeOtherConfigsList);
 
+        //TODO remove reflection for "getOvsBridgeLocalIp"
         ipAddress = Whitebox.invokeMethod(SfcOvsToSffMappingAPI.class, "getOvsBridgeLocalIp",
                 ovsdbBridgeAugmentationBuilder.build());
 

@@ -5,8 +5,8 @@
         </label>
 
         <div class="col-lg-6">
-            <input type="text" class="form-control input-sm" ng-model="matches['source-ipv4-address']"
-                   id="acl_source_ipv4_add{{idSuffix}}" name="source-ipv4-address"
+            <input type="text" class="form-control input-sm" ng-model="matches['source-ipv4-network']"
+                   id="acl_source_ipv4_add{{idSuffix}}" name="source-ipv4-network"
                    placeholder="{{'SFC_ACL_CREATE_SOURCE_IPV4_ADDRESS' | translate}}"
                    ip-address="{version:4, prefix:true}">
         </div>
@@ -18,8 +18,8 @@
         </label>
 
         <div class="col-lg-6">
-            <input type="text" class="form-control input-sm" ng-model="matches['destination-ipv4-address']"
-                   id="acl_dest_ipv4_add{{idSuffix}}" name="destination-ipv4-address"
+            <input type="text" class="form-control input-sm" ng-model="matches['destination-ipv4-network']"
+                   id="acl_dest_ipv4_add{{idSuffix}}" name="destination-ipv4-network"
                    placeholder="{{'SFC_ACL_CREATE_DESTINATION_IPV4_ADDRESS' | translate}}"
                    ip-address="{version:4, prefix:true}">
         </div>

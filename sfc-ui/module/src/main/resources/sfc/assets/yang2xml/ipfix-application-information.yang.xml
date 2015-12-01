@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ipfix-application-information"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ipfix-app-info="urn:ietf:params:xml:ns:yang:ipfix-application-information">
+  <yang-version value="1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ipfix-application-information"/>
+  <prefix value="ipfix-app-info"/>
+  <organization>
+    <text>Qosmos</text>
+  </organization>
+  <contact>
+    <text>Christophe Fontaine &lt;christophe.fontaine@qosmos.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions to
+manage IPfix Application Identification Information.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2015-04-10">
+    <description>
+      <text>Initial version of IPFIX fields used by access-lists</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-appid</text>
+    </reference>
+  </revision>
+  <typedef name="application-id-ref">
+    <type name="leafref">
+      <path value="/ipfix-app-info:application-id-dictionary/ipfix-app-info:application-id/ipfix-app-info:applicationName"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference
+an application-id</text>
+    </description>
+  </typedef>
+  <typedef name="class-id-name">
+    <type name="enumeration">
+      <enum name="IANA-L3">
+        <value value="1"/>
+        <description>
+          <text>IANA-L3</text>
+        </description>
+      </enum>
+      <enum name="PANA-L3">
+        <value value="2"/>
+        <description>
+          <text>PANA-L3</text>
+        </description>
+      </enum>
+      <enum name="IANA-L4">
+        <value value="3"/>
+        <description>
+          <text>IANA-L4</text>
+        </description>
+      </enum>
+      <enum name="PANA-L4">
+        <value value="4"/>
+        <description>
+          <text>PANA-L4</text>
+        </description>
+      </enum>
+      <enum name="USER-Defined">
+        <value value="6"/>
+        <description>
+          <text>USER-Defined</text>
+        </description>
+      </enum>
+      <enum name="PANA-L2">
+        <value value="12"/>
+        <description>
+          <text>PANA-L2</text>
+        </description>
+      </enum>
+      <enum name="PANA-L7">
+        <value value="13"/>
+        <description>
+          <text>PANA-L7</text>
+        </description>
+      </enum>
+      <enum name="ETHERTYPE">
+        <value value="18"/>
+        <description>
+          <text>ETHERTYPE</text>
+        </description>
+      </enum>
+      <enum name="LLC">
+        <value value="19"/>
+        <description>
+          <text>LLC</text>
+        </description>
+      </enum>
+      <enum name="PANA-L7-PEN">
+        <value value="20"/>
+        <description>
+          <text>PANA-L7-PEN</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definitions for Classification engine ID names.</text>
+    </description>
+  </typedef>
+  <container name="class-id-dictionary">
+    <description>
+      <text>Dictionary for classification ids</text>
+    </description>
+    <list name="class-id">
+      <key value="name"/>
+      <unique tag="id"/>
+      <leaf name="id">
+        <type name="uint8"/>
+        <description>
+          <text>Classification identifier</text>
+        </description>
+      </leaf>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>classification Engine name</text>
+        </description>
+      </leaf>
+      <leaf name="description">
+        <type name="string"/>
+        <description>
+          <text>Description of the class-id</text>
+        </description>
+      </leaf>
+      <description>
+        <text>A list of all classification ids</text>
+      </description>
+    </list>
+  </container>
+  <container name="application-id-dictionary">
+    <description>
+      <text>Dictionary for application ids</text>
+    </description>
+    <list name="application-id">
+      <key value="applicationName"/>
+      <unique tag="class-id pen selector-id"/>
+      <leaf name="class-id">
+        <type name="leafref">
+          <path value="/ipfix-app-info:class-id-dictionary/ipfix-app-info:class-id/ipfix-app-info:id"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>A unique identifier for the engine that
+determined the Selector ID.  Thus, the
+Classification Engine ID defines the context for
+the Selector ID.</text>
+        </description>
+      </leaf>
+      <leaf name="pen">
+        <type name="uint32"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Private Entreprise Number, only relevant when
+used with appropriate class-id.
+Set to 0 when not used.</text>
+        </description>
+      </leaf>
+      <leaf name="selector-id">
+        <type name="uint32">
+          <range value="0..16777216"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Selector identifier</text>
+        </description>
+      </leaf>
+      <leaf name="applicationName">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The name of the application</text>
+        </description>
+      </leaf>
+      <leaf name="applicationDescription">
+        <type name="string"/>
+        <description>
+          <text>The description of the application</text>
+        </description>
+      </leaf>
+      <leaf name="applicationCategoryName">
+        <type name="string"/>
+        <description>
+          <text>An attribute that provides a first-
+level categorization for each
+Application ID.  Examples include
+browsing, email, file-sharing,
+gaming, instant messaging, voice-
+and-video, etc.
+The category attribute is encoded by
+the applicationCategoryName
+Information Element</text>
+        </description>
+      </leaf>
+      <leaf name="applicationSubCategoryName">
+        <type name="string"/>
+        <description>
+          <text>An attribute that provides a second-
+level categorization for each
+Application ID.  Examples include
+backup-systems, client-server,
+database, routing-protocol, etc.
+The sub-category attribute is
+encoded by the applicationSubCategoryName
+Information Element</text>
+        </description>
+      </leaf>
+      <leaf name="applicationGroupName">
+        <type name="string"/>
+        <description>
+          <text>An attribute that groups multiple
+Application IDs that belong to the
+same networking application.  For
+example, the ftp-group contains
+ftp-data (port 20), ftp (port 20),
+ni-ftp (port 47), sftp (port 115),
+bftp (port 152), ftp-agent(port
+574), ftps-data (port 989).  The
+application-group attribute is
+encoded by the applicationGroupName
+Information Element</text>
+        </description>
+      </leaf>
+      <description>
+        <text>A list of all applications</text>
+      </description>
+    </list>
+  </container>
+</module>

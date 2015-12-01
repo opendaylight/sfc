@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-path"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sfp="urn:cisco:params:xml:ns:yang:sfc-sfp"
+        xmlns:sfc-md="urn:cisco:params:xml:ns:yang:sfc-md"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sfp"/>
+  <prefix value="sfc-sfp"/>
+  <import module="service-function-path-metadata">
+    <prefix value="sfc-md"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="sfc-common">
+    <prefix value="sfc-common"/>
+    <revision-date date="2015-10-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function chains.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Changes based on Opendaylight Testing and IETF SFC ml.</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <container name="service-function-paths">
+    <description>
+      <text>The SFP provides a level of indirection
+between the fully abstract notion of service chain as an
+abstract sequence of functions to be delivered, and the
+fully specified notion of exactly what SFF/SFs the packet
+will visit when it actually traverses the network.  By
+allowing the control components to specify the use of this
+level of indirection, the deployment may choose the degree
+of SFF/SF selection authority that is delegated to the
+network</text>
+    </description>
+    <list name="service-function-path">
+      <key value="name"/>
+      <description>
+        <text>A list that holds configuration data for all SFPs in the
+domain</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sfp-name"/>
+        <description>
+          <text>The name of this service function path</text>
+        </description>
+      </leaf>
+      <leaf name="transport-type">
+        <type name="sfc-sl:sl-transport-type-def"/>
+        <default value="sfc-sl:vxlan-gpe"/>
+        <description>
+          <text>Transport type from service-locator.yang.</text>
+        </description>
+      </leaf>
+      <leaf name="symmetric">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>If the chain is symmetric we will create two service
+paths, one ingress and another egress. Packets traverse
+the egress service path in the reverse order of the
+ingress path</text>
+        </description>
+      </leaf>
+      <leaf name="classifier">
+        <type name="string"/>
+        <description>
+          <text>The classifier responsible for directingpackets to this service path</text>
+        </description>
+      </leaf>
+      <leaf name="symmetric-classifier">
+        <type name="string"/>
+        <description>
+          <text>The classifier responsible for directingpackets to this service path</text>
+        </description>
+      </leaf>
+      <leaf name="context-metadata">
+        <type name="sfc-md:context-metadata-ref"/>
+        <description>
+          <text>The name of the associated context metadata</text>
+        </description>
+      </leaf>
+      <leaf name="variable-metadata">
+        <type name="sfc-md:variable-metadata-ref"/>
+        <description>
+          <text>The name of the associated variable metadata</text>
+        </description>
+      </leaf>
+      <leaf name="tenant-id">
+        <type name="string"/>
+        <description>
+          <text>This SFP was created for a specific tenant-id</text>
+        </description>
+      </leaf>
+      <list name="service-path-hop">
+        <key value="hop-number"/>
+        <leaf name="hop-number">
+          <type name="uint8"/>
+          <description>
+            <text>A Monotonically increasing number</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-name">
+          <type name="sfc-common:sf-name"/>
+          <description>
+            <text>Service Function name</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-group-name">
+          <type name="string"/>
+          <description>
+            <text>Service Function group name</text>
+          </description>
+        </leaf>
+        <leaf name="service-function-forwarder">
+          <type name="sfc-common:sff-name"/>
+          <description>
+            <text>Service Function Forwarder name</text>
+          </description>
+        </leaf>
+        <leaf name="service-index">
+          <type name="uint8"/>
+          <description>
+            <text>Provides location within the service path.
+Service index MUST be decremented by service functions
+or proxy nodes after performing required services.  MAY
+be used in conjunction with service path for path
+selection.  Service Index is also valuable when
+troubleshooting/reporting service paths.  In addition to
+location within a path, SI can be used for loop
+detection.</text>
+          </description>
+        </leaf>
+        <ordered-by value="user"/>
+        <description>
+          <text>A list of service functions that compose the
+service path</text>
+        </description>
+      </list>
+      <leaf name="service-chain-name">
+        <type name="sfc-common:sfc-name"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The Service Function Chain used as blueprint for this
+path</text>
+        </description>
+      </leaf>
+      <leaf name="starting-index">
+        <type name="uint8"/>
+        <description>
+          <text>Starting service index</text>
+        </description>
+      </leaf>
+      <leaf name="path-id">
+        <type name="uint32">
+          <range value="0..16777216"/>
+        </type>
+        <description>
+          <text>Identifies a service path.
+Participating nodes MUST use this identifier for path
+selection.  An administrator can use the service path
+value for reporting and troubleshooting packets along
+a specific path.</text>
+        </description>
+      </leaf>
+    </list>
+  </container>
+  <container name="service-function-paths-state">
+    <config value="false"/>
+    <description>
+      <text>This container hold operational state for all service
+function paths</text>
+    </description>
+    <list name="service-function-path-state">
+      <key value="name"/>
+      <description>
+        <text>This list holds operational data for all service function
+paths in the domain</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sfp-name"/>
+        <description>
+          <text>The name of the service function path</text>
+        </description>
+      </leaf>
+      <list name="sfp-rendered-service-path">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="sfc-common:rsp-name"/>
+          <description>
+            <text>The name of the Rendered Service Path</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A list of all rendered service paths instantiated
+from this service path</text>
+        </description>
+      </list>
+    </list>
+  </container>
+</module>

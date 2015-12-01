@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-type"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sft"/>
+  <prefix value="sfc-sft"/>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+  </import>
+  <import module="sfc-common">
+    <prefix value="sfc-common"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function types.
+
+It follows closely the constructs of
+http://tools.ietf.org/html/draft-ietf-netmod-interfaces-cfg-12
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Changes based on Opendaylight Testing.</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <identity name="service-function-type-identity">
+    <description>
+      <text>Base identity from which specific service function
+types are derived.</text>
+    </description>
+  </identity>
+  <identity name="firewall">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Firewall</text>
+    </description>
+  </identity>
+  <identity name="dpi">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Deep Packet Inspection</text>
+    </description>
+  </identity>
+  <identity name="napt44">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Network Address and Port Translation 44</text>
+    </description>
+  </identity>
+  <identity name="qos">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Quality of Service</text>
+    </description>
+  </identity>
+  <identity name="ids">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Intrusion Detection System</text>
+    </description>
+  </identity>
+  <identity name="http-header-enrichment">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>HTTP services that add HTTP headers for charging and adding
+subscriber metadata</text>
+    </description>
+  </identity>
+  <identity name="tcp-proxy">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>A TCP Proxy sets up a connection with the
+client and another one with the server.</text>
+    </description>
+  </identity>
+  <identity name="Cisco-vASA">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Cisco vASA</text>
+    </description>
+  </identity>
+  <identity name="Cisco-vNBAR">
+    <base name="service-function-type-identity"/>
+    <description>
+      <text>Cisco vNBAR</text>
+    </description>
+  </identity>
+  <typedef name="service-function-type">
+    <type name="identityref">
+      <base name="service-function-type-identity"/>
+    </type>
+    <description>
+      <text>This type is used to reference all
+registered service function types</text>
+    </description>
+  </typedef>
+  <grouping name="service-function-type-definition">
+    <description>
+      <text>List of parameters to define an abstract type of Service Function</text>
+    </description>
+    <leaf name="type">
+      <type name="sfc-common:sft-type"/>
+      <description>
+        <text>Service Function type names such as firewall, dpi, tcp-proxy, etc</text>
+      </description>
+    </leaf>
+    <leaf name="symmetry">
+      <type name="boolean"/>
+      <description>
+        <text>SF is involved in a symmetric service path</text>
+      </description>
+    </leaf>
+    <leaf name="bidirectionality">
+      <type name="boolean"/>
+      <description>
+        <text>SF handles uplink and downlink traffic</text>
+      </description>
+    </leaf>
+    <leaf name="nsh-aware">
+      <type name="boolean"/>
+      <description>
+        <text>Service Function can handle Network Service Headers</text>
+      </description>
+    </leaf>
+    <leaf name="request-reclassification">
+      <type name="boolean"/>
+      <description>
+        <text>This leaf determines whether SF can request
+reclassification by the SFF</text>
+      </description>
+    </leaf>
+    <list name="supported-dataplanelocator-types">
+      <description>
+        <text>Data Plane Locator types from the Service Function</text>
+      </description>
+      <key value="dataplanelocator-type"/>
+      <leaf name="dataplanelocator-type">
+        <type name="sfc-sl:sl-transport-type-def"/>
+      </leaf>
+    </list>
+  </grouping>
+  <container name="service-function-types">
+    <description>
+      <text>A list of Service function Types. For each type we keep
+a list of Service Functions</text>
+    </description>
+    <list name="service-function-type">
+      <key value="type"/>
+      <leaf name="type">
+        <type name="service-function-type"/>
+        <description>
+          <text>The service function type</text>
+        </description>
+      </leaf>
+      <list name="sft-service-function-name">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>The name of the service function.</text>
+          </description>
+        </leaf>
+        <description>
+          <text>The list of all service functions of a specific type</text>
+        </description>
+      </list>
+      <description>
+        <text>A list of all service types. Each service-type entry holds
+a list of all service functions of the type</text>
+      </description>
+    </list>
+  </container>
+</module>

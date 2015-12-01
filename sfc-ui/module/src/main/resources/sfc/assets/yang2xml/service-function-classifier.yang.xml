@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-classifier"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-scf="urn:cisco:params:xml:ns:yang:sfc-scf">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-scf"/>
+  <prefix value="sfc-scf"/>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service classification functions.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Revised based on Opendaylight Project feedback</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <grouping name="attachment-point">
+    <description>
+      <text>Reusable group of all possible attachment point types</text>
+    </description>
+    <choice name="attachment-point-type">
+      <description>
+        <text>Provides a choice between access list
+attachment point types</text>
+      </description>
+      <case name="bridge">
+        <leaf name="bridge">
+          <type name="string"/>
+          <description>
+            <text>OVS bridge as an attachment point</text>
+          </description>
+        </leaf>
+      </case>
+      <case name="interface">
+        <leaf name="interface">
+          <type name="string"/>
+          <description>
+            <text>interface name as attachment point</text>
+          </description>
+        </leaf>
+      </case>
+    </choice>
+  </grouping>
+  <container name="service-function-classifiers">
+    <description>
+      <text>Classifier container which represents the ACL being applied,
+attachment point and the chain associated with that ACL.</text>
+    </description>
+    <list name="service-function-classifier">
+      <key value="name"/>
+      <description>
+        <text>A list that holds all service function classifiers</text>
+      </description>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>Classification function name</text>
+        </description>
+      </leaf>
+      <leaf name="access-list">
+        <type name="string"/>
+        <description>
+          <text>The ACL name associated with this classifier</text>
+        </description>
+      </leaf>
+      <list name="scl-service-function-forwarder">
+        <key value="name"/>
+        <description>
+          <text>The classifier will be attached to these SFFs</text>
+        </description>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>The classifier will be attached to this SFF</text>
+          </description>
+        </leaf>
+        <uses name="attachment-point">
+          <description>
+            <text>Classifier attachment point</text>
+          </description>
+        </uses>
+      </list>
+    </list>
+  </container>
+</module>

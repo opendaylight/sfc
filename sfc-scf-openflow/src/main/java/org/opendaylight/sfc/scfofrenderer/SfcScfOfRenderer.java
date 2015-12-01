@@ -24,12 +24,12 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 public class SfcScfOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfRenderer.class);
-    SfcScfOfScfDataListener sfcScfDataListener = null;
+    SfcScfOfDataListener sfcScfDataListener = null;
 
     public SfcScfOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService) {
         LOG.info("SfcScfOfRenderer starting the SfcScfOfRenderer plugin...");
 
-        this.sfcScfDataListener = new SfcScfOfScfDataListener(dataBroker);
+        this.sfcScfDataListener = new SfcScfOfDataListener(dataBroker, new SfcScfOfProcessor());
 
         LOG.info("SfcScfOfRenderer successfully started the SfcScfOfRenderer plugin");
     }

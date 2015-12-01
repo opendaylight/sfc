@@ -182,7 +182,7 @@ public class SfcServicePathIdTest  extends AbstractSfcRendererServicePathAPITest
            assertEquals(SfcServicePathId.check_and_allocate_pathid(), pathId);
        }
        // Free the previously allocated pathIds
-       for (long pathId = firstPathId; pathId < firstPathId+numPathIds+1; ++pathId) {
+       for (long pathId = firstPathId; pathId < firstPathId+numPathIds; ++pathId) {
            assertTrue(SfcServicePathId.free_pathid(pathId));
        }
    }

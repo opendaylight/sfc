@@ -608,5 +608,9 @@ define([
     });
   });
 
+  angular.module('ngTable').run(['$templateCache', '$filter', function ($templateCache, $filter) {
+    $templateCache.put('ng-table/filters/text.html', '<input type="text" name="{{column.filterName}}" ng-model="params.filter()[name]" ng-if="filter==\'text\'" class="input-filter form-control" placeholder="{{\'SFC_SEARCH_BY\' | translate}} {{name}}"/>');
+  }]);
+
   return sfc;
 });

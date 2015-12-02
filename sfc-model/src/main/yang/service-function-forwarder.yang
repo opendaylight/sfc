@@ -228,9 +228,12 @@ module service-function-forwarder {
 
   container service-function-forwarders-state {
     config false;
+    status deprecated;
     description
       "This container hold operational state for all service
-       function forwarders";
+       function forwarders. This container will be removed in
+       Boron when the config/oper md-sal will be used to
+       represent state.";
     list service-function-forwarder-state {
       key "name";
       description

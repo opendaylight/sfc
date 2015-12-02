@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-description-monitor"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sf-desc-mon="urn.intel.params:xml:ns:sf-desc-mon"
+        xmlns:sfc-sf="urn:cisco:params:xml:ns:yang:sfc-sf"
+        xmlns:sf-desc-mon-rpt="urn.intel.params:xml:ns:sf-desc-mon-rpt">
+  <namespace uri="urn.intel.params:xml:ns:sf-desc-mon"/>
+  <prefix value="sf-desc-mon"/>
+  <import module="service-function">
+    <prefix value="sfc-sf"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-function-description-monitor-report">
+    <prefix value="sf-desc-mon-rpt"/>
+    <revision-date date="2014-11-05"/>
+  </import>
+  <organization>
+    <text>Intel Inc.</text>
+  </organization>
+  <contact>
+    <text>honglix.chen@intel.com</text>
+  </contact>
+  <description>
+    <text>Create description and monitoring information of Service Function extensions to service-function model</text>
+  </description>
+  <revision date="2014-12-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <augment target-node="/sfc-sf:service-functions-state/sfc-sf:service-function-state">
+    <description>
+      <text>Service function description and monitoring information</text>
+    </description>
+    <container name="sfc-sf-desc-mon">
+      <container name="description-info">
+        <uses name="sf-desc-mon-rpt:SF-description"/>
+      </container>
+      <container name="monitoring-info">
+        <uses name="sf-desc-mon-rpt:SF-monitoring-info"/>
+      </container>
+    </container>
+  </augment>
+</module>

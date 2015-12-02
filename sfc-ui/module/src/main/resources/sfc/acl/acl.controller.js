@@ -41,8 +41,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       SfcAclSvc.getArray(function (data) {
         // expand acl group into rows
         _.each(data, function (acl) {
-          if (!_.isEmpty(acl['access-list-entries'])) {
-            _.each(acl['access-list-entries'], function (entry) {
+          if (!_.isEmpty(acl['access-list-entries']['ace'])) {
+            _.each(acl['access-list-entries']['ace'], function (entry) {
               entry['acl-name'] = acl['acl-name'];
               $scope.acls.push(entry);
               thisCtrl.stringifyComposedProperties(entry);
@@ -108,7 +108,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('sfcAclCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcAclHelper, SfcAclSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc, SfcIpfixClassIdSvc, SfcIpfixAppIdSvc, SfcIpFixHelper) {
 
-    $scope.data = {'access-list-entries': []}; // initial data
+    $scope.data = {'access-list-entries': {'ace': []}}; // initial data
 
     SfcContextMetadataSvc.getArray(function (data) {
       $scope.contextMetadata = data;
@@ -131,7 +131,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         $scope.data = item;
       });
     } else {
-      $scope.data['access-list-entries'].push({});
+      $scope.data['access-list-entries']['ace'].push({});
     }
 
     Array.prototype.move = function(from, to) {
@@ -146,7 +146,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         $scope.oldIndex = ui.item.index();
       },
       update: function (e, ui) {
-        $scope.data['access-list-entries'].move($scope.oldIndex, ui.item.index());
+        $scope.data['access-list-entries']['ace'].move($scope.oldIndex, ui.item.index());
       }
     };
 

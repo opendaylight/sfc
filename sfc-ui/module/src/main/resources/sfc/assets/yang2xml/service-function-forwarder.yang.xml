@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-forwarder"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sff="urn:cisco:params:xml:ns:yang:sfc-sff"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-ss="urn:cisco:params:xml:ns:yang:sfc-ss"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sff"/>
+  <prefix value="sfc-sff"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-function-type">
+    <prefix value="sfc-sft"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-statistics">
+    <prefix value="sfc-ss"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="sfc-common">
+    <prefix value="sfc-common"/>
+    <revision-date date="2015-10-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function forwarders.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Revision based on Opendaylight project feedback</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <identity name="failmode-type-identity">
+    <description>
+      <text>Base identity from which specific failmode
+types are derived. Fail mode specifies the behavior
+when the interface does not have connectivity to the
+service node.</text>
+    </description>
+  </identity>
+  <typedef name="failmode-type">
+    <type name="identityref">
+      <base name="failmode-type-identity"/>
+    </type>
+    <description>
+      <text>This type is used to reference all
+registered failmode types</text>
+    </description>
+  </typedef>
+  <identity name="close">
+    <base name="failmode-type-identity"/>
+    <description>
+      <text>When service-function can not reach service
+function, packets will be dropped</text>
+    </description>
+  </identity>
+  <identity name="open">
+    <base name="failmode-type-identity"/>
+    <description>
+      <text>When service-function can not reach service
+function, packets will be forwarded</text>
+    </description>
+  </identity>
+  <container name="service-function-forwarders">
+    <description>
+      <text>A service function forwarder is
+responsible for delivering traffic received from the SFC
+network forwarder to one or more connected service
+functions via information carried in the SFC encapsulation.
+</text>
+    </description>
+    <list name="service-function-forwarder">
+      <key value="name"/>
+      <description>
+        <text>A list that holds configuration of all SFFs in the domain</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sff-name"/>
+        <description>
+          <text>The unique name of this service function forwarder, such
+as SFF1</text>
+        </description>
+      </leaf>
+      <leaf name="service-node">
+        <type name="sfc-common:sn-name"/>
+        <description>
+          <text>The service node that hosts this SFF</text>
+        </description>
+      </leaf>
+      <leaf name="ip-mgmt-address">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>The IP and port used to configure this
+service-function-forwarder</text>
+        </description>
+      </leaf>
+      <leaf name="rest-uri">
+        <type name="inet:uri"/>
+        <description>
+          <text>URI of REST based management</text>
+        </description>
+      </leaf>
+      <list name="sff-data-plane-locator">
+        <key value="name"/>
+        <description>
+          <text>A list of all data-plane-locators of this SFF.</text>
+        </description>
+        <leaf name="name">
+          <type name="sfc-common:sff-data-plane-locator-name"/>
+          <description>
+            <text>A unique name that represents this
+data-plane-locator</text>
+          </description>
+        </leaf>
+        <container name="data-plane-locator">
+          <description>
+            <text>This container holds configuration for the overlay data
+plane locator used by this SFF. This could be VXLAN,
+GRE, etc</text>
+          </description>
+          <uses name="sfc-sl:data-plane-locator"/>
+        </container>
+      </list>
+      <list name="service-function-dictionary">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="sfc-common:sf-name"/>
+          <description>
+            <text>The name of the service function.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="sfc-sft:service-function-type"/>
+          <description>
+            <text>Service Function Type from service-function-type yang
+model</text>
+          </description>
+        </leaf>
+        <container name="sff-sf-data-plane-locator">
+          <description>
+            <text>The SFF uses this data plane locator when sending
+packets to the associated service function</text>
+          </description>
+          <uses name="sfc-sl:data-plane-locator"/>
+        </container>
+        <list name="sff-interfaces">
+          <key value="sff-interface"/>
+          <leaf name="sff-interface">
+            <type name="string"/>
+            <description>
+              <text>An individual interface on the SFF connected to the
+SF</text>
+            </description>
+          </leaf>
+          <description>
+            <text>A list of interfaces on the SFF which are connected to
+this SF, usually one 1 or 2 elements</text>
+          </description>
+        </list>
+        <leaf name="failmode">
+          <type name="failmode-type"/>
+          <description>
+            <text>This leaf defines what should the SFF do if it can not
+send packets to the SF</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A list of all Service Functions attached to this SFF.</text>
+        </description>
+      </list>
+      <list name="connected-sff-dictionary">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="sfc-common:sff-name"/>
+          <description>
+            <text>The name of the SFF connected to this SFF</text>
+          </description>
+        </leaf>
+        <container name="sff-sff-data-plane-locator">
+          <description>
+            <text>The SFF uses this data plane locator when sending
+packets to the associated SFF</text>
+          </description>
+          <uses name="sfc-sl:data-plane-locator"/>
+        </container>
+        <list name="sff-interfaces">
+          <key value="sff-interface"/>
+          <leaf name="sff-interface">
+            <type name="string"/>
+            <description>
+              <text>An individual SFF interface connected to this SFF</text>
+            </description>
+          </leaf>
+          <description>
+            <text>A list of SFF interfaces connected to this SFF</text>
+          </description>
+        </list>
+        <leaf name="failmode">
+          <type name="failmode-type"/>
+          <description>
+            <text>This leaf defines what the SFF should do if it can not
+send packets to a connected SFF</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A list of all Service Function Forwarders connected to
+this SFF</text>
+        </description>
+      </list>
+    </list>
+  </container>
+  <container name="service-function-forwarders-state">
+    <config value="false"/>
+    <description>
+      <text>This container hold operational state for all service
+function forwarders</text>
+    </description>
+    <list name="service-function-forwarder-state">
+      <key value="name"/>
+      <description>
+        <text>This list holds operational data for all service functions
+forwarders in the domain</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sff-name"/>
+        <description>
+          <text>the name of the service function forwarder</text>
+        </description>
+      </leaf>
+      <uses name="sfc-ss:service-statistics-group">
+        <description>
+          <text>Global Service Function Forwarder statistics</text>
+        </description>
+      </uses>
+      <list name="sff-service-path">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="sfc-common:sfp-name"/>
+          <description>
+            <text>The name of the Service Path</text>
+          </description>
+        </leaf>
+        <uses name="sfc-ss:service-statistics-group"/>
+        <description>
+          <text>A list of all service function paths that use this
+service function forwarder</text>
+        </description>
+      </list>
+    </list>
+  </container>
+</module>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-path-metadata"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-md="urn:cisco:params:xml:ns:yang:sfc-md">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-md"/>
+  <prefix value="sfc-md"/>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Paul Quinn &lt;paulq@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions metadata
+ used in a service function path between participating nodes</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Initial Version</text>
+    </description>
+    <reference>
+      <text>RFC XXXX: Service Path Metadata</text>
+    </reference>
+  </revision>
+  <typedef name="context-metadata-ref">
+    <type name="leafref">
+      <path value="/sfc-md:service-function-metadata/sfc-md:context-metadata/sfc-md:name"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference
+configured context metadata headers.</text>
+    </description>
+  </typedef>
+  <typedef name="variable-metadata-ref">
+    <type name="leafref">
+      <path value="/sfc-md:service-function-metadata/sfc-md:variable-metadata/sfc-md:name"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference
+configured variable metadata headers.</text>
+    </description>
+  </typedef>
+  <container name="service-function-metadata">
+    <description>
+      <text>NSH provides a mechanism to carry shared metadata between
+network  devices and service function, and between service
+functions. The semantics of the shared metadata is
+communicated via a control plane to participating
+nodes. Examples of metadata include classification
+information used for policy enforcement and network context
+for forwarding post service delivery.</text>
+    </description>
+    <list name="context-metadata">
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>A unique name for this set of context headers</text>
+        </description>
+      </leaf>
+      <leaf name="context-header1">
+        <type name="uint32"/>
+        <description>
+          <text>network platform context, bytes 9-12</text>
+        </description>
+      </leaf>
+      <leaf name="context-header2">
+        <type name="uint32"/>
+        <description>
+          <text>network platform context, bytes 13-16</text>
+        </description>
+      </leaf>
+      <leaf name="context-header3">
+        <type name="uint32"/>
+        <description>
+          <text>network platform context, bytes 17-20</text>
+        </description>
+      </leaf>
+      <leaf name="context-header4">
+        <type name="uint32"/>
+        <description>
+          <text>network platform context, bytes 21-24</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Fixed Context metadata headers</text>
+      </description>
+    </list>
+    <list name="variable-metadata">
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>A unique name for this set of variable length
+metadata</text>
+        </description>
+      </leaf>
+      <list name="tlv-metadata">
+        <key value="tlv-class tlv-type"/>
+        <leaf name="tlv-class">
+          <type name="uint16"/>
+          <description>
+            <text>Class of TLV being used, bytes 25-26</text>
+          </description>
+        </leaf>
+        <leaf name="tlv-type">
+          <type name="uint8"/>
+          <description>
+            <text>type of tlv for a given class</text>
+          </description>
+        </leaf>
+        <leaf name="flags">
+          <type name="bits">
+            <bit name="r1">
+              <position value="24"/>
+              <description>
+                <text>Reserved</text>
+              </description>
+            </bit>
+            <bit name="r2">
+              <position value="25"/>
+              <description>
+                <text>Reserved</text>
+              </description>
+            </bit>
+            <bit name="r3">
+              <position value="26"/>
+              <description>
+                <text>Reserved</text>
+              </description>
+            </bit>
+          </type>
+          <description>
+            <text>reserved flag bits</text>
+          </description>
+        </leaf>
+        <leaf name="length">
+          <type name="uint8">
+            <range value="0..32"/>
+          </type>
+          <description>
+            <text>Length of the variable metadata in 4-byte
+words</text>
+          </description>
+        </leaf>
+        <leaf name="tlv-data">
+          <type name="string"/>
+          <description>
+            <text>Variable Data</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A set of variable length metadata</text>
+        </description>
+      </list>
+      <description>
+        <text>A list that contain sets of variable length
+metadata</text>
+      </description>
+    </list>
+  </container>
+</module>

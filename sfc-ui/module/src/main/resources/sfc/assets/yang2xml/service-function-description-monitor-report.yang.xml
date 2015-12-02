@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-description-monitor-report"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sf-desc-mon-rpt="urn.intel.params:xml:ns:sf-desc-mon-rpt"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn.intel.params:xml:ns:sf-desc-mon-rpt"/>
+  <prefix value="sf-desc-mon-rpt"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>Intel Inc.</text>
+  </organization>
+  <contact>
+    <text>honglix.chen@intel.com</text>
+  </contact>
+  <description>
+    <text>The module for entities implementing the network service functions for Service Function Chaining</text>
+  </description>
+  <revision date="2014-11-05">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <grouping name="SF-description">
+    <leaf name="data-plane-ip">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>Data-plane IP address</text>
+      </description>
+    </leaf>
+    <leaf name="data-plane-port">
+      <type name="inet:port-number"/>
+      <description>
+        <text>Data-plane port number</text>
+      </description>
+    </leaf>
+    <leaf name="type">
+      <type name="string"/>
+      <description>
+        <text>SF type</text>
+      </description>
+    </leaf>
+    <leaf name="number-of-dataports">
+      <type name="uint32"/>
+      <description>
+        <text>Number of dataports</text>
+      </description>
+    </leaf>
+    <container name="capabilities">
+      <leaf name="supported-packet-rate">
+        <type name="uint32"/>
+        <description>
+          <text>Maximum Mpps supported</text>
+        </description>
+      </leaf>
+      <leaf name="supported-bandwidth">
+        <type name="uint32"/>
+        <description>
+          <text>Maximum Mbps supported </text>
+        </description>
+      </leaf>
+      <leaf name="supported-ACL-number">
+        <type name="uint32"/>
+        <description>
+          <text>ACL number of the service function</text>
+        </description>
+      </leaf>
+      <leaf name="RIB-size">
+        <type name="uint32"/>
+        <description>
+          <text>Number of Routing Information Table's entries.</text>
+        </description>
+      </leaf>
+      <leaf name="FIB-size">
+        <type name="uint32"/>
+        <description>
+          <text>Number of Forwarding Information Table's entries.</text>
+        </description>
+      </leaf>
+      <container name="ports-bandwidth">
+        <list name="port-bandwidth">
+          <key value="port-id"/>
+          <leaf name="port-id">
+            <type name="uint32"/>
+            <description>
+              <text>The id of the port </text>
+            </description>
+          </leaf>
+          <leaf name="ipaddress">
+            <type name="inet:ipv4-address"/>
+            <description>
+              <text>IP address of the port</text>
+            </description>
+          </leaf>
+          <leaf name="macaddress">
+            <type name="yang:mac-address"/>
+            <description>
+              <text>MAC address of the the port</text>
+            </description>
+          </leaf>
+          <leaf name="supported-bandwidth">
+            <type name="uint32"/>
+            <description>
+              <text>Maximum Mbps supported by the port</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="SF-monitoring-info">
+    <leaf name="liveness">
+      <type name="boolean"/>
+      <description>
+        <text>Liveness flag of the service function</text>
+      </description>
+    </leaf>
+    <container name="resource-utilization">
+      <leaf name="packet-rate-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of current package rate utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="bandwidth-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of bandwidth utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="CPU-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of CPU utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="memory-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of memory utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="available-memory">
+        <type name="uint32"/>
+        <description>
+          <text>Available memory size of the service function in MB.</text>
+        </description>
+      </leaf>
+      <leaf name="RIB-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of Routing Information Table utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="FIB-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>Percentage of Forwarding Information Table utilization.</text>
+        </description>
+      </leaf>
+      <leaf name="power-utilization">
+        <type name="uint32"/>
+        <description>
+          <text>power utilization in W.</text>
+        </description>
+      </leaf>
+      <container name="SF-ports-bandwidth-utilization">
+        <list name="port-bandwidth-utilization">
+          <key value="port-id"/>
+          <leaf name="port-id">
+            <type name="uint32"/>
+            <description>
+              <text>The id of the port </text>
+            </description>
+          </leaf>
+          <leaf name="bandwidth-utilization">
+            <type name="uint32"/>
+            <description>
+              <text>Percentage of the port's supported bandwidth utilization.</text>
+            </description>
+          </leaf>
+          <leaf name="rx-packet">
+            <type name="yang:zero-based-counter64"/>
+            <description>
+              <text>The number of received packets.</text>
+            </description>
+          </leaf>
+          <leaf name="tx-packet">
+            <type name="yang:zero-based-counter64"/>
+            <description>
+              <text>The number of transmitted packets.</text>
+            </description>
+          </leaf>
+          <leaf name="rx-bytes">
+            <type name="yang:zero-based-counter64"/>
+            <description>
+              <text>The number of received bytes.</text>
+            </description>
+          </leaf>
+          <leaf name="tx-bytes">
+            <type name="yang:zero-based-counter64"/>
+            <description>
+              <text>The number of transmitted bytes.</text>
+            </description>
+          </leaf>
+          <leaf name="rx-bytes-rate">
+            <type name="uint32"/>
+            <description>
+              <text>Bytes received rate.</text>
+            </description>
+          </leaf>
+          <leaf name="tx-bytes-rate">
+            <type name="uint32"/>
+            <description>
+              <text>Bytes transmitted rate.</text>
+            </description>
+          </leaf>
+          <leaf name="rx-packet-rate">
+            <type name="uint32"/>
+            <description>
+              <text>Packets received rate.</text>
+            </description>
+          </leaf>
+          <leaf name="tx-packet-rate">
+            <type name="uint32"/>
+            <description>
+              <text>Packets transmitted rate.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <container name="service-function">
+    <container name="description-info">
+      <uses name="SF-description"/>
+    </container>
+    <container name="monitoring-info">
+      <uses name="SF-monitoring-info"/>
+    </container>
+  </container>
+  <rpc name="get-SF-description">
+    <description>
+      <text>Get service function description information.</text>
+    </description>
+    <output>
+      <container name="description-info">
+        <uses name="SF-description"/>
+      </container>
+    </output>
+  </rpc>
+  <rpc name="get-SF-monitoring-info">
+    <description>
+      <text>Get current service function monitoring information.</text>
+    </description>
+    <output>
+      <container name="monitoring-info">
+        <uses name="SF-monitoring-info"/>
+      </container>
+    </output>
+  </rpc>
+</module>

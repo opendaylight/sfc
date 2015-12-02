@@ -288,8 +288,7 @@ public class SfcSffToOvsMappingAPITest {
     @Test
     public void testGetSffDataPlaneLocatorOptions_nullSffDplOvsOptions() throws Exception {
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-
-        //TODO remove reflection for "getSffDataPlaneLocatorOptions"
+        // TODO remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -306,8 +305,7 @@ public class SfcSffToOvsMappingAPITest {
         sffOvsLocatorOptionsAugmentationBuilder.setOvsOptions(ovsOptionsBuilder.build());
         sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class,
                 sffOvsLocatorOptionsAugmentationBuilder.build());
-
-        //TODO remove reflection for "getSffDataPlaneLocatorOptions"
+        // TODO remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -337,7 +335,7 @@ public class SfcSffToOvsMappingAPITest {
         sffDataPlaneLocatorBuilder.addAugmentation(SffOvsLocatorOptionsAugmentation.class,
                 sffOvsLocatorOptionsAugmentationBuilder.build());
 
-        //TODO remove reflection for "getSffDataPlaneLocatorOptions"
+        // TODO remove reflection for "getSffDataPlaneLocatorOptions"
         optionsList = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getSffDataPlaneLocatorOptions",
                 sffDataPlaneLocatorBuilder.build());
 
@@ -358,7 +356,7 @@ public class SfcSffToOvsMappingAPITest {
     public void testGetDataPlaneLocatorInterfaceType_NoTransport() throws Exception {
         dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
 
-        //TODO remove reflection for "getDataPlaneLocatorInterfaceType"
+        // TODO remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 
@@ -371,7 +369,7 @@ public class SfcSffToOvsMappingAPITest {
 
         dataPlaneLocatorBuilder.setTransport(Other.class);
 
-        //TODO remove reflection for "getDataPlaneLocatorInterfaceType"
+        // TODO remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 

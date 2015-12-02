@@ -132,9 +132,12 @@ module service-function {
 
   container service-functions-state {
     config false;
+    status deprecated;
     description
       "This container hold operational state for all service
-       functions";
+       functions. This container will be removed in Boron
+       when the config/oper md-sal will be used to represent
+       state.";
     list service-function-state {
       key "name";
       description

@@ -55,11 +55,13 @@ module service-function-chain {
       leaf symmetric {
         type boolean;
         default false;
+        status deprecated;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse
            the egress service path in the reverse order of the
-           ingress path";
+           ingress path. This will be removed in Boron and will
+           be replaced with the SF symmetric field.";
       }
       list sfc-service-function {
         key "name";
@@ -111,6 +113,12 @@ module service-function-chain {
 
   container service-function-chains-state {
     config false;
+    status deprecated;
+    description
+      "This containers holds operational service function
+       chain state and their associated service path. This
+       container will be removed in Boron when the config/oper
+       md-sal will be used to represent state.";
     list service-function-chain-state {
       key "name";
       description
@@ -133,9 +141,6 @@ module service-function-chain {
          this chain";
       }
     }
-    description
-      "This containers holds operational service function
-        chain state and their associated service path";
   }
 
 // Remote procedure calls

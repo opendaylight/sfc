@@ -208,8 +208,11 @@ module rendered-service-path {
 
 
   rpc delete-rendered-path {
+    status deprecated;
     description
-      "Delete a Rendered Service Path";
+      "Delete a Rendered Service Path This RPC will be
+       removed in Boron, when then config/oper md-sal
+       will be used instead.";
     input {
       leaf name {
         type string;
@@ -228,8 +231,11 @@ module rendered-service-path {
   }
 
   rpc create-rendered-path {
+    status deprecated;
     description
-      "Created a Rendered Service Path";
+      "Created a Rendered Service Path. This RPC will be
+       removed in Boron, when then config/oper md-sal
+       will be used instead.";
     input {
       leaf name {
         type string;
@@ -245,11 +251,13 @@ module rendered-service-path {
       leaf symmetric {
         type boolean;
         default false;
+        status deprecated;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse
            the egress service path in the reverse order of the
-           ingress path";
+           ingress path. This will be removed in Boron and will
+           be replaced with the SF symmetric field.";
       }
       choice context-header-allocation-type-1 {
         case vxlan-classifier {

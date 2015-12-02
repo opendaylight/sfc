@@ -85,11 +85,13 @@ module service-function-path {
       leaf symmetric {
         type boolean;
         default false;
+        status deprecated;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse
            the egress service path in the reverse order of the
-           ingress path";
+           ingress path. This will be removed in Boron and will
+           be replaced with the SF symmetric field.";
       }
       leaf classifier {
         type string;
@@ -183,9 +185,11 @@ module service-function-path {
 
   container service-function-paths-state {
     config false;
+    status deprecated;
     description
       "This container hold operational state for all service
-       function paths";
+       function paths. This container will be removed in Boron
+       when the config/oper md-sal will be used to represent state.";
     list service-function-path-state {
       key "name";
       description

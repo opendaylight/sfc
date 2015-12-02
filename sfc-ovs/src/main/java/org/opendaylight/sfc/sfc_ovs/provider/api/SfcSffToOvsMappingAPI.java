@@ -62,7 +62,6 @@ import com.google.common.base.Preconditions;
 public class SfcSffToOvsMappingAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcSffToOvsMappingAPI.class);
-
     private static final String OF_PORT = "6653";
 
     /**

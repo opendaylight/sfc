@@ -294,6 +294,8 @@ class NfqClassifier(metaclass=Singleton):
             self.fwd_socket.close()
             
         self.fwd_socket = socket.socket(adrr_family, socket.SOCK_DGRAM)
+        self.fwd_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
         logger.debug("Forward socket created in classifier with IP %s", ip_adr)
         # res = self.fwd_socket.getsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY)
         # logger.info('IPV6_V6ONLY set to :"%s"', res)

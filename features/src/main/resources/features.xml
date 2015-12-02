@@ -19,7 +19,6 @@
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.l2switch/features-l2switch/${l2switch.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-netconf-connector/${netconf.parent.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${feature.openflowplugin.version}/xml/features</repository>
@@ -34,7 +33,6 @@
     <feature name="odl-sfc-provider" version="${project.version}" description="OpenDaylight :: sfc :: Provider ">
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-sfc-model</feature>
-        <feature version="${l2switch.version}">odl-l2switch-hosttracker</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-provider/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/${project.version}/xml/config</configfile>
     </feature>

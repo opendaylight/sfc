@@ -145,18 +145,21 @@ define([].concat(modules).concat(services).concat(directives).concat(controllers
         "name": "Classifier1"
       },
       aclDefault: {
-        "access-list-entries": [
-          {
-            "matches": {
-              "absolute": {"active": "true"},
-              "source-ipv4-address": "0.0.0.0/0",
-              "destination-ipv4-address": "0.0.0.0/0",
-              "source-port-range": {"lower-port": "80", "upper-port": "80"},
-              "ip-protocol": "7"
-            },
-            "actions": {}, "rule-name": "ACE1"
-          }
-        ],
+        "access-list-entries": {
+          "ace": [
+            {
+              "rule-name": "ACE1",
+              "matches": {
+                "absolute-time": {
+                  "active": true
+                },
+                "protocol": 7,
+                "source-ipv4-network": "11.11.11.0/24",
+                "destination-ipv4-network": "22.22.22.0/24"
+              }
+            }
+          ]
+        },
         "acl-name": "ACL1"
       },
       contextMetadataDefault: [

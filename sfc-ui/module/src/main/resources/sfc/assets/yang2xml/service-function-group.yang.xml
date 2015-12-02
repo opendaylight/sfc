@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-group"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sfg="urn:cisco:params:xml:ns:yang:sfc-sfg"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:sfc-sf="urn:cisco:params:xml:ns:yang:sfc-sf"
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sfg-alg="urn:cisco:params:xml:ns:yang:sfc-sfg-alg">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sfg"/>
+  <prefix value="sfc-sfg"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="service-function">
+    <prefix value="sfc-sf"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-function-type">
+    <prefix value="sfc-sft"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-function-group-algorithm">
+    <prefix value="sfc-sfg-alg"/>
+    <revision-date date="2015-02-14"/>
+  </import>
+  <organization>
+    <text>Contextream, Inc.</text>
+  </organization>
+  <contact>
+    <text>Kfir Yeshayahu &lt;kfir.yeshayahu@contextream.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function group algorithms.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2015-02-14">
+    <description>
+      <text>Revised based on SFF Load Balance Feature Proposal</text>
+    </description>
+  </revision>
+  <grouping name="service-function-group-entry">
+    <description>
+      <text>A list that holds all service function groups in the domain</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>The name of the service function group</text>
+      </description>
+    </leaf>
+    <leaf name="groupId">
+      <type name="uint32"/>
+      <description>
+        <text>The groupId of the service function group</text>
+      </description>
+    </leaf>
+    <leaf name="algorithm">
+      <type name="sfc-sfg-alg:service-function-group-algorithm-ref"/>
+      <mandatory value="true"/>
+      <description>
+        <text>The name of the service-function-group-algorithm used by this group</text>
+      </description>
+    </leaf>
+    <leaf name="rest-uri">
+      <description>
+        <text>URI of REST based management</text>
+      </description>
+      <type name="inet:uri"/>
+    </leaf>
+    <leaf name="ip-mgmt-address">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>The IP and port used to configure this service-function</text>
+      </description>
+    </leaf>
+    <leaf name="type">
+      <type name="sfc-sft:service-function-type"/>
+      <mandatory value="true"/>
+      <description>
+        <text>Service Function Type from service-function-type yang
+model</text>
+      </description>
+    </leaf>
+    <list name="sfc-service-function">
+      <key value="name"/>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>The name of the Service Function</text>
+        </description>
+      </leaf>
+      <description>
+        <text>A list of all service functions that are contained in this group</text>
+      </description>
+    </list>
+  </grouping>
+  <container name="service-function-groups">
+    <description>
+      <text>All service function groups</text>
+    </description>
+    <list name="service-function-group">
+      <description>
+        <text>This list holds configuration data for all service function groups
+in the domain</text>
+      </description>
+      <key value="name"/>
+      <uses name="service-function-group-entry"/>
+    </list>
+  </container>
+</module>

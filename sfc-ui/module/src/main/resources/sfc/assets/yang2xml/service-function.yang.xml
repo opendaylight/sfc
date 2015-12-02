@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sf="urn:cisco:params:xml:ns:yang:sfc-sf"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:sfc-ss="urn:cisco:params:xml:ns:yang:sfc-ss"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sf"/>
+  <prefix value="sfc-sf"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="service-function-type">
+    <prefix value="sfc-sft"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-statistics">
+    <prefix value="sfc-ss"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="sfc-common">
+    <prefix value="sfc-common"/>
+    <revision-date date="2015-10-17"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Changes based on Opendaylight Testing.</text>
+    </description>
+  </revision>
+  <grouping name="service-function-entry">
+    <description>
+      <text>This group bundles together all information related to a
+single service function</text>
+    </description>
+    <leaf name="name">
+      <type name="sfc-common:sf-name"/>
+      <description>
+        <text>The name of the service function.</text>
+      </description>
+    </leaf>
+    <leaf name="tenant-id">
+      <type name="sfc-common:tenant-id"/>
+      <description>
+        <text>This SF was created for a specific tenant-id</text>
+      </description>
+    </leaf>
+    <leaf name="type">
+      <type name="sfc-sft:service-function-type"/>
+      <mandatory value="true"/>
+      <description>
+        <text>Service Function Type from service-function-type yang
+model</text>
+      </description>
+    </leaf>
+    <leaf name="rest-uri">
+      <type name="inet:uri"/>
+      <description>
+        <text>URI of REST based management</text>
+      </description>
+    </leaf>
+    <leaf name="ip-mgmt-address">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>The IP and port used to configure this service-function</text>
+      </description>
+    </leaf>
+    <leaf name="request_reclassification">
+      <status value="deprecated"/>
+      <type name="boolean"/>
+      <description>
+        <text>This leaf determines whether SF can request
+reclassification by the SFF</text>
+      </description>
+    </leaf>
+    <leaf name="nsh-aware">
+      <status value="deprecated"/>
+      <type name="boolean"/>
+      <description>
+        <text>Whether this SF can process NSH headers</text>
+      </description>
+    </leaf>
+    <list name="sf-data-plane-locator">
+      <key value="name"/>
+      <description>
+        <text>A network data-plane locator</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sf-data-plane-locator-name"/>
+        <description>
+          <text>A unique string that represents this
+data-plane-locator</text>
+        </description>
+      </leaf>
+      <uses name="sfc-sl:data-plane-locator"/>
+      <leaf name="service-function-forwarder">
+        <type name="sfc-common:sff-name"/>
+        <description>
+          <text>The service function forwarder associated with this
+locator</text>
+        </description>
+      </leaf>
+    </list>
+  </grouping>
+  <container name="service-functions">
+    <description>
+      <text>A function that is responsible for specific
+treatment of received packets.  A Service Function can act at
+various layers of a protocol stack (e.g., at the network layer
+or other OSI layers).  A Service Function can be a virtual
+element or be embedded in a physical network element.  One of
+multiple Service Functions can be embedded in the same network
+element.  Multiple occurrences of the Service Function can be
+enabled in the same administrative domain.
+
+One or more Service Functions can be involved in the delivery
+of added-value services.  A non-exhaustive list of Service
+Functions includes: firewalls, WAN and application
+acceleration, Deep Packet Inspection (DPI),a LI (Lawful
+Intercept) module, server load balancers, NAT44 [RFC3022],
+NAT64 [RFC6146], NPTv6 [RFC6296], HOST_ID injection, HTTP
+Header Enrichment functions, TCP optimizer, etc.
+
+An SF may be SFC encapsulation aware, that is it receives, and
+acts on information in the SFC encapsulation, or unaware in
+which case data forwarded to the service does not contain the
+SFC encapsulation.</text>
+    </description>
+    <list name="service-function">
+      <key value="name"/>
+      <description>
+        <text>This list holds configuration data for all service functions
+in the domain</text>
+      </description>
+      <uses name="service-function-entry"/>
+    </list>
+  </container>
+  <container name="service-functions-state">
+    <config value="false"/>
+    <description>
+      <text>This container hold operational state for all service
+functions</text>
+    </description>
+    <list name="service-function-state">
+      <key value="name"/>
+      <description>
+        <text>This list holds operational data for all service functions
+in the domain</text>
+      </description>
+      <leaf name="name">
+        <type name="sfc-common:sf-name"/>
+        <description>
+          <text>the name of the service function</text>
+        </description>
+      </leaf>
+      <uses name="sfc-ss:service-statistics-group">
+        <description>
+          <text>Global Service Function statistics</text>
+        </description>
+      </uses>
+      <list name="sf-service-path">
+        <key value="name"/>
+        <leaf name="name">
+          <type name="sfc-common:sfp-name"/>
+          <description>
+            <text>The name of the Service Path</text>
+          </description>
+        </leaf>
+        <uses name="sfc-ss:service-statistics-group"/>
+        <description>
+          <text>A list of all service function paths that contain this
+service function</text>
+        </description>
+      </list>
+    </list>
+  </container>
+  <rpc name="delete-all-service-function">
+    <description>
+      <text>Deletes all service functions</text>
+    </description>
+  </rpc>
+  <rpc name="put-service-function">
+    <description>
+      <text>Creates a service function</text>
+    </description>
+    <input>
+      <uses name="service-function-entry"/>
+    </input>
+  </rpc>
+  <rpc name="read-service-function">
+    <description>
+      <text>Reads a service function</text>
+    </description>
+    <input>
+      <leaf name="name">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The name of the service function.</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <uses name="service-function-entry"/>
+    </output>
+  </rpc>
+  <rpc name="delete-service-function">
+    <description>
+      <text>Deletes a service function</text>
+    </description>
+    <input>
+      <leaf name="name">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>The name of the service function.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

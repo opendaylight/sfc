@@ -4,14 +4,14 @@ define(['app/sfc/sfc.module'], function (sfc) {
     var svc = {};
 
     svc.addAce = function ($scope) {
-      if (angular.isUndefined($scope.data['access-list-entries'])) {
-        $scope.data['access-list-entries'] = [];
+      if (angular.isUndefined($scope.data['access-list-entries']['ace'])) {
+        $scope.data['access-list-entries']['ace'] = [];
       }
-      $scope.data['access-list-entries'].push({});
+      $scope.data['access-list-entries']['ace'].push({});
     };
 
     svc.removeAce = function (index, $scope) {
-      $scope.data['access-list-entries'].splice(index, 1);
+      $scope.data['access-list-entries']['ace'].splice(index, 1);
     };
 
     svc.valueOfAceType = function (matches, $rootScope) {
@@ -31,7 +31,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       if (svc.valueOfIpVersion(matches, $rootScope) ||
         matches['source-port-range'] ||
         matches['destination-port-range'] ||
-        matches['ip-protocol'] ||
+        matches['protocol'] ||
         matches['dscp']) {
         r2 = $rootScope.aclConstants['ace-type'][0]; // ip
       }
@@ -46,8 +46,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
     svc.valueOfIpVersion = function (matches, $rootScope) {
       var r1, r2;
 
-      if (matches['destination-ipv4-address'] ||
-        matches['source-ipv4-address']) {
+      if (matches['destination-ipv4-network'] ||
+        matches['source-ipv4-network']) {
         r1 =  $rootScope.aclConstants['ace-ip'][0]; // ipv4
       }
 
@@ -163,8 +163,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     svc.sourceIpMacMaskToString = function (matches) {
       var str = "";
-      str += (matches['source-ipv4-address']) ? matches['source-ipv4-address'] + " ":  "";
-      str += (matches['source-ipv6-address']) ? matches['source-ipv6-address'] + " " : "";
+      str += (matches['source-ipv4-network']) ? matches['source-ipv4-network'] + " ":  "";
+      str += (matches['source-ipv6-network']) ? matches['source-ipv6-network'] + " " : "";
       str += (matches['source-mac-address']) ? matches['source-mac-address'] + " " : "";
       str += (matches['source-mac-address-mask']) ? matches['source-mac-address-mask'] + " " : "";
       return str;
@@ -172,8 +172,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     svc.destinationIpMacMaskToString = function (matches) {
       var str = "";
-      str += (matches['destination-ipv4-address']) ? matches['destination-ipv4-address'] + " " :  "";
-      str += (matches['destination-ipv6-address']) ? matches['destination-ipv6-address'] + " " : "";
+      str += (matches['destination-ipv4-network']) ? matches['destination-ipv4-network'] + " " :  "";
+      str += (matches['destination-ipv6-network']) ? matches['destination-ipv6-network'] + " " : "";
       str += (matches['destination-mac-address']) ? matches['destination-mac-address'] + " " : "";
       str += (matches['destination-mac-address-mask']) ? matches['destination-mac-address-mask'] + " " : "";
       return str;
@@ -213,7 +213,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     svc.ipProtocolToString = function (matches) {
       var str = "";
-      str += (matches['ip-protocol']) ? matches['ip-protocol'] : "";
+      str += (matches['protocol']) ? matches['protocol'] : "";
       return str;
     };
 

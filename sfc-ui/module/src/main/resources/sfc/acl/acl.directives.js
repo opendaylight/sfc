@@ -67,8 +67,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (arg != $scope.notResetCondition) {
             delete $scope['matches']['destination-port-range'];
             delete $scope['matches']['source-port-range'];
-            delete $scope['matches']['destination-ipv4-address'];
-            delete $scope['matches']['source-ipv4-address'];
+            delete $scope['matches']['destination-ipv4-network'];
+            delete $scope['matches']['source-ipv4-network'];
             $scope.$broadcast('ace_ip_change', null);
           }
         });
@@ -91,8 +91,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         $scope.$on($scope.resetOn, function (event, arg) {
           if (arg != $scope.notResetCondition) {
-            delete $scope['matches']['destination-ipv4-address'];
-            delete $scope['matches']['source-ipv4-address'];
+            delete $scope['matches']['destination-ipv4-network'];
+            delete $scope['matches']['source-ipv4-network'];
           }
         });
       }
@@ -114,8 +114,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
         $scope.$on($scope.resetOn, function (event, arg) {
           if (arg != $scope.notResetCondition) {
-            delete $scope['matches']['destination-ipv6-address'];
-            delete $scope['matches']['source-ipv6-address'];
+            delete $scope['matches']['destination-ipv6-network'];
+            delete $scope['matches']['source-ipv6-network'];
             delete $scope['matches']['flow-label'];
           }
         });

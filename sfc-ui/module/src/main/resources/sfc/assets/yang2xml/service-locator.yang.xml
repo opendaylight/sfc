@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-locator"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sl"/>
+  <prefix value="sfc-sl"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service locators. Service locators are used as
+data plane network destinations for Service Functions and
+Service Function Forwarders
+
+It follows closely the constructs of
+http://tools.ietf.org/html/draft-ietf-netmod-interfaces-cfg-12
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Changes based on Opendaylight Testing.</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <identity name="transport-type">
+    <description>
+      <text>Base identity from which specific transport types are
+derived.</text>
+    </description>
+  </identity>
+  <identity name="mac">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>Simple MAC with optional VLAN transport type</text>
+    </description>
+  </identity>
+  <identity name="vxlan-gpe">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>Programmable vxlan transport type</text>
+    </description>
+  </identity>
+  <identity name="gre">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>GRE transport type</text>
+    </description>
+  </identity>
+  <identity name="mpls">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>Multi Protocol Label Switching transport type</text>
+    </description>
+  </identity>
+  <identity name="other">
+    <base name="sl-transport-type"/>
+    <description>
+      <text>unspecified transport type</text>
+    </description>
+  </identity>
+  <identity name="sl-transport-type">
+    <base name="transport-type"/>
+    <description>
+      <text>This identity is used as a base for all transport
+types</text>
+    </description>
+  </identity>
+  <typedef name="sl-transport-type-def">
+    <type name="identityref">
+      <base name="sl-transport-type"/>
+    </type>
+    <description>
+      <text>This type is used to reference all
+registered transport types</text>
+    </description>
+  </typedef>
+  <grouping name="lisp-locator">
+    <description>
+      <text>Data plane-locator: Lisp Eid(IP)</text>
+    </description>
+    <leaf name="eid">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>Data-plane IP address</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ip-port-locator">
+    <description>
+      <text>Data plane-locator: IP address and L4 port</text>
+    </description>
+    <leaf name="ip">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>Data-plane IP address</text>
+      </description>
+    </leaf>
+    <leaf name="port">
+      <type name="inet:port-number"/>
+      <description>
+        <text>Data-plane port number</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mac-address-locator">
+    <description>
+      <text>Data plane-locator: mac address and optional vlan-id</text>
+    </description>
+    <leaf name="mac">
+      <type name="yang:mac-address"/>
+      <description>
+        <text>Data-plane MAC address</text>
+      </description>
+    </leaf>
+    <leaf name="vlan-id">
+      <type name="uint16">
+        <range value="1..4094"/>
+      </type>
+      <description>
+        <text>Data-plane VLAN ID address</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mpls-locator">
+    <description>
+      <text>Data plane-locator: MPLS label</text>
+    </description>
+    <leaf name="mpls-label">
+      <type name="uint32">
+        <range value="1..1048575"/>
+      </type>
+      <description>
+        <text>MPLS Label, 20 bits</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="function-locator">
+    <description>
+      <text>When SF is co-located with SFF, this could be the name of a
+function or method.</text>
+    </description>
+    <leaf name="function-name">
+      <type name="string"/>
+      <description>
+        <text>Function or method name</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="other-locator">
+    <description>
+      <text>Other locator</text>
+    </description>
+    <leaf name="other-name">
+      <type name="string"/>
+      <description>
+        <text>A other or undefined locator</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="data-plane-locator">
+    <description>
+      <text>This group presents data-plane locator
+information for service function elements in the domain</text>
+    </description>
+    <choice name="locator-type">
+      <mandatory value="true"/>
+      <case name="ip">
+        <uses name="ip-port-locator"/>
+      </case>
+      <case name="lisp">
+        <uses name="lisp-locator"/>
+      </case>
+      <case name="mac">
+        <uses name="mac-address-locator"/>
+      </case>
+      <case name="function">
+        <uses name="function-locator"/>
+      </case>
+      <case name="mpls">
+        <uses name="mpls-locator"/>
+      </case>
+      <case name="other">
+        <uses name="other-locator"/>
+      </case>
+      <description>
+        <text>The collection of all possible data-plane
+locators. Only one can be chosen</text>
+      </description>
+    </choice>
+    <leaf name="transport">
+      <type name="identityref">
+        <base name="sfc-sl:sl-transport-type"/>
+      </type>
+      <description>
+        <text>The encapsulation used to carry NSH packets</text>
+      </description>
+    </leaf>
+  </grouping>
+</module>

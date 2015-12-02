@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-acl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-acl="urn:cisco:params:xml:ns:yang:sfc-acl"
+        xmlns:ietf-acl="urn:ietf:params:xml:ns:yang:ietf-access-control-list"
+        xmlns:ipfix-application-information="urn:ietf:params:xml:ns:yang:ipfix-application-information">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-acl"/>
+  <prefix value="sfc-acl"/>
+  <import module="ietf-access-control-list">
+    <prefix value="ietf-acl"/>
+    <revision-date date="2015-03-17"/>
+  </import>
+  <import module="ipfix-application-information">
+    <prefix value="ipfix-application-information"/>
+    <revision-date date="2015-04-10"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <revision date="2015-10-01">
+    <description>
+      <text>creating Service Function Chaining extensions to ietf-acl model</text>
+    </description>
+  </revision>
+  <augment target-node="/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:actions">
+    <description>
+      <text>SFC simple filter actions</text>
+    </description>
+    <choice name="sfc-action">
+      <case name="acl-rendered-service-path">
+        <description>
+          <text>Determine the Service Function Path the packet the packet will
+traverse</text>
+        </description>
+        <leaf name="rendered-service-path">
+          <type name="string"/>
+        </leaf>
+      </case>
+    </choice>
+  </augment>
+  <augment target-node="/ietf-acl:access-lists/ietf-acl:acl/ietf-acl:access-list-entries/ietf-acl:ace/ietf-acl:matches">
+    <description>
+      <text>Level 7 match criteria, based on IPFIX applicationIds</text>
+    </description>
+    <leaf-list name="application-id">
+      <description>
+        <text>Application Identifier</text>
+      </description>
+      <type name="ipfix-application-information:application-id-ref"/>
+    </leaf-list>
+  </augment>
+</module>

@@ -24,7 +24,7 @@
             </td>
             <td data-title="'SFC_ACL_SHORT_SRC_IP_MAC_ADDRESS' | translate"
                 sortable="'valueOf()[\'source-ip-mac-mask-string\']'" filter="{ 'source-ip-mac-mask-string': 'text' }">
-                {{entry['matches']['source-ipv4-address']}}{{entry['matches']['source-ipv6-address']}}
+                {{entry['matches']['source-ipv4-network']}}{{entry['matches']['source-ipv6-address']}}
                 {{entry['matches']['source-mac-address']}}
                 <span class="spanText" ng-if="entry['matches']['source-mac-address-mask']">
                     <br/>({{entry['matches']['source-mac-address-mask']}})
@@ -33,7 +33,7 @@
             <td data-title="'SFC_ACL_SHORT_DST_IP_MAC_ADDRESS' | translate"
                 sortable="'valueOf()[\'destination-ip-mac-mask-string\']'"
                 filter="{ 'destination-ip-mac-mask-string': 'text' }">
-                {{entry['matches']['destination-ipv4-address']}}{{entry['matches']['destination-ipv6-address']}}
+                {{entry['matches']['destination-ipv4-network']}}{{entry['matches']['destination-ipv6-address']}}
                 {{entry['matches']['destination-mac-address']}}
                 <span class="spanText" ng-if="entry['matches']['destination-mac-address-mask']">
                     <br/>({{entry['matches']['destination-mac-address-mask']}})
@@ -55,7 +55,7 @@
             </td>
             <td data-title="'SFC_ACL_SHORT_IP_PROTOCOL' | translate" sortable="'valueOf()[\'ip-protocol-string\']'"
                 filter="{ 'ip-protocol-string': 'text' }">
-                {{entry['matches']['ip-protocol']}}
+                {{entry['matches']['protocol']}}
             </td>
             <td data-title="'SFC_ACL_SHORT_DSCP' | translate" sortable="'valueOf()[\'dscp-string\']'"
                 filter="{ 'dscp-string': 'text' }">

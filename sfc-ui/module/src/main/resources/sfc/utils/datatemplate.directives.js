@@ -72,7 +72,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           $scope.selectedDataTemplateName = dataTemplateName;
           var loadedTemplate = SfcDataTemplateSvc.getDataTemplate($scope.dialogId, dataTemplateName);
           //if template exists - load it
-          if (angular.isDefined(loadedTemplate)) {
+          if (dataTemplateName && angular.isDefined(loadedTemplate)) {
             $scope.templateDataModel = loadedTemplate;
             $scope.templateSaveRequired = false;
 

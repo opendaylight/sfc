@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-scheduler-type"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sfst="urn:intel:params:xml:ns:yang:sfc-sfst"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:intel:params:xml:ns:yang:sfc-sfst"/>
+  <prefix value="sfc-sfst"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>Intel, Inc.</text>
+  </organization>
+  <contact>
+    <text>Johnson Li &lt;johnson.li@intel.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for
+managing service function scheduler types.</text>
+  </description>
+  <revision date="2015-03-12">
+    <description>
+      <text>Initial version.</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <identity name="service-function-scheduler-type-identity">
+    <description>
+      <text>Base identity from which specific service function
+scheduler types are derived.</text>
+    </description>
+  </identity>
+  <identity name="random">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>Random Scheduler.</text>
+    </description>
+  </identity>
+  <identity name="round-robin">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>Round Robin.</text>
+    </description>
+  </identity>
+  <identity name="shortest-path">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>Shortest Path.</text>
+    </description>
+  </identity>
+  <identity name="load-balance">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>Load Balance.</text>
+    </description>
+  </identity>
+  <identity name="weighted-shortest-path">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>Weighted Shortest Path.</text>
+    </description>
+  </identity>
+  <identity name="user-defined">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>User Defined Scheduler Type.</text>
+    </description>
+  </identity>
+  <typedef name="service-function-scheduler-type">
+    <type name="identityref">
+      <base name="service-function-scheduler-type-identity"/>
+    </type>
+    <description>
+      <text>This type is used to reference all
+registered service function scheduler types</text>
+    </description>
+  </typedef>
+  <container name="service-function-scheduler-types">
+    <description>
+      <text>A list of Service function scheduler types. For each type we
+keep a list of service function scheduler names. Each name may
+indicate the vendor of the scheduler</text>
+    </description>
+    <list name="service-function-scheduler-type">
+      <key value="type"/>
+      <leaf name="type">
+        <type name="service-function-scheduler-type"/>
+        <description>
+          <text>The service function scheduler type</text>
+        </description>
+      </leaf>
+      <leaf name="enabled">
+        <type name="boolean"/>
+        <description>
+          <text>The enabled status of this scheduler type.</text>
+        </description>
+      </leaf>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>The name of the service function schedule type.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>A list of all service function schedule types.</text>
+      </description>
+    </list>
+  </container>
+</module>

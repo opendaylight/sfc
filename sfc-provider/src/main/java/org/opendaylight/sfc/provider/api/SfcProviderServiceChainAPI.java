@@ -13,16 +13,9 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.ServiceFunctionChainStateKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,69 +62,6 @@ public class SfcProviderServiceChainAPI {
     }
 
     /**
-     * This method deletes a single service path name from the Service Function
-     * Chain operational data store
-     *
-     * @param serviceFunctionChainName sfc name
-     * @param servicePathName service path name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     *         this service function, null otherwise
-     */
-    public static boolean deletePathFromServiceFunctionChainState(SfcName serviceFunctionChainName,
-            SfpName servicePathName) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey =
-                new ServiceFunctionChainStateKey(serviceFunctionChainName);
-        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
-            .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-            .child(SfcServicePath.class, new SfcServicePathKey(servicePathName))
-            .build();
-
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfcoIID, LogicalDatastoreType.OPERATIONAL)) {
-            ret = true;
-        }
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method adds a single service path name to the Service Function
-     * Chain operational data store
-     *
-     * @param serviceFunctionChainName sfc name
-     * @param servicePathName service path name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     *         this service function, null otherwise
-     */
-    public static boolean addPathToServiceFunctionChainState(SfcName serviceFunctionChainName,
-            SfpName servicePathName) {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-        ServiceFunctionChainStateKey serviceFunctionChainStateKey =
-                new ServiceFunctionChainStateKey(serviceFunctionChainName);
-        InstanceIdentifier<SfcServicePath> sfcoIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class)
-            .child(ServiceFunctionChainState.class, serviceFunctionChainStateKey)
-            .child(SfcServicePath.class, new SfcServicePathKey(servicePathName))
-            .build();
-
-        SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
-        sfcServicePathBuilder.setKey(new SfcServicePathKey(servicePathName));
-        sfcServicePathBuilder.setName(servicePathName);
-
-        if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcoIID, sfcServicePathBuilder.build(),
-                LogicalDatastoreType.OPERATIONAL)) {
-            ret = true;
-        }
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
      * This method creates a SFC from the datastore.
      *
      * @param serviceFunctionChain SFC object
@@ -154,109 +84,5 @@ public class SfcProviderServiceChainAPI {
 
         printTraceStop(LOG);
         return ret;
-    }
-
-    /**
-     * This method deletes a SFC from the datastore
-     *
-     * @param serviceFunctionChainName SFC name
-     * @return true if SF was deleted, false otherwise
-     */
-    protected static boolean deleteServiceFunctionChain(SfcName serviceFunctionChainName) {
-        boolean ret = false;
-        printTraceStart(LOG);
-        ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
-        InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-            .child(ServiceFunctionChain.class, serviceFunctionChainKey)
-            .build();
-
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfcEntryIID, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
-        } else {
-            LOG.error("Could not delete SFC: {}", serviceFunctionChainName);
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method puts all service functions from the given object in the
-     * datastore
-     *
-     * @param sfcs Service Functions Object
-     * @return A ServiceFunctionState object that is a list of all paths using
-     *         this service function, null otherwise
-     */
-    protected static boolean putAllServiceFunctionChains(ServiceFunctionChains sfcs) {
-        boolean ret = false;
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-        if (SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, sfcs, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
-        }
-
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    /**
-     * This method reads all service function chains from datastore
-     *
-     * @return ServiceFunctionChains A object that contains all Service Functions Object
-     */
-    protected static ServiceFunctionChains readAllServiceFunctionChains() {
-        ServiceFunctionChains sfcs;
-        printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-        sfcs = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-        return sfcs;
-    }
-
-    protected boolean deleteAllServiceFunctionChains() {
-
-        printTraceStart(LOG);
-        boolean ret = false;
-
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-        if (SfcDataStoreAPI.deleteTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION)) {
-            ret = true;
-        }
-        printTraceStop(LOG);
-        return ret;
-    }
-
-    public static ServiceFunctionChains getServiceFunctionChainsRef() {
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID;
-        sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
-
-        ServiceFunctionChains sfc = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.CONFIGURATION);
-
-        printTraceStop(LOG);
-
-        return sfc;
-    }
-
-    protected static ServiceFunctionChainsState getServiceFunctionChainsStateRef() {
-        printTraceStart(LOG);
-
-        InstanceIdentifier<ServiceFunctionChainsState> sfcsIID;
-        sfcsIID = InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
-
-        ServiceFunctionChainsState sfc = SfcDataStoreAPI.readTransactionAPI(sfcsIID, LogicalDatastoreType.OPERATIONAL);
-
-        printTraceStop(LOG);
-
-        return sfc;
     }
 }

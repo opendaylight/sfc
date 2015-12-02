@@ -17,7 +17,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
@@ -221,7 +223,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        SfcProviderServiceFunctionAPI.putAllServiceFunctions(sfsBuilder.build());
+        SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {

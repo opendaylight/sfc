@@ -3,7 +3,7 @@
         <div class="col-md-6" style="padding: 0">
             <h3>
                 {{'SFC_ACL' | translate}}
-                <sfc-data-template template-data-model="data"
+                <sfc-data-template template-data-model="aclDataZ"
                                    default-template-data-model="defaultTemplates['aclDefault']"
                                    dialog-id="createAcl"></sfc-data-template>
             </h3>
@@ -14,7 +14,7 @@
                         translate}}</label>
 
                     <div class="col-lg-6">
-                        <input type="text" class="form-control input-sm" ng-model="data['acl-name']" id="acl-name" name="acl-name"
+                        <input type="text" class="form-control input-sm" ng-model="aclData['acl-name']" id="acl-name" name="acl-name"
                                placeholder="{{'SFC_ACL_CREATE_NAME' | translate}}" required focus-me="{{true}}">
                     </div>
                 </div>
@@ -29,12 +29,12 @@
         <div ui-sortable="sortableOptions">
         <div class="col-md-12 formElement has-feedback transition"
              ng-form="acl_entry_form_{{$index}}"
-             ng-repeat="ace in data['access-list-entries'] track by $index"
+             ng-repeat="ace in aclData['access-list-entries']['ace'] track by $index"
              >
 
             <div class="col-md-12"
                  sfc-watch-for-reinit="ace"
-                 ng-init="ace['matches']= (ace['matches'] || {}); ace['matches']['absolute']= (ace['matches']['absolute'] || {});
+                 ng-init="ace['matches']= (ace['matches'] || {}); ace['matches']['absolute-time']= (ace['matches']['absolute-time'] || {});
                     ace['actions']= (ace['actions'] || {}); ace_type = valueOfAceType(ace['matches']); ">
                 <div style="text-align: right; margin-bottom: 10px">
                     <span class="spanTip">{{ 'SFC_ACL_ACE_REMOVE' | translate }}</span>
@@ -120,7 +120,7 @@
 
                     <div class="col-lg-6">
                         <input type="text" class="form-control input-sm"
-                               ng-model="ace['matches']['absolute']['start']"
+                               ng-model="ace['matches']['absolute-time']['start']"
                                id="metadata-absolute-start_{{$index}}" name="metadata-absolute-start"
                                placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_START' | translate}}"
                                date-and-time>
@@ -133,7 +133,7 @@
 
                     <div class="col-lg-6">
                         <input type="text" class="form-control input-sm"
-                               ng-model="ace['matches']['absolute']['end']"
+                               ng-model="ace['matches']['absolute-time']['end']"
                                id="metadata-absolute-end_{{$index}}" name="metadata-absolute-end"
                                placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_END' | translate}}"
                                date-and-time>
@@ -148,8 +148,8 @@
 
                     <div class="col-lg-6">
                         <select class="form-control input-sm" id="metadata-absolute-active_{{$index}}" ui-select2="{allowClear: true}"
-                                ng-model="ace['matches']['absolute']['active']"
-                                ng-required="false" ng-init="ace['matches']['absolute']['active'] = 'true'"
+                                ng-model="ace['matches']['absolute-time']['active']"
+                                ng-required="false" ng-init="ace['matches']['absolute-time']['active'] = 'true'"
                                 data-placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_ACTIVE' | translate}}">
                             <option value=""></option>
                             <option value="true">{{'SFC_TRUE' | translate}}</option>

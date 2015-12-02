@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sfc-common"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common">
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-common"/>
+  <prefix value="sfc-common"/>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Keith Burns &lt;krb@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>Common typedefs and leafrefs for project</text>
+  </description>
+  <revision date="2015-10-17">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <typedef name="tenant-id">
+    <type name="string"/>
+    <description>
+      <text>Tenant ID</text>
+    </description>
+  </typedef>
+  <typedef name="sn-name">
+    <type name="string"/>
+    <description>
+      <text>Service Node Name Type</text>
+    </description>
+  </typedef>
+  <typedef name="sfc-name">
+    <type name="string"/>
+    <description>
+      <text>Service Function Chain Name</text>
+    </description>
+  </typedef>
+  <typedef name="sft-type">
+    <type name="string"/>
+    <description>
+      <text>Service function type name</text>
+    </description>
+  </typedef>
+  <typedef name="sf-name">
+    <type name="string"/>
+    <description>
+      <text>Service Function Name</text>
+    </description>
+  </typedef>
+  <typedef name="sf-data-plane-locator-name">
+    <type name="string"/>
+    <description>
+      <text>A unique name for SF data-plane-locator</text>
+    </description>
+  </typedef>
+  <typedef name="rsp-name">
+    <type name="string"/>
+    <description>
+      <text>Rendererd Service Path Name Type</text>
+    </description>
+  </typedef>
+  <typedef name="sfp-name">
+    <type name="string"/>
+    <description>
+      <text>Service Function Path Name Type</text>
+    </description>
+  </typedef>
+  <typedef name="sff-data-plane-locator-name">
+    <type name="string"/>
+    <description>
+      <text>Service Function Forwarder data-plane-locator name type</text>
+    </description>
+  </typedef>
+  <typedef name="sff-name">
+    <type name="string"/>
+    <description>
+      <text>Service Function Forwarder Name type</text>
+    </description>
+  </typedef>
+</module>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-forwarder-ovs"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sff-ovs="urn:cisco:params:xml:ns:yang:sfc-sff-ovs"
+        xmlns:sfc-sff="urn:cisco:params:xml:ns:yang:sfc-sff"
+        xmlns:sfc-common="urn:cisco:params:xml:ns:yang:sfc-common"
+        xmlns:ext="urn:opendaylight:yang:extension:yang-ext"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:cisco:params:xml:ns:yang:sfc-sff-ovs"/>
+  <prefix value="sfc-sff-ovs"/>
+  <import module="service-function-forwarder">
+    <prefix value="sfc-sff"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="sfc-common">
+    <prefix value="sfc-common"/>
+    <revision-date date="2015-10-17"/>
+  </import>
+  <import module="yang-ext">
+    <prefix value="ext"/>
+    <revision-date date="2013-07-09"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2013-07-15"/>
+  </import>
+  <import module="ovsdb">
+    <prefix value="ovsdb"/>
+    <revision-date date="2015-01-05"/>
+  </import>
+  <import module="overlay">
+    <prefix value="ovsdb-overlay"/>
+    <revision-date date="2015-01-05"/>
+  </import>
+  <organization>
+    <text>Cisco Systems, Inc.</text>
+  </organization>
+  <contact>
+    <text>Reinaldo Penno &lt;repenno@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions used
+to augment Service Function Forwarder configuration with
+OpenvSwitch specific information.
+
+Copyright (c) 2013 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC XXXX; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>Augmentation of SFF for OVS</text>
+    </description>
+    <reference>
+      <text>https://tools.ietf.org/html/draft-penno-sfc-yang</text>
+    </reference>
+  </revision>
+  <grouping name="node">
+    <description>
+      <text>Groups that holds OVS node information</text>
+    </description>
+    <container name="ovs-node">
+      <description>
+        <text>This container holds OVS node information</text>
+      </description>
+      <leaf name="node-id">
+        <type name="ovsdb:ovsdb-node-ref"/>
+        <description>
+          <text>Open vSwitch node id.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="bridge">
+    <description>
+      <text>Groups OVS bridge information that is reused throughout
+SFF augmentations</text>
+    </description>
+    <container name="ovs-bridge">
+      <description>
+        <text>This container holds OVS bridge information</text>
+      </description>
+      <leaf name="bridge-name">
+        <type name="string"/>
+        <description>
+          <text>Open vSwitch bridge name. In Openstack it is usually br-tun or br-int depending if it is used in the overlay or facing virtual machines respectively</text>
+        </description>
+      </leaf>
+      <leaf name="uuid">
+        <type name="yang:uuid"/>
+        <description>
+          <text>Open vSwitch bridge UUID</text>
+        </description>
+      </leaf>
+      <leaf name="openflow-node-id">
+        <type name="string"/>
+        <description>
+          <text>Openflow node ID</text>
+        </description>
+      </leaf>
+      <list name="external-ids">
+        <key value="name"/>
+        <description>
+          <text>The list of external ids associated with this
+bridge</text>
+        </description>
+        <leaf name="name">
+          <type name="string"/>
+          <description>
+            <text>A unique string that represents this external-id such
+as attached-mac</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="string"/>
+          <description>
+            <text>A unique string that represents the value of the
+external-id such as fa:16:3e:56:47:10</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <container name="sff-ovs-mappings">
+    <description>
+      <text>Container for keeping lists of mappings neededby the SFC-OVS renderer</text>
+    </description>
+    <list name="ovs-node-to-sff-mapping">
+      <key value="uuid bridge-name"/>
+      <config value="false"/>
+      <description>
+        <text>List to keep mappings of OVS UUIDs + Bridge Nameto Service Function Fowarders (SFFs). This is used tocorrelate OVS bridge events to SFFs</text>
+      </description>
+      <leaf name="uuid">
+        <type name="yang:uuid"/>
+        <description>
+          <text>Open vSwitch bridge UUID</text>
+        </description>
+      </leaf>
+      <leaf name="bridge-name">
+        <type name="string"/>
+        <description>
+          <text>Open vSwitch bridge name. In Openstack it is usually br-tun or br-int depending if it is used in the overlay or facing virtual machines respectively</text>
+        </description>
+      </leaf>
+      <leaf name="name">
+        <type name="sfc-common:sff-name"/>
+        <description>
+          <text>The unique name of this service function forwarder, such
+as SFF1</text>
+        </description>
+      </leaf>
+    </list>
+  </container>
+  <grouping name="options">
+    <description>
+      <text>Groups all OVS specific configuration options that are reused
+throughout many SFF augmentations</text>
+    </description>
+    <container name="ovs-options">
+      <description>
+        <text>Port/Interface related optional input values</text>
+      </description>
+      <leaf name="local-ip">
+        <type name="string"/>
+        <description>
+          <text>Local interface IP address</text>
+        </description>
+      </leaf>
+      <leaf name="remote-ip">
+        <type name="string"/>
+        <description>
+          <text>Remote IP address, e.g. the remote Vxlan tunnel endpoint
+IP</text>
+        </description>
+      </leaf>
+      <leaf name="dst-port">
+        <type name="string"/>
+        <description>
+          <text>Remote port, e.g. the remote Vxlan tunnel endpoint port</text>
+        </description>
+      </leaf>
+      <leaf name="nsp">
+        <type name="string"/>
+        <description>
+          <text>NSH Service Path ID</text>
+        </description>
+      </leaf>
+      <leaf name="nsi">
+        <type name="string"/>
+        <description>
+          <text>NSH Starting Index</text>
+        </description>
+      </leaf>
+      <leaf name="in-nsp">
+        <type name="string"/>
+        <description>
+          <text>Ingress NSH Service Path ID</text>
+        </description>
+      </leaf>
+      <leaf name="in-nsi">
+        <type name="string"/>
+        <description>
+          <text>Ingress NSH Service Index</text>
+        </description>
+      </leaf>
+      <leaf name="out-nsp">
+        <type name="string"/>
+        <description>
+          <text>Egress NSH Service Path ID</text>
+        </description>
+      </leaf>
+      <leaf name="out-nsi">
+        <type name="string"/>
+        <description>
+          <text>Egress NSH Service Index</text>
+        </description>
+      </leaf>
+      <leaf name="nshc1">
+        <type name="string"/>
+        <description>
+          <text>NSH Context Header 1</text>
+        </description>
+      </leaf>
+      <leaf name="nshc2">
+        <type name="string"/>
+        <description>
+          <text>NSH Context Header 2</text>
+        </description>
+      </leaf>
+      <leaf name="nshc3">
+        <type name="string"/>
+        <description>
+          <text>NSH Context Header 3</text>
+        </description>
+      </leaf>
+      <leaf name="nshc4">
+        <type name="string"/>
+        <description>
+          <text>NSH Context Header 4</text>
+        </description>
+      </leaf>
+      <leaf name="key">
+        <type name="string"/>
+        <description>
+          <text>Vxlan tunnel ID</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/">
+    <description>
+      <text>Augments the SFF definition with
+OVS node specific information</text>
+    </description>
+    <ext:augment-identifier/>
+    <uses name="node"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/">
+    <description>
+      <text>Augments the SFF definition with
+bridge specific information</text>
+    </description>
+    <ext:augment-identifier/>
+    <uses name="bridge"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:sff-data-plane-locator">
+    <description>
+      <text>Augments the SFF data plane locator with
+bridge specific information</text>
+    </description>
+    <ext:augment-identifier identifier="sff-ovs-locator-bridge-augmentation"/>
+    <uses name="bridge"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:sff-data-plane-locator">
+    <description>
+      <text>Augments the SFF data plane locator with
+options specific to OVS such as context headers</text>
+    </description>
+    <ext:augment-identifier identifier="sff-ovs-locator-options-augmentation"/>
+    <uses name="options"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:service-function-dictionary/sfc-sff:sff-sf-data-plane-locator">
+    <description>
+      <text>Augments the data plane locator between SFF and SF with
+bridge specific information</text>
+    </description>
+    <ext:augment-identifier identifier="sff-sf-ovs-locator-bridge-augmentation"/>
+    <uses name="bridge"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:service-function-dictionary/sfc-sff:sff-sf-data-plane-locator">
+    <description>
+      <text>Augments the data plane locator between SFF and SF with
+options specific to OVS such as context headers</text>
+    </description>
+    <ext:augment-identifier identifier="sff-sf-ovs-locator-options-augmentation"/>
+    <uses name="options"/>
+  </augment>
+  <rpc name="create-ovs-bridge">
+    <description>
+      <text>Creates OVS Bridge on specified OVS Node</text>
+    </description>
+    <input>
+      <leaf name="name">
+        <type name="string"/>
+        <description>
+          <text>The name of OVS Bridge to be created</text>
+        </description>
+      </leaf>
+      <container name="ovs-node">
+        <description>
+          <text>Contains ip:port locator of the OVS Node,
+on which OVS Bridge is going to be created</text>
+        </description>
+        <uses name="ovsdb-overlay:ip-port-locator"/>
+      </container>
+    </input>
+    <output>
+      <leaf name="result">
+        <type name="boolean"/>
+        <description>
+          <text>True if the OVS bridge was created, otherwise
+false</text>
+        </description>
+      </leaf>
+    </output>
+  </rpc>
+</module>

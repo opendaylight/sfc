@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-mapping"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sf-map="urn:ericsson:params:xml:ns:yang:sfc-sf-map"
+        xmlns:sfc-sft="urn:cisco:params:xml:ns:yang:sfc-sft"
+        xmlns:sfc-sl="urn:cisco:params:xml:ns:yang:sfc-sl">
+  <namespace uri="urn:ericsson:params:xml:ns:yang:sfc-sf-map"/>
+  <prefix value="sfc-sf-map"/>
+  <import module="service-function-type">
+    <prefix value="sfc-sft"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="service-locator">
+    <prefix value="sfc-sl"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <organization>
+    <text>Ericsson Inc.</text>
+  </organization>
+  <contact>
+    <text>Brady Johnson &lt;brady.allen.johnson@ericsson.com&gt;</text>
+  </contact>
+  <description>
+    <text>The defenitions herein allow for an SF and SFF to easily be
+identified given the Service Locator transport type and the
+SF type. These entities will be populated when the SFF and
+SFs are populated, and cannot be configured via RESTConf.
+Currently, there is no way of knowing if SFFs specified in
+adjacent Service Chain hops are reachable, so later, when
+SFC has something capable of determining the SFF topology,
+the SFF list may be modified.</text>
+  </description>
+  <revision date="2014-07-01">
+    <description>
+      <text>First version.</text>
+    </description>
+  </revision>
+  <container name="service-function-mapping">
+    <config value="false"/>
+    <description>
+      <text>This container maps the transport type to service function types
+that are reachable with the transport type. Each service function
+type then maps to a list of service functions of that type. Each
+service function then maps to a list of service function forwarders
+that can reach the service fuction with the transport type.</text>
+    </description>
+    <list name="sl-transports">
+      <key value="transport"/>
+      <leaf name="transport">
+        <type name="identityref">
+          <base name="sfc-sl:sl-transport-type"/>
+        </type>
+        <description>
+          <text>the name of the locator transport</text>
+        </description>
+      </leaf>
+      <list name="service-function-types">
+        <key value="sf-type"/>
+        <leaf name="sf-type">
+          <type name="sfc-sft:service-function-type"/>
+          <description>
+            <text>The service function type</text>
+          </description>
+        </leaf>
+        <list name="service-functions">
+          <key value="sf-name"/>
+          <leaf name="sf-name">
+            <type name="string"/>
+            <description>
+              <text>the name of the service function</text>
+            </description>
+          </leaf>
+          <list name="service-function-forwarders">
+            <key value="sff-name"/>
+            <leaf name="sff-name">
+              <type name="string"/>
+              <description>
+                <text>the name of the service function forwarder</text>
+              </description>
+            </leaf>
+          </list>
+        </list>
+      </list>
+    </list>
+  </container>
+</module>

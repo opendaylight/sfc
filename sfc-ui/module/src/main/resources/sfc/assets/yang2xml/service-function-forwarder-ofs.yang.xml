@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="service-function-forwarder-ofs"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sfc-sff-ofs="urn:ericsson:params:xml:ns:yang:sfc-sff-ofs"
+        xmlns:sfc-sff="urn:cisco:params:xml:ns:yang:sfc-sff"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:ericsson:params:xml:ns:yang:sfc-sff-ofs"/>
+  <prefix value="sfc-sff-ofs"/>
+  <import module="service-function-forwarder">
+    <prefix value="sfc-sff"/>
+    <revision-date date="2014-07-01"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <revision-date date="2010-09-24"/>
+  </import>
+  <organization>
+    <text>Ericsson, Inc.</text>
+  </organization>
+  <contact>
+    <text>Brady Johnson &lt;brady.allen.johnson@ericsson.com&gt;</text>
+  </contact>
+  <revision date="2015-04-08">
+    <description>
+      <text>Augmentation of SFF for OFS</text>
+    </description>
+  </revision>
+  <grouping name="port-details">
+    <container name="ofs-port">
+      <leaf name="port-id">
+        <description>
+          <text>Open Flow Switch port ID.</text>
+        </description>
+        <type name="string"/>
+      </leaf>
+      <leaf name="mac-address">
+        <description>
+          <text>MAC address to use on this OFS port</text>
+        </description>
+        <type name="yang:mac-address"/>
+      </leaf>
+    </container>
+  </grouping>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:sff-data-plane-locator">
+    <uses name="port-details"/>
+  </augment>
+  <augment target-node="/sfc-sff:service-function-forwarders/sfc-sff:service-function-forwarder/sfc-sff:service-function-dictionary">
+    <uses name="port-details"/>
+  </augment>
+</module>

@@ -40,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MplsBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
@@ -467,12 +466,12 @@ public class SfcL2RspProcessor {
 
         if (!getSffInitialized(sffName)) {
             LOG.debug("Initializing SFF [{}] node [{}]", sffName, sffNodeName);
-            this.sfcL2FlowProgrammer.configureClassifierTableMatchAny(sffNodeName, false);
-            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName, true);
-            this.sfcL2FlowProgrammer.configurePathMapperTableMatchAny(sffNodeName, false);
-            this.sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName, false);
-            this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffNodeName, false);
-            this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName, true);
+            this.sfcL2FlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
+            this.sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            this.sfcL2FlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
+            this.sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
+            this.sfcL2FlowProgrammer.configureNextHopTableMatchAny(sffNodeName);
+            this.sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
 
             setSffInitialized(sffName, true);
         }
@@ -539,10 +538,7 @@ public class SfcL2RspProcessor {
         // Mac and possibly VLAN
         if (implementedInterface.equals(Mac.class)) {
             Integer vlanTag = ((MacAddressLocator) sffLocatorType).getVlanId();
-            MacAddress mac = ((MacAddressLocator) sffLocatorType).getMac();
-            if (vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacPathMapperFlow(sffNodeName, mac.getValue(), pathId, isSf);
-            } else {
+            if (vlanTag != null) {
                 this.sfcL2FlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, pathId, isSf);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
@@ -618,7 +614,7 @@ public class SfcL2RspProcessor {
             }
         } else {
             // Same thing for Mac/VLAN and MPLS
-            this.sfcL2FlowProgrammer.configureNextHopFlow(sffNodeName, pathId, srcMac, dstMac);
+            this.sfcL2FlowProgrammer.configureMacNextHopFlow(sffNodeName, pathId, srcMac, dstMac);
         }
     }
 
@@ -714,25 +710,22 @@ public class SfcL2RspProcessor {
         if (implementedInterface.equals(Mac.class)) {
             // Mac and possibly VLAN
             Integer vlanTag = ((MacAddressLocator) hopLocatorType).getVlanId();
-            if (vlanTag == null) {
-                this.sfcL2FlowProgrammer.configureMacTransportEgressFlow(sffNodeName, srcMac, dstMac, srcOfsPort,
-                        pathId, isSf, isLastServiceIndex, doPktIn);
-            } else {
+            if (vlanTag != null) {
                 this.sfcL2FlowProgrammer.configureVlanTransportEgressFlow(sffNodeName, srcMac, dstMac, vlanTag,
-                        srcOfsPort, pathId, isSf, isLastServiceIndex, doPktIn);
+                        srcOfsPort, pathId, isSf, doPktIn);
             }
         } else if (implementedInterface.equals(Mpls.class)) {
             // MPLS
             long mplsLabel = ((MplsLocator) hopLocatorType).getMplsLabel();
             this.sfcL2FlowProgrammer.configureMplsTransportEgressFlow(sffNodeName, srcMac, dstMac, mplsLabel,
-                    srcOfsPort, pathId, isSf, isLastServiceIndex, doPktIn);
+                    srcOfsPort, pathId, isSf, doPktIn);
         } else if (implementedInterface.equals(Ip.class)) {
             // VxLAN-gpe, it is IP/UDP flow with VLAN tag
             if (hopDpl.getTransport().equals(VxlanGpe.class)) {
                 long nsp = pathId;
                 short nsi = serviceIndex;
                 this.sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(sffNodeName, nsp, nsi, srcOfsPort,
-                        isLastServiceIndex, doPktIn);
+                        isLastServiceIndex);
                 if (isLastServiceIndex) {
                     this.sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(sffNodeName, nsp, nsi,
                             OutputPortValues.INPORT.toString());

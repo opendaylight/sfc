@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -35,19 +37,16 @@ public class SfcL2FlowWriterTest implements SfcL2FlowWriterInterface {
     @Override
     public void removeFlowFromConfig(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
-
     }
 
     @Override
     public void storeFlowDetails(Long rspId, String sffNodeName,
             FlowKey flowKey, short tableId) {
-
     }
 
     @Override
     public void writeGroupToDataStore(String sffNodeName, GroupBuilder gb,
             boolean isAdd) {
-
     }
 
     @Override
@@ -57,7 +56,9 @@ public class SfcL2FlowWriterTest implements SfcL2FlowWriterInterface {
 
     @Override
     public void deleteRspFlows(Long rspId) {
-
     }
 
+    @Override
+    public void shutdown() throws ExecutionException, InterruptedException {
+    }
 }

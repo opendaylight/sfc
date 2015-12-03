@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -45,10 +50,85 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
-
+    private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
+    private static final int QUEUE_SIZE = 1000;
+    private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
+    private static final long SHUTDOWN_TIME = 5;
+    private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowWriterImpl.class);
 
-    // Internal class used to store the details of a flow for easy deletion later
+    private ExecutorService threadPoolExecutorService;
+    private FlowBuilder flowBuilder;
+    private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
+
+    public SfcL2FlowWriterImpl() {
+        // Not using an Executors.newSingleThreadExecutor() here, since it creates
+        // an Executor that uses a single worker thread operating off an unbounded
+        // queue, and we want to be able to limit the size of the queue
+        this.threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE, SCHEDULED_THREAD_POOL_SIZE,
+                ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
+        this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
+        this.flowBuilder = null;
+    }
+
+    public void shutdown() throws ExecutionException, InterruptedException {
+        // When we close this service we need to shutdown our executor!
+        threadPoolExecutorService.shutdown();
+        if (!threadPoolExecutorService.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
+            LOG.error("SfcL2FlowProgrammerOFimpl Executor did not terminate in the specified time.");
+            List<Runnable> droppedTasks = threadPoolExecutorService.shutdownNow();
+            LOG.error("SfcL2FlowProgrammerOFimpl Executor was abruptly shut down. [{}] tasks will not be executed.",
+                    droppedTasks.size());
+        }
+    }
+
+    /**
+     * A thread class used to write the flows to the data store.
+     */
+    class FlowWriterThread implements Runnable {
+        String sffNodeName;
+        InstanceIdentifier<Flow> flowInstanceId;
+        FlowBuilder flowBuilder;
+
+        public FlowWriterThread(String sffNodeName, InstanceIdentifier<Flow> flowInstanceId, FlowBuilder flowBuilder) {
+            this.sffNodeName = sffNodeName;
+            this.flowInstanceId = flowInstanceId;
+            this.flowBuilder = flowBuilder;
+        }
+
+        public void run(){
+            if (!SfcDataStoreAPI.writeMergeTransactionAPI(
+                    this.flowInstanceId,
+                    this.flowBuilder.build(),
+                    LogicalDatastoreType.CONFIGURATION)) {
+                LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], this.sffNodeName);
+            }
+        }
+    }
+
+    /**
+     * A thread class used to remove flows from the data store.
+     */
+    class FlowRemoverThread implements Runnable {
+        String sffNodeName;
+        InstanceIdentifier<Flow> flowInstanceId;
+
+        public FlowRemoverThread(String sffNodeName, InstanceIdentifier<Flow> flowInstanceId) {
+            this.flowInstanceId = flowInstanceId;
+            this.sffNodeName = sffNodeName;
+        }
+
+        public void run(){
+            if (!SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
+                LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
+            }
+        }
+    }
+
+    /**
+     * Internal class used to store the details of a flow for easy deletion later
+     */
     private class FlowDetails {
 
         public String sffNodeName;
@@ -62,21 +142,12 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
         }
     }
 
-    private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
-
-    public SfcL2FlowWriterImpl() {
-        this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
-    }
-
     /**
      * Write a flow to the DataStore
      *
      * @param sffNodeName - which SFF to write the flow to
      * @param flow - details of the flow to be written
      */
-
-    FlowBuilder flowBuilder = null;
-
     @Override
     public void writeFlowToConfig(Long rspId, String sffNodeName,
             FlowBuilder flow) {
@@ -96,11 +167,14 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
         LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
 
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(),
-                LogicalDatastoreType.CONFIGURATION)) {
-            LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
-        }
         storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
+
+        FlowWriterThread writerThread = new FlowWriterThread(sffNodeName, flowInstanceId, flow);
+        try {
+            threadPoolExecutorService.execute(writerThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        }
     }
 
     /**
@@ -126,8 +200,11 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
             .child(Flow.class, flowKey)
             .build();
 
-        if (!SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
-            LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
+        FlowRemoverThread removerThread = new FlowRemoverThread(sffNodeName, flowInstanceId);
+        try {
+            threadPoolExecutorService.execute(removerThread);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
         }
     }
 
@@ -183,6 +260,11 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
     }
 
+    /**
+     * Delete all flows created for the given rspId
+     *
+     * @param rspId - the rspId to delete flows for
+     */
     @Override
     public void deleteRspFlows(final Long rspId) {
         List<FlowDetails> flowDetailsList = rspNameToFlowsMap.get(rspId);
@@ -208,5 +290,4 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
             rspNameToFlowsMap.clear();
         }
     }
-
 }

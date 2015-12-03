@@ -11,6 +11,7 @@ package org.opendaylight.sfc.l2renderer;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 
 /**
@@ -42,6 +43,9 @@ public interface SfcL2FlowProgrammerInterface {
     // Delete all flows created for a particular RSP
     public void deleteRspFlows(final Long rspId);
 
+    //Set FlowWriter implementation
+    public void setFlowWriter(SfcL2FlowWriterInterface sfcL2FlowWriter);
+
     //
     // Congfigure Table 1, Transport Ingress
     //
@@ -58,18 +62,16 @@ public interface SfcL2FlowProgrammerInterface {
     //
     // Configure Table 2, Path Mapper
     //
-    public void configureMacPathMapperFlow(final String sffNodeName, final String mac, long pathId, boolean isSf);
-
     public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf);
 
     public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf);
-
-    public void configureVxlanGpePathMapperFlow(final String sffNodeName, long nsp, short nsi, long pathId);
+    // PathMapper not needed for VxlanGpe NSH
+    //configureVxlanGpePathMapperFlow()
 
     //
     // Table 3, NextHop
     //
-    public void configureNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
+    public void configureMacNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
             final String dstMac);
 
     public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
@@ -81,44 +83,37 @@ public interface SfcL2FlowProgrammerInterface {
     //
     // Table 10, Transport Egress
     //
-    public void configureMacTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final String port, final long pathId, final boolean setDscp, final boolean isLastHop,
-            final boolean doPktIn);
-
     public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, final String port, final long pathId, final boolean setDscp, final boolean isLastHop,
-            final boolean doPktIn);
+            final int dstVlan, final String port, final long pathId, final boolean setDscp, final boolean doPktIn);
 
     public void configureVxlanGpeTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
-            final String port, final boolean isLastHop, final boolean doPktIn);
+            final String port, final boolean isLastHop);
 
     public void configureMplsTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final long mplsLabel, final String port, final long pathId, boolean setDscp, final boolean isLastHop,
-            final boolean doPktIn);
+            final long mplsLabel, final String port, final long pathId, boolean setDscp, final boolean doPktIn);
 
     public void configureNshNscTransportEgressFlow(String sffNodeName, final long nshNsp, final short nshNsi,
             String switchPort);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
-    // If doDrop == False
     // Classifier MatchAny will go to Ingress
     // TransportIngress MatchAny will go to PathMapper
     // PathMapper MatchAny will go to PathMapperAcl
     // PathMapperAcl MatchAny will go to NextHop
     // NextHop MatchAny will go to TransportEgress
     //
-    public void configureClassifierTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configureClassifierTableMatchAny(final String sffNodeName);
 
-    public void configureTransportIngressTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configureTransportIngressTableMatchAny(final String sffNodeName);
 
-    public void configurePathMapperTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configurePathMapperTableMatchAny(final String sffNodeName);
 
-    public void configurePathMapperAclTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configurePathMapperAclTableMatchAny(final String sffNodeName);
 
-    public void configureNextHopTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configureNextHopTableMatchAny(final String sffNodeName);
 
-    public void configureTransportEgressTableMatchAny(final String sffNodeName, final boolean doDrop);
+    public void configureTransportEgressTableMatchAny(final String sffNodeName);
 
     // group configuration
     public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName,

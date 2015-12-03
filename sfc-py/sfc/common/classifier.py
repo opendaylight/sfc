@@ -673,10 +673,9 @@ class NfqClassifier(metaclass=Singleton):
         :type acl_data: dict
 
         """
-        for acl in acl_data['access-list']:
+        for acl in acl_data['acl']:
             self.rsp_acl = acl['acl-name'].upper()
-
-            for ace in acl['access-list-entries']:
+            for ace in acl['access-list-entries']['ace']:
                 if 'delete' in ace:
                     self.remove_acl_rsps()
                     return
@@ -695,9 +694,9 @@ class NfqClassifier(metaclass=Singleton):
                 self.rsp_id = rsp_id
                 self.rsp_ace = ace['rule-name'].upper()
                 self.rsp_chain = '-'.join((self.rsp_acl,
-                                           self.rsp_ace,
-                                           'RSP',
-                                           str(rsp_id)))
+                                       self.rsp_ace,
+                                       'RSP',
+                                       str(rsp_id)))
 
                 # `self.rsp_ipv` and `self.rsp_mark` are set by this
                 ace_rule_cmd = self.parse_ace(ace['matches'])

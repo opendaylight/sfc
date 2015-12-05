@@ -11,6 +11,7 @@ package org.opendaylight.sfc.l2renderer;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
 import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;

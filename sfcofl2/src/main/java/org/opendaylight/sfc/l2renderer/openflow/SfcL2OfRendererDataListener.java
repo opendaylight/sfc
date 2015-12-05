@@ -21,7 +21,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
-import org.opendaylight.sfc.l2renderer.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.SfcSynchronizer;
 
 import org.slf4j.Logger;

@@ -22,16 +22,10 @@
         "service-function-dictionary": [
           {
             "name": "sf1",
-            "type": "service-function-type:tcp-proxy",
             "sff-sf-data-plane-locator":
             {
-                "vlan-id": 1000,
-                "mac": "22:22:22:22:22:22",
-                "transport": "service-locator:mac"
-            },
-            "service-function-forwarder-ofs:ofs-port":
-            {
-                "port-id" : "1"
+                "sf-dpl-name" : "sff1",
+                "sff-dpl-name" : "ulSff1Ingress"
             }
           }
         ]
@@ -57,16 +51,10 @@
         "service-function-dictionary": [
           {
             "name": "sf2",
-            "type": "service-function-type:tcp-proxy",
             "sff-sf-data-plane-locator":
             {
-                "vlan-id": 2000,
-                "mac": "55:55:55:55:55:55",
-                "transport": "service-locator:mac"
-            },
-            "service-function-forwarder-ofs:ofs-port":
-            {
-                "port-id" : "1"
+                "sf-dpl-name" : "sff2",
+                "sff-dpl-name" : "ulSff2Ingress"
             }
           }
         ]

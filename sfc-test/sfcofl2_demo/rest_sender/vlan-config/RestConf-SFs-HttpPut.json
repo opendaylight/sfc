@@ -3,7 +3,7 @@
     "service-function": [
       {
         "name": "sf1",
-        "type": "service-function-type:tcp-proxy",
+        "type": "tcp-proxy",
         "nsh-aware": false,
         "ip-mgmt-address": "10.0.0.2",
         "sf-data-plane-locator": [
@@ -18,7 +18,7 @@
       },
       {
         "name": "sf2",
-        "type": "service-function-type:tcp-proxy",
+        "type": "tcp-proxy",
         "nsh-aware": false,
         "ip-mgmt-address": "10.0.0.3",
         "sf-data-plane-locator": [

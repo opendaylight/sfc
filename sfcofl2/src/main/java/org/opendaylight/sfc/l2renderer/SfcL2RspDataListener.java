@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;

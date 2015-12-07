@@ -32,9 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -1504,19 +1502,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      * @param tableKey - The table the flow was written to
      */
     private void removeFlowFromConfig(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(sffNodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
-
-        // Create the flow path
-        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, tableKey)
-            .child(Flow.class, flowKey)
-            .build();
-
-        if (!SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
+        if (!SfcOpenflowUtils.removeFlowFromDataStore(sffNodeName, tableKey, flowKey)) {
             LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
     }
@@ -1528,23 +1514,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      * @param flow - details of the flow to be written
      */
     private void writeFlowToConfig(final Long rspId, final String sffNodeName, FlowBuilder flow) {
-        // Create the NodeBuilder
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(sffNodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
-
-        // Create the flow path, which will include the Node, Table, and Flow
-        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, new TableKey(flow.getTableId()))
-            .child(Flow.class, flow.getKey())
-            .build();
-
         LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
-
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(),
-                LogicalDatastoreType.CONFIGURATION)) {
+        if (!SfcOpenflowUtils.writeFlowToDataStore(sffNodeName, flow)) {
             LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
         }
         storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());

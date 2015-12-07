@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:spi">
+                        sfc:sfc-vnfm-spi
+                    </type>
+                    <name>sfc-vnfm-spi</name>
+                    <notification-service>
+                      <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                        binding:binding-notification-service
+                      </type>
+                      <name>binding-notification-broker</name>
+                    </notification-service>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                </module>
+            </modules>
+        </data>
+
+    </configuration>
+
+    <required-capabilities>
+    </required-capabilities>
+
+</snapshot>

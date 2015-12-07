@@ -1,0 +1,57 @@
+// vi: set smarttab et sw=4 tabstop=4:
+module sfc-vnfm-spi-cfg {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:sfc:vnfm:spi";
+    prefix "spi";
+
+    import config { prefix config; revision-date 2013-04-05; }
+
+    organization "Cisco Systems, Inc.";
+
+    contact "Keith Burns <alagalah@gmail.com>";
+
+    description
+        "This module contains the base YANG definitions for
+        the SFC VNFM SPI module.
+
+        Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2015-12-07" {
+        description
+            "Initial revision";
+    }
+
+    identity vnfm {
+        description
+            "Service representing a vnfm.";
+
+        base "config:service-type";
+        config:java-class "org.opendaylight.sfc.SfcVnfmHuh??";
+    }
+
+    identity vnfm-impl {
+        base config:module-type;
+        config:provided-service vnfm;
+        config:java-name-prefix SfcVnfmHuh??;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case vnfm-impl {
+            when "/config:modules/config:module/config:type = 'vnfm-impl'";
+
+            list vnfm {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity vnfm;
+                    }
+                }
+            }
+        }
+    }
+}

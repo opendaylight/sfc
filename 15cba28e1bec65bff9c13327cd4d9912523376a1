@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "1aa4ed85_926b2285",
+        "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/controller/config/yang/config/sfc/vnfm/spi/SfcVnfmSpiModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_5205aac0",
+        "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/controller/config/yang/config/sfc/vnfm/spi/SfcVnfmSpiModuleFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_d70bcc29",
         "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmSpi.java",
         "patchSetId": 4
@@ -71,6 +105,23 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_d2f8bac6",
+        "filename": "sfc-vnfm-spi/src/main/resources/configuration/initial/sfc-vnfm-spi-initial.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_32aa6ed5",
         "filename": "sfc-vnfm-spi/src/main/yang/sfc-vnfm-spi-cfg.yang",
         "patchSetId": 4
@@ -117,6 +168,46 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_f2f5b6cb",
+        "filename": "sfc-vnfm-spi/src/main/yang/sfc-vnfm-spi-cfg.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 5
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_920242b3",
+        "filename": "sfc-vnfm-spi/src/test/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmDummyImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_b2bade08",
         "filename": "sfc-vnfm-spi/src/test/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmDummyImpl.java",
         "patchSetId": 4
@@ -134,6 +225,23 @@
         "endLine": 19,
         "endChar": 29
       },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_b2ff3eaa",
+        "filename": "sfc-vnfm-spi/src/test/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmSpiTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:54:58Z",
+      "side": 1,
+      "message": "please remove",
       "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

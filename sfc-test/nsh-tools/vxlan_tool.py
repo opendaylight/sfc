@@ -44,7 +44,7 @@ class VXLAN(Structure):
 
     def __init__(self, flags=int('00001000', 2), reserved=0, next_protocol=0,
                  vni=int('111111111111111111111111', 2), reserved2=0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.flags = flags
         self.reserved = reserved
         self.next_protocol = next_protocol
@@ -109,7 +109,7 @@ class BASEHEADER(Structure):
 
     def __init__(self, service_path=1, service_index=255, version=NSH_VERSION1, flags=NSH_FLAG_ZERO,
                  length=NSH_TYPE1_LEN, md_type=NSH_MD_TYPE1, proto=NSH_NEXT_PROTO_ETH, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.version = version
         self.flags = flags
         self.length = length
@@ -138,7 +138,7 @@ class CONTEXTHEADER(Structure):
 
     def __init__(self, network_platform=0x00, network_shared=0x00, service_platform=0x00, service_shared=0x00, *args,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.network_platform = network_platform
         self.network_shared = network_shared
         self.service_platform = service_platform
@@ -307,13 +307,17 @@ def compute_internet_checksum(data):
         pad = bytearray(b'\x00')
     # for i in range(0, len(data + pad) - n, 2):
     for i in range(0, len(data)-1, 2):
-        checksum += (data[i] << 8) + (data[i + 1])
+        checksum += (ord(data[i]) << 8) + (ord(data[i + 1]))
     if n == 1:
-        checksum += (data[len(data)-1] << 8) + (pad[0])
+        checksum += (ord(data[len(data)-1]) << 8) + (pad[0])
     while checksum >> 16:
         checksum = (checksum & 0xFFFF) + (checksum >> 16)
     checksum = ~checksum & 0xffff
     return checksum
+
+# Implements int.from_bytes(s, byteorder='big')
+def int_from_bytes(s):
+    return sum(ord(c) << (i * 8) for i, c in enumerate(s[::-1]))
 
 def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
     """
@@ -325,11 +329,11 @@ def build_ipv4_header(ip_tot_len, proto, src_ip, dest_ip):
     else:
         ip_saddr = socket.inet_aton(socket.gethostbyname(socket.gethostname()))
 
-    ip_saddr = int.from_bytes(ip_saddr, byteorder='big')
-    ip_daddr = socket.inet_aton(dest_ip)
-    ip_daddr = int.from_bytes(ip_daddr, byteorder='big')
+    new_ip_daddr = int_from_bytes(ip_saddr)
+    new_ip_saddr = socket.inet_aton(dest_ip)
+    new_ip_saddr = int_from_bytes(new_ip_saddr)
 
-    ip_header = IP4HEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0, ip_saddr, ip_daddr)
+    ip_header = IP4HEADER(IP_HEADER_LEN, IPV4_VERSION, IPV4_TOS, ip_tot_len, IPV4_PACKET_ID, 0, IPV4_TTL, proto, 0, new_ip_saddr, new_ip_daddr)
 
     checksum = compute_internet_checksum(ip_header.build())
     ip_header.set_ip_checksum(checksum)
@@ -393,6 +397,8 @@ def main():
                         help='Specify the interface to listen')
     parser.add_argument('-d', '--do', choices=['dump', 'forward'],
                         help='dump/foward VxLAN/VxLAN-gpe + NSH packet')
+    parser.add_argument('-v', '--verbose', choices=['on', 'off'],
+                        help='dump packets when in forward mode')
     args = parser.parse_args()
     macaddr = None
 
@@ -415,6 +421,12 @@ def main():
         print("{}".format(e) + " '%s'" % args.interface)
         sys.exit(-1)
 
+
+    do_print = ((args.do != "forward") or (args.verbose == "on"))
+
+    vxlan_gpe_udp_ports = [4790, 6633]
+    vxlan_udp_ports = [4789] + vxlan_gpe_udp_ports
+
     # receive a packet
     pktnum=0
     while True:
@@ -432,62 +444,77 @@ def main():
         nshcontext_length = 16
 
         myethheader = ETHHEADER()
-        myipheader = IP4HEADER()
-        myudpheader = UDPHEADER()
-        myvxlanheader = VXLAN()
-        mynshbaseheader = BASEHEADER()
-        mynshcontextheader = CONTEXTHEADER()
 
         """ Decode ethernet header """
         decode_eth(packet, myethheader)
+
         if ((myethheader.ethertype0 != 0x08) or (myethheader.ethertype1 != 0x00)):
             continue
         if (macaddr is not None):
             if ((myethheader.dmac4 != int(macaddr[4], 16)) or (myethheader.dmac5 != int(macaddr[5], 16))):
                 continue
 
+        pktnum = pktnum + 1
+        if (do_print):
+            print("\n\nPacket #%d" % pktnum)
+
+        """ Print ethernet header """
+        if (do_print):
+            print("Eth Dst MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Src MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Ethertype: 0x%.4x" % (myethheader.dmac0, myethheader.dmac1, myethheader.dmac2, myethheader.dmac3, myethheader.dmac4, myethheader.dmac5, myethheader.smac0, myethheader.smac1, myethheader.smac2, myethheader.smac3, myethheader.smac4, myethheader.smac5, (myethheader.ethertype0<<8) | myethheader.ethertype1))
+
+        myipheader = IP4HEADER()
+
         """ Decode IP header """
         decode_ip(packet, myipheader)
+
+        """ Print IP header """
+        if (do_print):
+            print("IP Version: %s IP Header Length: %s, TTL: %s, Protocol: %s, Src IP: %s, Dst IP: %s" % (myipheader.ip_ver, myipheader.ip_ihl, myipheader.ip_ttl, myipheader.ip_proto, str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr)))))
+
         if (myipheader.ip_proto != 17):
             continue
 
+        myudpheader = UDPHEADER()
+
         """ Decode UDP header """
         decode_udp(packet, myudpheader)
-        if ((myudpheader.udp_dport != 4789) and (myudpheader.udp_dport != 4790)):
+
+        """ Print UDP header """
+        if (do_print):
+            print ("UDP Src Port: %s, Dst Port: %s, Length: %s, Checksum: %s" % (myudpheader.udp_sport, myudpheader.udp_dport, myudpheader.udp_len, myudpheader.udp_sum))
+
+        if (myudpheader.udp_dport not in vxlan_udp_ports):
             continue
 
-        pktnum = pktnum + 1
+        myvxlanheader = VXLAN()
 
         """ Decode VxLAN/VxLAN-gpe header """
         decode_vxlan(packet, myvxlanheader)
-        print("\n\nPacket #%d" % pktnum)
-
-        """ Print ethernet header """
-        print("Eth Dst MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Src MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Ethertype: 0x%.4x" % (myethheader.dmac0, myethheader.dmac1, myethheader.dmac2, myethheader.dmac3, myethheader.dmac4, myethheader.dmac5, myethheader.smac0, myethheader.smac1, myethheader.smac2, myethheader.smac3, myethheader.smac4, myethheader.smac5, (myethheader.ethertype0<<8) | myethheader.ethertype1))
-
-        """ Print IP header """
-        print("IP Version: %s IP Header Length: %s, TTL: %s, Protocol: %s, Src IP: %s, Dst IP: %s" % (myipheader.ip_ver, myipheader.ip_ihl, myipheader.ip_ttl, myipheader.ip_proto, str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr)))))
-
-        """ Print UDP header """
-        print ("UDP Src Port: %s, Dst Port: %s, Length: %s, Checksum: %s" % (myudpheader.udp_sport, myudpheader.udp_dport, myudpheader.udp_len, myudpheader.udp_sum))
 
         """ Print VxLAN/VxLAN-gpe header """
-        print("VxLAN/VxLAN-gpe VNI: %s, flags: %.2x, Next: %s" % (myvxlanheader.vni, myvxlanheader.flags, myvxlanheader.next_protocol))
+        if (do_print):
+            print("VxLAN/VxLAN-gpe VNI: %s, flags: %.2x, Next: %s" % (myvxlanheader.vni, myvxlanheader.flags, myvxlanheader.next_protocol))
+
+        mynshbaseheader = BASEHEADER()
+
+        mynshcontextheader = CONTEXTHEADER()
 
         """ Print NSH header """
-        if (myudpheader.udp_dport == 4790):
+        if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
             decode_nsh_baseheader(packet, mynshbaseheader)
             decode_nsh_contextheader(packet, mynshcontextheader)
 
             """ Print NSH base header """
-            print("NSH base nsp: %s, nsi: %s" % (mynshbaseheader.service_path, mynshbaseheader.service_index))
+            if (do_print):
+                print("NSH base nsp: %s, nsi: %s" % (mynshbaseheader.service_path, mynshbaseheader.service_index))
 
             """ Print NSH context header """
-            print("NSH context c1: 0x%.8x, c2: 0x%.8x, c3: 0x%.8x, c4: 0x%.8x" % (mynshcontextheader.network_platform, mynshcontextheader.network_shared, mynshcontextheader.service_platform, mynshcontextheader.service_shared))
+            if (do_print):
+                print("NSH context c1: 0x%.8x, c2: 0x%.8x, c3: 0x%.8x, c4: 0x%.8x" % (mynshcontextheader.network_platform, mynshcontextheader.network_shared, mynshcontextheader.service_platform, mynshcontextheader.service_shared))
 
-            if ((args.do == "forward") and (args.interface is not None)):
+            if ((args.do == "forward") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):
                 """ Build IP packet"""
-                if (myudpheader.udp_dport == 4790):
+                if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
                     """ nsi minus one """
                     mynshbaseheader.service_index = mynshbaseheader.service_index - 1
                     ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[eth_length+ip_length+udp_length+vxlan_length+nshbase_length+nshcontext_length:])

@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_d70bcc29",
+        "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmSpi.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "I would change name - something like SfcVnfManager. You do not have to have Spi in class name because spi is already mentioned in packege name",
+      "range": {
+        "startLine": 15,
+        "startChar": 17,
+        "endLine": 15,
+        "endChar": 27
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_f708482f",
+        "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmSpi.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "you can skip public in interface\u0027s methods",
+      "range": {
+        "startLine": 17,
+        "startChar": 4,
+        "endLine": 17,
+        "endChar": 10
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_52ffea01",
+        "filename": "sfc-vnfm-spi/src/main/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmSpi.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "you should add javadoc with info like what states of boolean indicates and what is purpose of the method.\nthis comment is also valid for methods below.",
+      "range": {
+        "startLine": 17,
+        "startChar": 11,
+        "endLine": 17,
+        "endChar": 55
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_32aa6ed5",
+        "filename": "sfc-vnfm-spi/src/main/yang/sfc-vnfm-spi-cfg.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "service will be known under this name. I would be more detailed - e.g. sfc-vnf-manager",
+      "range": {
+        "startLine": 29,
+        "startChar": 13,
+        "endLine": 29,
+        "endChar": 17
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_52e92a19",
+        "filename": "sfc-vnfm-spi/src/main/yang/sfc-vnfm-spi-cfg.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "this is OK, if you want to provide \"default\" implementation of the service. If not then it should be removed",
+      "range": {
+        "startLine": 37,
+        "startChar": 13,
+        "endLine": 37,
+        "endChar": 22
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_b2bade08",
+        "filename": "sfc-vnfm-spi/src/test/java/org/opendaylight/sfc/sfc/vnfm/spi/SfcVnfmDummyImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2015-12-08T20:44:30Z",
+      "side": 1,
+      "message": "does this represents default impl of service? Will it be tacker implementation or what is a purpose here?",
+      "range": {
+        "startLine": 19,
+        "startChar": 13,
+        "endLine": 19,
+        "endChar": 29
+      },
+      "revId": "15cba28e1bec65bff9c13327cd4d9912523376a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

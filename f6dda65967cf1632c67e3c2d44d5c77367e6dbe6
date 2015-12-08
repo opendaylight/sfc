@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_2caa17d5",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2RspProcessor.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 3547
+      },
+      "writtenOn": "2015-12-08T13:52:09Z",
+      "side": 1,
+      "message": "I\u0027ve used it because Node ID is still passed as String on many places (e.g. in this file on lines 474-480 methods from SfcL2FlowProgrammerOFimpl). I admit that this was not a good assumption and being type specific as possible is the right approach.",
+      "parentUuid": "1aa4ed85_66303057",
+      "range": {
+        "startLine": 80,
+        "startChar": 42,
+        "endLine": 80,
+        "endChar": 48
+      },
+      "revId": "f6dda65967cf1632c67e3c2d44d5c77367e6dbe6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_263a3837",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 5

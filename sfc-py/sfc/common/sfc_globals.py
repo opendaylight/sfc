@@ -58,7 +58,7 @@ SFF_SF_DATA_PLANE_LOCATOR_URL = ("http://{}/restconf/config/"
                                  "sff-sf-data-plane-locator/")
 
 METADATA_URL =  ("http://{}/restconf/config/"
-                 "service-function-metadata:"
+                 "service-function-path-metadata:"
                  "service-function-metadata/")
 
 class SfcGlobals:

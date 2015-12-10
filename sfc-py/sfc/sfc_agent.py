@@ -172,7 +172,9 @@ def find_sf_locator(sf_name, sff_name):
     service_list = local_sff_topo[sff_name]['service-function-dictionary']
     sf_list_entry = {}
     try:
-        sf_list_entry = service_list.index(sf_name, None)
+        for sf in service_list:
+            if sf.get('name') == sf_name:
+                sf_list_entry = sf
     except ValueError:
         # if the entry is not found in the list, return an empty locator
         return sf_locator
@@ -187,11 +189,13 @@ def find_sf_locator(sf_name, sff_name):
                 return None
 
             sf_dpl_list = local_sf['sf-data-plane-locator']
-            sf_dpl = sf_dpl_list.get('sf-dpl-name', None)
+            for dpl in sf_dpl_list:
+                if dpl.get('sf-dpl-name') == sf.get('sf-dpl-name'):
+                    sf_dpl = dpl
             if sf_dpl:
                 if 'ip' in sf_dpl:
-                    sf_locator['ip'] = _sf_sff_locator['ip']
-                    sf_locator['port'] = _sf_sff_locator['port']
+                    sf_locator['ip'] = sf_dpl['ip']
+                    sf_locator['port'] = sf_dpl['port']
                     return sf_locator
 
     if not sf_locator:
@@ -423,20 +427,20 @@ def create_paths():
     return flask.jsonify({'path': sfc_globals.path}), 201
 
 
-@app.route('/config/service-function-metadata:service-function-metadata/',
+@app.route('/config/service-function-path-metadata:service-function-metadata/',
            methods=['GET'])
 def get_odl_metadata():
     logger.info("Requesting ODL for Metadata")
     return flask.jsonify(sfc_globals.get_odl_metadata()())
 
 
-@app.route('/config/service-function-metadata:service-function-metadata/',
+@app.route('/config/service-function-path-metadata:service-function-metadata/',
            methods=['PUT', 'POST'])
 def set_odl_metadata():
     logger.info("Received request for Metadata creation")
     if not flask.request.json:
         flask.abort(400)
-        logger.warning("=>Failed to GET Metadata from ODL \n")
+        logger.warning("=>Failed to PUT Metadata to ODL \n")
     r_json = flask.request.get_json()
     with open("jsonputMDT.txt", "w") as outfile:
         json.dump(r_json, outfile)

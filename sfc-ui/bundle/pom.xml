@@ -11,19 +11,6 @@
   <name>sfc-ui-bundle</name>
   <packaging>bundle</packaging>
   <dependencies>
-<!--     <dependency> -->
-<!--       <groupId>org.osgi</groupId> -->
-<!--       <artifactId>org.osgi.core</artifactId> -->
-<!--     </dependency> -->
-<!--     <dependency> -->
-<!--       <groupId>org.osgi</groupId> -->
-<!--       <artifactId>org.osgi.compendium</artifactId> -->
-<!--     </dependency> -->
-<!--     <dependency> -->
-<!--       <groupId>org.apache.felix</groupId> -->
-<!--       <artifactId>org.osgi.compendium</artifactId> -->
-<!--       <version>${apache.felix.osgi.compendium.version}</version> -->
-<!--     </dependency> -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>

@@ -163,11 +163,6 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                 <groupId>org.slf4j</groupId>
-                 <artifactId>slf4j-simple</artifactId>
-                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.opendaylight.ovsdb</groupId>
                 <artifactId>southbound-api</artifactId>
                 <version>${ovsdb.southbound.version}</version>

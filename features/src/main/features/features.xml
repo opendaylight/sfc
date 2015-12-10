@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+
+<!--
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+
+<features name="odl-sfc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+
+    <!-- Add repo entries for the repositories of features you refer to in this feature file but do not define here.  -->
+
+    <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.ovsdb/southbound-features/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.netconf/features-netconf-connector/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/{{VERSION}}/xml/features</repository>
+
+    <feature name="odl-sfc-model" version="${project.version}" description="OpenDaylight :: sfc :: Model">
+        <feature version="${mdsal.model.version}">odl-mdsal-models</feature>
+         <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-api</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-model/{{VERSION}}</bundle>
+    </feature>
+
+    <feature name="odl-sfc-provider" version="${project.version}" description="OpenDaylight :: sfc :: Provider ">
+        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${project.version}">odl-sfc-model</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-provider/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/80-sfc.xml">mvn:org.opendaylight.sfc/sfc-config/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-provider-rest" version="${project.version}" description="OpenDaylight :: sfc :: Provider ">
+      <feature version="${project.version}">odl-sfc-provider</feature>
+      <feature version="${restconf.version}">odl-restconf</feature>
+    </feature>
+
+     <feature name="odl-sfc-netconf" version="${project.version}" description="OpenDaylight :: Netconf ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-netconf-initial.xml">mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-ovs" version="${project.version}" description="OpenDaylight :: OpenvSwitch ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-impl</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ovs/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">mvn:org.opendaylight.sfc/sfc-ovs/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-scf-openflow" version="${project.version}" description="OpenDaylight :: sfc-scf-openflow">
+        <feature version="${project.version}">odl-sfc-ovs</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-scf-openflow-initial.xml">mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfcofl2" version="${project.version}" description="OpenDaylight :: sfcofl2 ">
+        <feature version="${project.version}">odl-sfc-ovs</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfcofl2/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfcofl2-initial.xml">mvn:org.opendaylight.sfc/sfcofl2/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfclisp" version="${project.version}" description="OpenDaylight :: sfclisp :: all">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${lispflowmapping.version}">odl-lispflowmapping-mappingservice</feature>
+        <feature version="${lispflowmapping.version}">odl-lispflowmapping-southbound</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfclisp/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-lisp-initial.xml">mvn:org.opendaylight.sfc/sfclisp/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-sb-rest" version="${project.version}" description="OpenDaylight :: sfc-sb-rest ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
+        <bundle>wrap:mvn:org.json/json/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>
+        <bundle>mvn:org.glassfish/javax.json/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-sb-rest-initial.xml">mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-ui" version="${project.version}" description="OpenDaylight :: sfc :: UI">
+        <feature version="${dlux.version}">odl-dlux-core</feature>
+        <feature version="${restconf.version}">odl-restconf</feature>
+        <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
+        <feature>http</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ui-bundle/{{VERSION}}</bundle>
+    </feature>
+
+    <!-- Convenience features  -->
+    <feature name="odl-sfc-bootstrap" version="${project.version}" description="OpenDaylight :: sfc :: Provider ">
+        <feature version="${project.version}">odl-sfc-provider</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-bootstrap/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
+        <bundle>wrap:mvn:org.json/json/{{VERSION}}</bundle>
+        <bundle>mvn:org.codehaus.jettison/jettison/{{VERSION}}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>
+        <bundle>mvn:org.glassfish/javax.json/{{VERSION}}</bundle>
+        <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sff</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sf</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sfc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sn</configfile>
+        <configfile finalname="configuration/startup/bootstrap/ipfix-class-id.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-ipfix-class-id</configfile>
+    </feature>
+
+    <feature name="odl-sfc-test-consumer" version="${project.version}" description="OpenDaylight :: sfc :: Test :: Consumer ">
+        <feature version="${project.version}">odl-sfc-provider</feature>
+        <feature version="${project.version}">odl-sfc-model</feature>
+        <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sff</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sf</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sfc</configfile>
+        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sn</configfile>
+        <configfile finalname="configuration/startup/bootstrap/ipfix-class-id.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-ipfix-class-id</configfile>
+        <bundle>mvn:org.opendaylight.sfc/sfc-test-consumer/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml">mvn:org.opendaylight.sfc/sfc-test-consumer/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-vnfm-tacker" version="${project.version}" description="OpenDaylight :: sfc :: Vnfm :: Tacker ">
+        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${project.version}">odl-sfc-model</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-spi/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+</features>

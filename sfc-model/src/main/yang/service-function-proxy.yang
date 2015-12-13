@@ -1,0 +1,413 @@
+module service-function-proxy {
+
+  namespace "urn:intel:params:xml:ns:yang:sfc-sf-proxy";
+
+  prefix sfc-sf-proxy;
+
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2010-09-24;
+      }
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2010-09-24;
+      }
+  import service-locator {
+      prefix sfc-sl;
+      revision-date 2014-07-01;
+      }
+  import service-function-type {
+      prefix sfc-sft;
+      revision-date 2014-07-01;
+      }
+  import service-statistics {
+      prefix sfc-ss;
+      revision-date 2014-07-01;
+      }
+  import sfc-common {
+      prefix sfc-common;
+      revision-date 2015-10-17;
+      }
+  import service-function-forwarder {
+      prefix sfc-sff;
+      revision-date 2014-07-01;
+      }
+
+  organization "Intel, Inc.";
+  contact "Hongjun Ni <hongjun.ni@intel.com>";
+
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing service function proxy.";
+
+
+  // proxy method type definitions
+  identity proxy-method-type {
+    description
+      "Base identity from which specific proxy method types are
+       derived.";
+  }
+
+  identity mac {
+    base "proxy-method-type";
+    description "Simple Source MAC proxy method type";
+  }
+
+  identity vlan {
+    base "proxy-method-type";
+    description "Vlan proxy method type";
+  }
+
+  identity qinq {
+    base "proxy-method-type";
+    description "QinQ proxy method type";
+  }
+
+  identity vxlan {
+    base "proxy-method-type";
+    description "Vxlan proxy method type";
+  }
+
+  identity five-tuple {
+    base "proxy-method-type";
+    description "five-tuple proxy method type";
+  }
+
+  identity sf-proxy-method-type {
+    base "proxy-method-type";
+    description
+      "This identity is used as a base for all proxy method types";
+  }
+
+  typedef sf-proxy-method-type-def {
+    type identityref {
+      base "sf-proxy-method-type";
+    }
+    description "This type is used to reference all
+      registered proxy method types";
+  }
+
+  grouping has-direction {
+    description "Object that have a directionality.";
+    leaf direction {
+        default bidirectional;
+        type enumeration {
+            enum in {
+                description
+                    "Applies to traffic into nsh-unware sfs";
+            }
+            enum out {
+                description
+                    "Applies to traffic out of nsh-unware sfs";
+            }
+            enum bidirectional {
+                description
+                    "Applies to traffic in both directions";
+            }
+        }
+    }
+  }
+
+
+  // proxy method definitions
+  grouping mac-method {
+    description
+      "proxy-method: source mac address";
+    leaf mac {
+      type yang:mac-address;
+      description "assigned source mac address per packet or path id";
+    }
+  }
+
+  grouping vlan-method {
+    description
+      "proxy-method: vlan with direction";
+    leaf vlan-id {
+      type uint16 {
+        range "1..4094";
+      }
+      description "assigned vlan id per bidirectioanal path-pair";
+    }
+
+    uses has-direction;
+  }
+
+  grouping qinq-method {
+    description
+      "proxy-method: qinq with direction";
+    leaf outer-vlan-id {
+      type uint16 {
+        range "1..4094";
+      }
+      description "assigned outer vlan id per bidirectioanal path-pair";
+    }
+
+    uses has-direction;
+  }
+
+  grouping vxlan-method {
+    description
+      "proxy-method: vxlan with direction";
+    leaf vni {
+        type uint32 {
+        range "1..16777216";
+      }
+      description "assigned vni per bidirectioanal path-pair";
+    }
+
+    uses has-direction;
+  }
+
+  grouping five-tuple-method {
+    description
+      "proxy-method: five-tuple";
+    leaf src-ip {
+      type inet:ip-address;
+      description "source IP address";
+    }
+    leaf src-port {
+      type inet:port-number;
+      description "source port number";
+    }
+    leaf dest-ip {
+      type inet:ip-address;
+      description "destination IP address";
+    }
+    leaf dest-port {
+      type inet:port-number;
+      description "destination port number";
+    }
+    leaf protocol {
+      type uint8;
+      description "packet protocol";
+    }
+  }
+
+  //proxy methods
+  grouping sf-proxy-method {
+    description
+      "This group presents proxy methods
+       for nsh-unware SFs in the domain";
+    choice method-type {
+      mandatory true;
+      case mac {
+        uses mac-method ;
+      }
+      case vlan {
+        uses vlan-method;
+      }
+      case qinq {
+        uses qinq-method;
+      }
+      case vxlan {
+        uses vxlan-method;
+      }
+      case five-tuple {
+        uses five-tuple-method;
+      }
+      description "The collection of all possible proxy methods
+        Only one can be chosen";
+    }
+    leaf method {
+      type identityref {
+        base sfc-sf-proxy:sf-proxy-method-type;
+      }
+      description
+        "The encapsulation used to carry inner packets";
+    }
+  }
+
+
+  //layer 2 encoding to sfc-header mapping
+  grouping sfc-header-mapping {
+    description
+      "layer 2 encoding to sfc-header mapping";
+    leaf name {
+        type string;
+        description
+            "A unique string that represents this sfc-header mapping";
+    }
+    uses sfc-sf-proxy:sf-proxy-method;
+    leaf sfc-header {
+      type string;
+      description "SFC header, including metadata.";
+    }
+  }
+
+
+  //service function proxy entry definition
+  grouping service-function-proxy-entry {
+    description
+      "This group bundles together all information related to a
+       single service function proxy";
+    leaf name {
+      type string;
+      description
+          "The name of the service functio proxy.";
+    }
+    leaf rest-uri {
+      type inet:uri;
+      description "URI of REST based management";
+    }
+    leaf ip-mgmt-address {
+      type inet:ip-address;
+      description
+        "The IP used to configure this service-function-proxy";
+    }
+    list service-function-dictionary {
+      key "name";
+      leaf name {
+          type sfc-common:sf-name;
+          description "The name of the service function.";
+      }
+      list sf-proxy-sfc-header-mapping {
+          description
+            "The SF-Proxy uses this mapping when sending
+             packets to the associated SF";
+          uses sfc-sf-proxy:sfc-header-mapping;
+      }
+      list sf-proxy-interfaces {
+        key "sf-proxy-interface";
+        leaf sf-proxy-interface {
+            type string;
+            description
+              "An individual interface on the sf-proxy connected to the SF";
+        }
+        description
+            "A list of interfaces on the sf-proxy which are connected to
+             this SF, usually one 1 or 2 elements";
+      }
+      leaf failmode {
+          type sfc-sff:failmode-type;
+          description
+            "This leaf defines what should the SF-Proxy do if it can not
+             send packets to the SF";
+      }
+      description
+          "A list of all Service Functions attached to this SF-Proxy.";
+    }
+    list connected-sff-dictionary {
+        key "name";
+        leaf name {
+          type sfc-common:sff-name;
+          description
+            "The name of the SFF connected to this SF-Proxy";
+        }
+        container proxy-sff-data-plane-locator {
+          description
+            "The SF-Proxy uses this data plane locator when sending
+             packets to the associated SFF";
+          uses sfc-sl:data-plane-locator;
+        }
+        list sf-proxy-interfaces {
+          key "sf-proxy-interface";
+          leaf sf-proxy-interface {
+            type string;
+            description
+              "An individual SF-proxy interface connected to this SFF";
+          }
+          description
+            "A list of SF-proxy interfaces connected to this SFF";
+        }
+        leaf failmode {
+          type sfc-sff:failmode-type;
+          description
+            "This leaf defines what the SF-proxy should do if it can not
+             send packets to a connected SFF";
+        }
+        description
+          "A list of all Service Function Forwarders connected to
+           this SF-proxy";
+     }
+  }
+
+  container service-function-proxys {
+    description
+      "A SF-Proxy accepts packets from the SFF on behalf of the SF.
+      It removes the SFC encapsulation, and then uses a local
+      attachment circuit(e.g. MAC, VLAN) to deliver packets to
+      SFC unaware SFs. It also receives packets back from the SF,
+      reapplies the SFC encapsulation, and returns them to the SFF
+      for processing along the service function path.";
+
+    list service-function-proxy {
+      key "name";
+      description
+        "This list holds configuration data for all service function proxys
+         in the domain";
+      uses service-function-proxy-entry;
+    }
+  }
+
+  container service-function-proxys-state {
+    config false;
+    description
+      "This container hold operational state for all service
+       function proxys";
+    list service-function-proxy-state {
+      key "name";
+      description
+        "This list holds operational data for all service function proxys
+         in the domain";
+      leaf name {
+        type string;
+        description
+          "the name of the service function proxy";
+      }
+      uses sfc-ss:service-statistics-group {
+        description "Global Service Function statistics";
+      }
+      list sf-service-path {
+        key "name";
+        leaf name {
+          type sfc-common:sfp-name;
+          description
+            "The name of the Service Path";
+        }
+        uses sfc-ss:service-statistics-group;
+        description
+        "A list of all service function paths that contain this
+         service function proxy";
+      }
+    }
+  }
+
+  rpc delete-all-service-function-proxy {
+  description
+    "Deletes all service function proxys";
+  }
+
+  rpc put-service-function-proxy {
+    description
+      "Creates a service function proxy";
+    input {
+      uses service-function-proxy-entry;
+    }
+  }
+  rpc read-service-function-proxy {
+    description
+      "Reads a service function proxy";
+    input {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function proxy.";
+      }
+    }
+    output {
+      uses service-function-proxy-entry;
+    }
+  }
+  rpc delete-service-function-proxy {
+    description
+      "Deletes a service function proxy";
+    input {
+      leaf name {
+        type string;
+        mandatory true;
+        description "The name of the service function proxy.";
+      }
+    }
+  }
+}

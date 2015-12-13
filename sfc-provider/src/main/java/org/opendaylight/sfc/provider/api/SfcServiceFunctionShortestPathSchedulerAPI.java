@@ -15,6 +15,8 @@ import java.util.Random;
 
 import org.opendaylight.sfc.provider.topology.SfcProviderGraph;
 import org.opendaylight.sfc.provider.topology.SfcProviderTopologyNode;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.topology.SfcProviderTopologyUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -28,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,17 +191,24 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                 LOG.debug("Add SF-to-SFF edge: {} => {}", sfName, sffName);
             }
 
-            List<ConnectedSffDictionary> connectedSffDictionaryList =
-                    serviceFunctionForwarder.getConnectedSffDictionary();
-
             /*
              * Add edge for every ServiceFunctionForwarder connected
              * to serviceFunctionForwarder
              */
+            List<ConnectedSffDictionary> connectedSffDictionaryList =
+                    serviceFunctionForwarder.getConnectedSffDictionary();
             for (ConnectedSffDictionary connectedSffDictionary : connectedSffDictionaryList) {
                 toSffName = connectedSffDictionary.getName();
-                sfcProviderGraph.addEdge(sffName.getValue(), toSffName.getValue());
-                LOG.debug("Add SFF-to-SFF edge: {} => {}", sffName, toSffName);
+                /* Check if the link between fromsff and tosff is alive */
+                String fromNode = SfcProviderServiceForwarderAPI.getOpenFlowNodeIdFromSffName(sffName);
+                String toNode = SfcProviderServiceForwarderAPI.getOpenFlowNodeIdFromSffName(toSffName);
+                if((fromNode != null) && (toNode != null)) {
+                    Link link = SfcProviderTopologyUtil.getLink(fromNode, toNode);
+                    if(link != null) {
+                        sfcProviderGraph.addEdge(sffName.getValue(), toSffName.getValue());
+                        LOG.debug("Add SFF-to-SFF edge: {} => {}", sffName, toSffName);   
+                    }
+                }
             }
         }
     }

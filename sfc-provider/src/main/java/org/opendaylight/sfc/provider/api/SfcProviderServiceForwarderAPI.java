@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -406,5 +407,21 @@ public class SfcProviderServiceForwarderAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+    
+    public static String getOpenFlowNodeIdFromSffName(SffName sffName) {
+    	String openflowNodeId = null;
+        ServiceFunctionForwarder sff = readServiceFunctionForwarder(sffName);
+    	
+        // Check if its an service-function-forwarder-ovs augmentation
+        // if it is, then return;
+        SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        if (ovsSff != null) {
+            if (ovsSff.getOvsBridge() != null) {
+            	openflowNodeId = ovsSff.getOvsBridge().getOpenflowNodeId();
+            }
+        }
+        return openflowNodeId;
     }
 }

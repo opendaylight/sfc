@@ -1,0 +1,36 @@
+// vi: set smarttab et sw=4 tabstop=4:
+module sfc-vnf-manager-cfg {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:spi";
+    prefix "vnf-manager";
+
+    import config { prefix config; revision-date 2013-04-05; }
+
+    organization "Cisco Systems, Inc.";
+
+    contact "Keith Burns <alagalah@gmail.com>";
+
+    description
+        "This module contains the base YANG definitions for
+        the SFC VNF MANAGER SPI module.
+
+        Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2015-12-07" {
+        description
+            "Initial revision";
+    }
+
+    identity sfc-vnf-manager {
+        description
+            "Service representing a SfcVnfManager.";
+
+        base "config:service-type";
+        config:java-class "org.opendaylight.sfc.vnfm.spi.SfcVnfManager";
+    }
+}

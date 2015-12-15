@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_add02a54",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-12-15T06:36:53Z",
+      "side": 1,
+      "message": "We may move all ODL component version properties to odlparent",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_9b2b31eb",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-12-15T06:36:53Z",
+      "side": 1,
+      "message": "We may define features-yangtools-version",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_8dcf6eb0",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-12-15T06:36:53Z",
+      "side": 1,
+      "message": "why we use this version?",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

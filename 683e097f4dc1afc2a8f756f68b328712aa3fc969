@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_edc38236",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 4540
+      },
+      "writtenOn": "2015-12-15T08:29:45Z",
+      "side": 1,
+      "message": "I wasn\u0027t aware of any plans to do so, but it might be worth discussing with the odlparent committers. We\u0027re actually trying to decouple projects\u0027 dependencies though so I\u0027m not sure it\u0027s such a good idea going forwards.",
+      "parentUuid": "1aa4ed85_add02a54",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_9b2b31eb",
         "filename": "features/pom.xml",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1aa4ed85_0dc13e2e",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4540
+      },
+      "writtenOn": "2015-12-15T08:29:45Z",
+      "side": 1,
+      "message": "Yup. I\u0027m not a fan of adding properties but it makes sense here to keep a consistent style.",
+      "parentUuid": "1aa4ed85_9b2b31eb",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1aa4ed85_8dcf6eb0",
         "filename": "features/pom.xml",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2015-12-15T06:36:53Z",
       "side": 1,
       "message": "why we use this version?",
+      "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_cde246d5",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 4540
+      },
+      "writtenOn": "2015-12-15T08:29:45Z",
+      "side": 1,
+      "message": "opendaylight-karaf-empty, while provided by controller, is actually versioned along with odlparent. I\u0027ll restore the property though just to keep things coherent.",
+      "parentUuid": "1aa4ed85_8dcf6eb0",
       "revId": "683e097f4dc1afc2a8f756f68b328712aa3fc969",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

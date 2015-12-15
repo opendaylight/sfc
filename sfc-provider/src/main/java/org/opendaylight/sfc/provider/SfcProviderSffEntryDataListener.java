@@ -25,8 +25,6 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.SffVxlanClassifierType1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.md.features.rev151010.service.function.forwarders.service.function.forwarder.VxlanClassifierType1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -107,22 +105,6 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener {
                 // SFF CREATION
 
                 Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-                for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-                    if (entry.getValue() instanceof ServiceFunctionForwarder) {
-                        ServiceFunctionForwarder createdServiceFunctionForwarder =
-                                (ServiceFunctionForwarder) entry.getValue();
-                        SffVxlanClassifierType1 sffVxlanOverlayClassifierType1 =
-                                createdServiceFunctionForwarder.getAugmentation(SffVxlanClassifierType1.class);
-                        if (sffVxlanOverlayClassifierType1 != null) {
-                            VxlanClassifierType1 vxlanClassifierType1 =
-                                    sffVxlanOverlayClassifierType1.getVxlanClassifierType1();
-                        }
-                        LOG.debug("{}: SFF {} create", Thread.currentThread().getStackTrace()[1],
-                                createdServiceFunctionForwarder.getName());
-
-                    }
-                }
 
                 // SFF UPDATE
                 Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();

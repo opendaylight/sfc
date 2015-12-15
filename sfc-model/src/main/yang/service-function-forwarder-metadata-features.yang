@@ -53,33 +53,36 @@ module service-function-forwarder-metadata-features {
         "sfc-dev/2015-September/001886.html";
   }
 
+  feature vxlan-classifier-type-1 {
+    description "Feature definition for C1: IPv4 tunnel dest and" +
+     "C2: VNID";
+  }
+
   augment "/sfc-sff:service-function-forwarders/"  {
-    feature vxlan-classifier-type-1 {
-      description "Feature definition for C1: IPv4 tunnel dest and" +
-       "C2: VNID";
-    }
     description
       "Augments SFF module with definition of" +
        "VXLAN overlay classifier feature";
     ext:augment-identifier "sff-vxlan-classifier-type-1-feature";
   }
 
+  feature mobility-allocation-type-1 {
+    description "Feature definition for https://tools.ietf.org/html/" +
+      "draft-napper-sfc-nsh-mobility-allocation-01";
+  }
+
   augment "/sfc-sff:service-function-forwarders/"  {
-    feature mobility-allocation-type-1 {
-      description "Feature definition for https://tools.ietf.org/html/" +
-        "draft-napper-sfc-nsh-mobility-allocation-01";
-    }
     description
       "Augments SFF module with definition of" +
        "Mobility allocation feature";
     ext:augment-identifier "sff-mobility-allocation-type-1-feature";
   }
 
+  feature dc-allocation-type-1 {
+    description "Feature definition for https://tools.ietf.org/" +
+      "html/draft-guichard-sfc-nsh-dc-allocation-02";
+  }
+
   augment "/sfc-sff:service-function-forwarders/"  {
-    feature dc-allocation-type-1 {
-      description "Feature definition for https://tools.ietf.org/" +
-        "html/draft-guichard-sfc-nsh-dc-allocation-02";
-    }
     description
       "Augments SFF module with definition of" +
        "DC allocation feature";

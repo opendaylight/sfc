@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_e7b63edc",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2Renderer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-15T19:10:10Z",
+      "side": 1,
+      "message": "Why is this being set to null?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 60
+      },
+      "revId": "a5349d02586d056daed3ee9c501b7aae2b71e524",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_07bcbaba",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcL2Renderer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-15T19:10:10Z",
+      "side": 1,
+      "message": "Is this necessary?",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 61
+      },
+      "revId": "a5349d02586d056daed3ee9c501b7aae2b71e524",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_27ad3689",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-15T19:10:10Z",
+      "side": 1,
+      "message": "use setFlowWriter?",
+      "range": {
+        "startLine": 112,
+        "startChar": 8,
+        "endLine": 112,
+        "endChar": 47
+      },
+      "revId": "a5349d02586d056daed3ee9c501b7aae2b71e524",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_87a0aa91",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-15T19:10:10Z",
+      "side": 1,
+      "message": "null check?",
+      "range": {
+        "startLine": 124,
+        "startChar": 4,
+        "endLine": 126,
+        "endChar": 6
+      },
+      "revId": "a5349d02586d056daed3ee9c501b7aae2b71e524",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

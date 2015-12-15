@@ -134,9 +134,8 @@ define([].concat(modules).concat(services).concat(directives).concat(controllers
         }],
         "service-function-dictionary": [{
           "nonExistent": false,
-          "sff-sf-data-plane-locator": {"ovs-bridge": {}},
-          "sff-interfaces": [],
-          "type": "dpi"
+          "sff-sf-data-plane-locator": {},
+          "sff-interfaces": []
         }],
         "service-node": null, "name": "SFF1", "rest-uri": "http://www.example.com/sffs/sff-bootstrap"
       },

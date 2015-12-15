@@ -138,6 +138,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
   sfc.register.controller('serviceForwarderCreateCtrl', function ($scope, $state, $stateParams, ServiceNodeSvc, ServiceForwarderSvc, ServiceForwarderHelper, ServiceFunctionSvc) {
 
     $scope.selectOptions = ServiceForwarderHelper.selectOptions($scope);
+    $scope.chosenSfDpls = {};
 
     if (angular.isDefined($stateParams.sffName) || angular.isDefined($stateParams.sff)) {
       // we'll wait for data to edit
@@ -168,7 +169,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       ServiceFunctionSvc.getArray(function (data) {
         $scope.sfs = data;
-
+        
         if (angular.isDefined($stateParams.sff)) {
           $scope.data = JSON.parse($stateParams.sff);
           ServiceForwarderHelper.removeNonExistentSn($scope.data, $scope.sns);
@@ -182,6 +183,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             ServiceForwarderHelper.removeNonExistentSn($scope.data, $scope.sns);
             _.each($scope.data['service-function-dictionary'], function (sf) {
               ServiceForwarderHelper.sfUpdate(sf, $scope);
+              $scope.sfChangeListener(sf);
             });
           });
         }
@@ -204,9 +206,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ServiceForwarderHelper.removeFunction(index, $scope);
     };
 
+
     $scope.sfChangeListener = function (choosenSf) {
       ServiceForwarderHelper.sfChangeListener(choosenSf, $scope);
     };
+
+    $scope.initOVSBridge = function(locator){
+      locator['ovs-bridge'] = {};
+      locator['ovs-options'] = {};
+    }
+
+
 
     $scope.submit = function () {
       //reformat sff-interfaces string array to object array

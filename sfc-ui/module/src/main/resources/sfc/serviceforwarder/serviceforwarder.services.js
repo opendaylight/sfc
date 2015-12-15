@@ -90,12 +90,17 @@ define(['app/sfc/sfc.module'], function (sfc) {
       choosenSf.type = sfModelData.type;
     };
 
+    svc.setChosenSfDpls = function(chosenSfModel, $scope){
+      $scope.chosenSfDpls[chosenSfModel.name] = chosenSfModel['sf-data-plane-locator'];
+    };
+
     svc.sfChangeListener = function (choosenSf, $scope) {
       if (angular.isDefined(choosenSf)) {
         var sfModelData = _.findWhere($scope.sfs, {name: choosenSf.name});
 
         if (angular.isDefined(sfModelData)) {
-          svc.addSfTypeToChoosenSf(choosenSf, sfModelData);
+          //svc.addSfTypeToChoosenSf(choosenSf, sfModelData);
+          svc.setChosenSfDpls(sfModelData, $scope);
         }
       }
     };

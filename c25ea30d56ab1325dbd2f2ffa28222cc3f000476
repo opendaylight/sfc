@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_48ff2435",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Looks like this is now duplicated. That is, it was copied here, and left in the FlowProgrammer. I think it belongs in the FlowProgrammer. If it does stay here, the \"FFFF\" mask isnt correct.",
+      "range": {
+        "startLine": 78,
+        "startChar": 30,
+        "endLine": 78,
+        "endChar": 44
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_08f92c4d",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Why is this method empty? The original impl in the FlowProgrammer was very important for later deleting flows.",
+      "range": {
+        "startLine": 119,
+        "startChar": 16,
+        "endLine": 119,
+        "endChar": 32
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_a89578e5",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Why is this method empty?",
+      "range": {
+        "startLine": 125,
+        "startChar": 16,
+        "endLine": 125,
+        "endChar": 37
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_488644bb",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Since you have this same code repeated multiple times, it should be in a simple util function in this class.",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 9
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_c8c1d4e5",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Seems like this code is duplicated several times, consider putting it in a simple util function in this class.",
+      "range": {
+        "startLine": 348,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 13
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_68b6a08c",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Seems like this code is duplicated several times, consider putting it in a simple util function in this class.",
+      "range": {
+        "startLine": 365,
+        "startChar": 0,
+        "endLine": 370,
+        "endChar": 13
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_287748d6",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 915,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2015-12-15T13:45:06Z",
+      "side": 1,
+      "message": "Same comment as above about duplicated code.",
+      "range": {
+        "startLine": 910,
+        "startChar": 0,
+        "endLine": 915,
+        "endChar": 17
+      },
+      "revId": "c25ea30d56ab1325dbd2f2ffa28222cc3f000476",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

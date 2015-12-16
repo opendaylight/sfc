@@ -81,7 +81,7 @@ public abstract class SfcRspTransportProcessorBase {
     //
 
     public abstract void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry);
-    public abstract void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry);
+    public abstract void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl);
 
     public abstract void configureSfPathMapperFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl);
     public abstract void configureSffPathMapperFlow(SffGraph.SffGraphEntry entry, DataPlaneLocator hopDpl);

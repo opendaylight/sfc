@@ -10,6 +10,7 @@ package org.opendaylight.sfc.l2renderer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -21,7 +22,6 @@ import java.util.List;
  */
 
 import org.junit.Test;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.net.InetAddresses;
 
+
 public class SfcL2FlowProgrammerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowProgrammerTest.class);
@@ -70,6 +72,7 @@ public class SfcL2FlowProgrammerTest {
     private static final String SFF_NAME = "sff1";
     private static final String MAC_SRC = "AA:BB:CC:DD:EE:FF";
     private static final String MAC_DST = "FF:EE:DD:CC:BB:AA";
+    private static final String IP_SRC = "192.168.0.5";
     private static final String IP_DST = "192.168.0.1";
     private static final String INPORT = "INPORT";
     private static final String PORT = "1";
@@ -84,9 +87,12 @@ public class SfcL2FlowProgrammerTest {
     private static final long GROUP_ID = 1;
     private static final String GROUP_NAME = "GROUP";
     private static final boolean PKTIN = false;
+    private static final short TABLE_BASE = 30;
+    private static final short TABLE_EGRESS = 80;
+    private static final int UDP_VXLAN_PORT = 6633;
 
     SfcL2FlowWriterInterface sfcL2FlowWriter;
-    SfcL2FlowProgrammerInterface sfcL2FlowProgrammer;
+    SfcL2FlowProgrammerOFimpl sfcL2FlowProgrammer;
     FlowBuilder flowBuilder;
 
     public SfcL2FlowProgrammerTest() {
@@ -107,7 +113,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureIpv4TransportIngressFlow(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
         //TODO Two test cases for TCP/UDP shall be done
         Match match = flowBuilder.getMatch();
@@ -134,7 +140,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVlanTransportIngressFlow(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
@@ -157,14 +163,16 @@ public class SfcL2FlowProgrammerTest {
     @Test
     public void configureVxlanGpeTransportIngressFlow() {
 
-        sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(SFF_NAME);
+        sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(SFF_NAME, UDP_VXLAN_PORT);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetType().getType().getValue().longValue(), SfcOpenflowUtils.ETHERTYPE_IPV4);
+        assertEquals(match.getIpMatch().getIpProtocol().shortValue(), SfcOpenflowUtils.IP_PROTOCOL_UDP);
+        assertEquals(((UdpMatch) match.getLayer4Match()).getUdpDestinationPort().getValue().intValue(), UDP_VXLAN_PORT);
         LOG.info("configureVxlanGpeTransportIngressFlow() Match EtherType: [{}]",
                 match.getEthernetMatch().getEthernetType().getType().getValue());
 
@@ -186,7 +194,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureMplsTransportIngressFlow(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
@@ -212,7 +220,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureArpTransportIngressFlow(SFF_NAME, MAC_SRC);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_ARP_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
@@ -722,7 +730,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
-        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_INGRESS_TRANSPORT_TABLE);
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -837,11 +845,299 @@ public class SfcL2FlowProgrammerTest {
         }
     }
 
+    /**
+     * Unit test to check app coexistence works for NSH flows
+     */
+    @Test
+    public void appCoexistenceNsh() {
+        sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
+        sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
+
+        // Check that configureVxlanGpeTransportIngressFlow() is written to the correct table
+        // Notice: TransportIngress doesnt use the offset, as it will always be table 0
+        sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(SFF_NAME, UDP_VXLAN_PORT);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+
+        // Check that configureVxlanGpeNextHopFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+
+        // Check that configureVxlanGpeLastHopTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureVxlanGpeTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureNshNscTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureVxlanGpeAppCoexistTransportEgressFlow() is written
+        // to the correct table and that it goes to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI, IP_SRC);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+    }
+
+    /**
+     * Unit test to check app coexistence works for VLAN flows
+     */
+    @Test
+    public void appCoexistenceVlan() {
+        sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
+        sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
+
+        // Check that configureVlanTransportIngressFlow() is written to the correct table
+        // Notice: TransportIngress doesnt use the offset, as it will always be table 0
+        sfcL2FlowProgrammer.configureVlanTransportIngressFlow(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+
+        // Check that configureVlanPathMapperFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureVlanPathMapperFlow(SFF_NAME, VLAN_ID, PATH_ID_SMALL, true);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+
+        // Check that configureVlanPathMapperFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureVlanPathMapperFlow(SFF_NAME, VLAN_ID, PATH_ID, false);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+
+        // Check that configureMacNextHopFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureMacNextHopFlow(SFF_NAME, SFP, MAC_SRC, MAC_DST);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+
+        // Check that configureVlanSfTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVlanSfTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID_SMALL, true);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureVlanSfTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVlanSfTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID_SMALL, false);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureVlanTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVlanTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureVlanLastHopTransportEgressFlow() is written
+        // to the correct table and that it goes to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureVlanLastHopTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+    }
+
+    /**
+     * Unit test to check app coexistence works for MPLS flows
+     */
+    @Test
+    public void appCoexistenceMpls() {
+        sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
+        sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
+
+        // Check that configureMplsTransportIngressFlow() is written to the correct table
+        // Notice: TransportIngress doesnt use the offset, as it will always be table 0
+        sfcL2FlowProgrammer.configureMplsTransportIngressFlow(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE), true);
+
+        // Check that configureMplsPathMapperFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureMplsPathMapperFlow(SFF_NAME, MPLS_LABEL, PATH_ID_SMALL, true);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+
+        // Check that configureMplsPathMapperFlow() is written to the correct table
+        sfcL2FlowProgrammer.configureMplsPathMapperFlow(SFF_NAME, MPLS_LABEL, PATH_ID, false);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+
+        // Mpls NextHop uses MacNextHop which is tested in appCoexistenceVlan
+
+        // Check that configureMplsTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureMplsTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, MPLS_LABEL, PORT, PATH_ID);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        // Check that configureMplsLastHopTransportEgressFlow() is written
+        // to the correct table and that it goes to TABLE_EGRESS
+        sfcL2FlowProgrammer.configureMplsLastHopTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, MPLS_LABEL, PORT, PATH_ID);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+    }
+
+    /**
+     * Unit test to check app coexistence works for the MatchAny flows
+     */
+    @Test
+    public void appCoexistenceMatchAny() {
+        sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
+        sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
+
+        // Test TransportIngress Match Any table offset.
+        // It should do a drop
+        // Notice: TransportIngress doesnt use the offset, as it will always be table 0
+        sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkDrop(curInstruction, true);
+
+        // Test PathMapper Match Any table offset.
+        // It should go to PathMapperAcl + offset
+        sfcL2FlowProgrammer.configurePathMapperTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE), true);
+
+        // Test PathMapperAcl Match Any table offset.
+        // It should go to NextHop + offset
+        sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+
+        // Test NextHop Match Any table offset.
+        // It should go to TransportEgress + offset
+        sfcL2FlowProgrammer.configureNextHopTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+
+        // Test TransportEgress Match Any table offset.
+        // It should do a drop
+        sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        checkDrop(curInstruction, true);
+    }
+
+    /**
+     * Unit test to check app coexistence works for the PathMapperAcl flows
+     */
+    @Test
+    public void appCoexistencePathMapperAcl() {
+        sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
+        sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
+        ((SfcL2FlowProgrammerOFimpl) sfcL2FlowProgrammer).configurePathMapperAclFlow(SFF_NAME, IP_SRC, IP_DST, (short) PATH_ID);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+    }
+
     public void checkGoToTable(Instruction curInstruction, short nextTableId) {
+        checkGoToTable(curInstruction, nextTableId, false);
+    }
+
+    public void checkGoToTable(Instruction curInstruction, short nextTableId, boolean mustExist) {
 
         if (curInstruction instanceof GoToTableCase) {
             GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
             assertEquals(goToTablecase.getGoToTable().getTableId().shortValue(), nextTableId);
+        } else {
+            if(mustExist) {
+                LOG.info("checkGoToTable expecting GoToTableCase, but received [{}]", curInstruction);
+                fail();
+            }
+        }
+    }
+
+    public void checkDrop(Instruction curInstruction) {
+        checkDrop(curInstruction, false);
+    }
+
+    public void checkDrop(Instruction curInstruction, boolean mustExist) {
+
+        if (curInstruction instanceof ApplyActionsCase) {
+            ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+            DropActionCase drop = (DropActionCase) action.getApplyActions().getAction().get(0).getAction();
+            assertTrue(drop.getDropAction() != null);
+        } else {
+            if(mustExist) {
+                LOG.info("checkDrop expecting GoToTableCase, but received [{}]", curInstruction);
+                fail();
+            }
         }
     }
 

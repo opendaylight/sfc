@@ -443,7 +443,7 @@ public class SfcOvsUtil {
      * @return {@link Node}
      */
     public static Node lookupTopologyNode(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
-         IpAddress ip = null;
+        IpAddress ip = null;
 
         ip = serviceFunctionForwarder.getIpMgmtAddress();
 
@@ -464,23 +464,21 @@ public class SfcOvsUtil {
                 if ((sffDpl.getDataPlaneLocator() != null)
                         && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
                     Class<? extends DataContainer> locatorType =
-                         sffDpl.getDataPlaneLocator().getLocatorType().getImplementedInterface();
+                        sffDpl.getDataPlaneLocator().getLocatorType().getImplementedInterface();
 
                     if (locatorType.isAssignableFrom(Ip.class)) {
                         Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
                         ip = ipPortLocator.getIp();
                     }
-                 }
-             }
-
+                }
+            }
 
             if (ip == null) {
                 LOG.debug("Could not get IP address for Service Function Forwarder {}", serviceFunctionForwarder);
                 return null;
             }
-         }
-         return SfcOvsUtil.getManagerNodeByIp(ip, executor);
-
+        }
+        return SfcOvsUtil.getManagerNodeByIp(ip, executor);
     }
 
     public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {

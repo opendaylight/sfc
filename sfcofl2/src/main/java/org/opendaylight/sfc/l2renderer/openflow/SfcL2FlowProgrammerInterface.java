@@ -6,12 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.l2renderer.openflow;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
 
 /**
@@ -83,17 +82,29 @@ public interface SfcL2FlowProgrammerInterface {
     //
     // Table 10, Transport Egress
     //
+    public void configureVlanSfTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final int dstVlan, final String port, final long pathId, final boolean doPktin);
     public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, final String port, final long pathId, final boolean setDscp, final boolean doPktIn);
-
-    public void configureVxlanGpeTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
-            final String port, final boolean isLastHop);
+            final int dstVlan, final String port, final long pathId);
+    public void configureVlanLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final int dstVlan, final String port, final long pathId);
 
     public void configureMplsTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final long mplsLabel, final String port, final long pathId, boolean setDscp, final boolean doPktIn);
+            final long mplsLabel, final String port, final long pathId);
+    public void configureMplsLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final long mplsLabel, final String port, final long pathId);
 
-    public void configureNshNscTransportEgressFlow(String sffNodeName, final long nshNsp, final short nshNsi,
-            String switchPort);
+    public void configureVxlanGpeTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+
+    public void configureVxlanGpeAppCoexistTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
+
+    public void configureVxlanGpeLastHopTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+
+    public void configureNshNscTransportEgressFlow(
+            String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

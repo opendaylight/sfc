@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_9cda3577",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-16T23:37:47Z",
+      "side": 1,
+      "message": "|| cookie.getValue() \u003d\u003d null. Short circuit valuation.",
+      "range": {
+        "startLine": 171,
+        "startChar": 12,
+        "endLine": 171,
+        "endChar": 26
+      },
+      "revId": "0ceba68fb52afdf31983a1f5b354e023c29b06fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_3ce78142",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-16T23:37:47Z",
+      "side": 1,
+      "message": "Can delete if do above.",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 177,
+        "endChar": 9
+      },
+      "revId": "0ceba68fb52afdf31983a1f5b354e023c29b06fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_dc142df7",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-16T23:37:47Z",
+      "side": 1,
+      "message": "Can we consider storing a table instead of a flow per thread?\n\nThere are n+1 flows per table for n x SFs. So this will help reduce the amount of writing and threads we are doing. \n\nIf you write the entire pipeline to an array of tables you can put a per table write all in the one thread. Its still a datastore write per table but it would be more performant.",
+      "range": {
+        "startLine": 172,
+        "startChar": 8,
+        "endLine": 176,
+        "endChar": 57
+      },
+      "revId": "0ceba68fb52afdf31983a1f5b354e023c29b06fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_4d7411fd",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-12-16T08:33:34Z",
+      "side": 1,
+      "message": "I\u0027d prefer add this in your own graph, don\u0027t add into the YANG model. If added into the YANG model, anyone can update it through Restful API.",
+      "range": {
+        "startLine": 205,
+        "startChar": 9,
+        "endLine": 205,
+        "endChar": 15
+      },
+      "revId": "9771c4eb131edb07ea973e65236a93740bdf788a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

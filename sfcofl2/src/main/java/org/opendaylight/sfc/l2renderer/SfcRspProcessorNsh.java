@@ -234,6 +234,9 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
                     sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
             this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
+            IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
+            this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(
+                    sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
         } else {
             this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);

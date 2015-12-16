@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_ad8345cb",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 3225
+      },
+      "writtenOn": "2015-12-16T08:27:47Z",
+      "side": 1,
+      "message": "Do not use info in this field if you use MD-SAL datastore to get the link.",
+      "range": {
+        "startLine": 197,
+        "startChar": 41,
+        "endLine": 197,
+        "endChar": 67
+      },
+      "revId": "81e7def6a7f36c450384fda9f7399cc4f326d104",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

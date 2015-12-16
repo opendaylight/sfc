@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.l2renderer.openflow;
 
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
@@ -35,10 +37,13 @@ public interface SfcL2FlowWriterInterface {
     //Write group to MD-SAL datastore
     public void writeGroupToDataStore(String sffNodeName, GroupBuilder gb, boolean isAdd);
 
+    // Delete all flows written to this RSP
+    public void deleteRspFlows(final Long rspId);
+
     //Get flow
     public FlowBuilder getFlowBuilder();
 
-    //Delete Rsp flows
-    public void deleteRspFlows(final Long rspId);
+    // If the impl uses threads, shut it down
+    public void shutdown() throws ExecutionException, InterruptedException;
 
 }

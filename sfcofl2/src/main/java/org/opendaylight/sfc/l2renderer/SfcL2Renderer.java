@@ -13,6 +13,7 @@ import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterImpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;

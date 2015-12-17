@@ -16,17 +16,14 @@ import junitparams.Parameters;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-//import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 
 import static com.fasterxml.uuid.EthernetAddress.constructMulticastAddress;
-import static java.lang.Math.random;
 import static junitparams.JUnitParamsRunner.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-//import static org.mockito.Mockito.mock;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionOutPort;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionPopVlan;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionPushVlan;
@@ -41,16 +38,15 @@ public class SfcOpenflowUtilsTest{
 
     private static Integer[] randNumArray= new Integer[6];
     private static Integer[] randVlanArray= new Integer[6];
-    private static Long[] nextHopGroupIdArray = new Long[6];
-    private static Random randomInt = new Random((int)random());
+    private static Random randomInt = new Random();
     static {
         for(int i = 0; i<randNumArray.length; i++){
-            randNumArray[i] = (Integer)randomInt.nextInt((1500 - 0) + 1);
-            randVlanArray[i] = (Integer)randomInt.nextInt((500 - 10) + 1) + 10;
-            nextHopGroupIdArray[i] = Long.parseLong("" + (randomInt.nextInt((429496729 - 1000) + 1) + 1000));
+            randNumArray[i] = randomInt.nextInt((1500 - 0) + 1);
+            randVlanArray[i] = randomInt.nextInt((500 - 10) + 1) + 10;
         }
     }
-    private static final Object[] createActionSetDlParams(){
+    @SuppressWarnings("unused")
+    private static Object[] createActionSetDlParams(){
         return $(
                 $(constructMulticastAddress().toString(), randNumArray[0]),
                 $(constructMulticastAddress().toString(), randNumArray[1]),
@@ -61,7 +57,8 @@ public class SfcOpenflowUtilsTest{
         );
     }
 
-    private static final Object[] createActionSetDlBadParams(){
+    @SuppressWarnings("unused")
+    private static Object[] createActionSetDlBadParams(){
         return $(
                 $(constructMulticastAddress().toString().replace(":", ""), randNumArray[0]),
                 $(constructMulticastAddress().toString().replace(":", "."), randNumArray[1]),
@@ -73,17 +70,8 @@ public class SfcOpenflowUtilsTest{
         );
     }
 
-    private static final Object[] createActionOutPortParams(){
-        /*
-        return $(
-        $(mock(Uri.class), randNumArray[0]),
-        $(mock(Uri.class), randNumArray[1]),
-        $(mock(Uri.class), randNumArray[2]),
-        $(mock(Uri.class), randNumArray[3]),
-        $(mock(Uri.class), randNumArray[4]),
-        $(mock(Uri.class), randNumArray[5])
-        );
-        */
+    @SuppressWarnings("unused")
+    private static Object[] createActionOutPortParams(){
         return $(
         $(randNumArray[0].toString(), randNumArray[0]),
         $(randNumArray[1].toString(), randNumArray[1]),
@@ -93,7 +81,8 @@ public class SfcOpenflowUtilsTest{
         $(randNumArray[5].toString(), randNumArray[5])
         );
     }
-    private static final Object[] createActionVlanParams(){
+    @SuppressWarnings("unused")
+    private static Object[] createActionVlanParams(){
         return $(
         $(randNumArray[0]),
         $(randNumArray[1]),
@@ -104,7 +93,8 @@ public class SfcOpenflowUtilsTest{
         );
     }
 
-    private static final Object[] createActionSetVlanIdParams() {
+    @SuppressWarnings("unused")
+    private static Object[] createActionSetVlanIdParams() {
         return $(
                 $(randVlanArray[0], randNumArray[0]),
                 $(randVlanArray[1], randNumArray[1]),
@@ -115,7 +105,8 @@ public class SfcOpenflowUtilsTest{
                 );
     }
 
-    private static final Object[] addMatchVlanParams(){
+    @SuppressWarnings("unused")
+    private static Object[] addMatchVlanParams(){
         return $(
         $(randVlanArray[0]),
         $(randVlanArray[1]),
@@ -160,18 +151,18 @@ public class SfcOpenflowUtilsTest{
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
-/*    @Test
-    @Parameters(method = "createSetDlActionBadParams")
+    @Test
+    @Parameters(method = "createActionSetDlBadParams")
     public void shouldThrowExceptionForCreateSetAction(String mac, int order) {
         //Test that badly formatted mac addresses cannot be used
         try {
-            createSetDlSrcAction(mac, order);
+            createActionSetDlSrc(mac, order);
         } catch (Exception e) {
             assertTrue("Exception is not instance of IllegalArgumentException", e instanceof  IllegalArgumentException);
             assertEquals("Error message does not match", "Supplied value \"" + mac + "\" " +
-                    "does not match any of the permitted patterns [^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$]", e.getMessage());
+                    "does not match required pattern \"^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$\"", e.getMessage());
         }
-    }*/
+    }
 
     @Test
     public void shouldThrowNPExceptionForCreateActionSet() {

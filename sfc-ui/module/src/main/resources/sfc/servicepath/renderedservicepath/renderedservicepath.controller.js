@@ -2,7 +2,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('renderedServicePathCtrl', function ($scope, $state, $rootScope, ServiceFunctionSvc, ServiceForwarderSvc,
                                                                RenderedServicePathSvc, SfcContextMetadataSvc, SfcVariableMetadataSvc,
-                                                               SfcClassifierStateSvc, ModalDeleteSvc, ModalErrorSvc, ngTableParams, $filter) {
+                                                               ModalDeleteSvc, ModalErrorSvc, ngTableParams, $filter) {
     var thisCtrl = this;
     var NgTableParams = ngTableParams; // checkstyle 'hack'
     $scope.rsps = [];
@@ -31,16 +31,10 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     $scope.fetchData = function () {
       var rspToClassifierMap = {};
-      SfcClassifierStateSvc.getOperationalArray(function (data) {
-        _.each(data, function (classifier) {
-          _.each(classifier['scl-rendered-service-path'], function (rsp) {
-            rspToClassifierMap[rsp['name']] = classifier['name'];
-          });
-        });
 
         RenderedServicePathSvc.getOperationalArray(function (data) {
           _.each(data, function (rsp) {
-            rsp['classifier'] = rspToClassifierMap[rsp['name']];
+            // rsp['classifier'] = rspToClassifierMap[rsp['name']];
 
             rsp['context-metadata'] = $scope.sfps.length ? $scope.sfps.filter(function(sfp){
                 return sfp.name === rsp['parent-service-function-path'];
@@ -51,7 +45,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
           $scope.tableParams.reload();
         });
-      });
     };
 
     $scope.vnbar = function vnbar(sfName) {

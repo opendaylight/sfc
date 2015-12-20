@@ -55,6 +55,8 @@
     "SFC_FUNCTION_CREATE_FAILMODE": "Select a failmode",
     "SFC_FUNCTION_CREATE_IP": "Example: 10.0.0.1",
     "SFC_FUNCTION_DATA_PLANE_LOCATOR": "Data plane locator",
+    "SFC_SF_DATA_PLANE_LOCATOR": "Service function data plane locator",
+    "SFC_SFF_DATA_PLANE_LOCATOR": "Service function forwarder data plane locator",
     "SFC_FUNCTION_CREATE_NONEXISTENT": "Enter yet nonexistent Service function",
     "SFC_FUNCTION_SHORT_REST_URI": "REST URI",
     "SFC_FUNCTION_REST_URI": "URI of REST based management",

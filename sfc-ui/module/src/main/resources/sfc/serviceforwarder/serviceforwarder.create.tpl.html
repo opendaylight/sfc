@@ -104,13 +104,12 @@
 
         <service-locator locator="locator['data-plane-locator']" constants="serviceLocatorConstants" id-suffix="loc_{{$index}}"></service-locator>
 
-        <div style="text-align: right; margin-bottom: 40px" ng-init="function.defineOVSBridge = (locator['ovs_bridge'].length > 0)">
+        <div style="text-align: right; margin-bottom: 40px" ng-init="function.defineOVSBridge = (locator['ovs-bridge'].uuid.length > 0)">
             <span class="spanTip pull-left">
-                <input type="checkbox" ng-model="function.defineOVSBridge" id="existentSf">
+                <input type="checkbox" ng-model="function.defineOVSBridge" id="existentSf" ng-click="initOVSBridge(locator)">
                 {{ 'SFC_FUNCTION_DEFINE_OVS_BRIDGE' | translate }}
             </span>
         </div>
-
         <div sfc-watch-for-reinit="locator"
              ng-init="locator['ovs-bridge'] = locator['ovs-bridge'] || {};" ng-if="function.defineOVSBridge">
             <!-- <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4> -->
@@ -143,7 +142,7 @@
         <div ng-if="!(function.nonExistent)">
             <div class="form-group" show-validation-error>
                 <label ui-select2-label="function_name_{{$index}}" class="col-lg-6 control-label small-label">
-                    {{'SFC_FUNCTION_NAME_TYPE_IP' | translate}}
+                    {{'SFC_FUNCTION_NAME' | translate}}
                 </label>
 
                 <div class="col-lg-6">
@@ -152,8 +151,7 @@
                             ng-required="true" data-placeholder="{{'SFC_FUNCTION_CREATE_SELECT_NAME' | translate}}"
                             ng-change="sfChangeListener(function)">
                         <option value=""></option>
-                        <option ng-repeat="sf in sfs" value="{{sf.name}}">{{sf.name}} / {{sf.type}} /
-                            {{sf['ip-mgmt-address']}}
+                        <option ng-repeat="sf in sfs" value="{{sf.name}}">{{sf.name}}
                         </option>
                     </select>
                 </div>
@@ -174,7 +172,36 @@
                 </div>
             </div>
 
-            <service-locator-selector function="function" ng-show="function['name']" id-suffix="func_loc_{{$index}}"></service-locator-selector>
+            <div class="form-group" ng-show="function['name']">
+                <label ui-select2-label="function_sf_dpl_{{$index}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_SF_DATA_PLANE_LOCATOR' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <select class="form-control input-sm" id="function_dpl_{{$index}}" ui-select2="{allowClear: true}" ng-model="function['sff-sf-data-plane-locator']['sf-dpl-name']"
+                            ng-required="false">
+
+                        <option value=""></option>
+                        <option ng-repeat="t in chosenSfDpls[function['name']]" value="{{t.name}}">{{t.name}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="function['name']">
+                <label ui-select2-label="function_sff_dpl_{{$index}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_SFF_DATA_PLANE_LOCATOR' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <select class="form-control input-sm" id="function_f_dpl_{{$index}}" ui-select2="{allowClear: true}" ng-model="function['sff-sf-data-plane-locator']['sff-dpl-name']" ng-required="false">
+
+                        <option value=""></option>
+                        <option ng-repeat="t in data['sff-data-plane-locator']" value="{{t.name}}">{{t.name}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- <service-locator-selector function="function" ng-show="function['name']" id-suffix="func_loc_{{$index}}"></service-locator-selector> -->
 
             <div class="form-group" ng-show="function['name']">
                 <label ui-select2-label="function_interfaces_{{$index}}" class="col-lg-6 control-label small-label">
@@ -202,7 +229,7 @@
                 </div>
             </div>
 
-            <div class="form-group" show-validation-error>
+            <!-- <div class="form-group" show-validation-error>
                 <label ui-select2-label="function_type_{{$index}}" class="col-lg-6 control-label small-label">
                     {{'SFC_FUNCTION_TYPE' | translate}}
                 </label>
@@ -216,7 +243,7 @@
                         <option ng-repeat="t in serviceFunctionConstants.type" value="{{t}}">{{t}}</option>
                     </select>
                 </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
                 <label ui-select2-label="function_failmode2_{{$index}}" class="col-lg-6 control-label small-label">
@@ -235,7 +262,34 @@
                 </div>
             </div>
 
-            <service-locator constants="serviceLocatorConstants" locator="function['sff-sf-data-plane-locator']" id-suffix="func_loc_{{$index}}"></service-locator>
+            <div class="form-group" ng-show="function['name']">
+                
+                <label for="function_sf_dpl2_{{$index}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_SF_DATA_PLANE_LOCATOR' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <input type="text" class="form-control input-sm" id="function_dpl2_{{$index}}" name="function_dpl2" 
+                           ng-model="function['sff-sf-data-plane-locator']['sf-dpl-name']">
+                </div>
+                
+            </div>
+
+            <div class="form-group" ng-show="function['name']">
+                <label ui-select2-label="function_sff_dpl_{{$index}}" class="col-lg-6 control-label small-label">
+                    {{'SFC_SFF_DATA_PLANE_LOCATOR' | translate}}
+                </label>
+
+                <div class="col-lg-6">
+                    <select class="form-control input-sm" id="function_f_dpl_{{$index}}" ui-select2="{allowClear: true}" ng-model="function['sff-sf-data-plane-locator']['sff-dpl-name']" ng-required="false">
+
+                        <option value=""></option>
+                        <option ng-repeat="t in data['sff-data-plane-locator']" value="{{t.name}}">{{t.name}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- <service-locator constants="serviceLocatorConstants" locator="function['sff-sf-data-plane-locator']" id-suffix="func_loc_{{$index}}"></service-locator> -->
 
             <div class="form-group">
                 <label ui-select2-label="function_interfaces2_{{$index}}" class="col-lg-6 control-label small-label">
@@ -250,14 +304,14 @@
             </div>
         </div>
 
-        <div ng-if="function['sff-sf-data-plane-locator']"
+        <!-- <div ng-if="function['sff-sf-data-plane-locator']"
              sfc-watch-for-reinit="function['sff-sf-data-plane-locator']"
              ng-init="function['sff-sf-data-plane-locator']['ovs-bridge'] = function['sff-sf-data-plane-locator']['ovs-bridge'] || {};">
             <h4 style="padding-left: 30px;">{{'SFC_FORWARDER_OVS_BRIDGE' | translate}}</h4>
             <sff-bridge bridge="function['sff-sf-data-plane-locator']['ovs-bridge']"
                         id-suffix="func_loc_{{$index}}">
             </sff-bridge>
-        </div>
+        </div> -->
 
     </div>
 

@@ -17,14 +17,18 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -41,6 +45,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+
 /**
  * Set of instructions in order to interact with MD-SAL datastore.
  * <p>
@@ -51,28 +60,40 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
-    private static final int SCHEDULED_THREAD_POOL_SIZE = 1;
-    private static final int QUEUE_SIZE = 1000;
-    private static final int ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS = 300;
     private static final long SHUTDOWN_TIME = 5;
-    private static final String LOGSTR_THREAD_QUEUE_FULL = "Thread Queue is full, cant execute action: {}";
+    private static final String LOGSTR_THREAD_EXCEPTION = "Exception executing Thread: {}";
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2FlowWriterImpl.class);
 
     private ExecutorService threadPoolExecutorService;
     private FlowBuilder flowBuilder;
+    // Store RspId to List of FlowDetails, to be able
+    // to delete all flows for a particular RSP
     private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
+    // Store Table IID to a List of Flows to be able to write the flows one
+    // table at a time, which is much faster than writing a flow at a time.
+    // Notice the Table IID includes the nodeId and the tableId
+    private Map<InstanceIdentifier<Table>, TableBuilder> tableIdToFlowsMap;
 
     public SfcL2FlowWriterImpl() {
-        // Not using an Executors.newSingleThreadExecutor() here, since it creates
-        // an Executor that uses a single worker thread operating off an unbounded
-        // queue, and we want to be able to limit the size of the queue
-        this.threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE, SCHEDULED_THREAD_POOL_SIZE,
-                ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(QUEUE_SIZE));
+        this.threadPoolExecutorService = Executors.newSingleThreadExecutor();
         this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
+        this.tableIdToFlowsMap = new HashMap<InstanceIdentifier<Table>, TableBuilder>();
         this.flowBuilder = null;
     }
 
+    /**
+     * Return the last flow builder
+     * Used mainly in Unit Testing
+     */
+    @Override
+    public FlowBuilder getFlowBuilder() {
+        return this.flowBuilder;
+    }
+
+    /**
+     * Shutdown the thread pool
+     */
+    @Override
     public void shutdown() throws ExecutionException, InterruptedException {
         // When we close this service we need to shutdown our executor!
         threadPoolExecutorService.shutdown();
@@ -87,23 +108,43 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     /**
      * A thread class used to write the flows to the data store.
      */
-    class FlowWriterTask implements Runnable {
-        String sffNodeName;
-        InstanceIdentifier<Flow> flowInstanceId;
-        FlowBuilder flowBuilder;
+    class TableWriterTask implements Runnable {
+        InstanceIdentifier<Table> tableInstanceId;
+        TableBuilder tableBuilder;
 
-        public FlowWriterTask(String sffNodeName, InstanceIdentifier<Flow> flowInstanceId, FlowBuilder flowBuilder) {
-            this.sffNodeName = sffNodeName;
-            this.flowInstanceId = flowInstanceId;
-            this.flowBuilder = flowBuilder;
+        public TableWriterTask(InstanceIdentifier<Table> tableInstanceId, TableBuilder tableBuilder) {
+            this.tableInstanceId = tableInstanceId;
+            this.tableBuilder = tableBuilder;
         }
 
         public void run(){
-            if (!SfcDataStoreAPI.writeMergeTransactionAPI(
-                    this.flowInstanceId,
-                    this.flowBuilder.build(),
-                    LogicalDatastoreType.CONFIGURATION)) {
-                LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], this.sffNodeName);
+            try {
+                ReadWriteTransaction trans = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newReadWriteTransaction();
+                Optional<Table> read = trans.read(LogicalDatastoreType.CONFIGURATION, this.tableInstanceId).get();
+
+                if (read.isPresent()) {
+                    Table currentTable = read.get();
+                    tableBuilder.getFlow().addAll(currentTable.getFlow());
+                    LOG.info("TableWriterTask adding [{}] current flows to tableId [{}]",
+                            currentTable.getFlow().size(), this.tableInstanceId.toString());
+                }
+
+                trans.put(LogicalDatastoreType.CONFIGURATION, this.tableInstanceId, this.tableBuilder.build(), true);
+
+                CheckedFuture<Void, TransactionCommitFailedException> f = trans.submit();
+                Futures.addCallback(f, new FutureCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable t) {
+                        LOG.error("Could not write flow table {}: {}", tableInstanceId, t);
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+                        LOG.debug("Flow table {} updated.", tableInstanceId);
+                    }
+                });
+            } catch(Exception e) {
+                LOG.error("Exception in TableWriterTask: {}", e.toString());
             }
         }
     }
@@ -144,38 +185,85 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     }
 
     /**
-     * Write a flow to the DataStore
+     * From previous calls to writeFlowToConfig(), flows were stored per table
+     * and per SFF. Now the flows will be written, one table at at time per SFF.
+     */
+    @Override
+    public void flushFlows() {
+        for(Map.Entry<InstanceIdentifier<Table>, TableBuilder> entry : tableIdToFlowsMap.entrySet()) {
+
+            LOG.info("flushFlows: TableIID [{}], writing [{}] flows.",
+                    entry.getKey().toString(), entry.getValue().getFlow().size());
+
+            TableWriterTask writerThread = new TableWriterTask(entry.getKey(), entry.getValue());
+            try {
+                threadPoolExecutorService.execute(writerThread);
+            } catch (Exception ex) {
+                LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString());
+            }
+        }
+
+        // Clear the entries
+        tableIdToFlowsMap.clear();
+    }
+
+    /**
+     * Purge any unwritten flows not written yet. This should be called upon
+     * errors, when the remaining buffered flows should not be written.
+     */
+    @Override
+    public void purgeFlows() {
+        tableIdToFlowsMap.clear();
+    }
+
+    /**
+     * Store a flow to be written later. The flows will be stored per
+     * SFF and table. Later, when flushFlows() is called, all the flows
+     * will be written. The tableId is taken from the FlowBuilder.
      *
      * @param sffNodeName - which SFF to write the flow to
      * @param flow - details of the flow to be written
      */
     @Override
-    public void writeFlowToConfig(Long rspId, String sffNodeName,
-            FlowBuilder flow) {
+    public void writeFlow(Long rspId, String sffNodeName, FlowBuilder flow) {
+        this.flowBuilder = flow;
 
-        // Create the NodeBuilder
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setId(new NodeId(sffNodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+        InstanceIdentifier<Table> tablePath =
+                SfcOpenflowUtils.createTablePath(
+                        new NodeId(sffNodeName), flow.getTableId());
 
-        // Create the flow path, which will include the Node, Table, and Flow
-        InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, new TableKey(flow.getTableId()))
-            .child(Flow.class, flow.getKey())
-            .build();
-
-        LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
-
-        storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
-
-        FlowWriterTask writerThread = new FlowWriterTask(sffNodeName, flowInstanceId, flow);
-        try {
-            threadPoolExecutorService.execute(writerThread);
-        } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+        // Get the TableBuilder based on the TablePath
+        // If it doesnt exist, create it
+        TableBuilder tableBuilder = tableIdToFlowsMap.get(tablePath);
+        if(tableBuilder == null) {
+            // The entry didnt exist, creating it
+            tableBuilder = new TableBuilder();
+            tableBuilder.setFlow(new ArrayList<Flow>());
+            tableIdToFlowsMap.put(tablePath, tableBuilder);
         }
+
+        // Add the flow to the TableBuiler for this tableId and sffNodeName
+        tableBuilder.getFlow().add(flow.build());
+
+        // This will store the flow info and rspId for removal later
+        storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
+    }
+
+    /**
+     * storeFlowDetails
+     * Store the flow details so the flows are easy to delete later
+     *
+     * @param sffNodeName - the SFF the flow is written to
+     * @param flowKey - the flow key of the new flow
+     * @param tableId - the table the flow was written to
+     */
+    private void storeFlowDetails(final Long rspId, final String sffNodeName, FlowKey flowKey, short tableId) {
+        List<FlowDetails> flowDetails = rspNameToFlowsMap.get(rspId);
+        if (flowDetails == null) {
+            flowDetails = new ArrayList<FlowDetails>();
+            rspNameToFlowsMap.put(rspId, flowDetails);
+        }
+        flowDetails.add(new FlowDetails(sffNodeName, flowKey, new TableKey(tableId)));
     }
 
     /**
@@ -186,7 +274,7 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
      * @param tableKey - The table the flow was written to
      */
     @Override
-    public void removeFlowFromConfig(String sffNodeName, FlowKey flowKey,
+    public void removeFlow(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
 
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -205,26 +293,8 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
         try {
             threadPoolExecutorService.execute(removerThread);
         } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_QUEUE_FULL, ex.toString());
+            LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString());
         }
-    }
-
-    /**
-     * storeFlowDetails
-     * Store the flow details so the flows are easy to delete later
-     *
-     * @param sffNodeName - the SFF the flow is written to
-     * @param flowKey - the flow key of the new flow
-     * @param tableId - the table the flow was written to
-     */
-    @Override
-    public void storeFlowDetails(final Long rspId, final String sffNodeName, FlowKey flowKey, short tableId) {
-        List<FlowDetails> flowDetails = rspNameToFlowsMap.get(rspId);
-        if (flowDetails == null) {
-            flowDetails = new ArrayList<FlowDetails>();
-            rspNameToFlowsMap.put(rspId, flowDetails);
-        }
-        flowDetails.add(new FlowDetails(sffNodeName, flowKey, new TableKey(tableId)));
     }
 
     @Override
@@ -255,11 +325,6 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
         }
     }
 
-    @Override
-    public FlowBuilder getFlowBuilder() {
-        return this.flowBuilder;
-    }
-
     /**
      * Delete all flows created for the given rspId
      *
@@ -275,7 +340,7 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
         rspNameToFlowsMap.remove(rspId);
         for (FlowDetails flowDetails : flowDetailsList) {
-            removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
+            removeFlow(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
         }
     }
 
@@ -289,7 +354,7 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
             Set<Entry<Long, List<FlowDetails>>> entries = rspNameToFlowsMap.entrySet();
             List<FlowDetails> flowDetailsList = entries.iterator().next().getValue();
             for (FlowDetails flowDetails : flowDetailsList) {
-                removeFlowFromConfig(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
+                removeFlow(flowDetails.sffNodeName, flowDetails.flowKey, flowDetails.tableKey);
                 sffNodeIDs.add(new NodeId(flowDetails.sffNodeName));
             }
             rspNameToFlowsMap.clear();

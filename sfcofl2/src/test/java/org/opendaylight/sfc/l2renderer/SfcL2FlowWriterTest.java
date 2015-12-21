@@ -32,19 +32,14 @@ public class SfcL2FlowWriterTest implements SfcL2FlowWriterInterface {
     FlowBuilder flowBuilder = null;
 
     @Override
-    public void writeFlowToConfig(Long rspId, String sffNodeName,
+    public void writeFlow(Long rspId, String sffNodeName,
             FlowBuilder flow) {
         this.flowBuilder = flow;
     }
 
     @Override
-    public void removeFlowFromConfig(String sffNodeName, FlowKey flowKey,
+    public void removeFlow(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
-    }
-
-    @Override
-    public void storeFlowDetails(Long rspId, String sffNodeName,
-            FlowKey flowKey, short tableId) {
     }
 
     @Override
@@ -64,6 +59,13 @@ public class SfcL2FlowWriterTest implements SfcL2FlowWriterInterface {
     @Override
     public Set<NodeId> clearSffsIfNoRspExists() {
         return null;
+    }
+
+    public void flushFlows() {
+    }
+
+    @Override
+    public void purgeFlows() {
     }
 
     @Override

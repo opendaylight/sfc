@@ -6,9 +6,9 @@ __status__ = "alpha"
 
 import requests
 import json
-import time
 from subprocess import *
 import pexpect
+import time
 
 put_json_headers = {'content-type': 'application/json'}
 get_json_headers = {'Accept': 'application/json'}
@@ -100,7 +100,7 @@ def put_and_check(url, json_req, json_resp):
         # Creation of SFPs is slow, need to pause here.
         time.sleep(2)
         r = s.get(url, stream=False, auth=(USERNAME, PASSWORD))
-        if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
+        if (r.status_code == 200) and (ordered(json.loads(r.text)) == ordered(json.loads(json_resp))):
             print("=>Creation successfully \n")
         else:
             print("=>Creation did not pass check, error code: {}. If error code was 2XX it is "
@@ -113,7 +113,7 @@ def check(url, json_resp, message):
     s = requests.Session()
     print(message, "\n")
     r = s.get(url, stream=False, auth=(USERNAME, PASSWORD))
-    if (r.status_code == 200) and (json.loads(r.text) == json.loads(json_resp)):
+    if (r.status_code == 200) and (ordered(json.loads(r.text)) == ordered(json.loads(json_resp))):
         print("=>Check successful \n")
     else:
         print("=>Check not successful, error code: {}. If error code was 2XX it is "
@@ -210,3 +210,15 @@ def check_sfc_initialized(child):
     except KeyError:
         print("SFC not initialized properly, empty answer from Karaf")
     return ret
+
+
+# http://stackoverflow.com/questions/25851183/how-to-compare-two-json-objects-with-the-same-elements-in-a-different-order-equa
+
+
+def ordered(obj):
+    if isinstance(obj, dict):
+        return sorted((k, ordered(v)) for k, v in obj.items())
+    if isinstance(obj, list):
+        return sorted(ordered(x) for x in obj)
+    else:
+        return obj

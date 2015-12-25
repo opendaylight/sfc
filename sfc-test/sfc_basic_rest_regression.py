@@ -1,7 +1,7 @@
 __author__ = "Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __license__ = "New-style BSD"
-__version__ = "0.3"
+__version__ = "0.4"
 __email__ = "rapenno@gmail.com"
 __status__ = "Tested with SFC-Karaf distribution as of 10/05/2014"
 
@@ -71,9 +71,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    # delete_and_check(SF_ONE_URL.format("SF1"), "Deleting SF {}".format("SF1"))
-    # check(RSP_URL, RENDERED_SERVICE_PATH_DEL_ONE_JSON, "Checking RSP after deleting one SF...")
-    # check(SFT_URL, SERVICE_FUNCTION_TYPE_DELETE_ONE_SF_JSON, "Checking Service Function Types after deleting on SF...")
-    # delete_configuration()
 

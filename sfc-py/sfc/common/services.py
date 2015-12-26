@@ -20,11 +20,10 @@ from threading import Thread
 from struct import pack, unpack
 
 from ..common.sfc_globals import sfc_globals
-from ..nsh.common import *    # noqa
+from ..nsh.common import *  # noqa
 from ..nsh import decode as nsh_decode
 from ..nsh.encode import add_sf_to_trace_pkt
 from ..nsh.service_index import process_service_index
-
 
 __author__ = "Jim Guichard, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
@@ -32,14 +31,11 @@ __version__ = "0.3"
 __email__ = "jguichar@cisco.com, rapenno@gmail.com"
 __status__ = "beta"
 
-
 """
 All supported services
 """
 
-
 logger = logging.getLogger(__name__)
-
 
 #: Global flags used for indication of current packet processing status
 # Packet needs more processing within this SFF
@@ -118,6 +114,13 @@ class BasicService(object):
     def set_name(self, name):
         self.service_name = name
 
+    def get_name(self):
+        """
+        :return service name which is the same as SF/SFF name
+        :rtype: str
+        """
+        return self.service_name
+
     def _decode_headers(self, data):
         """
         Procedure for decoding packet headers.
@@ -148,8 +151,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.debug('%s: Processing received packet(basicservice) service name :%s',
-        # self.service_type, self.service_name)
+        logger.debug('%s: Processing received packet(basicservice) service name :%s',
+                     self.service_type, self.service_name)
 
         self._decode_headers(data)
 
@@ -215,14 +218,14 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.info('%s service received packet from %s:', self.service_type, addr)
-        # logger.debug('%s %s', addr, binascii.hexlify(data))
+        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.debug('%s %s', addr, binascii.hexlify(data))
         packet = (data, addr)
         try:
             self.packet_queue.put_nowait(packet)
         except:
             msg = 'Putting into queue failed'
-            logger.info(msg)
+            # logger.info(msg)
             logger.exception(msg)
 
         if self.service_type == DPI:
@@ -240,8 +243,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.info('%s service received packet from %s:', self.service_type, addr)
-        # logger.debug('%s %s', addr, binascii.hexlify(data))
+        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
             # logger.debug('%s: Sending packets to %s', self.service_type, addr)
@@ -280,7 +283,7 @@ class BasicService(object):
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
         ipv6_addr = ipaddress.IPv6Address(data[
-         NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
+                                          NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
         if ipv6_addr.ipv4_mapped:
             ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
             trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)
@@ -366,8 +369,7 @@ class MySffServer(BasicService):
 
         self.service_type = 'SFF Server'
 
-    @staticmethod
-    def _lookup_next_sf(service_path, service_index):
+    def _lookup_next_sf(self, service_path, service_index):
         """
         Retrieve next SF locator info from SfcGlobals
 
@@ -377,6 +379,7 @@ class MySffServer(BasicService):
         :type service_index: int
 
         :return dict or hex
+        :rtype: tuple
 
         """
         next_hop = SERVICE_HOP_INVALID
@@ -385,14 +388,16 @@ class MySffServer(BasicService):
         # SPI value extracted from packet
         try:
             local_data_plane_path = sfc_globals.get_data_plane_path()
-            next_hop = local_data_plane_path[service_path][service_index]
+            sff_name = super(MySffServer, self).get_name()
+            next_hop = local_data_plane_path[sff_name][service_path][service_index]
         except KeyError:
-            # logger.error('Could not determine next service hop. SP: %d, SI: %d',
-            #             service_path, service_index)
+            logger.error('Could not determine next service hop. SP: %d, SI: %d',
+                         service_path, service_index)
             pass
         return next_hop
 
-    def _get_packet_bearing(self, packet):
+    @staticmethod
+    def _get_packet_bearing(packet):
         """
         Parse a packet to get source and destination info
 
@@ -469,10 +474,13 @@ class MySffServer(BasicService):
                 #             self.server_base_values.service_index)
 
                 # Remove all SFC headers, leave only original packet
-                if sfc_globals.NSH_TYPE_3 == sfc_globals.get_NSH_type():
+                if self.server_base_values.next_protocol == NSH_NEXT_PROTO_IPV4:
+                    payload_start_index = PAYLOAD_START_INDEX_NSH_TYPE1
+                elif self.server_base_values.next_protocol == NSH_NEXT_PROTO_ETH:
                     payload_start_index = PAYLOAD_START_INDEX_NSH_TYPE3
                 else:
-                    payload_start_index = PAYLOAD_START_INDEX_NSH_TYPE1
+                    logger.error("\nCan not determine NSH next protocol\n")
+                    return rw_data, address
                 inner_packet = rw_data[payload_start_index:]
                 if inner_packet:
                     euid = os.geteuid()
@@ -518,8 +526,8 @@ class MySffServer(BasicService):
 
         elif nsh_decode.is_trace_message(data):
             # Have to differentiate between no SPID and End of path
-            if (self.server_trace_values.sil == self.server_base_values.service_index) or (
-                    next_hop == SERVICE_HOP_INVALID):
+            service_index = self.server_base_values.service_index
+            if (self.server_trace_values.sil == service_index) or (next_hop == SERVICE_HOP_INVALID):
                 # End of trace
                 super(MySffServer, self).process_trace_pkt(rw_data, data)
 

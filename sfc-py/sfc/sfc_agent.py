@@ -1104,8 +1104,8 @@ def main():
             logging.basicConfig(level=logging.INFO)
 
         logger.info("====== STARTING SFC AGENT ======")
-        logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
-                    "appropriate action such as creating, deleting, updating  SFs, SFFs, "
+        logger.info("SFC Agent will listen to Opendaylight REST Messages and take any \n"
+                    "appropriate action such as creating, deleting, updating  SFs, SFFs, \n "
                     "or classifier. \n")
 
         if args.odl_get_sff:

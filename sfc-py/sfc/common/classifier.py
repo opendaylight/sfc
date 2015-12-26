@@ -24,22 +24,17 @@ from ..nsh.common import (VXLANGPE, VXLAN, GREHEADER, BASEHEADER, CONTEXTHEADER,
                           VXLAN_NEXT_PROTO_NSH)
 from _socket import IPV6_V6ONLY
 
-
-
-
 __author__ = 'Martin Lauko, Dusan Madar'
 __email__ = "martin.lauko@pantheon.sk, madar.dusan@gmail.com"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __version__ = "0.1"
 __status__ = "alpha"
 
-
 """
 NFQ classifier - manage everything related with NetFilterQueue: from starting
 packet listeners to creation of appropriate ip(6)tables rules and marking
 received packets accordingly.
 """
-
 
 # NOTE: naming conventions
 # nfq -> NetFilterQueue
@@ -57,7 +52,6 @@ logger.setLevel(logging.DEBUG)
 requests_logger = logging.getLogger('requests')
 requests_logger.setLevel(logging.WARNING)
 
-
 #: constants
 IPV4 = 4
 IPv6 = 6
@@ -70,10 +64,10 @@ in_pckt_queue = queue.Queue()
 if sys.platform.startswith('linux'):
     try:
         from netfilterqueue import NetfilterQueue
+
         NFQ_AVAILABLE = True
     except ImportError:
         pass
-
 
 #: ACE items to ip(6)tables flags/types mapping
 ace_2_iptables = {'source-ips': {'flag': '-s',
@@ -93,9 +87,9 @@ ace_2_iptables = {'source-ips': {'flag': '-s',
                   }
 
 #: IP version to NSH next protocol mapping
-ipv_2_next_protocol = {4: 0x1,      # IPv4
-                       6: 0x2,      # IPv6
-                       10: 0x3}     # Ethernet
+ipv_2_next_protocol = {4: 0x1,  # IPv4
+                       6: 0x2,  # IPv6
+                       10: 0x3}  # Ethernet
 
 
 def run_cmd(cmd):
@@ -282,17 +276,17 @@ class NfqClassifier(metaclass=Singleton):
 
         """
         ipver = self._get_current_ip_version(ip_adr)
-        #logger.info('IP version for classifier forward socket is :"%s"', ipver)
+        # logger.info('IP version for classifier forward socket is :"%s"', ipver)
         if ipver == 4:
             adrr_family = socket.AF_INET
         elif ipver == 6:
-            adrr_family = socket.AF_INET6     
+            adrr_family = socket.AF_INET6
         else:
-           adrr_family = socket.AF_INET
-           
+            adrr_family = socket.AF_INET
+
         if self.fwd_socket != None:
             self.fwd_socket.close()
-            
+
         self.fwd_socket = socket.socket(adrr_family, socket.SOCK_DGRAM)
         self.fwd_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -305,7 +299,7 @@ class NfqClassifier(metaclass=Singleton):
         except (AttributeError, socket.error):
             # Apparently, the socket option is not available in
             # this machine's TCP stack
-            logger.info("Apparently, the socket option is not available in this machine's TCP stack")            
+            logger.info("Apparently, the socket option is not available in this machine's TCP stack")
             pass
 
     def _get_rsp_by_name(self, rsp_name):
@@ -419,9 +413,9 @@ class NfqClassifier(metaclass=Singleton):
 
         fwd_to = self.rsp_2_sff[rsp_id]['sff']
         next_protocol = ipv_2_next_protocol[ipv]
-        
+
         transport = fwd_to['transport-type']
-               
+
         if 'vxlan-gpe' in transport and sfc_globals.get_legacy_vxlan() == False:
             # NOTE
             # tunnel_id (0x0500) is hard-coded, will it be always the same?
@@ -439,62 +433,62 @@ class NfqClassifier(metaclass=Singleton):
                                      version=int('000', 2),
                                      reserved0=int('000000000000', 2),
                                      checksum=int('0000000000000000', 2))
-        elif 'vxlan' in  transport and sfc_globals.get_legacy_vxlan():
+        elif 'vxlan' in transport and sfc_globals.get_legacy_vxlan():
             # NOTE
             # tunnel_id (0x0500) is hard-coded, will it be always the same?
             logger.info('transport: VXLAN')
-            encap_header = VXLAN()                
+            encap_header = VXLAN()
         else:
             raise ValueError('Unsupported transport type "%s"', transport)
-
 
         base_header = BASEHEADER(service_path=rsp_id,
                                  service_index=fwd_to['starting-index'],
                                  next_protocol=next_protocol)
-
 
         # NOTE
         # so far only context metadata are supported 
         local_sfp_mtdt = sfc_globals.get_sfp_context_metadata()
         if local_sfp_mtdt:
             ctx_header = CONTEXTHEADER(network_shared=local_sfp_mtdt['context-header1'],
-                                   service_shared=local_sfp_mtdt['context-header2'],
-                                   network_platform=local_sfp_mtdt['context-header3'],
-                                   service_platform=local_sfp_mtdt['context-header4'])
+                                       service_shared=local_sfp_mtdt['context-header2'],
+                                       network_platform=local_sfp_mtdt['context-header3'],
+                                       service_platform=local_sfp_mtdt['context-header4'])
         else:
             ctx_header = CONTEXTHEADER(network_shared=0,
-                                   service_shared=0,
-                                   network_platform=0,
-                                   service_platform=0)
+                                       service_shared=0,
+                                       network_platform=0,
+                                       service_platform=0)
         eth_header = ETHHEADER(0x3c, 0x15, 0xc2, 0xc9, 0x4f, 0xbc, 0x08, 0x00, 0x27, 0xb6, 0xb0, 0x58,
-                                    0x08, 0x00)
-        if sfc_globals.NSH_TYPE_3 == sfc_globals.get_NSH_type():
+                               0x08, 0x00)
+        if sfc_globals.NSH_TYPE_3 == sfc_globals.get_nsh_type():
             nsh_header = build_nsh_eth_header(encap_header, base_header, ctx_header, eth_header)
             logger.debug('NSH type 3 created')
         else:
             nsh_header = build_nsh_header(encap_header, base_header, ctx_header)
             logger.debug('NSH type 1 created')
         nsh_packet = nsh_header + packet.get_payload()
-        
+
         try:
             logger.info('addr: "%s"  port:"%s"', fwd_to['ip'], fwd_to['port'])
-            logger.debug('* Sending packet to IP: "%s", port: "%d", nsp: "%d", nsi: "%d", next_protocol(base_header): "%s", next_protocol(encap_header): "%s"',
+            logger.debug(
+                '* Sending packet to IP: "%s", port: "%d", nsp: "%d", nsi: "%d", next_protocol(base_header):\n'
+                ' "%s", next_protocol(encap_header): "%s"',
                 fwd_to['ip'], fwd_to['port'], rsp_id, fwd_to['starting-index'], next_protocol, VXLAN_NEXT_PROTO_NSH)
-        
+
             self.fwd_socket.sendto(nsh_packet, (fwd_to['ip'], fwd_to['port']))
 
             sfc_globals.sent_packets += 1
             logger.debug('* Queued:"%d" sent:"%d sfq:"%d" sffq:"%d" sf_proc:"%d" sff_proc "%d"',
-                    sfc_globals.processed_packets, sfc_globals.sent_packets,
-                    sfc_globals.sf_queued_packets, sfc_globals.sff_queued_packets,
-                    sfc_globals.sf_processed_packets, sfc_globals.sff_processed_packets)
+                         sfc_globals.processed_packets, sfc_globals.sent_packets,
+                         sfc_globals.sf_queued_packets, sfc_globals.sff_queued_packets,
+                         sfc_globals.sf_processed_packets, sfc_globals.sff_processed_packets)
             sleep(0.00000001)  # not nice but this sending process needs to be slow down
-        except Exception as e:  
+        except Exception as e:
             # msg = 'Excepton {} , {}'.format(e.message, e.args)
             logger.info(e)
             logger.exception(e)
             # raise
-        
+
     def process_packet(self, packet):
         """
         Main NFQ callback for each classified packet.
@@ -681,7 +675,7 @@ class NfqClassifier(metaclass=Singleton):
                     return
 
                 rsp_name = (ace['actions']
-                               ['service-function-acl:rendered-service-path'])
+                            ['service-function-acl:rendered-service-path'])
 
                 sff_data = self._fetch_rsp_first_hop_from_odl(rsp_name)
 
@@ -694,9 +688,9 @@ class NfqClassifier(metaclass=Singleton):
                 self.rsp_id = rsp_id
                 self.rsp_ace = ace['rule-name'].upper()
                 self.rsp_chain = '-'.join((self.rsp_acl,
-                                       self.rsp_ace,
-                                       'RSP',
-                                       str(rsp_id)))
+                                           self.rsp_ace,
+                                           'RSP',
+                                           str(rsp_id)))
 
                 # `self.rsp_ipv` and `self.rsp_mark` are set by this
                 ace_rule_cmd = self.parse_ace(ace['matches'])
@@ -751,7 +745,7 @@ class NfqClassifier(metaclass=Singleton):
         """
         logger.info('Creating RSP')
         self.register_rsp()
-        
+
         if self.rsp_id not in self.rsp_2_sff:
             self.rsp_2_sff[self.rsp_id] = {'name': rsp_name}
 
@@ -887,7 +881,7 @@ def clear_classifier():
         nfq_classifier.remove_all_rsps()
         logger.debug('******************Processed packets "%d"***************', sfc_globals.processed_packets)
         logger.debug('******************Sent packets "%d"***************', sfc_globals.sent_packets)
-        
+
     logger.debug('******************SF processed packets "%d"***************', sfc_globals.sf_processed_packets)
     logger.debug('******************SFF processed packets "%d"***************', sfc_globals.sff_processed_packets)
     logger.debug('******************SF queued packets "%d"***************', sfc_globals.sf_queued_packets)

@@ -403,7 +403,7 @@ class PSEUDO_UDPHEADER(Structure):
         return p_udp_header_pack
 
 
-class InnerHeader():
+class InnerHeader(object):
     """
     Essential Information to build inner packet.
 

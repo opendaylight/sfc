@@ -17,27 +17,24 @@ import json
 
 from urllib.parse import urlparse
 
-
 # fix Python 3 relative imports inside packages
 # CREDITS: http://stackoverflow.com/a/6655098/4183498
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, parent_dir)
 import sfc  # noqa
-__package__ = 'sfc'
 
+__package__ = 'sfc'
 
 from sfc.common import classifier
 from sfc.cli import xe_cli, xr_cli, ovs_cli
 from sfc.common import sfc_globals as _sfc_globals
 from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
-
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
 __version__ = "0.4"
 __email__ = "paulq@cisco.com, rapenno@gmail.com"
 __status__ = "alpha"
-
 
 """
 SFC Agent Server. This Server should be co-located with the python SFF data
@@ -240,19 +237,22 @@ def find_sff_locator_by_ip(addr):
     :return str or None
 
     """
+    sff_name_list = []
     local_sff_topo = sfc_globals.get_sff_topo()
 
     for sff_name, sff_value in local_sff_topo.items():
         try:
             for locator_value in sff_value['sff-data-plane-locator']:
                 if locator_value['data-plane-locator']['ip'] == addr:
-                    return sff_name
+                    sff_name_list.append(sff_name)
+                    # return sff_name
                 else:
                     continue
         except KeyError:
             continue
 
-    return None
+    return sff_name_list
+    # return None
 
 
 def build_data_plane_service_path(service_path):
@@ -264,44 +264,70 @@ def build_data_plane_service_path(service_path):
 
     :return int
 
+
+    255, SF1, SFF1
+    254, SF2, SFF2
+
     """
+
     sp_id = service_path['path-id']
     local_data_plane_path = sfc_globals.get_data_plane_path()
     sfc_globals.set_sfp_parent_path(service_path['parent-service-function-path'])
-    for service_hop in service_path['rendered-service-path-hop']:
+    prev_sff = None
+    service_hop_list = service_path['rendered-service-path-hop']
+    for list_index, service_hop in enumerate(service_hop_list):
         sh_index = service_hop['service-index']
         sh_sff = service_hop['service-function-forwarder']
+        if prev_sff and (sh_sff != prev_sff):
+            local_data_plane_path[prev_sff][sp_id][sh_index] = find_sff_locator(sh_sff)
 
-        if sh_sff == sfc_globals.get_my_sff_name():
-            # SF is reachable by my SFF
-            if sp_id not in local_data_plane_path.keys():
-                local_data_plane_path[sp_id] = {}
-
-            sf_locator = find_sf_locator(service_hop['service-function-name'],
-                                         sh_sff)
-
-            if sf_locator:
-                local_data_plane_path[sp_id][sh_index] = sf_locator
-                sf_name = service_hop['service-function-name']
-                check_and_start_sf_thread(sf_name)
-
-            else:
-                logger.error("Failed to build rendered service path: %s",
-                             service_path['name'])
-                return -1
+        sf_locator = find_sf_locator(service_hop['service-function-name'],
+                                     sh_sff)
+        if sf_locator:
+            if sh_sff not in local_data_plane_path:
+                local_data_plane_path[sh_sff] = {}
+            if sp_id not in local_data_plane_path[sh_sff]:
+                local_data_plane_path[sh_sff][sp_id] = {}
+            local_data_plane_path[sh_sff][sp_id][sh_index] = sf_locator
+            sf_name = service_hop['service-function-name']
+            check_and_start_sf_thread(sf_name)
         else:
-            # If SF resides in another SFF, the locator is just the data plane
-            # locator of that SFF.
-            if sp_id not in local_data_plane_path.keys():
-                local_data_plane_path[sp_id] = {}
+            logger.error("Failed to build rendered service path: %s",
+                         service_path['name'])
+            return -1
 
-            sff_locator = find_sff_locator(sh_sff)
-            if sff_locator:
-                local_data_plane_path[sp_id][sh_index] = sff_locator
-            else:
-                logger.error("Failed to build rendered service path: %s",
-                             service_path['name'])
-                return -1
+        prev_sff = sh_sff
+
+        # if sh_sff in sfc_globals.get_my_sff_name():
+        #     # SF is reachable by (one of) my SFFs
+        #     if sp_id not in local_data_plane_path.keys():
+        #         local_data_plane_path[sp_id] = {}
+        #
+        #     sf_locator = find_sf_locator(service_hop['service-function-name'],
+        #                                  sh_sff)
+        #
+        #     if sf_locator:
+        #         local_data_plane_path[sp_id][sh_index] = sf_locator
+        #         sf_name = service_hop['service-function-name']
+        #         check_and_start_sf_thread(sf_name)
+        #
+        #     else:
+        #         logger.error("Failed to build rendered service path: %s",
+        #                      service_path['name'])
+        #         return -1
+        # else:
+        #     # If SF resides in another SFF, the locator is just the data plane
+        #     # locator of that SFF.
+        #     if sp_id not in local_data_plane_path.keys():
+        #         local_data_plane_path[sp_id] = {}
+        #
+        #     sff_locator = find_sff_locator(sh_sff)
+        #     if sff_locator:
+        #         local_data_plane_path[sp_id][sh_index] = sff_locator
+        #     else:
+        #         logger.error("Failed to build rendered service path: %s",
+        #                      service_path['name'])
+        #         return -1
 
     return 0
 
@@ -385,7 +411,8 @@ def delete_path(rsp_name):
 
     try:
         sfp_id = local_path[rsp_name]['path-id']
-        local_data_plane_path.pop(sfp_id, None)
+        for key, sff_path in local_data_plane_path.iteritems():
+            sff_path.pop(sfp_id, None)
         local_path.pop(rsp_name, None)
 
         if nfq_classifier.nfq_running():
@@ -529,7 +556,7 @@ def create_sff(sffname):
 
     r_json = flask.request.get_json()
     with open("jsonputSFF.txt", "w") as outfile:
-            json.dump(r_json, outfile)
+        json.dump(r_json, outfile)
     local_sff_topo = sfc_globals.get_sff_topo()
 
     local_sff_topo[sffname] = r_json['service-function-forwarder'][0]
@@ -560,9 +587,9 @@ def delete_sff(sffname):
         if sffname in local_sff_threads.keys():
             stop_sff(sffname)
 
-        if sffname == sfc_globals.get_my_sff_name():
+        if sffname in sfc_globals.get_my_sff_name():
             sfc_globals.reset_path()
-            sfc_globals.reset_data_plane_path()
+            sfc_globals.reset_sff_data_plane_path()
 
         local_sff_topo.pop(sffname)
 
@@ -631,6 +658,12 @@ def get_sff_sf_locator(odl_ip_port, sff_name, sf_name):
     """
     #TODO: add description
     #TODO: add arguments description and type
+    :param sf_name: SF Name
+    :type sf_name: str
+    :param sff_name: SFF name
+    :type sff_name: str
+    :param odl_ip_port: ODL IP and port
+    :type odl_ip_port: tuple
 
     """
     try:
@@ -765,7 +798,7 @@ def get_sffs_from_odl(odl_ip_port):
     except requests.ConnectionError as e:
         logger.warning("Not able to get SFFs from ODL: {}".format(e.args[0]))
         return
-    except ConnectionRefusedError as e:     # noqa
+    except ConnectionRefusedError as e:  # noqa
         logger.warning("Not able to get SFFs from ODL: {}".format(e.args[0]))
         return
     except OSError as e:
@@ -952,6 +985,8 @@ def auto_sff_name():
     :return int
 
     """
+    sff_name = []
+
     for intf in netifaces.interfaces():
         addr_list_dict = netifaces.ifaddresses(intf)
         # Some interfaces have no address
@@ -962,13 +997,14 @@ def auto_sff_name():
 
                 for value in inet_addr_list:
                     # logger.info('addr %s', value['addr'])
+                    # We return the list of all SFFs that match
                     sff_name = find_sff_locator_by_ip(value['addr'])
                     if sff_name:
                         sfc_globals.set_my_sff_name(sff_name)
-                        sff_name = sfc_globals.get_my_sff_name()
+                        # sff_name = sfc_globals.get_my_sff_name()
 
-                        logger.info("Auto SFF name is: %s", sff_name)
-                        return 0
+                        # logger.info("Auto SFF name is: %s", sff_name)
+
             if netifaces.AF_INET6 in addr_list_dict:
                 inet_addr_list = addr_list_dict[netifaces.AF_INET6]
 
@@ -980,12 +1016,14 @@ def auto_sff_name():
                         sff_name = sfc_globals.get_my_sff_name()
 
                         logger.info("Auto SFF name is: %s", sff_name)
-                        return 0
-    else:
-        logger.warn("Could not determine SFF name. This means ODL is not running"
-                    " or there is no SFF with a data plane locator IP that matches"
-                    " one where the SFC agent is running. SFC Agent will retry later... \n")
+
+    if not sff_name:
+        logger.warn("\n\nCould not determine SFF name. This means ODL is not running \n"
+                    "or there is no SFF with a data plane locator IP that matches \n"
+                    "one where the SFC agent is running. SFC Agent will retry later... \n")
         return -1
+    else:
+        return 0
 
 
 def main():
@@ -1038,7 +1076,7 @@ def main():
     parser.add_argument('--NSH-type',
                         choices=['1', '3'],
                         help='Set NSH type '
-                             'Default is %s' % sfc_globals.get_NSH_type())
+                             'Default is %s' % sfc_globals.get_nsh_type())
 
     parser.add_argument('--legacy-vxlan', action='store_true',
                         help='Using Vxlan header instead of Vxlan-gpe')
@@ -1075,7 +1113,7 @@ def main():
         sfc_globals.set_my_sff_name(args.sff_name)
 
     if args.NSH_type is not None:
-        sfc_globals.set_NSH_type(args.NSH_type)
+        sfc_globals.set_nsh_type(args.NSH_type)
 
     if args.legacy_vxlan is not None:
         sfc_globals.set_legacy_vxlan(True)
@@ -1103,9 +1141,9 @@ def main():
         else:
             logging.basicConfig(level=logging.INFO)
 
-        logger.info("====== STARTING SFC AGENT ======")
-        logger.info("SFC Agent will listen to Opendaylight REST Messages and take any "
-                    "appropriate action such as creating, deleting, updating  SFs, SFFs, "
+        logger.info("\n\n====== STARTING SFC AGENT ======")
+        logger.info("\n\nSFC Agent will listen to Opendaylight REST Messages and take any\n"
+                    "appropriate action such as creating, deleting, updating  SFs, SFFs,\n "
                     "or classifier. \n")
 
         if args.odl_get_sff:

@@ -14,10 +14,8 @@ __version__ = "0.1"
 __email__ = "rapenno@gmail.com"
 __status__ = "alpha"
 
-
 #: constants
 OF_TABLEID = 0
-
 
 # Static URLs for (local) testing
 ODL_PORT = 8181
@@ -31,7 +29,6 @@ SFF_URL = base_url + "service-function-forwarder:service-function-forwarders/"
 SFT_URL = base_url + "service-function-type:service-function-types/"
 SFP_URL = base_url + "service-function-path:service-function-paths/"
 
-
 #: sfc_agent URLs
 SFF_PARAMETER_URL = ("http://{}/restconf/config/"
                      "service-function-forwarder:service-function-forwarders/")
@@ -43,8 +40,8 @@ SFF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
 
 SFP_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
                           "service-function-path:"
-                          "service-function-paths/") 						  
-						  
+                          "service-function-paths/")
+
 SF_NAME_PARAMETER_URL = ("http://{}/restconf/config/"
                          "service-function:"
                          "service-functions/"
@@ -57,9 +54,10 @@ SFF_SF_DATA_PLANE_LOCATOR_URL = ("http://{}/restconf/config/"
                                  "service-function-dictionary/{}/"
                                  "sff-sf-data-plane-locator/")
 
-METADATA_URL =  ("http://{}/restconf/config/"
-                 "service-function-path-metadata:"
-                 "service-function-metadata/")
+METADATA_URL = ("http://{}/restconf/config/"
+                "service-function-path-metadata:"
+                "service-function-metadata/")
+
 
 class SfcGlobals:
     """
@@ -67,18 +65,19 @@ class SfcGlobals:
     credentials) for the locally running sfc_agent.
     """
     sff_os = "ODL"
-    my_sff_name = None
+    my_sff_name = []
     sff_os_set = {"OVS", "XE", "XR"}
     NSH_TYPE_1 = '1'
     NSH_TYPE_2 = '2'
     NSH_TYPE_3 = '3'
-    
+
     path = {}
     sf_topo = {}
     sff_topo = {}
     sf_threads = {}
     sff_threads = {}
     data_plane_path = {}
+    sff_data_plane_path = {}
     odl_metadata = {}
     sfp_context_metadata = {}
     sfp_variable_metadata = {}
@@ -110,10 +109,10 @@ class SfcGlobals:
 
     def reset_sfp_parent_path(self):
         self.sfp_parent_path = None
-        
+
     def set_sfp_parent_path(self, parent_path):
-        self.sfp_parent_path = parent_path        
-        
+        self.sfp_parent_path = parent_path
+
     def get_sf_topo(self):
         return self.sf_topo
 
@@ -131,10 +130,10 @@ class SfcGlobals:
 
     def set_odl_metadata(self, metadata):
         self.odl_metadata = metadata
-        
+
     def reset_odl_metadata(self):
         self.odl_metadata = {}
-        
+
     def get_sfp_context_metadata(self):
         return self.sfp_context_metadata
 
@@ -146,16 +145,16 @@ class SfcGlobals:
 
     def reset_sfp_variable_metadata(self):
         self.sfp_variable_metadata = {}
-        
+
     def get_sfp_topo(self):
         return self.sfp_topo
 
     def reset_sfp_topo(self):
         self.sfp_topo = {}
-        
+
     def set_sfp_topo(self, sfp_topo):
         self.sfp_topo = sfp_topo
-        
+
     def get_sf_threads(self):
         return self.sf_threads
 
@@ -163,15 +162,15 @@ class SfcGlobals:
         return self.sff_threads
 
     def set_my_sff_name(self, sff_name):
-        self.my_sff_name = sff_name
+        self.my_sff_name.append(sff_name)
 
     def get_my_sff_name(self):
         return self.my_sff_name
 
-    def set_NSH_type(self, new_NSH_type):
-        self.NSH_type = new_NSH_type
+    def set_nsh_type(self, new_nsh_type):
+        self.NSH_type = new_nsh_type
 
-    def get_NSH_type(self):
+    def get_nsh_type(self):
         return self.NSH_type
 
     def set_legacy_vxlan(self, new_legacy_vxlan):
@@ -197,6 +196,9 @@ class SfcGlobals:
 
     def reset_data_plane_path(self):
         self.data_plane_path = {}
+
+    def reset_sff_data_plane_path(self, sff_name):
+        self.data_plane_path[sff_name] = {}
 
     def get_odl_locator(self):
         return self.odl_locator

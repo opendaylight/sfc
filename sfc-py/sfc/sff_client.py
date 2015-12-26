@@ -105,6 +105,8 @@ class MyVxlanGpeNshIpClient(MyNshBaseClass):
         except socket.error as msg:
             print('Failed to send packet. Error Code : ' + str(msg))
             sys.exit()
+        except Exception as e:
+            logger.error("Error processing client: %s" % str(e))
 
     def datagram_received(self, data, addr):
         signal.alarm(0)

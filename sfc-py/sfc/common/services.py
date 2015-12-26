@@ -20,11 +20,10 @@ from threading import Thread
 from struct import pack, unpack
 
 from ..common.sfc_globals import sfc_globals
-from ..nsh.common import *    # noqa
+from ..nsh.common import *  # noqa
 from ..nsh import decode as nsh_decode
 from ..nsh.encode import add_sf_to_trace_pkt
 from ..nsh.service_index import process_service_index
-
 
 __author__ = "Jim Guichard, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."
@@ -32,14 +31,11 @@ __version__ = "0.3"
 __email__ = "jguichar@cisco.com, rapenno@gmail.com"
 __status__ = "beta"
 
-
 """
 All supported services
 """
 
-
 logger = logging.getLogger(__name__)
-
 
 #: Global flags used for indication of current packet processing status
 # Packet needs more processing within this SFF
@@ -148,8 +144,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.debug('%s: Processing received packet(basicservice) service name :%s',
-        # self.service_type, self.service_name)
+        logger.debug('%s: Processing received packet(basicservice) service name :%s',
+                     self.service_type, self.service_name)
 
         self._decode_headers(data)
 
@@ -215,8 +211,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.info('%s service received packet from %s:', self.service_type, addr)
-        # logger.debug('%s %s', addr, binascii.hexlify(data))
+        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.debug('%s %s', addr, binascii.hexlify(data))
         packet = (data, addr)
         try:
             self.packet_queue.put_nowait(packet)
@@ -240,8 +236,8 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        # logger.info('%s service received packet from %s:', self.service_type, addr)
-        # logger.debug('%s %s', addr, binascii.hexlify(data))
+        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
         if nsh_decode.is_data_message(data):
             # logger.debug('%s: Sending packets to %s', self.service_type, addr)
@@ -280,7 +276,7 @@ class BasicService(object):
     def process_trace_pkt(self, rw_data, data):
         logger.info('%s: Sending trace report packet', self.service_type)
         ipv6_addr = ipaddress.IPv6Address(data[
-         NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
+                                          NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET:NSH_OAM_TRACE_DEST_IP_REPORT_OFFSET + NSH_OAM_TRACE_DEST_IP_REPORT_LEN])  # noqa
         if ipv6_addr.ipv4_mapped:
             ipv4_str_trace_dest_addr = str(ipaddress.IPv4Address(self.server_trace_values.ip_4))
             trace_dest_addr = (ipv4_str_trace_dest_addr, self.server_trace_values.port)
@@ -387,12 +383,13 @@ class MySffServer(BasicService):
             local_data_plane_path = sfc_globals.get_data_plane_path()
             next_hop = local_data_plane_path[service_path][service_index]
         except KeyError:
-            # logger.error('Could not determine next service hop. SP: %d, SI: %d',
-            #             service_path, service_index)
+            logger.error('Could not determine next service hop. SP: %d, SI: %d',
+                         service_path, service_index)
             pass
         return next_hop
 
-    def _get_packet_bearing(self, packet):
+    @staticmethod
+    def _get_packet_bearing(packet):
         """
         Parse a packet to get source and destination info
 
@@ -519,7 +516,7 @@ class MySffServer(BasicService):
         elif nsh_decode.is_trace_message(data):
             # Have to differentiate between no SPID and End of path
             if (self.server_trace_values.sil == self.server_base_values.service_index) or (
-                    next_hop == SERVICE_HOP_INVALID):
+                        next_hop == SERVICE_HOP_INVALID):
                 # End of trace
                 super(MySffServer, self).process_trace_pkt(rw_data, data)
 

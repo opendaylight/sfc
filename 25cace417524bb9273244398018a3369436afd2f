@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_d4be2aff",
+        "filename": "sfc-test/sfc_demo_regression.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2015-12-28T03:18:55Z",
+      "side": 1,
+      "message": "remove \"action\u003d\u0027store\u0027\"",
+      "revId": "25cace417524bb9273244398018a3369436afd2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

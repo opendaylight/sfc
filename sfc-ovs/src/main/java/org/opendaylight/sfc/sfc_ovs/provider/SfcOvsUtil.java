@@ -22,9 +22,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
@@ -35,11 +36,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
@@ -433,6 +436,24 @@ public class SfcOvsUtil {
     }
 
     /**
+     * This gets VxlanDataLocator
+     *
+     * @param sff - Service Function Forwarder
+     * @return Ip
+     */
+    public static Ip getSffVxlanDataLocator(ServiceFunctionForwarder sff) {
+
+        List<SffDataPlaneLocator> dplList = sff.getSffDataPlaneLocator();
+        for (SffDataPlaneLocator dpl: dplList) {
+             if (dpl.getDataPlaneLocator() != null &&
+                 dpl.getDataPlaneLocator().getTransport() == VxlanGpe.class) {
+                 return (Ip) dpl.getDataPlaneLocator().getLocatorType();
+             }
+        }
+        return null;
+    }
+
+    /**
      * This gets the OVSDB Manager Topology Node for the
      * {@link ServiceFunctionForwarder}, using the IP address
      * found in an IP based Data Plane Locator. If there isn't
@@ -577,5 +598,91 @@ public class SfcOvsUtil {
             LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
         }
         return null;
+    }
+
+    interface OvsdbTPComp {
+        public boolean compare(OvsdbTerminationPointAugmentation otp);
+    }
+
+    private static Long getOvsPort(String nodeName, OvsdbTPComp comp) {
+        if (nodeName == null) {
+            return null;
+        }
+
+        InstanceIdentifier<Topology> topoIID = buildOvsdbTopologyIID();
+        Topology topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
+
+        if (topo == null) {
+            return null;
+        }
+
+        List<Node> nodes = topo.getNode();
+        if (nodes == null) {
+           return null;
+        }
+
+        for (Node node : nodes) {
+            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+            List<TerminationPoint> tpList = node.getTerminationPoint();
+
+            if (ovsdbBridgeAugmentation == null || tpList == null) {
+                continue;
+            }
+
+            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals("openflow:" + String.valueOf(dpid))) {
+                for (TerminationPoint tp : tpList) {
+                    OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+                    if (comp.compare(otp)) {
+                        return otp.getOfport();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This gets openflow port by port name
+     * @param nodeName openflow node name
+     * @param portName openflow port name
+     * @return port number
+     */
+    public static Long getOfPortByName(String nodeName, String portName) {
+        class PortNameCompare implements OvsdbTPComp {
+            private String portName;
+            public PortNameCompare(String portName) {
+                this.portName = portName;
+            }
+            public boolean compare(OvsdbTerminationPointAugmentation otp) {
+                if (otp == null)
+                    return false;
+                if (portName.equals(otp.getName()))
+                    return true;
+                return false;
+            }
+        }
+
+        return getOvsPort(nodeName, new PortNameCompare(portName));
+    }
+
+    /**
+     * This gets vxlan openflow port
+     * @param nodeName openflow node name
+     * @return port number
+     */
+    public static Long getVxlanOfPort(String nodeName) {
+        class VxlanPortCompare implements OvsdbTPComp {
+            public boolean compare(OvsdbTerminationPointAugmentation otp) {
+                if (otp == null)
+                    return false;
+
+                if (otp.getInterfaceType() == InterfaceTypeVxlan.class) {
+                   return true;
+                }
+                return false;
+            }
+        }
+        return getOvsPort(nodeName, new VxlanPortCompare());
     }
 }

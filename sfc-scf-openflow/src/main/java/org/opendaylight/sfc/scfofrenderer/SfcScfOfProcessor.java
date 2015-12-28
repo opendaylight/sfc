@@ -12,6 +12,7 @@ package org.opendaylight.sfc.scfofrenderer;
 import java.util.List;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -22,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
@@ -102,13 +102,13 @@ public class SfcScfOfProcessor {
                 continue;
             }
 
-            String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
+            String nodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
             if (nodeName == null) {
                 LOG.error("createdServiceFunctionClassifier: nodeName is null\n");
                 continue;
             }
 
-            Long outPort = SfcOvsPortUtils.getVxlanOfPort(nodeName);
+            Long outPort = SfcOvsUtil.getVxlanOfPort(nodeName);
             SfcScfOfUtils.initClassifierTable(nodeName);
 
             if (sclsff.getAttachmentPointType() instanceof Interface) {
@@ -123,7 +123,7 @@ public class SfcScfOfProcessor {
                     LOG.error("createdServiceFunctionClassifier: interface is null\n");
                     continue;
                 }
-                inPort = SfcOvsPortUtils.getOfPortByName(nodeName, itfName);
+                inPort = SfcOvsUtil.getOfPortByName(nodeName, itfName);
                 if (inPort == null) {
                     LOG.error("createdServiceFunctionClassifier: port is null\n");
                     continue;
@@ -206,16 +206,16 @@ public class SfcScfOfProcessor {
                     if (lastSffName != null &&
                         !reverseNsh.getSffName().equals(sffName)) {
                         ServiceFunctionForwarder lastSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
-                        String lastNodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(lastSff);
+                        String lastNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(lastSff);
                         if (lastNodeName == null) {
                             LOG.error("createdServiceFunctionClassifier: lastNodeName is null\n");
                         } else {
                             LOG.debug("createdServiceFunctionClassifier: relay node is {}\n", lastNodeName);
                         }
-                        outPort = SfcOvsPortUtils.getVxlanOfPort(lastNodeName);
+                        outPort = SfcOvsUtil.getVxlanOfPort(lastNodeName);
                         key = new StringBuffer();
                         key.append(scf.getName()).append(aclName).append(ruleName).append(".relay");
-                        Ip ip = SfcOvsPortUtils.getSffIpDataLocator(sff, VxlanGpe.class);
+                        Ip ip = SfcOvsUtil.getSffVxlanDataLocator(sff);
                         reverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address());
                         reverseNsh.setVxlanUdpPort(ip.getPort());
                         if (!SfcScfOfUtils.createClassifierRelayFlow(lastNodeName, key.toString(), reverseNsh)) {
@@ -318,7 +318,7 @@ public class SfcScfOfProcessor {
                     continue;
                 }
 
-                String nodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(sff);
+                String nodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
                 if (nodeName == null) {
                     LOG.error("deletedServiceFunctionClassifier: nodeName is null\n");
                     continue;
@@ -349,7 +349,7 @@ public class SfcScfOfProcessor {
                     if (lastSffName != null &&
                         !reverseNsh.getSffName().equals(sffName)) {
                         ServiceFunctionForwarder lastSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
-                        String lastNodeName = SfcOvsPortUtils.getSffOpenFlowNodeName(lastSff);
+                        String lastNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(lastSff);
                         if (lastNodeName == null) {
                             LOG.error("deletedServiceFunctionClassifier: lastNodeName is null\n");
                         } else {

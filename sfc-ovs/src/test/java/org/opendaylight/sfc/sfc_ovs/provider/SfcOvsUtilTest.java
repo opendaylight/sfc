@@ -54,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
@@ -98,6 +99,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final SffDataPlaneLocatorName sffDataPlaneLocator =
             new SffDataPlaneLocatorName("sffDataPlaneLocator test");
     private static final String testDataPath = "12:34:56:78:9A:BC:DE:F0";
+    private static final Long  testPort = 1L;
     private static final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("sffdpl");
     private static final String testIpAddress = "170.0.0.1";
     private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
@@ -698,6 +700,26 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertNull("Must be null", result);
     }
 
+    @Test
+    /*
+     * Test case for getOfPortByName
+     *
+     */
+    public void getOfPortByNameTest1() {
+        final String ofNodeId = "openflow:95075992133360";
+        assertEquals("Must be equal", SfcOvsUtil.getOfPortByName(ofNodeId, testString), (Long) testPort);
+    }
+
+    @Test
+    /*
+     * Test case for getVxlanOfPort
+     *
+     */
+    public void getVxlanOfPortTest1() {
+        final String ofNodeId = "openflow:95075992133360";
+        assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), (Long) testPort);
+    }
+
     /*
      * create node IID
      */
@@ -752,6 +774,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         List<TerminationPoint> terminationPointList = new ArrayList<>();
         TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
         terminationPointBuilder.setTpId(new TpId("tp_id"));
+        terminationPointBuilder.addAugmentation(OvsdbTerminationPointAugmentation.class, createOvsdbTerminationPointAugmentation());
         terminationPointList.add(terminationPointBuilder.build());
         return terminationPointList;
     }
@@ -768,6 +791,20 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
             .setOvsVersion("OvsVersion_")
             .setConnectionInfo(connectionInfoBuilder.build());
         return ovsdbNodeAugmentationBuilder.build();
+    }
+
+    /*
+     * build ovsdb termination point augmentation
+     *
+     */
+     private OvsdbTerminationPointAugmentation createOvsdbTerminationPointAugmentation() {
+        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
+                new OvsdbTerminationPointAugmentationBuilder();
+        ovsdbTerminationPointAugmentationBuilder.setName(testString);
+        ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
+        ovsdbTerminationPointAugmentationBuilder.setOfport(testPort);
+
+        return ovsdbTerminationPointAugmentationBuilder.build();
     }
 
     /*

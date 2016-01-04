@@ -204,7 +204,12 @@ public class SfcL2RspProcessor {
             return;
         }
 
-        transportProcessor.configureSffTransportIngressFlow(entry);
+        ServiceFunctionForwarder sffDst =
+                sfcL2ProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
+        SffDataPlaneLocator sffDstIngressDpl = sfcL2ProviderUtils.getSffDataPlaneLocator(sffDst,
+                sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
+
+        transportProcessor.configureSffTransportIngressFlow(entry, sffDstIngressDpl);
 
         // Configure the SF related flows
         if (entry.getSf() != null) {

@@ -89,11 +89,9 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
-        IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
+    public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry) {
         this.sfcFlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()),
-                dstSffLocator.getPort().getValue());
+                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()));
     }
 
     //
@@ -236,9 +234,6 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
                     sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
             this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
-            IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
-            this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(
-                    sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
         } else {
             this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);

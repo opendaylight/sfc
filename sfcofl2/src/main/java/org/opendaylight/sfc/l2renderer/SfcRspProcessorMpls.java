@@ -84,7 +84,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
+    public void configureSffTransportIngressFlow(SffGraphEntry entry) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         this.sfcFlowProgrammer.configureMplsTransportIngressFlow(sffNodeName);
     }
@@ -254,14 +254,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel();
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = (dstSffDpl == null) ? null : sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
-        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-            this.sfcFlowProgrammer.configureMplsLastHopTransportEgressFlow(
-                    sffNodeName, srcMac, dstMac, mplsLabel,
-                    srcOfsPortStr, entry.getPathId());
-        } else {
-            this.sfcFlowProgrammer.configureMplsTransportEgressFlow(
-                    sffNodeName, srcMac, dstMac, mplsLabel,
-                    srcOfsPortStr, entry.getPathId());
-        }
+        this.sfcFlowProgrammer.configureMplsTransportEgressFlow(
+                sffNodeName, srcMac, dstMac, mplsLabel,
+                srcOfsPortStr, entry.getPathId());
     }
 }

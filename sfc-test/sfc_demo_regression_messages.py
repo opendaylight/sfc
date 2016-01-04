@@ -1,8 +1,9 @@
 __author__ = "Andrej Kincel"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __license__ = "New-style BSD"
-__version__ = "0.1"
+__version__ = "0.3"
 __email__ = "andrej.kincel@gmail.com"
+__email__ = "rapennol@gmail.com"
 __status__ = ""
 
 SERVICE_FUNCTIONS_JSON = """
@@ -14,48 +15,48 @@ SERVICE_FUNCTIONS_JSON = """
         "sf-data-plane-locator": [
           {
             "name": "vxlan",
-            "ip": "10.0.2.101",
-            "port": 40000,
+            "ip": "{ip}",
+            "port": 40001,
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF1"
           }
         ],
-        "rest-uri": "http://10.0.2.101:5000",
+        "rest-uri": "http://{ip}:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.101",
-        "type": "service-function-type:dpi"
+        "ip-mgmt-address": "{ip}",
+        "type": "dpi"
       },
       {
         "name": "SF2",
         "sf-data-plane-locator": [
           {
             "name": "vxlan",
-            "ip": "10.0.2.102",
-            "port": 40000,
+            "ip": "{ip}",
+            "port": 40002,
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF2"
           }
         ],
-        "rest-uri": "http://10.0.2.102:5000",
+        "rest-uri": "http://{ip}:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.102",
-        "type": "service-function-type:napt44"
+        "ip-mgmt-address": "{ip}",
+        "type": "firewall"
       },
       {
         "name": "SF3",
         "sf-data-plane-locator": [
           {
             "name": "vxlan",
-            "ip": "10.0.2.103",
-            "port": 40000,
+            "ip": "{ip}",
+            "port": 40003,
             "transport": "service-locator:vxlan-gpe",
             "service-function-forwarder": "SFF3"
           }
         ],
-        "rest-uri": "http://10.0.2.103:5000",
+        "rest-uri": "http://{ip}:5000",
         "nsh-aware": true,
-        "ip-mgmt-address": "10.0.2.103",
-        "type": "service-function-type:firewall"
+        "ip-mgmt-address": "{ip}",
+        "type": "napt44"
       }
     ]
   }
@@ -71,25 +72,23 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           {
             "name": "eth0",
             "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.101",
+              "port": 30001,
+              "ip": "{ip}",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.101:5000",
+        "rest-uri": "http://{ip}:5000",
         "service-function-dictionary": [
           {
             "name": "SF1",
-            "type": "service-function-type:dpi",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.101",
-              "transport": "service-locator:vxlan-gpe"
+              "sff-dpl-name": "eth0",
+              "sf-dpl-name": "vxlan"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.101",
+        "ip-mgmt-address": "{ip}",
         "service-node": "Xubuntu-1"
       },
       {
@@ -98,25 +97,23 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           {
             "name": "eth0",
             "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.102",
+              "port": 30002,
+              "ip": "{ip}",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.102:5000",
+        "rest-uri": "http://{ip}:5000",
         "service-function-dictionary": [
           {
             "name": "SF2",
-            "type": "service-function-type:napt44",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.102",
-              "transport": "service-locator:vxlan-gpe"
+              "sff-dpl-name": "eth0",
+              "sf-dpl-name": "vxlan"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.102",
+        "ip-mgmt-address": "{ip}",
         "service-node": "Xubuntu-2"
       },
       {
@@ -125,58 +122,24 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
           {
             "name": "eth0",
             "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.103",
+              "port": 30003,
+              "ip": "{ip}",
               "transport": "service-locator:vxlan-gpe"
             }
           }
         ],
-        "rest-uri": "http://10.0.2.103:5000",
+        "rest-uri": "http://{ip}:5000",
         "service-function-dictionary": [
           {
             "name": "SF3",
-            "type": "service-function-type:firewall",
             "sff-sf-data-plane-locator": {
-              "port": 40000,
-              "ip": "10.0.2.103",
-              "transport": "service-locator:vxlan-gpe"
+              "sff-dpl-name": "eth0",
+              "sf-dpl-name": "vxlan"
             }
           }
         ],
-        "ip-mgmt-address": "10.0.2.103",
+        "ip-mgmt-address": "{ip}",
         "service-node": "Xubuntu-3"
-      },
-      {
-        "name": "SFF-classifier",
-        "sff-data-plane-locator": [
-          {
-            "name": "eth0",
-            "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.10",
-              "transport": "service-locator:vxlan-gpe"
-            }
-          }
-        ],
-        "rest-uri": "http://10.0.2.10:5000",
-        "ip-mgmt-address": "10.0.2.10",
-        "service-node": "Xubuntu-class"
-      },
-      {
-        "name": "SFF-classifier-Reverse",
-        "sff-data-plane-locator": [
-          {
-            "name": "eth0",
-            "data-plane-locator": {
-              "port": 30000,
-              "ip": "10.0.2.20",
-              "transport": "service-locator:vxlan-gpe"
-            }
-          }
-        ],
-        "rest-uri": "http://10.0.2.20:5000",
-        "ip-mgmt-address": "10.0.2.20",
-        "service-node": "Xubuntu-rev-class"
       }
     ]
   }
@@ -191,17 +154,17 @@ SERVICE_CHAINS_JSON = """
         "sfc-service-function": [
           {
             "name": "dpi-abstract",
-            "type": "service-function-type:dpi",
+            "type": "dpi",
             "order": 0
           },
           {
-            "name": "napt44-abstract",
-            "type": "service-function-type:napt44",
+            "name": "firewall-abstract",
+            "type": "firewall",
             "order": 1
           },
           {
-            "name": "firewall-abstract",
-            "type": "service-function-type:firewall",
+            "name": "napt44-abstract",
+            "type": "napt44",
             "order": 2
           }
         ]
@@ -248,7 +211,7 @@ RENDERED_SERVICE_PATH_RPC_REQ = """
 RENDERED_SERVICE_PATH_RPC_RESP = """
 {
   "output": {
-    "name": "SFC1-SFP1-Path-1"
+    "name": "SFC1-SFP1-Path-194"
   }
 }"""
 
@@ -258,63 +221,72 @@ RENDERED_SERVICE_PATH_RESP_JSON = """
   "rendered-service-paths": {
     "rendered-service-path": [
       {
-        "name": "SFC1-SFP1-Path-1",
+        "name": "SFC1-SFP1-Path-272-Reverse",
+        "transport-type": "service-locator:vxlan-gpe",
         "parent-service-function-path": "SFC1-SFP1",
+        "path-id": 8388880,
         "service-chain-name": "SFC1",
         "starting-index": 255,
-        "path-id": 1,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
-            "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1",
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF3",
+            "service-function-forwarder": "SFF3",
             "service-index": 255
           },
           {
-            "hop-number": 0,
+            "hop-number": 1,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF2",
             "service-index": 254
           },
           {
-            "hop-number": 0,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3",
+            "hop-number": 2,
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF1",
+            "service-function-forwarder": "SFF1",
             "service-index": 253
           }
-        ]
+        ],
+        "symmetric-path-id": 272
       },
       {
-        "name": "SFC1-SFP1-Reverse",
+        "name": "SFC1-SFP1-Path-272",
+        "transport-type": "service-locator:vxlan-gpe",
         "parent-service-function-path": "SFC1-SFP1",
+        "path-id": 272,
         "service-chain-name": "SFC1",
         "starting-index": 255,
-        "path-id": 1,
         "rendered-service-path-hop": [
           {
             "hop-number": 0,
-            "service-function-name": "SF3",
-            "service-function-forwarder": "SFF3",
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF1",
+            "service-function-forwarder": "SFF1",
             "service-index": 255
           },
           {
-            "hop-number": 0,
+            "hop-number": 1,
+            "service-function-forwarder-locator": "eth0",
             "service-function-name": "SF2",
             "service-function-forwarder": "SFF2",
             "service-index": 254
           },
           {
-            "hop-number": 0,
-            "service-function-name": "SF1",
-            "service-function-forwarder": "SFF1",
+            "hop-number": 2,
+            "service-function-forwarder-locator": "eth0",
+            "service-function-name": "SF3",
+            "service-function-forwarder": "SFF3",
             "service-index": 253
           }
-        ]
+        ],
+        "symmetric-path-id": 8388880
       }
     ]
   }
-}
-"""
+}"""
 
 SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
 {
@@ -324,10 +296,10 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF1",
         "sff-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       },
@@ -335,10 +307,10 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF2",
         "sff-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       },
@@ -346,10 +318,10 @@ SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
         "name": "SFF3",
         "sff-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       }
@@ -362,13 +334,13 @@ SERVICE_FUNCTION_OPER_JSON = """
   "service-functions-state": {
     "service-function-state": [
       {
-        "name": "SF1",
+        "name": "SF3",
         "sf-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       },
@@ -376,21 +348,21 @@ SERVICE_FUNCTION_OPER_JSON = """
         "name": "SF2",
         "sf-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       },
       {
-        "name": "SF3",
+        "name": "SF1",
         "sf-service-path": [
           {
-            "name": "SFC1-SFP1"
+            "name": "SFC1-SFP1-Path-272-Reverse"
           },
           {
-            "name": "SFC1-SFP1-Reverse"
+            "name": "SFC1-SFP1-Path-272"
           }
         ]
       }
@@ -403,7 +375,7 @@ SERVICE_FUNCTION_TYPE_JSON = """
   "service-function-types": {
     "service-function-type": [
       {
-        "type": "service-function-type:dpi",
+        "type": "dpi",
         "sft-service-function-name": [
           {
             "name": "SF1"
@@ -411,7 +383,7 @@ SERVICE_FUNCTION_TYPE_JSON = """
         ]
       },
       {
-        "type": "service-function-type:napt44",
+        "type": "napt44",
         "sft-service-function-name": [
           {
             "name": "SF2"
@@ -419,7 +391,7 @@ SERVICE_FUNCTION_TYPE_JSON = """
         ]
       },
       {
-        "type": "service-function-type:firewall",
+        "type": "firewall",
         "sft-service-function-name": [
           {
             "name": "SF3"

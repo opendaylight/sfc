@@ -81,7 +81,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSffTransportIngressFlow(SffGraphEntry entry) {
+    public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         this.sfcFlowProgrammer.configureVlanTransportIngressFlow(sffNodeName);
     }
@@ -259,8 +259,14 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
-        this.sfcFlowProgrammer.configureVlanTransportEgressFlow(
-                sffNodeName, srcMac, dstMac, vlanTag,
-                srcOfsPortStr, entry.getPathId());
+        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
+            this.sfcFlowProgrammer.configureVlanLastHopTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, vlanTag,
+                    srcOfsPortStr, entry.getPathId());
+        } else {
+            this.sfcFlowProgrammer.configureVlanTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, vlanTag,
+                    srcOfsPortStr, entry.getPathId());
+        }
     }
 }

@@ -55,6 +55,7 @@ public abstract class SfcL2BaseProviderUtils {
     abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
     abstract public Long getPortNumberFromName(final String bridgeName, final String portName, long rspId);
+
     /**
      * Return a named SffDataPlaneLocator on a SFF
      *

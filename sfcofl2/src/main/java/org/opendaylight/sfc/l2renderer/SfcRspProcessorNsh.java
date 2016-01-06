@@ -85,20 +85,25 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
          * Here we take this name and convert it to the port number.
          */
 
+        String portName = null;
         SfDplOvsAugmentation sfDplOvs = sfDpl.getAugmentation(SfDplOvsAugmentation.class);
-        if(sfDplOvs == null) {
-            LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow NO sfDplOvs augmentation present");
-            return;
+        if(sfDplOvs != null) {
+            portName = sfDplOvs.getOvsPort().getPortId();
+        } else if(sfDpl.getName().getValue().contains("tap-")) {
+            // Tacker set the port name in the SF DPL Name
+            // This is not the preferred method, and the above SF DPL OVS augmentation should be used
+            portName = sfDpl.getName().getValue();
         }
-        LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow sf [{}] sfDplOvs augmentation port [{}]",
-                entry.getSf().getValue(), sfDplOvs.getOvsPort().getPortId());
+
+        if(portName == null) {
+          return;
+        }
 
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
         String sfIp = new String(dstSfLocator.getIp().getValue());
         short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
-        long sffPort = sfcProviderUtils.getPortNumberFromName(
-                entry.getDstSff().getValue(), sfDplOvs.getOvsPort().getPortId(), entry.getPathId());
+        long sffPort = sfcProviderUtils.getPortNumberFromName(sffNodeName, portName, entry.getPathId());
 
         /* SfLoopbackEncapsulatedEgress flow
            udp,nw_dst=11.0.0.5,tp_dst=6633 actions=output:4

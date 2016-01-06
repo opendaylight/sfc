@@ -52,7 +52,11 @@ public interface SfcL2FlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName);
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName);
+    // These 2 are work-around flows until the OVS NSH patch is completed
+    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
+    public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
+
+    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
 
     public void configureMplsTransportIngressFlow(final String sffNodeName);
 
@@ -86,18 +90,25 @@ public interface SfcL2FlowProgrammerInterface {
             final int dstVlan, final String port, final long pathId, final boolean doPktin);
     public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final int dstVlan, final String port, final long pathId);
+    public void configureVlanLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final int dstVlan, final String port, final long pathId);
 
     public void configureMplsTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final long mplsLabel, final String port, final long pathId);
+    public void configureMplsLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
+            final long mplsLabel, final String port, final long pathId);
 
-    public void configureVxlanGpeTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
-            final String port);
+    public void configureVxlanGpeTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
-    public void configureVxlanGpeLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
-            final String port);
+    public void configureVxlanGpeAppCoexistTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
 
-    public void configureNshNscTransportEgressFlow(String sffNodeName, final long nshNsp, final short nshNsi,
-            String switchPort);
+    public void configureVxlanGpeLastHopTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+
+    public void configureNshNscTransportEgressFlow(
+            String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

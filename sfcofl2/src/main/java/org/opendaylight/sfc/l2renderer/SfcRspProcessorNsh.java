@@ -78,9 +78,43 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry) {
-        // nothing needs to be done for NSH
-        // same as for configureSffTransportIngressFlow
+    public void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
+        /*
+         * The current implementation of this method is for Proof Of Concept purposes only.
+         * Currently the switch port the SF is connected to is stored in the SF DPL name by
+         * Tacker. Here we take this name and convert it to the port number. This will be
+         * improved later.
+         */
+
+        if(! sfDpl.getName().getValue().contains("tap-")) {
+            return;
+        }
+
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
+        String sfIp = new String(dstSfLocator.getIp().getValue());
+        short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
+        long sffPort = sfcProviderUtils.getPortNumberFromName(sffNodeName, sfDpl.getName().getValue());
+
+        /* SfLoopbackEncapsulatedEgress flow
+           udp,nw_dst=11.0.0.5,tp_dst=6633 actions=output:4
+           - match incoming vxlan packets destined for an sf, but the nw_dst is the sf ip and not the sff so it bypasses tunnel decap.
+           - Key here is the nw_dst is the ip of the sf.
+           - these packets would have been forwarded by the normal SFC egress rules, match NSH, set tun_dst, send out vtep.
+             They would loop back to this bridge, hit this flow - bypassing the vtep and be forwarded to the sf
+        */
+        this.sfcFlowProgrammer.configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(sffNodeName, sfIp, vxlanUdpPort, sffPort);
+
+        /* SfReturnLoopbackIngress flow
+           udp,in_port=4,tp_dst=6633 actions=LOCAL
+           - match packets coming from the sf and that are vxlan packets - which means NSH and no decap
+           - here I have reg0=1 to indicate this was a packet from a port on the bridge - meaning from a sf.
+             Probably better to add in_port=ofport.
+           - these packets are from the sf and encapped, so they simply get forwarded out the bridge LOCAL
+             and end up coming back to the bridge into the vtep so that the hit the normal SFF flows.
+         */
+        this.sfcFlowProgrammer.configureVxlanGpeSfReturnLoopbackIngressFlow(sffNodeName, vxlanUdpPort, sffPort);
+
     }
 
     /**
@@ -89,9 +123,12 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry) {
+    public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
+        // TODO later use the dstSffDpl to get the tap port number
         this.sfcFlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()));
+                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()),
+                entry.getPathId(),
+                entry.getServiceIndex());
     }
 
     //
@@ -234,6 +271,9 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
                     sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
             this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
+            IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
+            this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(
+                    sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
         } else {
             this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);

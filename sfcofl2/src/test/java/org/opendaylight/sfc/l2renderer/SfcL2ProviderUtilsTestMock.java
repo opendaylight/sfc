@@ -75,4 +75,9 @@ public class SfcL2ProviderUtilsTestMock extends SfcL2BaseProviderUtils {
         return serviceFunctionGroups.get(sfgName);
     }
 
+    @Override
+    public Long getPortNumberFromName(String bridgeName, String portName) {
+        return new Long(0);
+    }
+
 }

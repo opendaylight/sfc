@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
@@ -557,6 +558,9 @@ public class SfcOpenflowUtils {
         addExtension(match, NxmNxNshc1Key.class, am);
     }
 
+    public static void addMatchInPort(MatchBuilder match, NodeId nodeId, long inPort) {
+        match.setInPort(new NodeConnectorId(nodeId + ":" + inPort));
+    }
 
     //
     // Create Action methods

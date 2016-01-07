@@ -162,11 +162,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      * @return true if the cookie belongs to the Classification table, false otherwise
      */
     public boolean compareClassificationTableCookie(FlowCookie cookie) {
-        if (cookie == null) {
-            return false;
-        }
-
-        if (cookie.getValue() == null) {
+        if (cookie == null || cookie.getValue() == null) {
             return false;
         }
 
@@ -541,6 +537,79 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         sfcL2FlowWriter.writeFlowToConfig(flowRspId, sffNodeName, arpTransportIngressFlow);
     }
+
+    @Override
+    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(
+            final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort) {
+
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+        SfcOpenflowUtils.addMatchIpProtocol(match, SfcOpenflowUtils.IP_PROTOCOL_UDP);
+        SfcOpenflowUtils.addMatchDstIpv4(match, sfIp, 32);
+        SfcOpenflowUtils.addMatchDstUdpPort(match, vxlanUdpPort);
+
+        List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionOutPort((int) sffPort, 0));
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        int ibOrder = 0;
+        InstructionBuilder actionsIb = new InstructionBuilder();
+        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        actionsIb.setKey(new InstructionKey(ibOrder));
+        actionsIb.setOrder(ibOrder++);
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder sfFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
+                        FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
+                        "ingress_Transport_Arp_Flow",
+                        match, isb);
+
+        sfcL2FlowWriter.writeFlowToConfig(flowRspId, sffNodeName, sfFlow);
+    }
+
+    @Override
+    public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort) {
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+        SfcOpenflowUtils.addMatchIpProtocol(match, SfcOpenflowUtils.IP_PROTOCOL_UDP);
+        SfcOpenflowUtils.addMatchDstUdpPort(match, vxlanUdpPort);
+        SfcOpenflowUtils.addMatchInPort(match, new NodeId(sffNodeName), sffPort);
+
+        List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.LOCAL.toString(), 0));
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        int ibOrder = 0;
+        InstructionBuilder actionsIb = new InstructionBuilder();
+        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        actionsIb.setKey(new InstructionKey(ibOrder));
+        actionsIb.setOrder(ibOrder++);
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder sfFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
+                        FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
+                        "ingress_Transport_Arp_Flow",
+                        match, isb);
+
+        sfcL2FlowWriter.writeFlowToConfig(flowRspId, sffNodeName, sfFlow);
+    }
+
 
     //
     // Configure Table 2, PathMapper
@@ -1173,17 +1242,12 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
-        InstructionBuilder gotoTbIb = null;
         if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > 0) {
             // Application Coexistence:
             // Instead of egressing the packet out a port, send it to
             // a different application pipeline on this same switch
-            GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(getTableEgress());
+            actionList.add(SfcOpenflowUtils.createActionResubmitTable(getTableEgress(), order++));
 
-            gotoTbIb = new InstructionBuilder();
-            gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-            gotoTbIb.setKey(new InstructionKey(1));
-            gotoTbIb.setOrder(1);
         } else {
             actionList.add(SfcOpenflowUtils.createActionOutPort(port, order++));
         }
@@ -1201,9 +1265,6 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         // Put our Instruction in a list of Instructions
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
-        if(gotoTbIb != null) {
-            instructions.add(gotoTbIb.build());
-        }
         InstructionsBuilder isb = new InstructionsBuilder();
         isb.setInstruction(instructions);
 

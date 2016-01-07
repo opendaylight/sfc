@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.rev160107.SfDplOvsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
@@ -78,9 +79,44 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry) {
-        // nothing needs to be done for NSH
-        // same as for configureSffTransportIngressFlow
+    public void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
+        /*
+         * Currently the switch port the SF is connected to is stored by Tacker.
+         * Here we take this name and convert it to the port number.
+         */
+
+        SfDplOvsAugmentation sfDplOvs = sfDpl.getAugmentation(SfDplOvsAugmentation.class);
+        if(sfDplOvs == null) {
+            LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow NO sfDplOvs augmentation present");
+            return;
+        }
+        LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow sf [{}] sfDplOvs augmentation port [{}]",
+                entry.getSf().getValue(), sfDplOvs.getOvsPort().getPortId());
+
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
+        String sfIp = new String(dstSfLocator.getIp().getValue());
+        short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
+        long sffPort = sfcProviderUtils.getPortNumberFromName(
+                entry.getDstSff().getValue(), sfDplOvs.getOvsPort().getPortId(), entry.getPathId());
+
+        /* SfLoopbackEncapsulatedEgress flow
+           udp,nw_dst=11.0.0.5,tp_dst=6633 actions=output:4
+           - match incoming vxlan packets destined for an sf, but the nw_dst is the sf ip and not the sff so it bypasses tunnel decap.
+           - Key here is the nw_dst is the ip of the sf.
+           - these packets would have been forwarded by the normal SFC egress rules, match NSH, set tun_dst, send out vtep.
+             They would loop back to this bridge, hit this flow - bypassing the vtep and be forwarded to the sf
+        */
+        this.sfcFlowProgrammer.configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(sffNodeName, sfIp, vxlanUdpPort, sffPort);
+
+        /* SfReturnLoopbackIngress flow
+           udp,in_port=4,tp_dst=6633 actions=LOCAL
+           - match packets coming from the sf and that are vxlan packets - which means NSH and no decap
+           - these packets are from the sf and encapped, so they simply get forwarded out the bridge LOCAL
+             and end up coming back to the bridge into the vtep so that the hit the normal SFF flows.
+         */
+        this.sfcFlowProgrammer.configureVxlanGpeSfReturnLoopbackIngressFlow(sffNodeName, vxlanUdpPort, sffPort);
+
     }
 
     /**

@@ -72,7 +72,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSfTransportIngressFlow(SffGraphEntry entry) {
+    public void configureSfTransportIngressFlow(SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         // Even though this is MPLS, the SFs will be VLAN
         this.sfcFlowProgrammer.configureVlanTransportIngressFlow(sffNodeName);
@@ -84,7 +84,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSffTransportIngressFlow(SffGraphEntry entry) {
+    public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         this.sfcFlowProgrammer.configureMplsTransportIngressFlow(sffNodeName);
     }
@@ -254,8 +254,14 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel();
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = (dstSffDpl == null) ? null : sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
-        this.sfcFlowProgrammer.configureMplsTransportEgressFlow(
-                sffNodeName, srcMac, dstMac, mplsLabel,
-                srcOfsPortStr, entry.getPathId());
+        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
+            this.sfcFlowProgrammer.configureMplsLastHopTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, mplsLabel,
+                    srcOfsPortStr, entry.getPathId());
+        } else {
+            this.sfcFlowProgrammer.configureMplsTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, mplsLabel,
+                    srcOfsPortStr, entry.getPathId());
+        }
     }
 }

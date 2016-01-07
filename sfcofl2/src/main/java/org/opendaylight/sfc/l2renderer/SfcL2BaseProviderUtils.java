@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SfcL2BaseProviderUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcL2BaseProviderUtils.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(SfcL2BaseProviderUtils.class);
 
     abstract public void addRsp(long rspId);
 
@@ -54,6 +54,7 @@ public abstract class SfcL2BaseProviderUtils {
 
     abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
+    abstract public Long getPortNumberFromName(final String bridgeName, final String portName, long rspId);
     /**
      * Return a named SffDataPlaneLocator on a SFF
      *

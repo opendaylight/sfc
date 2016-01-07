@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
@@ -58,6 +59,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmit;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,7 +170,6 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
 
-        Match match = flowBuilder.getMatch();
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -897,8 +899,9 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
-        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+        //checkGoToTable(curInstruction, TABLE_EGRESS, true);
     }
 
     /**
@@ -975,8 +978,9 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
-        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+        //checkGoToTable(curInstruction, TABLE_EGRESS, true);
     }
 
     /**
@@ -1025,8 +1029,9 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
-        curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, TABLE_EGRESS, true);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+        //checkGoToTable(curInstruction, TABLE_EGRESS, true);
     }
 
     /**
@@ -1115,6 +1120,25 @@ public class SfcL2FlowProgrammerTest {
                 fail();
             }
         }
+    }
+
+    public void checkActionHasResubmit(Instruction curInstruction, short nextTableId) {
+        assertTrue(curInstruction instanceof ApplyActionsCase);
+
+        boolean resubmitActionFound = false;
+        for(Action action : ((ApplyActionsCase) curInstruction).getApplyActions().getAction()){
+            if(action.getAction() instanceof
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action a =
+                        (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action) action.getAction();
+                NxActionResubmit nxAction = ((ActionResubmit) a.getActionChoice()).getNxActionResubmit();
+                assertEquals(nxAction.getTable().shortValue(), nextTableId);
+                resubmitActionFound = true;
+            }
+            //ApplyActionsCase aac = (ApplyActionsCase) curInstruction;
+        }
+
+        assertTrue(resubmitActionFound);
     }
 
     public void checkDrop(Instruction curInstruction) {

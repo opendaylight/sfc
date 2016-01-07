@@ -218,7 +218,9 @@ public class SfcL2RspProcessor {
 
         // Configure the SF related flows
         if (entry.getSf() != null) {
-            transportProcessor.configureSfTransportIngressFlow(entry);
+            ServiceFunction sf = sfcL2ProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
+            SfDataPlaneLocator sfDpl = sfcL2ProviderUtils.getSfDataPlaneLocator(sf, entry.getDstSff());
+            transportProcessor.configureSfTransportIngressFlow(entry, sfDpl);
         }
     }
 

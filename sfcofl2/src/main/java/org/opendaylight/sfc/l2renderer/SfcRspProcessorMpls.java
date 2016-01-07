@@ -72,7 +72,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      * @param entry - RSP hop info used to create the flow
      */
     @Override
-    public void configureSfTransportIngressFlow(SffGraphEntry entry) {
+    public void configureSfTransportIngressFlow(SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         // Even though this is MPLS, the SFs will be VLAN
         this.sfcFlowProgrammer.configureVlanTransportIngressFlow(sffNodeName);

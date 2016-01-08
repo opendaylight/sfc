@@ -69,6 +69,30 @@
       "revId": "a410a9825190aa3945f8eb950ec2810f5f57e972",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_c43950da",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderTopologyUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4912
+      },
+      "writtenOn": "2016-01-08T04:10:48Z",
+      "side": 1,
+      "message": "Yes, it is.",
+      "parentUuid": "da33351e_2168eef4",
+      "range": {
+        "startLine": 52,
+        "startChar": 48,
+        "endLine": 52,
+        "endChar": 52
+      },
+      "revId": "a410a9825190aa3945f8eb950ec2810f5f57e972",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

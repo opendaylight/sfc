@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da33351e_a7508e5f",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "this is not sufficient - there needs to be vnfm-tacker bundle and bundle with SPI at least. Please double-check all runtime dependencies",
+      "range": {
+        "startLine": 149,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 70
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_27cc7e35",
+        "filename": "sfc-vnfm-tacker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "why this is not in parent pom?",
+      "range": {
+        "startLine": 31,
+        "startChar": 12,
+        "endLine": 31,
+        "endChar": 45
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_c7daf2e8",
+        "filename": "sfc-vnfm-tacker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "why do we need this dependency?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 21
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_87d10ad0",
+        "filename": "sfc-vnfm-tacker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "please move to \"Test dependencies\" section?",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 21
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_a7d7eebe",
+        "filename": "sfc-vnfm-tacker/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "why are these packages exported?",
+      "range": {
+        "startLine": 88,
+        "startChar": 28,
+        "endLine": 89,
+        "endChar": 61
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_c78832c9",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/Attributes.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "why just don\u0027t use CammelCase? this comment is applied on all methods where a name contains \"_\"",
+      "range": {
+        "startLine": 32,
+        "startChar": 18,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_a7736ee6",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/TackerError.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "this looks ugly - if an exception occurs it will be considered as null data are received - I would suggest to remove this constructor and GSON from this class. This comment is applied on all classes with this pattern. If you don\u0027t agree we can discuss.",
+      "range": {
+        "startLine": 26,
+        "startChar": 8,
+        "endLine": 28,
+        "endChar": 9
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_479542e3",
+        "filename": "sfc-vnfm-tacker/src/main/yang/sfc-vnfm-tacker.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "where is the config xml file for this yang?",
+      "range": {
+        "startLine": 1,
+        "startChar": 7,
+        "endLine": 1,
+        "endChar": 22
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_a7fece36",
+        "filename": "sfc-vnfm-tacker/src/main/yang/sfc-vnfm-tacker.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-08T12:30:45Z",
+      "side": 1,
+      "message": "where are the classes SfcVnfManagerProviderModule and SfcVnfManagerProviderModuleFactory?",
+      "range": {
+        "startLine": 31,
+        "startChar": 32,
+        "endLine": 31,
+        "endChar": 53
+      },
+      "revId": "4fdc93c21da24d9aa02f75852377b2b57a11f46c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

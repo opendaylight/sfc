@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da33351e_8420e89c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 4912
+      },
+      "writtenOn": "2016-01-08T04:08:42Z",
+      "side": 1,
+      "message": "No, it cannot. But I think the openflow id is augmented when the OVS bridge node corresponding to the SFF is created.",
+      "parentUuid": "da33351e_813bbaea",
+      "range": {
+        "startLine": 201,
+        "startChar": 12,
+        "endLine": 201,
+        "endChar": 13
+      },
+      "revId": "a410a9825190aa3945f8eb950ec2810f5f57e972",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da33351e_2168eef4",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderTopologyUtil.java",
         "patchSetId": 1

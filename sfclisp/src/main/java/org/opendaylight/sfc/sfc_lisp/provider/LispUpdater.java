@@ -210,7 +210,85 @@ public class LispUpdater implements ILispUpdater {
         return serviceFunctionForwarder;
     }
 
-    public void registerPath(RenderedServicePath rsp) {
+    private boolean isIpInList(List<IpAddress> ipList, IpAddress newIp) {
+        for (IpAddress ip : ipList) {
+            if (newIp.equals(ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean addIfNotInList(List<IpAddress> ipList, IpAddress newIp) {
+        if (newIp == null) {
+            return false;
+        }
+        if (!isIpInList(ipList, newIp)) {
+            ipList.add(newIp);
+            return true;
+        }
+        return false;
+    }
+
+    private IpAddress findLastHop(Eid prefix) {
+        Object[] methodParameters = { prefix };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
+                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
+                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        if (reply == null) {
+            return null;
+        }
+
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
+            if (address instanceof Ipv4) {
+                Ipv4 ipv4 = (Ipv4) address;
+                return new IpAddress(ipv4.getIpv4());
+            } else if (address instanceof Ipv6) {
+                Ipv6 ipv6 = (Ipv6) address;
+                return new IpAddress(ipv6.getIpv6());
+            } else {
+                LOG.debug("Locator address type not supported for TE LCAF: {}", address);
+            }
+        }
+        return null;
+    }
+
+    private void buildAndRegisterTeMapping(Eid eid, List<IpAddress> hopList) {
+        Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
+        List<Rloc> locators = Arrays.asList(locatorPath);
+        Object[] methodParameters = {eid, locators};
+        SfcLispUtil.submitCallable(
+                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
+                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+    }
+
+    private Eid getSrcDstFromAce(AceIp ipMatch) {
+        AceIpVersion ipMatchVersion = ipMatch.getAceIpVersion();
+        String[] srcPrefixParts = null, dstPrefixParts = null;
+
+        if (ipMatchVersion instanceof AceIpv4) {
+            AceIpv4 ipMatch4 = (AceIpv4) ipMatchVersion;
+            srcPrefixParts = ipMatch4.getSourceIpv4Network().getValue().split("/");
+            dstPrefixParts = ipMatch4.getDestinationIpv4Network().getValue().split("/");
+        } else if (ipMatchVersion instanceof AceIpv6) {
+            AceIpv6 ipMatch6 = (AceIpv6) ipMatchVersion;
+            srcPrefixParts = ipMatch6.getSourceIpv6Network().getValue().split("/");
+            dstPrefixParts = ipMatch6.getDestinationIpv6Network().getValue().split("/");
+        }
+
+        if (srcPrefixParts != null && srcPrefixParts.length == 2 && dstPrefixParts != null
+                && dstPrefixParts.length == 2) {
+            return LispAddressUtil.asSrcDstEid(srcPrefixParts[0], dstPrefixParts[0], Integer.parseInt(srcPrefixParts[1]),
+                    Integer.parseInt(dstPrefixParts[1]), 0);
+        } else {
+            LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
+            return null;
+        }
+    }
+
+    @Deprecated
+    public void registerPathOld(RenderedServicePath rsp) {
         // build locator paths from rsp hops and the locators of each src/dst pair of the associated
         // acl's aces
         List<IpAddress> hopIpList = new ArrayList<IpAddress>();
@@ -305,60 +383,79 @@ public class LispUpdater implements ILispUpdater {
         }
     }
 
-    private boolean isIpInList(List<IpAddress> ipList, IpAddress newIp) {
-        for (IpAddress ip : ipList) {
-            if (newIp.equals(ip)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean addIfNotInList(List<IpAddress> ipList, IpAddress newIp) {
-        if (newIp == null) {
-            return false;
-        }
-        if (!isIpInList(ipList, newIp)) {
-            ipList.add(newIp);
-            return true;
-        }
-        return false;
-    }
-
-    private IpAddress findLastHop(Eid prefix) {
-        Object[] methodParameters = { prefix };
-        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
-                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
-        if (reply == null) {
-            return null;
-        }
-
-        for (LocatorRecord locator : reply.getLocatorRecord()) {
-            Address address = locator.getRloc().getAddress();
-            if (address instanceof Ipv4) {
-                Ipv4 ipv4 = (Ipv4) address;
-                return new IpAddress(ipv4.getIpv4());
-            } else if (address instanceof Ipv6) {
-                Ipv6 ipv6 = (Ipv6) address;
-                return new IpAddress(ipv6.getIpv6());
-            } else {
-                LOG.debug("Locator address type not supported for TE LCAF: {}", address);
-            }
-        }
-        return null;
-    }
-
-    private void buildAndRegisterTeMapping(Eid eid, List<IpAddress> hopList) {
-        Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
-        List<Rloc> locators = Arrays.asList(locatorPath);
+    private void registerMapping(Eid eid, Rloc rloc) {
+        List<Rloc> locators = Arrays.asList(rloc);
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
     }
 
-    public void deletePath(RenderedServicePath rsp) {
+    private void registerElpMapping(Eid eid, List<IpAddress> hopList) {
+        Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
+        registerMapping(eid, locatorPath);
+    }
+
+    public void registerPath(RenderedServicePath rsp) {
+        // build locator paths from rsp hops and the locators of each src/dst pair of the associated
+        // acl's aces
+        List<IpAddress> hopIpList = new ArrayList<IpAddress>();
+        List<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop();
+        for (RenderedServicePathHop hop : hops) {
+            SffDataPlaneLocatorName locatorName = hop.getServiceFunctionForwarderLocator();
+            SffName sffName = hop.getServiceFunctionForwarder();
+            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+            if (sff == null) {
+                LOG.warn("Couldn't find SFF {} that supports hop {} in datastore", sffName,
+                        hop.getHopNumber().shortValue());
+                return;
+            }
+
+            List<SffDataPlaneLocator> locators = sff.getSffDataPlaneLocator();
+
+            boolean found = false;
+            for (SffDataPlaneLocator locator : locators) {
+                if (locator.getName().equals(locatorName)) {
+                    DataPlaneLocator dpLocator = locator.getDataPlaneLocator();
+                    LOG.debug("Found for SFF {} the locator {}", sffName, dpLocator);
+                    if (dpLocator.getLocatorType() instanceof Ip) {
+                        Ip sffLocator = (Ip) dpLocator.getLocatorType();
+                        // For now we do not support an SFF appearing twice on a TE path
+                        // and we only use one SFF locator
+                        if (sffLocator != null) {
+                            hopIpList.add(sffLocator.getIp());
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                LOG.debug("Couldn't find locator for SFF {}. Aborting!", sff);
+                return;
+            }
+        }
+
+        // TODO fix VNI. The RSP's tenant ID is a string (UUID?) we need a long
+        Eid spEid = LispAddressUtil.asServicePathEid((long) 0, rsp.getPathId().longValue(),
+                LispAddressUtil.STARTING_SERVICE_INDEX);
+        registerElpMapping(spEid, hopIpList);
+
+        // TODO for each ACE in the RSP's ACL we should insert a SourceDest mapping pointing at the ServicePath LCAF.
+        // For now we can't because we default to SourceDest mapping lookups in LFM so both the classifier and the end
+        // of chain xTR would retrieve the same mapping. The solution is to use an ELP as a locator BUT at this time
+        // the hops can only be SimpleAddresses. The ServicePath LCAF is not one.
+    }
+
+    private void removeMapping(Eid eid) {
+        Object[] methodParameters = {eid};
+        SfcLispUtil.submitCallable(
+                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
+                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+    }
+
+    @Deprecated
+    public void deletePathOld(RenderedServicePath rsp) {
         // get rsp's acl
         Acl acl = SfcLispUtil.getServiceFunctionAcl(rsp.getParentServiceFunctionPath());
         if (acl != null) {
@@ -376,47 +473,11 @@ public class LispUpdater implements ILispUpdater {
         }
     }
 
-    private Eid getSrcDstFromAce(AceIp ipMatch) {
-        AceIpVersion ipMatchVersion = ipMatch.getAceIpVersion();
-        String[] srcPrefixParts = null, dstPrefixParts = null;
-
-        if (ipMatchVersion instanceof AceIpv4) {
-            AceIpv4 ipMatch4 = (AceIpv4) ipMatchVersion;
-            srcPrefixParts = ipMatch4.getSourceIpv4Network().getValue().split("/");
-            dstPrefixParts = ipMatch4.getDestinationIpv4Network().getValue().split("/");
-        } else if (ipMatchVersion instanceof AceIpv6) {
-            AceIpv6 ipMatch6 = (AceIpv6) ipMatchVersion;
-            srcPrefixParts = ipMatch6.getSourceIpv6Network().getValue().split("/");
-            dstPrefixParts = ipMatch6.getDestinationIpv6Network().getValue().split("/");
-        }
-
-        if (srcPrefixParts != null && srcPrefixParts.length == 2 && dstPrefixParts != null
-                && dstPrefixParts.length == 2) {
-            return LispAddressUtil.asSrcDstEid(srcPrefixParts[0], dstPrefixParts[0], Integer.parseInt(srcPrefixParts[1]),
-                    Integer.parseInt(dstPrefixParts[1]), 0);
-        } else {
-            LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
-            return null;
-        }
-    }
-
-    private void removeMapping(Eid eid) {
-        Object[] methodParameters = {eid};
-        SfcLispUtil.submitCallable(
-                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
-    }
-
-    public void updatePath(RenderedServicePath newRsp, RenderedServicePath oldRsp) {
-        Acl newAcl = SfcLispUtil.getServiceFunctionAcl(newRsp.getParentServiceFunctionPath());
-        Acl oldAcl = SfcLispUtil.getServiceFunctionAcl(oldRsp.getParentServiceFunctionPath());
-        if (shallowCompareAcls(newAcl, oldAcl)) {
-            // overwrite
-            registerPath(newRsp);
-        } else {
-            deletePath(oldRsp);
-            registerPath(newRsp);
-        }
+    public void deletePath(RenderedServicePath rsp) {
+        // remove ServicePath mapping
+        Eid spEid = LispAddressUtil.asServicePathEid((long) 0, rsp.getPathId().longValue(),
+                LispAddressUtil.STARTING_SERVICE_INDEX);
+        removeMapping(spEid);
     }
 
     private boolean shallowCompareAcls(Acl acl1, Acl acl2) {
@@ -466,5 +527,23 @@ public class LispUpdater implements ILispUpdater {
             }
         }
         return true;
+    }
+
+    @Deprecated
+    public void updatePathOld(RenderedServicePath newRsp, RenderedServicePath oldRsp) {
+        Acl newAcl = SfcLispUtil.getServiceFunctionAcl(newRsp.getParentServiceFunctionPath());
+        Acl oldAcl = SfcLispUtil.getServiceFunctionAcl(oldRsp.getParentServiceFunctionPath());
+        if (shallowCompareAcls(newAcl, oldAcl)) {
+            // overwrite
+            registerPath(newRsp);
+        } else {
+            deletePath(oldRsp);
+            registerPath(newRsp);
+        }
+    }
+
+    public void updatePath(RenderedServicePath newRsp, RenderedServicePath oldRsp) {
+        // overwrite
+        registerPath(newRsp);
     }
 }

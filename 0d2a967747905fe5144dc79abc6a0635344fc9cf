@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da33351e_b941ca0d",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "these changes supposed to be in change 30933",
+      "range": {
+        "startLine": 161,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 19
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_99468622",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "why we need this as feature?",
+      "range": {
+        "startLine": 148,
+        "startChar": 0,
+        "endLine": 152,
+        "endChar": 14
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_d9476e1c",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "these changes supposed to be in change 30933",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 116,
+        "endChar": 25
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_593cfe93",
+        "filename": "sfc-vnfm-spi/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "these changes supposed to be in change 30933",
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_3955bac6",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/controller/config/yang/config/sfc/vnfm/tacker/SfcVnfManagerProviderModule.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "this does not look right...\nwe need to get IP and port from somewhere (config xml, datastore)",
+      "range": {
+        "startLine": 27,
+        "startChar": 80,
+        "endLine": 27,
+        "endChar": 110
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_59635eb1",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/TackerError.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "why we need this class?",
+      "range": {
+        "startLine": 14,
+        "startChar": 13,
+        "endLine": 14,
+        "endChar": 24
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_195276dd",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/TackerError.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "please remove from each DTO",
+      "range": {
+        "startLine": 16,
+        "startChar": 4,
+        "endLine": 16,
+        "endChar": 64
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_795e22eb",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/TackerError.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-01-12T11:29:34Z",
+      "side": 1,
+      "message": "please remove from each DTO",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 5
+      },
+      "revId": "0d2a967747905fe5144dc79abc6a0635344fc9cf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -158,6 +158,16 @@
         <artifactId>sfc-bootstrap</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-vnfm-spi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-vnfm-tacker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     <!--  Used in odl-sfc-bootstrp and odl-sfc-sb-rest -->
     <dependency>
         <groupId>com.sun.jersey</groupId>

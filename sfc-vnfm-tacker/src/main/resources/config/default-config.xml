@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-vnfm-tacker">
+                        sfc:sfc-vnfm-tacker
+                    </type>
+                    <name>sfc-vnfm-tacker</name>
+                </module>
+            </modules>
+
+            <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <service>
+                    <type xmlns:sfc="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-vnfm-tacker">
+                        sfc:sfc-vnfm-tacker
+                    </type>
+                    <instance>
+                        <name>sfc-vnfm-tacker</name>
+                        <provider>/modules/module[type='sfc-vnfm-tacker'][name='sfc-vnfm-tacker']
+                        </provider>
+                    </instance>
+                </service>
+            </services>
+
+        </data>
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-vnfm-tacker?module=sfc-vnfm-tacker&amp;revision=2015-12-23</capability>
+    </required-capabilities>
+
+</snapshot>

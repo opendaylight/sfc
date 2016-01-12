@@ -109,6 +109,16 @@
                 <artifactId>sfc-openflow-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-vnfm-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>config-api</artifactId>
+                <version>${config.version}</version>
+            </dependency>
 
             <!-- YANG tools -->
             <dependency>
@@ -202,6 +212,7 @@
         <module>sfc-netconf</module>
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
+        <module>sfc-vnfm-spi</module>
         <module>features</module>
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>

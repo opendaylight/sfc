@@ -145,4 +145,14 @@
         <configfile finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml">mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}/xml/config</configfile>
     </feature>
 
+    <feature name="odl-sfc-vnfm-tacker" version="${project.version}" description="OpenDaylight :: sfc :: Vnfm :: Tacker ">
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-spi/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-tacker/${project.version}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/${jersey.version}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/${jersey.version}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/${project.version}/xml/config</configfile>
+    </feature>
+
 </features>

@@ -1,0 +1,18 @@
+{
+  "vnf": {
+    "status": "PENDING_CREATE",
+    "name": "",
+    "tenant_id": "4dd6c1d7b6c94af980ca886495bcfed0",
+    "description": "OpenWRT with services",
+    "instance_id": "4f0d6222-afa0-4f02-8e19-69e7e4fd7edc",
+    "mgmt_url": null,
+    "attributes": {
+      "service_type": "firewall",
+      "heat_template": "description: OpenWRT with services\n                <sample_heat_template> type: OS::Nova::Server\n",
+      "monitoring_policy": "noop",
+      "failure_policy": "noop"
+    },
+    "id": "e3158513-92f4-4587-b949-70ad0bcbb2dd",
+    "vnfd_id": "247b045e-d64f-4ae0-a3b4-8441b9e5892c"
+  }
+}

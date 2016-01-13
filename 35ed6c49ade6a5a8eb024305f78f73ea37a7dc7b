@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da33351e_7e2c3f4b",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/api/SfcVnfManagerProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 5139
+      },
+      "writtenOn": "2016-01-13T15:30:05Z",
+      "side": 1,
+      "message": "Done, renamed",
+      "parentUuid": "da33351e_de474b1c",
+      "range": {
+        "startLine": 24,
+        "startChar": 13,
+        "endLine": 24,
+        "endChar": 34
+      },
+      "revId": "35ed6c49ade6a5a8eb024305f78f73ea37a7dc7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da33351e_9e466322",
         "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/api/SfcVnfManagerProvider.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2016-01-13T14:57:28Z",
       "side": 1,
       "message": "no value of using builder for 2 params",
+      "range": {
+        "startLine": 34,
+        "startChar": 34,
+        "endLine": 34,
+        "endChar": 62
+      },
+      "revId": "35ed6c49ade6a5a8eb024305f78f73ea37a7dc7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da33351e_5e317ba1",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/api/SfcVnfManagerProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5139
+      },
+      "writtenOn": "2016-01-13T15:30:05Z",
+      "side": 1,
+      "message": "Done, builer removed, constructor with 2 params created.",
+      "parentUuid": "da33351e_9e466322",
       "range": {
         "startLine": 34,
         "startChar": 34,

@@ -12,7 +12,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--memory", 1024]
     v.customize ["modifyvm", :id, "--cpus", 4]
   end
-  
+
+  config.vm.synced_folder "../..", "/sfc"
+
   config.vm.define "odl" do | h |
     h.vm.host_name = "odl"
     h.vm.network :private_network, ip: "192.168.1.5"
@@ -21,22 +23,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ["modifyvm", :id, "--cpus", 4]
     end
   end
-  
+
   config.vm.define "classifier1" do | h |
     h.vm.host_name = "classifier1"
     h.vm.network :private_network, ip: "192.168.1.10"
   end
-  
+
   config.vm.define "sff1" do | h |
     h.vm.host_name = "sff1"
     h.vm.network :private_network, ip: "192.168.1.20"
   end
-  
+
   config.vm.define "sf1" do | h |
     h.vm.host_name = "sf1"
     h.vm.network :private_network, ip: "192.168.1.30"
   end
-  
+
   config.vm.define "sf2" do | h |
     h.vm.host_name = "sf2"
     h.vm.network :private_network, ip: "192.168.1.40"

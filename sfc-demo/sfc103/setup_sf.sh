@@ -11,8 +11,7 @@ apt-get install python3-pip -y
 pip3 install sfc
 apt-get install curl -y
 
-cd /home/vagrant/
-git clone http://github.com/opendaylight/sfc
+cd /home/vagrant/; cp -r /sfc .
 
 cd /home/vagrant/sfc/sfc-py
-sudo python3.4 sfc/sfc_agent.py --rest --odl-ip-port 192.168.1.5:8181 &
+python3.4 sfc/sfc_agent.py --rest --odl-ip-port 192.168.1.5:8181

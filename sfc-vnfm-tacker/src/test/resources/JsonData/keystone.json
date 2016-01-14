@@ -1,0 +1,191 @@
+{
+  "access": {
+    "token": {
+      "issued_at": "2016-01-14T12:45:47.035952",
+      "expires": "2016-01-14T13:45:47Z",
+      "id": "7a17dc67ba284ab2beeccc21ce198626",
+      "tenant": {
+        "description": null,
+        "enabled": true,
+        "id": "f3a250db7c374654854f56ad60caea66",
+        "name": "admin"
+      },
+      "audit_ids": [
+        "LUMVW2kmQU29kwkZv8VCZg"
+      ]
+    },
+    "serviceCatalog": [
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8774/v2/f3a250db7c374654854f56ad60caea66",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8774/v2/f3a250db7c374654854f56ad60caea66",
+            "id": "2be14587664648d19873feede3a1fbd8",
+            "publicURL": "http://192.168.50.20:8774/v2/f3a250db7c374654854f56ad60caea66"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "compute",
+        "name": "nova"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8774/v2.1/f3a250db7c374654854f56ad60caea66",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8774/v2.1/f3a250db7c374654854f56ad60caea66",
+            "id": "2c8a218f29174215a59ce16c7afd0992",
+            "publicURL": "http://192.168.50.20:8774/v2.1/f3a250db7c374654854f56ad60caea66"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "computev21",
+        "name": "novav21"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8776/v2/f3a250db7c374654854f56ad60caea66",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8776/v2/f3a250db7c374654854f56ad60caea66",
+            "id": "4ba425642fba4799b566e71198d77286",
+            "publicURL": "http://192.168.50.20:8776/v2/f3a250db7c374654854f56ad60caea66"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "volumev2",
+        "name": "cinderv2"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:9292",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:9292",
+            "id": "0dd501fc767b4775a23ac8855eee28e6",
+            "publicURL": "http://192.168.50.20:9292"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "image",
+        "name": "glance"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8000/v1",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8000/v1",
+            "id": "a646d8f1915e4f32bc34a196f6a96bac",
+            "publicURL": "http://192.168.50.20:8000/v1"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "cloudformation",
+        "name": "heat-cfn"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8776/v1/f3a250db7c374654854f56ad60caea66",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8776/v1/f3a250db7c374654854f56ad60caea66",
+            "id": "38fe7acb53e94ca4aca6181a63bef2c9",
+            "publicURL": "http://192.168.50.20:8776/v1/f3a250db7c374654854f56ad60caea66"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "volume",
+        "name": "cinder"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8773/",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8773/",
+            "id": "81d602d26319446a9ffb181760dc4ad1",
+            "publicURL": "http://192.168.50.20:8773/"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "ec2",
+        "name": "ec2"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8004/v1/f3a250db7c374654854f56ad60caea66",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8004/v1/f3a250db7c374654854f56ad60caea66",
+            "id": "08b3d67b84694b6c8c9e26f44aa2526a",
+            "publicURL": "http://192.168.50.20:8004/v1/f3a250db7c374654854f56ad60caea66"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "orchestration",
+        "name": "heat"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:8888/",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:8888/",
+            "id": "51bf4ea707ae43af838a233bf9cd004d",
+            "publicURL": "http://192.168.50.20:8888/"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "servicevm",
+        "name": "tacker"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:35357/v2.0",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:5000/v2.0",
+            "id": "82c17a499c06465090a33088b1a3aa21",
+            "publicURL": "http://192.168.50.20:5000/v2.0"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "identity",
+        "name": "keystone"
+      },
+      {
+        "endpoints": [
+          {
+            "adminURL": "http://192.168.50.20:9696/",
+            "region": "RegionOne",
+            "internalURL": "http://192.168.50.20:9696/",
+            "id": "34071b0b8e4648d484859549c8e52a26",
+            "publicURL": "http://192.168.50.20:9696/"
+          }
+        ],
+        "endpoints_links": [],
+        "type": "network",
+        "name": "neutron"
+      }
+    ],
+    "user": {
+      "username": "admin",
+      "roles_links": [],
+      "id": "d89c0febc0af4668bda02fff6e4abf34",
+      "roles": [
+        {
+          "name": "admin"
+        }
+      ],
+      "name": "admin"
+    },
+    "metadata": {
+      "is_admin": 0,
+      "roles": [
+        "639aebf4b3934d1b8893c95597744387"
+      ]
+    }
+  }
+}

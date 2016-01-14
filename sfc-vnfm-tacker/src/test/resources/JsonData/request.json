@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "tenantName": "admin",
+    "passwordCredentials": {
+      "username": "admin",
+      "password": "devstack"
+    }
+  },
+  "vnf": {
+    "vnfd_id": "d770ddd7-6014-4191-92d8-a2cd7a6cecd8"
+  }
+}

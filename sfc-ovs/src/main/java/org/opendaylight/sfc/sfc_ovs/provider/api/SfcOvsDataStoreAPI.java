@@ -142,7 +142,7 @@ public class SfcOvsDataStoreAPI implements Callable {
         Preconditions.checkNotNull(ovsdbBridge,
                 "Cannot PUT new OVS Bridge into OVS configuration store, OvsdbBridgeAugmentation is null.");
 
-        return SfcDataStoreAPI.writePutTransactionAPI(SfcOvsUtil.buildOvsdbBridgeIID(ovsdbBridge), ovsdbBridge,
+        return SfcDataStoreAPI.writeMergeTransactionAPI(SfcOvsUtil.buildOvsdbBridgeIID(ovsdbBridge), ovsdbBridge,
                 LogicalDatastoreType.CONFIGURATION);
     }
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:vnfm-tacker="urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:tacker">
+                        vnfm-tacker:sfc-vnf-tacker-provider
+                    </type>
+                    <name>sfc-vnf-tacker</name>
+
+                    <sfc-vnfm-uri>http://192.168.50.20</sfc-vnfm-uri>
+                    <sfc-vnfm-keystone-port>5000</sfc-vnfm-keystone-port>
+                    <sfc-vnfm-tacker-port>8888</sfc-vnfm-tacker-port>
+                    <sfc-vnfm-tacker-name>admin</sfc-vnfm-tacker-name>
+                    <sfc-vnfm-tacker-tenant>admin</sfc-vnfm-tacker-tenant>
+                    <sfc-vnfm-tacker-password>devstack</sfc-vnfm-tacker-password>
+                </module>
+            </modules>
+
+            <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <service>
+                    <type xmlns:vnf-manager="urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:spi">
+                        vnf-manager:sfc-vnf-manager
+                    </type>
+                    <instance>
+                        <name>sfc-vnf-manager</name>
+                        <provider>/modules/module[type='sfc-vnf-tacker-provider'][name='sfc-vnf-tacker']
+                        </provider>
+                    </instance>
+                </service>
+            </services>
+
+        </data>
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:tacker?module=sfc-vnfm-tacker&amp;revision=2015-12-23</capability>
+    </required-capabilities>
+
+</snapshot>

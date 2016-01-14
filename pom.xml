@@ -213,6 +213,7 @@
         <module>sfc-config</module>
         <module>sfc-jsonconfig</module>
         <module>sfc-vnfm-spi</module>
+        <module>sfc-vnfm-tacker</module>
         <module>features</module>
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>

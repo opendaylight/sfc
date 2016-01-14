@@ -1,0 +1,77 @@
+module sfc-vnfm-tacker {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc:vnfm:tacker";
+    prefix "vnfm-tacker";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import sfc-vnf-manager-cfg { prefix vnf-manager; revision-date 2015-12-07; }
+
+    organization "Cisco Systems, Inc.";
+
+    description
+        "This module contains the base YANG definitions for
+        the SFC VNF MANAGER TACKER module.
+
+        Copyright (c)2013 Cisco Systems, Inc. All rights reserved.;
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2015-12-23" {
+        description
+            "Initial revision";
+    }
+
+    identity sfc-vnf-tacker-provider {
+        base "config:module-type";
+
+        config:provided-service vnf-manager:sfc-vnf-manager;
+        config:java-name-prefix TackerManager;
+    }
+
+    // Augments the 'configuration' choice node under modules/module.
+    augment "/config:modules/config:module/config:configuration" {
+        case sfc-vnf-tacker-provider {
+            when "/config:modules/config:module/config:type = 'sfc-vnf-tacker-provider'";
+
+            uses initial-values;
+        }
+    }
+
+    grouping initial-values {
+        description
+            "Values for SFC Vnfm Tacker setup";
+        leaf sfc-vnfm-tacker-name {
+            description
+                "This is the username used for authentication with tacker service.";
+            type string;
+        }
+        leaf sfc-vnfm-tacker-password {
+            description
+                "This is the password used for authentication with tacker service.";
+            type string;
+        }
+        leaf sfc-vnfm-uri {
+            description
+                "This is the URI used for communication with services.";
+            type string;
+        }
+        leaf sfc-vnfm-tacker-port {
+            description
+                "This is the port that Tacker uses for communication.";
+            type int32;
+        }
+        leaf sfc-vnfm-keystone-port {
+            description
+                "This is the port that Keystone uses for communication.";
+            type int32;
+        }
+        leaf sfc-vnfm-tacker-tenant {
+            description
+                "This is the tenant name used for tacker.";
+            type string;
+        }
+    }
+}

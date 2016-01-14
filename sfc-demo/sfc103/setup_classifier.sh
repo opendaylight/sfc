@@ -39,6 +39,6 @@ else
     ip netns exec app ip link set dev veth-app up
     ip netns exec app ip link set dev lo up
     ip netns exec app ifconfig veth-app mtu 1400
-    ip netns exec app python -m SimpleHTTPServer 80 &
+    ip netns exec app python -m SimpleHTTPServer 80
 fi
 ovs-vsctl show

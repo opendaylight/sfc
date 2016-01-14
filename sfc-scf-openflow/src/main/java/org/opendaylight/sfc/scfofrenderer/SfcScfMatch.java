@@ -81,12 +81,14 @@ public class SfcScfMatch {
 
                 if (aceip.getSourcePortRange() != null &&
                     aceip.getSourcePortRange().getLowerPort() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != null) {
+                    aceip.getSourcePortRange().getLowerPort().getValue() != null &&
+                    aceip.getSourcePortRange().getLowerPort().getValue().intValue() != 0) {
                     srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
                 }
                 if (aceip.getDestinationPortRange() != null &&
                     aceip.getDestinationPortRange().getLowerPort() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != null) {
+                    aceip.getDestinationPortRange().getLowerPort().getValue() != null &&
+                    aceip.getDestinationPortRange().getLowerPort().getValue().intValue() != 0) {
                     dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
                 }
 

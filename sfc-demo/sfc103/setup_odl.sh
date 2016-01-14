@@ -21,5 +21,6 @@ source /home/vagrant/.bashrc
 mkdir /home/vagrant/.m2
 wget -O  - https://raw.githubusercontent.com/opendaylight/odlparent/master/settings.xml > /home/vagrant/.m2/settings.xml
 
-cd /home/vagrant; git clone https://github.com/opendaylight/sfc.git
-cd /home/vagrant/sfc; mvn clean install -nsu -DskipTests; sfc-karaf/target/assembly/bin/karaf &
+cd /home/vagrant; cp -r /sfc .
+cd /home/vagrant/sfc; mvn clean install -DskipTests;
+mvn clean install -DskipTests -nsu -rf :sfc-karaf; echo "log4j.logger.org.opendaylight.sfc.scfofrenderer = DEBUG,stdout" >> sfc-karaf/target/assembly/etc/org.ops4j.pax.logging.cfg; sfc-karaf/target/assembly/bin/karaf

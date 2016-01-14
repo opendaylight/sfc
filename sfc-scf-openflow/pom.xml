@@ -17,15 +17,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-provider</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-ovs</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-openflow-utils</artifactId>
         </dependency>
         <dependency>
@@ -60,7 +60,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.opendaylight.sfc-scf-openflow.*;</Export-Package>
-                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                        <Bundle-Name>org.opendaylight.sfc.${project.artifactId}</Bundle-Name>
                     </instructions>
                 </configuration>
             </plugin>

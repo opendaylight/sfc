@@ -93,6 +93,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writePutTransactionAPI")).toReturn(true);
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "deleteTransactionAPI")).toReturn(true);
+        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(true);
     }
 
     @Test

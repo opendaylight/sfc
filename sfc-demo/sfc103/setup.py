@@ -394,6 +394,9 @@ def get_service_function_acl_data():
                 "destination-ipv4-network": "192.168.2.0/24",
                 "source-ipv4-network": "192.168.2.0/24",
                 "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 0
+                },
                 "destination-port-range": {
                     "lower-port": 80
                 }
@@ -417,6 +420,9 @@ def get_service_function_acl_data():
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 80
+                },
+                "destination-port-range": {
+                    "lower-port": 0
                 }
               }
             }

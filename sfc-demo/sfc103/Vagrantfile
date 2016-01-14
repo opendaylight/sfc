@@ -13,6 +13,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--cpus", 4]
   end
   
+  config.vm.synced_folder "../..", "/sfc"
+
   config.vm.define "odl" do | h |
     h.vm.host_name = "odl"
     h.vm.network :private_network, ip: "192.168.1.5"

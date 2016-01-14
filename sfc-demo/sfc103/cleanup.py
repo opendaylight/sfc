@@ -24,7 +24,7 @@ def get_service_nodes_uri():
 
 def get_service_functions_uri():
     return "/restconf/config/service-function:service-functions"
-    
+
 def get_service_function_forwarders_uri():
     return "/restconf/config/service-function-forwarder:service-function-forwarders"
 

@@ -34,3 +34,4 @@ node_modules/
 node/
 coverage/
 .checkstyle
+.vagrant

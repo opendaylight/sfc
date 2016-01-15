@@ -1042,14 +1042,15 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
         sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
 
+        // Test Classifier Match Any table offset.
+        // No flows should be written
+        sfcL2FlowProgrammer.configureClassifierTableMatchAny(SFF_NAME);
+        assertEquals(sfcL2FlowWriter.getFlowBuilder(), null);
+
         // Test TransportIngress Match Any table offset.
-        // It should do a drop
-        // Notice: TransportIngress doesnt use the offset, as it will always be table 0
+        // No flows should be written
         sfcL2FlowProgrammer.configureTransportIngressTableMatchAny(SFF_NAME);
-        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
-        assertEquals(flowBuilder.getTableId().shortValue(), 0);
-        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkDrop(curInstruction, true);
+        assertEquals(sfcL2FlowWriter.getFlowBuilder(), null);
 
         // Test PathMapper Match Any table offset.
         // It should go to PathMapperAcl + offset
@@ -1058,7 +1059,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
-        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE), true);
 
         // Test PathMapperAcl Match Any table offset.

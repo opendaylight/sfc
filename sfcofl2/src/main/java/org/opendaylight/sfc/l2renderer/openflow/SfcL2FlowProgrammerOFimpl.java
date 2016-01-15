@@ -206,6 +206,11 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      */
     @Override
     public void configureTransportIngressTableMatchAny(final String sffNodeName) {
+        if(getTableBase() != 0) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
         FlowBuilder flowBuilder =
                 configureTableMatchAnyDropFlow(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS));

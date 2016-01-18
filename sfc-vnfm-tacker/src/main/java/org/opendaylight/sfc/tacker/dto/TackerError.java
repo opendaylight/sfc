@@ -10,35 +10,35 @@ package org.opendaylight.sfc.tacker.dto;
 
 public class TackerError {
 
-    private Error error;
+    private Error TackerError;
 
     // used by GSON
     private TackerError() {}
 
     public TackerError(Error err) {
-        this.error = err;
+        this.TackerError = err;
     }
 
     public String getMessage() {
-        return error.getMessage();
+        return TackerError.getMessage();
     }
 
-    public int getCode() {
-        return error.getCode();
+    public String getType() {
+        return TackerError.getType();
     }
 
-    public String getTitle() {
-        return error.getTitle();
+    public String getDetail() {
+        return TackerError.getDetail();
     }
 
     public Error getError() {
-        return error;
+        return TackerError;
     }
 
     @Override
     public String toString() {
-        if (this.error != null)
-            return String.format("%s - %s: %s", getError().getCode(), getError().getTitle(), getError().getMessage());
+        if (this.TackerError != null)
+            return String.format("%s - %s: %s", getError().getType(), getError().getMessage(), getError().getDetail());
         else
             return super.toString();
     }

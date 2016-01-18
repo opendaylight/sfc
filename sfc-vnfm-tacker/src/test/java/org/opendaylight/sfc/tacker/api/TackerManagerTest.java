@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.tacker.api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.ClassNamesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -24,6 +25,8 @@ import org.opendaylight.sfc.tacker.dto.*;
 import org.opendaylight.sfc.tacker.dto.Error;
 import org.opendaylight.sfc.tacker.dto.TackerRequest;
 import org.opendaylight.sfc.tacker.dto.TackerResponse;
+import org.opendaylight.sfc.tacker.util.DateSerializer;
+import org.opendaylight.sfc.tacker.util.DateUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -34,12 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class TackerManagerTest extends JerseyTest {
 
@@ -47,13 +50,16 @@ public class TackerManagerTest extends JerseyTest {
     private static final String BASE_URI = "http://localhost";
     private static final int BASE_PORT = 1234;
     private static final int KEYSTONE_PORT = 4321;
-    private static final Gson GSON = new Gson();
+    private static final DateSerializer DATE_SERIALIZER = new DateSerializer();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, DATE_SERIALIZER).create();
     private static final List<String> vnfs = new ArrayList<>();
     private static TackerManager tackerManager;
     private static HttpServer server;
+    private static HttpServer keystoneServer;
     private static TackerResponse tackerResponse;
     private static TackerError badRequestError;
     private static TackerError notFoundError;
+    private static Token token;
 
     private static HttpServer startServer() {
         final ResourceConfig resourceConfig = new ClassNamesResourceConfig(tackerServer.class);
@@ -67,9 +73,23 @@ public class TackerManagerTest extends JerseyTest {
         return httpServer;
     }
 
+    private static HttpServer startKeystoneServer() {
+        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(keystoneServer.class);
+        HttpServer httpServer = null;
+        try {
+            httpServer =
+                    GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + KEYSTONE_PORT), resourceConfig);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.debug(e.getMessage());
+        }
+        return httpServer;
+    }
+
     @BeforeClass
     public static void setUpClass() {
         server = startServer();
+        keystoneServer = startKeystoneServer();
 
         tackerManager = TackerManager.builder()
             .setBaseUri(BASE_URI)
@@ -102,15 +122,15 @@ public class TackerManagerTest extends JerseyTest {
             .build();
 
         badRequestError = new TackerError(Error.builder()
-            .setCode(Response.Status.BAD_REQUEST.getStatusCode())
-            .setTitle("Bad Request")
-            .setMessage("Request not processed, wrong data.")
+            .setType("BadRequest")
+            .setDetail("Request not processed, wrong data.")
+            .setMessage("Bad Request")
             .build());
 
         notFoundError = new TackerError(Error.builder()
-            .setCode(Response.Status.NOT_FOUND.getStatusCode())
-            .setTitle("Not Found")
-            .setMessage("The resource could not be found.")
+            .setType("NotFound")
+            .setDetail("The resource could not be found.")
+            .setMessage("Not Found")
             .build());
     }
 
@@ -118,6 +138,8 @@ public class TackerManagerTest extends JerseyTest {
     public static void tearDownClass() {
         if (server != null && server.isStarted())
             server.shutdownNow();
+        if (keystoneServer != null && keystoneServer.isStarted())
+            keystoneServer.shutdownNow();
     }
 
     @Test
@@ -204,24 +226,43 @@ public class TackerManagerTest extends JerseyTest {
     public static class tackerServer {
 
         @POST
-        public Response postVnf(String json) {
-            TackerRequest testRequest = GSON.fromJson(json, TackerRequest.class);
-            if (!(testRequest.getAuth().getPasswordCredentials().getUsername().equals("admin")
-                    || testRequest.getAuth().getPasswordCredentials().getPassword().equals("devstack"))) {
-                return Response.status(Response.Status.UNAUTHORIZED).entity("unauthorized").build();
-            } else if (testRequest.getVnf().getName().isEmpty()) {
+        public Response postVnf(@HeaderParam("X-Auth-Token") String authToken,
+                @HeaderParam("X-Auth-Project-Id") String authProject, String json) {
+            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty())
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity(GSON.toJson(badRequestError))
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .build();
+
+            if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
             }
+
+            TackerRequest testRequest = GSON.fromJson(json, TackerRequest.class);
+
+            if (testRequest.getVnf().getName().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError)).build();
+            }
+
             vnfs.add(testRequest.getVnf().getName());
             return Response.status(Response.Status.CREATED).entity(GSON.toJson(tackerResponse)).build();
         }
 
         @DELETE
         @Path("/{vnf_id}")
-        public Response deleteVnf(@PathParam("vnf_id") @DefaultValue("") String vnf_id) {
+        public Response deleteVnf(@HeaderParam("X-Auth-Token") String authToken,
+                @HeaderParam("X-Auth-Project-Id") String authProject,
+                @PathParam("vnf_id") @DefaultValue("") String vnf_id) {
+
+            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty())
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(GSON.toJson(badRequestError))
+                    .type(MediaType.APPLICATION_JSON_TYPE)
+                    .build();
+
+            if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
+            }
 
             if (vnf_id.equals(" ")) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -240,6 +281,44 @@ public class TackerManagerTest extends JerseyTest {
                     .entity(GSON.toJson(notFoundError))
                     .build();
             }
+        }
+    }
+
+    @Path("/v2.0/tokens")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class keystoneServer {
+
+        @POST
+        public Response postVnf(String json) {
+            KeystoneRequest testRequest = GSON.fromJson(json, KeystoneRequest.class);
+            if (testRequest.getAuth().getTenantName().equals("admin")
+                    && testRequest.getAuth().getPasswordCredentials().getUsername().equals("admin")
+                    && testRequest.getAuth().getPasswordCredentials().getPassword().equals("devstack")) {
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                // Local time zone
+                SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+                Date now = DateUtils.getUtcDate(new Date());
+                Date expire = DateUtils.addHours(new Date(now.getTime()), 1);
+
+                token = Token.builder()
+                    .setIssued_at(now)
+                    .setExpires(expire)
+                    .setId("7a17dc67ba284ab2beeccc21ce198626")
+                    .setTenant(Tenant.builder().setDesription(null).setEnabled(true).setId("").setName("admin").build())
+                    .setAudit_ids(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
+                    .build();
+
+                String response = "{\"access\":{\"token\":" + GSON.toJson(token) + "}}";
+
+                return Response.status(Response.Status.OK)
+                    .type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(response)
+                    .build();
+            }
+            return Response.status(Response.Status.UNAUTHORIZED).entity("ok").build();
         }
     }
 }

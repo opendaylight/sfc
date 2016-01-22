@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_4ee7f212",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1219,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-01-22T16:47:04Z",
+      "side": 1,
+      "message": "Why this change?",
+      "range": {
+        "startLine": 1219,
+        "startChar": 31,
+        "endLine": 1219,
+        "endChar": 53
+      },
+      "revId": "82242c1b70626b747a79ccdb5be6e9859ec5c04a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_8ef1facf",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-01-22T16:47:04Z",
+      "side": 1,
+      "message": "Same question here.",
+      "range": {
+        "startLine": 102,
+        "startChar": 33,
+        "endLine": 102,
+        "endChar": 55
+      },
+      "revId": "82242c1b70626b747a79ccdb5be6e9859ec5c04a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_cea142ab",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1219,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2016-01-22T17:10:46Z",
+      "side": 1,
+      "message": "because flows without match section ment to be considered \"MatchAny\"... BUT in Li there cennot be flow without match section. Thats problem no.1 Second problem is that when i create match section for these flows but let them empty (https://git.opendaylight.org/gerrit/#/c/33105/) the merge operation just skip them and they will not get it into DS which bring us back to problem no.1 .... so its wheter this or creating match which is not empty (and thats no longer \"MatchAny\" match)... unfortunatelly match section doesnt have any fields that are just informative like description or something and after api freeze they are probably not going to get it now... i tested it with GBPSFC demos and everything is working though",
+      "parentUuid": "9a3d3df0_4ee7f212",
+      "range": {
+        "startLine": 1219,
+        "startChar": 31,
+        "endLine": 1219,
+        "endChar": 53
+      },
+      "revId": "82242c1b70626b747a79ccdb5be6e9859ec5c04a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_8ef1facf",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
         "patchSetId": 2

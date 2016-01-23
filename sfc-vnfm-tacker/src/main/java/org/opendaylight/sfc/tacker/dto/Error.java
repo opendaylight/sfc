@@ -11,16 +11,16 @@ package org.opendaylight.sfc.tacker.dto;
 public class Error {
 
     private String message;
-    private int code;
-    private String title;
+    private String type;
+    private String detail;
 
     // used by GSON
     private Error() {}
 
     public Error(ErrorBuilder builder) {
         this.message = builder.getMessage();
-        this.code = builder.getCode();
-        this.title = builder.getTitle();
+        this.type = builder.getType();
+        this.detail = builder.getDetail();
     }
 
     public static ErrorBuilder builder() {
@@ -31,19 +31,19 @@ public class Error {
         return message;
     }
 
-    public int getCode() {
-        return code;
+    public String getType() {
+        return type;
     }
 
-    public String getTitle() {
-        return title;
+    public String getDetail() {
+        return detail;
     }
 
     public static class ErrorBuilder {
 
         private String message;
-        private int code;
-        private String title;
+        private String type;
+        private String detail;
 
         public String getMessage() {
             return message;
@@ -54,21 +54,21 @@ public class Error {
             return this;
         }
 
-        public int getCode() {
-            return code;
+        public String getType() {
+            return type;
         }
 
-        public ErrorBuilder setCode(int code) {
-            this.code = code;
+        public ErrorBuilder setType(String type) {
+            this.type = type;
             return this;
         }
 
-        public String getTitle() {
-            return title;
+        public String getDetail() {
+            return detail;
         }
 
-        public ErrorBuilder setTitle(String title) {
-            this.title = title;
+        public ErrorBuilder setDetail(String detail) {
+            this.detail = detail;
             return this;
         }
 

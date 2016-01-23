@@ -1,0 +1,7 @@
+{
+  "TackerError": {
+    "message": "device 464654654 could not be found",
+    "type": "DeviceNotFound",
+    "detail": ""
+  }
+}

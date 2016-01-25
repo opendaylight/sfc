@@ -99,7 +99,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
     public SfcL2FlowProgrammerOFimpl(SfcL2FlowWriterInterface sfcL2FlowWriter) {
         this.tableBase = (short) 0;
-        this.tableEgress = (short) 0;
+        this.tableEgress = (short) -1;
         this.flowRspId = new Long(0);
         this.sfcL2FlowWriter = sfcL2FlowWriter;
     }
@@ -981,7 +981,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         // App coexistence
         String switchPort = port;
-        if(getTableEgress() > 0) {
+        if(getTableEgress() >= 0) {
             switchPort = EMPTY_SWITCH_PORT;
         }
 
@@ -1036,7 +1036,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
 
         // App coexistence
         String switchPort = port;
-        if(getTableEgress() > 0) {
+        if(getTableEgress() >= 0) {
             switchPort = EMPTY_SWITCH_PORT;
         }
 
@@ -1155,8 +1155,8 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp) {
 
         // This flow only needs to be created if App Coexistence is being used
-        if(getTableEgress() == (short) 0) {
-            LOG.info("configureVxlanGpeAppCoexistTransportEgressFlow NO AppCoexistence configured, skipping flow");
+        if(getTableEgress() < (short) 0) {
+            LOG.debug("configureVxlanGpeAppCoexistTransportEgressFlow NO AppCoexistence configured, skipping flow");
             return;
         }
 
@@ -1247,7 +1247,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
-        if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > 0) {
+        if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() >= 0) {
             // Application Coexistence:
             // Instead of egressing the packet out a port, send it to
             // a different application pipeline on this same switch
@@ -1415,12 +1415,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      * @return the resulting table id
      */
     private short getTableId(short tableIndex) {
-        if(getTableBase() != 0 && tableIndex == TABLE_INDEX_TRANSPORT_INGRESS) {
-            // If AppCoexistence is being used, and the table is Transport
-            // Ingress (which is table 1) then we need to return table 0
-            return 0;
+        if(getTableBase() != 0) {
+            // App Coexistence
+            if(tableIndex == TABLE_INDEX_TRANSPORT_INGRESS) {
+                // With AppCoexistence the TransportIngress table is now table 0
+                return 0;
+            } else {
+                // Need to subtract 2 to compensate for:
+                // - TABLE_INDEX_CLASSIFIER=0 - which is not used for AppCoexistence
+                // - TABLE_INDEX_TRANSPORT_INGRESS=1 - which is table 0 for AppCoexistence
+                // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
+                return (short) (getTableBase() + tableIndex-2);
+            }
         } else {
-            return (short) (tableBase + tableIndex);
+            return tableIndex;
         }
     }
 }

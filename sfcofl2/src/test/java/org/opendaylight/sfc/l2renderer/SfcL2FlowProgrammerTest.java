@@ -849,6 +849,11 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
         sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
 
+        // When checking the table offsets, we need to subtract 2 to compensate for:
+        // - TABLE_INDEX_CLASSIFIER=0 - which is not used for AppCoexistence
+        // - TABLE_INDEX_TRANSPORT_INGRESS=1 - which is table 0 for AppCoexistence
+        // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
+
         // Check that configureVxlanGpeTransportIngressFlow() is written to the correct table
         // Notice: TransportIngress doesnt use the offset, as it will always be table 0
         sfcL2FlowProgrammer.configureVxlanGpeTransportIngressFlow(SFF_NAME, NSP, NSI);
@@ -859,16 +864,16 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVxlanGpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Check that configureVxlanGpeLastHopTransportEgressFlow() is written
         // to the correct table and that it does NOT go to TABLE_EGRESS
         sfcL2FlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -878,7 +883,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVxlanGpeTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -888,7 +893,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -898,7 +903,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI, IP_SRC);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
         //checkGoToTable(curInstruction, TABLE_EGRESS, true);
@@ -912,6 +917,11 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.setTableBase(TABLE_BASE);
         sfcL2FlowProgrammer.setTableEgress(TABLE_EGRESS);
 
+        // When checking the table offsets, we need to subtract 2 to compensate for:
+        // - TABLE_INDEX_CLASSIFIER=0 - which is not used for AppCoexistence
+        // - TABLE_INDEX_TRANSPORT_INGRESS=1 - which is table 0 for AppCoexistence
+        // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
+
         // Check that configureVlanTransportIngressFlow() is written to the correct table
         // Notice: TransportIngress doesnt use the offset, as it will always be table 0
         sfcL2FlowProgrammer.configureVlanTransportIngressFlow(SFF_NAME);
@@ -922,32 +932,32 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVlanPathMapperFlow(SFF_NAME, VLAN_ID, PATH_ID_SMALL, true);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Check that configureVlanPathMapperFlow() is written to the correct table
         sfcL2FlowProgrammer.configureVlanPathMapperFlow(SFF_NAME, VLAN_ID, PATH_ID, false);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Check that configureMacNextHopFlow() is written to the correct table
         sfcL2FlowProgrammer.configureMacNextHopFlow(SFF_NAME, SFP, MAC_SRC, MAC_DST);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Check that configureVlanSfTransportEgressFlow() is written
         // to the correct table and that it does NOT go to TABLE_EGRESS
         sfcL2FlowProgrammer.configureVlanSfTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID_SMALL, true);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -957,7 +967,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVlanSfTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID_SMALL, false);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -967,7 +977,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVlanTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -977,7 +987,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureVlanLastHopTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, VLAN_ID, PORT, PATH_ID);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
         //checkGoToTable(curInstruction, TABLE_EGRESS, true);
@@ -997,19 +1007,19 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(), 0);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2), true);
 
         // Check that configureMplsPathMapperFlow() is written to the correct table
         sfcL2FlowProgrammer.configureMplsPathMapperFlow(SFF_NAME, MPLS_LABEL, PATH_ID_SMALL, true);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
 
         // Check that configureMplsPathMapperFlow() is written to the correct table
         sfcL2FlowProgrammer.configureMplsPathMapperFlow(SFF_NAME, MPLS_LABEL, PATH_ID, false);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
 
         // Mpls NextHop uses MacNextHop which is tested in appCoexistenceVlan
 
@@ -1018,7 +1028,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureMplsTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, MPLS_LABEL, PORT, PATH_ID);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
@@ -1028,7 +1038,7 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configureMplsLastHopTransportEgressFlow(SFF_NAME, MAC_SRC, MAC_DST, MPLS_LABEL, PORT, PATH_ID);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
         //checkGoToTable(curInstruction, TABLE_EGRESS, true);
@@ -1057,36 +1067,36 @@ public class SfcL2FlowProgrammerTest {
         sfcL2FlowProgrammer.configurePathMapperTableMatchAny(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2), true);
 
         // Test PathMapperAcl Match Any table offset.
         // It should go to NextHop + offset
         sfcL2FlowProgrammer.configurePathMapperAclTableMatchAny(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Test NextHop Match Any table offset.
         // It should go to TransportEgress + offset
         sfcL2FlowProgrammer.configureNextHopTableMatchAny(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Test TransportEgress Match Any table offset.
         // It should do a drop
         sfcL2FlowProgrammer.configureTransportEgressTableMatchAny(SFF_NAME);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         checkDrop(curInstruction, true);
     }
@@ -1101,9 +1111,9 @@ public class SfcL2FlowProgrammerTest {
         ((SfcL2FlowProgrammerOFimpl) sfcL2FlowProgrammer).configurePathMapperAclFlow(SFF_NAME, IP_SRC, IP_DST, (short) PATH_ID);
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
-                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE);
+                SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE), true);
+        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
     }
 
     public void checkGoToTable(Instruction curInstruction, short nextTableId) {

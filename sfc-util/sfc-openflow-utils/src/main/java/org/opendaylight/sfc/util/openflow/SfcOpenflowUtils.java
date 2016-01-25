@@ -1216,7 +1216,7 @@ public class SfcOpenflowUtils {
             .child(Flow.class, flow.getKey())
             .build();
 
-        return SfcDataStoreAPI.writeMergeTransactionAPI(flowInstanceId, flow.build(),
+        return SfcDataStoreAPI.writePutTransactionAPI(flowInstanceId, flow.build(),
                 LogicalDatastoreType.CONFIGURATION);
     }
 

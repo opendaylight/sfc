@@ -1415,12 +1415,20 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
      * @return the resulting table id
      */
     private short getTableId(short tableIndex) {
-        if(getTableBase() != 0 && tableIndex == TABLE_INDEX_TRANSPORT_INGRESS) {
-            // If AppCoexistence is being used, and the table is Transport
-            // Ingress (which is table 1) then we need to return table 0
-            return 0;
+        if(getTableBase() != 0) {
+            // App Coexistence
+            if(tableIndex == TABLE_INDEX_TRANSPORT_INGRESS) {
+                // With AppCoexistence the TransportIngress table is now table 0
+                return 0;
+            } else {
+                // Need to subtract 2 to compensate for:
+                // - TABLE_INDEX_CLASSIFIER=0 - which is not used for AppCoexistence
+                // - TABLE_INDEX_TRANSPORT_INGRESS=1 - which is table 0 for AppCoexistence
+                // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
+                return (short) (getTableBase() + tableIndex-2);
+            }
         } else {
-            return (short) (tableBase + tableIndex);
+            return tableIndex;
         }
     }
 }

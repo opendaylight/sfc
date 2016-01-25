@@ -88,6 +88,32 @@ public class SfcL2OfRendererDataListener extends SfcL2AbstractDataListener {
             return;
         }
 
+        // Cant set the table offset less than 1
+        if(config.getSfcOfTableOffset() < 1) {
+            LOG.error("Error SfcOfTableOffset value [{}]", config.getSfcOfTableOffset());
+            return;
+        }
+
+        // Cant set the egress table negative
+        if(config.getSfcOfAppEgressTableOffset() < 0) {
+            LOG.error("Error SfcOfAppEgressTableOffset value [{}]", config.getSfcOfAppEgressTableOffset());
+            return;
+        }
+
+        // Check that the egress value is not set in the middle of the SFC table range
+        // Example: tableBase = 20, SfcMaxTableOffset=10, then the SFC tables
+        //          would be in the range [20..30]. So an egress value of 25
+        //          would be invalid
+        if(config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset() &&
+           config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset() + this.sfcL2FlowProgrammer.getMaxTableOffset()) {
+            LOG.error("Error SfcOfAppEgressTableOffset value [{}] cant be in the SFC table range [{}..{}]",
+                    config.getSfcOfAppEgressTableOffset(),
+                    config.getSfcOfTableOffset(),
+                    config.getSfcOfTableOffset()+this.sfcL2FlowProgrammer.getMaxTableOffset());
+
+            return;
+        }
+
         UpdateOpenFlowTableOffsets updateThread =
                 new UpdateOpenFlowTableOffsets(
                         config.getSfcOfTableOffset(),

@@ -8,20 +8,21 @@
 
 package org.opendaylight.sfc.l2renderer;
 
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import org.mockito.stubbing.Answer;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 
-/**
- * An interface to be implemented by concrete classes that will OpenFlow rules to MD-SAL datastore.
- *
- * @author Ricardo Noriega (ricardo.noriega.de.soto@ericsson.com)
- * @since 2015-11-25
- */
-
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
@@ -66,6 +67,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.net.InetAddresses;
 
+/**
+ *
+ * @author Ricardo Noriega (ricardo.noriega.de.soto@ericsson.com)
+ * @since 2015-11-25
+ */
 
 public class SfcL2FlowProgrammerTest {
 
@@ -97,8 +103,27 @@ public class SfcL2FlowProgrammerTest {
     FlowBuilder flowBuilder;
 
     public SfcL2FlowProgrammerTest() {
+        this.flowBuilder = null;
+        this.sfcL2FlowWriter = mock(SfcL2FlowWriterInterface.class);
+        // Configure Mockito to store the FlowBuilder when writeFlowToConfig() is called
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                flowBuilder = (FlowBuilder) args[2];
+                return null;
+            }
+        }).when(this.sfcL2FlowWriter).writeFlowToConfig(anyLong(), anyString(), (FlowBuilder) anyObject());
 
-        this.sfcL2FlowWriter = new SfcL2FlowWriterTest();
+        // Configure Mockito to return the FlowBuilder stored by writeFlowToConfig()
+        // when getFlowBuilder() is called
+        // The following didnt work, since it used the value of flowBuilder at the time of invocation:
+        //    when(sfcL2FlowWriter.getFlowBuilder).thenReturn(flowBuilder)
+        doAnswer(new Answer<FlowBuilder>() {
+            public FlowBuilder answer(InvocationOnMock invocation) {
+                return flowBuilder;
+            }
+        }).when(this.sfcL2FlowWriter).getFlowBuilder();
+
         this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl(sfcL2FlowWriter);
     }
 

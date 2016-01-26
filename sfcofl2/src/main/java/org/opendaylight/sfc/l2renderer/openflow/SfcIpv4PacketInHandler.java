@@ -80,6 +80,10 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         this.packetCountPurge = packetCountPurge;
     }
 
+    public int getBufferSize() {
+        return pktInBuffer.size();
+    }
+
     /**
      * The handler function for IPv4 PktIn packets.
      *

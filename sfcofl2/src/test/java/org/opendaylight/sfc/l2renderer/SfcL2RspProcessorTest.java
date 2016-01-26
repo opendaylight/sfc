@@ -58,16 +58,14 @@ public class SfcL2RspProcessorTest {
     SfcL2RspProcessor sfcL2RspProcessor;
     RspBuilder rspBuilder;
     SfcL2FlowProgrammerInterface flowProgrammerTestMoc;
-    SfcL2FlowWriterInterface sfcL2FlowWriter;
     SfcL2ProviderUtilsTestMock sfcUtilsTestMock;
     List<SftType> sfTypes;
 
     public SfcL2RspProcessorTest() {
         LOG.info("SfcL2RspProcessorTest constructor");
 
-        this.sfcL2FlowWriter = new SfcL2FlowWriterTest();
         this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
-        this.flowProgrammerTestMoc.setFlowWriter(sfcL2FlowWriter);
+        this.flowProgrammerTestMoc.setFlowWriter(mock(SfcL2FlowWriterInterface.class));
         this.sfcUtilsTestMock = new SfcL2ProviderUtilsTestMock();
         this.sfcL2RspProcessor = new SfcL2RspProcessor(
                 this.flowProgrammerTestMoc,

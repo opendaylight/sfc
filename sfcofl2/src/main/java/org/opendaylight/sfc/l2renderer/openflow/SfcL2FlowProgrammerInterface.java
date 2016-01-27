@@ -108,16 +108,13 @@ public interface SfcL2FlowProgrammerInterface {
             final long mplsLabel, final String port, final long pathId);
 
     public void configureVxlanGpeTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+            final String sffNodeName, final long nshNsp, final short nshNsi);
 
     public void configureVxlanGpeAppCoexistTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
 
     public void configureVxlanGpeLastHopTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
-
-    public void configureNshNscTransportEgressFlow(
-            String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

@@ -19,10 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.rev160107.SfDplOvsAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
 public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
 
@@ -86,7 +85,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
          */
 
         SfDplOvsAugmentation sfDplOvs = sfDpl.getAugmentation(SfDplOvsAugmentation.class);
-        if(sfDplOvs == null) {
+        if (sfDplOvs == null) {
             LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow NO sfDplOvs augmentation present");
             return;
         }
@@ -97,23 +96,31 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
         IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
         String sfIp = new String(dstSfLocator.getIp().getValue());
         short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
-        long sffPort = sfcProviderUtils.getPortNumberFromName(
-                entry.getDstSff().getValue(), sfDplOvs.getOvsPort().getPortId(), entry.getPathId());
+        long sffPort = sfcProviderUtils.getPortNumberFromName(entry.getDstSff().getValue(),
+                sfDplOvs.getOvsPort().getPortId(), entry.getPathId());
 
-        /* SfLoopbackEncapsulatedEgress flow
-           udp,nw_dst=11.0.0.5,tp_dst=6633 actions=output:4
-           - match incoming vxlan packets destined for an sf, but the nw_dst is the sf ip and not the sff so it bypasses tunnel decap.
-           - Key here is the nw_dst is the ip of the sf.
-           - these packets would have been forwarded by the normal SFC egress rules, match NSH, set tun_dst, send out vtep.
-             They would loop back to this bridge, hit this flow - bypassing the vtep and be forwarded to the sf
-        */
-        this.sfcFlowProgrammer.configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(sffNodeName, sfIp, vxlanUdpPort, sffPort);
+        /*
+         * SfLoopbackEncapsulatedEgress flow
+         * udp,nw_dst=11.0.0.5,tp_dst=6633 actions=output:4
+         * - match incoming vxlan packets destined for an sf, but the nw_dst is the sf ip and not
+         * the sff so it bypasses tunnel decap.
+         * - Key here is the nw_dst is the ip of the sf.
+         * - these packets would have been forwarded by the normal SFC egress rules, match NSH, set
+         * tun_dst, send out vtep.
+         * They would loop back to this bridge, hit this flow - bypassing the vtep and be forwarded
+         * to the sf
+         */
+        this.sfcFlowProgrammer.configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(sffNodeName, sfIp, vxlanUdpPort,
+                sffPort);
 
-        /* SfReturnLoopbackIngress flow
-           udp,in_port=4,tp_dst=6633 actions=LOCAL
-           - match packets coming from the sf and that are vxlan packets - which means NSH and no decap
-           - these packets are from the sf and encapped, so they simply get forwarded out the bridge LOCAL
-             and end up coming back to the bridge into the vtep so that the hit the normal SFF flows.
+        /*
+         * SfReturnLoopbackIngress flow
+         * udp,in_port=4,tp_dst=6633 actions=LOCAL
+         * - match packets coming from the sf and that are vxlan packets - which means NSH and no
+         * decap
+         * - these packets are from the sf and encapped, so they simply get forwarded out the bridge
+         * LOCAL
+         * and end up coming back to the bridge into the vtep so that the hit the normal SFF flows.
          */
         this.sfcFlowProgrammer.configureVxlanGpeSfReturnLoopbackIngressFlow(sffNodeName, vxlanUdpPort, sffPort);
 
@@ -128,8 +135,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
     public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         // TODO later use the dstSffDpl to get the tap port number
         this.sfcFlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()),
-                entry.getPathId(),
+                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()), entry.getPathId(),
                 entry.getServiceIndex());
     }
 
@@ -171,7 +177,8 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param dstSfDpl - the particular SF DPL used to create the flow
      */
     @Override
-    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl) {
+    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SfDataPlaneLocator dstSfDpl) {
         IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
         this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSfLocator.getIp().getValue()));
     }
@@ -184,10 +191,11 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param dstSffDpl - the particular SFF DPL used to create the flow
      */
     @Override
-    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SffDataPlaneLocator dstSffDpl) {
+    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl,
+            SffDataPlaneLocator dstSffDpl) {
         // The dstSffDpl is intentionally set to null for certain cases that
         // can be used by other transports. For Nsh, just skip it.
-        if(dstSffDpl != null) {
+        if (dstSffDpl != null) {
             IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
             this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSffLocator.getIp().getValue()));
         }
@@ -201,7 +209,8 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param dstSfDpl - the particular SF DPL used to create the flow
      */
     @Override
-    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SfDataPlaneLocator dstSfDpl) {
+    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl,
+            SfDataPlaneLocator dstSfDpl) {
         IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
         this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSfLocator.getIp().getValue()));
     }
@@ -214,7 +223,8 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param dstSffDpl - the particular SFF DPL used to create the flow
      */
     @Override
-    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl) {
+    public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SffDataPlaneLocator dstSffDpl) {
         IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
         this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSffLocator.getIp().getValue()));
     }
@@ -227,8 +237,8 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      */
     private void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffName sffName, final String dstIp) {
         this.sfcFlowProgrammer.configureVxlanGpeNextHopFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(sffName, entry.getPathId()),
-                dstIp, entry.getPathId(), entry.getServiceIndex());
+                sfcProviderUtils.getSffOpenFlowNodeName(sffName, entry.getPathId()), dstIp, entry.getPathId(),
+                entry.getServiceIndex());
     }
 
     //
@@ -244,12 +254,12 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param hopDpl - Hop DPL used to create the flow
      */
     @Override
-    public void configureSfTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
+    public void configureSfTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
-        this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
-                sffNodeName, entry.getPathId(), entry.getServiceIndex(), srcOfsPortStr);
+        this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(sffNodeName, entry.getPathId(),
+                entry.getServiceIndex(), srcOfsPortStr);
     }
 
     /**
@@ -261,24 +271,21 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      * @param hopDpl - Hop DPL used to create the flow
      */
     @Override
-    public void configureSffTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
+    public void configureSffTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
         long nsp = entry.getPathId();
         short nsi = entry.getServiceIndex();
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
 
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-            this.sfcFlowProgrammer.configureNshNscTransportEgressFlow(
-                    sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
-            this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(
-                    sffNodeName, nsp, nsi, srcOfsPortStr);
+            //this.sfcFlowProgrammer.configureNshNscTransportEgressFlow(sffNodeName, nsp, nsi);
+            this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(sffNodeName, nsp, nsi, srcOfsPortStr);
             IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
-            this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(
-                    sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
+            this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(sffNodeName, nsp, nsi,
+                    new String(srcSffLocator.getIp().getValue()));
         } else {
-            this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
-                    sffNodeName, nsp, nsi, srcOfsPortStr);
+            this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(sffNodeName, nsp, nsi, srcOfsPortStr);
         }
     }
 }

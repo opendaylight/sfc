@@ -116,9 +116,6 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureVxlanGpeLastHopTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
-    public void configureNshNscTransportEgressFlow(
-            String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
-
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
     // Classifier MatchAny will go to Ingress

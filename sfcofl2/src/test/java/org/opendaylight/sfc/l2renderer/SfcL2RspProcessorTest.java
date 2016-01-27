@@ -69,10 +69,8 @@ public class SfcL2RspProcessorTest {
         this.flowProgrammerTestMoc = mock(SfcL2FlowProgrammerOFimpl.class);
         this.flowProgrammerTestMoc.setFlowWriter(sfcL2FlowWriter);
         this.sfcUtilsTestMock = new SfcL2ProviderUtilsTestMock();
-        this.sfcL2RspProcessor = new SfcL2RspProcessor(
-                this.flowProgrammerTestMoc,
-                this.sfcUtilsTestMock,
-                new SfcSynchronizer());
+        this.sfcL2RspProcessor =
+                new SfcL2RspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock, new SfcSynchronizer());
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<SftType>();
@@ -127,8 +125,10 @@ public class SfcL2RspProcessorTest {
 
         // Verify calls to configureVlanPathMapperFlow
         // the first 2 calls are SFF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), eq((long) 0), eq(false));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), eq((long) 0), eq(false));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), eq((long) 0),
+                eq(false));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), eq((long) 0),
+                eq(false));
         // the next 2 are SF vlans, these calls should instead be configureVlanSfPathMapperFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_0", 2, (long) 0, true);
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_1", 3, (long) 0, true);
@@ -143,15 +143,15 @@ public class SfcL2RspProcessorTest {
 
         // Verify calls to configureVlanTransportEgressFlow
         // the first 2 calls are SFF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(
-                eq("SFF_0"), eq("00:00:00:00:00:04"), eq("00:00:00:00:00:07"), anyInt(), eq("1"), eq((long) 0));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(
-                eq("SFF_1"), eq("00:00:00:00:00:09"), eq((String) null), anyInt(), eq("1"), eq((long) 0));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(eq("SFF_0"),
+                eq("00:00:00:00:00:04"), eq("00:00:00:00:00:07"), anyInt(), eq("1"), eq((long) 0));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(eq("SFF_1"),
+                eq("00:00:00:00:00:09"), eq((String) null), anyInt(), eq("1"), eq((long) 0));
         // the next 2 are SF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                "SFF_0", "00:00:00:00:00:02", "00:00:00:00:00:00", 2, "1", 0, false);
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                "SFF_1", "00:00:00:00:00:07", "00:00:00:00:00:05", 3, "1", 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow("SFF_0", "00:00:00:00:00:02",
+                "00:00:00:00:00:00", 2, "1", 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow("SFF_1", "00:00:00:00:00:07",
+                "00:00:00:00:00:05", 3, "1", 0, false);
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
@@ -224,30 +224,30 @@ public class SfcL2RspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(),
+                anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_1"), anyLong(),
+                anyShort());
 
         // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeNextHopFlow(
-                eq("SFF_0"), anyString(), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
-                eq("SFF_1"), anyString(), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeNextHopFlow(eq("SFF_0"), anyString(), anyLong(),
+                anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(eq("SFF_1"), anyString(), anyLong(),
+                anyShort());
 
         // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeTransportEgressFlow(
-                eq("SFF_0"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                "SFF_1", 0, (short) 253, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeTransportEgressFlow(eq("SFF_0"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow("SFF_1", 0, (short) 253);
 
         // Verify calls to configureNshNscTransportEgressFlow
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(eq("SFF_1"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
@@ -268,24 +268,24 @@ public class SfcL2RspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcL2FlowWriterInterface) anyObject());
 
         // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(),
+                anyShort());
 
         // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
-                "SFF_0", "192.168.0.1", 0, (short) 255);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow("SFF_0", "192.168.0.1", 0,
+                (short) 255);
 
         // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "INPORT");
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
-                "SFF_0", 0, (short) 255, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow("SFF_0", 0,
+                (short) 254, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow("SFF_0", 0, (short) 255,
+                "INPORT");
 
         // Verify calls to configureNshNscTransportEgressFlow
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "INPORT");
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow("SFF_0", 0, (short) 254);
 
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "192.168.0.2");
+        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow("SFF_0", 0, (short) 254,
+                "192.168.0.2");
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
@@ -334,14 +334,14 @@ public class SfcL2RspProcessorTest {
                 anyString());
 
         // Verify calls to configureVlanTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(
-                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(), anyLong());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(
-                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(), anyLong());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(eq("SFF_0"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(eq("SFF_1"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_0"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong(), eq(true));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_1"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong(), eq(true));
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
 

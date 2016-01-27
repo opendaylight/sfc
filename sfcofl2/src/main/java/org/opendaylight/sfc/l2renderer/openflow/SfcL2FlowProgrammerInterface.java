@@ -63,6 +63,7 @@ public interface SfcL2FlowProgrammerInterface {
 
     // These 2 are work-around flows until the OVS NSH patch is completed
     public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
+
     public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
 
     public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
@@ -108,10 +109,13 @@ public interface SfcL2FlowProgrammerInterface {
             final long mplsLabel, final String port, final long pathId);
 
     public void configureVxlanGpeTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+            final String sffNodeName, final long nshNsp, final short nshNsi);
+
+    public void configureVxlanGpeLastHopAppCoexistTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
 
     public void configureVxlanGpeAppCoexistTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
+            final String sffNodeName, final long nshNsp, final short nshNsi);
 
     public void configureVxlanGpeLastHopTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);

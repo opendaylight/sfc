@@ -382,7 +382,7 @@ public class SfcSffToOvsMappingAPITest {
 
         dataPlaneLocatorBuilder.setTransport(VxlanGpe.class);
 
-        //TODO remove reflection for "getDataPlaneLocatorInterfaceType"
+        // TODO remove reflection for "getDataPlaneLocatorInterfaceType"
         interfaceTypeClass = Whitebox.invokeMethod(SfcSffToOvsMappingAPI.class, "getDataPlaneLocatorInterfaceType",
                 dataPlaneLocatorBuilder.build());
 

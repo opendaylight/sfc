@@ -49,20 +49,33 @@ module service-statistics {
   }
 
   grouping service-statistics-group {
-    container service-statistics {
-      config false;
-      leaf bytes-in {
-        type yang:zero-based-counter64;
+      list statistic-by-timestamp {
+          key "timestamp";
+          leaf timestamp {
+              type uint64;
+              description
+                  "Date and time of record creation in milliseconds
+                  counting from 1.1.1970 00:00:00 UTC (= 0)";
+          }
+          uses statistic-fields;
       }
-      leaf bytes-out {
-        type yang:zero-based-counter64;
+  }
+
+  grouping statistic-fields {
+      container service-statistic {
+          config false;
+          leaf bytes-in {
+            type yang:zero-based-counter64;
+          }
+          leaf bytes-out {
+            type yang:zero-based-counter64;
+          }
+          leaf packets-in {
+            type yang:zero-based-counter64;
+          }
+          leaf packets-out {
+            type yang:zero-based-counter64;
+          }
       }
-      leaf packets-in {
-        type yang:zero-based-counter64;
-      }
-      leaf packet-out {
-        type yang:zero-based-counter64;
-      }
-    }
   }
 }

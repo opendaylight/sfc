@@ -10,7 +10,7 @@ package org.opendaylight.sfc.vnfm.spi;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
 
 public interface SfcVnfManager {
 
@@ -33,5 +33,5 @@ public interface SfcVnfManager {
      * @param sf service function to provide service statistics for
      * @return service statistics for provided ServiceFunction
      */
-    ServiceStatistics getSfStatistics(ServiceFunction sf);
+    StatisticByTimestamp getSfStatistics(ServiceFunction sf);
 }

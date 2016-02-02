@@ -8,6 +8,24 @@
 
 package org.opendaylight.sfc.tacker.api;
 
+import java.util.Date;
+
+import org.opendaylight.sfc.tacker.dto.Attributes;
+import org.opendaylight.sfc.tacker.dto.Auth;
+import org.opendaylight.sfc.tacker.dto.KeystoneRequest;
+import org.opendaylight.sfc.tacker.dto.TackerError;
+import org.opendaylight.sfc.tacker.dto.TackerRequest;
+import org.opendaylight.sfc.tacker.dto.TackerResponse;
+import org.opendaylight.sfc.tacker.dto.Token;
+import org.opendaylight.sfc.tacker.dto.Vnf;
+import org.opendaylight.sfc.tacker.util.DateDeserializer;
+import org.opendaylight.sfc.vnfm.spi.SfcVnfManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,16 +33,6 @@ import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import org.opendaylight.sfc.tacker.dto.*;
-import org.opendaylight.sfc.tacker.util.DateDeserializer;
-import org.opendaylight.sfc.vnfm.spi.SfcVnfManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 public class TackerManager implements SfcVnfManager, AutoCloseable {
 
@@ -135,7 +143,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
     }
 
     @Override
-    public ServiceStatistics getSfStatistics(ServiceFunction sf) {
+    public StatisticByTimestamp getSfStatistics(ServiceFunction sf) {
         // TODO implement method
         return null;
     }

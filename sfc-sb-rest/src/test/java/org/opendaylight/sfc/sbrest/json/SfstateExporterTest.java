@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -28,8 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestampBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.statistic.fields.ServiceStatistic;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.statistic.fields.ServiceStatisticBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
@@ -159,42 +162,52 @@ public class SfstateExporterTest {
         SfcSfDescMon sfDescMon =
                 new SfcSfDescMonBuilder().setMonitoringInfo(monitoringInfo).setDescriptionInfo(descriptionInfo).build();
 
-        ServiceStatistics serviceStatistics =
-                new ServiceStatisticsBuilder()
+        ServiceStatistic serviceStatistics =
+                new ServiceStatisticBuilder()
                     .setBytesIn(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.BYTES_IN.getValue()))))
                     .setBytesOut(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.BYTES_OUT.getValue()))))
-                    .setPacketOut(new ZeroBasedCounter64(
+                    .setPacketsOut(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PACKETS_OUT.getValue()))))
                     .setPacketsIn(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
                     .build();
 
         List<SfServicePath> sfServicePaths = new ArrayList<SfServicePath>();
-        ServiceStatistics pathserviceStatistics =
-                new ServiceStatisticsBuilder()
+        ServiceStatistic pathserviceStatistics =
+                new ServiceStatisticBuilder()
                     .setBytesIn(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_IN.getValue()))))
                     .setBytesOut(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_OUT.getValue()))))
-                    .setPacketOut(new ZeroBasedCounter64(
+                    .setPacketsOut(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PATH_PACKETS_OUT.getValue()))))
                     .setPacketsIn(new ZeroBasedCounter64(
                             new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
                     .build();
         SfServicePathKey servicePathKey = new SfServicePathKey(new SfpName(SfstateTestValues.PATH_NAME.getValue()));
 
+        StatisticByTimestamp pathStat = new StatisticByTimestampBuilder()
+                .setTimestamp(BigInteger.valueOf(123456789l))
+                .setServiceStatistic(pathserviceStatistics)
+                .build();
+
         SfServicePath sfServicePath = new SfServicePathBuilder().setKey(servicePathKey)
             .setName(new SfpName(SfstateTestValues.PATH_NAME.getValue()))
-            .setServiceStatistics(pathserviceStatistics)
+            .setStatisticByTimestamp(Collections.singletonList(pathStat))
             .build();
         sfServicePaths.add(sfServicePath);
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
         ServiceFunctionStateKey serviceFunctionStateKey =
                 new ServiceFunctionStateKey(new SfName(SfstateTestValues.NAME.getValue()));
+
+        StatisticByTimestamp sfStateStat = new StatisticByTimestampBuilder()
+                .setTimestamp(BigInteger.valueOf(123456789l))
+                .setServiceStatistic(serviceStatistics)
+                .build();
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
-            .setServiceStatistics(serviceStatistics)
+            .setStatisticByTimestamp(Collections.singletonList(sfStateStat))
             .setSfServicePath(sfServicePaths)
             .addAugmentation(ServiceFunctionState1.class, sfState1)
             .build();

@@ -34,6 +34,7 @@ def put(host, port, uri, data, debug=False):
     if debug == True:
         print r.text
     r.raise_for_status()
+    time.sleep(5)
 
 def post(host, port, uri, data, debug=False):
     '''Perform a POST rest operation, using the URL and data provided'''
@@ -48,6 +49,7 @@ def post(host, port, uri, data, debug=False):
     if debug == True:
         print r.text
     r.raise_for_status()
+    time.sleep(5)
 
 def get_service_nodes_uri():
     return "/restconf/config/service-node:service-nodes"
@@ -100,7 +102,7 @@ def get_service_nodes_data():
 
 def get_service_functions_uri():
     return "/restconf/config/service-function:service-functions"
-    
+
 def get_service_functions_data():
     return {
     "service-functions": {
@@ -394,6 +396,9 @@ def get_service_function_acl_data():
                 "destination-ipv4-network": "192.168.2.0/24",
                 "source-ipv4-network": "192.168.2.0/24",
                 "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 0
+                },
                 "destination-port-range": {
                     "lower-port": 80
                 }
@@ -417,6 +422,9 @@ def get_service_function_acl_data():
                 "protocol": "6",
                 "source-port-range": {
                     "lower-port": 80
+                },
+                "destination-port-range": {
+                    "lower-port": 0
                 }
               }
             }

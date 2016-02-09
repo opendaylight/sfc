@@ -36,6 +36,115 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_3c6f0cff",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1089,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "I dont understand this comment. It might be easier to explain it via email than Gerrit.",
+      "range": {
+        "startLine": 1089,
+        "startChar": 25,
+        "endLine": 1089,
+        "endChar": 96
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_bc82fc91",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1119,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "This appears to overwrite the value of port passed-in to this method. I would prefer a new variable be used.",
+      "range": {
+        "startLine": 1119,
+        "startChar": 8,
+        "endLine": 1119,
+        "endChar": 12
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9ca61852",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1128,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "Update this comment explaining what Case 1 and 2 is.",
+      "range": {
+        "startLine": 1127,
+        "startChar": 0,
+        "endLine": 1128,
+        "endChar": 19
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3f0b7e26",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1143,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "Does this method now combine what was previously in configureNshNscTransportEgressFlow()?? If so, why combine them?",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9c7d78b4",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1157,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "I prefer a new variable be used instead of overwriting what was passed in.",
+      "range": {
+        "startLine": 1157,
+        "startChar": 8,
+        "endLine": 1157,
+        "endChar": 12
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_3cd38cd7",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 7
@@ -52,6 +161,29 @@
         "startChar": 19,
         "endLine": 1208,
         "endChar": 22
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3f225ea4",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-09T14:39:47Z",
+      "side": 1,
+      "message": "Is it necessary to use both mockito and powerMock? If possible, I would prefer to use one or the other, but not both.",
+      "range": {
+        "startLine": 68,
+        "startChar": 33,
+        "endLine": 68,
+        "endChar": 45
       },
       "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

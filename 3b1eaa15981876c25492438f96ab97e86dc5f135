@@ -318,6 +318,30 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_d203690b",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1208,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2016-02-09T16:01:38Z",
+      "side": 1,
+      "message": "Is this the flow that is supposed to use the egress table offset using the SFC config: sfc-of-app-egress-table-offset?\n\nWhat port gets used here?\n\nCan you include a dump of all the flows for all the tables? We really need to see what this pipeline looks like now.",
+      "parentUuid": "9a3d3df0_bf6dce9a",
+      "range": {
+        "startLine": 1208,
+        "startChar": 19,
+        "endLine": 1208,
+        "endChar": 22
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_3f225ea4",
         "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
         "patchSetId": 7

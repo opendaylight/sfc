@@ -342,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_f2bb0de3",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1208,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T16:56:38Z",
+      "side": 1,
+      "message": "vxlan-gpe port is used\n\nhttp://pastebin.com/0P6X01eC - all coexistence flows (sfc flows are highlighted)\n\nhttp://pastebin.com/m3gmKCjd - stand-alone SFF",
+      "parentUuid": "9a3d3df0_d203690b",
+      "range": {
+        "startLine": 1208,
+        "startChar": 19,
+        "endLine": 1208,
+        "endChar": 22
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_3f225ea4",
         "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
         "patchSetId": 7

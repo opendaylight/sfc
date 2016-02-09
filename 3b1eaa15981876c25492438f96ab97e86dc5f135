@@ -118,6 +118,30 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_bff2eecf",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1119,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:54:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a3d3df0_bc82fc91",
+      "range": {
+        "startLine": 1119,
+        "startChar": 8,
+        "endLine": 1119,
+        "endChar": 12
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_9ca61852",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 7
@@ -129,6 +153,30 @@
       "writtenOn": "2016-02-09T14:39:47Z",
       "side": 1,
       "message": "Update this comment explaining what Case 1 and 2 is.",
+      "range": {
+        "startLine": 1127,
+        "startChar": 0,
+        "endLine": 1128,
+        "endChar": 19
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5f78022b",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1128,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:54:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a3d3df0_9ca61852",
       "range": {
         "startLine": 1127,
         "startChar": 0,
@@ -158,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_bf4aeec2",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1143,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:54:34Z",
+      "side": 1,
+      "message": "Actually, yes. They are combined probably because both flows have to be created (At least in our demo).",
+      "parentUuid": "9a3d3df0_3f0b7e26",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_9c7d78b4",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 7
@@ -169,6 +235,30 @@
       "writtenOn": "2016-02-09T14:39:47Z",
       "side": 1,
       "message": "I prefer a new variable be used instead of overwriting what was passed in.",
+      "range": {
+        "startLine": 1157,
+        "startChar": 8,
+        "endLine": 1157,
+        "endChar": 12
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5f22c201",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1157,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:54:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a3d3df0_9c7d78b4",
       "range": {
         "startLine": 1157,
         "startChar": 8,

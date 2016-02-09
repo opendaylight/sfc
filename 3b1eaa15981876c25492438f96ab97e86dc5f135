@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_bc783cf3",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcRspProcessorNsh.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2016-02-09T14:14:36Z",
+      "side": 1,
+      "message": "why is this removed?",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5c50105e",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2016-02-09T14:14:36Z",
+      "side": 1,
+      "message": "for reference, why are these numbers bumped? Do they collide with another range needed by another app?",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3cd38cd7",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1208,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2016-02-09T14:14:36Z",
+      "side": 1,
+      "message": "what does this new flow look like?",
+      "range": {
+        "startLine": 1208,
+        "startChar": 19,
+        "endLine": 1208,
+        "endChar": 22
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

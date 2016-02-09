@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_1f0e7a34",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/SfcRspProcessorNsh.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:02:24Z",
+      "side": 1,
+      "message": "this line should be removed\nmethod configureNshNscTransportEgressFlow was deleted because appropriate egress flow is now created in configureVxlanGpeAppCoexistTransportEgressFlow method",
+      "parentUuid": "9a3d3df0_bc783cf3",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_5c50105e",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2016-02-09T14:14:36Z",
       "side": 1,
       "message": "for reference, why are these numbers bumped? Do they collide with another range needed by another app?",
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_ffd11658",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:02:24Z",
+      "side": 1,
+      "message": "important value is FLOW_PRIORITY_TRANSPORT_INGRESS which has to be higher than \"allow from port\" flow in GBP project (priority\u003d300) because transport ingress flow is also in table\u003d0 when coexistence.\nOther numbers are increased only because I wanted to preserve original differences between them.",
+      "parentUuid": "9a3d3df0_5c50105e",
       "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -156,6 +192,30 @@
       "writtenOn": "2016-02-09T14:14:36Z",
       "side": 1,
       "message": "what does this new flow look like?",
+      "range": {
+        "startLine": 1208,
+        "startChar": 19,
+        "endLine": 1208,
+        "endChar": 22
+      },
+      "revId": "3b1eaa15981876c25492438f96ab97e86dc5f135",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_bf6dce9a",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1208,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-09T15:02:24Z",
+      "side": 1,
+      "message": "when app coexistence is set (last SFF + egress classifier on the same node), this flow returns traffic from the last SFF back to the table\u003d0 where it matches gbp flow (due to the nshc\u003d0) and continues in gbp pipeline.\n\npriority\u003d1500,matches,actions\u003d(some actions), set_nshc1\u003d0, resubmit(port,0)",
+      "parentUuid": "9a3d3df0_3cd38cd7",
       "range": {
         "startLine": 1208,
         "startChar": 19,

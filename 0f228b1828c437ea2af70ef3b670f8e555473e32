@@ -16,6 +16,24 @@
       "revId": "0f228b1828c437ea2af70ef3b670f8e555473e32",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_81034d41",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-10T17:17:36Z",
+      "side": 1,
+      "message": "Vladimir, no worries, I just wanted to see if it was possible to use just one. Better to leave it as is. You should remove this comment now.",
+      "parentUuid": "9a3d3df0_a145b1b4",
+      "revId": "0f228b1828c437ea2af70ef3b670f8e555473e32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

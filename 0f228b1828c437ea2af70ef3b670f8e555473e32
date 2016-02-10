@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_a145b1b4",
+        "filename": "sfcofl2/src/test/java/org/opendaylight/sfc/l2renderer/SfcL2FlowProgrammerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-02-10T16:10:00Z",
+      "side": 1,
+      "message": "Brady sorry, I didn\u0027t fix this yet (using of Mockito \u0026 Powermock at once). There is no way how to mock static method with Mockito so I had to do it with Powermock. But remove mockito, it means rewrite whole test class. If it\u0027s so important, mark this -1 and i will fix it asap\n\nand please review rest of this ps",
+      "revId": "0f228b1828c437ea2af70ef3b670f8e555473e32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

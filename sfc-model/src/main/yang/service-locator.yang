@@ -80,6 +80,21 @@ module service-locator {
     description "Multi Protocol Label Switching transport type";
   }
 
+  identity vlan {
+    base "sl-transport-type";
+    description "Programmable vlan transport type";
+  }
+
+  identity qinq{
+    base "sl-transport-type";
+    description "Programmable qinq transport type";
+  }
+
+  identity vxlan {
+    base "sl-transport-type";
+    description "Programmable vxlan transport type";
+  }
+
   identity other {
     base "sl-transport-type";
     description "unspecified transport type";

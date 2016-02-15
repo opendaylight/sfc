@@ -879,6 +879,50 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     }
 
     /**
+     * Configure the VxLanGPE NSH Next Hop associated with proxy by matching on the NSH pathId and
+     * index stored in the NSH header.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     * @param dstIp - the VxLan GPE tunnel destination IP
+     * @param nshNsp - NSH Service Path to match on
+     * @param nshNsi - NSH Index to match on
+     * @param SfIp - SF's IP
+     * @param SfPort - SF's port
+     * @param SfTranstport - SF's transport type
+     */
+    @Override
+    public void configureVxlanGpeNextHopFlowWithProxy(final String sffNodeName, final String dstIp, final long nsp,
+            final short nsi, final String SfIp, final short SfPort, final short SfTranstport){
+        LOG.debug("SfcProviderSffFlowWriter.configureVxlanGpeNextHopFlowWithProxy, dstIp [{}] nsp [{}] nsi [{}]"
+                        + "SfIp [{}] SfPort [{}] SfTranstport [{}] ",
+                        dstIp, nsp, nsi, SfIp, SfPort, SfTranstport);
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchNshNsp(match, nsp);
+        SfcOpenflowUtils.addMatchNshNsi(match, nsi);
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<Action>();
+        if (dstIp != null) {
+            Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
+            actionList.add(actionSetNwDst);
+        }
+        if (SfIp != null) {
+            int ip = InetAddresses.coerceToInteger(InetAddresses.forString(SfIp));
+            long ipl = ip & 0xffffffffL;
+            LOG.debug("SfcL2FlowProgrammerOFimpl.configureVxlanGpeNextHopFlowWithProxy, ip [{}]", ip);
+            Action actionSetNwNshc3 = SfcOpenflowUtils.createActionNxSetNshc3(new Long(ipl), order++);
+            actionList.add(actionSetNwNshc3);
+        }
+        long Nshc4 = ( (SfTranstport & 0xff) << 24 ) | ( SfPort & 0xffff );
+        LOG.debug("SfcL2FlowProgrammerOFimpl.configureVxlanGpeNextHopFlowWithProxy, Nshc4 [{}]", Nshc4);
+        Action actionSetNwNshc4 = SfcOpenflowUtils.createActionNxSetNshc4(Nshc4, order++);
+        actionList.add(actionSetNwNshc4);
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
+        sfcL2FlowWriter.writeFlowToConfig(flowRspId, sffNodeName, nextHopFlow);
+    }
+
+    /**
      * Simple pass through with default arg for flowPriority.
      *
      * @param match -already created matches

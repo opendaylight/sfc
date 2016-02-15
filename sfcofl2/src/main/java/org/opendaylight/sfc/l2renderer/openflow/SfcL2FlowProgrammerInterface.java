@@ -92,6 +92,8 @@ public interface SfcL2FlowProgrammerInterface {
     public void configureVxlanGpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
             final short nsi);
 
+    public void configureVxlanGpeNextHopFlowWithProxy(final String sffNodeName, final String dstIp, final long nsp,
+            final short nsi, final String SfIp, final short SfPort, final short SfTranstport);
     //
     // Table 10, Transport Egress
     //

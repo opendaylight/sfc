@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -23,10 +24,11 @@ import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -38,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -149,29 +150,21 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
     public Long getPortNumberFromName(final String sffName, final String portName, long rspId) {
 
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(new SffName(sffName), rspId);
-        SffOvsNodeAugmentation sffOvsNode = sff.getAugmentation(SffOvsNodeAugmentation.class);
-        if(sffOvsNode == null) {
-            throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsNodeAugmentation.");
+        SffOvsBridgeAugmentation sffOvsBridge = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        if(sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
+            throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsBridgeAugmentation.");
+        }
+        Node node = SfcOvsUtil.lookupTopologyNode(sff, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
+            throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
         }
 
-        InstanceIdentifier<?> ovsdbNodeId = sffOvsNode.getOvsNode().getNodeId().getValue();
-        NodeKey nodeKey = ovsdbNodeId.firstKeyOf(Node.class, NodeKey.class);
-        NodeId bridgeNodeId = nodeKey.getNodeId();
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(bridgeNodeId);
-        Node bridgeNode = nodeBuilder.build();
-
         Long ofPort = 0L;
-        OvsdbTerminationPointAugmentation port = extractTerminationPointAugmentation(bridgeNode, portName);
-        if (port != null) {
-            ofPort = getOFPort(port);
-        } else {
-            TerminationPoint tp = readTerminationPoint(bridgeNode, null, portName);
-            if (tp != null) {
-                port = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
-                if (port != null) {
-                    ofPort = getOFPort(port);
-                }
+        TerminationPoint tp = readTerminationPoint(node, sffOvsBridge.getOvsBridge().getBridgeName(), portName);
+        if (tp != null) {
+            OvsdbTerminationPointAugmentation port = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+            if (port != null) {
+                ofPort = getOFPort(port);
             }
         }
         return ofPort;
@@ -216,11 +209,11 @@ public class SfcL2ProviderUtils extends SfcL2BaseProviderUtils {
     }
 
     // internal support method for getPortNumberFromName() and related methods
-    private TerminationPoint readTerminationPoint(Node bridgeNode, String bridgeName, String portName) {
+    private TerminationPoint readTerminationPoint(Node ovsdbNode, String bridgeName, String portName) {
         InstanceIdentifier<TerminationPoint> tpIid =
                 InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId(new Uri("ovsdb:1"))))
-                .child(Node.class, bridgeNode.getKey())
+                .child(Node.class, new NodeKey(new NodeId(ovsdbNode.getKey().getNodeId().getValue() + "/bridge/" + bridgeName)))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(portName)));
 
         return SfcDataStoreAPI.readTransactionAPI(tpIid, LogicalDatastoreType.OPERATIONAL);

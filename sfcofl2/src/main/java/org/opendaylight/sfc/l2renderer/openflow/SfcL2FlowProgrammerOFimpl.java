@@ -190,7 +190,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     @Override
     public void configureClassifierTableMatchAny(final String sffNodeName) {
         if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -209,7 +209,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     @Override
     public void configureTransportIngressTableMatchAny(final String sffNodeName) {
         if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 

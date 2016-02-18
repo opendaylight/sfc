@@ -8,23 +8,11 @@
 
 package org.opendaylight.sfc.l2renderer;
 
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyObject;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-
-import org.junit.runner.RunWith;
-import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
+import com.google.common.net.InetAddresses;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
@@ -40,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
@@ -62,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpTpaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionSetNshc1NodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.powermock.api.mockito.PowerMockito;
@@ -70,10 +60,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.InetAddresses;
+import java.math.BigInteger;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
- *
  * @author Ricardo Noriega (ricardo.noriega.de.soto@ericsson.com)
  * @since 2015-11-25
  */
@@ -105,9 +98,9 @@ public class SfcL2FlowProgrammerTest {
     private static final short TABLE_BASE = 30;
     private static final short TABLE_EGRESS = 80;
 
-    SfcL2FlowWriterInterface sfcL2FlowWriter;
-    SfcL2FlowProgrammerOFimpl sfcL2FlowProgrammer;
-    FlowBuilder flowBuilder;
+    private final SfcL2FlowWriterInterface sfcL2FlowWriter;
+    private SfcL2FlowProgrammerOFimpl sfcL2FlowProgrammer;
+    private FlowBuilder flowBuilder;
 
     public SfcL2FlowProgrammerTest() {
         // TODO use one Mockito or PowerMock
@@ -132,10 +125,20 @@ public class SfcL2FlowProgrammerTest {
             }
         }).when(this.sfcL2FlowWriter).getFlowBuilder();
 
-        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl(sfcL2FlowWriter);
+        recreateFlowProgrammer();
     }
 
-
+    @Test
+    public void compareClassificationCookieTest() {
+        boolean result = sfcL2FlowProgrammer.compareClassificationTableCookie(null);
+        assertFalse(result);
+        FlowCookie cookie = new FlowCookie(new BigInteger("1"));
+        result = sfcL2FlowProgrammer.compareClassificationTableCookie(cookie);
+        assertFalse(result);
+        cookie = new FlowCookie(SfcL2FlowProgrammerOFimpl.TRANSPORT_EGRESS_COOKIE);
+        result = sfcL2FlowProgrammer.compareClassificationTableCookie(cookie);
+        assertTrue(result);
+    }
 
     /**
      * Unit test to check match and action fields from flows generated by:
@@ -192,7 +195,7 @@ public class SfcL2FlowProgrammerTest {
 
     /**
      * Unit test to check match and action fields from flows generated by:
-     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeTransportIngressFlow(String)}
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeTransportIngressFlow(String, long, short)}
      */
     @Test
     public void configureVxlanGpeTransportIngressFlow() {
@@ -203,7 +206,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
 
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
+        checkNshNsiMatch(flowBuilder.build());
 
         Instructions isb = flowBuilder.getInstructions();
         Instruction curInstruction = isb.getInstruction().get(0).getInstruction();
@@ -371,7 +374,7 @@ public class SfcL2FlowProgrammerTest {
             checkMetadata(curInstruction, PATH_ID);
             LOG.info("configureVlanPathMapperFlow() Action Metadata PathId: [{}]", PATH_ID);
 
-            if(curInstruction instanceof ApplyActionsCase) {
+            if (curInstruction instanceof ApplyActionsCase) {
 
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
                 PopVlanActionCase popVlan = (PopVlanActionCase) action.getApplyActions().getAction().get(0).getAction();
@@ -425,6 +428,13 @@ public class SfcL2FlowProgrammerTest {
             LOG.info("configureNextHopFlow() Action NextTableId: [{}]",
                     SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
         }
+
+        // Src mac == null
+        sfcL2FlowProgrammer.configureMacNextHopFlow(SFF_NAME, SFP, null, MAC_DST);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_NEXT_HOP - 10);
     }
 
     /**
@@ -468,6 +478,37 @@ public class SfcL2FlowProgrammerTest {
 
     /**
      * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureNshNscTransportEgressFlow(String, long, short, String)}
+     */
+    @Test
+    public void configureNshNscTransportEgressFlowTest() {
+
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(0L);
+
+        sfcL2FlowProgrammer.configureNshNscTransportEgressFlow(SFF_NAME, NSP, NSI, PORT);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 1);
+        checkNshNsiMatch(flowBuilder.build());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase actionsCase = (ApplyActionsCase) curInstruction;
+                List<Action> actions = actionsCase.getApplyActions().getAction();
+                assertTrue(actions.size() == 1);
+                Action action = actions.get(0);
+                assertTrue(action.getAction() instanceof OutputActionCase);
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows generated by:
      * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeNextHopFlow(String, String, long, short)}
      */
     @Test
@@ -478,7 +519,7 @@ public class SfcL2FlowProgrammerTest {
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_NEXT_HOP);
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
+        checkNshNsiMatch(flowBuilder.build());
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
@@ -515,7 +556,7 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(),  SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS+10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -556,7 +597,7 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS+10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -583,7 +624,7 @@ public class SfcL2FlowProgrammerTest {
 
     /**
      * Unit test to check match and action fields from flows generated by:
-     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeTransportEgressFlow(String, long, short, String)}
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeTransportEgressFlow(String, long, short)}
      */
     @Test
     public void configureVxlanGpeTransportEgressFlow() {
@@ -595,7 +636,7 @@ public class SfcL2FlowProgrammerTest {
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 1);
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
+        checkNshNsiMatch(flowBuilder.build());
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
@@ -637,7 +678,7 @@ public class SfcL2FlowProgrammerTest {
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 1);
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
+        checkNshNsiMatch(flowBuilder.build());
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
@@ -678,7 +719,7 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS+10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -699,6 +740,34 @@ public class SfcL2FlowProgrammerTest {
                 assertEquals(setField.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(), MAC_SRC);
                 assertEquals(pushMpls.getPushMplsAction().getEthernetType().intValue(), SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST);
                 assertEquals(mplsLabel.getSetField().getProtocolMatchFields().getMplsLabel().longValue(), MPLS_LABEL);
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureClassifierTableMatchAny(String)}
+     */
+    @Test
+    public void configureClassifierTableMatchAnyTest() {
+
+        sfcL2FlowProgrammer.configureClassifierTableMatchAny(SFF_NAME);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_CLASSIFIER);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_MATCH_ANY);
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+                DropActionCase drop = (DropActionCase) action.getApplyActions().getAction().get(0).getAction();
+                assertTrue(drop.getDropAction() != null);
+                LOG.info("configureClassifierTableMatchAny() Action is: [{}]",
+                        drop.getDropAction().toString());
             }
         }
     }
@@ -829,6 +898,154 @@ public class SfcL2FlowProgrammerTest {
     }
 
     /**
+     * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(String, String, short, long)}
+     */
+    @Test
+    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlowTest() {
+        sfcL2FlowProgrammer.configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(SFF_NAME, IP_SRC, Short.valueOf(PORT), 2L);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_ARP_TRANSPORT_INGRESS);
+
+        Match match = flowBuilder.getMatch();
+        assertNotNull(match.getEthernetMatch());
+        assertNotNull(match.getIpMatch());
+        assertNotNull(match.getLayer3Match());
+        assertNotNull(match.getLayer4Match());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase actionsCase = (ApplyActionsCase) curInstruction;
+                List<Action> actions = actionsCase.getApplyActions().getAction();
+                assertTrue(actions.size() == 1);
+                Action action = actions.get(0);
+                assertTrue(action.getAction() instanceof OutputActionCase);
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeSfReturnLoopbackIngressFlow(String, short, long)} (String, String, short, long)}
+     */
+    @Test
+    public void configureVxlanGpeSfReturnLoopbackIngressFlowTest() {
+        sfcL2FlowProgrammer.configureVxlanGpeSfReturnLoopbackIngressFlow(SFF_NAME, Short.valueOf(PORT), 2L);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcL2FlowProgrammerOFimpl.FLOW_PRIORITY_ARP_TRANSPORT_INGRESS);
+
+        Match match = flowBuilder.getMatch();
+        assertNotNull(match.getEthernetMatch());
+        assertNotNull(match.getInPort());
+        assertNotNull(match.getIpMatch());
+        assertNotNull(match.getLayer4Match());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase actionsCase = (ApplyActionsCase) curInstruction;
+                List<Action> actions = actionsCase.getApplyActions().getAction();
+                assertTrue(actions.size() == 1);
+                Action action = actions.get(0);
+                assertTrue(action.getAction() instanceof OutputActionCase);
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeAppCoexistTransportEgressFlow(String, long, short)}
+     */
+    @Test
+    public void configureVxlanGpeAppCoexistTransportEgressFlowTest() {
+
+        // Coexistence not set
+        sfcL2FlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertNull(flowBuilder);
+
+        // Coexistence set
+        sfcL2FlowProgrammer.setTableEgress(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
+
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(0L);
+
+        sfcL2FlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        checkNshNsiMatch(flowBuilder.build());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase actionsCase = (ApplyActionsCase) curInstruction;
+                List<Action> actions = actionsCase.getApplyActions().getAction();
+                assertTrue(actions.size() == 4);
+                assertTrue(actions.get(0).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(1).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(2).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(3).getAction() instanceof OutputActionCase);
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows generated by:
+     * {@link org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl#configureVxlanGpeLastHopAppCoexistTransportEgressFlow(String, long, short, String)}
+     */
+    @Test
+    public void configureVxlanGpeLastHopAppCoexistTransportEgressFlowTest() {
+
+        // Coexistence not set
+        sfcL2FlowProgrammer.configureVxlanGpeLastHopAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI, IP_SRC);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+        assertNull(flowBuilder);
+
+        // Coexistence set
+        sfcL2FlowProgrammer.setTableEgress(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS);
+
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(0L);
+
+        sfcL2FlowProgrammer.configureVxlanGpeLastHopAppCoexistTransportEgressFlow(SFF_NAME, NSP, NSI, IP_SRC);
+        flowBuilder = sfcL2FlowWriter.getFlowBuilder();
+
+        checkNshNsiMatch(flowBuilder.build());
+        checkNshc1Match(flowBuilder.build(), InetAddresses.coerceToInteger(InetAddresses.forString(IP_SRC)) & 0xffffffffL);
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase actionsCase = (ApplyActionsCase) curInstruction;
+                List<Action> actions = actionsCase.getApplyActions().getAction();
+                assertTrue(actions.size() == 6);
+                assertTrue(actions.get(0).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(1).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(2).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(3).getAction() instanceof NxActionRegMoveNodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(4).getAction() instanceof NxActionSetNshc1NodesNodeTableFlowApplyActionsCase);
+                assertTrue(actions.get(5).getAction() instanceof NxActionResubmitNodesNodeTableFlowWriteActionsCase);
+
+            }
+        }
+    }
+
+    /**
      * Unit test to check app coexistence works for NSH flows
      */
     @Test
@@ -856,7 +1073,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Check that configureVxlanGpeLastHopTransportEgressFlow() is written
         // to the correct table and that it does NOT go to TABLE_EGRESS
@@ -914,7 +1131,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Check that configureVlanPathMapperFlow() is written to the correct table
         sfcL2FlowProgrammer.configureVlanPathMapperFlow(SFF_NAME, VLAN_ID, PATH_ID, false);
@@ -922,7 +1139,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(2).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Check that configureMacNextHopFlow() is written to the correct table
         sfcL2FlowProgrammer.configureMacNextHopFlow(SFF_NAME, SFP, MAC_SRC, MAC_DST);
@@ -930,7 +1147,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Check that configureVlanSfTransportEgressFlow() is written
         // to the correct table and that it does NOT go to TABLE_EGRESS
@@ -987,7 +1204,7 @@ public class SfcL2FlowProgrammerTest {
         flowBuilder = sfcL2FlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(), 0);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2), true);
 
         // Check that configureMplsPathMapperFlow() is written to the correct table
         sfcL2FlowProgrammer.configureMplsPathMapperFlow(SFF_NAME, MPLS_LABEL, PATH_ID_SMALL, true);
@@ -1050,7 +1267,7 @@ public class SfcL2FlowProgrammerTest {
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2), true);
 
         // Test PathMapperAcl Match Any table offset.
         // It should go to NextHop + offset
@@ -1060,7 +1277,7 @@ public class SfcL2FlowProgrammerTest {
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2);
         assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
 
         // Test NextHop Match Any table offset.
         // It should go to TransportEgress + offset
@@ -1069,7 +1286,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2), true);
 
         // Test TransportEgress Match Any table offset.
         // It should do a drop
@@ -1093,7 +1310,7 @@ public class SfcL2FlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcL2FlowProgrammerOFimpl.TABLE_INDEX_PATH_MAPPER_ACL + TABLE_BASE - 2);
         Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
-        checkGoToTable(curInstruction, (short)(SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
+        checkGoToTable(curInstruction, (short) (SfcL2FlowProgrammerOFimpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2), true);
     }
 
     public void checkGoToTable(Instruction curInstruction, short nextTableId) {
@@ -1106,7 +1323,7 @@ public class SfcL2FlowProgrammerTest {
             GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
             assertEquals(goToTablecase.getGoToTable().getTableId().shortValue(), nextTableId);
         } else {
-            if(mustExist) {
+            if (mustExist) {
                 LOG.info("checkGoToTable expecting GoToTableCase, but received [{}]", curInstruction);
                 fail();
             }
@@ -1116,9 +1333,9 @@ public class SfcL2FlowProgrammerTest {
     public void checkActionHasResubmit(Instruction curInstruction, short nextTableId) {
         assertTrue(curInstruction instanceof ApplyActionsCase);
         boolean resubmitActionFound = false;
-        for(Action action : ((ApplyActionsCase) curInstruction).getApplyActions().getAction()){
+        for (Action action : ((ApplyActionsCase) curInstruction).getApplyActions().getAction()) {
             LOG.info("checkActionHasResubmit : action [{}]", action.getAction());
-            if(action.getAction() instanceof NxActionResubmitNodesNodeTableFlowWriteActionsCase) {
+            if (action.getAction() instanceof NxActionResubmitNodesNodeTableFlowWriteActionsCase) {
                 NxActionResubmitNodesNodeTableFlowWriteActionsCase a =
                         (NxActionResubmitNodesNodeTableFlowWriteActionsCase) action.getAction();
                 assertEquals(a.getNxResubmit().getTable().shortValue(), nextTableId);
@@ -1141,7 +1358,7 @@ public class SfcL2FlowProgrammerTest {
             DropActionCase drop = (DropActionCase) action.getApplyActions().getAction().get(0).getAction();
             assertTrue(drop.getDropAction() != null);
         } else {
-            if(mustExist) {
+            if (mustExist) {
                 LOG.info("checkDrop expecting GoToTableCase, but received [{}]", curInstruction);
                 fail();
             }
@@ -1156,7 +1373,10 @@ public class SfcL2FlowProgrammerTest {
         }
     }
 
-    public void checkMatchNsh(Flow flow, long nsp, short nsi) {
+    public void checkNshNsiMatch(Flow flow) {
+
+        boolean checkNsp = true;
+        boolean checkNsi = true;
 
         GeneralAugMatchNodesNodeTableFlow genAug = flow.getMatch().getAugmentation(
                 GeneralAugMatchNodesNodeTableFlow.class);
@@ -1166,14 +1386,37 @@ public class SfcL2FlowProgrammerTest {
             Extension extension = extensionList.getExtension();
             NxAugMatchNodesNodeTableFlow nxAugMatch = extension.getAugmentation(NxAugMatchNodesNodeTableFlow.class);
 
-            if (nxAugMatch.getNxmNxNsp() != null) {
+            if (checkNsp) {
                 assertEquals(nxAugMatch.getNxmNxNsp().getValue().longValue(), NSP);
+                checkNsp = false;
+                continue;
             }
-            if (nxAugMatch.getNxmNxNsi() != null) {
+            if (checkNsi) {
                 assertEquals(nxAugMatch.getNxmNxNsi().getNsi().shortValue(), NSI);
+                checkNsi = false;
             }
         }
 
+    }
+
+    public void checkNshc1Match(Flow flow, long nshc1) {
+
+        GeneralAugMatchNodesNodeTableFlow genAug = flow.getMatch().getAugmentation(
+                GeneralAugMatchNodesNodeTableFlow.class);
+
+        List<ExtensionList> extensions = genAug.getExtensionList();
+        for (ExtensionList extensionList : extensions) {
+            Extension extension = extensionList.getExtension();
+            NxAugMatchNodesNodeTableFlow nxAugMatch = extension.getAugmentation(NxAugMatchNodesNodeTableFlow.class);
+            if (nxAugMatch.getNxmNxNshc1() != null) {
+                assertEquals(nxAugMatch.getNxmNxNshc1().getValue(), Long.valueOf(nshc1));
+            }
+        }
+
+    }
+
+    private void recreateFlowProgrammer() {
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl(sfcL2FlowWriter);
     }
 }
 

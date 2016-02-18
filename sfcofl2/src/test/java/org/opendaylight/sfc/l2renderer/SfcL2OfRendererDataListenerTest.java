@@ -37,7 +37,7 @@ public class SfcL2OfRendererDataListenerTest {
 
     public SfcL2OfRendererDataListenerTest() {
         LOG.info("SfcL2OfRendererDataListenerTest constructor");
-        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl((SfcL2FlowWriterInterface) mock(SfcL2FlowWriterInterface.class));
+        initFlowProgrammer();
         DataBroker dataBroker = mock(DataBroker.class);
         SfcSynchronizer sfcSynchronizer = mock(SfcSynchronizer.class);
 
@@ -56,11 +56,13 @@ public class SfcL2OfRendererDataListenerTest {
         verifySettersNotCalled();
 
         // Table Offset must be greater than 1
+        initFlowProgrammer();
         change = createSfcOfRendererConfig(1, 100);
         this.sfcL2OfRendererDataListener.onDataChanged(change);
         verifySettersNotCalled();
 
         // Table Offset must be less than 246 (255-maxTableOffset())
+        initFlowProgrammer();
         change = createSfcOfRendererConfig(250, 100);
         this.sfcL2OfRendererDataListener.onDataChanged(change);
         verifySettersNotCalled();
@@ -138,5 +140,9 @@ public class SfcL2OfRendererDataListenerTest {
     private void verifySettersNotCalled() {
         assertEquals(this.sfcL2FlowProgrammer.getTableBase(),   SfcL2FlowProgrammerOFimpl.APP_COEXISTENCE_NOT_SET);
         assertEquals(this.sfcL2FlowProgrammer.getTableEgress(), SfcL2FlowProgrammerOFimpl.APP_COEXISTENCE_NOT_SET);
+    }
+
+    private void initFlowProgrammer() {
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl(mock(SfcL2FlowWriterInterface.class));
     }
 }

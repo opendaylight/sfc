@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_ea048819",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-02-19T13:38:16Z",
+      "side": 1,
+      "message": "If nothing important changed in this file, it shouldnt be included in this patch.",
+      "revId": "098fe3f61a8c167e7b73b27b4263f2ddaca12c36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

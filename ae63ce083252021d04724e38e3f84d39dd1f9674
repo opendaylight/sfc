@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_9aa37dff",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-02-23T00:14:44Z",
+      "side": 1,
+      "message": "This is for vlan transport type, so you are unnecessary to add a new one.\n\n  identity mac {\n    base \"sl-transport-type\";\n    description \"Simple MAC with optional VLAN transport type\";\n  }",
+      "revId": "ae63ce083252021d04724e38e3f84d39dd1f9674",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

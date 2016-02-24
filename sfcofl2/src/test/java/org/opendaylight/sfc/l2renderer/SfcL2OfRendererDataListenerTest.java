@@ -53,16 +53,19 @@ public class SfcL2OfRendererDataListenerTest {
         // Table Offset must be greater than 1
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(0, 100);
         this.sfcL2OfRendererDataListener.onDataChanged(change);
+        this.sfcL2OfRendererDataListener.waitForTasks();
         verifySettersNotCalled();
 
         // Table Offset must be greater than 1
         change = createSfcOfRendererConfig(1, 100);
         this.sfcL2OfRendererDataListener.onDataChanged(change);
+        this.sfcL2OfRendererDataListener.waitForTasks();
         verifySettersNotCalled();
 
         // Table Offset must be less than 246 (255-maxTableOffset())
         change = createSfcOfRendererConfig(250, 100);
         this.sfcL2OfRendererDataListener.onDataChanged(change);
+        this.sfcL2OfRendererDataListener.waitForTasks();
         verifySettersNotCalled();
     }
 

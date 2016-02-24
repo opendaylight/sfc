@@ -8,7 +8,10 @@
 
 package org.opendaylight.sfc.l2renderer.openflow;
 
+import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -140,6 +143,16 @@ public class SfcL2OfRendererDataListener extends SfcL2AbstractDataListener {
             LOG.error("SfcL2OfRendererDataListener::verifyMaxTableId invalid table offset [{}] maxTable [{}]",
                     tableOffset, maxTable);
             return null;
+        }
+    }
+
+    public void waitForTasks() {
+        // Cheat by submitting an empty task and waiting for it to run
+        try {
+            threadExecutor.invokeAll(Collections.singleton((Callable<Object>) () -> null)).get(0).get();
+        } catch (InterruptedException | ExecutionException e) {
+            // The tasks can't generate exceptions
+            LOG.error("Interrupted while waiting for tasks", e);
         }
     }
 

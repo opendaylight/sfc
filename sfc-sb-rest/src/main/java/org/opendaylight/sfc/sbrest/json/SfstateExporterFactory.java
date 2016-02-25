@@ -7,9 +7,11 @@
  */
 package org.opendaylight.sfc.sbrest.json;
 
+import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.ServiceStatistics;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
@@ -46,7 +48,9 @@ class SfstateExporter extends AbstractExporter implements Exporter {
 
     public static final String _SERVICE_FUNCTION_STATE = "service-function-state";
     public static final String _NAME = "name";
-    public static final String _SERVICE_STATISTICS = "service-statistics";
+    public static final String _SERVICE_STATISTICS = "service-statistic";
+    public static final String _SERVICE_STATISTICS_BY_TIMESTAMP = "statistic-by-timestamp";
+    public static final String _TIMESTAMP = "timestamp";
     public static final String _BYTES_IN = "bytes-in";
     public static final String _BYTES_OUT = "bytes-out";
     public static final String _PACKETS_IN = "packets-in";
@@ -106,8 +110,9 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             if (sfstate.getName() != null && sfstate.getName().getValue() != null) {
                 sfstateNode.put(_NAME, sfstate.getName().getValue());
             }
-            if (sfstate.getServiceStatistics() != null) {
-                sfstateNode.put(_SERVICE_STATISTICS, getServiceStatisticsObjectNode(sfstate.getServiceStatistics()));
+            if (sfstate.getStatisticByTimestamp() != null) {
+                sfstateNode.put(_SERVICE_STATISTICS_BY_TIMESTAMP,
+                        getStatisticByTimestampObjectNode(sfstate.getStatisticByTimestamp()));
             }
 
             if (sfstate.getSfServicePath() != null) {
@@ -286,30 +291,30 @@ class SfstateExporter extends AbstractExporter implements Exporter {
         return sfcSfDescMonNode;
     }
 
-    private ObjectNode getServiceStatisticsObjectNode(ServiceStatistics serviceStatistics) {
+    private ArrayNode getStatisticByTimestampObjectNode(List<StatisticByTimestamp> serviceStatistics) {
         if (serviceStatistics == null) {
             return null;
         }
 
-        ObjectNode serviceStatisticsNode = mapper.createObjectNode();
+        ArrayNode statisticsByTimeArray = mapper.createArrayNode();
 
-        if (serviceStatistics.getBytesIn() != null) {
-            serviceStatisticsNode.put(_BYTES_IN, serviceStatistics.getBytesIn().getValue().intValue());
+        for (StatisticByTimestamp statByTimestamp : serviceStatistics){
+            ObjectNode statisticByTimeNode = mapper.createObjectNode();
+            ObjectNode serviceStatisticNode = mapper.createObjectNode();
+            serviceStatisticNode.put(_BYTES_IN, statByTimestamp.getServiceStatistic().getBytesIn()
+                    .getValue().longValue());
+            serviceStatisticNode.put(_BYTES_OUT, statByTimestamp.getServiceStatistic().getBytesOut()
+                    .getValue().longValue());
+            serviceStatisticNode.put(_PACKETS_IN, statByTimestamp.getServiceStatistic().getPacketsIn()
+                    .getValue().longValue());
+            serviceStatisticNode.put(_PACKETS_OUT, statByTimestamp.getServiceStatistic().getPacketsOut()
+                    .getValue().longValue());
+            statisticByTimeNode.put(_TIMESTAMP, statByTimestamp.getTimestamp().longValue());
+            statisticByTimeNode.put(_SERVICE_STATISTICS, serviceStatisticNode);
+            statisticsByTimeArray.add(statisticByTimeNode);
         }
 
-        if (serviceStatistics.getBytesOut() != null) {
-            serviceStatisticsNode.put(_BYTES_OUT, serviceStatistics.getBytesOut().getValue().intValue());
-        }
-
-        if (serviceStatistics.getPacketOut() != null) {
-            serviceStatisticsNode.put(_PACKETS_IN, serviceStatistics.getPacketsIn().getValue().intValue());
-        }
-
-        if (serviceStatistics.getPacketsIn() != null) {
-            serviceStatisticsNode.put(_PACKETS_OUT, serviceStatistics.getPacketOut().getValue().intValue());
-        }
-
-        return serviceStatisticsNode;
+        return statisticsByTimeArray;
     }
 
     private ObjectNode getSfServicePathObjectNode(SfServicePath sfServicePath) {
@@ -323,26 +328,9 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             sfServicePathNode.put(_NAME, sfServicePath.getName().getValue());
         }
 
-        if (sfServicePath.getServiceStatistics() != null) {
-            ObjectNode serviceStatisticsNode = mapper.createObjectNode();
-            ServiceStatistics serviceStatistics = sfServicePath.getServiceStatistics();
-
-            if (serviceStatistics.getBytesIn() != null) {
-                serviceStatisticsNode.put(_BYTES_IN, serviceStatistics.getBytesIn().getValue().intValue());
-            }
-
-            if (serviceStatistics.getBytesOut() != null) {
-                serviceStatisticsNode.put(_BYTES_OUT, serviceStatistics.getBytesOut().getValue().intValue());
-            }
-
-            if (serviceStatistics.getPacketOut() != null) {
-                serviceStatisticsNode.put(_PACKETS_IN, serviceStatistics.getPacketsIn().getValue().intValue());
-            }
-
-            if (serviceStatistics.getPacketsIn() != null) {
-                serviceStatisticsNode.put(_PACKETS_OUT, serviceStatistics.getPacketOut().getValue().intValue());
-            }
-            sfServicePathNode.put(_SERVICE_STATISTICS, serviceStatisticsNode);
+        if (sfServicePath.getStatisticByTimestamp() != null) {
+            ArrayNode serviceStatisticsNode = getStatisticByTimestampObjectNode(sfServicePath.getStatisticByTimestamp());
+            sfServicePathNode.put(_SERVICE_STATISTICS_BY_TIMESTAMP, serviceStatisticsNode);
         }
 
         return sfServicePathNode;

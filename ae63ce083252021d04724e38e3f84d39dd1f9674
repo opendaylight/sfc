@@ -16,6 +16,24 @@
       "revId": "ae63ce083252021d04724e38e3f84d39dd1f9674",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_8c333d13",
+        "filename": "sfc-model/src/main/yang/service-locator.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 4912
+      },
+      "writtenOn": "2016-02-26T04:01:24Z",
+      "side": 1,
+      "message": "On \"mac\" case, mac is needed and vlan is optional. But SFC proxy specification requires that only vlan is needed.\n\nYes, I have verified this code with my NSH Proxy. It works well.",
+      "parentUuid": "9a3d3df0_9aa37dff",
+      "revId": "ae63ce083252021d04724e38e3f84d39dd1f9674",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

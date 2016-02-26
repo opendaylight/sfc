@@ -95,7 +95,7 @@
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>
-        <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
+        <bundle>mvn:org.glassfish/javax.json/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-sb-rest-initial.xml">mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}/xml/config</configfile>
     </feature>
 
@@ -123,7 +123,7 @@
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>
-        <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
+        <bundle>mvn:org.glassfish/javax.json/{{VERSION}}</bundle>
         <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sff</configfile>
         <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sf</configfile>
@@ -148,12 +148,12 @@
     <feature name="odl-sfc-vnfm-tacker" version="${project.version}" description="OpenDaylight :: sfc :: Vnfm :: Tacker ">
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-sfc-model</feature>
-        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-spi/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-tacker/${project.version}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-client/${jersey.version}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-core/${jersey.version}</bundle>
-        <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/${project.version}/xml/config</configfile>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-spi/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>

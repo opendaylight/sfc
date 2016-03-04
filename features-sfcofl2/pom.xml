@@ -12,14 +12,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.1.4-Lithium-SR4</version>
+    <version>0.1.5-SNAPSHOT</version>
   </parent>
    <artifactId>features-sfcofl2</artifactId>
    <packaging>jar</packaging>
    <properties>
       <features.file>features.xml</features.file>
-      <lisp.version>1.2.4-Lithium-SR4</lisp.version>
-      <openflowplugin.version>0.1.4-Lithium-SR4</openflowplugin.version>
+      <lisp.version>1.2.5-SNAPSHOT</lisp.version>
+      <openflowplugin.version>0.1.5-SNAPSHOT</openflowplugin.version>
    </properties>
    <dependencies>
    <dependency>

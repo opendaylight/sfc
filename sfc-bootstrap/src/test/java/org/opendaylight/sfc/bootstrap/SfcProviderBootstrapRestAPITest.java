@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,6 @@ import com.sun.jersey.api.client.ClientHandlerException;
 public class SfcProviderBootstrapRestAPITest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderBootstrapRestAPI.class);
-    private JSONObject bootstrap;
 
     /*
      * Method putBootstrapData reads sfc_provider_config.json file from specific location, this
@@ -71,11 +71,21 @@ public class SfcProviderBootstrapRestAPITest {
             LOG.error("Failed to...", e);
         }
 
-        if (encoded != null)
-            configFile = new JSONObject(jsonConfigString);
+        if (encoded != null) {
+            try {
+                configFile = new JSONObject(jsonConfigString);
+            } catch (JSONException e) {
+                LOG.error("Error instantiating {}", jsonConfigString, e);
+            }
+        }
 
-        if (configFile != null)
-            configFile = configFile.getJSONObject("bootstrap");
+        if (configFile != null) {
+            try {
+                configFile = configFile.getJSONObject("bootstrap");
+            } catch (JSONException e) {
+                LOG.error("Error retrieving bootstrap object", e);
+            }
+        }
 
         // first mock returns true when method tries to find json file (is does not exists), second
         // puts created json as a result

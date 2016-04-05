@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_cbaaecd3",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-04-05T14:20:14Z",
+      "side": 1,
+      "message": "This should be replaced with $JAVA_HOME. Not everybody uses Oracle Java, and not everybody has it in the same place.",
+      "range": {
+        "startLine": 30,
+        "startChar": 85,
+        "endLine": 30,
+        "endChar": 111
+      },
+      "revId": "e3698a994777996c5a51cd8c5797854dcf932593",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

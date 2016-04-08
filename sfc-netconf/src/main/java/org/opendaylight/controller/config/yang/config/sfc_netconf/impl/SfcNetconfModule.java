@@ -9,8 +9,7 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_netconf.impl;
 
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.sfc.sfc_netconf.provider.listener.SfcNetconfNodeDataListener;
+import org.opendaylight.sfc.sfc_netconf.provider.SfcNetconfRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +34,10 @@ public class SfcNetconfModule extends org.opendaylight.controller.config.yang.co
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
-        final SfcNetconfNodeDataListener sfcNetconfNodeDataListener = new SfcNetconfNodeDataListener(opendaylightSfc);
+        LOG.info("Initializing SFC Netconf module ... ");
+
+        SfcNetconfRenderer renderer = new SfcNetconfRenderer(getDataBrokerDependency(), getBindingRegistryDependency());
 
         LOG.info("SFC Netconf module initialized");
 
@@ -45,14 +45,8 @@ public class SfcNetconfModule extends org.opendaylight.controller.config.yang.co
 
             @Override
             public void close() {
-                sfcNetconfNodeDataListener.getDataChangeListenerRegistration().close();
-
-/*                try {
-                    opendaylightSfc.close();
-                } catch (ExecutionException | InterruptedException e) {
-                    LOG.error("\nFailed to close SfcNetconfModule instance {} cleanly", this);
-                }*/
-                LOG.info("SfcNetconfModule (instance {}) torn down", this);
+                renderer.unregisterListeners();
+                LOG.info("Netconf listeners closed");
             }
         }
 

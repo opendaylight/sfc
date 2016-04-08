@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DataListener to listen for SFC OpenFlow Renderer data store changes.
+ * DataListener to listen for SFC OpenFlow renderer data store changes.
  *
  * @author ebrjohn
  *
@@ -53,19 +53,19 @@ public class SfcL2OfRendererDataListener extends SfcL2AbstractDataListener {
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        // SFC OF Renderer config create
+        // SFC OF renderer config create
         for (Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
             if (entry.getValue() instanceof SfcOfRendererConfig) {
-                LOG.info("SfcL2OfRendererDataListener.onDataChanged create SFC OF Renderer config {}",
+                LOG.info("SfcL2OfRendererDataListener.onDataChanged create SFC OF renderer config {}",
                         ((SfcOfRendererConfig) entry.getValue()));
                 processConfig((SfcOfRendererConfig) entry.getValue());
             }
         }
 
-        // SFC OF Renderer config update
+        // SFC OF renderer config update
         for (Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
             if (entry.getValue() instanceof SfcOfRendererConfig) {
-                LOG.info("SfcL2OfRendererDataListener.onDataChanged update SFC OF Renderer config {}",
+                LOG.info("SfcL2OfRendererDataListener.onDataChanged update SFC OF renderer config {}",
                         ((SfcOfRendererConfig) entry.getValue()));
                 processConfig((SfcOfRendererConfig) entry.getValue());
             }
@@ -75,7 +75,7 @@ public class SfcL2OfRendererDataListener extends SfcL2AbstractDataListener {
     }
 
     /**
-     * Process an OpenFlow Renderer configuration change. Only creates and
+     * Process an OpenFlow renderer configuration change. Only creates and
      * updates are handled
      * @param config the configuration details
      */

@@ -56,7 +56,7 @@ public class SfcProviderSfDescriptionMonitorAPI{
         try {
             if(odlSfc.getBroker()!=null) {
                 if(sessionData==null) {
-                    sessionData = odlSfc.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
+                    sessionData = odlSfc.getBroker().registerProvider(SfcNetconfDataProvider.GetNetconfDataProvider());
                     Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
                 }
             }

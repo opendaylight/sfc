@@ -8,12 +8,14 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider;
 
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 
-public class SfcNetconfDataProvider implements BindingAwareConsumer {
+public class SfcNetconfDataProvider implements BindingAwareProvider {
 
     private MountPointService mountService;
     static SfcNetconfDataProvider sfcNetconfDataProvider;
@@ -35,8 +37,7 @@ public class SfcNetconfDataProvider implements BindingAwareConsumer {
     }
 
     @Override
-    public void onSessionInitialized(ConsumerContext session) {
+    public void onSessionInitiated(BindingAwareBroker.ProviderContext session) {
         mountService = session.getSALService(MountPointService.class);
     }
-
 }

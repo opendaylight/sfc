@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a494da4_64603b36",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-04-12T18:02:45Z",
+      "side": 1,
+      "message": "Considering this imports odlparent you should use change this to pull in the nexusproxy property from odlparent so that you get URL updates for free.\n\n\u003curl\u003e${nexusproxy}/repositories/opendaylight.release/\u003c/url\u003e",
+      "revId": "2347c8d0ac6e1eadfd2879e841c734741af679e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

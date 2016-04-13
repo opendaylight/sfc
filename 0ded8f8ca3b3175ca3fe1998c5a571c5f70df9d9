@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a494da4_7dec4ac8",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-04-13T14:26:49Z",
+      "side": 1,
+      "message": "I think a typo here. The $ is in the wrong spot. Should be:\n\n    ${nexusproxy}",
+      "revId": "0ded8f8ca3b3175ca3fe1998c5a571c5f70df9d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -99,7 +99,7 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
         }
 
         public void run(){
-            if (!SfcDataStoreAPI.writeMergeTransactionAPI(
+            if (!SfcDataStoreAPI.writePutTransactionAPI(
                     this.flowInstanceId,
                     this.flowBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION)) {

@@ -20,8 +20,8 @@
     <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.ovsdb/southbound-features/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-netconf-connector/{{VERSION}}/xml/features</repository>
-    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/{{VERSION}}/xml/features</repository>
-    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-li/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension-li/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/{{VERSION}}/xml/features</repository>
 
     <feature name="odl-sfc-model" version="${project.version}" description="OpenDaylight :: sfc :: Model">
@@ -58,8 +58,8 @@
 
     <feature name="odl-sfc-scf-openflow" version="${project.version}" description="OpenDaylight :: sfc-scf-openflow">
         <feature version="${project.version}">odl-sfc-ovs</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services-li</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions-li</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-scf-openflow-initial.xml">mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}/xml/config</configfile>
@@ -67,8 +67,8 @@
 
     <feature name="odl-sfcofl2" version="${project.version}" description="OpenDaylight :: sfcofl2 ">
         <feature version="${project.version}">odl-sfc-ovs</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services-li</feature>
+        <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions-li</feature>
         <bundle>mvn:org.opendaylight.sfc/sfcofl2/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfcofl2-initial.xml">mvn:org.opendaylight.sfc/sfcofl2/{{VERSION}}/xml/config</configfile>

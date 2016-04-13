@@ -86,14 +86,14 @@
     </dependency>
     <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>features-openflowplugin</artifactId>
+        <artifactId>features-openflowplugin-li</artifactId>
         <version>${openflowplugin.version}</version>
         <classifier>features</classifier>
         <type>xml</type>
     </dependency>
     <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>features-openflowplugin-extension</artifactId>
+        <artifactId>features-openflowplugin-extension-li</artifactId>
         <version>${openflowplugin.version}</version>
         <classifier>features</classifier>
         <type>xml</type>

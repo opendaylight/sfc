@@ -126,8 +126,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
                             .child(Flow.class, f.flowKey)
                             .build();
 
-                // No need to read previously existing flows. Merge will take care of that
-                trans.merge(LogicalDatastoreType.CONFIGURATION, iidFlow, f.flow, true);
+                trans.put(LogicalDatastoreType.CONFIGURATION, iidFlow, f.flow, true);
             }
 
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans.submit();

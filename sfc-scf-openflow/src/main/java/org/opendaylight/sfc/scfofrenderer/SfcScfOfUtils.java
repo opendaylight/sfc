@@ -32,6 +32,9 @@ public class SfcScfOfUtils {
 
     private static final int FLOW_PRIORITY_CLASSIFIER = 1000;
     private static final int FLOW_PRIORITY_MATCH_ANY = 5;
+    private static final short NSH_MDTYPE_ONE = 0x1;
+    private static final short NSH_NP_ETH = 0x3;
+    private static final short TUN_GPE_NP_NSH = 0x4;
 
    /**
     * Initialize classifier flow table.
@@ -88,13 +91,17 @@ public class SfcScfOfUtils {
         }
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
-        Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
+        Action pushNsh = SfcOpenflowUtils.createActionNxPushNsh(order++);
+        Action loadNshMdtype = SfcOpenflowUtils.createActionNxLoadNshMdtype(NSH_MDTYPE_ONE, order++);
+        Action loadNshNp = SfcOpenflowUtils.createActionNxLoadNshNp(NSH_NP_ETH, order++);
         Action setNsp = SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), order++);
         Action setNsi = SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), order++);
         Action setC1 = SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), order++);
         Action setC2 = SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++);
         Action setC3 = SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++);
         Action setC4 = SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), order++);
+        Action loadTunGpeNp = SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++);
+        Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
 
         Action out = null;
         if (outPort == null) {
@@ -110,7 +117,7 @@ public class SfcScfOfUtils {
             .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
             .setMatch(match)
             .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
-                .createActionsInstructionBuilder(setTunIpDst, setNsp, setNsi, setC1, setC2, setC3, setC4, out))
+                .createActionsInstructionBuilder(pushNsh, loadNshMdtype, loadNshNp, setNsp, setNsi, setC1, setC2, setC3, setC4, loadTunGpeNp, setTunIpDst, out))
                 .build());
         return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
     }
@@ -138,6 +145,9 @@ public class SfcScfOfUtils {
         SfcOpenflowUtils.addMatchNshNsp(mb, sfcNshHeader.getNshNsp());
         SfcOpenflowUtils.addMatchNshNsi(mb, sfcNshHeader.getNshEndNsi());
 
+        /* Pop NSH */
+        Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(order++);
+
         Action out = null;
         if (outPort == null) {
             out = SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++);
@@ -152,7 +162,7 @@ public class SfcScfOfUtils {
             .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
             .setMatch(mb.build())
             .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
-                .createActionsInstructionBuilder(out))
+                .createActionsInstructionBuilder(popNsh, out))
                 .build());
         return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
     }
@@ -180,6 +190,7 @@ public class SfcScfOfUtils {
         SfcOpenflowUtils.addMatchNshNsi(mb, sfcNshHeader.getNshEndNsi());
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
+        Action loadTunGpeNp = SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++);
         Action setTunIpDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
         Action mvNsp = SfcOpenflowUtils.createActionNxMoveNsp(order++);
         Action mvNsi = SfcOpenflowUtils.createActionNxMoveNsi(order++);
@@ -194,7 +205,7 @@ public class SfcScfOfUtils {
             .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
             .setMatch(mb.build())
             .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
-                .createActionsInstructionBuilder(setTunIpDst, mvNsp, mvNsi, mvC1, mvC2, out))
+                .createActionsInstructionBuilder(loadTunGpeNp, setTunIpDst, mvNsp, mvNsi, mvC1, mvC2, out))
                 .build());
         return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
     }

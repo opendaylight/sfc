@@ -44,12 +44,14 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -84,6 +86,8 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_NSHC3 = "nshc3";
     public static final String OVSDB_OPTION_NSHC4 = "nshc4";
     public static final String OVSDB_OPTION_KEY = "key";
+    public static final String OVSDB_OPTION_EXTS = "exts";
+    public static final String OVSDB_OPTION_GPE = "gpe";
     public static final String OVSDB_OPTION_VALUE_FLOW = "flow";
     public static final String DPL_NAME_DPDK = "Dpdk";
     public static final String DPL_NAME_DPDKVHOST = "Dpdkvhost";
@@ -675,8 +679,9 @@ public class SfcOvsUtil {
     public static Long getVxlanOfPort(String nodeName) {
         class VxlanPortCompare implements OvsdbTPComp {
             public boolean compare(OvsdbTerminationPointAugmentation otp) {
-                if (otp == null)
+                if (otp == null) {
                     return false;
+                }
 
                 if (otp.getInterfaceType() == InterfaceTypeVxlan.class) {
                    return true;
@@ -685,5 +690,39 @@ public class SfcOvsUtil {
             }
         }
         return getOvsPort(nodeName, new VxlanPortCompare());
+    }
+
+    /**
+     * This gets the vxlan-gpe openflow port
+     * @param nodeName openflow node name
+     * @return port number
+     */
+    public static Long getVxlanGpeOfPort(String nodeName) {
+        class VxlanGpePortCompare implements OvsdbTPComp {
+            public boolean compare(OvsdbTerminationPointAugmentation otp) {
+                if (otp == null) {
+                    return false;
+                }
+
+                if (otp.getInterfaceType() == InterfaceTypeVxlanGpe.class) {
+                   return true;
+                }
+
+                // If the interface type is not VxlanGpe, then it may be Vxlan with the option exts=gpe set
+                List<Options> options = otp.getOptions();
+                if(options != null) {
+                    for(Options option : options) {
+                        if(option.getValue() != null && option.getOption() != null) {
+                            if(option.getOption().equals(OVSDB_OPTION_EXTS) && option.getValue().equals(OVSDB_OPTION_GPE)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+        return getOvsPort(nodeName, new VxlanGpePortCompare());
     }
 }

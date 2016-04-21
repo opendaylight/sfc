@@ -84,6 +84,7 @@ public class SfcOvsUtil {
     public static final String OVSDB_OPTION_NSHC3 = "nshc3";
     public static final String OVSDB_OPTION_NSHC4 = "nshc4";
     public static final String OVSDB_OPTION_KEY = "key";
+    public static final String OVSDB_OPTION_EXTS = "exts";
     public static final String OVSDB_OPTION_VALUE_FLOW = "flow";
     public static final String DPL_NAME_DPDK = "Dpdk";
     public static final String DPL_NAME_DPDKVHOST = "Dpdkvhost";

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_4bf37a73",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1100,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-04-21T07:16:30Z",
+      "side": 1,
+      "message": "For NSH, it is yes, but it can also be other protocol, it is VxLAN-gpe header\u0027s next protocol.",
+      "parentUuid": "fa57193c_2b4e06c2",
+      "range": {
+        "startLine": 1100,
+        "startChar": 26,
+        "endLine": 1100,
+        "endChar": 29
+      },
+      "revId": "164a95e1aeca24a22f78966f3000921699d939e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_abd176cf",
         "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-04-21T07:09:03Z",
       "side": 1,
       "message": "When do we encap VXLAN-GPE and NSH?",
+      "range": {
+        "startLine": 1101,
+        "startChar": 8,
+        "endLine": 1101,
+        "endChar": 22
+      },
+      "revId": "164a95e1aeca24a22f78966f3000921699d939e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8bed928e",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowProgrammerOFimpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1101,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-04-21T07:16:30Z",
+      "side": 1,
+      "message": "outputing to a VxLAN-gpe port will do encapsulation, input from a VxLAN-gpe port will do decapsulation.",
+      "parentUuid": "fa57193c_abd176cf",
       "range": {
         "startLine": 1101,
         "startChar": 8,

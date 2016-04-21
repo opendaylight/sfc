@@ -90,6 +90,7 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
     private static final int PKTIN_IDLE_TIMEOUT = 60;
     private static final String EMPTY_SWITCH_PORT = "";
     public static final short APP_COEXISTENCE_NOT_SET = -1;
+    private static final short TUN_GPE_NP_NSH = 0x4;
 
     // Instance variables
     private short tableBase;
@@ -1091,10 +1092,15 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
         int order = 0;
         List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
+
+        /* Need to set TUN_GPE_NP for VxLAN-gpe port */
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order);
@@ -1112,9 +1118,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         int order = 0;
         List<Action> actionList = new ArrayList<Action>();
         // Copy/Move Nsc1/Nsc2 to the next hop
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+
+        /* Need to set TUN_GPE_NP for VxLAN-gpe port */
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order);
@@ -1143,10 +1154,14 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
         SfcOpenflowUtils.addMatchNshNsc1(match, 0l);
 
+        /* Need to set TUN_GPE_NP for VxLAN-gpe port */
         int order = 0;
+        List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
-                        match, new ArrayList<Action>(), port,
+                        match, actionList, port,
                         order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
         sfcL2FlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
     }
@@ -1174,10 +1189,15 @@ public class SfcL2FlowProgrammerOFimpl implements SfcL2FlowProgrammerInterface {
         // Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
         int order = 0;
         List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
+
+        /* Need to set TUN_GPE_NP for VxLAN-gpe port */
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(

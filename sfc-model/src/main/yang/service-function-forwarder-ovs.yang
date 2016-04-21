@@ -178,6 +178,10 @@ module service-function-forwarder-ovs {
         type string;
         description "NSH Starting Index";
       }
+      leaf exts {
+        type string;
+        description "VxLAN extension type";
+      }
       leaf in-nsp {
         type string;
         description "Ingress NSH Service Path ID";

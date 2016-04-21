@@ -261,6 +261,15 @@ public class SfcSffToOvsMappingAPI {
                 LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
             }
 
+            if (ovsOptions.getExts() != null) {
+                OptionsBuilder optionsExtsBuilder = new OptionsBuilder();
+                optionsExtsBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_EXTS);
+                optionsExtsBuilder.setValue(ovsOptions.getExts());
+                options.add(optionsExtsBuilder.build());
+            } else {
+                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_EXTS);
+            }
+
             if (ovsOptions.getInNsp() != null) {
                 OptionsBuilder optionsInNspBuilder = new OptionsBuilder();
                 optionsInNspBuilder.setOption(SfcOvsUtil.OVSDB_OPTION_IN_NSP);

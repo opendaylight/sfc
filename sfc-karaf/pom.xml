@@ -2,16 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>sfc-parent</artifactId>
-    <groupId>org.opendaylight.sfc</groupId>
-    <version>0.3.0-SNAPSHOT</version>
+    <groupId>org.opendaylight.controller</groupId>
+    <artifactId>karaf-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-karaf</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <prerequisites>
     <maven>3.2</maven>
   </prerequisites>
+
+  <properties>
+    <karaf.localFeature>odl-sfc-scf-openflow</karaf.localFeature>
+  </properties>
+
   <dependencies>
     <!-- Basic Karaf dependencies -->
     <dependency>
@@ -21,48 +28,9 @@
       <artifactId>framework</artifactId>
       <version>${karaf.version}</version>
       <type>kar</type>
-      <exclusions>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.sshd</groupId>
-          <artifactId>sshd-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>standard</artifactId>
-      <version>${karaf.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-
-    <!-- ODL Branding -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>karaf.branding</artifactId>
-      <version>${branding.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- ODL Resources needed for karaf -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>opendaylight-karaf-resources</artifactId>
-      <version>${karaf.resources.version}</version>
     </dependency>
 
     <!-- Project local feautures -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-mdsal</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features-sfc</artifactId>
@@ -71,307 +39,10 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin</artifactId>
-      <version>${feature.openflowplugin.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-extension</artifactId>
-      <version>${feature.openflowplugin.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.opendaylight.ovsdb</groupId>
-        <artifactId>southbound-features</artifactId>
-        <version>${ovsdb.southbound.version}</version>
-        <classifier>features</classifier>
-        <type>xml</type>
-        <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.ops4j.pax.swissbox</groupId>
-        <artifactId>pax-swissbox-bnd</artifactId>
-        <version>1.8.0</version>
-    </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <versionRange>[0,)</versionRange>
-                    <goals>
-                      <goal>cleanVersions</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[0,)</versionRange>
-                    <goals>
-                      <goal>copy</goal>
-                      <goal>unpack</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <versionRange>${karaf.maven.version}</versionRange>
-                    <goals>
-                      <goal>commands-generate-help</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.fusesource.scalate</groupId>
-                    <artifactId>maven-scalate-plugin</artifactId>
-                    <versionRange>[0,)</versionRange>
-                    <goals>
-                      <goal>sitegen</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.servicemix.tooling</groupId>
-                    <artifactId>depends-maven-plugin</artifactId>
-                    <versionRange>[0,)</versionRange>
-                    <goals>
-                      <goal>generate-depends-file</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <!-- here the phase you need -->
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/assembly</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/assembly</directory>
-                </resource>
-              </resources>
-              <overwrite>true</overwrite>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf.maven.version}</version>
-        <extensions>true</extensions>
-        <configuration>
-          <bootFeatures>
-            <feature>standard</feature>
-            <feature>odl-sfc-core</feature>
-            <feature>odl-sfc-ui</feature>
-            <feature>odl-sfcofl2</feature>
-            <feature>odl-sfc-scf-openflow</feature>
-            <feature>odl-sfc-sb-rest</feature>
-            <feature>odl-sfclisp</feature>
-            <feature>odl-sfc-ovs</feature>
-            <feature>odl-sfc-netconf</feature>
-            <!--
-              Add entries here for the features you want in your local distro
-              Note: odl-restconf is a separate feature from odl-mdsal-broker.
-              If you want restconf, you need to list it here explicitely.
-            -->
-          </bootFeatures>
-        </configuration>
-        <executions>
-          <execution>
-            <id>process-resources</id>
-            <goals>
-              <goal>install-kars</goal>
-            </goals>
-            <phase>process-resources</phase>
-          </execution>
-          <execution>
-            <id>package</id>
-            <goals>
-              <goal>instance-create-archive</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <!-- here the phase you need -->
-            <phase>generate-resources</phase>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opendaylight.controller</groupId>
-                  <artifactId>karaf.branding</artifactId>
-                  <version>${karaf.branding.version}</version>
-                  <outputDirectory>target/assembly/lib</outputDirectory>
-                  <destFileName>karaf.branding-${branding.version}.jar</destFileName>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-karaf-resources</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <outputDirectory>${project.build.directory}/assembly</outputDirectory>
-              <groupId>org.opendaylight.controller</groupId>
-              <includeArtifactIds>opendaylight-karaf-resources</includeArtifactIds>
-              <excludes>META-INF\/**</excludes>
-              <excludeTransitive>true</excludeTransitive>
-              <ignorePermissions>false</ignorePermissions>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/assembly/system</outputDirectory>
-              <excludeArtifactIds>distribution.vtn-coordinator</excludeArtifactIds>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-              <useRepositoryLayout>true</useRepositoryLayout>
-              <addParentPoms>true</addParentPoms>
-              <copyPom>true</copyPom>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <chmod perm="755">
-                  <fileset dir="${project.build.directory}/assembly/bin">
-                    <include name="karaf"/>
-                    <include name="instance"/>
-                    <include name="start"/>
-                    <include name="stop"/>
-                    <include name="status"/>
-                    <include name="client"/>
-                    <include name="shell"/>
-                  </fileset>
-                </chmod>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.3</version>
-        <executions>
-          <execution>
-            <id>change-pax-logging-version</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <file>${project.build.directory}/assembly/etc/startup.properties</file>
-          <replacements>
-            <replacement>
-              <token>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.api.version}</token>
-              <value>mvn\\:org.ops4j.pax.logging/pax-logging-api/${pax.logging.api.version}</value>
-            </replacement>
-            <replacement>
-              <token>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.api.version}</token>
-              <value>mvn\\:org.ops4j.pax.logging/pax-logging-service/${pax.logging.service.version}</value>
-            </replacement>
-          </replacements>
-        </configuration>
-      </plugin>
-
       <!-- DO NOT deploy the karaf artifact -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

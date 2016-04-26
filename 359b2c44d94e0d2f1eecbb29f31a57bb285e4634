@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_a3eeaf89",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-04-26T14:16:45Z",
+      "side": 1,
+      "message": "This didnt format very well, can you fix this please.",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 71
+      },
+      "revId": "359b2c44d94e0d2f1eecbb29f31a57bb285e4634",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_c3eda38d",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/sfc/l2renderer/openflow/SfcL2FlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-04-26T14:16:45Z",
+      "side": 1,
+      "message": "Can you fix this formatting, please.",
+      "range": {
+        "startLine": 285,
+        "startChar": 69,
+        "endLine": 289,
+        "endChar": 38
+      },
+      "revId": "359b2c44d94e0d2f1eecbb29f31a57bb285e4634",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

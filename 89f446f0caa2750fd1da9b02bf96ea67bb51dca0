@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_482c12ac",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-04-26T11:53:59Z",
+      "side": 1,
+      "message": "The SFC project has more features than just this one, why is this feature the only one listed here?",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "89f446f0caa2750fd1da9b02bf96ea67bb51dca0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

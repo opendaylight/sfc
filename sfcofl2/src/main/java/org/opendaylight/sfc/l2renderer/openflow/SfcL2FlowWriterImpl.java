@@ -63,8 +63,10 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
 
     public SfcL2FlowWriterImpl() {
-        // Not using an Executors.newSingleThreadExecutor() here, since it creates
-        // an Executor that uses a single worker thread operating off an unbounded
+        // Not using an Executors.newSingleThreadExecutor() here, since it
+        // creates
+        // an Executor that uses a single worker thread operating off an
+        // unbounded
         // queue, and we want to be able to limit the size of the queue
         this.threadPoolExecutorService = new ThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE, SCHEDULED_THREAD_POOL_SIZE,
                 ASYNC_THREAD_POOL_KEEP_ALIVE_TIME_SECS, TimeUnit.SECONDS,
@@ -98,12 +100,11 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
             this.flowBuilder = flowBuilder;
         }
 
-        public void run(){
-            if (!SfcDataStoreAPI.writeMergeTransactionAPI(
-                    this.flowInstanceId,
-                    this.flowBuilder.build(),
+        public void run() {
+            if (!SfcDataStoreAPI.writeMergeTransactionAPI(this.flowInstanceId, this.flowBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION)) {
-                LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1], this.sffNodeName);
+                LOG.error("{}: Failed to create Flow on node: {}", Thread.currentThread().getStackTrace()[1],
+                        this.sffNodeName);
             }
         }
     }
@@ -120,15 +121,17 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
             this.sffNodeName = sffNodeName;
         }
 
-        public void run(){
+        public void run() {
             if (!SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION)) {
-                LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1], sffNodeName);
+                LOG.error("{}: Failed to remove Flow on node: {}", Thread.currentThread().getStackTrace()[1],
+                        sffNodeName);
             }
         }
     }
 
     /**
-     * Internal class used to store the details of a flow for easy deletion later
+     * Internal class used to store the details of a flow for easy deletion
+     * later
      */
     private class FlowDetails {
 
@@ -146,12 +149,13 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     /**
      * Write a flow to the DataStore
      *
-     * @param sffNodeName - which SFF to write the flow to
-     * @param flow - details of the flow to be written
+     * @param sffNodeName
+     *            - which SFF to write the flow to
+     * @param flow
+     *            - details of the flow to be written
      */
     @Override
-    public void writeFlowToConfig(Long rspId, String sffNodeName,
-            FlowBuilder flow) {
+    public void writeFlowToConfig(Long rspId, String sffNodeName, FlowBuilder flow) {
 
         // Create the NodeBuilder
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -160,11 +164,8 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
         // Create the flow path, which will include the Node, Table, and Flow
         InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, new TableKey(flow.getTableId()))
-            .child(Flow.class, flow.getKey())
-            .build();
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
 
         LOG.debug("writeFlowToConfig writing flow to Node {}, table {}", sffNodeName, flow.getTableId());
 
@@ -181,13 +182,15 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     /**
      * Remove a Flow from the DataStore
      *
-     * @param sffNodeName - which SFF the flow is in
-     * @param flowKey - The flow key of the flow to be removed
-     * @param tableKey - The table the flow was written to
+     * @param sffNodeName
+     *            - which SFF the flow is in
+     * @param flowKey
+     *            - The flow key of the flow to be removed
+     * @param tableKey
+     *            - The table the flow was written to
      */
     @Override
-    public void removeFlowFromConfig(String sffNodeName, FlowKey flowKey,
-            TableKey tableKey) {
+    public void removeFlowFromConfig(String sffNodeName, FlowKey flowKey, TableKey tableKey) {
 
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(sffNodeName));
@@ -195,11 +198,8 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
         // Create the flow path
         InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Table.class, tableKey)
-            .child(Flow.class, flowKey)
-            .build();
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, tableKey).child(Flow.class, flowKey).build();
 
         FlowRemoverTask removerThread = new FlowRemoverTask(sffNodeName, flowInstanceId);
         try {
@@ -210,12 +210,15 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     }
 
     /**
-     * storeFlowDetails
-     * Store the flow details so the flows are easy to delete later
+     * storeFlowDetails Store the flow details so the flows are easy to delete
+     * later
      *
-     * @param sffNodeName - the SFF the flow is written to
-     * @param flowKey - the flow key of the new flow
-     * @param tableId - the table the flow was written to
+     * @param sffNodeName
+     *            - the SFF the flow is written to
+     * @param flowKey
+     *            - the flow key of the new flow
+     * @param tableId
+     *            - the table the flow was written to
      */
     @Override
     public void storeFlowDetails(final Long rspId, final String sffNodeName, FlowKey flowKey, short tableId) {
@@ -237,11 +240,8 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
         GroupKey gk = new GroupKey(gb.getGroupId());
         InstanceIdentifier<Group> groupIID;
 
-        groupIID = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class, nodeBuilder.getKey())
-            .augmentation(FlowCapableNode.class)
-            .child(Group.class, gk)
-            .build();
+        groupIID = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeBuilder.getKey())
+                .augmentation(FlowCapableNode.class).child(Group.class, gk).build();
         Group group = gb.build();
         LOG.debug("about to write group to data store \nID: {}\nGroup: {}", groupIID, group);
         if (isAdd) {
@@ -263,7 +263,8 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
     /**
      * Delete all flows created for the given rspId
      *
-     * @param rspId - the rspId to delete flows for
+     * @param rspId
+     *            - the rspId to delete flows for
      */
     @Override
     public void deleteRspFlows(final Long rspId) {
@@ -281,8 +282,10 @@ public class SfcL2FlowWriterImpl implements SfcL2FlowWriterInterface {
 
     @Override
     public Set<NodeId> clearSffsIfNoRspExists() {
-        // If there is just one entry left in the rsp-flows mapping, then all flows for RSPs
-        // have been deleted, and the only flows remaining are those that are common to all
+        // If there is just one entry left in the rsp-flows mapping, then all
+        // flows for RSPs
+        // have been deleted, and the only flows remaining are those that are
+        // common to all
         // RSPs, which can be deleted.
         Set<NodeId> sffNodeIDs = new HashSet<>();
         if (rspNameToFlowsMap.size() == 1) {

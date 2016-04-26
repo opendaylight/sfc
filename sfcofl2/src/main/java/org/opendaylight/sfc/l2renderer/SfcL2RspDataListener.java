@@ -23,11 +23,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class has will be notified when changes are mad to Rendered Service Paths.
+ * This class has will be notified when changes are mad to Rendered Service
+ * Paths.
  *
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
- * <p>
+ *          <p>
  * @since 2015-01-27
  */
 public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
@@ -35,11 +36,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcL2RspDataListener.class);
     private SfcL2RspProcessor sfcL2RspProcessor;
 
-    public SfcL2RspDataListener(
-            DataBroker dataBroker,
-            SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
-            SfcL2BaseProviderUtils sfcL2ProviderUtils,
-            SfcSynchronizer sfcSynchronizer) {
+    public SfcL2RspDataListener(DataBroker dataBroker, SfcL2FlowProgrammerInterface sfcL2FlowProgrammer,
+            SfcL2BaseProviderUtils sfcL2ProviderUtils, SfcSynchronizer sfcSynchronizer) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
@@ -58,7 +56,8 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
             if (entry.getValue() instanceof RenderedServicePath) {
-                LOG.info("SfcL2RspDataListener.onDataChanged create RSP {}", ((RenderedServicePath) entry.getValue()).getName());
+                LOG.info("SfcL2RspDataListener.onDataChanged create RSP {}",
+                        ((RenderedServicePath) entry.getValue()).getName());
                 this.sfcL2RspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue());
             }
         }
@@ -66,8 +65,10 @@ public class SfcL2RspDataListener extends SfcL2AbstractDataListener {
         // RSP update
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if ((entry.getValue() instanceof RenderedServicePath && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
-                LOG.info("SfcL2RspDataListener.onDataChanged update RSP {}", ((RenderedServicePath) entry.getValue()).getName());
+            if ((entry.getValue() instanceof RenderedServicePath
+                    && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
+                LOG.info("SfcL2RspDataListener.onDataChanged update RSP {}",
+                        ((RenderedServicePath) entry.getValue()).getName());
                 // Currently RSP updates are not supported
             }
         }

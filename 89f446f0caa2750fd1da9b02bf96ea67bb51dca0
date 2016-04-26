@@ -22,6 +22,30 @@
       "revId": "89f446f0caa2750fd1da9b02bf96ea67bb51dca0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_a34d0f75",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-04-26T12:14:03Z",
+      "side": 1,
+      "message": "Because it\u0027s a single property and you can only list one.",
+      "parentUuid": "fa57193c_482c12ac",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "89f446f0caa2750fd1da9b02bf96ea67bb51dca0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

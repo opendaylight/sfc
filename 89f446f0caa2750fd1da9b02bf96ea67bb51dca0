@@ -70,6 +70,30 @@
       "revId": "89f446f0caa2750fd1da9b02bf96ea67bb51dca0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_838d6b34",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-04-26T13:31:59Z",
+      "side": 1,
+      "message": "Ok, well then if we have to choose one default feature for SFC, I would prefer odl-sfc-provider. The odl-sfc-scf-openflow isnt always used, but the odl-sfc-provider is mandatory for SFC.",
+      "parentUuid": "fa57193c_033e7bb8",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "89f446f0caa2750fd1da9b02bf96ea67bb51dca0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

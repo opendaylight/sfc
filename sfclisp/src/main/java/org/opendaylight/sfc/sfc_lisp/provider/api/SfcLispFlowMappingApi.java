@@ -112,7 +112,7 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(locators, "Cannot ADD new Mapping to LISP configuration store, Locators is null.");
         try {
             LOG.trace("ADD mapping with locators: {}", locators);
-            Future<RpcResult<Void>> result = lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators, 0));
+            Future<RpcResult<Void>> result = lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators));
             result.get().getResult();
             return true;
         } catch (Exception e) {

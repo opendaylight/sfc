@@ -84,16 +84,16 @@ public class SfcLispUtil {
         return new GetMappingInputBuilder().setEid(eid).build();
     }
 
-    public static AddMappingInput buildAddMappingInput(Eid eid, List<Rloc> locators, int mask) {
+    public static AddMappingInput buildAddMappingInput(Eid eid, List<Rloc> locators) {
         MappingRecordBuilder record = new MappingRecordBuilder();
 
         record.setAction(Action.NoAction).setAuthoritative(true).setEid(eid)
                 .setLocatorRecord(LispAddressUtil.asLocatorRecords(locators)).setMapVersion((short) 0)
-                .setMaskLength((short) mask).setRecordTtl(1440);
+                .setRecordTtl(1440);
         return new AddMappingInputBuilder().setMappingRecord(record.build()).build();
     }
 
-    public static RemoveMappingInput buildRemoveMappingInput(Eid eid, int mask) {
+    public static RemoveMappingInput buildRemoveMappingInput(Eid eid) {
         RemoveMappingInputBuilder rmib = new RemoveMappingInputBuilder();
         rmib.setEid(eid);
         return rmib.build();

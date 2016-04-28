@@ -112,7 +112,7 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(locators, "Cannot ADD new Mapping to LISP configuration store, Locators is null.");
         try {
             LOG.trace("ADD mapping with locators: {}", locators);
-            Future<RpcResult<Void>> result = lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators, 0));
+            Future<RpcResult<Void>> result = lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators));
             result.get().getResult();
             return true;
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(eid, "Cannot REMOVE new Mapping to LISP configuration store, EID is null.");
         try {
             LOG.trace("REMOVE mapping for EID: {}", eid);
-            Future<RpcResult<Void>> result = lfmService.removeMapping(SfcLispUtil.buildRemoveMappingInput(eid, 0));
+            Future<RpcResult<Void>> result = lfmService.removeMapping(SfcLispUtil.buildRemoveMappingInput(eid));
             result.get().getResult();
             return true;
         } catch (Exception e) {

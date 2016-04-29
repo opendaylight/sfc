@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sfc-rsp-manager="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-rsp-manager:impl">
+                        sfc-ovs:sfc-rsp-manager-impl
+                    </type>
+                    <name>sfc-rsp-manager-impl</name>
+                </module>
+
+
+            </modules>
+        </data>
+
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ovs:impl?module=sfc-rsp-manager-impl&amp;revision=2016-04-21</capability>
+    </required-capabilities>
+
+</snapshot>

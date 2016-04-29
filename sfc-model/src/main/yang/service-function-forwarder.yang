@@ -88,6 +88,51 @@ module service-function-forwarder {
        function, packets will be forwarded";
   }
 
+  grouping service-function-forwarder-base {
+    description
+      "A group with all base nodes to describe service function
+      forwarder";
+    leaf name {
+      type sfc-common:sff-name;
+      description
+        "The unique name of this service function forwarder, such
+        as SFF1";
+    }
+
+    leaf service-node {
+      type sfc-common:sn-name;
+      description "The service node that hosts this SFF";
+    }
+
+    leaf ip-mgmt-address {
+      type inet:ip-address;
+      description
+        "The IP and port used to configure this
+        SffEpservice-function-forwarder";
+    }
+
+    list sff-data-plane-locator {
+      key "name";
+      description
+        "A list of all data-plane-locators of this SFF.";
+      leaf name {
+        type sfc-common:sff-data-plane-locator-name;
+        description
+          "A unique name that represents this
+           data-plane-locator";
+      }
+
+      container data-plane-locator {
+        description
+          "This container holds configuration for the overlay data
+          plane locator used by this SFF. This could be VXLAN,
+          GRE, etc";
+
+        uses sfc-sl:data-plane-locator;
+      }
+    }
+  }
+
   container service-function-forwarders {
     description
       "A service function forwarder is
@@ -99,48 +144,12 @@ module service-function-forwarder {
       key "name";
       description
         "A list that holds configuration of all SFFs in the domain";
-      leaf name {
-        type sfc-common:sff-name;
-        description
-          "The unique name of this service function forwarder, such
-           as SFF1";
-      }
 
-      leaf service-node {
-        type sfc-common:sn-name;
-        description "The service node that hosts this SFF";
-      }
-
-      leaf ip-mgmt-address {
-        type inet:ip-address;
-        description
-          "The IP and port used to configure this
-           service-function-forwarder";
-      }
+      uses service-function-forwarder-base;
 
       leaf rest-uri {
         type inet:uri;
         description "URI of REST based management";
-      }
-
-      list sff-data-plane-locator {
-        key "name";
-        description
-          "A list of all data-plane-locators of this SFF.";
-        leaf name {
-          type sfc-common:sff-data-plane-locator-name;
-          description
-            "A unique name that represents this
-             data-plane-locator";
-        }
-
-        container data-plane-locator {
-          description
-            "This container holds configuration for the overlay data
-             plane locator used by this SFF. This could be VXLAN,
-             GRE, etc";
-          uses sfc-sl:data-plane-locator;
-        }
       }
 
       list service-function-dictionary {

@@ -76,4 +76,9 @@ module sfc-common {
       description "Service Function Forwarder Name type";
   }
 
+  // typedefs for renderer names
+  typedef renderer-name {
+      type string;
+      description "Renderer Name type";
+  }
 }

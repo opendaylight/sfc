@@ -1,0 +1,41 @@
+module rendered-service-path-manager {
+
+    namespace "urn.intel.params:xml:ns:rsp-manager";
+    prefix "rsp-manager";
+
+    import sfc-common {
+        prefix sfc-common;
+        revision-date 2015-10-17;
+    }
+
+    description
+        "This module defines rendered service path manager capabilities"; // TODO be more specific
+
+    revision "2016-04-21" {
+        description
+            "Initial revision.";
+    }
+
+    container renderers {
+        description
+            "Contains all renderers"; // TODO be more specific
+
+        list renderer {
+            description
+                "Specific renderer"; // TODO be more specific
+
+            key name;
+
+            leaf name {
+                type sfc-common:renderer-name;
+                description
+                    "An unique, user-visible name of renderer";
+            }
+
+            list service-function-forwarders-to-set-up {
+                description
+                    "List of service function forwardes designed to be configured by this renderer";
+            }
+        }
+    }
+}

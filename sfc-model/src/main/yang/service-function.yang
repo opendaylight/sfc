@@ -34,35 +34,58 @@ module service-function {
       "Changes based on Opendaylight Testing.";
   }
 
+  grouping service-function-base {
+    description
+      "A group with all base nodes to describe service function";
+    leaf name {
+      type sfc-common:sf-name;
+      description
+        "The name of the service function.";
+      }
+      leaf type {
+        type sfc-common:sft-type;
+        mandatory true;
+        description
+          "Service Function Type from service-function-type yang
+          model";
+      }
+      leaf ip-mgmt-address {
+        type inet:ip-address;
+        description
+          "The IP and port used to configure this service-function";
+      }
+      list sf-data-plane-locator {
+        key "name";
+        description
+        "A network data-plane locator";
+        leaf name {
+          type sfc-common:sf-data-plane-locator-name;
+          description
+          "A unique string that represents this
+          data-plane-locator";
+      }
+      uses sfc-sl:data-plane-locator;
+      leaf service-function-forwarder {
+        type sfc-common:sff-name;
+        description
+        "The service function forwarder associated with this
+        locator";
+      }
+    }
+  }
+
   grouping service-function-entry {
     description
       "This group bundles together all information related to a
        single service function";
-    leaf name {
-      type sfc-common:sf-name;
-      description
-          "The name of the service function.";
-    }
     leaf tenant-id {
       type sfc-common:tenant-id;
       description
         "This SF was created for a specific tenant-id";
     }
-    leaf type {
-      type sfc-common:sft-type;
-      mandatory true;
-      description
-        "Service Function Type from service-function-type yang
-         model";
-    }
     leaf rest-uri {
       type inet:uri;
       description "URI of REST based management";
-    }
-    leaf ip-mgmt-address {
-      type inet:ip-address;
-      description
-        "The IP and port used to configure this service-function";
     }
     //TODO should not use "_" in yang names. This will be deprecated before it becomes an issue.
     leaf request_reclassification {
@@ -76,25 +99,7 @@ module service-function {
       type boolean;
       description "Whether this SF can process NSH headers";
     }
-
-    list sf-data-plane-locator {
-      key "name";
-      description
-        "A network data-plane locator";
-      leaf name {
-          type sfc-common:sf-data-plane-locator-name;
-        description
-          "A unique string that represents this
-           data-plane-locator";
-      }
-      uses sfc-sl:data-plane-locator;
-      leaf service-function-forwarder {
-        type sfc-common:sff-name;
-        description
-          "The service function forwarder associated with this
-           locator";
-      }
-    }
+    uses service-function-base;
   }
 
   container service-functions {

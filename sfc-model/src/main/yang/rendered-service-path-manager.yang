@@ -1,0 +1,174 @@
+module rendered-service-path-manager {
+
+    namespace "urn.intel.params:xml:ns:rsp-manager";
+    prefix "rsp-manager";
+
+    import ietf-inet-types {
+        prefix inet;
+        revision-date 2010-09-24;
+    }
+
+    import sfc-common {
+        prefix sfc-common;
+        revision-date 2015-10-17;
+    }
+
+    import service-locator {
+        prefix sfc-sl;
+        revision-date 2014-07-01;
+    }
+
+    description
+        "This module defines rendered service path manager capabilities";
+
+    revision "2016-04-21" {
+        description
+            "Initial revision.";
+    }
+
+    typedef service-function-in-chain {
+        type string;
+        description
+            "Combination of service function name in concrete service
+            chain";
+    }
+
+    grouping rsp-hop-info {
+        container service-function-data {
+            leaf name {
+                type sfc-common:sf-name;
+            }
+            leaf type {
+                type sfc-common:sft-type;
+            }
+            leaf ip-mgmt-address {
+                type inet:ip-address;
+            }
+            container sf-data-plane-locator {
+                description
+                "Single service function data plane locator with locator
+                type IP";
+                leaf name {
+                    type sfc-common:sf-data-plane-locator-name;
+                }
+                uses sfc-sl:data-plane-locator;
+            }
+        }
+        container service-function-forwarder-data {
+            leaf name {
+                type sfc-common:sff-name;
+            }
+            leaf service-node {
+                type sfc-common:sn-name;
+            }
+            leaf ip-mgmt-address {
+                type inet:ip-address;
+            }
+            leaf rest-uri {
+                type inet:uri;
+            }
+            container sff-data-plane-locator {
+                description
+                    "Single service function forwarder data plane locator
+                    with locator type IP.";
+                leaf name {
+                    type sfc-common:sff-data-plane-locator-name;
+                }
+                uses sfc-sl:data-plane-locator;
+            }
+        }
+        leaf path-id {
+            type uint32;
+        }
+        leaf hop-number {
+            type uint8;
+        }
+        leaf service-index {
+            type uint8;
+        }
+    }
+
+    // RSP manager
+    container rsp-manager-data {
+        list renderer {
+            key name;
+
+            leaf name {
+                type sfc-common:renderer-name;
+                description
+                    "Contains all available renderers with appropriate data.
+                    Every renderer gets its own part (hops) of rendered service
+                    path to resolve, configure devices and inform RSP manager
+                    about result.";
+            }
+            container managed-hops {
+                description
+                    "Actual and next rsp hop necesarry to resolve that part of
+                    rendered service path";
+                list current-rsp-hop {
+                    description
+                        "Contains all necesarry data to identify service function
+                        forwarder and other SFC entities like service function,
+                        RSP hop or location of these entities in rendered service
+                        path";
+                    key sf-in-chain;
+                    leaf sf-in-chain {
+                        type service-function-in-chain;
+                        description
+                            "Unambiguous key consists from combination of service
+                            function name and service chain name";
+                    }
+                    uses rsp-hop-info;
+                    container next-rsp-hop {
+                        description
+                            "All required data about next hop";
+                        uses rsp-hop-info;
+                    }
+                }
+            }
+        }
+    }
+
+    // Responsible nodes
+    container managed-nodes-by-renderer {
+        config false;
+        description
+            "Contains all nodes managed by specific renderer";
+        list renderer-nodes {
+            key name;
+            leaf name {
+                type sfc-common:renderer-name;
+            }
+            container nodes {
+                description
+                    "List of nodes managed by renderer";
+                list node {
+                    key node-name;
+                    leaf node-name {
+                        type sfc-common:sn-name;
+                    }
+                    leaf ip-mgmt-address {
+                        type inet:ip-address;
+                    }
+                }
+            }
+        }
+    }
+
+    // Renderer status
+    container renderer-status {
+        config false;
+        list renderer-status {
+            key name;
+            leaf name {
+                type sfc-common:renderer-name;
+            }
+            leaf renderer-status-value {
+                type enumeration {
+                    enum success;
+                    enum failure;
+                }
+            }
+        }
+    }
+}

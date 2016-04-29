@@ -1,0 +1,53 @@
+module sfc-rsp-manager-impl {
+
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-rsp-manager:impl";
+  prefix "sfc-rsp-manager-impl";
+
+  import config { prefix config; revision-date 2013-04-05; }
+  import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+  import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+  description
+      "This module contains the base YANG definitions for
+      sfc-rsp-manager implementation.";
+
+  revision "2016-04-21" {
+      description
+          "Initial revision.";
+  }
+
+  // This is the definition of the service implementation as a module identity
+  identity sfc-rsp-manager-impl {
+      base config:module-type;
+
+      // Specifies the prefix for generated java classes.
+      config:java-name-prefix SfcRspManager;
+  }
+
+  // Augments the 'configuration' choice node under modules/module.
+  augment "/config:modules/config:module/config:configuration" {
+      case sfc-rsp-manager-impl {
+          when "/config:modules/config:module/config:type = 'sfc-rsp-manager-impl'";
+
+          //wires in the data-broker service
+          container data-broker {
+              uses config:service-ref {
+                  refine type {
+                      mandatory false;
+                      config:required-identity mdsal:binding-async-data-broker;
+                  }
+              }
+          }
+
+          container rpc-registry {
+              uses config:service-ref {
+                  refine type {
+                      mandatory true;
+                      config:required-identity mdsal:binding-rpc-registry;
+                  }
+              }
+          }
+      }
+  }
+}

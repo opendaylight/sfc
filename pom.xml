@@ -203,6 +203,7 @@
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>
         <module>sfc-renderers</module>
+        <module>sfc-rsp-manager</module>
     </modules>
 
     <build>

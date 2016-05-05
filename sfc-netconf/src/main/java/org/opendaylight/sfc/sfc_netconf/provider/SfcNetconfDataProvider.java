@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Intel Corp. and others.  All rights reserved.
+ * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,19 +8,16 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 
-public class SfcNetconfDataProvider implements BindingAwareConsumer {
+public class SfcNetconfDataProvider implements BindingAwareProvider {
 
     private MountPointService mountService;
-    static SfcNetconfDataProvider sfcNetconfDataProvider;
+    private static SfcNetconfDataProvider sfcNetconfDataProvider;
 
-    /*
-     * Factory method
-     */
     public static SfcNetconfDataProvider GetNetconfDataProvider() {
         if (sfcNetconfDataProvider != null)
             return sfcNetconfDataProvider;
@@ -35,8 +32,7 @@ public class SfcNetconfDataProvider implements BindingAwareConsumer {
     }
 
     @Override
-    public void onSessionInitialized(ConsumerContext session) {
+    public void onSessionInitiated(BindingAwareBroker.ProviderContext session) {
         mountService = session.getSALService(MountPointService.class);
     }
-
 }

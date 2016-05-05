@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_ca69218d",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-05-05T09:22:29Z",
+      "side": 1,
+      "message": "We will also need a boolean indicating if this is the last hop.\nAlso, we need to indicate the next SFF, so that flows can be written not only to get to the SF, but also to get to the next SFF.",
+      "range": {
+        "startLine": 36,
+        "startChar": 13,
+        "endLine": 36,
+        "endChar": 25
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_aa72ed79",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-05-05T09:22:29Z",
+      "side": 1,
+      "message": "Im wondering if the type, ip-mgmt-address and the \"uses sfc-sl:data-plane-locator\" in the sf-data-plane-locator are necessary here, since its repeated information from the service-function definition. That is, these 3 fields are already available in the SF.",
+      "range": {
+        "startLine": 37,
+        "startChar": 18,
+        "endLine": 37,
+        "endChar": 39
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8a6f2992",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-05-05T09:22:29Z",
+      "side": 1,
+      "message": "Same comment here about duplicated information.",
+      "range": {
+        "startLine": 57,
+        "startChar": 18,
+        "endLine": 57,
+        "endChar": 49
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4ae35107",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-05-05T09:22:29Z",
+      "side": 1,
+      "message": "Is this the \"object\" that will be passed to a renderer or will it be the rsp-hop-info? If its the rsp-hop-info, then what is the purpose of this definition?",
+      "range": {
+        "startLine": 92,
+        "startChar": 14,
+        "endLine": 92,
+        "endChar": 30
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_0d6973f9",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-05T16:09:01Z",
+      "side": 1,
+      "message": "Brady, there is duplicated information because this is only model where SFF renderer needs to listen. We want to avoid situation where a renderer itself will read something about SF or SFF. The reason is that renderer#1 could read SF in time 1 when DPL is \"foo\" and renderer#2 could read SF in time 2 when DPL is \"bar\". So these two renderers will configure network based on different information which can cause misconfiguration.",
+      "parentUuid": "fa57193c_aa72ed79",
+      "range": {
+        "startLine": 37,
+        "startChar": 18,
+        "endLine": 37,
+        "endChar": 39
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_8a6f2992",
         "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
         "patchSetId": 3
@@ -87,6 +111,29 @@
         "startChar": 14,
         "endLine": 92,
         "endChar": 30
+      },
+      "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_cd7e5bae",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-05T16:09:01Z",
+      "side": 1,
+      "message": "maybe you could put this under list with RSP name so it will tell to renderer that these hops are from this RSP.\n\nI think it also needs to contain RSP path so renderer will know where a SF or SFF is in RSP located",
+      "range": {
+        "startLine": 104,
+        "startChar": 12,
+        "endLine": 104,
+        "endChar": 36
       },
       "revId": "808d57751273f0f70a8ffac7ab774194cffdcbef",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

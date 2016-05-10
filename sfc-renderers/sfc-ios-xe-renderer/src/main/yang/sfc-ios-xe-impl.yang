@@ -1,0 +1,53 @@
+module sfc-ios-xe-impl {
+
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ios-xe:impl";
+  prefix "sfc-ios-xe-impl";
+
+  import config { prefix config; revision-date 2013-04-05; }
+  import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+
+  description
+      "This module contains the base YANG definitions for
+      sfc-ios-xe implementation.";
+
+  revision "2014-10-20" {
+      description
+          "Initial revision.";
+  }
+
+  // This is the definition of the service implementation as a module identity
+  identity sfc-ios-xe-impl {
+      base config:module-type;
+
+      // Specifies the prefix for generated java classes.
+      config:java-name-prefix SfcIosXe;
+  }
+
+
+  // Augments the 'configuration' choice node under modules/module.
+  augment "/config:modules/config:module/config:configuration" {
+    case sfc-ios-xe-impl {
+      when "/config:modules/config:module/config:type = 'sfc-ios-xe-impl'";
+
+      //wires in the data-broker service
+      container data-broker {
+        uses config:service-ref {
+          refine type {
+              mandatory false;
+              config:required-identity mdsal:binding-async-data-broker;
+          }
+        }
+      }
+      container binding-registry {
+        uses config:service-ref {
+          refine type {
+              mandatory true;
+              config:required-identity mdsal:binding-broker-osgi-registry;
+          }
+        }
+      }
+    }
+  }
+}

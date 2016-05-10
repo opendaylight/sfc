@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+//import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sbrest.json.RspExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -64,7 +64,7 @@ public class SbRestRspTaskTest {
         executorService = Executors.newFixedThreadPool(10);
 
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
+        PowerMockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
             .thenReturn(this.buildServiceFunctionForwarder());
     }
 
@@ -91,7 +91,7 @@ public class SbRestRspTaskTest {
     @Test
     public void testSbRestRspTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
+        PowerMockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
             .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestRspTask sbRestRspTask =

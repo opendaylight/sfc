@@ -9,8 +9,8 @@
 package org.opendaylight.sfc.scfofrenderer;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+//import static org.mockito.Mockito.mock;
+//import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,28 +45,28 @@ public class SfcScfOfProcessorTest {
 
     private void initTest() {
         sfcScfProcessor = new SfcScfOfProcessor();
-        scf = mock(ServiceFunctionClassifier.class);
-        acl = mock(Acl.class);
-        Ace ace = mock(Ace.class);
+        scf = PowerMockito.mock(ServiceFunctionClassifier.class);
+        acl = PowerMockito.mock(Acl.class);
+        Ace ace = PowerMockito.mock(Ace.class);
         acesList = new ArrayList<Ace>();
         acesList.add(ace);
-        accessListEntries = mock(AccessListEntries.class);
+        accessListEntries = PowerMockito.mock(AccessListEntries.class);
 
         sfflist = new ArrayList<SclServiceFunctionForwarder>();
-        SclServiceFunctionForwarder sclSff = mock(SclServiceFunctionForwarder.class);
+        SclServiceFunctionForwarder sclSff = PowerMockito.mock(SclServiceFunctionForwarder.class);
         sfflist.add(sclSff);
 
-        when(sclSff.getName()).thenReturn("sffName");
-        when(scf.getSclServiceFunctionForwarder()).thenReturn(sfflist);
-        when(scf.getAccessList()).thenReturn("acl");
-        when(acl.getAclName()).thenReturn("aclName");
-        when(acl.getAccessListEntries()).thenReturn(accessListEntries);
-        when(accessListEntries.getAce()).thenReturn(acesList);
+        PowerMockito.when(sclSff.getName()).thenReturn("sffName");
+        PowerMockito.when(scf.getSclServiceFunctionForwarder()).thenReturn(sfflist);
+        PowerMockito.when(scf.getAccessList()).thenReturn("acl");
+        PowerMockito.when(acl.getAclName()).thenReturn("aclName");
+        PowerMockito.when(acl.getAccessListEntries()).thenReturn(accessListEntries);
+        PowerMockito.when(accessListEntries.getAce()).thenReturn(acesList);
 
         PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList"))
             .toReturn(acl);
 
-        sff = mock(ServiceFunctionForwarder.class);
+        sff = PowerMockito.mock(ServiceFunctionForwarder.class);
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder"))
             .toReturn(sff);
 
@@ -98,11 +98,11 @@ public class SfcScfOfProcessorTest {
         assertTrue(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
-        when(acl.getAccessListEntries()).thenReturn(null);
+        PowerMockito.when(acl.getAccessListEntries()).thenReturn(null);
         assertFalse(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
-        when(accessListEntries.getAce()).thenReturn(null);
+        PowerMockito.when(accessListEntries.getAce()).thenReturn(null);
         assertFalse(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
@@ -130,11 +130,11 @@ public class SfcScfOfProcessorTest {
         assertTrue(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();
-        when(acl.getAccessListEntries()).thenReturn(null);
+        PowerMockito.when(acl.getAccessListEntries()).thenReturn(null);
         assertFalse(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();
-        when(accessListEntries.getAce()).thenReturn(null);
+        PowerMockito.when(accessListEntries.getAce()).thenReturn(null);
         assertFalse(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();

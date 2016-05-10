@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sfc-ios-xe="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ios-xe:impl">
+                        sfc-ios-xe:sfc-ios-xe-impl
+                    </type>
+                    <name>sfc-ios-xe-impl</name>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+
+                    <binding-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                        <name>binding-osgi-broker</name>
+                    </binding-registry>
+                </module>
+            </modules>
+        </data>
+
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-ios-xe:impl?module=sfc-ios-xe-impl&amp;revision=2014-10-20</capability>
+    </required-capabilities>
+
+</snapshot>

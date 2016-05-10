@@ -49,6 +49,13 @@
         <configfile finalname="etc/opendaylight/karaf/sfc-netconf-initial.xml">mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}/xml/config</configfile>
     </feature>
 
+    <feature name="odl-sfc-ios-xe-renderer" version="${project.version}" description="OpenDaylight :: sfc-renderers :: IOS-XE Renderer ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ios-xe-renderer/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-ios-xe-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-ios-xe-renderer/{{VERSION}}/xml/config</configfile>
+    </feature>
+
     <feature name="odl-sfc-ovs" version="${project.version}" description="OpenDaylight :: OpenvSwitch ">
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-impl</feature>

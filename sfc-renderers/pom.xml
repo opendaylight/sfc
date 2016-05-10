@@ -3,12 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
         <version>0.3.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath/>
     </parent>
 
     <artifactId>sfc-renderers</artifactId>
@@ -16,10 +15,10 @@
 
     <description>This module groups together the RSP renderers.</description>
 
-    <!-- <modules>
-        <module>sfc-openflow-renderer</module>
-        <module>sfc-foo-renderer</module>
-        <module>sfc-bar-renderer</module>
-    </modules> -->
-
+    <modules>
+        <module>sfc-ios-xe-renderer</module>
+        <!--<module>sfc-openflow-renderer</module>-->
+        <!--<module>sfc-foo-renderer</module>-->
+        <!--<module>sfc-bar-renderer</module>-->
+    </modules>
 </project>

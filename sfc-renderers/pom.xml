@@ -8,7 +8,7 @@
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
         <version>0.3.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath/>
     </parent>
 
     <artifactId>sfc-renderers</artifactId>
@@ -17,8 +17,7 @@
     <description>This module groups together the RSP renderers.</description>
 
     <modules>
-        <!-- <module>sfc-foo-renderer</module> -->
-        <!-- <module>sfc-bar-renderer</module> -->
+        <module>sfc-ios-xe-renderer</module>
         <module>sfc-openflow-renderer</module>
     </modules>
 

@@ -26,7 +26,7 @@
 
     <feature name="odl-sfc-model" version="${project.version}" description="OpenDaylight :: sfc :: Model">
         <feature version="${mdsal.model.version}">odl-mdsal-models</feature>
-         <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-api</feature>
+        <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-api</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-model/{{VERSION}}</bundle>
     </feature>
 
@@ -38,15 +38,22 @@
     </feature>
 
     <feature name="odl-sfc-provider-rest" version="${project.version}" description="OpenDaylight :: sfc :: Provider ">
-      <feature version="${project.version}">odl-sfc-provider</feature>
-      <feature version="${restconf.version}">odl-restconf</feature>
+        <feature version="${project.version}">odl-sfc-provider</feature>
+        <feature version="${restconf.version}">odl-restconf</feature>
     </feature>
 
-     <feature name="odl-sfc-netconf" version="${project.version}" description="OpenDaylight :: Netconf ">
+    <feature name="odl-sfc-netconf" version="${project.version}" description="OpenDaylight :: Netconf ">
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-netconf-initial.xml">mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-ios-xe-renderer" version="${project.version}" description="OpenDaylight :: sfc-renderers :: IOS-XE Renderer ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-ios-xe-renderer/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-ios-xe-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-ios-xe-renderer/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfc-ovs" version="${project.version}" description="OpenDaylight :: OpenvSwitch ">

@@ -17,8 +17,7 @@
     <description>This module groups together the RSP renderers.</description>
 
     <modules>
-        <!-- <module>sfc-foo-renderer</module> -->
-        <!-- <module>sfc-bar-renderer</module> -->
+        <module>sfc-ios-xe-renderer</module>
         <module>sfc-openflow-renderer</module>
     </modules>
 

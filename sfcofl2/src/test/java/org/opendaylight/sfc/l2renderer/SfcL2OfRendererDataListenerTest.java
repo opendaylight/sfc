@@ -10,8 +10,7 @@ package org.opendaylight.sfc.l2renderer;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.powermock.api.mockito.PowerMockito;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +36,9 @@ public class SfcL2OfRendererDataListenerTest {
 
     public SfcL2OfRendererDataListenerTest() {
         LOG.info("SfcL2OfRendererDataListenerTest constructor");
-        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl((SfcL2FlowWriterInterface) mock(SfcL2FlowWriterInterface.class));
-        DataBroker dataBroker = mock(DataBroker.class);
-        SfcSynchronizer sfcSynchronizer = mock(SfcSynchronizer.class);
+        this.sfcL2FlowProgrammer = new SfcL2FlowProgrammerOFimpl((SfcL2FlowWriterInterface) PowerMockito.mock(SfcL2FlowWriterInterface.class));
+        DataBroker dataBroker = PowerMockito.mock(DataBroker.class);
+        SfcSynchronizer sfcSynchronizer = PowerMockito.mock(SfcSynchronizer.class);
 
         this.sfcL2OfRendererDataListener =
                 new SfcL2OfRendererDataListener(dataBroker, this.sfcL2FlowProgrammer, sfcSynchronizer);
@@ -124,8 +123,8 @@ public class SfcL2OfRendererDataListenerTest {
         Map<InstanceIdentifier<?>, DataObject> entrySet = new HashMap<InstanceIdentifier<?>, DataObject>();
         entrySet.put(entryKey, entryValue);
 
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = mock(AsyncDataChangeEvent.class);
-        when(change.getCreatedData()).thenReturn(entrySet);
+        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = PowerMockito.mock(AsyncDataChangeEvent.class);
+        PowerMockito.when(change.getCreatedData()).thenReturn(entrySet);
 
         return change;
     }

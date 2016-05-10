@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+//import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -59,7 +59,7 @@ public class SbRestSfstateTaskTest {
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
+        PowerMockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
             .thenReturn(this.buildServiceFunction());
     }
 
@@ -88,7 +88,7 @@ public class SbRestSfstateTaskTest {
         SbRestSfstateTask sbRestSfstateTask =
                 new SbRestSfstateTask(RestOperation.PUT, new ServiceFunctionStateBuilder().build(), executorService);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
-        Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
+        PowerMockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
             .thenReturn(new ServiceFunctionBuilder().build());
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);

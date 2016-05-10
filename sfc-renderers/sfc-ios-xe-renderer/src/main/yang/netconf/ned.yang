@@ -1,0 +1,198 @@
+module ned {
+
+    prefix ios;
+    namespace
+        "urn:ios";
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    import ietf-inet-types {
+        prefix inet;
+        revision-date 2013-07-15;
+    }
+
+    description
+        "This file was adapted to be parsed by a yangtools";
+
+    revision
+        2016-03-08;
+
+    container native {
+        tailf:cli-drop-node-name;
+
+        grouping config-service-chain-grouping {
+            leaf description {
+                tailf:info "Service function forwarder description";
+                    description "Service function forwarder description";
+                    tailf:cli-multi-value;
+                    type string {
+                        tailf:info "LINE;;Up to 256 characters describing this "
+                            + "service function forwarder";
+                        length "1..256";
+                    }
+                }
+                container ip {
+                    tailf:info "IP address for Service Function Forwarder";
+                    description "IP address for Service Function Forwarder";
+                    leaf address {
+                        tailf:info "Set IPv4 address";
+                        description "Set IPv4 address";
+                        type inet:ipv4-address {
+                            tailf:info "A.B.C.D;;IP address of Service Function Forwarder";
+                        }
+                    }
+                }
+            }
+
+            container service-chain {
+                tailf:info "Service Chain mode";
+                description "Service Chain mode";
+                list service-function {
+                    tailf:info "Service function details";
+                    description "Service function details";
+                    tailf:cli-mode-name "config-service-chain-sf";
+                    key "name";
+                    leaf name {
+                        tailf:info "WORD;;Service function name";
+                        description "WORD;;Service function name";
+                        type string;
+                    }
+                    container config-service-chain-sf-mode {
+                        tailf:cli-drop-node-name;
+                        leaf description {
+                            tailf:info "Service function description";
+                            description "Service function description";
+                            tailf:cli-multi-value;
+                            tailf:cli-full-command;
+                            type string {
+                                tailf:info "LINE;;Up to 256 characters describing this "
+                                    +"service function";
+                                length "1..256";
+                            }
+                        }
+                        container encapsulation {
+                            tailf:info "Service node encapsulation";
+                            description "Service node encapsulation";
+                            container gre {
+                                tailf:info "Service node encapsulation type";
+                                description "Service node encapsulation type";
+                                leaf enhanced {
+                                    tailf:info "Add enhanced NSH TLV information";
+                                    description "Add enhanced NSH TLV information";
+                                    type enumeration {
+                                        enum copy {
+                                            tailf:info "Send a copy of the packet";
+                                        }
+                                        enum divert {
+                                            tailf:info "Divert the packet (default)";
+                                        }
+                                    }
+                                }
+                            }
+                            leaf none {
+                                tailf:info "Service node encapsulation type";
+                                description "Service node encapsulation type";
+                                type empty;
+                            }
+                        }
+                        container ip {
+                            tailf:info "Service node";
+                            description "Service node";
+                            leaf address {
+                                type inet:ipv4-address {
+                                    tailf:info "A.B.C.D;;Service node";
+                                }
+                            }
+                        }
+                    }
+                }
+                container service-function-forwarder {
+                    tailf:info "Service function forwarder details";
+                    description "Service function forwarder details";
+                    list service-ff-name {
+                        tailf:cli-drop-node-name;
+                        tailf:cli-mode-name "config-service-chain-sff";
+                        key "name";
+                        leaf name {
+                            tailf:info "WORD;;Service function forwarder name";
+                            description "WORD;;Service function forwarder name";
+                            type string;
+                        }
+                        uses config-service-chain-grouping;
+                    }
+                    container local {
+                        tailf:info "Local service function forwarder";
+                        description "Local service function forwarder";
+                        tailf:cli-add-mode;
+                        tailf:cli-mode-name "config-service-chain-sff";
+                        presence true;
+                        uses config-service-chain-grouping;
+                    }
+                }
+                list service-path {
+                    tailf:info "Service Path Entries";
+                    description "Service Path Entries";
+                    tailf:cli-mode-name "config-service-chain-path";
+                    key "service-path-id";
+                    leaf service-path-id {
+                        type uint32 {
+                            range "0..16777215";
+                            tailf:info "<0-16777215>;;Service Path ID";
+                        }
+                    }
+                    container config-service-chain-path-mode {
+                        tailf:cli-drop-node-name;
+                        leaf description {
+                            tailf:info "Path Description";
+                            description "Path Description";
+                            tailf:cli-multi-value;
+                            tailf:cli-full-command;
+                            type string {
+                                tailf:info "LINE;;Up to 256 characters describing this "
+                                    +"service path";
+                                length "1..256";
+                            }
+                        }
+                        container service-index {
+                            tailf:info "Service Index";
+                            description "Service Index";
+                            list services {
+                                tailf:cli-drop-node-name;
+                                tailf:cli-suppress-mode;
+                                key "service-index-id";
+                                leaf service-index-id {
+                                    type uint8 {
+                                    range "2..255";
+                                    tailf:info "<2-255>;;Service Index ID";
+                                }
+                            }
+                            choice service-type-choice {
+                                leaf service-function {
+                                    tailf:info "Service Function name";
+                                    description "Service Function name";
+                                    type string {
+                                        tailf:info "WORD;;Service Function name";
+                                    }
+                                }
+                                leaf service-function-forwarder {
+                                    tailf:info "Service Function Forwarder name";
+                                    description "Service Function Forwarder name";
+                                    type string {
+                                        tailf:info "WORD;;Service Function Forwarder name";
+                                    }
+                                }
+                                leaf terminate {
+                                    tailf:info "Terminate(Proxy)";
+                                    description "Terminate(Proxy)";
+                                    type empty;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -119,7 +119,7 @@ public class SfcScfOfProcessor {
                 }
 
                 String itfName = itf.getInterface();
-                if (itf == null) {
+                if (itfName == null) {
                     LOG.error("createdServiceFunctionClassifier: interface is null\n");
                     continue;
                 }
@@ -151,7 +151,7 @@ public class SfcScfOfProcessor {
 
                 // Action
                 Actions actions = ace.getActions();
-                if (ruleName == null) {
+                if (actions == null) {
                     LOG.error("createdServiceFunctionClassifier: action is null\n");
                     continue;
                 }

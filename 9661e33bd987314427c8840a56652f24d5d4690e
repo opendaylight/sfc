@@ -16,6 +16,24 @@
       "revId": "9661e33bd987314427c8840a56652f24d5d4690e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_08cb1354",
+        "filename": "sfc-model/src/main/yang/rendered-service-path-manager.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-05-11T11:20:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_a5397043",
+      "revId": "9661e33bd987314427c8840a56652f24d5d4690e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -49,7 +49,14 @@ public interface SfcOfFlowProgrammerInterface {
      *
      * @return Node IDs from which initialization flows were removed.
      */
-    public Set<NodeId> deleteRspFlowsAndClearSFFsIfNoRspExists(final Long rspId);
+    public Set<NodeId> deleteRspFlows(final Long rspId);
+
+    // Write any buffered flows to the data store
+    public void flushFlows();
+
+    // Purge any unwritten flows not written yet. This should be called upon
+    // errors, when the remaining buffered flows should not be written.
+    public void purgeFlows();
 
     //Set FlowWriter implementation
     public void setFlowWriter(SfcOfFlowWriterInterface sfcOfFlowWriter);

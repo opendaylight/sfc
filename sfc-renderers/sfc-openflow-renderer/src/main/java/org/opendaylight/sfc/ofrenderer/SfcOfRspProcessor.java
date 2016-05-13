@@ -74,7 +74,6 @@ public class SfcOfRspProcessor {
             // Populate the SFF Connection Graph
             //
             SffGraph sffGraph = populateSffGraph(rsp);
-
             SfcRspTransportProcessorBase transportProcessor = getTransportProcessor(sffGraph, rsp);
 
             //
@@ -107,11 +106,16 @@ public class SfcOfRspProcessor {
                 configureTransportEgressFlows(entry, sffGraph, transportProcessor);
             }
 
+            // Flush the flows to the data store
+            this.sfcOfFlowProgrammer.flushFlows();
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (RuntimeException e) {
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         } finally {
+            // If there were any errors, purge any remaining flows so they're not written
+            this.sfcOfFlowProgrammer.purgeFlows();
             sfcSynchronizer.unlock();
             sfcOfProviderUtils.removeRsp(rsp.getPathId());
         }
@@ -123,7 +127,7 @@ public class SfcOfRspProcessor {
      * @param rsp - the Rendered Service Path to delete
      */
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
-        Set<NodeId> clearedSffNodeIDs = sfcOfFlowProgrammer.deleteRspFlowsAndClearSFFsIfNoRspExists(rsp.getPathId());
+        Set<NodeId> clearedSffNodeIDs = sfcOfFlowProgrammer.deleteRspFlows(rsp.getPathId());
         for(NodeId sffNodeId : clearedSffNodeIDs){
             setSffInitialized(sffNodeId, false);
         }

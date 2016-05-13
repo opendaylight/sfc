@@ -24,9 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
@@ -68,13 +68,13 @@ public class SfcL2RspProcessor {
             // This call blocks until the lock is obtained
             sfcSynchronizer.lock();
 
+            LOG.debug("processing rendered service path!");
             sfcL2ProviderUtils.addRsp(rsp.getPathId());
 
             //
             // Populate the SFF Connection Graph
             //
             SffGraph sffGraph = populateSffGraph(rsp);
-
             SfcRspTransportProcessorBase transportProcessor = getTransportProcessor(sffGraph, rsp);
 
             //
@@ -107,11 +107,16 @@ public class SfcL2RspProcessor {
                 configureTransportEgressFlows(entry, sffGraph, transportProcessor);
             }
 
+            // Flush the flows to the data store
+            this.sfcL2FlowProgrammer.flushFlows();
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (RuntimeException e) {
             LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
         } finally {
+            // If there were any errors, purge any remaining flows so they're not written
+            this.sfcL2FlowProgrammer.purgeFlows();
             sfcSynchronizer.unlock();
             sfcL2ProviderUtils.removeRsp(rsp.getPathId());
         }
@@ -123,7 +128,7 @@ public class SfcL2RspProcessor {
      * @param rsp - the Rendered Service Path to delete
      */
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
-        Set<NodeId> clearedSffNodeIDs = sfcL2FlowProgrammer.deleteRspFlowsAndClearSFFsIfNoRspExists(rsp.getPathId());
+        Set<NodeId> clearedSffNodeIDs = sfcL2FlowProgrammer.deleteRspFlows(rsp.getPathId());
         for(NodeId sffNodeId : clearedSffNodeIDs){
             setSffInitialized(sffNodeId, false);
         }

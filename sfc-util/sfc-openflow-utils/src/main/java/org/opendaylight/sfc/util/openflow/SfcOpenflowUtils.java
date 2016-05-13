@@ -1260,4 +1260,53 @@ public class SfcOpenflowUtils {
         }
         return false;
     }
+
+    /**
+     * Creates an Instance Identifier (path) for node with specified id
+     *
+     * @param nodeId the ID of the node
+     * @return the {@link InstanceIdentifier}
+     */
+    public static final InstanceIdentifier<Node> createNodePath(final NodeId nodeId) {
+        return InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
+    }
+
+    /**
+     * Creates a table path from a node ID and table ID
+     *
+     * @param nodeId the ID of the node
+     * @param tableId the ID of the table
+     * @return the {@link InstanceIdentifier}
+     */
+    public static final InstanceIdentifier<Table> createTablePath(final NodeId nodeId, final short tableId) {
+        return createNodePath(nodeId).builder()
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(tableId))
+            .build();
+    }
+
+    /**
+     * Creates a path for particular flow, by appending flow-specific information
+     * to table path.
+     *
+     * @param table the table iid
+     * @param flowKey the flow key
+     * @return the {@link InstanceIdentifier}
+     */
+    public static InstanceIdentifier<Flow> createFlowPath(final InstanceIdentifier<Table> table, final FlowKey flowKey) {
+        return table.child(Flow.class, flowKey);
+    }
+
+    /**
+     * Creates a path for particular flow, by appending flow-specific information
+     * to table path.
+     *
+     * @param table the table iid
+     * @param flowId the flow id
+     * @return the {@link InstanceIdentifier}
+     */
+    public static InstanceIdentifier<Flow> createFlowPath(final InstanceIdentifier<Table> table, final FlowId flowId) {
+        return createFlowPath(table, new FlowKey(flowId));
+    }
+
 }

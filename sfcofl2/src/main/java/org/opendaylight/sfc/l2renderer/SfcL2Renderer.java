@@ -8,20 +8,18 @@
 
 package org.opendaylight.sfc.l2renderer;
 
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterImpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
-import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
-
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.yangtools.concepts.Registration;
-
 import java.util.concurrent.ExecutionException;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterImpl;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
+import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
+import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

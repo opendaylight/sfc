@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -19,6 +17,9 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  * Wrapper around DataStore APIs. These methods take care of retries and callbacks
@@ -58,6 +59,7 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeMergeTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
         boolean ret;
+
 
         WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);

@@ -8,9 +8,8 @@
 
 package org.opendaylight.sfc.l2renderer.openflow;
 
-import java.util.concurrent.ExecutionException;
-
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -29,13 +28,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 public interface SfcL2FlowWriterInterface {
 
     //Write flows to MD-SAL datastore
-    public void writeFlowToConfig(final Long rspId, final String sffNodeName, FlowBuilder flow);
+    public void writeFlow(final Long rspId, final String sffNodeName, FlowBuilder flow);
 
     //Remove flows from MD-SAL datastore
-    public void removeFlowFromConfig(final String sffNodeName, FlowKey flowKey, TableKey tableKey);
-
-    //Store the flow details so it is easier to remove later
-    public void storeFlowDetails(final Long rspId, final String sffNodeName, FlowKey flowKey, short tableId);
+    public void removeFlow(final String sffNodeName, FlowKey flowKey, TableKey tableKey);
 
     //Write group to MD-SAL datastore
     public void writeGroupToDataStore(String sffNodeName, GroupBuilder gb, boolean isAdd);
@@ -55,8 +51,17 @@ public interface SfcL2FlowWriterInterface {
      */
     public Set<NodeId> clearSffsIfNoRspExists();
 
-    //Get flow
+    // Get the most recent Flow Builder
     public FlowBuilder getFlowBuilder();
+
+    // Flush any flows that havent been written to the data store yet
+    public void flushFlows();
+
+    // Performs the deletion of any flows that havent been deleted from the data store yet
+    public void deleteFlowSet();
+
+    // Purge any flows that havent been written/deleted to/from the data store yet
+    public void purgeFlows();
 
     // If the impl uses threads, shut it down
     public void shutdown() throws ExecutionException, InterruptedException;

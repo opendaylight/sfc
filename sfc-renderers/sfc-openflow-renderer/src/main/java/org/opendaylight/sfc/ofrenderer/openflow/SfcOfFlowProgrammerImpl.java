@@ -151,9 +151,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public Set<NodeId> deleteRspFlowsAndClearSFFsIfNoRspExists(final Long rspId) {
+    public Set<NodeId> deleteRspFlows(final Long rspId) {
         sfcOfFlowWriter.deleteRspFlows(rspId);
-        return sfcOfFlowWriter.clearSffsIfNoRspExists();
+        Set<NodeId> nodes = sfcOfFlowWriter.clearSffsIfNoRspExists();
+        sfcOfFlowWriter.deleteFlowSet();
+        return nodes;
+    }
+
+    @Override
+    public void flushFlows() {
+        this.sfcOfFlowWriter.flushFlows();
+    }
+
+    @Override
+    public void purgeFlows() {
+        this.sfcOfFlowWriter.purgeFlows();
     }
 
     /**
@@ -197,7 +209,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTableMatchAnyFlow(
                         getTableId(TABLE_INDEX_CLASSIFIER),
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -215,7 +227,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder flowBuilder =
                 configureTableMatchAnyDropFlow(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -230,7 +242,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTableMatchAnyFlow(
                         getTableId(TABLE_INDEX_PATH_MAPPER),
                         getTableId(TABLE_INDEX_PATH_MAPPER_ACL));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -245,7 +257,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTableMatchAnyFlow(
                         getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
                         getTableId(TABLE_INDEX_NEXT_HOP));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -260,7 +272,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTableMatchAnyFlow(
                         getTableId(TABLE_INDEX_NEXT_HOP),
                         getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -274,7 +286,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder flowBuilder =
                 configureTableMatchAnyDropFlow(
                         getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, flowBuilder);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
     /**
@@ -368,13 +380,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTransportIngressFlow(
                         SfcOpenflowUtils.ETHERTYPE_IPV4,
                         SfcOpenflowUtils.IP_PROTOCOL_TCP);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportIngressFlowTcp);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlowTcp);
 
         FlowBuilder transportIngressFlowUdp =
                 configureTransportIngressFlow(
                         SfcOpenflowUtils.ETHERTYPE_IPV4,
                         SfcOpenflowUtils.IP_PROTOCOL_UDP);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportIngressFlowUdp);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlowUdp);
     }
 
     /**
@@ -395,7 +407,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         match.setVlanMatch(vlanBuilder.build());
 
         FlowBuilder transportIngressFlow = configureTransportIngressFlow(match);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportIngressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
     }
 
     /**
@@ -410,7 +422,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportIngressFlow =
                 configureTransportIngressFlow(match, getTableId(TABLE_INDEX_NEXT_HOP));
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportIngressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
     }
 
     /**
@@ -422,7 +434,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureMplsTransportIngressFlow(final String sffNodeName) {
         FlowBuilder transportIngressFlow =
                 configureTransportIngressFlow(SfcOpenflowUtils.ETHERTYPE_MPLS_UCAST);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportIngressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
     }
 
     /**
@@ -541,7 +553,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                         "ingress_Transport_Arp_Flow",
                         match, isb);
 
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, arpTransportIngressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, arpTransportIngressFlow);
     }
 
     @Override
@@ -578,7 +590,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                         "ingress_Transport_Arp_Flow",
                         match, isb);
 
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, sfFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
     }
 
     @Override
@@ -613,7 +625,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                         "ingress_Transport_Arp_Flow",
                         match, isb);
 
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, sfFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
     }
 
 
@@ -644,7 +656,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         } else {
             pathMapperFlow = configurePathMapperFlow(pathId, match, actionList);
         }
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, pathMapperFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, pathMapperFlow);
     }
 
     /**
@@ -670,7 +682,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         } else {
             pathMapperFlow = configurePathMapperFlow(pathId, match, actionList);
         }
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, pathMapperFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, pathMapperFlow);
     }
 
     /**
@@ -811,7 +823,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Set an idle timeout on this flow
         ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
 
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, ingressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, ingressFlow);
     }
 
     //
@@ -848,7 +860,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         }
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowPriority);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, nextHopFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
     /**
@@ -875,7 +887,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         }
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, nextHopFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
     /**
@@ -961,7 +973,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     /**
@@ -1015,7 +1027,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     /**
@@ -1069,7 +1081,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     /**
@@ -1098,7 +1110,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     @Override
@@ -1118,7 +1130,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(match, actionList, port, order);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     /**
@@ -1148,7 +1160,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTransportEgressFlow(
                         match, new ArrayList<Action>(), port,
                         order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     @Override
@@ -1183,7 +1195,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 configureTransportEgressFlow(
                         match, actionList, EMPTY_SWITCH_PORT,
                         order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, transportEgressFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     /**
@@ -1400,7 +1412,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 SfcOpenflowUtils.createFlowBuilder(
                         getTableId(TABLE_INDEX_NEXT_HOP),
                         flowPriority, "nextHop", match, isb);
-        sfcOfFlowWriter.writeFlowToConfig(flowRspId, sffNodeName, nextHopFlow);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
     private static BigInteger getMetadataSFP(long sfpId) {

@@ -150,6 +150,11 @@ public class SfcOfRspProcessorTest {
                 "SFF_0", "00:00:00:00:00:02", "00:00:00:00:00:00", 2, "1", 0, false);
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
                 "SFF_1", "00:00:00:00:00:07", "00:00:00:00:00:05", 3, "1", 0, false);
+
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
+
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
@@ -205,6 +210,10 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, times(1)).configureMplsLastHopTransportEgressFlow(eq("SFF_1"), anyString(),
                 anyString(), anyLong(), anyString(), anyLong());
 
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
+
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
 
     }
@@ -247,6 +256,10 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
 
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
+
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
 
@@ -284,6 +297,10 @@ public class SfcOfRspProcessorTest {
 
         verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "192.168.0.2");
+
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
@@ -340,6 +357,10 @@ public class SfcOfRspProcessorTest {
                 eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
                 eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
+
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
 

@@ -8,9 +8,9 @@
 
 package org.opendaylight.sfc.ofrenderer;
 
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyObject;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import org.mockito.stubbing.Answer;
@@ -111,7 +111,7 @@ public class SfcOfFlowProgrammerTest {
                 flowBuilder = (FlowBuilder) args[2];
                 return null;
             }
-        }).when(this.sfcOfFlowWriter).writeFlowToConfig(anyLong(), anyString(), (FlowBuilder) anyObject());
+        }).when(this.sfcOfFlowWriter).writeFlow(anyLong(), anyString(), (FlowBuilder) anyObject());
 
         // Configure Mockito to return the FlowBuilder stored by writeFlowToConfig()
         // when getFlowBuilder() is called

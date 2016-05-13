@@ -8,9 +8,9 @@
 
 package org.opendaylight.sfc.l2renderer;
 
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyObject;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import org.mockito.stubbing.Answer;
@@ -111,7 +111,7 @@ public class SfcL2FlowProgrammerTest {
                 flowBuilder = (FlowBuilder) args[2];
                 return null;
             }
-        }).when(this.sfcL2FlowWriter).writeFlowToConfig(anyLong(), anyString(), (FlowBuilder) anyObject());
+        }).when(this.sfcL2FlowWriter).writeFlow(anyLong(), anyString(), (FlowBuilder) anyObject());
 
         // Configure Mockito to return the FlowBuilder stored by writeFlowToConfig()
         // when getFlowBuilder() is called

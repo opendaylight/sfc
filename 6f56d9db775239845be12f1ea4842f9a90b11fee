@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_6513c20d",
+        "filename": "features/src/main/features/features.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "please, remove, this feature is not used and it is already in netconf-connector\n\nhttps://git.opendaylight.org/gerrit/gitweb?p\u003dnetconf.git;a\u003dblob;f\u003dfeatures/netconf-connector/src/main/features/features.xml;h\u003d28d4dbcaaa271d7740d6a44b5decb27cca0d4418;hb\u003drefs/heads/master",
+      "range": {
+        "startLine": 27,
+        "startChar": 19,
+        "endLine": 27,
+        "endChar": 44
+      },
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_65e102fe",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/SfcIosXeDataProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "I think we can get MountPointService via config-subsystem (by defining dependency in yang and xml). Similar approach as with DataBroker. In that case this class can be removed.",
+      "range": {
+        "startLine": 29,
+        "startChar": 11,
+        "endLine": 29,
+        "endChar": 28
+      },
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_25a54ab5",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/api/IosXeDataStoreAPI.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "every operation is single transaction here. Would be nice to have control over transaction so caller can do multiple changes in one transaction",
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_45bb1ee5",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/listener/NodeListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "I think you want to listen on node in network-topology. This is NodeListener, right? :)\n\nAnd even the listener could listen on augmentation NetconfNode",
+      "range": {
+        "startLine": 47,
+        "startChar": 24,
+        "endLine": 47,
+        "endChar": 73
+      },
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_c5e72e11",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/listener/NodeListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "you should check capabilities of netconf node. It is not sufficient to know that it is netconf device, but you also needs to check if the device has particular capabilities in order to support functionality which needs to be configured.\n\nOtherwise you will end up with try to configure something to netconf node which even does not have required yang model and functionality.",
+      "range": {
+        "startLine": 84,
+        "startChar": 20,
+        "endLine": 84,
+        "endChar": 39
+      },
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_25beead4",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/renderer/NodeManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-05-16T21:54:38Z",
+      "side": 1,
+      "message": "method only needs TopologyId",
+      "range": {
+        "startLine": 57,
+        "startChar": 27,
+        "endLine": 57,
+        "endChar": 35
+      },
+      "revId": "6f56d9db775239845be12f1ea4842f9a90b11fee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

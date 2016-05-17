@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -27,9 +27,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;

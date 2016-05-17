@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.sfg;
+package org.opendaylight.sfc.ofrenderer.sfg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
-import org.opendaylight.sfc.l2renderer.SfcL2BaseProviderUtils;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.SfcL2AbstractDataListener;
+import org.opendaylight.sfc.ofrenderer.SfcL2BaseProviderUtils;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerInterface;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;

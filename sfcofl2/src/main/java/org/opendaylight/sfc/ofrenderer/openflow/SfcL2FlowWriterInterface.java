@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.openflow;
+package org.opendaylight.sfc.ofrenderer.openflow;
 
 import java.util.concurrent.ExecutionException;
 

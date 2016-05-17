@@ -6,13 +6,13 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.openflow;
+package org.opendaylight.sfc.ofrenderer.openflow;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import org.opendaylight.sfc.l2renderer.sfg.GroupBucketInfo;
+import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 /**

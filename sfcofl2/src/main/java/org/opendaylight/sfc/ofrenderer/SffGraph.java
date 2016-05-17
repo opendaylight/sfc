@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

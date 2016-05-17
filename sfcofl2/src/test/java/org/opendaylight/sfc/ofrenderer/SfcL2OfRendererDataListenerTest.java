@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,10 +19,10 @@ import java.util.Map;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowWriterInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2OfRendererDataListener;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;

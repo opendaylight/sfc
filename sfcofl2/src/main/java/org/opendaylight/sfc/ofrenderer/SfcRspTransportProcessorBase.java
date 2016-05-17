@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerInterface;
 
 public abstract class SfcRspTransportProcessorBase {
     protected static final Logger LOG = LoggerFactory.getLogger(SfcRspTransportProcessorBase.class);

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.openflow;
+package org.opendaylight.sfc.ofrenderer.openflow;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import org.opendaylight.sfc.l2renderer.SfcL2AbstractDataListener;
-import org.opendaylight.sfc.l2renderer.SfcSynchronizer;
+import org.opendaylight.sfc.ofrenderer.SfcL2AbstractDataListener;
+import org.opendaylight.sfc.ofrenderer.SfcSynchronizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

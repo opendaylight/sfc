@@ -6,15 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2OfRendererDataListener;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterImpl;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowWriterInterface;
-import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerInterface;
-import org.opendaylight.sfc.l2renderer.sfg.SfcL2SfgDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2OfRendererDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowWriterImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowWriterInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.sfg.SfcL2SfgDataListener;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;

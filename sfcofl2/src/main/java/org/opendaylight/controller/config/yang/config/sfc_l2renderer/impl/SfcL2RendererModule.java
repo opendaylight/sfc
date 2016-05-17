@@ -8,7 +8,7 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_l2renderer.impl;
 
-import org.opendaylight.sfc.l2renderer.SfcL2Renderer;
+import org.opendaylight.sfc.ofrenderer.SfcL2Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

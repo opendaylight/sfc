@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer;
+package org.opendaylight.sfc.ofrenderer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 
 import org.junit.Test;
-import org.opendaylight.sfc.l2renderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.l2renderer.openflow.SfcL2FlowProgrammerOFimpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcL2FlowProgrammerOFimpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;

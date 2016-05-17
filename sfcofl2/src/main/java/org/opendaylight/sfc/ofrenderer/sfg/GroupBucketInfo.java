@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.sfg;
+package org.opendaylight.sfc.ofrenderer.sfg;
 
 public class GroupBucketInfo {
 

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.l2renderer.openflow;
+package org.opendaylight.sfc.ofrenderer.openflow;
 
 import java.math.BigInteger;
 import java.net.InetAddress;

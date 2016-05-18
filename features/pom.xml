@@ -144,7 +144,7 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>sfcofl2</artifactId>
+        <artifactId>sfc-openflow-renderer</artifactId>
         <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -275,10 +275,10 @@
        <type>xml</type>
        <classifier>config</classifier>
     </dependency>
-    <!-- odl-sfcofl2 config files -->
+    <!-- odl-sfc-openflow-renderer config files -->
     <dependency>
        <groupId>${project.groupId}</groupId>
-       <artifactId>sfcofl2</artifactId>
+       <artifactId>sfc-openflow-renderer</artifactId>
        <version>${project.version}</version>
        <type>xml</type>
        <classifier>config</classifier>

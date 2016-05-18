@@ -16,10 +16,10 @@
 
     <description>This module groups together the RSP renderers.</description>
 
-    <!-- <modules>
+    <modules>
+        <!-- <module>sfc-foo-renderer</module> -->
+        <!-- <module>sfc-bar-renderer</module> -->
         <module>sfc-openflow-renderer</module>
-        <module>sfc-foo-renderer</module>
-        <module>sfc-bar-renderer</module>
-    </modules> -->
+    </modules>
 
 </project>

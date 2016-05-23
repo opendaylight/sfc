@@ -88,8 +88,9 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
             return;
         }
 
-        // Cant set the table offset less than 1
-        if(config.getSfcOfTableOffset() < 1) {
+        // See SfcOfFlowProgrammerImpl.getTableId
+        final int MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL = 2;
+        if(config.getSfcOfTableOffset() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
             LOG.error("Error SfcOfTableOffset value [{}]", config.getSfcOfTableOffset());
             return;
         }

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class SfcOfRendererDataListenerTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRendererDataListenerTest.class);
+    private static final long SLEEP = 100; // milliseconds to sleep after onDataChanged is called.
     private SfcOfRendererDataListener sfcOfRendererDataListener;
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
 
@@ -46,28 +47,31 @@ public class SfcOfRendererDataListenerTest {
     }
 
     @Test
-    public void invalidTableOffset() {
+    public void invalidTableOffset() throws InterruptedException {
         // Negatives cant be tested here since setting Table Offset causes an exception in:
         //    SfcOfRendererConfigBuilder.checkSfcOfTableOffsetRange()
 
         // Table Offset must be greater than 1
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(0, 100);
         this.sfcOfRendererDataListener.onDataChanged(change);
+        Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
 
         // Table Offset must be greater than 1
         change = createSfcOfRendererConfig(1, 100);
         this.sfcOfRendererDataListener.onDataChanged(change);
+        Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
 
         // Table Offset must be less than 246 (255-maxTableOffset())
         change = createSfcOfRendererConfig(250, 100);
         this.sfcOfRendererDataListener.onDataChanged(change);
+        Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
     }
 
     @Test
-    public void invalidTableEgress() {
+    public void invalidTableEgress() throws InterruptedException {
         // Table Egress cannot be negative
         // This cant be tested here since setting Table Egress causes an exception in:
         //    SfcOfRendererConfigBuilder.checkSfcOfAppEgressTableOffsetRange()
@@ -77,6 +81,7 @@ public class SfcOfRendererDataListenerTest {
         for(int i = 100; i < 110; ++i) {
             change = createSfcOfRendererConfig(100, i);
             this.sfcOfRendererDataListener.onDataChanged(change);
+            Thread.sleep(SLEEP); // otherwise the failure is not detected
             verifySettersNotCalled();
         }
     }

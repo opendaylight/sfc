@@ -28,4 +28,7 @@ wget -O  - https://raw.githubusercontent.com/opendaylight/odlparent/master/setti
 
 rm -rf /home/vagrant/sfc; cp -r /sfc /home/vagrant
 cd /home/vagrant/sfc; mvn clean install -nsu -DskipTests;
-cd /home/vagrant/sfc/sfc-karaf/target/assembly; echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg; rm -rf journal snapshots; bin/karaf clean
+cd /home/vagrant/sfc/sfc-karaf/target/assembly;
+sed -i "/^featuresBoot =/ s/$/,odl-sfc-provider,odl-sfc-core,odl-sfc-ui,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs,odl-sfc-netconf/" etc/org.apache.karaf.features.cfg;
+echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg;
+rm -rf journal snapshots; bin/karaf clean

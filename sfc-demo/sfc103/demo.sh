@@ -15,7 +15,7 @@ while [ $inprog -ne 0 ]
 do
     echo "check system is ready"
     inprog=0
-    vagrant ssh odl -c "sfc/sfc-karaf/target/assembly/bin/client -u karaf 'log:display' 2>/dev/null | grep 'Initialized RSP listener'"
+    vagrant ssh odl -c "sfc/sfc-karaf/target/assembly/bin/client -u karaf 'log:display' 2>/dev/null | grep 'Opendaylight Service Function Chaining Initialized'"
     inprog+=$?
     vagrant ssh classifier1  -c "sudo ovs-vsctl show"
     inprog+=$?

@@ -284,7 +284,7 @@ public class SfcScfOfProcessor {
 
                 // Action
                 Actions actions = ace.getActions();
-                if (ruleName == null) {
+                if (actions == null) {
                     LOG.error("createdServiceFunctionClassifier: action is null\n");
                     continue;
                 }

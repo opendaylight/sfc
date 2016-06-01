@@ -1,0 +1,344 @@
+module service-function-chain-verification {
+
+  yang-version 1;
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-sfcv";
+
+  prefix sfc-sfcv;
+
+  import yang-ext { prefix ext; }
+  import ietf-yang-types { prefix yang; }
+
+  import service-function { prefix sfc-sf; }
+  import service-function-type { prefix sfc-sft; }
+  import service-function-forwarder { prefix sfc-sff; }
+  import service-function-chain { prefix sfc-sfc; }
+  import service-function-path { prefix sfc-sfp; }
+  import rendered-service-path { prefix sfc-rsp; }
+  import service-statistics { prefix sfc-ss; }
+
+  import network-topology { prefix topo; }
+
+  organization "Cisco Systems, Inc.";
+  contact
+    "Srihari Raghavan <srihari@cisco.com>";
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing service function chain verification related
+     configuration parameters at the north-bound side towards
+     the controller.";
+
+  revision 2015-07-17 {
+    description
+    "";
+  }
+
+  identity sfcv-algorithm-identity {
+    description
+      "Base identity for SFCV algorithms";
+  }
+
+  typedef sfcv-algorithm-type {
+    type identityref {
+      base sfcv-algorithm-identity;
+    }
+    description
+      "SFCV algorithm type.";
+  }
+
+  identity poly-alg {
+    base "sfcv-algorithm-identity";
+    description
+      "Polynomial algorithm based service function chain
+       verification via in-band OAM.";
+  }
+
+  grouping sfcv-algorithm-ext {
+
+    leaf sfcv-algorithm {
+      type sfcv-algorithm-type;
+      description "Desired SFCV algorithm for this chain";
+    }
+
+    leaf sfcv-num-profiles {
+      type uint32;
+      description "Desired SFCV number of profiles per service node.";
+    }
+
+    leaf sfcv-profiles-validator {
+      type uint32;
+      description
+        "Desired SFCV criteria (number of packets currently)
+         based on which profile renew will be done.";
+    }
+
+    choice algorithm-parameters {
+      case poly-params {
+        when "sfcv-algorithm = poly-alg";
+        container poly-parameters {
+          config false;
+
+          leaf start-index {
+            type uint32 {
+              range "0 .. 15";
+            }
+            description
+              "List of service profiles sent with the index starting
+               at this location for handling notifications based
+               renew/refresh.  This will be zero-based when
+               sending initial set of profiles.";
+          }
+
+          leaf num-poly-parameter {
+            type uint32;
+            description "Number of poly parameters for a node.";
+          }
+
+          leaf profiles-validator {
+            type uint32;
+            description
+              "Copy of sfcv-profiles-validator for computational uses.";
+          }
+
+          leaf refresh-node {
+            type string;
+            description
+              "Node that sent refresh notification and needs an
+               unicast response reply back to the node.";
+          }
+
+          leaf base-num-profiles {
+            type uint32;
+            description
+              "Initial total number of configured profiles for use
+               in computations.";
+          }
+
+          list poly-parameter {
+            key "pindex";
+            description
+              "List of multiple algorithm parameters ordered
+               by profile index for a node to use during SCV refresh
+               and renewal.";
+            ordered-by system;
+
+            leaf pindex {
+              type uint32;
+              description
+                "Positional index of the profile being referred to.";
+            }
+
+            leaf prime {
+              type int64;
+              description
+                "Prime number value in the profile being referred to.";
+            }
+
+            list indices {
+              description
+                "Should use leaf-list, see bug 2062. List of ordered
+                 indices in the profile being referred to.";
+              ordered-by user;
+              leaf index {
+                type uint16;
+              }
+            }
+
+            list coeffs {
+              ordered-by user;
+              leaf coeff {
+                type int64;
+              }
+              description
+                "List of coefficients in the profile being referred to.";
+            }
+            leaf mask {
+              type uint16;
+              description "Mask value in the profile being referred to.";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping sfcv-hop-secret {
+    description
+      "Secret share and other parameters of each hop for SFC verification";
+    choice algorithm-type {
+      case poly {
+        when "../../sfcv-algorithm = poly-alg";
+        container poly-secrets {
+          leaf num-poly-secret {
+            type uint32;
+            description "Number of secrets and other parameters for a node.";
+          }
+          list poly-secret {
+            key "pindex";
+            description
+              "List of parameters ordered by the positional profile index
+               for a node to use during initial profile generation as well
+               as for SCV profile refresh and renewal.";
+            ordered-by system;
+
+            leaf pindex {
+              type uint32;
+              description
+                "Positional index of the profile being referred to.";
+            }
+            leaf secret-share {
+              type int64;
+              description
+                "Per-hop secret share of the profile being referred to.";
+            }
+            leaf index {
+              type uint16;
+              description
+                "Internal index of the profile being referred to.";
+            }
+            leaf secret {
+              type int64;
+              description
+                "The overall secret of the profile being referred to.
+                 Meant for the SFCV verifier node.";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping sfcv-statistics-group{
+    container verification-statistics {
+      leaf packets-verified {
+        type yang:zero-based-counter64;
+      }
+      leaf packets-invalid {
+        type yang:zero-based-counter64;
+      }
+    }
+  }
+
+  grouping sfcv-ioam-group {
+    description "Node details for NETCONF based connection.";
+    leaf netconf-node {
+      type topo:node-ref;
+    }
+  }
+
+  augment "/sfc-sf:service-functions"
+        + "/sfc-sf:service-function" {
+    ext:augment-identifier "sf-entry-sfcv-augmentation";
+    leaf-list sfcv-algorithms {
+      description "SFCV algorithms supported by SF";
+      type sfcv-algorithm-type;
+    }
+  }
+
+  augment "/sfc-sfc:service-function-chains"
+        + "/sfc-sfc:service-function-chain" {
+    ext:augment-identifier "sfc-sfcv-augmentation";
+    uses sfcv-algorithm-ext;
+  }
+
+  augment "/sfc-sfp:service-function-paths"
+        + "/sfc-sfp:service-function-path" {
+    ext:augment-identifier "sfp-sfcv-augmentation";
+    uses sfcv-algorithm-ext;
+  }
+
+  augment "/sfc-rsp:rendered-service-paths"
+        + "/sfc-rsp:rendered-service-path" {
+    ext:augment-identifier "rsp-sfcv-augmentation";
+    uses sfcv-algorithm-ext;
+  }
+
+  augment "/sfc-rsp:rendered-service-paths"
+        + "/sfc-rsp:rendered-service-path"
+        + "/sfc-rsp:rendered-service-path-hop" {
+    ext:augment-identifier "rsp-sfcv-hop-augmentation";
+    uses sfcv-hop-secret;
+  }
+
+  augment "/sfc-sf:service-functions/sfc-sf:service-function" {
+    ext:augment-identifier "sf-sfcv-ioam-augmentation";
+    uses sfcv-ioam-group;
+  }
+
+  augment "/sfc-sff:service-function-forwarders"
+        + "/sfc-sff:service-function-forwarder" {
+    ext:augment-identifier "sff-sfcv-ioam-augmentation";
+    uses sfcv-ioam-group;
+  }
+
+
+  rpc enable-sfc-verify-rendered-path {
+    description
+      "Enable and Configure service function chain verification for a rendered service path.";
+    input {
+      leaf sfc-verify-rsp-name {
+        type string;
+        description
+          "Name of the Rendered Service Path to enable verification on. This should be
+           an existing rendered service path such as one created from
+           rendered-service-path:create-rendered-path RPC.";
+      }
+
+      leaf sfc-verify-netconf-node {
+        type topo:node-ref;
+        description
+          "Netconf node id of one of the nodes of the RSP which will act as the decap node for the
+           in-band OAM based verification of the service function chain represented by the RSP. If
+           no value is passed in, the exit node of the SFC would be taken as the decap node.";
+      }
+
+      leaf sfc-verify-num-profiles {
+        type uint32;
+        default 3;
+        description
+          "Desired number service function chain verification of profiles per service node.";
+      }
+
+      leaf sfc-verify-profiles-validator {
+        type uint32;
+        default 1000;
+        description
+          "Desired service function chain verification criteria (number of packets currently)
+           based on which profile renew will be done.";
+      }
+    }
+
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if SFC verification of the chosen Rendered Service Path is enabled, otherwise
+           false";
+      }
+    }
+  }
+
+  rpc disable-sfc-verify-rendered-path {
+    description
+      "Disable service function chain verification for a rendered service path.";
+    input {
+      leaf sfc-verify-rsp-name {
+        type string;
+        description
+          "Name of the Rendered Service Path to disable verification on. This should be
+           an existing rendered service path such as one created from
+           rendered-service-path:create-rendered-path RPC.";
+      }
+    }
+
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if SFC verification of the chosen Rendered Service Path is disabled, otherwise
+           false";
+      }
+    }
+  }
+}

@@ -162,6 +162,11 @@
         <artifactId>sfc-sb-rest</artifactId>
         <version>${project.version}</version>
     </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-verify</artifactId>
+        <version>${project.version}</version>
+    </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-test-consumer</artifactId>
@@ -308,6 +313,14 @@
     <dependency>
        <groupId>${project.groupId}</groupId>
        <artifactId>sfc-sb-rest</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-verify config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-verify</artifactId>
        <version>${project.version}</version>
        <type>xml</type>
        <classifier>config</classifier>

@@ -1,0 +1,264 @@
+module ioam-scv {
+
+  yang-version 1;
+
+  namespace "urn:cisco:params:xml:ns:yang:ioam-scv";
+
+  prefix ioam-scv;
+
+  organization "Cisco Systems, Inc.";
+  contact
+    "Srihari Raghavan <srihari@cisco.com>
+     Shwetha Bhandari <shwethab@cisco.com>";
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing in-band OAM based proof of transit configuration
+     parameters.  (https://github.com/ciscodevnet/ioam).
+
+     The model is customized for service chain verification
+     and is targetted for south-bound deployment nodes.";
+
+  revision 2015-12-21;
+
+  grouping attachment-point {
+    description
+      "Reusable group of all possible attachment point types";
+    choice attachment-point-type {
+      description
+        "Provides a choice between access list
+         attachment point types";
+      case bridge {
+        leaf bridge {
+          type string;
+          description
+            "OVS bridge as an attachment point";
+        }
+      }
+      case interface {
+        leaf interface {
+          type string;
+          description
+            "interface name as attachment point";
+        }
+      }
+    }
+  }
+
+  container scv-profiles {
+    description "A group of service chain verification profiles.";
+    leaf service-chain-path-name {
+      type string;
+      description
+        "The service chain path name associated with one or more service
+         profiles for this node.  This needs to be reflected back in
+         profile renewal or refresh notifications from server.";
+    }
+
+    leaf scv-profile-start-index {
+      type uint32 {
+        range "0 .. 15";
+      }
+      description
+        "List of service profiles sent by controller with the index
+         starting at this location.  Currently restricted from
+         0..15, as PoT options can only signal 0..15.
+         If the index starts at 15 and the number of profiles
+         requested is more than one, then the indices circle
+         through to the next 0..15 indices as in a circular buffer.";
+    }
+
+    leaf scv-profile-num-profiles {
+      type uint32 {
+        range "1 .. 16";
+      }
+      description
+        "Number of service profiles sent by controller. This is to aid
+         bulk refresh.  Currently restricted to 16 as
+         PoT header options can only signal 16.";
+    }
+
+    list scv-profile {
+      key "service-profile-index";
+      ordered-by user;
+      description
+        "Set of service chain validation profiles that group parameters
+         required to classify and compute service chain validation
+         metadata at a service node";
+
+      leaf service-profile-index {
+        type uint32 {
+          range "0 .. 15";
+        }
+        mandatory true;
+        description
+          "List of service profiles sent by controller with the index
+           starting at this location.  Currently restricted from 0..15,
+           as PoT options can only signal 0..15. The list of service
+           profiles can have different indices but same profile
+           name to signal bulk service profiles for the same node.";
+      }
+
+      leaf service-profile-name {
+        type string;
+        mandatory true;
+        description
+          "Unique identifier for each service chain validation profile";
+      }
+
+      leaf acl-name {
+        type string;
+        description
+          "The ACL name associated to classify and apply this profile";
+      }
+
+      leaf prime-number {
+        type uint64;
+        mandatory true;
+        description
+          "Prime number used for module math computation";
+      }
+
+      leaf secret_share {
+        type uint64;
+        mandatory true;
+        description
+          "Share of the secret of polynomial 1 used in computation";
+      }
+
+      leaf service-count {
+        type uint16;
+        mandatory true;
+        description
+          "Number of services in the chain participating in validation";
+      }
+
+      list coefficients {
+        key "coefficient";
+        ordered-by user;
+        description
+          "Coefficients of the 2nd polynomial used in computation of
+           service chain validation metadata";
+        leaf coefficient {
+          type uint64;
+        }
+      }
+
+      list service-chain-indices {
+        key "index";
+        ordered-by user;
+        description
+          "Ordered list of service chain indices used in compulation
+           of service chain validation metadata";
+        leaf index {
+          type uint16;
+        }
+      }
+
+      leaf my-service-index {
+        type uint16;
+        description
+          "Index of the service node from the service-chain-indices
+           list that is computing the metadata";
+      }
+
+      leaf validator {
+        type boolean;
+        default "false";
+        description
+          "Indicates if the service node applying this profile also
+           services as a verifier of service chain";
+      }
+
+      leaf validator-key {
+        type uint64;
+        mandatory false;
+        description
+          "Secret key for validating the service chain, constant
+           of polynomial 1";
+      }
+
+      leaf validity {
+        type uint64;
+        mandatory true;
+        description
+          "Service profile validity (currently TTL) to verify whether
+           a profile renewal is required or not";
+      }
+
+      leaf mark {
+        type uint16;
+        default 7;
+        description
+          "Mark value";
+      }
+
+      leaf bitmask {
+        type uint64;
+        default 4294967295;
+        description
+          "Number of bits as mask used in random value generation.
+           32-bits of mask is default.";
+      }
+
+    /*** list: end ***/
+    }
+  /*** Container: end ***/
+  }
+
+  notification scv-profile-renew {
+    description
+      "This is a notification to request for renew and hence new
+       profiles generation at the controller.";
+    leaf service-chain-path-name {
+      type string;
+      description
+        "The service chain path name associated with one or more
+         service profiles for this node.";
+    }
+
+    leaf scv-profile-renew-start-index {
+      type uint8;
+      mandatory true;
+      description
+        "List of service profiles requested by this node with the
+         index starting at this location";
+    }
+
+    leaf scv-profile-renew-num-profiles {
+      type uint8;
+      mandatory true;
+      description
+        "Number of service profiles requested by node.";
+    }
+  }
+
+  notification scv-profile-refresh {
+    description
+      "This is a notification to request for refresh without new
+       profile generation at the controller.";
+    leaf service-chain-path-name {
+      type string;
+      description
+        "The service chain path name associated with one or more
+         service profiles for this node.";
+    }
+
+    leaf scv-profile-refresh-start-index {
+      type uint8;
+      mandatory true;
+      description
+        "List of service profiles requested by this node with the
+         index starting at this location";
+    }
+
+    leaf scv-profile-refresh-num-profiles {
+      type uint8;
+      mandatory true;
+      description
+        "Number of service profiles requested by node.";
+    }
+  }
+
+/*** module: end ***/
+}

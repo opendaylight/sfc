@@ -8,7 +8,7 @@ __email__ = "brady.allen.johnson@ericsson.com"
 __status__ = "demo code"
 
 #
-# This script is intended to only work with sfcofl2_mininet.py
+# This script is intended to only work with sfc-openflow-renderer_mininet.py
 #
 # This script will read the SFF flows and populate the ToR switch accordingly
 # It will look for these sorts of flows, and populate the ToR with the necessary info:
@@ -134,7 +134,7 @@ def get_gw_egress_vlans(gw_name):
     return gw_vlan_list
 
 def get_tor_port(sff_name):
-    # When sfcofl2_mininet.py starts, it stores the output of the mininet "net" command here: /tmp/mininet_net.txt
+    # When sfc-openflow-renderer_mininet.py starts, it stores the output of the mininet "net" command here: /tmp/mininet_net.txt
     # Looking for the following line to know the tor1 switch ports
     #    tor1 lo:  tor1-eth1:sff1-eth2 tor1-eth2:sff2-eth2 tor1-eth3:gw1-eth1 tor1-eth4:gw2-eth1
 

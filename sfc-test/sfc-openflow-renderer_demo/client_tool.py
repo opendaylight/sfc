@@ -8,7 +8,7 @@ __email__ = "brady.allen.johnson@ericsson.com"
 __status__ = "demo code"
 
 #
-# This script is intended to only work with sfcofl2_mininet.py
+# This script is intended to only work with sfc-openflow-renderer_mininet.py
 #
 # This script will do the following for clients:
 #    add a client to RSP mapping in GW1
@@ -265,7 +265,7 @@ def _get_client_mappings(context):
         client_info.vlan = vlan
 
 def _get_gw2_servers():
-    # When sfcofl2_mininet.py starts, it stores the output of the mininet "dump" command here: /tmp/mininet_dump.txt
+    # When sfc-openflow-renderer_mininet.py starts, it stores the output of the mininet "dump" command here: /tmp/mininet_dump.txt
     # Return a list of all servers
     # Looking for the following lines:
     #     <Host server1: server1-eth0:10.10.0.1 pid=15553> 
@@ -284,7 +284,7 @@ def _get_gw2_servers():
     return server_list
 
 def _get_gw_port(gw_name, conn_name):
-    # When sfcofl2_mininet.py starts, it stores the output of the mininet "net" command here: /tmp/mininet_net.txt
+    # When sfc-openflow-renderer_mininet.py starts, it stores the output of the mininet "net" command here: /tmp/mininet_net.txt
     # Looking for one of the following lines to know the gw switch ports
     #    gw1 lo:  gw1-eth1:tor1-eth3 gw1-eth2:gw2-eth2 gw1-eth3:client1-eth0
     #    gw2 lo:  gw2-eth1:tor1-eth4 gw2-eth2:gw1-eth2 gw2-eth3:server1-eth0 gw2-eth4:server2-eth0

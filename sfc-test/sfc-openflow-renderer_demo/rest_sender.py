@@ -215,7 +215,7 @@ def get_cmd_line(context):
             context.batch_sff      =  True
             context.batch_sfp      =  True
             context.batch_rsp      =  True
-            # For now, ACL is no longer used by SFCOFL2
+            # For now, ACL is no longer used by sfc-openflow-renderer
             #context.batch_acl      =  True
         else:
             context.batch_sf       =  args.send_sf
@@ -333,7 +333,7 @@ def batch(context):
         send_rest(context, GET, context.rest_url_sfc)
         send_rest(context, GET, context.rest_url_sfp)
         send_rest(context, GET, context.rest_url_rsp)
-        # For now, ACL is no longer used by SFCOFL2
+        # For now, ACL is no longer used by sfc-openflow-renderer
         #send_rest(context, GET, context.rest_url_acl)
     elif context.batch_nodes:
         send_rest(context, GET, context.rest_url_nodes)
@@ -378,7 +378,7 @@ def CLI(context):
             send_rest(context, PUT, context.rest_url_sfp, context.rest_path_sfp)
             time.sleep(1);
             send_rest(context, POST, context.rest_url_rsp_rpc, context.rest_path_rsp)
-            # For now, ACL is no longer used by SFCOFL2
+            # For now, ACL is no longer used by sfc-openflow-renderer
             # Need to wait until the SFC creates the RSP internally before sending the ACL
             #print 'Sleeping 2 seconds while RSP being created'
             #time.sleep(2);

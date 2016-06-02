@@ -2,8 +2,8 @@ Test MPLS:
 
 - Run ODL controller
 - Run mininet:
-    cd path/to/sfc/sfc-test/sfcofl2
-    sudo python sfcofl2_mininet.py -I $CONTROLLER_IP -L --demo-mode mpls
+    cd path/to/sfc/sfc-test/sfc-openflow-renderer_demo
+    sudo python sfc-openflow-renderer_mininet.py -I $CONTROLLER_IP -L --demo-mode mpls
 - Config ODL and send flows:
     python rest_sender.py --prefix path/to/mpls-config
 -Check flows
@@ -16,8 +16,8 @@ Test VLAN:
 
 - Run ODL controller
 - Run mininet:
-    cd path/to/sfc/sfc-test/sfcofl2
-    sudo python sfcofl2_mininet.py -I $CONTROLLER_IP -L --demo-mode vlan
+    cd path/to/sfc/sfc-test/sfc-openflow-renderer_demo
+    sudo python sfc-openflow-renderer_mininet.py -I $CONTROLLER_IP -L --demo-mode vlan
 - Config ODL and send flows:
     python rest_sender.py --prefix path/to/vlan-config
 -Check flows

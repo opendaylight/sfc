@@ -1,0 +1,310 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_3a1ac26e",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_84045516",
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_5a1df665",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_8968eef6",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 22
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_fa0faa2c",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_a9185285",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 34
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9a266eb9",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_0974decd",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 50
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_7a2b9a82",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_69811a8f",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 46
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_7a79da92",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Due to the nature of SFC verification using in-band OAM, the profiles might get outdated on a high speed link  due to more packets using the profile.  So, potentially large indexes are possible.",
+      "parentUuid": "da5c1566_09adfe31",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 85,
+        "endChar": 13
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_fa64cae6",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_a931720d",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_baaa52d2",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_69aaba1a",
+      "range": {
+        "startLine": 126,
+        "startChar": 17,
+        "endLine": 126,
+        "endChar": 23
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_faab2ad4",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_c9bb0671",
+      "range": {
+        "startLine": 140,
+        "startChar": 17,
+        "endLine": 140,
+        "endChar": 51
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1aaffee4",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_89362e02",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_5ab9762d",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_e93b6ae9",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_3ab6423e",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_e9440a76",
+      "range": {
+        "startLine": 234,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 31
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ba81b24c",
+        "filename": "sfc-verify/src/main/yang/sfc-verify-impl.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-07T03:45:44Z",
+      "side": 1,
+      "message": "Can you please clarify? both config and mdsal are being used in the yang file.  Please correct if am wrong.",
+      "parentUuid": "da5c1566_c9402659",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 80
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

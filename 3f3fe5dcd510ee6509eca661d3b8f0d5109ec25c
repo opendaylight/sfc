@@ -140,6 +140,30 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_aa4b1758",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "That is right.  To start with, planning to maintain 16 concurrent profiles.  The number is also chosen to aid lesser number of bits needed to convey the profile in use in packets.  This could be increased to a large number in future to aid very high speed links and hence the uint32.",
+      "parentUuid": "da5c1566_8f90e5ed",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 85,
+        "endChar": 13
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_fa64cae6",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -296,6 +320,30 @@
       "side": 1,
       "message": "Can you please clarify? both config and mdsal are being used in the yang file.  Please correct if am wrong.",
       "parentUuid": "da5c1566_c9402659",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 80
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_8a48d35c",
+        "filename": "sfc-verify/src/main/yang/sfc-verify-impl.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "No worries at all! Thanks for your time.",
+      "parentUuid": "da5c1566_6ff8f17c",
       "range": {
         "startLine": 8,
         "startChar": 0,

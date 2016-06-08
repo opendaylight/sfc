@@ -1,0 +1,484 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_141d0910",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_788d617b",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_741a8518",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_f8f851e7",
+      "range": {
+        "startLine": 41,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 17
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_541781ed",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_78e4413b",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_b4d37d37",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_b8bff9cf",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_94d8f954",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "No Exception is being thrown in the code in-between and hence the try...catch block is being removed.  Currently checking only for no ACL and logging a message, as there is a possibility of not having ACL here.",
+      "parentUuid": "da5c1566_5ec4c591",
+      "range": {
+        "startLine": 353,
+        "startChar": 0,
+        "endLine": 353,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_f4ddf543",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "No Exception is being thrown in the code in-between and hence the try...catch block is being removed.  Currently checking only for no ACL and logging a message, as there is a possibility of not having ACL here.",
+      "parentUuid": "da5c1566_3ec11181",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_14e4e90b",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyNodeListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Working on this.",
+      "parentUuid": "da5c1566_d5443976",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_74f1e5cc",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyRSPDataListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Working on this.",
+      "parentUuid": "da5c1566_38d809ef",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 56
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_d4e27102",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_db88e724",
+      "range": {
+        "startLine": 26,
+        "startChar": 47,
+        "endLine": 26,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_34e76d14",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_9b766f3d",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 9
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_54ee61ed",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNodeManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Working on this.",
+      "parentUuid": "da5c1566_75c1ede3",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 70
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_b4ba5ddf",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Working on this.",
+      "parentUuid": "da5c1566_9b778f02",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_94bf59d0",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_3b22c3b9",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 86
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_74c8c574",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_fb17ab4f",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 58
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_54c5c159",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationPolyAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_7ebb890e",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 227,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_b4a1bdab",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationPolyClassAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_9e55bdc8",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_94a639c0",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_fe5dd9ea",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_b4889d23",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_5e72057d",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 66
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_549ca169",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_de0575c3",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_749f2560",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_be0a41d0",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 66
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_14922957",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-06-08T05:24:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_1e108d00",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 67
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -4,17 +4,20 @@ module service-function-mapping {
 
   prefix sfc-sf-map;
 
-  import sfc-common {prefix sfc-common;}
-  import service-function-type {prefix sfc-sft;}
-  import service-locator {prefix sfc-sl;}
-  import service-function {prefix sfc-sf;}
-  import service-function-forwarder {prefix sfc-sff;}
+  import sfc-common {
+    prefix sfc-common;
+    revision-date 2015-10-17;
+  }
+  import service-locator {
+    prefix sfc-sl;
+    revision-date 2014-07-01;
+  }
 
   organization "Ericsson Inc.";
   contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
 
   description
-    "The defenitions herein allow for an SF and SFF to easily be
+    "The definitions herein allow for an SF and SFF to easily be
      identified given the Service Locator transport type and the
      SF type. These entities will be populated when the SFF and
      SFs are populated, and cannot be configured via RESTConf.
@@ -60,10 +63,10 @@ module service-function-mapping {
           "the name of the locator transport";
       }
 
-      list service-function-types {
+      list service-function-type-mapping {
         key "sf-type";
         leaf sf-type {
-          type sfc-common:sft-type;
+          type sfc-common:sft-type-name;
           description
               "The service function type";
         }

@@ -8,12 +8,6 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
-import static junit.framework.Assert.assertNull;
-import static junit.framework.TestCase.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,15 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.node.attributes.ConnectionInfoBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -54,6 +40,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.assertNull;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
  * this class contains junit tests for SfcOvsDataStoreAPI class
@@ -338,10 +330,10 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
      */
 
     // build ovsdb node augmentation
-    private OvsdbNodeAugmentation createOvsdbNodeAugmentation() {
+    public static OvsdbNodeAugmentation createOvsdbNodeAugmentation(String ipv4Address) {
         OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
         ConnectionInfoBuilder connectionInfoBuilder = new ConnectionInfoBuilder();
-        connectionInfoBuilder.setRemoteIp(new IpAddress(new Ipv4Address(testIpv4)));
+        connectionInfoBuilder.setRemoteIp(new IpAddress(new Ipv4Address(ipv4Address)));
         ovsdbNodeAugmentationBuilder.setDbVersion("DbVersion_")
             .setOvsVersion("OvsVersion_")
             .setConnectionInfo(connectionInfoBuilder.build());
@@ -351,7 +343,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     // create node using augmentation
     private Node createNode() {
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.addAugmentation(OvsdbNodeAugmentation.class, createOvsdbNodeAugmentation());
+        nodeBuilder.addAugmentation(OvsdbNodeAugmentation.class, createOvsdbNodeAugmentation(testIpv4));
         return nodeBuilder.build();
     }
 

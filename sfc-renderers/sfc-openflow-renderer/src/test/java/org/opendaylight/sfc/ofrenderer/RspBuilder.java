@@ -8,18 +8,7 @@
 
 package org.opendaylight.sfc.ofrenderer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
@@ -64,10 +53,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1Builder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPortBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RspBuilder {
 
@@ -103,13 +95,13 @@ public class RspBuilder {
         this.sfcUtilsTestMock = sfcUtilsTestMock;
     }
 
-    public RenderedServicePath createRspFromSfTypes(List<SftType> sfTypes,
+    public RenderedServicePath createRspFromSfTypes(List<SftTypeName> sfTypes,
             Class<? extends SlTransportType> transportType) {
 
         List<ServiceFunction> sfList = new ArrayList<ServiceFunction>();
         List<ServiceFunctionForwarder> sffList = new ArrayList<ServiceFunctionForwarder>();
 
-        for (SftType sfType : sfTypes) {
+        for (SftTypeName sfType : sfTypes) {
             SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(SF_NAME_INDEX++));
             SffName sffName = new SffName(SFF_NAME_PREFIX + String.valueOf(SFF_NAME_INDEX++));
 
@@ -125,11 +117,11 @@ public class RspBuilder {
         return rsp;
     }
 
-    public ServiceFunctionChain createServiceFunctionChain(List<SftType> sfTypes) {
+    public ServiceFunctionChain createServiceFunctionChain(List<SftTypeName> sfTypes) {
 
         short order = 0;
         List<SfcServiceFunction> sfcSfs = new ArrayList<SfcServiceFunction>();
-        for (SftType sfType : sfTypes) {
+        for (SftTypeName sfType : sfTypes) {
             String name = sfType.getValue() + "Abstract";
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             sfcSfBuilder.setKey(new SfcServiceFunctionKey(name));
@@ -208,7 +200,7 @@ public class RspBuilder {
         return sff;
     }
 
-    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftType sfType,
+    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftTypeName sfType,
             Class<? extends SlTransportType> transportType) {
 
         // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
@@ -383,7 +375,7 @@ public class RspBuilder {
         return locatorBuilder.build();
     }
 
-    private ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+    private ServiceFunction buildServiceFunction(SfName name, SftTypeName type, IpAddress ipMgmtAddress,
             SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
@@ -392,7 +384,7 @@ public class RspBuilder {
         return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
     }
 
-    private ServiceFunction buildServiceFunction(SfName name, SftType type, IpAddress ipMgmtAddress,
+    private ServiceFunction buildServiceFunction(SfName name, SftTypeName type, IpAddress ipMgmtAddress,
             List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();

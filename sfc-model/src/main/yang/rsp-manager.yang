@@ -10,8 +10,8 @@ module rendered-service-path-manager {
     }
 
     import ietf-inet-types {
-        prefix inet;
-        revision-date 2010-09-24;
+      prefix inet;
+      revision-date 2013-07-15;
     }
 
     import service-function {
@@ -92,7 +92,7 @@ module rendered-service-path-manager {
             }
             list rendered-service-path {
                 description
-                    "List of PARTIAL rendered sevice chains. Each RSP contains
+                    "List of PARTIAL rendered service chains. Each RSP contains
                     another list of hops chosen for specific renderer to configure";
                 key rsp-name;
                 leaf rsp-name {
@@ -103,7 +103,7 @@ module rendered-service-path-manager {
                 }
                 list hop-to-configure {
                     description
-                        "Contains all necesarry data to identify service function
+                        "Contains all necessary data to identify service function
                         forwarder and other SFC entities, their place in rendered
                         service path and info about what to do in next hop";
                     key hop-number;

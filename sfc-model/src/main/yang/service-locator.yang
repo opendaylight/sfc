@@ -6,12 +6,12 @@ module service-locator {
 
   import ietf-inet-types {
       prefix inet;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
   import ietf-yang-types {
       prefix yang;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -47,7 +47,7 @@ module service-locator {
 
   revision 2014-07-01 {
     description
-    "Changes based on Opendaylight Testing.";
+      "Changes based on Opendaylight Testing.";
     reference "https://tools.ietf.org/html/draft-penno-sfc-yang";
   }
 

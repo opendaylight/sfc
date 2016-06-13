@@ -4,9 +4,6 @@ module service-function-group-algorithm {
 
   prefix sfc-sfg-alg;
 
-  import ietf-inet-types { prefix inet; }
-  import ietf-yang-types { prefix yang; }
-
   organization "Contextream, Inc.";
   contact "Kfir Yeshayahu <kfir.yeshayahu@contextream.com>";
 

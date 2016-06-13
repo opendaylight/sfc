@@ -28,7 +28,7 @@ import org.opendaylight.sfc.tacker.dto.TackerResponse;
 import org.opendaylight.sfc.tacker.util.DateSerializer;
 import org.opendaylight.sfc.tacker.util.DateUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
@@ -145,7 +145,7 @@ public class TackerManagerTest extends JerseyTest {
     @Test
     public void createSfTest() {
         // create new vnf
-        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftType("firewall")).build();
+        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftTypeName("firewall")).build();
         boolean result = tackerManager.createSf(sfType);
         LOG.debug("Create vnf passed: " + result);
         Assert.assertTrue(result);
@@ -173,7 +173,7 @@ public class TackerManagerTest extends JerseyTest {
                 .build())
             .build();
 
-        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftType("firewall")).build();
+        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftTypeName("firewall")).build();
         boolean result = tackerManager.createSf(sfType);
         LOG.debug("createSfTestAuthFail passed: " + !result);
         Assert.assertFalse(result);
@@ -181,7 +181,7 @@ public class TackerManagerTest extends JerseyTest {
 
     @Test
     public void createSfTestEmptyNameFail() {
-        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftType("")).build();
+        ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftTypeName("")).build();
         boolean result = tackerManager.createSf(sfType);
         LOG.debug("createSfTestEmptyNameFail passed: " + !result);
         Assert.assertFalse(result);
@@ -193,7 +193,7 @@ public class TackerManagerTest extends JerseyTest {
         vnfs.add("Dpi");
 
         ServiceFunction sf =
-                new ServiceFunctionBuilder().setName(new SfName("Dpi")).setType(new SftType("firewall")).build();
+                new ServiceFunctionBuilder().setName(new SfName("Dpi")).setType(new SftTypeName("firewall")).build();
         boolean result = tackerManager.deleteSf(sf);
         Assert.assertTrue(result);
     }
@@ -201,7 +201,7 @@ public class TackerManagerTest extends JerseyTest {
     @Test
     public void deleteSfTestNotFound() {
         ServiceFunction sf =
-                new ServiceFunctionBuilder().setName(new SfName("Nope")).setType(new SftType("nope")).build();
+                new ServiceFunctionBuilder().setName(new SfName("Nope")).setType(new SftTypeName("nope")).build();
         boolean result = tackerManager.deleteSf(sf);
         Assert.assertFalse(result);
     }
@@ -209,9 +209,9 @@ public class TackerManagerTest extends JerseyTest {
     @Test
     public void deleteSfTestBadRequest() {
         ServiceFunction sf =
-                new ServiceFunctionBuilder().setName(new SfName(" ")).setType(new SftType("error")).build();
+                new ServiceFunctionBuilder().setName(new SfName(" ")).setType(new SftTypeName("error")).build();
         Assert.assertFalse(tackerManager.deleteSf(sf));
-        sf = new ServiceFunctionBuilder().setName(new SfName("")).setType(new SftType("error")).build();
+        sf = new ServiceFunctionBuilder().setName(new SfName("")).setType(new SftTypeName("error")).build();
         Assert.assertFalse(tackerManager.deleteSf(sf));
     }
 

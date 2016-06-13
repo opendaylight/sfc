@@ -34,7 +34,7 @@ module sfc-common {
   }
 
   // typedefs for Service Function Type
-  typedef sft-type {
+  typedef sft-type-name {
       type string;
       description "Service function type name";
   }

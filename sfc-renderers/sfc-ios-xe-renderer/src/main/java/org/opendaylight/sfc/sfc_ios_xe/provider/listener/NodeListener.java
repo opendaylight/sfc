@@ -18,8 +18,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.NodeManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -60,7 +58,7 @@ public class NodeListener implements DataTreeChangeListener<Node> {
                 case SUBTREE_MODIFIED:
                     if (rootNode.getDataAfter() != null) {
                         Node node = rootNode.getDataAfter();
-                        if (isCapableNetconfDevice(node)) {
+                        if (nodeManager.isCapableNetconfDevice(node)) {
                             nodeManager.updateNode(node);
                         }
                         break;
@@ -68,24 +66,12 @@ public class NodeListener implements DataTreeChangeListener<Node> {
                 case DELETE:
                     if (rootNode.getDataBefore() != null) {
                         Node node = rootNode.getDataBefore();
-                        if (isCapableNetconfDevice(node)) {
+                        if (nodeManager.isCapableNetconfDevice(node)) {
                             nodeManager.removeNode(node);
                         }
                     }
             }
         }
-    }
-
-    private boolean isCapableNetconfDevice(Node node) {
-        NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
-        if (netconfAugmentation == null) {
-            LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
-            return false;
-        }
-        AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
-        // TODO maybe add more specific capability test
-        return capabilities.getAvailableCapability()
-                .contains("urn:ietf:params:netconf:capability:writable-running:1.0");
     }
 
     public ListenerRegistration getRegistrationObject() {

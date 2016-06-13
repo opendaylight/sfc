@@ -6,7 +6,7 @@ module service-function-chain {
 
   import sfc-common {
       prefix sfc-common;
-      }
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -71,7 +71,7 @@ module service-function-chain {
              ingress-dpi. This is not the service function name";
         }
         leaf type {
-          type sfc-common:sft-type;
+          type sfc-common:sft-type-name;
           mandatory true;
           description
             "Service Function Type from service-function-type.yang";

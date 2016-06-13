@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.DeleteServiceFunctionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInputBuilder;
@@ -30,8 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      *
      * @return Boolean
      */
-    private Boolean putSf(SfName name, SftType type, String ipMgmt, String ipLocator, int portLocator) {
+    private Boolean putSf(SfName name, SftTypeName type, String ipMgmt, String ipLocator, int portLocator) {
         // printTraceStart(LOG);
 
         // Build Locator Type (ip and port)
@@ -174,7 +174,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     @Override
     public Boolean testAPutSf() {
         // printTraceStart(LOG);
-        return putSf(new SfName("firewall-test"), new SftType("firewall"), "10.0.0.2", "192.168.0.2", 5050);
+        return putSf(new SfName("firewall-test"), new SftTypeName("firewall"), "10.0.0.2", "192.168.0.2", 5050);
     }
 
     /**
@@ -244,9 +244,9 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testBPutSfs() {
         // printTraceStart(LOG);
 
-        Boolean res = putSf(new SfName("firewall-testB"), new SftType("firewall"), "10.0.0.101", "192.168.0.101", 5050);
-        res = putSf(new SfName("dpi-testB"), new SftType("dpi"), "10.0.0.102", "192.168.0.102", 5050) && res;
-        res = putSf(new SfName("napt44-testB"), new SftType("napt44"), "10.0.0.103", "192.168.0.102", 5050) && res;
+        Boolean res = putSf(new SfName("firewall-testB"), new SftTypeName("firewall"), "10.0.0.101", "192.168.0.101", 5050);
+        res = putSf(new SfName("dpi-testB"), new SftTypeName("dpi"), "10.0.0.102", "192.168.0.102", 5050) && res;
+        res = putSf(new SfName("napt44-testB"), new SftTypeName("napt44"), "10.0.0.103", "192.168.0.102", 5050) && res;
 
         return res;
     }
@@ -271,11 +271,11 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         sfcServiceFunctionArrayList
-            .add(sfcServiceFunctionBuilder.setName("napt44-testB").setType(new SftType("napt44")).build());
+            .add(sfcServiceFunctionBuilder.setName("napt44-testB").setType(new SftTypeName("napt44")).build());
         sfcServiceFunctionArrayList
-            .add(sfcServiceFunctionBuilder.setName("firewall-testB").setType(new SftType("firewall")).build());
+            .add(sfcServiceFunctionBuilder.setName("firewall-testB").setType(new SftTypeName("firewall")).build());
         sfcServiceFunctionArrayList
-            .add(sfcServiceFunctionBuilder.setName("dpi-testB").setType(new SftType("dpi")).build());
+            .add(sfcServiceFunctionBuilder.setName("dpi-testB").setType(new SftTypeName("dpi")).build());
 
         // Now we add list function type list to Service Chain list.
         sfclist
@@ -324,30 +324,30 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         // printTraceStart(LOG);
 
         // Service Functions (real, not abstract)
-        Boolean res = putSf(new SfName("firewall-101-1"), new SftType("firewall"), "10.3.1.101", "10.3.1.101", 10001);
-        res = putSf(new SfName("firewall-101-2"), new SftType("firewall"), "10.3.1.101", "10.3.1.101", 10002) && res;
-        res = putSf(new SfName("dpi-102-1"), new SftType("dpi"), "10.3.1.102", "10.3.1.102", 10001) && res;
-        res = putSf(new SfName("dpi-102-2"), new SftType("dpi"), "10.3.1.102", "10.3.1.102", 10002) && res;
-        res = putSf(new SfName("dpi-102-3"), new SftType("dpi"), "10.3.1.102", "10.3.1.102", 10003) && res;
-        res = putSf(new SfName("napt44-103-1"), new SftType("napt44"), "10.3.1.103", "10.3.1.103", 10001) && res;
-        res = putSf(new SfName("napt44-103-2"), new SftType("napt44"), "10.3.1.103", "10.3.1.103", 10002) && res;
-        res = putSf(new SfName("firewall-104"), new SftType("firewall"), "10.3.1.104", "10.3.1.104", 10001) && res;
-        res = putSf(new SfName("napt44-104"), new SftType("napt44"), "10.3.1.104", "10.3.1.104", 10020) && res;
+        Boolean res = putSf(new SfName("firewall-101-1"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101", 10001);
+        res = putSf(new SfName("firewall-101-2"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101", 10002) && res;
+        res = putSf(new SfName("dpi-102-1"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10001) && res;
+        res = putSf(new SfName("dpi-102-2"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10002) && res;
+        res = putSf(new SfName("dpi-102-3"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10003) && res;
+        res = putSf(new SfName("napt44-103-1"), new SftTypeName("napt44"), "10.3.1.103", "10.3.1.103", 10001) && res;
+        res = putSf(new SfName("napt44-103-2"), new SftTypeName("napt44"), "10.3.1.103", "10.3.1.103", 10002) && res;
+        res = putSf(new SfName("firewall-104"), new SftTypeName("firewall"), "10.3.1.104", "10.3.1.104", 10001) && res;
+        res = putSf(new SfName("napt44-104"), new SftTypeName("napt44"), "10.3.1.104", "10.3.1.104", 10020) && res;
 
         // SFC1
         List<SfcServiceFunction> sfRefList = new ArrayList<>();
         SfcServiceFunctionBuilder sfBuilder = new SfcServiceFunctionBuilder();
-        sfRefList.add(sfBuilder.setName("firewall-abstract1").setType(new SftType("firewall")).build());
-        sfRefList.add(sfBuilder.setName("dpi-abstract1").setType(new SftType("dpi")).build());
-        sfRefList.add(sfBuilder.setName("napt44-abstract1").setType(new SftType("napt44")).build());
+        sfRefList.add(sfBuilder.setName("firewall-abstract1").setType(new SftTypeName("firewall")).build());
+        sfRefList.add(sfBuilder.setName("dpi-abstract1").setType(new SftTypeName("dpi")).build());
+        sfRefList.add(sfBuilder.setName("napt44-abstract1").setType(new SftTypeName("napt44")).build());
 
         res = putChain(new SfcName("SFC1"), sfRefList) && res;
 
         // SFC2
         sfRefList.clear();
         sfBuilder = new SfcServiceFunctionBuilder();
-        sfRefList.add(sfBuilder.setName("firewall-abstract2").setType(new SftType("firewall")).build());
-        sfRefList.add(sfBuilder.setName("napt44-abstract2").setType(new SftType("napt44")).build());
+        sfRefList.add(sfBuilder.setName("firewall-abstract2").setType(new SftTypeName("firewall")).build());
+        sfRefList.add(sfBuilder.setName("napt44-abstract2").setType(new SftTypeName("napt44")).build());
 
         res = putChain(new SfcName("SFC2"), sfRefList) && res;
 

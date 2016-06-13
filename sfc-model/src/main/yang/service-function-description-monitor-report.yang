@@ -2,14 +2,14 @@ module service-function-description-monitor-report {
     namespace "urn.intel.params:xml:ns:sf-desc-mon-rpt";
     prefix sf-desc-mon-rpt;
 
-    import ietf-inet-types {
-        prefix inet;
-        revision-date 2010-09-24;
-        }
-    import ietf-yang-types {
-        prefix yang;
-        revision-date 2010-09-24;
-        }
+  import ietf-inet-types {
+      prefix inet;
+      revision-date 2013-07-15;
+  }
+  import ietf-yang-types {
+      prefix yang;
+      revision-date 2013-07-15;
+  }
 
     organization "Intel Inc.";
     contact "honglix.chen@intel.com";

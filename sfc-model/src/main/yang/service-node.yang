@@ -6,17 +6,17 @@ module service-node {
 
   import ietf-inet-types {
       prefix inet;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
   import ietf-yang-types {
       prefix yang;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
 
   import sfc-common {
       prefix sfc-common;
       revision-date 2015-10-17;
-      }
+  }
 
 
   organization "Cisco Systems, Inc.";

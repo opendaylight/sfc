@@ -8,16 +8,12 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
@@ -29,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import static org.junit.Assert.*;
 
 public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
 
@@ -43,7 +41,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
     @Test
     public void testPutServiceFunctionType() throws Exception {
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        SftType sftType = new SftType("firewall");
+        SftTypeName sftType = new SftTypeName("firewall");
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
             .setType(sftType)
             .setBidirectionality(false)
@@ -67,22 +65,22 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         SfName sfName = new SfName("SF1");
 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName)).setType(new SftType("firewall"));
+        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName)).setType(new SftTypeName("firewall"));
         ServiceFunction serviceFunction = serviceFunctionBuilder.build();
 
         SftServiceFunctionNameKey sftServiceFunctionNameKey =
-                new SftServiceFunctionNameKey(serviceFunction.getName().getValue());
+                new SftServiceFunctionNameKey(sfName);
 
         ServiceFunctionTypeKey serviceFunctionTypeKey =
-                new ServiceFunctionTypeKey(new ServiceFunctionTypeKey(new SftType("firewall")));
+                new ServiceFunctionTypeKey(new ServiceFunctionTypeKey(new SftTypeName("firewall")));
         InstanceIdentifier<SftServiceFunctionName> sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
             .child(ServiceFunctionType.class, serviceFunctionTypeKey)
             .child(SftServiceFunctionName.class, sftServiceFunctionNameKey)
             .build();
 
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-        sftServiceFunctionNameBuilder.setName(sfName.getValue())
-            .setKey(new SftServiceFunctionNameKey(sfName.getValue()));
+        sftServiceFunctionNameBuilder.setName(sfName)
+            .setKey(new SftServiceFunctionNameKey(sfName));
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sftentryIID, sftServiceFunctionName, LogicalDatastoreType.CONFIGURATION);

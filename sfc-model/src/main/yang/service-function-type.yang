@@ -6,10 +6,12 @@ module service-function-type {
 
   import service-locator {
       prefix sfc-sl;
-      }
+      revision-date 2014-07-01;
+  }
 
   import sfc-common {
       prefix sfc-common;
+      revision-date 2015-10-17;
   }
 
   organization "Cisco Systems, Inc.";
@@ -51,11 +53,16 @@ module service-function-type {
 
   grouping service-function-type-definition {
     description
-      "List of parameters to define an abstract type of Service Function";
-    //TODO: Expand list to include metadata context template support. ie MD Type1 C3/C4 context, MD Type2 etc.
+      "List of parameters to define an abstract type
+       of Service Function";
+    // TODO: Expand list to include metadata context
+    // template support.
+    // ie MD Type1 C3/C4 context, MD Type2 etc.
     leaf type {
-      type sfc-common:sft-type;
-      description "Service Function type names such as firewall, dpi, tcp-proxy, etc";
+      type sfc-common:sft-type-name;
+      description
+        "Service Function type names such as firewall,
+         dpi, tcp-proxy, etc";
     }
     leaf symmetry {
       type boolean;
@@ -67,19 +74,25 @@ module service-function-type {
     }
     leaf nsh-aware {
       type boolean;
-      description "Service Function can handle Network Service Headers";
+      description
+        "Service Function can handle Network Service
+         Headers";
     }
     leaf request-reclassification {
         type boolean;
         description "This leaf determines whether SF can request
           reclassification by the SFF";
-      }
+    }
     list supported-dataplanelocator-types {
-      description "Data Plane Locator types from the Service Function";
       key "dataplanelocator-type";
       leaf dataplanelocator-type {
           type sfc-sl:sl-transport-type-def;
+          description
+            "Unique data plane identifier";
       }
+      description
+        "Data Plane Locator types from the Service
+         Function";
     }
   }
 
@@ -93,10 +106,12 @@ module service-function-type {
       uses service-function-type-definition;
 
       list sft-service-function-name {
-        //TODO: should this be sf-name typedef? Also this should be kept in a separate map as an alternate index as it mirrors state.
+        // TODO: should this be sf-name typedef? Also this should be
+        // kept in a separate map as an alternate index as it mirrors
+        // state.
         key "name";
         leaf name {
-          type string;
+          type sfc-common:sf-name;
           description
             "The name of the service function.";
         }
@@ -105,7 +120,7 @@ module service-function-type {
       }
       description
         "A list of all service types. Each service-type entry holds
-         a list of all service functions of the type";
+         a list of all service functions of that type";
     }
   }
 }

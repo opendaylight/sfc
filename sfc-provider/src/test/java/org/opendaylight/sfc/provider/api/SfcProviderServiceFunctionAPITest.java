@@ -8,24 +8,12 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
@@ -49,10 +37,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.*;
 
 public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager {
 
@@ -91,7 +85,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testCreateReadServiceFunction() {
 
         SfName name = new SfName("unittest-fw-1");
-        SftType type = new SftType("firewall");
+        SftTypeName type = new SftTypeName("firewall");
         IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
         ServiceFunctionKey key = new ServiceFunctionKey(name);
@@ -135,7 +129,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
                 add(new SfName("unittest-fw-3"));
             }
         };
-        final SftType sfType = new SftType("firewall");
+        final SftTypeName sfType = new SftTypeName("firewall");
         final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))),
                 new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(1))),
                 new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(2)))};
@@ -252,7 +246,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         // create service functions
         boolean transactionSuccessful =
-                writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(0), new SftType("firewall"), true);
+                writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(0), new SftTypeName("firewall"), true);
 
         assertTrue("Must be true", transactionSuccessful);
 
@@ -265,10 +259,10 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
                 serviceFunctionsResult.getServiceFunction().get(0).getIpMgmtAddress().getIpv4Address().getValue(),
                 IP_MGMT_ADDRESS.get(0));
         assertEquals("Must be equal", serviceFunctionsResult.getServiceFunction().get(0).getType(),
-                new SftType("firewall"));
+                new SftTypeName("firewall"));
 
         // delete these functions
-        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(1), new SftType("firewall"), false);
+        transactionSuccessful = writeRemoveServiceFunctions(IP_MGMT_ADDRESS.get(1), new SftTypeName("firewall"), false);
 
         assertTrue("Must be true", transactionSuccessful);
     }
@@ -335,7 +329,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     }
 
     // write or remove service functions
-    private boolean writeRemoveServiceFunctions(String ipAddress, SftType type, boolean write) {
+    private boolean writeRemoveServiceFunctions(String ipAddress, SftTypeName type, boolean write) {
         ServiceFunctionsBuilder serviceFunctionsBuilder = new ServiceFunctionsBuilder();
         List<ServiceFunction> serviceFunctions = new ArrayList<>();
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();

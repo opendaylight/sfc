@@ -6,24 +6,20 @@ module service-function-forwarder {
 
   import ietf-inet-types {
       prefix inet;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
   import service-locator {
       prefix sfc-sl;
       revision-date 2014-07-01;
-      }
-  import service-function-type {
-      prefix sfc-sft;
-      revision-date 2014-07-01;
-      }
+  }
   import service-statistics {
       prefix sfc-ss;
       revision-date 2014-07-01;
-      }
+  }
   import sfc-common {
       prefix sfc-common;
       revision-date 2015-10-17;
-      }
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

@@ -8,19 +8,19 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Preconditions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class has the APIs to map Netconf to SFC Service Function Forwarder
@@ -57,7 +57,8 @@ public class SfcNetconfServiceForwarderAPI {
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(sffName);
-        serviceFunctionForwarderBuilder.setIpMgmtAddress(nnode.getHost().getIpAddress());
+        IpAddress ipAddress = new IpAddress(nnode.getHost().getIpAddress().getValue());
+        serviceFunctionForwarderBuilder.setIpMgmtAddress(ipAddress);
         return serviceFunctionForwarderBuilder.build();
     }
 

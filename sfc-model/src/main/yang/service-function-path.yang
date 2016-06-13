@@ -7,16 +7,15 @@ module service-function-path {
   import service-function-path-metadata {
       prefix sfc-md;
       revision-date 2014-07-01;
-      }
+  }
   import service-locator {
       prefix sfc-sl;
       revision-date 2014-07-01;
-      }
-
+  }
   import sfc-common {
       prefix sfc-common;
       revision-date 2015-10-17;
-      }
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";

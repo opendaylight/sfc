@@ -18,8 +18,6 @@
 package org.opendaylight.sfc.sfc_ovs.provider;
 
 
-import java.util.concurrent.Future;
-
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -29,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.ServiceFunctionForwarderOvsService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.create.ovs.bridge.input.OvsNode;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeRef;
@@ -40,6 +39,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Future;
 
 public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 
@@ -75,7 +76,8 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 
         //create parent OVS Node InstanceIdentifier (based on ip)
         } else if (ovsNode.getIp() != null) {
-            Node node = SfcOvsUtil.getManagerNodeByIp(ovsNode.getIp(), odlSfc.getExecutor());
+            IpAddress ipAddress = new IpAddress(ovsNode.getIp().getValue());
+            Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress, odlSfc.getExecutor());
             if (node != null) {
                 nodeId = node.getNodeId();
             }

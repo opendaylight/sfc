@@ -44,7 +44,7 @@ module service-path-id {
   typedef path-id-ref {
     type leafref {
       path "/sfc-spid:service-path-ids/" +
-        "sfc-spid:service-path-id/sfc-spid:path-id";
+        "sfc-spid:service-path-id/sfc-spid:path-id-key";
     }
     description
       "This type is used by data models that need to reference
@@ -97,12 +97,13 @@ module service-path-id {
   container service-path-ids {
     config false;
     description
-      "A container that holds the list of all Rendered Service Paths
-       in a SFC domain";
+      "This container stores a bitarray of all used/free Path IDs
+       in the domain.";
     leaf current-path-id {
         type uint32 {
           range "0..16777216";
         }
+        description "The last allocated path-id";
     }
     leaf generation-algorithm {
        type generation-algorithm-enum;
@@ -112,11 +113,13 @@ module service-path-id {
     list service-path-id {
       key "path-id-key";
       description
-        "A list that holds bitarray entries covering all service path ids";
+        "A list that holds bitarray entries covering
+         all service path ids";
       leaf path-id-key {
         type int64;
         description
-          "The key to a specific path-id bit array. The same key covers 64 path-ids";
+          "The key to a specific path-id bit array. The
+           same key covers 64 path-ids";
       }
       leaf path-id-bitarray {
         type int64;
@@ -240,6 +243,8 @@ module service-path-id {
     input {
       leaf generation-algorithm {
         type generation-algorithm-enum;
+        description
+          "The algorithm used to generated path-ids";
       }
     }
     output {

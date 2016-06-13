@@ -7,22 +7,22 @@ module rendered-service-path {
   import service-function-scheduler-type {
       prefix sfc-sfst;
       revision-date 2015-03-12;
-      }
+  }
   import service-function-path-metadata {
       prefix sfc-md;
       revision-date 2014-07-01;
-      }
+  }
   import service-locator {
       prefix sfc-sl;
       revision-date 2014-07-01;
-      }
+  }
   import service-statistics {
       prefix sfc-ss;
       revision-date 2014-07-01;
-      }
+  }
   import sfc-common {
       prefix sfc-common;
-      }
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -252,6 +252,9 @@ module rendered-service-path {
            ingress path";
       }
       choice context-header-allocation-type-1 {
+        description
+          "A RSP can support a single MD-type 1
+           context-allocation-type";
         case vxlan-classifier {
           leaf vxlan-classifier-enabled {
             type boolean;
@@ -357,7 +360,7 @@ module rendered-service-path {
         description "Service function scheduler type for RSP";
       }
       leaf-list sft-list {
-        type sfc-common:sft-type;
+        type sfc-common:sft-type-name;
         description "List of service function type";
 
       }

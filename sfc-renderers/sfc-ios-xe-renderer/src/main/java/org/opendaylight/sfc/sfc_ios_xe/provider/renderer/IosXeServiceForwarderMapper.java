@@ -72,15 +72,20 @@ public class IosXeServiceForwarderMapper {
                                 org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder localForwarder =
                                         SfcIosXeUtils.createLocalForwarder(ipAddress);
                                 if (localForwarder != null && !delete) {
-                                    new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(), WRITE_LOCAL,
-                                            LogicalDatastoreType.CONFIGURATION).call();
-                                    LOG.info("Local forwarder with ip {} created on node {}",
-                                            forwarder.getIpMgmtAddress().toString(), netconfNode.getNodeId().getValue());
+                                    boolean success = (boolean) new IosXeDataStoreAPI(mountPoint, localForwarder
+                                            .getLocal(), WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION).call();
+                                    if (success) {
+                                        LOG.info("Local forwarder with ip {} created on node {}",
+                                                forwarder.getIpMgmtAddress().toString(), netconfNode.getNodeId().getValue());
+                                    }
                                 }
                                 if (localForwarder != null && delete) {
-                                    new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(), DELETE_LOCAL,
+                                    boolean success = (boolean)new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(), DELETE_LOCAL,
                                             LogicalDatastoreType.CONFIGURATION).call();
-                                    LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId().getValue());
+                                    if (success) {
+                                        LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId()
+                                                .getValue());
+                                    }
                                 }
                             }
                         }

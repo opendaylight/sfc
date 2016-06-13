@@ -66,6 +66,7 @@ public class NodeManager implements BindingAwareProvider {
             InstanceIdentifier mountPointIid = getMountPointIid(netconfNodeId);
             DataBroker dataBroker = getNetconfNodeDataBroker(mountPointIid);
             if (dataBroker != null) {
+                LOG.info("Node {} registered by SFC", node.getNodeId().getValue());
                 activeMountPoints.put(netconfNodeId, dataBroker);
             } else {
                 LOG.debug("Cannot obtain data broker for netconf node {}", netconfNodeId.getValue());

@@ -83,9 +83,8 @@ public class NodeListener implements DataTreeChangeListener<Node> {
             return false;
         }
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
-        // TODO maybe add more specific capability test
-        return capabilities.getAvailableCapability()
-                .contains("urn:ietf:params:netconf:capability:writable-running:1.0");
+        return capabilities != null && capabilities.getAvailableCapability()
+                .contains("(urn:ios?revision=2016-03-08)ned");
     }
 
     public ListenerRegistration getRegistrationObject() {

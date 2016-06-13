@@ -188,7 +188,7 @@ public class IosXeDataStoreAPI implements Callable {
     private <U extends DataObject> boolean writeMergeTransaction(InstanceIdentifier<U> addIID, U data) {
         WriteTransaction writeTransaction = mountpoint.newWriteOnlyTransaction();
         try {
-            writeTransaction.merge(Preconditions.checkNotNull(datastoreType), addIID, data, true);
+            writeTransaction.merge(Preconditions.checkNotNull(datastoreType), addIID, data);
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
             submitFuture.checkedGet();
             return true;

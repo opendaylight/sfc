@@ -20,6 +20,7 @@ import org.opendaylight.sfc.sfc_ios_xe.provider.listener.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -31,7 +32,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NodeManager implements BindingAwareProvider {
@@ -41,6 +45,7 @@ public class NodeManager implements BindingAwareProvider {
     private final NodeListener nodeListener;
     private MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
+    private List<String> requiredCapabilities = new ArrayList<>();
 
     // Data
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
@@ -52,6 +57,8 @@ public class NodeManager implements BindingAwareProvider {
         onSessionInitiated(providerContext);
         // Node listener
         nodeListener = new NodeListener(dataBroker, this);
+        // Capabilities
+        requiredCapabilities = initializeRequiredCapabilities();
     }
 
     public void updateNode(Node node) {
@@ -66,6 +73,7 @@ public class NodeManager implements BindingAwareProvider {
             InstanceIdentifier mountPointIid = getMountPointIid(netconfNodeId);
             DataBroker dataBroker = getNetconfNodeDataBroker(mountPointIid);
             if (dataBroker != null) {
+                LOG.info("Node {} registered by SFC", node.getNodeId().getValue());
                 activeMountPoints.put(netconfNodeId, dataBroker);
             } else {
                 LOG.debug("Cannot obtain data broker for netconf node {}", netconfNodeId.getValue());
@@ -86,6 +94,17 @@ public class NodeManager implements BindingAwareProvider {
                 LOG.info("Netconf node {} removed", netconfNodeId.getValue());
             }
         }
+    }
+
+    public boolean isCapableNetconfDevice(Node node) {
+        NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
+        if (netconfAugmentation == null) {
+            LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
+            return false;
+        }
+        AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
+        return capabilities != null && capabilities.getAvailableCapability()
+                .containsAll(requiredCapabilities);
     }
 
     private DataBroker getNetconfNodeDataBroker(InstanceIdentifier mountPointIid) {
@@ -111,6 +130,18 @@ public class NodeManager implements BindingAwareProvider {
         return InstanceIdentifier.builder(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(topologyId))
                 .child(Node.class, new NodeKey(nodeId)).build();
+    }
+
+    private List<String> initializeRequiredCapabilities() {
+        final String ned = "(urn:ios?revision=2016-03-08)ned";
+        final String tailfCommon = "(http://tail-f.com/yang/common?revision=2015-05-22)tailf-common";
+        final String tailfCliExtension = "(http://tail-f.com/yang/common?revision=2015-03-19)tailf-cli-extensions";
+        final String tailfMetaExtension = "(http://tail-f.com/yang/common?revision=2013-11-07)tailf-meta-extensions";
+        final String ietfYangTypes = "(urn:ietf:params:xml:ns:yang:ietf-yang-types?revision=2013-07-15)ietf-yang-types";
+        final String ietfInetTypes = "(urn:ietf:params:xml:ns:yang:ietf-inet-types?revision=2013-07-15)ietf-inet-types";
+        String capabilityEntries[] = {ned, tailfCommon, tailfCliExtension, tailfMetaExtension, ietfYangTypes,
+                ietfInetTypes};
+        return Arrays.asList(capabilityEntries);
     }
 
     DataBroker getMountpointFromIpAddress(IpAddress ipAddress) {

@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType.OPERATIONAL;
+import static org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType.CONFIGURATION;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 
@@ -146,8 +146,8 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceForwarderBuilder.build());
 
-        new IosXeDataStoreAPI(dataBroker, firstServiceFunctionBuilder.build(), WRITE_FUNCTION, OPERATIONAL).call();
-        new IosXeDataStoreAPI(dataBroker, secondServiceFunctionBuilder.build(), WRITE_FUNCTION, OPERATIONAL).call();
-        new IosXeDataStoreAPI(dataBroker, thirdServiceFunctionBuilder.build(), WRITE_FUNCTION, OPERATIONAL).call();
+        new IosXeDataStoreAPI(dataBroker, firstServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
+        new IosXeDataStoreAPI(dataBroker, secondServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
+        new IosXeDataStoreAPI(dataBroker, thirdServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
     }
 }

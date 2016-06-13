@@ -72,15 +72,22 @@ public class IosXeServiceForwarderMapper {
                                 org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder localForwarder =
                                         SfcIosXeUtils.createLocalForwarder(ipAddress);
                                 if (localForwarder != null && !delete) {
-                                    new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(), WRITE_LOCAL,
-                                            LogicalDatastoreType.CONFIGURATION).call();
-                                    LOG.info("Local forwarder with ip {} created on node {}",
-                                            forwarder.getIpMgmtAddress().toString(), netconfNode.getNodeId().getValue());
+                                    IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
+                                            localForwarder.getLocal(), WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
+                                    Object result = writeServiceFunction.call();
+                                    if (result != null && result == Boolean.TRUE) {
+                                        LOG.info("Local forwarder with ip {} created on node {}",
+                                                forwarder.getIpMgmtAddress().toString(), netconfNode.getNodeId().getValue());
+                                    }
                                 }
                                 if (localForwarder != null && delete) {
-                                    new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(), DELETE_LOCAL,
-                                            LogicalDatastoreType.CONFIGURATION).call();
-                                    LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId().getValue());
+                                    IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
+                                            localForwarder.getLocal(), DELETE_LOCAL, LogicalDatastoreType.CONFIGURATION);
+                                    Object result = writeServiceFunction.call();
+                                    if (result != null && result == Boolean.TRUE) {
+                                        LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId()
+                                                .getValue());
+                                    }
                                 }
                             }
                         }

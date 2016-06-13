@@ -70,19 +70,25 @@ public class IosXeServiceFunctionMapper {
                         org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction serviceFunction =
                                 createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
-                            new IosXeDataStoreAPI(mountPoint, serviceFunction, WRITE_FUNCTION,
-                                    LogicalDatastoreType.CONFIGURATION).call();
-                            LOG.info("Service function {} created on node {}", serviceFunction.getName(),
-                                    netconfNode.getNodeId().getValue());
+                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction,
+                                    WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
+                            Object result = writeServiceFunction.call();
+                            if (result != null && result == Boolean.TRUE) {
+                                LOG.info("Service function {} created on node {}", serviceFunction.getName(),
+                                        netconfNode.getNodeId().getValue());
+                            }
                         }
                     }
                     if (mountPoint != null && delete) {
                         org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction serviceFunction =
                                 createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
-                            new IosXeDataStoreAPI(mountPoint, serviceFunction.getKey(), DELETE_FUNCTION,
-                                    LogicalDatastoreType.CONFIGURATION).call();
-                            LOG.info("Service function {} removed", serviceFunction.getName());
+                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction.getKey(),
+                                    DELETE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
+                            Object result = writeServiceFunction.call();
+                            if (result != null && result == Boolean.TRUE) {
+                                LOG.info("Service function {} removed", serviceFunction.getName());
+                            }
                         }
                     }
                 }

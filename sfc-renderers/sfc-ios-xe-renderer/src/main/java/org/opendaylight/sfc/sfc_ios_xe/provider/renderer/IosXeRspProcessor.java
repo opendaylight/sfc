@@ -90,7 +90,7 @@ public class IosXeRspProcessor {
         List<Services> services = new ArrayList<>();
         SfName sfName = hop.getServiceFunctionName();
         ServiceFunction serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                sfName, READ_FUNCTION, LogicalDatastoreType.OPERATIONAL).call();
+                sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
         ServiceTypeChoice serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
         Services serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
         services.add(serviceEntry);
@@ -104,7 +104,7 @@ public class IosXeRspProcessor {
                 // Next hop SF is on the same local SFF/node as the previous one
                 sfName = hop.getServiceFunctionName();
                 serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                        sfName, READ_FUNCTION, LogicalDatastoreType.OPERATIONAL).call();
+                        sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
                 serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
                 serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
                 services.add(serviceEntry);
@@ -141,7 +141,7 @@ public class IosXeRspProcessor {
                 services = new ArrayList<>();
                 sfName = hop.getServiceFunctionName();
                 serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                        sfName, READ_FUNCTION, LogicalDatastoreType.OPERATIONAL).call();
+                        sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
                 serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
                 serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
                 services.add(serviceEntry);

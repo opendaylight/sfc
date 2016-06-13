@@ -17,12 +17,6 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.List;
-import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -34,7 +28,7 @@ import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAP
 import org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.DescriptionInfo;
@@ -54,6 +48,12 @@ import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
 
@@ -166,8 +166,8 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
                                     LOG.error("SF type is empty");
                                     break;
                                 }
-                                SftType sfType =
-                                        SfcProviderServiceTypeAPI.readServiceFunctionType(new SftType(type)).getType();
+                                SftTypeName sfType =
+                                        SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName(type)).getType();
                                 if (sfType == null) {
                                     LOG.error("Invalid SF type {}", type);
                                     break;

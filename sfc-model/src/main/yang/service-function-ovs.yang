@@ -8,11 +8,11 @@ module service-function-ovs {
   import service-function {
       prefix sfc-sf;
       revision-date 2014-07-01;
-      }
+  }
   import yang-ext {
       prefix ext;
       revision-date 2013-07-09;
-      }
+  }
 
   organization "Ericsson, Inc.";
   contact "Brady Johnson <brady.allen.johnson@ericsson.com>";
@@ -25,20 +25,26 @@ module service-function-ovs {
   revision 2016-01-07 {
     description
       "Augment SF to include OVS tap port in DPL.";
+    reference
+     "https://tools.ietf.org/html/draft-penno-sfc-yang-14";
   }
 
   grouping connected-port {
+    description
+      "Groups OVS connected port information";
     container ovs-port {
+      description
+        "Holds OVS port information";
       leaf port-id {
-        description "OVS port ID this SF is connected on.";
         type string;
+        description "OVS port ID this SF is connected on";
       }
     }
   }
 
   augment "/sfc-sf:service-functions/"
         + "sfc-sf:service-function/"
-        + "sfc-sf:sf-data-plane-locator/" {
+        + "sfc-sf:sf-data-plane-locator" {
     description
       "Augments the SF Data Plane Locator definition
        with OVS specific information";

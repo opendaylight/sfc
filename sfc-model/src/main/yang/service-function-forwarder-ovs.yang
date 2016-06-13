@@ -8,18 +8,18 @@ module service-function-forwarder-ovs {
   import service-function-forwarder {
       prefix sfc-sff;
       revision-date 2014-07-01;
-      }
+  }
   import sfc-common {
       prefix sfc-common;
       revision-date 2015-10-17;
-      }
+  }
   import yang-ext {
       prefix ext;
       revision-date 2013-07-09;
-      }
+  }
   import ietf-yang-types {
-    prefix yang;
-    revision-date 2013-07-15;
+      prefix yang;
+      revision-date 2013-07-15;
   }
   import ovsdb {
     prefix ovsdb;
@@ -218,7 +218,7 @@ module service-function-forwarder-ovs {
   }
 
   augment "/sfc-sff:service-function-forwarders/"
-        + "sfc-sff:service-function-forwarder/" {
+        + "sfc-sff:service-function-forwarder" {
     description
       "Augments the SFF definition with
        OVS node specific information";
@@ -227,7 +227,7 @@ module service-function-forwarder-ovs {
   }
 
   augment "/sfc-sff:service-function-forwarders/"
-          + "sfc-sff:service-function-forwarder/" {
+          + "sfc-sff:service-function-forwarder" {
     description
       "Augments the SFF definition with
        bridge specific information";

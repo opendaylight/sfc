@@ -6,18 +6,18 @@ module service-function-forwarder-metadata-features {
 
   import ietf-inet-types {
       prefix inet;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
 
   import yang-ext {
       prefix ext;
       revision-date 2013-07-09;
-      }
+  }
 
   import service-function-forwarder {
       prefix "sfc-sff";
       revision-date 2014-07-01;
-    }
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -58,7 +58,7 @@ module service-function-forwarder-metadata-features {
      "C2: VNID";
   }
 
-  augment "/sfc-sff:service-function-forwarders/"  {
+  augment "/sfc-sff:service-function-forwarders"  {
     description
       "Augments SFF module with definition of" +
        "VXLAN overlay classifier feature";
@@ -70,7 +70,7 @@ module service-function-forwarder-metadata-features {
       "draft-napper-sfc-nsh-mobility-allocation-01";
   }
 
-  augment "/sfc-sff:service-function-forwarders/"  {
+  augment "/sfc-sff:service-function-forwarders"  {
     description
       "Augments SFF module with definition of" +
        "Mobility allocation feature";
@@ -82,7 +82,7 @@ module service-function-forwarder-metadata-features {
       "html/draft-guichard-sfc-nsh-dc-allocation-02";
   }
 
-  augment "/sfc-sff:service-function-forwarders/"  {
+  augment "/sfc-sff:service-function-forwarders"  {
     description
       "Augments SFF module with definition of" +
        "DC allocation feature";
@@ -90,7 +90,7 @@ module service-function-forwarder-metadata-features {
   }
 
   augment "/sfc-sff:service-function-forwarders/"
-          + "sfc-sff:service-function-forwarder/" {
+          + "sfc-sff:service-function-forwarder" {
     description
       "Augments SFF definition with new vxlan overlay classifier " +
       "configuration";

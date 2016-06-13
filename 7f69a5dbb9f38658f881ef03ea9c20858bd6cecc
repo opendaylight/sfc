@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_3e4db173",
+        "filename": "sfc-model/src/main/yang/service-function-description-monitor-report.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-06-13T08:54:03Z",
+      "side": 1,
+      "message": "DOS format?",
+      "revId": "7f69a5dbb9f38658f881ef03ea9c20858bd6cecc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_3b63031c",
+        "filename": "sfc-model/src/main/yang/service-path-id.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-06-13T08:54:03Z",
+      "side": 1,
+      "message": "bit array? used/free",
+      "revId": "7f69a5dbb9f38658f881ef03ea9c20858bd6cecc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_bbaf132b",
+        "filename": "sfc-model/src/main/yang/service-statistics.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-06-13T08:54:03Z",
+      "side": 1,
+      "message": "minor comment: remove blank in the end",
+      "revId": "7f69a5dbb9f38658f881ef03ea9c20858bd6cecc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_5bbb5772",
+        "filename": "sfc-model/src/main/yang/sfc-common.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-06-13T08:54:03Z",
+      "side": 1,
+      "message": "change sft-type-name to sf-type-name",
+      "revId": "7f69a5dbb9f38658f881ef03ea9c20858bd6cecc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

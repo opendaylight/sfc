@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_3b4ae383",
+        "filename": "sfc-model/src/main/yang/service-path-id.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-06-13T08:54:03Z",
+      "side": 0,
+      "message": "need to refer to? need reference to?",
+      "revId": "f1514d53294db8728063ab35fd3febe43a24020b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

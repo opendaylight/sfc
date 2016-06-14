@@ -6,13 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.ofrenderer;
+package org.opendaylight.sfc.ofrenderer.processors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
+import org.opendaylight.sfc.ofrenderer.RspBuilder;
+import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
+import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;

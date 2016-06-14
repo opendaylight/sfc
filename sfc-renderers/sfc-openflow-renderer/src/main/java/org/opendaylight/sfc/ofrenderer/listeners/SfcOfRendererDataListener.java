@@ -6,23 +6,20 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.ofrenderer.openflow;
+package org.opendaylight.sfc.ofrenderer.listeners;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import org.opendaylight.sfc.ofrenderer.SfcOfAbstractDataListener;
-import org.opendaylight.sfc.ofrenderer.SfcSynchronizer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

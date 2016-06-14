@@ -8,13 +8,17 @@
 
 package org.opendaylight.sfc.ofrenderer;
 
+import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRendererDataListener;
+import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRspDataListener;
+import org.opendaylight.sfc.ofrenderer.listeners.SfcOfSfgDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfRendererDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
-import org.opendaylight.sfc.ofrenderer.sfg.SfcOfSfgDataListener;
+import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
+import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
+import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;

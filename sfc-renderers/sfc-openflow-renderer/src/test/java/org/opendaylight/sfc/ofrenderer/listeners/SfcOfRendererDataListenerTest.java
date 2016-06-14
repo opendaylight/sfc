@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.ofrenderer;
+package org.opendaylight.sfc.ofrenderer.listeners;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,7 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfRendererDataListener;
+import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;

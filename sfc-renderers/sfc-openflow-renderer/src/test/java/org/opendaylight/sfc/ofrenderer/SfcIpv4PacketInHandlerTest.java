@@ -71,7 +71,7 @@ public class SfcIpv4PacketInHandlerTest {
 
     @Test
     public void pktInBuffering() {
-        this.pktInHandler.setMaxBufferTime(10000000); // 10 seconds
+        this.pktInHandler.setMaxBufferTime(10000); // 10 seconds
         this.pktInHandler.setPacketCountPurge(1000);
         PacketReceived pkt = createPacket();
 
@@ -92,7 +92,7 @@ public class SfcIpv4PacketInHandlerTest {
 
     @Test
     public void pktInBufferingTimeout() throws InterruptedException {
-        this.pktInHandler.setMaxBufferTime(1); // 1 microsecond
+        this.pktInHandler.setMaxBufferTime(1); // 1 millisecond
         this.pktInHandler.setPacketCountPurge(1000);
         PacketReceived pkt = createPacket();
 
@@ -104,8 +104,8 @@ public class SfcIpv4PacketInHandlerTest {
         verifyNoMoreInteractions(this.flowProgrammerMock);
 
         // When called again, the packet should be sent to the FlowProgrammer
-        // again, since the timeout is 1 microsecond
-        Thread.sleep(1); // sleep 1 millisecond, to let the buffer time expire
+        // again, since the timeout is 1 millisecond
+        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time expire
         resetFlowProgrammerMock();
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
@@ -117,7 +117,7 @@ public class SfcIpv4PacketInHandlerTest {
 
     @Test
     public void pktInPurgeBuffering() throws InterruptedException {
-        this.pktInHandler.setMaxBufferTime(1); // 1 microsecond
+        this.pktInHandler.setMaxBufferTime(1); // 1 millisecond
         this.pktInHandler.setPacketCountPurge(2);
         PacketReceived pkt = createPacket();
 
@@ -132,7 +132,7 @@ public class SfcIpv4PacketInHandlerTest {
 
         // When called again, the purgeCount will be exceeded, the buffer will
         // be flushed, and this packet will be added back, making a size of 1
-        Thread.sleep(1); // sleep 1 millisecond, to let the buffer time expire
+        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time expire
         resetFlowProgrammerMock();
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());

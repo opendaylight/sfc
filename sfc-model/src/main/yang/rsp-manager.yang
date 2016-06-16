@@ -144,20 +144,31 @@ module rendered-service-path-manager {
     }
 
     // Renderer status
-    container renderer-task-status {
+    container renderer-path-states {
         description
             "When renderer's task provided by rendered service path manager is completed,
             renderer reports back to rsp manager whether task was completed or not.";
         config false;
-        list renderer-task-status {
+        list renderer-path-state {
             key renderer-name;
             leaf renderer-name {
                 type sfc-common:renderer-name;
             }
-            leaf renderer-task-status-value {
-                type enumeration {
-                    enum success;
-                    enum failure;
+            container configured-rendered-paths {
+                description "trace all rendered service paths which renderer obtains
+                    and tracks status info";
+                list configured-rendered-path {
+                    key rsp-name;
+                    leaf rsp-name {
+                        type sfc-common:rsp-name;
+                    }
+                    leaf path-status {
+                        type enumeration {
+                            enum in-progress;
+                            enum success;
+                            enum failure;
+                        }
+                    }
                 }
             }
         }

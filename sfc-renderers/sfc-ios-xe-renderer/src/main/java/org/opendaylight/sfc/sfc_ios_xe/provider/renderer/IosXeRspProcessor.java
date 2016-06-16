@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.listener.RenderedPathListener;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.sfc_ios_xe.provider.utils.RspStatus;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -46,21 +47,30 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Failure;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.InProgress;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Success;
 
 public class IosXeRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(IosXeRspProcessor.class);
 
+    private final DataBroker dataBroker;
     private final NodeManager nodeManager;
     private final RenderedPathListener rspListener;
 
     public IosXeRspProcessor(DataBroker dataBroker, NodeManager nodeManager) {
-        this.nodeManager = nodeManager;
+        this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.nodeManager = Preconditions.checkNotNull(nodeManager);
         // Register RSP listener
         rspListener = new RenderedPathListener(dataBroker, this);
     }
 
     public void updateRsp(RenderedServicePath renderedServicePath) {
+        // Set status
+        RspStatus status = new RspStatus(dataBroker, renderedServicePath.getName());
+        status.writeStatus(InProgress);
+
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
         Short serviceIndex = renderedServicePath.getStartingIndex();
@@ -72,6 +82,7 @@ public class IosXeRspProcessor {
         if (renderedServicePath.getRenderedServicePathHop() == null ||
                 renderedServicePath.getRenderedServicePathHop().isEmpty()) {
             LOG.warn("Rendered path {} does not contain any hop", renderedServicePath.getName().getValue());
+            status.writeStatus(Failure);
             return;
         }
         Iterator<RenderedServicePathHop> rspHopIterator = renderedServicePath.getRenderedServicePathHop()
@@ -84,6 +95,7 @@ public class IosXeRspProcessor {
             LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
                     .getValue(), currentSffName.getValue());
             deleteRsp(renderedServicePath);
+            status.writeStatus(Failure);
             return;
         }
         // New list of services has to be created every time new mountpoint is created
@@ -118,6 +130,7 @@ public class IosXeRspProcessor {
                     LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
                             .getValue(), currentSffName.getValue());
                     deleteRsp(renderedServicePath);
+                    status.writeStatus(Failure);
                     return;
                 }
                 // Write current SFF to previous SFF node as remote
@@ -125,6 +138,7 @@ public class IosXeRspProcessor {
                 if (currentRemoteForwarder == null) {
                     LOG.error("SFF {} ip address is null", currentSffName.getValue());
                     deleteRsp(renderedServicePath);
+                    status.writeStatus(Failure);
                     return;
                 }
                 new IosXeDataStoreAPI(previousMountPoint, currentRemoteForwarder, WRITE_REMOTE,
@@ -157,7 +171,7 @@ public class IosXeRspProcessor {
         ServicePath servicePath = createServicePath(pathId, services);
         new IosXeDataStoreAPI(currentMountpoint, servicePath, WRITE_PATH, LogicalDatastoreType.CONFIGURATION).call();
         LOG.info("Rendered service path {} successfully processed", renderedServicePath.getName().getValue());
-
+        status.writeStatus(Success);
     }
 
     public void deleteRsp(RenderedServicePath renderedServicePath) {

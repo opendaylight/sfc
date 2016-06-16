@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_f15875fc",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/renderer/IosXeServiceForwarderMapper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-06-16T10:53:50Z",
+      "side": 1,
+      "message": "same comment about casting null to boolean.",
+      "range": {
+        "startLine": 75,
+        "startChar": 36,
+        "endLine": 75,
+        "endChar": 85
+      },
+      "revId": "8eb4643013b05d78224143cf5679a28ce4439e39",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_11c1a980",
+        "filename": "sfc-renderers/sfc-ios-xe-renderer/src/main/java/org/opendaylight/sfc/sfc_ios_xe/provider/renderer/IosXeServiceFunctionMapper.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-06-16T10:53:50Z",
+      "side": 1,
+      "message": "Its strange to cast the constructor to a boolean. It would be more intuitive to check if the return is null.",
+      "range": {
+        "startLine": 73,
+        "startChar": 28,
+        "endLine": 73,
+        "endChar": 77
+      },
+      "revId": "8eb4643013b05d78224143cf5679a28ce4439e39",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

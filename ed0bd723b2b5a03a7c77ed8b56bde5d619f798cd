@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_b1e9dd1c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcIpv4PacketInHandlerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-06-16T10:30:18Z",
+      "side": 1,
+      "message": "Using different (lower/higher) values for timers will not completely eliminate the chance of having race conditions again. If it is better to use a wait/notify pattern when possible.",
+      "range": {
+        "startLine": 74,
+        "startChar": 26,
+        "endLine": 74,
+        "endChar": 42
+      },
+      "revId": "ed0bd723b2b5a03a7c77ed8b56bde5d619f798cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_71b9052e",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcIpv4PacketInHandlerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-06-16T10:30:18Z",
+      "side": 1,
+      "message": "The value is still 1, the input is the milliseconds or microseconds?",
+      "range": {
+        "startLine": 120,
+        "startChar": 52,
+        "endLine": 120,
+        "endChar": 63
+      },
+      "revId": "ed0bd723b2b5a03a7c77ed8b56bde5d619f798cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

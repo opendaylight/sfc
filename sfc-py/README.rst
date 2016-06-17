@@ -11,23 +11,14 @@ chains.
 Instalation
 ===========
 
-The installation has been tested on Ubuntu Linux.  
+The installation has been tested on Ubuntu 14.04 Linux.  
 
 1.- SFC needs to have Python 3.4 installed
 
-2.- openssl-devel MUST BE INSTALLED as it is pip dependency 
-    sudo apt-get install libssl-dev openssl
-    
-3.- Before you run installation from Pypi,
-    be sure you have installed libnetfilter-queue.
-    To run installation of libnetfilter-queue:
-    sudo apt-get install libnetfilter-queue-dev
+2.- Install these dependencies.
+    sudo apt-get install -y --force-yes libssl-dev openssl libnetfilter-queue-dev python3-pip libffi-dev
 
-4.- be sure you have installed pip3
-    to run installation of pip3 :
-    sudo apt-get install python3-pip
-
-5.- Finally the installation of the SFC package:
+3.- Finally the installation of the SFC package:
     sudo pip3 install sfc
     
 All other dependencies are handled in the SFC setup.

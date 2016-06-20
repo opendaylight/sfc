@@ -9,7 +9,6 @@
 package org.opendaylight.controller.config.yang.config.sfc_lisp.impl;
 
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
 import org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispRspEntryDataListener;
@@ -18,6 +17,7 @@ import org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispSffDataListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SfcLispModule extends org.opendaylight.controller.config.yang.config.sfc_lisp.impl.AbstractSfcLispModule {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispModule.class);

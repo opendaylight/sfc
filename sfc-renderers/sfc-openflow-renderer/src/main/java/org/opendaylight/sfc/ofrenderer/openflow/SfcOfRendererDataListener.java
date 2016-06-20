@@ -8,23 +8,21 @@
 
 package org.opendaylight.sfc.ofrenderer.openflow;
 
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.concurrent.ExecutorService;
+import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.ofrenderer.SfcOfAbstractDataListener;
+import org.opendaylight.sfc.ofrenderer.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import org.opendaylight.sfc.ofrenderer.SfcOfAbstractDataListener;
-import org.opendaylight.sfc.ofrenderer.SfcSynchronizer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * DataListener to listen for SFC OpenFlow Renderer data store changes.

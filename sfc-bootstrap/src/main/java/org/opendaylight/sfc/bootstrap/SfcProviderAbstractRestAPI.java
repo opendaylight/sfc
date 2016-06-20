@@ -10,14 +10,12 @@ package org.opendaylight.sfc.bootstrap;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
-
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract parent Runnable for the REST API.

@@ -11,6 +11,8 @@
  */
 package org.opendaylight.sfc.sfc_ios_xe.provider.listener;
 
+import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
@@ -25,10 +27,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 
 public class NodeListener implements DataTreeChangeListener<Node> {

@@ -21,8 +21,6 @@ public abstract class SfcLispAbstractDataListener implements DataChangeListener 
     protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
     protected LogicalDatastoreType dataStoreType;
     protected InstanceIdentifier<?> instanceId;
-
-
     public SfcLispAbstractDataListener() {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
     }

@@ -76,6 +76,7 @@ public class SfcProviderRenderedPathAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
     private static final int MAX_STARTING_INDEX = 255;
     private static SfcServiceFunctionSchedulerAPI defaultScheduler;
+    private static final String REVERSED_PATH_SUFFIX = "-Reverse";
 
     private static SfcServiceFunctionSchedulerAPI getServiceFunctionScheduler(
             Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType) {
@@ -531,8 +532,7 @@ public class SfcProviderRenderedPathAPI {
 
         RenderedServicePathBuilder revRenderedServicePathBuilder = new RenderedServicePathBuilder(renderedServicePath);
         revRenderedServicePathBuilder.setPathId(pathId);
-        // TODO Move Reverse RSP Name generation to method, put String "-Reverse" to constant.
-        revPathName = new RspName(renderedServicePath.getName().getValue() + "-Reverse");
+        revPathName = generateReversedPathName(renderedServicePath.getName());
         revRenderedServicePathBuilder.setName(revPathName);
         RenderedServicePathKey revRenderedServicePathKey = new RenderedServicePathKey(revPathName);
         revRenderedServicePathBuilder.setKey(revRenderedServicePathKey);
@@ -596,6 +596,10 @@ public class SfcProviderRenderedPathAPI {
         printTraceStop(LOG);
         return ret;
 
+    }
+
+    public static RspName generateReversedPathName(RspName directRspName) {
+        return new RspName(directRspName.getValue() + REVERSED_PATH_SUFFIX);
     }
 
     /**

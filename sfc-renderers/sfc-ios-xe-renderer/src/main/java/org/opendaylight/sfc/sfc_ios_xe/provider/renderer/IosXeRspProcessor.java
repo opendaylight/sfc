@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.listener.RenderedPathListener;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.RspStatus;
@@ -20,9 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePath;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePathKey;
@@ -44,7 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
 import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Failure;
@@ -74,7 +74,6 @@ public class IosXeRspProcessor {
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
         Short serviceIndex = renderedServicePath.getStartingIndex();
-
         DataBroker previousMountPoint;
         DataBroker currentMountpoint;
         SffName previousSffName;
@@ -101,8 +100,11 @@ public class IosXeRspProcessor {
         // New list of services has to be created every time new mountpoint is created
         List<Services> services = new ArrayList<>();
         SfName sfName = hop.getServiceFunctionName();
-        ServiceFunction serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
+        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+        if (serviceFunction == null) {
+            LOG.error("Service function {} not present in datastore", sfName.getValue());
+            return;
+        }
         ServiceTypeChoice serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
         Services serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
         services.add(serviceEntry);
@@ -115,8 +117,11 @@ public class IosXeRspProcessor {
             if (previousSffName.equals(currentSffName)) {
                 // Next hop SF is on the same local SFF/node as the previous one
                 sfName = hop.getServiceFunctionName();
-                serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                        sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
+                serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+                if (serviceFunction == null) {
+                    LOG.error("Service function {} not present in datastore", sfName.getValue());
+                    return;
+                }
                 serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
                 serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
                 services.add(serviceEntry);
@@ -154,8 +159,11 @@ public class IosXeRspProcessor {
                 // Start with new services list
                 services = new ArrayList<>();
                 sfName = hop.getServiceFunctionName();
-                serviceFunction = (ServiceFunction) new IosXeDataStoreAPI(currentMountpoint,
-                        sfName, READ_FUNCTION, LogicalDatastoreType.CONFIGURATION).call();
+                serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+                if (serviceFunction == null) {
+                    LOG.error("Service function {} not present in datastore", sfName.getValue());
+                    return;
+                }
                 serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
                 serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
                 services.add(serviceEntry);
@@ -202,7 +210,7 @@ public class IosXeRspProcessor {
 
     private ServiceTypeChoice buildServiceFunctionChoice(ServiceFunction serviceFunction) {
         ServiceFunctionBuilder serviceFunctionTypeChoice = new ServiceFunctionBuilder();
-        serviceFunctionTypeChoice.setServiceFunction(serviceFunction.getName());
+        serviceFunctionTypeChoice.setServiceFunction(serviceFunction.getName().getValue());
         return serviceFunctionTypeChoice.build();
     }
 

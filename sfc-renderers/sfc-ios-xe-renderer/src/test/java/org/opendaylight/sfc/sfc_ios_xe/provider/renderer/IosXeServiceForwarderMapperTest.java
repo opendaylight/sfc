@@ -11,6 +11,7 @@ package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
@@ -40,6 +41,7 @@ public class IosXeServiceForwarderMapperTest {
 
     private DataBroker dataBroker;
     private NodeManager nodeManager;
+    private WriteTransaction writeTransaction;
     private IosXeServiceForwarderMapper sffMapper;
     private final String nodeId = "nodeId";
     private final String sffName2 = "forwarder2";
@@ -49,6 +51,7 @@ public class IosXeServiceForwarderMapperTest {
     public void init() {
         dataBroker = mock(DataBroker.class);
         nodeManager = mock(NodeManager.class);
+        writeTransaction = mock(WriteTransaction.class);
     }
 
     @Test
@@ -89,6 +92,7 @@ public class IosXeServiceForwarderMapperTest {
         when(nodeManager.getConnectedNodes()).thenReturn(nodeMap);
         when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(ipAddress)));
         when(nodeManager.getActiveMountPoints()).thenReturn(nodeDbMap);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         sffMapper = new IosXeServiceForwarderMapper(dataBroker, nodeManager);
         sffMapper.syncForwarders(forwarders, false);
@@ -131,6 +135,7 @@ public class IosXeServiceForwarderMapperTest {
         when(nodeManager.getConnectedNodes()).thenReturn(nodeMap);
         when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(ipAddress)));
         when(nodeManager.getActiveMountPoints()).thenReturn(nodeDbMap);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         sffMapper = new IosXeServiceForwarderMapper(dataBroker, nodeManager);
         sffMapper.syncForwarders(forwarders, true);

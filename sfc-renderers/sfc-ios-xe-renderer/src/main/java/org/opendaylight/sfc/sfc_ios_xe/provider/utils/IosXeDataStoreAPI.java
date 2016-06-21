@@ -12,11 +12,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.netconf.api.NetconfDocumentedException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction;
@@ -186,10 +187,34 @@ public class IosXeDataStoreAPI implements Callable {
     }
 
     private <U extends DataObject> boolean writeMergeTransaction(InstanceIdentifier<U> addIID, U data) {
-        WriteTransaction writeTransaction = mountpoint.newWriteOnlyTransaction();
+        long timeout = 5000L;
+        int attempt = 0;
+        WriteTransaction transaction = null;
+        do {
+            attempt++;
+            try {
+                transaction = mountpoint.newWriteOnlyTransaction();
+            } catch (RuntimeException e) {
+                if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    try {
+                        Thread.sleep(timeout);
+                        timeout += 1000L;
+                    } catch (InterruptedException i) {
+                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                    }
+                } else {
+                    LOG.error("Runtime exception ... {}", e.getMessage());
+                }
+            }
+        } while (attempt <= 5 && transaction == null);
+        if (transaction == null) {
+            LOG.error("Maximum number of attempts reached");
+            return false;
+        }
         try {
-            writeTransaction.merge(Preconditions.checkNotNull(datastoreType), addIID, data);
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+            transaction.merge(Preconditions.checkNotNull(datastoreType), addIID, data);
+            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = transaction.submit();
             submitFuture.checkedGet();
             return true;
         } catch (TransactionCommitFailedException e) {
@@ -202,10 +227,34 @@ public class IosXeDataStoreAPI implements Callable {
     }
 
     private <U extends DataObject> boolean deleteTransaction(InstanceIdentifier<U> deleteIID) {
-        WriteTransaction writeTx = mountpoint.newWriteOnlyTransaction();
+        long timeout = 5000L;
+        int attempt = 0;
+        WriteTransaction transaction = null;
+        do {
+            attempt++;
+            try {
+                transaction = mountpoint.newWriteOnlyTransaction();
+            } catch (RuntimeException e) {
+                if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    try {
+                        Thread.sleep(timeout);
+                        timeout += 1000L;
+                    } catch (InterruptedException i) {
+                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                    }
+                } else {
+                    LOG.error("Runtime exception ... {}", e.getMessage());
+                }
+            }
+        } while (attempt <= 5 && transaction == null);
+        if (transaction == null) {
+            LOG.error("Maximum number of attempts reached");
+            return false;
+        }
         try {
-            writeTx.delete(Preconditions.checkNotNull(datastoreType), deleteIID);
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+            transaction.delete(Preconditions.checkNotNull(datastoreType), deleteIID);
+            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = transaction.submit();
             submitFuture.checkedGet();
             return true;
         } catch (TransactionCommitFailedException e) {
@@ -218,9 +267,34 @@ public class IosXeDataStoreAPI implements Callable {
     }
 
     private <U extends DataObject> U readTransaction(InstanceIdentifier<U> readIID) {
-        ReadOnlyTransaction readTx = mountpoint.newReadOnlyTransaction();
+        long timeout = 5000L;
+        int attempt = 0;
+        ReadTransaction transaction = null;
+        do {
+            attempt++;
+            try {
+                transaction = mountpoint.newReadOnlyTransaction();
+            } catch (RuntimeException e) {
+                if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    try {
+                        Thread.sleep(timeout);
+                        timeout += 1000L;
+                    } catch (InterruptedException i) {
+                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                    }
+                } else {
+                    LOG.error("Runtime exception ... {}", e.getMessage());
+                }
+            }
+        } while (attempt <= 5 && transaction == null);
+        if (transaction == null) {
+            LOG.error("Maximum number of attempts reached");
+            return null;
+        }
         try {
-            CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(Preconditions.checkNotNull(datastoreType), readIID);
+            CheckedFuture<Optional<U>, ReadFailedException> submitFuture =
+                    transaction.read(Preconditions.checkNotNull(datastoreType), readIID);
             Optional<U> optional = submitFuture.checkedGet();
             if (optional != null && optional.isPresent()) {
                 return optional.get();

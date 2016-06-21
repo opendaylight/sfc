@@ -11,6 +11,7 @@ package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
@@ -46,12 +47,14 @@ public class IosXeServiceFunctionMapperTest {
     private final String ipAddress = "10.0.0.1";
     private DataBroker dataBroker;
     private NodeManager nodeManager;
+    private WriteTransaction writeTransaction;
     private IosXeServiceFunctionMapper sfMapper;
 
     @Before
     public void init() {
         dataBroker = mock(DataBroker.class);
         nodeManager = mock(NodeManager.class);
+        writeTransaction = mock(WriteTransaction.class);
     }
 
     @Test
@@ -115,6 +118,7 @@ public class IosXeServiceFunctionMapperTest {
         when(nodeManager.getConnectedNodes()).thenReturn(nodeMap);
         when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(ipAddress)));
         when(nodeManager.getActiveMountPoints()).thenReturn(nodeWithDataBrokerMap);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         sfMapper = new IosXeServiceFunctionMapper(dataBroker, nodeManager);
         sfMapper.syncFunctions(serviceFunctions, false);
@@ -164,6 +168,7 @@ public class IosXeServiceFunctionMapperTest {
         when(nodeManager.getConnectedNodes()).thenReturn(nodeMap);
         when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(ipAddress)));
         when(nodeManager.getActiveMountPoints()).thenReturn(nodeWithDataBrokerMap);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         sfMapper.syncFunctions(serviceFunctions, true);
 

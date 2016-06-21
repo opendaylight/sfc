@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -25,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorKey;
@@ -34,8 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionBuilder;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePath;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.ConfigServiceChainPathMode;
@@ -49,17 +50,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType.CONFIGURATION;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
     private final OpendaylightSfc odl = new OpendaylightSfc();
     private final String forwarderName = "forwarder";
-    private final String firstFunctionName = "firstFunction";
-    private final String secondFunctionName = "secondFunction";
-    private final String thirdFunctionName = "thirdFunction";
+    private final SfName firstFunctionName = new SfName("firstFunction");
+    private final SfName secondFunctionName = new SfName("secondFunction");
+    private final SfName thirdFunctionName = new SfName("thirdFunction");
     private final String mgmtIp = "10.0.0.1";
     private DataBroker dataBroker;
     private NodeManager nodeManager;
@@ -145,9 +144,8 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
                 .setKey(new ServiceFunctionKey(thirdFunctionName));
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceForwarderBuilder.build());
-
-        new IosXeDataStoreAPI(dataBroker, firstServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
-        new IosXeDataStoreAPI(dataBroker, secondServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
-        new IosXeDataStoreAPI(dataBroker, thirdServiceFunctionBuilder.build(), WRITE_FUNCTION, CONFIGURATION).call();
+        SfcProviderServiceFunctionAPI.putServiceFunction(firstServiceFunctionBuilder.build());
+        SfcProviderServiceFunctionAPI.putServiceFunction(secondServiceFunctionBuilder.build());
+        SfcProviderServiceFunctionAPI.putServiceFunction(thirdServiceFunctionBuilder.build());
     }
 }

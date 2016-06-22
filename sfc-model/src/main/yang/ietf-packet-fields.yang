@@ -4,11 +4,11 @@ module ietf-packet-fields {
   prefix packet-fields;
   import ietf-inet-types {
     prefix inet;
-    revision-date 2010-09-24;
+    revision-date 2013-07-15;
   }
   import ietf-yang-types {
     prefix yang;
-    revision-date 2010-09-24;
+    revision-date 2013-07-15;
   }
   organization "IETF NETMOD (NETCONF Data Modeling Language) Working
                 Group";

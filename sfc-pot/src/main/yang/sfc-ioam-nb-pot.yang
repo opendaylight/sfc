@@ -1,0 +1,364 @@
+module sfc-ioam-nb-pot {
+
+  yang-version 1;
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-ioam-nb-pot";
+
+  prefix sfc-ioam-nb-pot;
+
+  import yang-ext { prefix ext; }
+
+  import service-function { prefix sfc-sf; }
+  import service-function-chain { prefix sfc-sfc; }
+  import service-function-path { prefix sfc-sfp; }
+  import rendered-service-path { prefix sfc-rsp; }
+  import sfc-common { prefix sfc-co; }
+
+  organization "Cisco Systems, Inc.";
+  contact
+    "Xiao Liang <xiaolia@cisco.com>
+     Srihari Raghavan <srihari@cisco.com>";
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing service function chain proof of transit related
+     configuration parameters (RPC) at the north-bound side towards
+     the controller and some internal configuration parameters.";
+
+  revision 2015-07-17 {
+    description
+      "Initial revision.";
+    reference
+      "";
+  }
+
+  identity ioam-pot-algorithm-identity {
+    description
+      "Base identity for iOAM proof of transit algorithms";
+  }
+
+  typedef ioam-pot-algorithm-type {
+    type identityref {
+      base ioam-pot-algorithm-identity;
+    }
+    description
+      "Proof of transit algorithm type.";
+  }
+
+  identity time-resolution{
+    description
+      "Time interval resolution";
+  } //base identity
+
+  identity hours {
+    base time-resolution;
+    description
+      "Hours";
+  }
+
+  identity minutes {
+    base time-resolution;
+    description
+      "Minutes";
+  }
+
+  identity seconds {
+    base time-resolution;
+    description
+      "Seconds";
+  }
+
+  identity milliseconds {
+    base time-resolution;
+    description
+      "Milli-seconds";
+  }
+
+  identity microseconds {
+    base time-resolution;
+    description
+      "Micro-seconds";
+  }
+
+  identity nanoseconds {
+    base time-resolution;
+    description
+      "Nano-seconds";
+  }
+
+  grouping refresh-period-interval {
+    description
+      "Refresh period interval.";
+    leaf refresh-period-time-units {
+      type identityref {
+        base time-resolution;
+      }
+      description "Time units.";
+    }
+
+    leaf refresh-period-value {
+      type uint32;
+      description "Time value.";
+    }
+  }
+
+  typedef bit-mask-options {
+    type enumeration {
+      enum bits16 {
+        value 0;
+        description
+          "16-bits used for individual proof of transit metadata.";
+      }
+      enum bits32 {
+        value 1;
+        description
+          "32-bits used for individual proof of transit metadata.";
+      }
+      enum bits64 {
+        value 2;
+        description
+          "64-bits used for individual proof of transit metadata.";
+      }
+      enum bits128 {
+        value 3;
+        description
+          "128-bits used for individual proof of transit metadata.";
+      }
+      enum bits256 {
+        value 4;
+        description
+          "256-bits used for individual proof of transit metadata.";
+      }
+      enum bits512 {
+        value 5;
+        description
+          "512-bits used for individual proof of transit metadata.";
+      }
+      enum bits1024 {
+        value 6;
+        description
+          "1024-bits used for individual proof of transit metadata.";
+      }
+    }
+    description
+      "Defines the max number of bits used for individual
+       proof of transit metadata fields. For now, the max is 64-bits.
+       This handles the current scope of the proof of transit
+       domain.";
+  }
+
+  identity poly-alg {
+    base "ioam-pot-algorithm-identity";
+    description
+      "Polynomial algorithm based service function chain
+       proof of transit via in-band OAM.";
+  }
+
+  grouping ioam-pot-algorithm-ext {
+    description "Proof of transit algorithm details.";
+    leaf ioam-pot-algorithm {
+      type ioam-pot-algorithm-type;
+      description "Desired proof of transit algorithm for the chain";
+    }
+
+    uses refresh-period-interval;
+
+    choice algorithm-parameters {
+      description "Proof of transit algorithm options.";
+      case poly-params {
+        when "ioam-pot-algorithm = poly-alg" {
+          description "iOAM polynomial algorithm.";
+        }
+        container poly-parameters {
+          config false;
+          description "Proof of transit polynomial options.";
+
+          uses refresh-period-interval;
+
+          leaf profile-bit-mask-value {
+            type bit-mask-options;
+            description
+              "Profile bit mask value used for proof of transit
+               metadata calculations.";
+          }
+
+          list poly-parameter {
+            key "profile-name";
+            ordered-by system;
+            description
+              "List of multiple algorithm parameters ordered
+               by profile name for a node to use. For now, there are
+               two profiles per RSP.";
+
+            leaf profile-name {
+              type string;
+              description
+                "Profile name for the profile being referred to.";
+            }
+
+            leaf prime {
+              type int64;
+              description
+                "Prime number value in the profile.";
+            }
+
+            leaf lpc {
+              type int64;
+              description "LPC value";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping ioam-pot-hop-secret {
+    description
+      "Secret share and other parameters of
+       each hop for SFC proof of transit.";
+    choice algorithm-type {
+      description "Per-hop proof of transit algorithm parameters.";
+      case poly {
+        when "../../ioam-pot-algorithm = poly-alg" {
+          description "iOAM polynomial algorithm.";
+        }
+        container poly-secrets {
+          description "Proof of transit algorithm parameters.";
+          list poly-secret {
+            key "profile-name";
+            ordered-by system;
+            description
+              "List of parameters ordered by the profile name
+               for a node to use.";
+
+            leaf profile-name {
+              type string;
+              description
+                "Profile Name of the profile being referred to.";
+            }
+
+            leaf secret-share {
+              type int64;
+              description
+                "Per-hop secret share of the profile.";
+            }
+
+            leaf secret {
+              type int64;
+              description
+                "The overall secret of the profile being referred to.
+                 Meant for the proof of transit verifier node.";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  augment "/sfc-sf:service-functions"
+        + "/sfc-sf:service-function" {
+    description "Service function entry proof of
+                 transit related augmentation.";
+    ext:augment-identifier "sf-entry-ioam-pot-augmentation";
+    leaf-list ioam-pot-algorithms {
+      type ioam-pot-algorithm-type;
+      description "Proof of transit algorithms supported by SF";
+    }
+  }
+
+  augment "/sfc-sfc:service-function-chains"
+        + "/sfc-sfc:service-function-chain" {
+    description "Service function chain proof of transit
+                 related augmentation.";
+    ext:augment-identifier "sfc-ioam-pot-augmentation";
+    uses ioam-pot-algorithm-ext;
+  }
+
+  augment "/sfc-sfp:service-function-paths"
+        + "/sfc-sfp:service-function-path" {
+    description "Service function path proof of transit
+                 related augmentation.";
+    ext:augment-identifier "sfp-ioam-pot-augmentation";
+    uses ioam-pot-algorithm-ext;
+  }
+
+  augment "/sfc-rsp:rendered-service-paths"
+        + "/sfc-rsp:rendered-service-path" {
+    description "Rendered service path's proof of transit
+                 related augmentation.";
+    ext:augment-identifier "rsp-ioam-pot-augmentation";
+    uses ioam-pot-algorithm-ext;
+  }
+
+  augment "/sfc-rsp:rendered-service-paths"
+        + "/sfc-rsp:rendered-service-path"
+        + "/sfc-rsp:rendered-service-path-hop" {
+    description "Rendered service path hop's proof of transit
+                 related augmentation.";
+    ext:augment-identifier "rsp-ioam-pot-hop-augmentation";
+    uses ioam-pot-hop-secret;
+  }
+
+
+  /*** RPCs ***/
+  rpc enable-sfc-ioam-pot-rendered-path {
+    description
+      "Enable and Configure service function chain proof
+       of transit for a rendered service path.";
+    input {
+      leaf sfc-ioam-pot-rsp-name {
+        type sfc-co:rsp-name;
+        description
+          "Name of the Rendered Service Path to enable
+           proof of transit on. This should be an existing
+           rendered service path such as one created from
+           rendered-service-path:create-rendered-path RPC.
+           NOTE: by default, the last node of the SFC is
+           taken as the decap node for proof of transit.";
+      }
+
+      uses refresh-period-interval;
+
+      leaf ioam-pot-profile-bit-mask {
+        type bit-mask-options;
+        default bits64;
+        description "Default bit mask value for proof of transit
+                     calculations.";
+      }
+    }
+
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if SFC proof of transit of the chosen
+           Rendered Service Path is enabled, otherwise false";
+      }
+    }
+  }
+
+  rpc disable-sfc-ioam-pot-rendered-path {
+    description
+      "Disable service function chain proof of transit
+       for a rendered service path.";
+    input {
+      leaf sfc-ioam-pot-rsp-name {
+        type sfc-co:rsp-name;
+        description
+          "Name of the Rendered Service Path to disable
+           proof of transit on. This should be an existing
+           rendered service path such as one created from
+           rendered-service-path:create-rendered-path RPC.";
+      }
+    }
+
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if SFC proof of transit of the chosen
+           Rendered Service Path is disabled, otherwise false.";
+      }
+    }
+  }
+}

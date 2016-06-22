@@ -1,0 +1,191 @@
+module sfc-ioam-sb-pot {
+
+  yang-version 1;
+
+  namespace "urn:cisco:params:xml:ns:yang:sfc-ioam-sb-pot";
+
+  prefix sfc-ioam-sb-pot;
+
+  import ietf-interfaces { prefix ietf-if; }
+
+  organization "Cisco Systems, Inc.";
+  contact
+    "Shwetha Bhandari <shwethab@cisco.com>
+     Srihari Raghavan <srihari@cisco.com>";
+
+  description
+    "This module contains a collection of YANG definitions for
+     managing in-band OAM based proof of transit configuration
+     parameters.  (https://github.com/ciscodevnet/ioam).
+
+     The model is meant for proof of transit
+     and is targetted for south-bound deployment nodes.";
+
+  revision 2016-06-15 {
+    description
+      "Initial revision.";
+    reference
+      "";
+  }
+
+  typedef profile-index-range {
+    type int32 {
+      range "0 .. 1";
+    }
+    description
+      "Range used for the profile index. Currently restricted to
+       0 or 1 to identify the two profiles.";
+  }
+
+  typedef path-identifier-type {
+    type enumeration {
+      enum acltype {
+        value 0;
+        description "Path identifier is an ACL";
+      }
+    }
+    description "Path identifier type options.";
+  }
+
+  grouping pot-profile {
+    description "A grouping for proof of transit profiles.";
+    list pot-profile-list {
+      key "pot-profile-index";
+      ordered-by user;
+      description "A set of pot profiles.";
+
+      leaf pot-profile-index {
+        type profile-index-range;
+        mandatory true;
+        description
+          "Proof of transit profile index.";
+      }
+
+      leaf prime-number {
+        type uint64;
+        mandatory true;
+        description
+          "Prime number used for module math computation";
+      }
+
+      leaf secret-share {
+        type uint64;
+        mandatory true;
+        description
+          "Share of the secret of polynomial 1 used in computation";
+      }
+
+      leaf public-polynomial {
+        type uint64;
+        mandatory true;
+        description
+          "Public polynomial";
+      }
+
+      leaf lpc {
+        type uint64;
+        mandatory true;
+        description
+          "Lagrange Polynomial Coefficient";
+      }
+
+      leaf validator {
+        type boolean;
+        default "false";
+        description
+          "True if the node is a verifier node";
+      }
+
+      leaf validator-key {
+        type uint64;
+        description
+          "Secret key for validating the path, constant of poly 1";
+      }
+
+      leaf bitmask {
+        type uint64;
+        default 4294967295;
+        description
+          "Number of bits as mask used in random value generation.
+           32-bits of mask is default.";
+      }
+    }
+  }
+
+  container pot-profiles {
+    description "A group of proof of transit profiles.";
+
+    list pot-profile-set {
+      key "pot-profile-name";
+      ordered-by user;
+      description
+        "Set of proof of transit profiles that group parameters
+         required to classify and compute proof of transit
+         metadata at a node";
+
+      leaf pot-profile-name {
+        type string;
+        mandatory true;
+        description
+          "Unique identifier for each proof of transit profile";
+      }
+
+      leaf path-identifier {
+        type string;
+        description
+          "The path identifier could be an ACL or others associated to
+           classify and apply this profile";
+      }
+
+      leaf path-identifier-type-value {
+        type path-identifier-type;
+        default acltype;
+        description
+          "Identifies how to handle the path-identifier.";
+      }
+
+      leaf active-profile-index {
+        type profile-index-range;
+        description
+          "Proof of transit profile index that is currently active.
+           Will be set in the first hop of the path or chain.
+           Other nodes will not use this field.";
+      }
+
+      uses pot-profile;
+
+      leaf node-id {
+        type uint32;
+        mandatory true;
+        description
+          "Node id assigned to this node for proof of transit purposes.";
+      }
+
+      list node-interfaces {
+        key "index";
+        ordered-by system;
+        description
+          "List of node's interfaces on which the pot configuration
+          need to be applied. Typically this are some interfaces
+          that sees the traffic.";
+
+        leaf index {
+          type uint32;
+          mandatory true;
+          description
+            "Index for the interfaces list";
+        }
+
+        leaf intf-name {
+          type ietf-if:interface-ref;
+          mandatory true;
+          description
+            "Instance of ietf-interfaces:interface-ref";
+        }
+      }
+    /*** list: end ***/
+    }
+  /*** Container: end ***/
+  }
+/*** module: end ***/
+}

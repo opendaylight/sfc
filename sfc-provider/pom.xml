@@ -11,6 +11,10 @@
 
     <artifactId>sfc-provider</artifactId>
     <packaging>bundle</packaging>
+    <properties>
+        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
+        <configfile>configuration/initial/sfc-provider-initial.xml</configfile>
+    </properties>
 
     <dependencies>
         <dependency>

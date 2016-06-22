@@ -151,7 +151,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // read all paths
         ServiceFunctionPaths getPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
         assertNotNull("Must not be null", getPaths);
-        assertEquals(writtenPaths, getPaths);
+        assertTrue(writtenPaths.getServiceFunctionPath().containsAll(getPaths.getServiceFunctionPath()));
 
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION);
         assertTrue("Must be true", transactionSuccessful);

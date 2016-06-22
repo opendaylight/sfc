@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_60d8fb1d",
+        "filename": "sfc-model/src/main/yang/service-function-description-monitor-report.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2016-06-22T13:11:37Z",
+      "side": 1,
+      "message": "this yang has different formatting than the other. I would suggest to keep same look and feel.",
+      "revId": "d2b28c56c6cc631b39b531f3ba0191e614941563",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

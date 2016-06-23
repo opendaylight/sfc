@@ -251,7 +251,7 @@
     <!-- odl-sfc-provider config files -->
    <dependency>
        <groupId>${project.groupId}</groupId>
-       <artifactId>sfc-config</artifactId>
+       <artifactId>sfc-provider</artifactId>
        <version>${project.version}</version>
        <type>xml</type>
        <classifier>config</classifier>

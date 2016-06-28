@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--memory", 1024]
+    v.customize ["modifyvm", :id, "--cpus", 4]
+  end
+
+  config.vm.synced_folder "../..", "/sfc"
+
+  config.vm.define "odl" do | h |
+    h.vm.host_name = "odl"
+    h.vm.network :private_network, ip: "192.168.1.5"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--memory", 4096]
+      v.customize ["modifyvm", :id, "--cpus", 4]
+    end
+  end
+
+  config.vm.define "classifier1" do | h |
+    h.vm.host_name = "classifier1"
+    h.vm.network :private_network, ip: "192.168.1.10"
+  end
+
+  config.vm.define "sff1" do | h |
+    h.vm.host_name = "sff1"
+    h.vm.network :private_network, ip: "192.168.1.20"
+  end
+
+  config.vm.define "sf1" do | h |
+    h.vm.host_name = "sf1"
+    h.vm.network :private_network, ip: "192.168.1.30"
+  end
+
+  config.vm.define "sf2" do | h |
+    h.vm.host_name = "sf2"
+    h.vm.network :private_network, ip: "192.168.1.40"
+  end
+
+  config.vm.define "sff2" do | h |
+    h.vm.host_name = "sff2"
+    h.vm.network :private_network, ip: "192.168.1.50"
+  end
+
+  config.vm.define "classifier2" do | h |
+    h.vm.host_name = "classifier2"
+    h.vm.network :private_network, ip: "192.168.1.60"
+  end
+end

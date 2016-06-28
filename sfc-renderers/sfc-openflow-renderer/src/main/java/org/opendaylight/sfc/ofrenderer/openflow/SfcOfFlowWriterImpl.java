@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -65,6 +66,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     // Store RspId to List of FlowDetails, to be able
     // to delete all flows for a particular RSP
     private Map<Long, List<FlowDetails>> rspNameToFlowsMap;
+    private Map<Long, ServiceFunctionForwarder> rspNameToSffMap;
+    private Map<ServiceFunctionForwarder, Long> sffToRspNameMap;
+    private Map<ServiceFunctionForwarder, List<FlowDetails>> sffToFlowsMap;
 
     //temporary list of flows to be deleted. All of them will be transactionally deleted on
     // deleteFlowSet() invokation
@@ -77,6 +81,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         this.threadPoolExecutorService = Executors.newSingleThreadExecutor();;
         this.rspNameToFlowsMap = new HashMap<Long, List<FlowDetails>>();
+        this.rspNameToSffMap = new HashMap<Long, ServiceFunctionForwarder>();
+        this.sffToRspNameMap = new HashMap<ServiceFunctionForwarder, Long>();
+        this.sffToFlowsMap = new HashMap<ServiceFunctionForwarder, List<FlowDetails>>();
         this.flowBuilder = null;
         this.setOfFlowsToDelete = new HashSet<FlowDetails>();
         this.setOfFlowsToAdd = new HashSet<FlowDetails>();

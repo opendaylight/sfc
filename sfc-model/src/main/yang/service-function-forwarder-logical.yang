@@ -1,0 +1,149 @@
+module service-function-forwarder-logical {
+
+  yang-version 1;
+
+  namespace "urn:ericsson:params:xml:ns:yang:sfc-sff-logical";
+
+  prefix sfc-sff-logical;
+
+  import service-function { prefix sfc-sf; revision-date 2014-07-01; }
+  import service-function-forwarder { prefix sfc-sff; revision-date 2014-07-01; }
+  import ietf-yang-types { prefix yang; revision-date 2013-07-15; }
+  import yang-ext { prefix ext; revision-date 2013-07-09; }
+  import sfc-common { prefix sfc-common; revision-date 2015-10-17; }
+  import rendered-service-path { prefix rsp; revision-date 2014-07-01; }
+
+  organization "Ericsson, Inc.";
+  contact "Diego Granados <diego.jesus.granados.lopez@ericsson.com>";
+
+  description "This module contains a collection of YANG definitions used to
+        augment Service Function Forwarder operational information to
+        contain logical-SFF specific information. Also, minor changes
+        (augmentations) in the rendered service path and in the service
+        function elements";
+
+  revision 2017-06-20 {
+      description
+          "Augmentations in sff-state, rendered service paths to include support for
+          logical SFFs (based on Genius project support)";
+  }
+
+  grouping logical-interface-locator {
+      description "Unique interface id of a data plane node to which the SF is attached";
+      leaf interface-uuid {
+          type yang:uuid;
+          description "UUID of the interface";
+      }
+  }
+
+  //typedefs for dpn identifiers
+  typedef dpn-id-type  {
+      type uint64;
+      description "Data-plane node id";
+  }
+
+  identity dpn-id {
+      base "sfc-sl:sl-transport-type";
+      description "Indirect dpnid transport type (Genius project can be used to retrieve concrete transport details)";
+  }
+
+  grouping dpn-locator {
+      description
+         "Data plane-locator: dpn-id (indirect)";
+      leaf dpn-id {
+          type dpn-id-type;
+      }
+  }
+
+  grouping dpnid-rsps {
+       description "";
+      container dpn-rsps {
+          description "For each DPN id, the list contains all RSPs that
+                       are using the data plane node";
+          uses dpn-locator;
+          list rsps {
+                description "";
+              key "name";
+              leaf name {
+                  type sfc-common:sfp-name;
+                  description "The name of the Service Path";
+              }
+          }
+      }
+  }
+
+  grouping service-function-dictionary {
+  list service-function-dictionary {
+      key "name";
+      leaf name {
+        type sfc-common:sf-name;
+        description
+            "The name of the service function.";
+      }
+      container sff-sf-data-plane-locator {
+        description
+          "SFF and SF data plane locators to use when sending
+           packets from this SFF to the associated SF";
+        leaf sf-dpl-name {
+          type sfc-common:sf-data-plane-locator-name;
+          description
+            "The SF data plane locator to use when sending
+             packets to the associated service function";
+        }
+        uses dpn-locator;
+      }
+      list sff-interfaces {
+        key "sff-interface";
+        leaf sff-interface {
+          type string;
+          description
+            "An individual interface on the SFF connected to the
+             SF";
+        }
+        description
+          "A list of interfaces on the SFF which are connected to
+           this SF, usually one 1 or 2 elements";
+      }
+      leaf failmode {
+        type sfc-sff:failmode-type;
+        description
+          "This leaf defines what should the SFF do if it can not
+           send packets to the SF";
+      }
+      description
+        "A list of all Service Functions attached to this SFF.";
+    }
+  }
+
+  augment "/sfc-sf:service-functions/"
+        + "sfc-sf:service-function/"
+        + "sfc-sf:sf-data-plane-locator/" {
+      description "augment the Service Function to allow the use of
+          logical interface locators";
+      ext:augment-identifier "sf-sff-logical-augmentation";
+      uses logical-interface-locator;
+  }
+
+  augment "/sfc-sff:service-function-forwarders-state/"
+        + "sfc-sff:service-function-forwarder-state/" {
+      description "Augments the SFF state to hold logical SFF specific information";
+      ext:augment-identifier "sf-sff-logical-augmentation";
+      uses dpnid-rsps;
+  }
+
+  augment "/sfc-sff:service-function-forwarders-state/"
+      + "sfc-sff:service-function-forwarder-state/" {
+      description "Augments the SFF state to hold logical SFF specific information";
+      ext:augment-identifier "sf-sff-logical-augmentation";
+      uses service-function-dictionary;
+  }
+
+  augment "/rsp:rendered-service-paths/"
+      + "rsp:rendered-service-path/"
+      + "rsp:rendered-service-path-hop/" {
+      description "Augments the RSP hop information to allow to use dpn locators
+          instead of sff locators";
+      ext:augment-identifier "sf-sff-logical-augmentation";
+      uses dpn-locator;
+  }
+}

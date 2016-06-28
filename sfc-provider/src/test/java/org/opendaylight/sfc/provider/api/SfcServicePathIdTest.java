@@ -9,6 +9,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.GenerationAlgorithmEnum;
 
@@ -34,6 +35,11 @@ public class SfcServicePathIdTest  extends AbstractSfcRendererServicePathAPITest
     LinkedList<Integer> FlippedPathIdList = new LinkedList<Integer>(
             Arrays.asList(8388608, 8388608, 8388671, 8388672, 8388673, 8389631, 8389632, 8389633));
 
+    @Before
+    public void init() {
+        super.init();
+    }
+    
     /**
      *
      * Method: generatePathIdRandomIncrements()
@@ -41,7 +47,6 @@ public class SfcServicePathIdTest  extends AbstractSfcRendererServicePathAPITest
      */
     @Test
     public void testGeneratePathIdRandomIncrements() throws Exception {
-
         int i;
         for (i = 0; i < 20; i++) {
             assertTrue(pathIdSet.add(SfcServicePathId.generatePathIdRandomIncrements()));

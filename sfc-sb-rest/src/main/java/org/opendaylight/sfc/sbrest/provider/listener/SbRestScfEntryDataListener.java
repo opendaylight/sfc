@@ -7,12 +7,8 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
 import java.util.Map;
 import java.util.Set;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
@@ -24,6 +20,8 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);

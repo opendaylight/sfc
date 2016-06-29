@@ -8,12 +8,12 @@
 
 package org.opendaylight.sfc.ofrenderer.openflow;
 
+import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -46,8 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.net.InetAddresses;
 
 /*
  * This class writes Openflow Flow Entries to the SFF once an SFF has been configured.

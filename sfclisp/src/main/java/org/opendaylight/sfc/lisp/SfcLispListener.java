@@ -8,13 +8,13 @@
 package org.opendaylight.sfc.lisp;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-//import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
-//import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+//import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+//import org.opendaylight.sfc.provider.OpendaylightSfc;
 
 public class SfcLispListener implements ISfcLispListener, BindingAwareConsumer {
 

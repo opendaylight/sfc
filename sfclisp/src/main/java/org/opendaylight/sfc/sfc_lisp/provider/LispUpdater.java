@@ -7,6 +7,9 @@
  */
 package org.opendaylight.sfc.sfc_lisp.provider;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
@@ -54,9 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev15090
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class LispUpdater implements ILispUpdater {
 

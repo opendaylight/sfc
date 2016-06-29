@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -44,10 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 /**

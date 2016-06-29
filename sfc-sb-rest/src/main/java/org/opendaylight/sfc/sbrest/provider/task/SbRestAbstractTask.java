@@ -7,12 +7,12 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import org.opendaylight.sfc.sbrest.json.ExporterFactory;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.opendaylight.sfc.sbrest.json.ExporterFactory;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+
 
 abstract public class SbRestAbstractTask implements Runnable {
 

@@ -8,10 +8,8 @@
 
 package org.opendaylight.sfc.ofrenderer.openflow;
 
-import java.util.concurrent.ExecutionException;
-
 import java.util.Set;
-
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;

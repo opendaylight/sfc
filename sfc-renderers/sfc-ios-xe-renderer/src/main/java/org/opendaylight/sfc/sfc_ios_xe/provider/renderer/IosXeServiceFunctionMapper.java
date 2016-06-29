@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
 
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.sfc_ios_xe.provider.listener.ServiceFunctionListener;
@@ -32,9 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 

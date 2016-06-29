@@ -18,6 +18,11 @@
 package org.opendaylight.sfc.sfc_ovs.provider;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -53,11 +58,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class SfcOvsUtil {
 

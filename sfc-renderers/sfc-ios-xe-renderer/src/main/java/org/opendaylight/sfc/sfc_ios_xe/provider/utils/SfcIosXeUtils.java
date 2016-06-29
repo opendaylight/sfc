@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.sfc_ios_xe.provider.utils;
 
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -33,8 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.forwarder.ServiceFfNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class SfcIosXeUtils {
 

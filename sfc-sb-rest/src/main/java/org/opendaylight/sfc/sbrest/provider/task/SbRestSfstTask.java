@@ -7,14 +7,14 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.sbrest.json.SfstExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 
 public class SbRestSfstTask extends SbRestAbstractTask {
     private static final String SFST_REST_URI = "/config/service-function-scheduler-type:service-function-scheduler-types/service-function-scheduler-type/";

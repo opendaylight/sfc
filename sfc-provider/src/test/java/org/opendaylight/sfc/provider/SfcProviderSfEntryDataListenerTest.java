@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.provider;
 
+import java.util.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,9 +59,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 

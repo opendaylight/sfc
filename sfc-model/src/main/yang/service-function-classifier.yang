@@ -5,7 +5,10 @@ module service-function-classifier {
 
   prefix sfc-scf;
 
-  // import ietf-acl {prefix "ietf-acl";}
+  import ietf-access-control-list {
+    prefix ietf-acl;
+    revision-date 2016-02-18;
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -57,10 +60,15 @@ module service-function-classifier {
          description
          "Classification function name";
       }
-      leaf access-list {
-        type string;
+      container acl {
         description
-          "The ACL name associated with this classifier";
+          "The ACL associated with this classifier";
+        leaf name {
+          type string;
+        }
+        leaf type {
+          type ietf-acl:acl-type;
+        }
       }
 
       list scl-service-function-forwarder {

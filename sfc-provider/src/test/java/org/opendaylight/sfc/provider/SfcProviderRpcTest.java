@@ -8,62 +8,19 @@
 
 package org.opendaylight.sfc.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPITest;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathOutput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRenderedServicePathFirstHopInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRenderedServicePathFirstHopInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRenderedServicePathFirstHopOutput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRspFirstHopBySftListInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRspFirstHopBySftListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.ReadRspFirstHopBySftListOutput;
+import org.opendaylight.sfc.provider.api.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionOutput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorKey;
@@ -71,11 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.InstantiateServiceFunctionChainInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
@@ -91,11 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
@@ -113,13 +62,20 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static org.junit.Assert.*;
 
 public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
@@ -281,14 +237,14 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     };
 
     @SuppressWarnings("serial")
-    List<SftType> sfTypes = new ArrayList<SftType>() {
+    List<SftTypeName> sfTypes = new ArrayList<SftTypeName>() {
 
         {
-            add(new SftType("firewall"));
-            add(new SftType("dpi"));
-            add(new SftType("napt44"));
-            add(new SftType("http-header-enrichment"));
-            add(new SftType("qos"));
+            add(new SftTypeName("firewall"));
+            add(new SftTypeName("dpi"));
+            add(new SftTypeName("napt44"));
+            add(new SftTypeName("http-header-enrichment"));
+            add(new SftTypeName("qos"));
 
         }
     };
@@ -651,8 +607,8 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         writeRSP();
         ReadRspFirstHopBySftListInputBuilder readRspFirstHopBySftListInputBuilder =
                 new ReadRspFirstHopBySftListInputBuilder();
-        List<SftType> firewallList = new ArrayList<>();
-        firewallList.add(new SftType("firewall"));
+        List<SftTypeName> firewallList = new ArrayList<>();
+        firewallList.add(new SftTypeName("firewall"));
         readRspFirstHopBySftListInputBuilder.setSftList(firewallList);
         ReadRspFirstHopBySftListInput readRspFirstHopBySftListInput = readRspFirstHopBySftListInputBuilder.build();
 
@@ -731,10 +687,10 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     @Test
     public void putAndReadServiceFunctionTest() throws Exception {
         PutServiceFunctionInput putSfInput1 =
-                createPutServiceFunctionInput(new SfName("sfName1"), new SftType("firewall"), "192.168.50.80",
+                createPutServiceFunctionInput(new SfName("sfName1"), new SftTypeName("firewall"), "192.168.50.80",
                         "192.168.50.85", 6644, new SfDataPlaneLocatorName("dpLocatorKey1"));
 
-        PutServiceFunctionInput putSfInput2 = createPutServiceFunctionInput(new SfName("sfName2"), new SftType("dpi"),
+        PutServiceFunctionInput putSfInput2 = createPutServiceFunctionInput(new SfName("sfName2"), new SftTypeName("dpi"),
                 "192.168.50.90", "192.168.50.95", 6655, new SfDataPlaneLocatorName("dpLocatorKey2"));
 
         assertServiceFunctionDoesNotExist(putSfInput1.getName());
@@ -747,7 +703,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         // readAndAssertServiceFunction(putSfInput2);
     }
 
-    private static PutServiceFunctionInput createPutServiceFunctionInput(SfName sfName, SftType sfType,
+    private static PutServiceFunctionInput createPutServiceFunctionInput(SfName sfName, SftTypeName sfType,
             String ipMgmtAddress, String dpLocatorIpAddress, int dpLocatorPort, SfDataPlaneLocatorName dpLocatorKey) {
 
         // prepare ip builder for data plane locator
@@ -845,24 +801,24 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         // 8 functions + lists
         // SFF1
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(0), new SftType("firewall"), sfDplNames.get(0), sffNames.get(0)));
+                createServiceFunction(sfNames.get(0), new SftTypeName("firewall"), sfDplNames.get(0), sffNames.get(0)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(1), new SftType("dpi"), sfDplNames.get(1), sffNames.get(0)));
+                createServiceFunction(sfNames.get(1), new SftTypeName("dpi"), sfDplNames.get(1), sffNames.get(0)));
         // SFF2
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(2), new SftType("qos"), sfDplNames.get(2), sffNames.get(1)));
+                createServiceFunction(sfNames.get(2), new SftTypeName("qos"), sfDplNames.get(2), sffNames.get(1)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(3), new SftType("napt44"), sfDplNames.get(3), sffNames.get(1)));
+                createServiceFunction(sfNames.get(3), new SftTypeName("napt44"), sfDplNames.get(3), sffNames.get(1)));
         // SFF3
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(4), new SftType("firewall"), sfDplNames.get(4), sffNames.get(2)));
+                createServiceFunction(sfNames.get(4), new SftTypeName("firewall"), sfDplNames.get(4), sffNames.get(2)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(5), new SftType("dpi"), sfDplNames.get(5), sffNames.get(2)));
+                createServiceFunction(sfNames.get(5), new SftTypeName("dpi"), sfDplNames.get(5), sffNames.get(2)));
         // SFF4
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(6), new SftType("qos"), sfDplNames.get(6), sffNames.get(3)));
+                createServiceFunction(sfNames.get(6), new SftTypeName("qos"), sfDplNames.get(6), sffNames.get(3)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(7), new SftType("firewall"), sfDplNames.get(7), sffNames.get(3)));
+                createServiceFunction(sfNames.get(7), new SftTypeName("firewall"), sfDplNames.get(7), sffNames.get(3)));
 
         firewallSfs.add(sfNames.get(0));
         firewallSfs.add(sfNames.get(4));
@@ -874,16 +830,16 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         napt44Sfs.add(sfNames.get(3));
 
         // types
-        assertTrue("Must be true", createServiceFunctionType(new SftType("firewall"), firewallSfs));
-        assertTrue("Must be true", createServiceFunctionType(new SftType("dpi"), dpiSfs));
-        assertTrue("Must be true", createServiceFunctionType(new SftType("qos"), qosSfs));
-        assertTrue("Must be true", createServiceFunctionType(new SftType("napt44"), napt44Sfs));
+        assertTrue("Must be true", createServiceFunctionType(new SftTypeName("firewall"), firewallSfs));
+        assertTrue("Must be true", createServiceFunctionType(new SftTypeName("dpi"), dpiSfs));
+        assertTrue("Must be true", createServiceFunctionType(new SftTypeName("qos"), qosSfs));
+        assertTrue("Must be true", createServiceFunctionType(new SftTypeName("napt44"), napt44Sfs));
 
         // groups
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(0), firewallSfs, new SftType("firewall")));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(1), dpiSfs, new SftType("dpi")));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(2), qosSfs, new SftType("qos")));
-        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(3), qosSfs, new SftType("napt44")));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(0), firewallSfs, new SftTypeName("firewall")));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(1), dpiSfs, new SftTypeName("dpi")));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(2), qosSfs, new SftTypeName("qos")));
+        assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(3), qosSfs, new SftTypeName("napt44")));
 
         // chain + path 1 (SFF1 & SFF2)
         chainSf1.add(sfNames.get(0));
@@ -973,14 +929,14 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function type
      * put type, and list of all service functions with that type
      */
-    private boolean createServiceFunctionType(SftType serviceType, List<SfName> sfNames) {
+    private boolean createServiceFunctionType(SftTypeName serviceType, List<SfName> sfNames) {
         List<SftServiceFunctionName> sftServiceFunctionNames = new ArrayList<>();
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder;
 
         for (SfName sfName : sfNames) {
             sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-            sftServiceFunctionNameBuilder.setName(sfName.getValue())
-                .setKey(new SftServiceFunctionNameKey(sfName.getValue()));
+            sftServiceFunctionNameBuilder.setName(sfName)
+                .setKey(new SftServiceFunctionNameKey(sfName));
             sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
         }
 
@@ -1013,7 +969,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * build service function with data plane locator
      * specify function name, type, locator name and name of appropriate forwarder
      */
-    private boolean createServiceFunction(SfName functionName, SftType functionType, SfDataPlaneLocatorName locatorName,
+    private boolean createServiceFunction(SfName functionName, SftTypeName functionType, SfDataPlaneLocatorName locatorName,
             SffName forwarderName) {
         List<SfDataPlaneLocator> sfDataPlaneLocator = new ArrayList<>();
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
@@ -1036,7 +992,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function group containing service functions of specific type
      * specify group name, list of service functions and type (should match with sf type) of group
      */
-    private boolean createServiceFunctionGroup(String groupName, List<SfName> sfNames, SftType groupType) {
+    private boolean createServiceFunctionGroup(String groupName, List<SfName> sfNames, SftTypeName groupType) {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
 
         /*

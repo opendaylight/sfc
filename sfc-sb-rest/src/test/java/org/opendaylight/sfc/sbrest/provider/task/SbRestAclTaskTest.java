@@ -8,15 +8,10 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,17 +31,23 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.AclBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class contains unit tests for SbRestAclTask
@@ -61,6 +62,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class SbRestAclTaskTest {
 
     private static final String ACL_NAME = "Dummy_ACL";
+    private static final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
     private static final String CLASSIFIER_NAME = "Dummy_Classifier";
     private static final SffName SFF_NAME = new SffName("Dummy_SFF");
     private static final String REST_URI = "http://localhost:5000";
@@ -73,7 +75,7 @@ public class SbRestAclTaskTest {
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class))
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class, Class.class))
             .toReturn(this.buildAccessListState());
 
         PowerMockito
@@ -118,7 +120,7 @@ public class SbRestAclTaskTest {
 
     @Test
     public void testSbRestAclTaskAclNameForwarderList() throws IOException {
-        SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, ACL_NAME,
+        SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, ACL_NAME, ACL_TYPE,
                 this.buildServiceFunctionClassifier().getSclServiceFunctionForwarder(), executorService);
 
         assertNull(sbRestAclTask.jsonObject);
@@ -156,6 +158,7 @@ public class SbRestAclTaskTest {
     private Acl buildAccessList() {
         AclBuilder aclBuilder = new AclBuilder();
         aclBuilder.setAclName(ACL_NAME);
+        aclBuilder.setAclType(ACL_TYPE);
 
         return aclBuilder.build();
     }
@@ -164,6 +167,7 @@ public class SbRestAclTaskTest {
     private AccessListState buildAccessListState() {
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
         accessListStateBuilder.setAclName(ACL_NAME);
+        accessListStateBuilder.setAclType(ACL_TYPE);
 
         AclServiceFunctionClassifierBuilder aclServiceFunctionClassifierBuilder =
                 new AclServiceFunctionClassifierBuilder();

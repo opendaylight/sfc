@@ -1,20 +1,23 @@
 module service-function-description-monitor-report {
+
     namespace "urn.intel.params:xml:ns:sf-desc-mon-rpt";
     prefix sf-desc-mon-rpt;
 
     import ietf-inet-types {
-        prefix inet;
-        revision-date 2010-09-24;
-        }
+      prefix inet;
+      revision-date 2013-07-15;
+    }
+
     import ietf-yang-types {
-        prefix yang;
-        revision-date 2010-09-24;
-        }
+      prefix yang;
+      revision-date 2013-07-15;
+    }
 
     organization "Intel Inc.";
     contact "honglix.chen@intel.com";
     description
-        "The module for entities implementing the network service functions for Service Function Chaining";
+        "The module for entities implementing the network service
+        functions for Service Function Chaining";
 
     revision 2014-11-05 {
         description "Initial revision.";
@@ -25,39 +28,48 @@ module service-function-description-monitor-report {
             type inet:ip-address;
             description "Data-plane IP address";
         }
+
         leaf data-plane-port {
             type inet:port-number;
             description "Data-plane port number";
         }
+
         leaf type {
             type string;
             description "SF type";
         }
+
         leaf number-of-dataports {
             type uint32;
             description "Number of dataports";
         }
+
         container capabilities {
             leaf supported-packet-rate {
                 type uint32;
                 description "Maximum Mpps supported";
             }
+
             leaf supported-bandwidth {
                 type uint32;
                 description "Maximum Mbps supported ";
             }
+
             leaf supported-ACL-number {
                 type uint32;
                 description "ACL number of the service function";
             }
+
             leaf RIB-size {
                 type uint32;
                 description "Number of Routing Information Table's entries.";
             }
+
             leaf FIB-size {
                 type uint32;
                 description "Number of Forwarding Information Table's entries.";
             }
+
             container ports-bandwidth {
                 list port-bandwidth {
                     key port-id;
@@ -65,14 +77,17 @@ module service-function-description-monitor-report {
                         type uint32;
                         description "The id of the port ";
                     }
+
                     leaf ipaddress {
                         type inet:ipv4-address;
                         description "IP address of the port";
                     }
+
                     leaf macaddress {
                        type yang:mac-address;
                        description "MAC address of the the port";
                     }
+
                     leaf supported-bandwidth {
                         type uint32;
                         description "Maximum Mbps supported by the port";
@@ -87,39 +102,48 @@ module service-function-description-monitor-report {
             type boolean;
             description "Liveness flag of the service function";
         }
+
         container resource-utilization {
             leaf packet-rate-utilization {
                 type uint32;
                 description "Percentage of current package rate utilization.";
             }
+
             leaf bandwidth-utilization {
                 type uint32;
                 description "Percentage of bandwidth utilization.";
             }
+
             leaf CPU-utilization {
                 type uint32;
                 description "Percentage of CPU utilization.";
             }
+
             leaf memory-utilization {
                 type uint32;
                 description "Percentage of memory utilization.";
             }
+
             leaf available-memory {
                 type uint32;
                 description "Available memory size of the service function in MB.";
             }
+
             leaf RIB-utilization {
                 type uint32;
                 description "Percentage of Routing Information Table utilization.";
             }
+
             leaf FIB-utilization {
                 type uint32;
                 description "Percentage of Forwarding Information Table utilization.";
             }
+
             leaf power-utilization {
                 type uint32;
                 description "power utilization in W.";
             }
+
             container SF-ports-bandwidth-utilization {
                 list port-bandwidth-utilization {
                     key port-id;
@@ -127,38 +151,47 @@ module service-function-description-monitor-report {
                        type uint32;
                        description "The id of the port ";
                     }
+
                     leaf bandwidth-utilization {
                        type uint32;
                        description "Percentage of the port's supported bandwidth utilization.";
                     }
+
                     leaf rx-packet {
                        type yang:zero-based-counter64;
                        description "The number of received packets.";
                     }
+
                     leaf tx-packet {
                        type yang:zero-based-counter64;
                        description "The number of transmitted packets.";
                     }
+
                     leaf rx-bytes {
                        type yang:zero-based-counter64;
                        description "The number of received bytes.";
                     }
+
                     leaf tx-bytes {
                        type yang:zero-based-counter64;
                        description "The number of transmitted bytes.";
                     }
+
                     leaf rx-bytes-rate {
                        type uint32;
                        description "Bytes received rate.";
                     }
+
                     leaf tx-bytes-rate {
                        type uint32;
                        description "Bytes transmitted rate.";
                     }
+
                     leaf rx-packet-rate {
                        type uint32;
                        description "Packets received rate.";
                     }
+
                     leaf tx-packet-rate {
                        type uint32;
                        description "Packets transmitted rate.";
@@ -172,6 +205,7 @@ module service-function-description-monitor-report {
         container description-info {
             uses SF-description;
         }
+
         container monitoring-info {
             uses SF-monitoring-info;
         }
@@ -197,3 +231,4 @@ module service-function-description-monitor-report {
         }
     }
 }
+

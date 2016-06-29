@@ -385,6 +385,7 @@ def get_service_function_acl_data():
     "acl": [
       {
         "acl-name": "ACL1",
+        "acl-type": "ietf-access-control-list:ipv4-acl",
         "access-list-entries": {
           "ace": [
             {
@@ -409,6 +410,7 @@ def get_service_function_acl_data():
       },
       {
         "acl-name": "ACL2",
+        "acl-type": "ietf-access-control-list:ipv4-acl",
         "access-list-entries": {
           "ace": [
             {
@@ -450,7 +452,10 @@ def get_service_function_classifiers_data():
             "interface": "veth-br"
           }
         ],
-        "access-list": "ACL1"
+        "acl": {
+            "name": "ACL1",
+            "type": "ietf-access-control-list:ipv4-acl"
+         }
       },
       {
         "name": "Classifier2",
@@ -460,7 +465,10 @@ def get_service_function_classifiers_data():
             "interface": "veth-br"
           }
         ],
-        "access-list": "ACL2"
+        "acl": {
+            "name": "ACL2",
+            "type": "ietf-access-control-list:ipv4-acl"
+         }
       }
     ]
   }

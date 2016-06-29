@@ -6,13 +6,13 @@ module service-statistics {
 
   import ietf-inet-types {
       prefix inet;
-      revision-date 2010-09-24;
-      }
+      revision-date 2013-07-15;
+  }
 
   import ietf-yang-types {
-    prefix yang;
-    revision-date 2010-09-24;
-    }
+      prefix yang;
+      revision-date 2013-07-15;
+  }
 
   organization "Cisco Systems, Inc.";
   contact "Reinaldo Penno <repenno@cisco.com>";
@@ -40,15 +40,20 @@ module service-statistics {
      // RFC Ed.: replace XXXX with actual RFC number and remove this
      // note.
 
-     // RFC Ed.: update the date below with the date of RFC publication
+     // RFC Ed.: update the date below with the date of RFC
+     // publication
      // and remove this note.
 
   revision 2014-07-01 {
     description
-    "Initial Revision";
+      "Initial Revision";
+    reference
+      "https://tools.ietf.org/html/draft-penno-sfc-yang-14";
   }
 
   grouping service-statistics-group {
+      description
+        "Group that holds the list that indexes statistics by timestamp";
       list statistic-by-timestamp {
           key "timestamp";
           leaf timestamp {
@@ -58,24 +63,38 @@ module service-statistics {
                   counting from 1.1.1970 00:00:00 UTC (= 0)";
           }
           uses statistic-fields;
+          description
+            "This list holds statistics indexed by timestamp";
       }
   }
 
   grouping statistic-fields {
+      description
+        "Groups all statistics containers";
       container service-statistic {
           config false;
           leaf bytes-in {
             type yang:zero-based-counter64;
+            description
+              "Received bytes";
           }
           leaf bytes-out {
             type yang:zero-based-counter64;
+            description
+              "Transmitted bytes";
           }
           leaf packets-in {
             type yang:zero-based-counter64;
+            description
+              "Received packets";
           }
           leaf packets-out {
             type yang:zero-based-counter64;
+            description
+              "Transmitted packets";
           }
+          description
+            "This container holds packets and bytes statistics";
       }
   }
 }

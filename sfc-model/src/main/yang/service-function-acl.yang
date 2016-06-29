@@ -7,7 +7,7 @@ module service-function-acl {
 
   import ietf-access-control-list {
     prefix ietf-acl;
-    revision-date 2015-03-17;
+    revision-date 2016-02-18;
   }
   import ipfix-application-information {
     prefix ipfix-application-information;
@@ -51,12 +51,18 @@ module service-function-acl {
       description
         "This list holds operational data for all access lists
          in the domain";
-      key "acl-name";
+      key "acl-type acl-name";
       leaf acl-name {
         type string;
         description
           "The name of the acl";
       }
+      leaf acl-type {
+        type ietf-acl:acl-type;
+        description
+            "Type of the acl";
+      }
+
       list acl-service-function-classifier {
         key "name";
         leaf name {

@@ -18,23 +18,25 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev1510
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.state.AccessListStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.state.access.list.state.AclServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.state.access.list.state.AclServiceFunctionClassifierBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.AccessLists;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.Acl;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.AclKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntries;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.AccessListEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.Ace;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.AceBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.ActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.MatchesBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.actions.packet.handling.PermitBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev150317.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.DestinationPortRangeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev150611.acl.transport.header.fields.SourcePortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AccessLists;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.AclBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.AclKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.AceBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.ActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.MatchesBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.actions.packet.handling.PermitBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4Builder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6Builder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.*;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.DestinationPortRangeBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.SourcePortRangeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import static junit.framework.TestCase.*;
 public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
     private final String ACL_NAME = "aclName";
+    private final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
     private final String CLASSIFIER_NAME = "classifier";
 
     private final List<String> IP_V4_ADDRESS = new ArrayList<String>(){
@@ -89,21 +92,22 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     //read existing access list from data store
     public void testReadAccessList() throws Exception {
 
+
         //create Access List with entries and IID, then write transaction to data store
         AclBuilder aclBuilder = new AclBuilder();
         aclBuilder.setAclName(ACL_NAME)
-                .setKey(new AclKey(ACL_NAME))
+                .setKey(new AclKey(ACL_NAME, ACL_TYPE))
                 .setAccessListEntries(createAccessListEntries());
 
         InstanceIdentifier<Acl> aclIID = InstanceIdentifier.builder(AccessLists.class)
-                .child(Acl.class, new AclKey(ACL_NAME)).build();
+                .child(Acl.class, new AclKey(ACL_NAME, ACL_TYPE)).build();
 
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclIID, aclBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         assertTrue("must be true", transactionSuccessful);
 
         //read access list from data store
-        Acl accessList = SfcProviderAclAPI.readAccessList(ACL_NAME);
+        Acl accessList = SfcProviderAclAPI.readAccessList(ACL_NAME, ACL_TYPE);
 
         assertNotNull("Must not be null", accessList);
         assertNotNull("Must not be null", accessList.getAccessListEntries());
@@ -130,18 +134,18 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         String ACL_STATE_NAME = "aclStateName";
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
         accessListStateBuilder.setAclName(ACL_STATE_NAME)
-                .setKey(new AccessListStateKey(ACL_STATE_NAME))
+                .setKey(new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE))
                 .setAclServiceFunctionClassifier(createAclServiceFunctionClassifier());
 
         InstanceIdentifier<AccessListState> aclStateIID = InstanceIdentifier.builder(AccessListsState.class)
-                .child(AccessListState.class, new AccessListStateKey(ACL_STATE_NAME)).build();
+                .child(AccessListState.class, new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE)).build();
 
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclStateIID, accessListStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
 
         assertTrue("must be true", transactionSuccessful);
 
         //read access list state from data store
-        AccessListState accessListState = SfcProviderAclAPI.readAccessListState(ACL_STATE_NAME);
+        AccessListState accessListState = SfcProviderAclAPI.readAccessListState(ACL_STATE_NAME, ACL_TYPE);
 
         assertNotNull("Must not be null", accessListState);
         assertEquals("Must be equal", accessListState.getAclName(), ACL_STATE_NAME);
@@ -159,12 +163,12 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     public void testAddAndDeleteClassifier() throws Exception {
 
         //add classifier
-        boolean result = SfcProviderAclAPI.addClassifierToAccessListState(ACL_NAME, CLASSIFIER_NAME);
+        boolean result = SfcProviderAclAPI.addClassifierToAccessListState(ACL_NAME, ACL_TYPE, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
 
         //delete classifier
-        result = SfcProviderAclAPI.deleteClassifierFromAccessListState(ACL_NAME, CLASSIFIER_NAME);
+        result = SfcProviderAclAPI.deleteClassifierFromAccessListState(ACL_NAME, ACL_TYPE, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
     }

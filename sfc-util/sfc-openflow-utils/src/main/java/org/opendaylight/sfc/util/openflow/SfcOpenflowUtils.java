@@ -9,6 +9,10 @@ package org.opendaylight.sfc.util.openflow;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.ActionUtil;
@@ -110,10 +114,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 // Import Nicira extension
 

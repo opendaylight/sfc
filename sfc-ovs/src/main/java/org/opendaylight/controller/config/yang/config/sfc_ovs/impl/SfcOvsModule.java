@@ -17,6 +17,7 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_ovs.impl;
 
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc;
@@ -26,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
 
 public class SfcOvsModule extends org.opendaylight.controller.config.yang.config.sfc_ovs.impl.AbstractSfcOvsModule {
 

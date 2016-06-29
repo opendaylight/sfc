@@ -8,6 +8,9 @@
 
 package org.opendaylight.sfc.ofrenderer;
 
+import java.util.concurrent.ExecutionException;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRendererDataListener;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRspDataListener;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfSfgDataListener;
@@ -19,15 +22,10 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yangtools.concepts.Registration;
-
-import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 //
 // This class is instantiated from:

@@ -8,6 +8,7 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_provider.impl;
 
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -21,7 +22,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
 
 /**
  * This class is called from the MD-SAL infra in order to bootstrap
@@ -34,8 +34,6 @@ import java.util.concurrent.ExecutionException;
  * @since       2014-06-30
  * @see org.opendaylight.controller.config.yang.config.sfc_provider.impl.SfcProviderModule
  */
-
-
 public class SfcProviderModule extends org.opendaylight.controller.config.yang.config.sfc_provider.impl.AbstractSfcProviderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderModule.class);

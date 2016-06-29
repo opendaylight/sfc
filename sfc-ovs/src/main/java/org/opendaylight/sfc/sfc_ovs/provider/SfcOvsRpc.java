@@ -20,6 +20,7 @@ package org.opendaylight.sfc.sfc_ovs.provider;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.Future;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
@@ -40,7 +41,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Future;
 
 public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 

@@ -11,9 +11,9 @@ package org.opendaylight.sfc.ofrenderer.openflow;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+
 
 /**
  * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.

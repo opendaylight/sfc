@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +42,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertNotNull;
 

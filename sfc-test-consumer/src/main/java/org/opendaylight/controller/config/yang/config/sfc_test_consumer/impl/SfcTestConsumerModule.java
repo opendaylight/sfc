@@ -8,8 +8,8 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl;
 
-import org.opendaylight.sfc.sfc_test_consumer.SfcTestConsumerImpl;
 import org.opendaylight.sfc.sfc_test_consumer.SfcTestConsumer;
+import org.opendaylight.sfc.sfc_test_consumer.SfcTestConsumerImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 

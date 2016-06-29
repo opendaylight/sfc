@@ -10,7 +10,6 @@ package org.opendaylight.sfc.sfc_lisp.provider.listener;
 
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -22,6 +21,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * This class is the DataListener for SFF changes.

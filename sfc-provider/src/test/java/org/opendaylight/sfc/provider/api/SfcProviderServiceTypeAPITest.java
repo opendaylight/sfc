@@ -25,8 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import static org.junit.Assert.*;
+
 
 public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
 

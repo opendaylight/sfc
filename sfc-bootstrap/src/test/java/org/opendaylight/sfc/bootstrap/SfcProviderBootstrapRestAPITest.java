@@ -8,15 +8,12 @@
 
 package org.opendaylight.sfc.bootstrap;
 
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
+import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -27,8 +24,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-import com.sun.jersey.api.client.ClientHandlerException;
 
 /**
  * This class contains unit test for SfcProviderBootstrapRestAPI

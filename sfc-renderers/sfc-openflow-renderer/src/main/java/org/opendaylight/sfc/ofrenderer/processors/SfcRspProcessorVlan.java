@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -18,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
+
 
 public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     private static final int VLAN_ID_INCR_HOP = 1;

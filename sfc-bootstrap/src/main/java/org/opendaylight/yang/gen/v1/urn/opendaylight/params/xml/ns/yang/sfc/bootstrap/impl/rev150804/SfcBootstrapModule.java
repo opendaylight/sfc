@@ -3,10 +3,10 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.sfc.boo
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.sfc.bootstrap.SfcProviderBootstrapRestAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SfcBootstrapModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.sfc.bootstrap.impl.rev150804.AbstractSfcBootstrapModule {
     private static final Logger LOG = LoggerFactory.getLogger(SfcBootstrapModule.class);

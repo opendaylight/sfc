@@ -10,7 +10,6 @@ package org.opendaylight.sfc.ofrenderer.utils;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -18,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
 

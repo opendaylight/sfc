@@ -9,6 +9,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import java.util.Random;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.GenerationAlgorithmEnum;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIds;
@@ -18,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathIdKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.util.Random;
 
 /**
  * This class has the APIs to operate on the Service PathIds.

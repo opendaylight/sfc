@@ -8,12 +8,10 @@
 
 package org.opendaylight.sfc.provider.topology;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.List;
 import java.util.TreeSet;
-
+import org.junit.Before;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**

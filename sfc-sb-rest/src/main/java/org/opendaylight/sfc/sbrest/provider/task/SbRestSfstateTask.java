@@ -7,17 +7,17 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 
 public class SbRestSfstateTask extends SbRestAbstractTask {
     private static final String SFSTATE_REST_URI = "/operational/service-function:service-functions-state/service-function-state/";

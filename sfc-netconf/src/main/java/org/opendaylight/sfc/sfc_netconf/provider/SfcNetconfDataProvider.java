@@ -8,10 +8,10 @@
 
 package org.opendaylight.sfc.sfc_netconf.provider;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
-
-import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
+
 
 public class SfcNetconfDataProvider implements BindingAwareConsumer {
 

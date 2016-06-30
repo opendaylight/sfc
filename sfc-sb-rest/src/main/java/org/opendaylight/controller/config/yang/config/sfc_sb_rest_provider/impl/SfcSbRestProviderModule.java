@@ -8,12 +8,12 @@
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket;
 import org.opendaylight.sfc.sbrest.provider.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SfcSbRestProviderModule extends AbstractSfcSbRestProviderModule {
 

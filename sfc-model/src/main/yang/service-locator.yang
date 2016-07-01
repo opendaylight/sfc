@@ -101,7 +101,31 @@ module service-locator {
       registered transport types";
   }
 
-  grouping lisp-locator {
+  identity sfc-encapsulation-identity {
+    description
+      "Base identity from which the SFC encapsulation identities"
+      + " are derived";
+  }
+
+  identity nsh {
+    base "sfc-encapsulation-identity";
+    description "SFC information is exchanged via NSH headers";
+  }
+
+  identity transport {
+    base "sfc-encapsulation-identity";
+    description "SFC information exchange is achieved by means of the transport";
+  }
+
+  typedef sfc-encapsulation-type {
+    type identityref {
+        base "sfc-encapsulation-identity";
+    }
+    description "This type is used to reference all
+      SFC encapsulation types";
+  }
+
+    grouping lisp-locator {
     description
       "Data plane-locator: Lisp Eid(IP)";
     leaf eid {

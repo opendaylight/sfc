@@ -22,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.ApplicationData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.eid.container.Eid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.mapping.record.container.MappingRecord.Action;
@@ -65,8 +64,7 @@ public class SfcLispUtil {
     public static Ip createLocator(ApplicationData applicationData) {
         IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(
                 applicationData.getApplicationData().getIpTos()).getHostAddress()));
-        PortNumber portNumber = new PortNumber(applicationData.getApplicationData().getLocalPortLow().getValue());
-        Ip locatorType = new IpBuilder().setIp(ip).setPort(portNumber)
+        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getApplicationData().getLocalPortLow())
                 .build();
         return locatorType;
     }

@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.AceIpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.ApplicationData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.lisp.address.types.rev151105.lisp.address.address.Ipv4;
@@ -151,8 +151,7 @@ public class LispUpdater implements ILispUpdater {
     }
 
     private ServiceFunction updateLispData(Lisp lispLocation, ServiceFunction serviceFunction) {
-        IpAddress ipAddress = new IpAddress(lispLocation.getEid().getValue());
-        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(ipAddress, 0) };
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
@@ -184,8 +183,7 @@ public class LispUpdater implements ILispUpdater {
         // if (reply.getEidToLocatorRecord() == null || reply.getEidToLocatorRecord().isEmpty()) {
         // return serviceFunctionForwarder;
         // }
-        IpAddress ipAddress = new IpAddress(lispLocation.getEid().getValue());
-        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(ipAddress, 0) };
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
                 OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
@@ -317,8 +315,7 @@ public class LispUpdater implements ILispUpdater {
                         // For now we do not support an SFF appearing twice on a TE path
                         // and we only use one SFF locator
                         if (sffLocator != null) {
-                            IpAddress ipAddress = new IpAddress(sffLocator.getIp().getValue());
-                            addIfNotInList(hopIpList, ipAddress);
+                            addIfNotInList(hopIpList, sffLocator.getIp());
                             found = true;
                             break;
                         }
@@ -426,8 +423,7 @@ public class LispUpdater implements ILispUpdater {
                         // For now we do not support an SFF appearing twice on a TE path
                         // and we only use one SFF locator
                         if (sffLocator != null) {
-                            IpAddress ipAddress = new IpAddress(sffLocator.getIp().getValue());
-                            hopIpList.add(ipAddress);
+                            hopIpList.add(sffLocator.getIp());
                             found = true;
                             break;
                         }

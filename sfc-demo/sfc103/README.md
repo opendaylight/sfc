@@ -6,6 +6,14 @@ Overview
 
 SFC103 demo is to show standalone SFC classifier.
 
+
+Note
+----
+
+It takes long time to complete the demo including vagrant box download,
+SFC download/build and ovs with NSH installation. The duration depends
+On your network. Normally, it takes several hours.
+
 Topology
 -------
 

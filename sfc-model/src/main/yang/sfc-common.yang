@@ -81,4 +81,31 @@ module sfc-common {
       type string;
       description "Renderer Name type";
   }
+
+  identity sfc-encapsulation-identity {
+    description
+      "Base identity from which the SFC encapsulation identities"
+      + " are derived";
+  }
+
+  identity nsh-encap {
+    base "sfc-encapsulation-identity";
+    description "SFC information is exchanged via NSH headers";
+  }
+  identity mpls-encap {
+    base "sfc-encapsulation-identity";
+    description "SFC information is exchanged via MPLS labels";
+  }
+  identity vlan-encap {
+    base "sfc-encapsulation-identity";
+    description "SFC information is exchanged via VLAN ids";
+  }
+
+  typedef sfc-encapsulation-type {
+    type identityref {
+        base "sfc-encapsulation-identity";
+    }
+    description "This type is used to reference all
+      SFC encapsulation types";
+  }
 }

@@ -74,7 +74,11 @@ module service-function-path {
           "The name of this service function path";
       }
 
+      // Deprecated, since defining transport at the service function
+      // path level collides with the transport types at the data
+      // plane locators
       leaf transport-type {
+        status deprecated;
         type sfc-sl:sl-transport-type-def;
         default "sfc-sl:vxlan-gpe";
         description
@@ -149,6 +153,14 @@ module service-function-path {
              location within a path, SI can be used for loop
              detection.";
         }
+
+        leaf sfc-encapsulation {
+          type sfc-common:sfc-encapsulation-type;
+          description
+            "The type of encapsulation used in this path for passing
+            SFC information along the chain";
+        }
+
         ordered-by user;
         description
           "A list of service functions that compose the

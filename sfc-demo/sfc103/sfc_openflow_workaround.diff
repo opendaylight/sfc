@@ -1,0 +1,12 @@
+diff --git a/sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java b/sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java
+index db0a1cf..74148f5 100644
+--- a/sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java
++++ b/sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java
+@@ -353,6 +353,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
+ 
+         // Match any
+         MatchBuilder match = new MatchBuilder();
++        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+ 
+         // Finish up the instructions
+         InstructionsBuilder isb = new InstructionsBuilder();

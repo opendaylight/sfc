@@ -353,6 +353,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Match any
         MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
 
         // Finish up the instructions
         InstructionsBuilder isb = new InstructionsBuilder();

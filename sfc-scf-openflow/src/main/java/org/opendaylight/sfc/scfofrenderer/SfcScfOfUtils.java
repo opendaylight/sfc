@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 
 public class SfcScfOfUtils {
-    private static final short TABLE_INDEX_CLASSIFIER = 0;
+    private static final short TABLE_INDEX_CLASSIFIER = 1;
     private static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;
 
     private static final int FLOW_PRIORITY_CLASSIFIER = 1000;

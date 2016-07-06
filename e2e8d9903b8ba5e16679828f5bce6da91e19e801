@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_6bb1fbe0",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-06T14:37:38Z",
+      "side": 1,
+      "message": "As Brady indicated for rsp augmentation (https://git.opendaylight.org/gerrit/#/c/40947/3/sfc-model/src/main/yang/service-function-forwarder-logical.yang@142), shouldn\u0027t this augmentation be located also in a different yang file (i.e. service-function-logicalSff.yang)",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 115,
+        "endChar": 38
+      },
+      "revId": "e2e8d9903b8ba5e16679828f5bce6da91e19e801",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_8bc72f45",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-06T14:37:38Z",
+      "side": 1,
+      "message": "Instead of \"sf-sff-logical-augmentation\", shouldn\u0027t it be \"logical-interface-locator-sf-sff-logical-augmentation\"?",
+      "range": {
+        "startLine": 121,
+        "startChar": 1,
+        "endLine": 121,
+        "endChar": 57
+      },
+      "revId": "e2e8d9903b8ba5e16679828f5bce6da91e19e801",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_abcaf34c",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-06T14:37:38Z",
+      "side": 1,
+      "message": "Instead of \"sf-sff-logical-augmentation\", shouldn\u0027t it be \"dpnid-sf-sff-logical-augmentation\"?",
+      "range": {
+        "startLine": 130,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 57
+      },
+      "revId": "e2e8d9903b8ba5e16679828f5bce6da91e19e801",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_ebc4eb41",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-06T14:37:38Z",
+      "side": 1,
+      "message": "Instead of \"sf-sff-logical-augmentation\", shouldn\u0027t it be \"dictionary-sf-sff-logical-augmentation\"?",
+      "range": {
+        "startLine": 137,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 57
+      },
+      "revId": "e2e8d9903b8ba5e16679828f5bce6da91e19e801",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_cbc12730",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-06T14:37:38Z",
+      "side": 1,
+      "message": "Instead of \"sf-sff-logical-augmentation\", shouldn\u0027t it be \"rsp-sf-sff-logical-augmentation\"?",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 146,
+        "endChar": 57
+      },
+      "revId": "e2e8d9903b8ba5e16679828f5bce6da91e19e801",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

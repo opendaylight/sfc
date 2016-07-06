@@ -1,0 +1,104 @@
+module service-function-forwarder-vpp {
+    namespace "urn:opendaylight:service-function-forwarder-vpp";
+    prefix "sff-vpp";
+
+    import service-function-forwarder {
+        prefix sfc-sff;
+        revision-date 2014-07-01;
+    }
+    import sfc-common {
+        prefix sfc-common;
+        revision-date 2015-10-17;
+    }
+    import yang-ext {
+        prefix ext;
+        revision-date 2013-07-09;
+    }
+    import ietf-yang-types {
+        prefix yang;
+        revision-date 2013-07-15;
+    }
+
+    import ietf-inet-types {
+        prefix inet;
+        revision-date 2010-09-24;
+    }
+
+    revision 2016-07-06 {
+        description "Initial revision";
+    }
+
+    identity netconf-node-type-base {
+        description "base type for different types of netconf nodes";
+    }
+
+    identity netconf-node-type-honeycomb {
+        base netconf-node-type-base;
+        description "Type for honeycomb netconf nodes";
+    }
+
+    typedef netconf-node-type {
+        type identityref {
+            base "netconf-node-type-base";
+        }
+        description "Netconf node-type";
+    }
+
+    typedef netconf-mount-point {
+        description "A reference to a netconf mount point";
+        type instance-identifier;
+    }
+
+    grouping sff-netconf-attributes {
+        leaf sff-netconf-node-type {
+            type netconf-node-type;
+        }
+        leaf sff-netconf-mount-point {
+            type netconf-mount-point;
+        }
+    }
+
+    augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder" {
+        description
+              "Augments the SFF definition with
+               netconf node specific information";
+        ext:augment-identifier "sff-netconf-augmentation";
+        uses sff-netconf-attributes;
+    }
+
+    rpc connect-honeycomb-sff {
+        description
+          "Connect a netconf sff node. Note, if the netconf mount already exists, it will be reused.";
+        input {
+            leaf address {
+                type inet:host;
+            }
+
+            leaf port {
+                type inet:port-number;
+            }
+
+            leaf tcp-only {
+                type boolean;
+            }
+
+            leaf username {
+                type string;
+            }
+
+            leaf password {
+                type string;
+            }
+        }
+        output {
+          leaf result {
+            type boolean;
+            description
+              "True if the netconf bridge was connected, otherwise
+               false";
+          }
+          uses sff-netconf-attributes;
+        }
+    }
+}

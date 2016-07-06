@@ -104,10 +104,7 @@ public class IosXeServiceFunctionMapperTest {
         NodeId nodeId = new NodeId(nodeIdString);
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
-        Host host = new Host(new IpAddress(new Ipv4Address(ipAddress)));
-        org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Host hostLegacy =
-                new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Host(host.getValue());
-        netconfNodeBuilder.setHost(hostLegacy);
+        netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(ipAddress))));
         nodeBuilder.setNodeId(nodeId)
                 .addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();
@@ -157,10 +154,7 @@ public class IosXeServiceFunctionMapperTest {
         NodeId nodeId = new NodeId(nodeIdString);
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
-        Host host = new Host(new IpAddress(new Ipv4Address(ipAddress)));
-        org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Host hostLegacy =
-                new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Host(host.getValue());
-        netconfNodeBuilder.setHost(hostLegacy);
+        netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(ipAddress))));
         nodeBuilder.setNodeId(nodeId)
                 .addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();

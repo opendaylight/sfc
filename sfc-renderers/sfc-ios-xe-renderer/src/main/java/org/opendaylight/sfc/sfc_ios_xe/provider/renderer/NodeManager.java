@@ -156,8 +156,7 @@ public class NodeManager implements BindingAwareProvider {
     IpAddress getNetconfNodeIp(Node node) {
         NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
-        IpAddress ipAddress = new IpAddress(netconfNode.getHost().getIpAddress().getValue());
-        return ipAddress;
+        return netconfNode.getHost().getIpAddress();
     }
 
     Map<NodeId, Node> getConnectedNodes() {

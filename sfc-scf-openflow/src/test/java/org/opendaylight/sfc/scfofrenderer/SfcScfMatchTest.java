@@ -86,7 +86,7 @@ public class SfcScfMatchTest {
 
         Assert.assertNull(match.getEthernetMatch().getEthernetSource());
         Assert.assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress("00:00:00:00:00:01"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress("00:00:00:00:00:01"));
 
         ace  = new AceEthBuilder()
                     .setSourceMacAddress(new MacAddress("00:00:00:00:00:01"))
@@ -102,7 +102,7 @@ public class SfcScfMatchTest {
                     .build();
 
         Assert.assertEquals(match.getEthernetMatch().getEthernetSource().getAddress(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress("00:00:00:00:00:01"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress("00:00:00:00:00:01"));
         Assert.assertNull(match.getEthernetMatch().getEthernetDestination());
 
         ace  = new AceEthBuilder()
@@ -119,9 +119,9 @@ public class SfcScfMatchTest {
                     .build();
 
         Assert.assertEquals(match.getEthernetMatch().getEthernetSource().getAddress(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress("00:00:00:00:00:01"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress("00:00:00:00:00:01"));
         Assert.assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress("00:00:00:00:00:01"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress("00:00:00:00:00:01"));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class SfcScfMatchTest {
 
         Assert.assertNull(((Ipv4Match)match.getLayer3Match()).getIpv4Source());
         Assert.assertEquals(((Ipv4Match)match.getLayer3Match()).getIpv4Destination(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix("1.1.1.1/24"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix("1.1.1.1/24"));
 
         ipv4  = new AceIpv4Builder()
                     .setSourceIpv4Network(new Ipv4Prefix("1.1.1.1/24"))
@@ -179,7 +179,7 @@ public class SfcScfMatchTest {
                     .setAclMatch(matches)
                     .build();
         Assert.assertEquals(((Ipv4Match)match.getLayer3Match()).getIpv4Source(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix("1.1.1.1/24"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix("1.1.1.1/24"));
         Assert.assertNull(((Ipv4Match)match.getLayer3Match()).getIpv4Destination());
 
         ipv4  = new AceIpv4Builder()
@@ -199,9 +199,9 @@ public class SfcScfMatchTest {
                     .setAclMatch(matches)
                     .build();
         Assert.assertEquals(((Ipv4Match)match.getLayer3Match()).getIpv4Source(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix("1.1.1.1/24"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix("1.1.1.1/24"));
         Assert.assertEquals(((Ipv4Match)match.getLayer3Match()).getIpv4Destination(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix("2.2.2.2/24"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix("2.2.2.2/24"));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class SfcScfMatchTest {
 
         Assert.assertNull(((Ipv6Match)match.getLayer3Match()).getIpv6Source());
         Assert.assertEquals(((Ipv6Match)match.getLayer3Match()).getIpv6Destination(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
 
         ipv6  = new AceIpv6Builder()
                     .setSourceIpv6Network(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"))
@@ -259,7 +259,7 @@ public class SfcScfMatchTest {
                     .setAclMatch(matches)
                     .build();
         Assert.assertEquals(((Ipv6Match)match.getLayer3Match()).getIpv6Source(),
-                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
         Assert.assertNull(((Ipv6Match)match.getLayer3Match()).getIpv6Destination());
 
         ipv6  = new AceIpv6Builder()
@@ -279,8 +279,8 @@ public class SfcScfMatchTest {
                     .setAclMatch(matches)
                     .build();
         Assert.assertEquals(((Ipv6Match)match.getLayer3Match()).getIpv6Source(),
-                     new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
+                     new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/128"));
         Assert.assertEquals(((Ipv6Match)match.getLayer3Match()).getIpv6Destination(),
-                     new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0002/128"));
+                     new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0002/128"));
     }
 }

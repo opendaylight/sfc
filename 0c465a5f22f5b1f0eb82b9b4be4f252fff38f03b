@@ -16,6 +16,24 @@
       "revId": "0c465a5f22f5b1f0eb82b9b4be4f252fff38f03b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_2e2c2c47",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-honeycomb.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2016-07-07T14:37:03Z",
+      "side": 1,
+      "message": "Yi, the requestor doesn\u0027t specify the mountpoint, the call to this rpc performs the mount and in the output tells the user where it is mounted in sff-netconf-attributes.  I would suggest that the flow for this RPC should be:\n\ninput arrives\nrpc performance mount\nrpc creates sff pointing to mount\nrpc returns with the sff-netconf attributes\n\nThoughts?",
+      "parentUuid": "9a561d44_54277464",
+      "revId": "0c465a5f22f5b1f0eb82b9b4be4f252fff38f03b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

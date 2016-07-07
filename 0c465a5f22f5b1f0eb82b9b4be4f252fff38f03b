@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_54277464",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-honeycomb.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-07-07T03:15:38Z",
+      "side": 1,
+      "message": "How to specify netconf mount point instance identifier? Per my understand, it should be string type, like \"vpp1\", \"vpp2\".\n\nWe also need to have these info in SFF augment.\n\n            leaf address {\n                type inet:host;\n            }\n\n            leaf port {\n                type inet:port-number;\n            }\n\n            leaf tcp-only {\n                type boolean;\n            }\n\n            leaf username {\n                type string;\n            }\n\n            leaf password {\n                type string;\n            }\n\n\nOnce a user adds a SFF, SFF listener need to use them to mount honeycomb/vpp netconf node to the specified mount point.",
+      "revId": "0c465a5f22f5b1f0eb82b9b4be4f252fff38f03b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

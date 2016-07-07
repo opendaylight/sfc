@@ -22,6 +22,30 @@
       "revId": "73cb85bdf1bb881470dd0b25deb8c77064c53ef0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_4e108001",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 5995
+      },
+      "writtenOn": "2016-07-07T14:25:10Z",
+      "side": 1,
+      "message": "As we agreed, it is not needed in the end. They belong to the same feature so it looks interesting to be inside the same file.",
+      "parentUuid": "9a561d44_92bbfbc3",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 40
+      },
+      "revId": "73cb85bdf1bb881470dd0b25deb8c77064c53ef0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

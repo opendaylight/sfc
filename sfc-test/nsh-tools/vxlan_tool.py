@@ -232,8 +232,8 @@ class TCPHEADER(Structure):
     header_size = 8
 
 
-def decode_eth(payload, eth_header_values):
-    eth_header = payload[0:14]
+def decode_eth(payload, offset, eth_header_values):
+    eth_header = payload[offset:(offset+14)]
 
     _header_values = unpack('!B B B B B B B B B B B B B B', eth_header)
     eth_header_values.dmac0 = _header_values[0]
@@ -628,7 +628,7 @@ def main():
         ethpkt = myethheader.build() + outerippack
 
         """ Decode ethernet header """
-        decode_eth(ethpkt, myethheader)
+        decode_eth(ethpkt, 0, myethheader)
 
         if (args.type == "eth_nsh"):
             offset = eth_length
@@ -692,9 +692,11 @@ def main():
         packet = packet[0]
 
         myethheader = ETHHEADER()
+        myinsertedethheader = ETHHEADER()
+        has_inserted_eth = False
 
         """ Decode ethernet header """
-        decode_eth(packet, myethheader)
+        decode_eth(packet, 0, myethheader)
 
         if ((myethheader.ethertype0 != 0x08) or (myethheader.ethertype1 != 0x00)):
             if ((myethheader.ethertype0 != 0x89) or (myethheader.ethertype1 != 0x4f)):
@@ -788,8 +790,16 @@ def main():
         """ Print NSH header """
         if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
             offset = eth_length + ip_length + udp_length + vxlan_length
+            """ Decode inserted ethernet header before NSH """
+            decode_eth(packet, offset, myinsertedethheader)
+            if ((myinsertedethheader.ethertype0 == 0x89) and (myinsertedethheader.ethertype1 == 0x4f)):
+                has_inserted_eth = True
+                offset += eth_length
+
             decode_nsh_baseheader(packet, offset, mynshbaseheader)
-            decode_nsh_contextheader(packet, offset + nshbase_length, mynshcontextheader)
+            offset += nshbase_length
+            decode_nsh_contextheader(packet, offset, mynshcontextheader)
+            offset += nshcontext_length
 
             """ Print NSH base header """
             if (do_print):
@@ -835,7 +845,10 @@ def main():
                     if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
                         """ nsi minus one """
                         mynshbaseheader.service_index = mynshbaseheader.service_index - 1
-                        ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[eth_length+ip_length+udp_length+vxlan_length+nshbase_length+nshcontext_length:], args.swap_ip)
+                        if (has_inserted_eth is True):
+                            ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + myinsertedethheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[offset:], args.swap_ip)
+                        else:
+                            ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[offset:], args.swap_ip)
                     else:
                         ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, packet[eth_length+ip_length+udp_length:], args.swap_ip)
 

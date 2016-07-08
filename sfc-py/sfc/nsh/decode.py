@@ -8,8 +8,9 @@
 import struct
 import logging
 import binascii
-from .common import *  # noqa
-
+from .common import NSH_OAM_TRACE_HDR_LEN, VXLAN_RFC7348_HEADER
+from .common import NSH_TYPE1_DATA_PACKET, NSH_TYPE1_OAM_PACKET
+from .common import OAM_VERSION_AND_FLAG, OAM_TRACE_REQ_TYPE, OAM_TRACE_RESP_TYPE
 
 __author__ = 'Reinaldo Penno'
 __copyright__ = 'Copyright(c) 2014, Cisco Systems, Inc.'
@@ -72,9 +73,9 @@ values in the passed variable.
 logger = logging.getLogger(__name__)
 
 
-def decode_vxlan(payload, vxlan_header_values):
+def decode_vxlan(payload, offset, vxlan_header_values):
     """Decode the VXLAN header for a received packets"""
-    vxlan_header = payload[0:8]
+    vxlan_header = payload[offset:offset+8]
 
     _header_values = struct.unpack('!B B H I', vxlan_header)
     vxlan_header_values.flags = _header_values[0]
@@ -98,9 +99,9 @@ def decode_vxlan(payload, vxlan_header_values):
         logger.info('Reserved: %s', vxlan_header_values.reserved2)
 
 
-def decode_baseheader(payload, base_header_values):
+def decode_baseheader(payload, offset, base_header_values):
     """Decode the NSH base headers for a received packets"""
-    base_header = payload[8:16]
+    base_header = payload[offset:offset+8]
 
     _header_values = struct.unpack('!H B B I', base_header)
     start_idx = _header_values[0]
@@ -128,9 +129,9 @@ def decode_baseheader(payload, base_header_values):
         logger.info('Service Index: %s', base_header_values.service_index)
 
 
-def decode_contextheader(payload, context_header_values):
+def decode_contextheader(payload, offset, context_header_values):
     """Decode the NSH context headers for a received packet"""
-    context_header = payload[16:32]
+    context_header = payload[offset:offset+16]
 
     _header_values = struct.unpack('!I I I I', context_header)
     context_header_values.network_platform = _header_values[0]
@@ -151,9 +152,9 @@ def decode_contextheader(payload, context_header_values):
                     context_header_values.service_shared)
 
 
-def decode_ethheader(payload, eth_header_values):
+def decode_ethheader(payload, offset, eth_header_values):
     """Decode the NSH context headers for a received packet"""
-    eth_header = payload[32:46]
+    eth_header = payload[offset:offset+14]
 
     _header_values = struct.unpack('!B B B B B B B B B B B B B B', eth_header)
     eth_header_values.dmac0 = _header_values[0]
@@ -193,9 +194,9 @@ def decode_ethheader(payload, eth_header_values):
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 
-def decode_trace_req(payload, trace_req_header_values):
+def decode_trace_req(payload, offset, trace_req_header_values):
     """Decode headers for a OAM Trace Req packet"""
-    trace_header = payload[NSH_OAM_PKT_START_OFFSET: NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN]
+    trace_header = payload[offset:offset+NSH_OAM_TRACE_HDR_LEN]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
     trace_req_header_values.oam_type = _header_values[0]
@@ -213,12 +214,12 @@ def decode_trace_req(payload, trace_req_header_values):
                     trace_req_header_values.sil)
 
 
-def decode_trace_resp(payload, trace_resp_header_values):
+def decode_trace_resp(payload, offset, trace_resp_header_values):
     """Decode headers for a OAM Trace Response"""
 
     sf_type = None
     sf_name = None
-    trace_header = payload[NSH_OAM_PKT_START_OFFSET: NSH_OAM_PKT_START_OFFSET + NSH_OAM_TRACE_HDR_LEN]
+    trace_header = payload[offset:offset+NSH_OAM_TRACE_HDR_LEN]
 
     _header_values = struct.unpack('!B B H I I I I', trace_header)
     trace_resp_header_values.oam_type = _header_values[0]
@@ -230,9 +231,9 @@ def decode_trace_resp(payload, trace_resp_header_values):
     trace_resp_header_values.ip_4 = _header_values[6]
 
     try:
-        sf_type_len = payload[NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET]
-        sf_type_end = NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET + (sf_type_len << 2)
-        sf_type = payload[NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET:sf_type_end].decode('utf-8')
+        sf_type_len = payload[offset+NSH_OAM_TRACE_HDR_LEN]
+        sf_type_end = offset+NSH_OAM_TRACE_HDR_LEN+1 + (sf_type_len << 2)
+        sf_type = payload[offset+NSH_OAM_TRACE_HDR_LEN+1:sf_type_end].decode('utf-8')
         sf_name_len = payload[sf_type_end]
         sf_name_end = sf_type_end + 1 + (sf_name_len << 2)
         sf_name = payload[sf_type_end + 1:sf_name_end].decode('utf-8')
@@ -248,12 +249,12 @@ def decode_trace_resp(payload, trace_resp_header_values):
     return sf_type, sf_name
 
 
-def is_trace_message(data):
-    base_header_first_word_int = int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:12], byteorder='big', signed='false')
+def is_trace_message(data, offset):
+    base_header_first_word_int = int.from_bytes(data[offset:offset+4], byteorder='big', signed='false')
     try:
         if (base_header_first_word_int == NSH_TYPE1_OAM_PACKET) and (
-                (data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_REQ_TYPE) or (
-                    data[NSH_OAM_PKT_START_OFFSET] == OAM_TRACE_RESP_TYPE)):
+                (data[offset+24] == OAM_TRACE_REQ_TYPE) or (
+                    data[offset+24] == OAM_TRACE_RESP_TYPE)):
             return True
         else:
             return False
@@ -262,22 +263,22 @@ def is_trace_message(data):
         return False
 
 
-def is_oam_message(data):
-    if data[NSH_BASE_HEADER_START_OFFSET] == OAM_VERSION_AND_FLAG:
+def is_oam_message(data, offset):
+    if data[offset] == OAM_VERSION_AND_FLAG:
         return True
     else:
         return False
 
 
-def is_data_message(data):
-    if int.from_bytes(data[NSH_BASE_HEADER_START_OFFSET:11], byteorder='big', signed='false') == NSH_TYPE1_DATA_PACKET:
+def is_data_message(data, offset):
+    if int.from_bytes(data[offset:offset+3], byteorder='big', signed='false') == NSH_TYPE1_DATA_PACKET:
         return True
     else:
         return False
 
 
-def is_vxlan_nsh_legacy_message(data):
-    if int.from_bytes(data[VXLAN_START_OFFSET:4], byteorder='big', signed='false') == VXLAN_RFC7348_HEADER:
+def is_vxlan_nsh_legacy_message(data, offset):
+    if int.from_bytes(data[offset:offset+4], byteorder='big', signed='false') == VXLAN_RFC7348_HEADER:
         return True
     else:
         return False

@@ -16,7 +16,7 @@ __status__ = "alpha"
 """Network Service Header (NSH) Service Index Processing"""
 
 
-def set_service_index(rw_data, service_index):
+def set_service_index(rw_data, offset, service_index):
     """
     Set service index in received packet data
 
@@ -26,10 +26,10 @@ def set_service_index(rw_data, service_index):
     :type service_index: int
 
     """
-    rw_data[15] = service_index
+    rw_data[offset+7] = service_index
 
 
-def process_service_index(rw_data, server_base_values):
+def process_service_index(rw_data, offset, server_base_values):
     """
     Manage service index - test if it's equal to zero or decrement it otherwise
 
@@ -46,7 +46,7 @@ def process_service_index(rw_data, server_base_values):
 
     else:
         server_base_values.service_index -= 1
-        set_service_index(rw_data, server_base_values.service_index)
+        set_service_index(rw_data, offset, server_base_values.service_index)
 
         si_result = 1
 

@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_d8ee0e22",
+        "filename": "sfc-pot/src/main/yang/ietf-interfaces.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-08T16:38:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_b1c1bd30",
+      "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_f1e215d4",
         "filename": "sfc-pot/src/main/yang/ietf-interfaces.yang",
         "patchSetId": 5
@@ -64,6 +82,24 @@
       "writtenOn": "2016-07-07T19:30:48Z",
       "side": 1,
       "message": "Please do *not* define a global level interface container.  Its inappropriate within the context of the controller.  Please do such things within the topology model or other appropriate controller models instead of using device models.",
+      "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_f8e9521b",
+        "filename": "sfc-pot/src/main/yang/ietf-interfaces.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-08T16:38:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_f1e215d4",
       "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +123,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_78dd4270",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-nb-pot.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-08T16:38:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_51e821b4",
+      "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_31edadc4",
         "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
         "patchSetId": 5
@@ -104,6 +158,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_58dafe78",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-08T16:38:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_31edadc4",
+      "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_91d119fe",
         "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
         "patchSetId": 5
@@ -115,6 +187,24 @@
       "writtenOn": "2016-07-07T19:30:48Z",
       "side": 1,
       "message": "Again... the ietf interface model is not used globally in the controller and shouldn\u0027t be... how do you intend to use this reference?",
+      "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_b8e7da3f",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-08T16:38:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_91d119fe",
       "revId": "f9353907c55beee2ef50d0290f21733b7de09102",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

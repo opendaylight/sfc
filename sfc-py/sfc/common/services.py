@@ -56,6 +56,11 @@ SF = 'sf'
 SFF = 'sff'
 CUDP = 'cudp'
 
+# For VxLAN-gpe
+GPE_NP_NSH = 0x4
+ETH_P_NSH_0 = 0x89
+ETH_P_NSH_1 = 0x4f
+
 
 def find_service(service_type):
     """Service dispatcher - get service class based on its type
@@ -95,6 +100,8 @@ class BasicService(object):
         self.loop = loop
         self.transport = None
         self.server_vxlan_values = VXLANGPE()
+        self.server_eth_before_nsh_values = ETHHEADER()
+        self.is_eth_nsh = False
         self.server_base_values = BASEHEADER()
         self.server_ctx_values = CONTEXTHEADER()
         self.server_eth_values = ETHHEADER()
@@ -128,17 +135,36 @@ class BasicService(object):
         header values.
 
         """
+        offset = 0
         # decode vxlan-gpe header
-        nsh_decode.decode_vxlan(data, self.server_vxlan_values)
+        nsh_decode.decode_vxlan(data, offset, self.server_vxlan_values)
+        offset += 8
+        # decode ETH header before NSH if exists
+        if self.server_vxlan_values.next_protocol == GPE_NP_NSH:
+            nsh_decode.decode_ethheader(data, offset, self.server_eth_before_nsh_values)
+            if ((self.server_eth_before_nsh_values.ethertype0 == ETH_P_NSH_0) and
+               (self.server_eth_before_nsh_values.ethertype1 == ETH_P_NSH_1)):
+                self.is_eth_nsh = True
+                offset += 14
+            else:
+                self.is_eth_nsh = False
         # decode NSH base header
-        nsh_decode.decode_baseheader(data, self.server_base_values)
+        nsh_decode.decode_baseheader(data, offset, self.server_base_values)
+        offset += 8
         # decode NSH context headers
-        nsh_decode.decode_contextheader(data, self.server_ctx_values)
+        nsh_decode.decode_contextheader(data, offset, self.server_ctx_values)
+        offset += 16
         # decode NSH eth headers
-        nsh_decode.decode_ethheader(data, self.server_eth_values)
+        nsh_decode.decode_ethheader(data, offset, self.server_eth_values)
+
         # decode common trace header
-        if nsh_decode.is_trace_message(data):
-            nsh_decode.decode_trace_req(data, self.server_trace_values)
+        if self.is_eth_nsh:
+            offset = 8 + 14
+        else:
+            offset = 8
+        if nsh_decode.is_trace_message(data, offset):
+            offset += 24
+            nsh_decode.decode_trace_req(data, offset, self.server_trace_values)
 
     def _process_incoming_packet(self, data, addr):
         """
@@ -154,9 +180,12 @@ class BasicService(object):
                      self.service_type, self.service_name)
 
         self._decode_headers(data)
-
+        if self.is_eth_nsh:
+            offset = 8 + 14
+        else:
+            offset = 8
         rw_data = bytearray(data)
-        rw_data, _ = process_service_index(rw_data, self.server_base_values)
+        rw_data, _ = process_service_index(rw_data, offset, self.server_base_values)
         sfc_globals.sf_processed_packets += 1
 
         return rw_data
@@ -245,16 +274,20 @@ class BasicService(object):
         logger.info('%s service received packet from %s:', self.service_type, addr)
         logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
-        if nsh_decode.is_data_message(data):
-            # logger.debug('%s: Sending packets to %s', self.service_type, addr)
-            if nsh_decode.is_vxlan_nsh_legacy_message(data):
+        if self.is_eth_nsh:
+            offset = 8 + 14
+        else:
+            offset = 8
+        if nsh_decode.is_data_message(data, offset):
+            # Must send it to UDP port of VxLAN-gpe
+            # if nsh_decode.is_vxlan_nsh_legacy_message(data, 0):
                 # Disregard source port of received packet and send packet back to 6633
-                addr_l = list(addr)
-                addr_l[1] = 6633
-                addr = tuple(addr_l)
-
+            addr_l = list(addr)
+            addr_l[1] = 6633
+            addr = tuple(addr_l)
             self.transport.sendto(rw_data, addr)
-        elif nsh_decode.is_trace_message(data):
+            logger.info('%s: sending packets to %s', self.service_type, addr)
+        elif nsh_decode.is_trace_message(data, offset):
             # Add SF information to packet
             if self.server_base_values.service_index == self.server_trace_values.sil:
                 trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
@@ -456,8 +489,11 @@ class MySffServer(BasicService):
         # Lookup what to do with the packet based on Service Path Identifier
         next_hop = self._lookup_next_sf(self.server_base_values.service_path,
                                         self.server_base_values.service_index)
-
-        if nsh_decode.is_data_message(data):
+        if self.is_eth_nsh:
+            offset = 8 + 14
+        else:
+            offset = 8
+        if nsh_decode.is_data_message(data, offset):
             # send the packet to the next SFF based on address
             if next_hop != SERVICE_HOP_INVALID:
                 address = next_hop['ip'], next_hop['port']
@@ -524,7 +560,7 @@ class MySffServer(BasicService):
                 rw_data.__init__()
                 data = ""
 
-        elif nsh_decode.is_trace_message(data):
+        elif nsh_decode.is_trace_message(data, offset):
             # Have to differentiate between no SPID and End of path
             service_index = self.server_base_values.service_index
             if (self.server_trace_values.sil == service_index) or (next_hop == SERVICE_HOP_INVALID):

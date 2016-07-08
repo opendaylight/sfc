@@ -4,7 +4,9 @@ set -eux
 
 apt-get update -y
 apt-get install git -y
-curl https://raw.githubusercontent.com/priteshk/ovs/nsh-v8/third-party/start-ovs-deb.sh | bash
+curl https://raw.githubusercontent.com/yyang13/ovs_nsh_patches/master/start-ovs-deb.sh | bash
+chmod +x ovs_nsh_patches/start-ovs-deb.sh
+./ovs_nsh_patches/start-ovs-deb.sh
 
 ovs-vsctl set-manager tcp:192.168.1.5:6640
 

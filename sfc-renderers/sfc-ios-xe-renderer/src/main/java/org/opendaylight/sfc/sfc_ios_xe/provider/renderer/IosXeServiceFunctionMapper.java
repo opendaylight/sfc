@@ -8,6 +8,9 @@
 
 package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
 
+import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
+import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
+
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -25,16 +28,10 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.ConfigServiceChainSfModeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.config.service.chain.sf.mode.Encapsulation;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.config.service.chain.sf.mode.EncapsulationBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.config.service.chain.sf.mode.IpBuilder;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.config.service.chain.sf.mode.encapsulation.Gre;
-import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.config.service.chain.sf.mode.encapsulation.GreBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 
 public class IosXeServiceFunctionMapper {
 
@@ -118,8 +115,7 @@ public class IosXeServiceFunctionMapper {
             Class<? extends SlTransportType> transport = sfDataPlaneLocator.getTransport();
             if (transport == org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Gre.class) {
                 ConfigServiceChainSfModeBuilder sfModeBuilder = new ConfigServiceChainSfModeBuilder();
-                sfModeBuilder.setIp(ipBuilder.build())
-                        .setEncapsulation(buildSfEncapsulation());
+                sfModeBuilder.setIp(ipBuilder.build());
                 ServiceFunctionBuilder netconfServiceFunction = new ServiceFunctionBuilder();
                 netconfServiceFunction.setName(sfName.getValue())
                         .setKey(new ServiceFunctionKey(sfName.getValue()))
@@ -128,15 +124,6 @@ public class IosXeServiceFunctionMapper {
             }
         }
         return null;
-    }
-
-    private Encapsulation buildSfEncapsulation() {
-        EncapsulationBuilder encapsulationBuilder = new EncapsulationBuilder();
-        GreBuilder greBuilder = new GreBuilder();
-        // TODO remove enhanced mode from encapsulation
-        greBuilder.setEnhanced(Gre.Enhanced.Divert);
-        encapsulationBuilder.setGre(greBuilder.build());
-        return encapsulationBuilder.build();
     }
 
     public void unregisterSfListener() {

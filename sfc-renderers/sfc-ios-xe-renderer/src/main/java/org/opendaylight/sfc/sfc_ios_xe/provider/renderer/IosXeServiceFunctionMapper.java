@@ -120,8 +120,8 @@ public class IosXeServiceFunctionMapper {
             Class<? extends SlTransportType> transport = sfDataPlaneLocator.getTransport();
             if (transport == org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Gre.class) {
                 ConfigServiceChainSfModeBuilder sfModeBuilder = new ConfigServiceChainSfModeBuilder();
-                sfModeBuilder.setIp(ipBuilder.build())
-                        .setEncapsulation(buildSfEncapsulation());
+                sfModeBuilder.setIp(ipBuilder.build());
+                       // .setEncapsulation(buildSfEncapsulation());
                 ServiceFunctionBuilder netconfServiceFunction = new ServiceFunctionBuilder();
                 netconfServiceFunction.setName(sfName.getValue())
                         .setKey(new ServiceFunctionKey(sfName.getValue()))

@@ -35,6 +35,16 @@ IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
 
 UDP_HEADER_LEN_BYTES = 8
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 class VXLAN(Structure):
     _fields_ = [('flags', c_ubyte),
                 ('reserved', c_uint, 16),
@@ -209,6 +219,19 @@ class PSEUDO_UDPHEADER(Structure):
                                  self.zeroes, self.protocol, self.length)
         return p_udp_header_pack
 
+class TCPHEADER(Structure):
+    """
+    Represents a TCP header
+    """
+    _fields_ = [
+        ('tcp_sport', c_ushort),
+        ('tcp_dport', c_ushort),
+        ('tcp_len', c_ushort),
+        ('tcp_sum', c_ushort)]
+
+    header_size = 8
+
+
 def decode_eth(payload, eth_header_values):
     eth_header = payload[0:14]
 
@@ -253,6 +276,14 @@ def decode_udp(payload, udp_header_values):
     udp_header_values.udp_len = _header_values[2]
     udp_header_values.udp_sum = _header_values[3]
 
+def decode_tcp(payload, tcp_header_values):
+    tcp_header = payload[108:116]
+
+    _header_values = unpack('!H H H H', tcp_header)
+    tcp_header_values.tcp_sport = _header_values[0]
+    tcp_header_values.tcp_dport = _header_values[1]
+    tcp_header_values.tcp_len = _header_values[2]
+    tcp_header_values.tcp_sum = _header_values[3]
 
 def decode_vxlan(payload, vxlan_header_values):
     """Decode the VXLAN header for a received packets"""
@@ -470,6 +501,12 @@ def main():
                         help="won't swap ip if provided")
     parser.add_argument('-v', '--verbose', choices=['on', 'off'],
                         help='dump packets when in forward mode')
+    parser.add_argument('--forward-inner', '-f', dest='forward_inner',
+                        default=False, action='store_true',
+                        help='Strip the outer encapsulation and forward the inner packet')
+    parser.add_argument('--block', '-b', type=int, default=0,
+                        help='Acts as a firewall dropping packets that match this TCP dst port')
+
     args = parser.parse_args()
     macaddr = None
 
@@ -666,6 +703,7 @@ def main():
             if ((myethheader.dmac4 != int(macaddr[4], 16)) or (myethheader.dmac5 != int(macaddr[5], 16))):
                 continue
 
+        """ Check if the received packet was ETH + NSH """
         if ((myethheader.ethertype0 == 0x89) or (myethheader.ethertype1 == 0x4f)):
             pktnum = pktnum + 1
             print("\n\nPacket #%d" % pktnum)
@@ -708,7 +746,7 @@ def main():
 
         """ Print ethernet header """
         if (do_print):
-            print_ethheader(myethheader)
+           print_ethheader(myethheader)
 
         myipheader = IP4HEADER()
 
@@ -761,20 +799,48 @@ def main():
             if (do_print):
                 print_nsh_contextheader(mynshcontextheader)
 
-            if ((args.do == "forward") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):
-                """ Build IP packet"""
-                if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
-                    """ nsi minus one """
-                    mynshbaseheader.service_index = mynshbaseheader.service_index - 1
-                    ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[eth_length+ip_length+udp_length+vxlan_length+nshbase_length+nshcontext_length:], args.swap_ip)
-                else:
-                    ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, packet[eth_length+ip_length+udp_length:], args.swap_ip)
+            """ Check if Firewall checking is enabled, and block/drop if its the same TCP port """
+            if (args.block != 0):
+                mytcpheader = TCPHEADER()
+                decode_tcp(packet,mytcpheader)
+                if (mytcpheader.tcp_dport == args.block):
+                    print bcolors.WARNING + "TCP packet dropped on port: " + str(args.block) + bcolors.ENDC
+                    continue
 
+            if ((args.do == "forward") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):
                 """ Build Ethernet header """
                 newethheader = build_ethernet_header_swap(myethheader)
 
-                """ Build Ethernet packet """
-                pkt = newethheader.build() + ippack
+                """ Build the packet, either encapsulated, or the original inner packet """
+                pkt = None
+                if args.forward_inner:
+                    """ Just build the original, inner packet """
+                    inner_offset = eth_length + ip_length + udp_length + vxlan_length + nshbase_length + nshcontext_length
+                    inner_ethheader = ETHHEADER()
+                    # Get the inner ethernet header
+                    decode_eth(packet[inner_offset:], inner_ethheader)
+                    # The new SourceMac should be the outer dest, and the new DestMac should be the inner dest
+                    # This call sets the new SourceMac to be the outer dest
+                    newethheader = build_ethernet_header_swap(myethheader)
+                    # Now set the DestMac to be the inner dest
+                    newethheader.dmac0 = inner_ethheader.dmac0
+                    newethheader.dmac1 = inner_ethheader.dmac1
+                    newethheader.dmac2 = inner_ethheader.dmac2
+                    newethheader.dmac3 = inner_ethheader.dmac3
+                    newethheader.dmac4 = inner_ethheader.dmac4
+                    newethheader.dmac5 = inner_ethheader.dmac5
+                    pkt = newethheader.build() + packet[inner_offset + eth_length:]
+                else:
+                    """ Build IP packet"""
+                    if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
+                        """ nsi minus one """
+                        mynshbaseheader.service_index = mynshbaseheader.service_index - 1
+                        ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + packet[eth_length+ip_length+udp_length+vxlan_length+nshbase_length+nshcontext_length:], args.swap_ip)
+                    else:
+                        ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, packet[eth_length+ip_length+udp_length:], args.swap_ip)
+
+                    """ Build Ethernet packet """
+                    pkt = newethheader.build() + ippack
 
                 """ Send it and make sure all the data is sent out """
                 while pkt:

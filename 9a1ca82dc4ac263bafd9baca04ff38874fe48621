@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_e835ffdb",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 660,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-11T09:24:16Z",
+      "side": 1,
+      "message": "Why were these lines commented out? If they\u0027re not needed, remove them, please.",
+      "range": {
+        "startLine": 659,
+        "startChar": 0,
+        "endLine": 660,
+        "endChar": 45
+      },
+      "revId": "9a1ca82dc4ac263bafd9baca04ff38874fe48621",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_682a8f7f",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 745,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-11T09:24:16Z",
+      "side": 1,
+      "message": "Why were these lines commented out? If they\u0027re not needed, remove them, please.",
+      "range": {
+        "startLine": 744,
+        "startChar": 0,
+        "endLine": 745,
+        "endChar": 45
+      },
+      "revId": "9a1ca82dc4ac263bafd9baca04ff38874fe48621",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_c8211ba1",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 749,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-11T09:24:16Z",
+      "side": 1,
+      "message": "Why were these lines commented out? If they\u0027re not needed, remove them, please.",
+      "range": {
+        "startLine": 748,
+        "startChar": 0,
+        "endLine": 749,
+        "endChar": 41
+      },
+      "revId": "9a1ca82dc4ac263bafd9baca04ff38874fe48621",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_a824a7af",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 758,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-11T09:24:16Z",
+      "side": 1,
+      "message": "Why were these lines commented out? If they\u0027re not needed, remove them, please.",
+      "range": {
+        "startLine": 757,
+        "startChar": 0,
+        "endLine": 758,
+        "endChar": 39
+      },
+      "revId": "9a1ca82dc4ac263bafd9baca04ff38874fe48621",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

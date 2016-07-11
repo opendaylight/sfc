@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_54fda239",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-11T22:55:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_182c0647",
+      "revId": "8735f9e8ae5c336c080813a119fabc79b95a471b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_7820a249",
         "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
         "patchSetId": 6
@@ -30,6 +48,24 @@
       "writtenOn": "2016-07-11T22:11:25Z",
       "side": 1,
       "message": "Curious... why treat interface as a string?  Given such a string... how do I *find* the interface?",
+      "revId": "8735f9e8ae5c336c080813a119fabc79b95a471b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_34f8ee48",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-11T22:55:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_7820a249",
       "revId": "8735f9e8ae5c336c080813a119fabc79b95a471b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

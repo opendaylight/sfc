@@ -24,6 +24,7 @@
       <groupId>org.opendaylight.sfc</groupId>
       <artifactId>sfc-ui-module</artifactId>
       <version>${dlux.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
  <build>

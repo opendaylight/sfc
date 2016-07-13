@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_77ab831d",
+        "filename": "sfc-scf-openflow/src/test/java/org/opendaylight/sfc/scfofrenderer/SfcScfMatchTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 4082
+      },
+      "writtenOn": "2016-07-13T01:10:26Z",
+      "side": 0,
+      "message": "use MacAddress instead of org...rev130715 and apply to followings",
+      "revId": "127ef60aa937b5016b9135f2e4e2cbb733d3e6e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

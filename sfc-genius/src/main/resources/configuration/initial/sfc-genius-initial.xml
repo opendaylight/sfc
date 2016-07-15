@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot>
+    <configuration>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+                <module>
+                    <type xmlns:sfc-genius="urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl">
+                        sfc-genius:sfc-genius-impl
+                    </type>
+                    <name>sfc-genius-impl</name>
+
+                    <data-broker>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <name>binding-data-broker</name>
+                    </data-broker>
+                </module>
+            </modules>
+        </data>
+
+    </configuration>
+
+    <required-capabilities>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl?module=sfc-genius-impl&amp;revision=2014-10-20</capability>
+    </required-capabilities>
+
+</snapshot>

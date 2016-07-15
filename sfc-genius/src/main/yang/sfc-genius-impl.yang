@@ -1,0 +1,41 @@
+module sfc-genius-impl {
+
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl";
+    prefix "sfc-genius-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+    description
+        "This module contains the base YANG definitions for
+        sfc-genius impl implementation.";
+
+    revision "2016-07-15" {
+        description
+            "Initial revision.";
+    }
+
+    // This is the definition of a service implementation
+    identity sfc-genius-impl {
+            base config:module-type;
+            config:java-name-prefix SfcGenius;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case sfc-genius-impl {
+            when "/config:modules/config:module/config:type = 'sfc-genius-impl'";
+
+            //wires in the data-broker service
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                    mandatory false;
+                    config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+
+        }
+    }
+}

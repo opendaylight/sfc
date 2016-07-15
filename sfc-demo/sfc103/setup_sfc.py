@@ -10,15 +10,8 @@ import os
 controller='192.168.1.5'
 DEFAULT_PORT='8181'
 
-
 USERNAME='admin'
 PASSWORD='admin'
-
-def get(host, port, uri):
-    url='http://'+host+":"+port+uri
-    r = requests.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD))
-    jsondata=json.loads(r.text)
-    return jsondata
 
 def put(host, port, uri, data, debug=False):
     '''Perform a PUT rest operation, using the URL and data provided'''
@@ -59,39 +52,39 @@ def get_service_nodes_data():
     "service-nodes": {
         "service-node": [
             {
-                "name": "node0",
+                "name": "classifier1",
                 "service-function": [
                 ],
                 "ip-mgmt-address": "192.168.1.10"
             },
             {
-                "name": "node1",
+                "name": "sff1",
                 "service-function": [
                 ],
                 "ip-mgmt-address": "192.168.1.20"
             },
             {
-                "name": "node2",
+                "name": "sf1",
                 "service-function": [
                     "dpi-1"
                 ],
                 "ip-mgmt-address": "192.168.1.30"
             },
             {
-                "name": "node3",
+                "name": "sf2",
                 "service-function": [
                     "firewall-1"
                 ],
                 "ip-mgmt-address": "192.168.1.40"
             },
             {
-                "name": "node4",
+                "name": "sff2",
                 "service-function": [
                 ],
                 "ip-mgmt-address": "192.168.1.50"
             },
             {
-                "name": "node5",
+                "name": "classifier2",
                 "service-function": [
                 ],
                 "ip-mgmt-address": "192.168.1.60"
@@ -107,7 +100,7 @@ def get_service_functions_data():
     return {
     "service-functions": {
         "service-function": [
-           {
+            {
                 "name": "dpi-1",
                 "ip-mgmt-address": "192.168.1.30",
                 "rest-uri": "http://192.168.1.30:5000",
@@ -115,7 +108,7 @@ def get_service_functions_data():
                 "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
-                        "name": "sf1-dpl",
+                        "name": "dpi-1-dpl",
                         "port": 6633,
                         "ip": "192.168.1.30",
                         "transport": "service-locator:vxlan-gpe",
@@ -131,7 +124,7 @@ def get_service_functions_data():
                 "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
-                        "name": "sf2-dpl",
+                        "name": "firewall-1-dpl",
                         "port": 6633,
                         "ip": "192.168.1.40",
                         "transport": "service-locator:vxlan-gpe",
@@ -151,8 +144,8 @@ def get_service_function_forwarders_data():
     "service-function-forwarders": {
         "service-function-forwarder": [
            {
-                "name": "SFF0",
-                "service-node": "node0",
+                "name": "Classifier1",
+                "service-node": "classifier1",
                 "service-function-forwarder-ovs:ovs-bridge": {
                     "bridge-name": "br-sfc",
                 },
@@ -180,7 +173,7 @@ def get_service_function_forwarders_data():
             },
             {
                 "name": "SFF1",
-                "service-node": "node1",
+                "service-node": "sff1",
                 "service-function-forwarder-ovs:ovs-bridge": {
                     "bridge-name": "br-sfc",
                 },
@@ -209,7 +202,7 @@ def get_service_function_forwarders_data():
                     {
                         "name": "dpi-1",
                         "sff-sf-data-plane-locator": {
-                             "sf-dpl-name": "sf1-dpl",
+                             "sf-dpl-name": "dpi-1-dpl",
                              "sff-dpl-name": "sff1-dpl"
                         }
                     }
@@ -217,7 +210,7 @@ def get_service_function_forwarders_data():
             },
             {
                 "name": "SFF2",
-                "service-node": "node4",
+                "service-node": "sff2",
                 "service-function-forwarder-ovs:ovs-bridge": {
                     "bridge-name": "br-sfc",
                 },
@@ -246,15 +239,15 @@ def get_service_function_forwarders_data():
                     {
                         "name": "firewall-1",
                         "sff-sf-data-plane-locator": {
-                            "sf-dpl-name": "sf2-dpl",
+                            "sf-dpl-name": "firewall-1-dpl",
                             "sff-dpl-name": "sff2-dpl"
                         }
                     }
                 ]
             },
             {
-                "name": "SFF3",
-                "service-node": "node5",
+                "name": "Classifier2",
+                "service-node": "classifier2",
                 "service-function-forwarder-ovs:ovs-bridge": {
                     "bridge-name": "br-sfc",
                 },
@@ -304,6 +297,16 @@ def get_service_function_chains_data():
                         "type": "firewall"
                     }
                 ]
+            },
+            {
+                "name": "SFC2",
+                "symmetric": "true",
+                "sfc-service-function": [
+                    {
+                        "name": "dpi-abstract1",
+                        "type": "dpi"
+                    }
+                ]
             }
         ]
     }
@@ -321,7 +324,26 @@ def get_service_function_paths_data():
                 "service-chain-name": "SFC1",
                 "starting-index": 255,
                 "symmetric": "true",
-                 "context-metadata": "NSH1"
+                "context-metadata": "NSH1",
+                "service-path-hop": [
+                    {
+                        "hop-number": 0,
+                        "service-function-name": "dpi-1"
+                    }
+                ]
+            },
+            {
+                "name": "SFP2",
+                "service-chain-name": "SFC2",
+                "starting-index": 255,
+                "symmetric": "true",
+                "context-metadata": "NSH1",
+                "service-path-hop": [
+                    {
+                        "hop-number": 0,
+                        "service-function-name": "dpi-1"
+                    }
+                ]
             }
         ] 
     } 
@@ -340,25 +362,6 @@ def get_service_function_metadata_data():
         "context-header2": "2",
         "context-header3": "3",
         "context-header4": "4"
-      }
-    ]
-  }
-}
-
-def get_service_function_paths_uri():
-    return "/restconf/config/service-function-path:service-function-paths/"
-
-def get_service_function_paths_data():
-    return {
-  "service-function-paths": {
-    "service-function-path": [
-      {
-        "name": "SFP1",
-        "service-chain-name": "SFC1",
-        "classifier": "Classifier1",
-        "symmetric-classifier": "Classifier2",
-        "context-metadata": "NSH1",
-        "symmetric": "true"
       }
     ]
   }
@@ -448,7 +451,7 @@ def get_service_function_classifiers_data():
         "name": "Classifier1",
         "scl-service-function-forwarder": [
           {
-            "name": "SFF0",
+            "name": "Classifier1",
             "interface": "veth-br"
           }
         ],
@@ -461,7 +464,7 @@ def get_service_function_classifiers_data():
         "name": "Classifier2",
         "scl-service-function-forwarder": [
           {
-            "name": "SFF3",
+            "name": "Classifier2",
             "interface": "veth-br"
           }
         ],

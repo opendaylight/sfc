@@ -366,8 +366,4 @@ public class SfcScfOfProcessor {
         }
         return true;
     }
-
-    public boolean updatedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
-        return true;
-    }
 }

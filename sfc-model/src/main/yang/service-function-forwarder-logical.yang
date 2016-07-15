@@ -12,6 +12,7 @@ module service-function-forwarder-logical {
   import service-function { prefix sfc-sf; revision-date 2014-07-01; }
   import service-function-forwarder { prefix sfc-sff; revision-date 2014-07-01; }
   import rendered-service-path { prefix rsp; revision-date 2014-07-01; }
+  import service-locator { prefix sfc-sl; revision-date 2014-07-01; }
 
   organization "Ericsson, Inc.";
   contact "Diego Granados <diego.jesus.granados.lopez@ericsson.com>";
@@ -119,7 +120,7 @@ module service-function-forwarder-logical {
     description "augment the Service Function to allow the use of logical interface
                 locators";
     ext:augment-identifier "sf-logical-sff-augmentation";
-    case openstack-vm {
+    case logical-interface {
       uses logical-interface-locator;
     }
   }

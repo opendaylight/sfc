@@ -11,7 +11,15 @@ package org.opendaylight.sfc.ofrenderer;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
@@ -99,8 +107,8 @@ public class RspBuilder {
     public RenderedServicePath createRspFromSfTypes(List<SftTypeName> sfTypes,
             Class<? extends SlTransportType> transportType) {
 
-        List<ServiceFunction> sfList = new ArrayList<ServiceFunction>();
-        List<ServiceFunctionForwarder> sffList = new ArrayList<ServiceFunctionForwarder>();
+        List<ServiceFunction> sfList = new ArrayList<>();
+        List<ServiceFunctionForwarder> sffList = new ArrayList<>();
 
         for (SftTypeName sfType : sfTypes) {
             SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(SF_NAME_INDEX++));
@@ -121,7 +129,7 @@ public class RspBuilder {
     public ServiceFunctionChain createServiceFunctionChain(List<SftTypeName> sfTypes) {
 
         short order = 0;
-        List<SfcServiceFunction> sfcSfs = new ArrayList<SfcServiceFunction>();
+        List<SfcServiceFunction> sfcSfs = new ArrayList<>();
         for (SftTypeName sfType : sfTypes) {
             String name = sfType.getValue() + "Abstract";
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
@@ -169,7 +177,7 @@ public class RspBuilder {
 
         short index = 0;
         short serviceIndex = 255;
-        List<RenderedServicePathHop> rspHopList = new ArrayList<RenderedServicePathHop>();
+        List<RenderedServicePathHop> rspHopList = new ArrayList<>();
         for (ServiceFunction sf : sfList) {
             ServiceFunctionForwarder sff = sffList.get(index);
             RenderedServicePathHopBuilder rspHopBuilder = new RenderedServicePathHopBuilder();
@@ -220,7 +228,7 @@ public class RspBuilder {
     private List<SffDataPlaneLocator> createSffDpls(Class<? extends SlTransportType> transportType) {
         int dplCount = (transportType.equals(VxlanGpe.class) ? 1 : 2);
 
-        ArrayList<Integer> tunnelIds = new ArrayList<Integer>();
+        ArrayList<Integer> tunnelIds = new ArrayList<>();
         int tunnelIdsIndex = 0;
         // This allows us to have adjacent SFFs with matching tunnel info
         if (transportType.equals(Mac.class)) {
@@ -231,7 +239,7 @@ public class RspBuilder {
             tunnelIds.add(1, Integer.valueOf(getNextSffMplsLabel()));
         }
 
-        List<SffDataPlaneLocator> sffDpls = new ArrayList<SffDataPlaneLocator>();
+        List<SffDataPlaneLocator> sffDpls = new ArrayList<>();
         for (int i = 0; i < dplCount; ++i) {
             SffDataPlaneLocatorName name =
                     new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(SFF_DPL_NAME_INDEX++));
@@ -277,7 +285,7 @@ public class RspBuilder {
         sfDictBuilder.setSffSfDataPlaneLocator(sffSfDplBuilder.build());
         sfDictBuilder.setKey(new ServiceFunctionDictionaryKey(sf.getName()));
 
-        List<ServiceFunctionDictionary> sfDictList = new ArrayList<ServiceFunctionDictionary>();
+        List<ServiceFunctionDictionary> sfDictList = new ArrayList<>();
         sfDictList.add(sfDictBuilder.build());
 
         return sfDictList;

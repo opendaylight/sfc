@@ -8,6 +8,11 @@
 
 package org.opendaylight.sfc.scfofrenderer;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -24,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 //import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
@@ -47,11 +49,11 @@ public class SfcScfOfProcessorTest {
         scf = mock(ServiceFunctionClassifier.class);
         acl = mock(Acl.class);
         Ace ace = mock(Ace.class);
-        acesList = new ArrayList<Ace>();
+        acesList = new ArrayList<>();
         acesList.add(ace);
         accessListEntries = mock(AccessListEntries.class);
 
-        sfflist = new ArrayList<SclServiceFunctionForwarder>();
+        sfflist = new ArrayList<>();
         SclServiceFunctionForwarder sclSff = mock(SclServiceFunctionForwarder.class);
         sfflist.add(sclSff);
 

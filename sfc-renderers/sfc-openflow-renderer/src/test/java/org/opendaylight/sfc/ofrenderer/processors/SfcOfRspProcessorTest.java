@@ -8,6 +8,19 @@
 
 package org.opendaylight.sfc.ofrenderer.processors;
 
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyShort;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -26,14 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyShort;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * Unit Testing for the SfcOfRspProcessor class. The SfcOfRspProcessor receives
@@ -70,7 +75,7 @@ public class SfcOfRspProcessorTest {
                 new SfcSynchronizer());
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
-        this.sfTypes = new ArrayList<SftTypeName>();
+        this.sfTypes = new ArrayList<>();
         this.sfTypes.add(new SftTypeName("firewall"));
         this.sfTypes.add(new SftTypeName("http-header-enrichment"));
     }
@@ -265,7 +270,7 @@ public class SfcOfRspProcessorTest {
         LOG.info("SfcOfRspProcessorTest testNshOneHopFlowCreation");
 
         List<SftTypeName> sfOneHopTypes;
-        sfOneHopTypes = new ArrayList<SftTypeName>();
+        sfOneHopTypes = new ArrayList<>();
         sfOneHopTypes.add(new SftTypeName("firewall"));
 
         RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
@@ -307,7 +312,7 @@ public class SfcOfRspProcessorTest {
         LOG.info("SfcOfRspProcessorTest testVlanTcpProxyFlowCreation");
 
         List<SftTypeName> sfTcpProxyTypes;
-        sfTcpProxyTypes = new ArrayList<SftTypeName>();
+        sfTcpProxyTypes = new ArrayList<>();
         sfTcpProxyTypes.add(new SftTypeName("tcp-proxy"));
         sfTcpProxyTypes.add(new SftTypeName("tcp-proxy"));
 

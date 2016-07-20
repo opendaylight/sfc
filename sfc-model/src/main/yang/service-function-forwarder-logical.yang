@@ -129,12 +129,6 @@ module service-function-forwarder-logical {
     description "Augments the SFF state to hold logical SFF specific information";
     ext:augment-identifier "sff-logical-sff-augmentation";
     uses dpnid-rsps;
-  }
-
-  augment "/sfc-sff:service-function-forwarders-state/"
-      + "sfc-sff:service-function-forwarder-state/" {
-    description "Augments the SFF state to hold logical SFF specific information";
-    ext:augment-identifier "sff-logical-sff-augmentation";
     uses service-function-dictionary;
   }
 

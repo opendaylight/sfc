@@ -43,9 +43,9 @@ module service-function-forwarder-logical {
     description "Data-plane node id";
   }
 
-  grouping dpn-locator {
+  grouping dpn-grouping {
     description
-      "Data plane-locator: dpn-id";
+      "Data plane id: dpn-id";
     leaf dpn-id {
       type dpn-id-type;
     }
@@ -56,7 +56,7 @@ module service-function-forwarder-logical {
     container dpn-rsps {
       description "For each DPN id, the list contains all RSPs that
                    are using the data plane node";
-      uses dpn-locator;
+      uses dpn-grouping;
       list rsps {
         description
           "List of service paths using this data plane node";
@@ -69,8 +69,8 @@ module service-function-forwarder-logical {
     }
   }
 
-  grouping service-function-dictionary {
-    list service-function-dictionary {
+  grouping sf-logical-sff-dictionary {
+    list sf-logical-sff-dictionary {
       key "name";
       leaf name {
         type sfc-common:sf-name;
@@ -87,25 +87,7 @@ module service-function-forwarder-logical {
             "The SF data plane locator to use when sending
             packets to the associated service function";
         }
-        uses dpn-locator;
-      }
-      list sff-interfaces {
-        key "sff-interface";
-        leaf sff-interface {
-          type string;
-          description
-            "An individual interface on the SFF connected to the
-            SF";
-        }
-        description
-          "A list of interfaces on the SFF which are connected to
-          this SF, usually one 1 or 2 elements";
-      }
-      leaf failmode {
-        type sfc-sff:failmode-type;
-        description
-          "This leaf defines what should the SFF do if it can not
-          send packets to the SF";
+        uses dpn-grouping;
       }
     }
     description
@@ -135,7 +117,7 @@ module service-function-forwarder-logical {
       + "sfc-sff:service-function-forwarder-state/" {
     description "Augments the SFF state to hold logical SFF specific information";
     ext:augment-identifier "sff-logical-sff-augmentation";
-    uses service-function-dictionary;
+    uses sf-logical-sff-dictionary;
   }
 
   augment "/rsp:rendered-service-paths/"
@@ -144,6 +126,6 @@ module service-function-forwarder-logical {
     description "Augments the RSP hop information to allow to use dpn locators
                 instead of sff locators";
     ext:augment-identifier "rsp-logical-sff-augmentation";
-    uses dpn-locator;
+    uses dpn-grouping;
   }
 }

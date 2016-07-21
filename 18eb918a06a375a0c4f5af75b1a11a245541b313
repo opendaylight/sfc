@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_aa2aa47b",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/sfc_pot/provider/SfcPot.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-07-21T11:44:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_4fdcbae4",
+      "range": {
+        "startLine": 9,
+        "startChar": 29,
+        "endLine": 9,
+        "endChar": 36
+      },
+      "revId": "18eb918a06a375a0c4f5af75b1a11a245541b313",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

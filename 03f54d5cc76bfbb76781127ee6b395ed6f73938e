@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_8a335baa",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-07-22T07:45:54Z",
+      "side": 1,
+      "message": "If we use \"interface name\" in the \"description\" field we should be consistent and replace UUID with name.",
+      "range": {
+        "startLine": 36,
+        "startChar": 19,
+        "endLine": 36,
+        "endChar": 23
+      },
+      "revId": "03f54d5cc76bfbb76781127ee6b395ed6f73938e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

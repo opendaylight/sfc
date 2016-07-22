@@ -69,10 +69,10 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureVlanTransportIngressFlow(final String sffNodeName);
 
     // These 2 are work-around flows until the OVS NSH patch is completed
-    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
-    public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
+    public void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
+    public void configureNshVxgpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
+    public void configureNshVxgpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
 
     public void configureMplsTransportIngressFlow(final String sffNodeName);
 
@@ -84,8 +84,8 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf);
 
     public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf);
-    // PathMapper not needed for VxlanGpe NSH
-    //configureVxlanGpePathMapperFlow()
+    // PathMapper not needed for NshVxgpe NSH
+    //configureNshVxgpePathMapperFlow()
 
     //
     // Table 3, NextHop
@@ -96,7 +96,10 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
             final long groupId, final String groupName);
 
-    public void configureVxlanGpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
+    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
+            final short nsi);
+
+    public void configureNshEthNextHopFlow(final String sffNodeName, final String dstMac, final long nsp,
             final short nsi);
 
     //
@@ -114,17 +117,20 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureMplsLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final long mplsLabel, final String port, final long pathId);
 
-    public void configureVxlanGpeTransportEgressFlow(
+    public void configureNshVxgpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
-    public void configureVxlanGpeAppCoexistTransportEgressFlow(
+    public void configureNshVxgpeAppCoexistTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
 
-    public void configureVxlanGpeLastHopTransportEgressFlow(
+    public void configureNshVxgpeLastHopTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
     public void configureNshNscTransportEgressFlow(
             String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
+
+    public void configureNshEthTransportEgressFlow(
+            String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table

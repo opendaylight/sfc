@@ -53,7 +53,7 @@ public class SfcOfRspProcessor {
         this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<NodeId, Boolean>();
         this.rspTransportProcessors = new HashMap<String, Class<? extends SfcRspTransportProcessorBase>>();
-        this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNsh.class);
+        this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNshVxgpe.class);
         this.rspTransportProcessors.put(Mpls.class.getName(), SfcRspProcessorMpls.class);
         this.rspTransportProcessors.put(Mac.class.getName(), SfcRspProcessorVlan.class);
     }

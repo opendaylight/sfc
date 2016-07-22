@@ -27,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -43,6 +45,7 @@ public class SfcOfRspProcessor {
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
     private static final Long SFC_FLOWS = new Long(0xdeadbeef);
+    private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
@@ -53,9 +56,18 @@ public class SfcOfRspProcessor {
         this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<NodeId, Boolean>();
         this.rspTransportProcessors = new HashMap<String, Class<? extends SfcRspTransportProcessorBase>>();
-        this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNsh.class);
-        this.rspTransportProcessors.put(Mpls.class.getName(), SfcRspProcessorMpls.class);
-        this.rspTransportProcessors.put(Mac.class.getName(), SfcRspProcessorVlan.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
+                SfcRspProcessorNshVxgpe.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
+                SfcRspProcessorNshEth.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
+                SfcRspProcessorMpls.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mac.class.getName(), Transport.class.getName()),
+                SfcRspProcessorVlan.class);
     }
 
     /**
@@ -146,8 +158,12 @@ public class SfcOfRspProcessor {
      */
     public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
         try {
+            LOG.info("getTransportProcessor :: transport [{}] encap [{}]",
+                    rsp.getTransportType().getName(), rsp.getSfcEncapsulation());
             Class<? extends SfcRspTransportProcessorBase> transportClass =
-                    rspTransportProcessors.get(rsp.getTransportType().getName());
+                    rspTransportProcessors.get(getTransportEncapName(
+                            rsp.getTransportType().getName(),
+                            rsp.getSfcEncapsulation().getName()));
             SfcRspTransportProcessorBase transportProcessor = transportClass.newInstance();
             transportProcessor.setFlowProgrammer(sfcOfFlowProgrammer);
             transportProcessor.setRsp(rsp);
@@ -156,7 +172,10 @@ public class SfcOfRspProcessor {
 
             return transportProcessor;
         } catch(Exception e) {
-            throw new RuntimeException("getTransportProcessor no processor for transport [" + rsp.getTransportType().getName() + "]" + e);
+            throw new RuntimeException(
+                    "getTransportProcessor no processor for transport [" +
+                    rsp.getTransportType().getName() +
+                    "] encap [" + rsp.getSfcEncapsulation().getName() + "] " + e);
         }
     }
 
@@ -457,5 +476,14 @@ public class SfcOfRspProcessor {
     private void setSffInitialized(final NodeId sffNodeId, boolean initialized) {
         // If the value is already in the map, its value will be replaced
         sffInitialized.put(new NodeId(sffNodeId), initialized);
+    }
+
+    private String getTransportEncapName(final String transportName, final String encapName) {
+        StringBuffer sb =
+                new StringBuffer(transportName).
+                append(TRANSPORT_ENCAP_SEPARATOR_STRING).
+                append(encapName);
+        LOG.info("getTransportEncapName :: transport [{}] encap [{}] result [{}]", transportName, encapName, sb.toString());
+        return sb.toString();
     }
 }

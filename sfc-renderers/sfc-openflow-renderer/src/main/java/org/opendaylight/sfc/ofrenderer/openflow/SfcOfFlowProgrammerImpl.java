@@ -73,7 +73,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE        = "00000102";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE    = "00000103";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE = "00000104";
-    // The 000002** cookies are for NSH Eth Transport Egress flows (coming soon)
+    // The 000002** cookies are for NSH Eth Transport Egress flows
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE   = "00000201";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows
     public static final String TRANSPORT_EGRESS_VLAN_COOKIE         = "00000301";
@@ -429,12 +429,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
-     * Configure a VxlanGpe Transport Ingress flow, by matching on EtherType IPv4.
+     * Configure a NshVxgpe Transport Ingress flow, by matching on EtherType IPv4.
      *
      * @param sffNodeName - the SFF to write the flow to
      */
     @Override
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi) {
+    public void configureNshVxgpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi) {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
 
@@ -575,7 +575,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(
+    public void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(
             final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort) {
 
         // Create the match criteria
@@ -612,7 +612,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort) {
+    public void configureNshVxgpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort) {
         // Create the match criteria
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
@@ -882,7 +882,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
-     * Configure the VxLanGPE NSH Next Hop by matching on the NSH pathId and
+     * Configure the NshVxgpe Next Hop by matching on the NSH pathId and
      * index stored in the NSH header.
      *
      * @param sffNodeName - the SFF to write the flow to
@@ -891,7 +891,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param nshNsi - NSH Index to match on
      */
     @Override
-    public void configureVxlanGpeNextHopFlow(final String sffNodeName, final String dstIp, final long nshNsp,
+    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nshNsp,
             final short nshNsi) {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
@@ -903,6 +903,29 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
             actionList.add(actionSetNwDst);
         }
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
+    }
+
+    /**
+     * Configure the NshEth Next Hop by matching on the NSH pathId and
+     * index stored in the NSH header.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     * @param dstMac - the destination Mac
+     * @param nsp - NSH Service Path to match on
+     * @param nsi - NSH Index to match on
+     */
+    @Override
+    public void configureNshEthNextHopFlow(String sffNodeName, String dstMac, long nsp, short nsi) {
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchNshNsp(match, nsp);
+        SfcOpenflowUtils.addMatchNshNsi(match, nsi);
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<Action>();
+        actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, order++));
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
@@ -1156,7 +1179,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param port - the switch port to send the packet out on
      */
     @Override
-    public void configureVxlanGpeLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
+    public void configureNshVxgpeLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
             String port) {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
@@ -1183,7 +1206,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public void configureVxlanGpeTransportEgressFlow(
+    public void configureNshVxgpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, String port) {
 
         // When outputing to an outport, if inport==outport, then according to the
@@ -1280,12 +1303,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public void configureVxlanGpeAppCoexistTransportEgressFlow(
+    public void configureNshVxgpeAppCoexistTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp) {
 
         // This flow only needs to be created if App Coexistence is being used
         if(getTableEgress() == APP_COEXISTENCE_NOT_SET) {
-            LOG.debug("configureVxlanGpeAppCoexistTransportEgressFlow NO AppCoexistence configured, skipping flow");
+            LOG.debug("configureNshVxgpeAppCoexistTransportEgressFlow NO AppCoexistence configured, skipping flow");
             return;
         }
 
@@ -1317,6 +1340,38 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                         match, actionList, EMPTY_SWITCH_PORT,
                         order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
                         TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
+    }
+
+    /**
+     * Configure the NSH Ethernet Transport Egress flow by matching on the
+     * NSP and NSI.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     * @param nshNsp - the NSH Service Path to match on
+     * @param nshNsi - the NSH Service Index to match on
+     * @param port - the switch port to send the packet out on
+     */
+    @Override
+    public void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port) {
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
+        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<Action>();
+        // Copy/Move Nsc1/Nsc2 to the next hop
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+
+        // TODO need to encap the Ethernet transport
+
+        FlowBuilder transportEgressFlow =
+                configureTransportEgressFlow(
+                        match, actionList, port, order,
+                        FLOW_PRIORITY_TRANSPORT_EGRESS,
+                        TRANSPORT_EGRESS_NSH_ETH_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1564,4 +1619,5 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             return tableIndex;
         }
     }
+
 }

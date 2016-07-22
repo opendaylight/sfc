@@ -11,12 +11,14 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateKey;
@@ -190,7 +193,7 @@ public class SfcProviderServiceForwarderAPI {
 
         boolean ret = true;
         ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
-                new ServiceFunctionForwarderStateBuilder();
+            new ServiceFunctionForwarderStateBuilder();
 
         // TODO another example of strings being used to interchange types. Note
         // the constructor of
@@ -250,9 +253,10 @@ public class SfcProviderServiceForwarderAPI {
                 SffName sffName = renderedServicePathHop.getServiceFunctionForwarder();
                 if (sffNameSet.add(sffName)) {
                     // TODO Bug 4495 - RPCs hiding heuristics using Strings -
-                    SffServicePathKey sffServicePathKey = new SffServicePathKey(new SfpName(rspName.getValue()));
+                    SffServicePathKey sffServicePathKey =
+                        new SffServicePathKey(new SfpName(rspName.getValue()));
                     ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
-                            new ServiceFunctionForwarderStateKey(sffName);
+                        new ServiceFunctionForwarderStateKey(sffName);
                     InstanceIdentifier<SffServicePath> sfStateIID = InstanceIdentifier
                             .builder(ServiceFunctionForwardersState.class)
                             .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
@@ -284,6 +288,7 @@ public class SfcProviderServiceForwarderAPI {
      * Delete the given list of service paths from the SFF operational state.
      *
      * <p>
+     *
      * @param renderedServicePaths
      *            String List of Service Path names
      * @return True if paths were deleted, false otherwise
@@ -332,8 +337,7 @@ public class SfcProviderServiceForwarderAPI {
                     // TODO Bug 4495 - RPCs hiding heuristics using Strings -
                     SffServicePathKey sffServicePathKey = new SffServicePathKey(new SfpName(rspName.getValue()));
                     ServiceFunctionForwarderStateKey serviceFunctionForwarderStateKey =
-                            new ServiceFunctionForwarderStateKey(
-                            sffname);
+                        new ServiceFunctionForwarderStateKey(sffname);
                     InstanceIdentifier<SffServicePath> sfStateIID = InstanceIdentifier
                             .builder(ServiceFunctionForwardersState.class)
                             .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
@@ -365,6 +369,7 @@ public class SfcProviderServiceForwarderAPI {
      * This method deletes the operational state for a service function.
      *
      * <p>
+     *
      * @param sffName
      *            SFF name
      * @return A ServiceFunctionState object that is a list of all paths using
@@ -392,6 +397,7 @@ public class SfcProviderServiceForwarderAPI {
      * Returns the list of SFPs anchored by a SFF.
      *
      * <p>
+     *
      * @param sffName
      *            SFF name
      * @return SffServicePath
@@ -431,4 +437,39 @@ public class SfcProviderServiceForwarderAPI {
                 .stream().map(SffServicePath::getName).map(SfpName::getValue).map(RspName::new)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Return a list of SffDataPlaneLocator that are not used by any SF, which
+     * is determined by looking at the Sff.SfDictionary.SffSfDpl.SffDpl. This is
+     * useful when there are multiple SFF DPLs, this returns the DPLs that are
+     * not used by SFs. For example, in the case of Vxgpe+NSH between the SFFs,
+     * and Eth+NSH to the SFs, there will be a Eth+NSH Dpl per SF, and just 1
+     * Vxgpe+NSH DPL for the SFF-SFF, which will be returned by this method.
+     *
+     * @param sff
+     *            - The SFF to process
+     * @return List of SffDataPlaneLocator not used by any SF
+     */
+    public static List<SffDataPlaneLocator> getNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
+        List<SffDataPlaneLocator> nonSfDpls = new ArrayList<>();
+
+        for (SffDataPlaneLocator sffDpl : sff.getSffDataPlaneLocator()) {
+            boolean dplInSf = false;
+            for (ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+                if (sffDpl.getName().toString().equals(sffDict.getSffSfDataPlaneLocator().getSffDplName().toString())) {
+                    dplInSf = true;
+                    continue;
+                }
+            }
+
+            if (!dplInSf) {
+                LOG.debug("getNonSfDataPlaneLocators found NonSf DPL [{}] from SFF [{}]", sffDpl.getName().toString(),
+                        sff.getName().toString());
+                nonSfDpls.add(sffDpl);
+            }
+        }
+
+        return nonSfDpls;
+    }
+
 }

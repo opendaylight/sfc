@@ -655,16 +655,6 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
-    public static Action createActionSetNP(final long etherType, final int order) {
-        SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
-        setDlTypeActionBuilder.setDlType(new EtherType(etherType));
-
-        ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
-
-        return ab.build();
-    }
-
     public static Action createActionWriteDscp(short dscpVal, final int order) {
         IpMatchBuilder ipMatch = new IpMatchBuilder();
         Dscp dscp = new Dscp(dscpVal);

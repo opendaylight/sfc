@@ -16,6 +16,7 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -151,6 +152,28 @@ public abstract class SfcRspTransportProcessorBase {
                 throw new SfcRenderingException("processSffDpls srcSff is null [" + entry.getSrcSff() + "]");
             }
 
+            // If the SFF only has 1 DPL, then no extra special processing is
+            // needed
+            if (srcSff.getSffDataPlaneLocator().size() == 1) {
+                SffDataPlaneLocatorName dplName = srcSff.getSffDataPlaneLocator().get(0).getName();
+                this.sffGraph.setSffIngressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                this.sffGraph.setSffEgressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                continue;
+            }
+
+            // If there is only 1 DPL not used for SFs, then no extra special
+            // processing is needed
+            // For the case of Vxgpe+NSH for classifier-SFF and SFF-SFF and
+            // Eth+NSH for SFF-SF, then
+            // there will be 1 DPL not used for SFs, namely the Vxgpe+NSH DPL.
+            List<SffDataPlaneLocator> nonSfDpls = sfcProviderUtils.getSffNonSfDataPlaneLocators(srcSff);
+            if (nonSfDpls.size() == 1) {
+                SffDataPlaneLocatorName dplName = nonSfDpls.get(0).getName();
+                this.sffGraph.setSffIngressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                this.sffGraph.setSffEgressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                continue;
+            }
+
             // may be null if its EGRESS
             ServiceFunctionForwarder dstSff = sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
                     entry.getPathId());
@@ -203,15 +226,15 @@ public abstract class SfcRspTransportProcessorBase {
      */
     private boolean setSffRemainingHopDataPlaneLocator(final ServiceFunctionForwarder sff,
             SffDataPlaneLocator alreadySetSffDpl, boolean ingressDplSet) {
+
+        if (alreadySetSffDpl == null) {
+            LOG.error("setSffRemainingHopDataPlaneLocator alreadySetSffDpl is null, cant continue");
+            return false;
+        }
+
         long pathId = rsp.getPathId();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
-        if (sffDplList.size() == 1) {
-            // Nothing to be done here
-            this.sffGraph.setSffIngressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
-            this.sffGraph.setSffEgressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
-            return true;
-        }
 
         for (SffDataPlaneLocator sffDpl : sffDplList) {
             LOG.debug("try to match sffDpl name: {}, type: {}", sffDpl.getName(),

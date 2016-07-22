@@ -14,6 +14,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -385,10 +386,12 @@ public class SfcProviderRenderedPathAPI {
 
         ServiceFunctionForwarder serviceFunctionForwarder = SfcProviderServiceForwarderAPI
                 .readServiceFunctionForwarder(serviceFunctionForwarderName);
-        if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null
-                && serviceFunctionForwarder.getSffDataPlaneLocator().get(0) != null) {
-            renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(
-                    serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getName());
+        if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null) {
+            List<SffDataPlaneLocator> sffNonSfDplList = SfcProviderServiceForwarderAPI
+                    .getNonSfDataPlaneLocators(serviceFunctionForwarder);
+            if (sffNonSfDplList.size() == 1) {
+                renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(sffNonSfDplList.get(0).getName());
+            }
         }
 
         renderedServicePathHopBuilder.setHopNumber(posIndex).setServiceIndex((short) serviceIndex)
@@ -422,8 +425,7 @@ public class SfcProviderRenderedPathAPI {
                 .getContextHeaderAllocationType1();
         if (contextHeaderAllocationType1 != null) {
             Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
-                    contextHeaderAllocationType1
-                    .getImplementedInterface();
+                contextHeaderAllocationType1.getImplementedInterface();
             if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
                 LOG.debug("ok");
             }
@@ -762,7 +764,7 @@ public class SfcProviderRenderedPathAPI {
         RenderedServicePath renderedServicePath = readRenderedServicePath(rspName);
         if (renderedServicePath != null) {
             RenderedServicePathFirstHopBuilder renderedServicePathFirstHopBuilder =
-                    new RenderedServicePathFirstHopBuilder();
+                new RenderedServicePathFirstHopBuilder();
             renderedServicePathFirstHopBuilder.setPathId(renderedServicePath.getPathId())
                     .setStartingIndex(renderedServicePath.getStartingIndex())
                     .setSymmetricPathId(renderedServicePath.getSymmetricPathId());
@@ -829,6 +831,7 @@ public class SfcProviderRenderedPathAPI {
      * of a Rendered Service Path by ServiceFunctionTypeIdentity list.
      *
      * <p>
+     *
      * @param serviceFunctionSchedulerType
      *            schedulertype for the Service Function
      * @param serviceFunctionTypeList

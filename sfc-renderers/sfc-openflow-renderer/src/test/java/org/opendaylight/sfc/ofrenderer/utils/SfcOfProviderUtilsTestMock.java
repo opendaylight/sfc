@@ -8,17 +8,20 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
 
@@ -48,11 +51,13 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
 
     // Only needed for multi-threading, empty for now
     @Override
-    public void addRsp(long rspId) {}
+    public void addRsp(long rspId) {
+    }
 
     // Only needed for multi-threading, empty for now
     @Override
-    public void removeRsp(long rspId) {}
+    public void removeRsp(long rspId) {
+    }
 
     public void resetCache() {
         LOG.info("SfcOfProviderUtilsTestMock resetCache");
@@ -79,5 +84,36 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
     @Override
     public Long getPortNumberFromName(String bridgeName, String portName, long rspId) {
         return new Long(0);
+    }
+
+    @Override
+    public List<SffDataPlaneLocator> getSffNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
+        List<SffDataPlaneLocator> nonSfDpls = new ArrayList<>();
+
+        for (SffDataPlaneLocator sffDpl : sff.getSffDataPlaneLocator()) {
+            boolean dplInSf = false;
+            if (sff.getServiceFunctionDictionary() == null) {
+                continue;
+            }
+
+            for (ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+                if (sffDict.getSffSfDataPlaneLocator() == null
+                        || sffDict.getSffSfDataPlaneLocator().getSffDplName() == null) {
+                    continue;
+                }
+                if (sffDpl.getName().toString().equals(sffDict.getSffSfDataPlaneLocator().getSffDplName().toString())) {
+                    dplInSf = true;
+                    continue;
+                }
+            }
+
+            if (!dplInSf) {
+                LOG.debug("getNonSfDataPlaneLocators found NonSf DPL [{}] from SFF [{}]", sffDpl.getName().toString(),
+                        sff.getName().toString());
+                nonSfDpls.add(sffDpl);
+            }
+        }
+
+        return nonSfDpls;
     }
 }

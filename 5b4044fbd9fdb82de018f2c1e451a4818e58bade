@@ -22,6 +22,30 @@
       "revId": "5b4044fbd9fdb82de018f2c1e451a4818e58bade",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_90ceea2c",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-logical.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-07-22T14:14:04Z",
+      "side": 0,
+      "message": "The original idea was to reuse the service function dictionary defined @ service-function-forwarder.yang. Even thought we did not have a use for everything defined on it, we thought that being able to reuse the type was enough advantage.\nAt the end, it was not reused, and instead was copied almost verbatim as a new type. That being the case, we should have removed from the beginning everything we did not have not a use for.\nThis sff-interfaces is not an original idea of ours, it was already included on the service function dictionary defined @ service-function-forwarder.yang and we do not know what it is used for.",
+      "parentUuid": "9a561d44_aa2d7f00",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 27
+      },
+      "revId": "5b4044fbd9fdb82de018f2c1e451a4818e58bade",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

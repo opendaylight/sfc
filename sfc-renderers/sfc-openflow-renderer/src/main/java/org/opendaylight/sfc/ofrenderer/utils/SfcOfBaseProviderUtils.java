@@ -58,6 +58,10 @@ public abstract class SfcOfBaseProviderUtils {
 
     public abstract Long getPortNumberFromName(String bridgeName, String portName, long rspId);
 
+    // Get the SFF DPLs that are not used by SFs. Useful when there are multiple
+    // DPL types: one for the SFs and another for the SFF trunk.
+    public abstract List<SffDataPlaneLocator> getSffNonSfDataPlaneLocators(ServiceFunctionForwarder sff);
+
     /**
      * Return a named SffDataPlaneLocator on a SFF.
      *
@@ -419,4 +423,17 @@ public abstract class SfcOfBaseProviderUtils {
         }
         return interfaceName;
     }
+
+    public SffDataPlaneLocator getSffSfDict_SffDpl(SfName sfName, SffName sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+
+        for (ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+            if (sffDict.getName().equals(sfName)) {
+                return getSffDataPlaneLocator(sff, sffDict.getSffSfDataPlaneLocator().getSffDplName());
+            }
+        }
+
+        return null;
+    }
+
 }

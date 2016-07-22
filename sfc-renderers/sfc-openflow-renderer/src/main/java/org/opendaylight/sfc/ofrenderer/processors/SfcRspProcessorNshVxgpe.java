@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
+
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -21,10 +22,28 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.rev160107.SfDplOvsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
+/**
+ * SfcRspProcessorNshVxgpe class
+ *
+ * <p>
+ *
+ * This implementation is used when the SFP:transport-type is VxGpe and the
+ * SFP:sfc-encapsulation is NSH. In this case, it is assumed that Vxgpe+NSH
+ * will be used between the SFF and SF and SFF to SFF.
+ * There are times, however, when the SFF-SFF encap/transport is Vxgpe+NSH,
+ * but the SFF-SF encap/transport will be Eth/NSH, in which case, this class
+ * will make the appropriate calls into the SfcRspProcessorNshEth class
+ *
+ * @author ebrjohn
+ *
+ */
 public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
+
+    SfcRspProcessorNshEth sfcRspProcessorNshEth;
 
     /*
      * Set the RSP path egress DPL and SFF Hop Ingress DPLs for the NSH
@@ -81,11 +100,21 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
+        // If its Eth+NSH call into
+        // SfcRspProcessorNshEth.configureSfTransportIngressFlow()
+        if (sfDpl.getLocatorType() instanceof Mac) {
+            // In this case, the SfLoopbackEncapsulatedEgress and
+            // SfReturnLoopbackIngress flows are not needed
+            sfcRspProcessorNshEth = getSfcRspProcessorNshEth();
+            sfcRspProcessorNshEth.configureSfTransportIngressFlow(entry, sfDpl);
+
+            return;
+        }
+
         /*
          * Currently the switch port the SF is connected to is stored by Tacker.
          * Here we take this name and convert it to the port number.
          */
-
         SfDplOvsAugmentation sfDplOvs = sfDpl.getAugmentation(SfDplOvsAugmentation.class);
         if (sfDplOvs == null) {
             LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow NO sfDplOvs augmentation present");
@@ -141,7 +170,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     }
 
     //
-    // PathMapper methods
+    // PathMapper methods - not needed for NSH
     //
 
     /**
@@ -187,6 +216,15 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl) {
+
+        // If its Eth+NSH call into SfcRspProcessorNshEth.configureNextHopFlow()
+        if (dstSfDpl.getLocatorType() instanceof Mac) {
+            sfcRspProcessorNshEth = getSfcRspProcessorNshEth();
+            sfcRspProcessorNshEth.configureNextHopFlow(entry, srcSffDpl, dstSfDpl);
+
+            return;
+        }
+
         IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
         this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSfLocator.getIp().getValue()));
     }
@@ -225,6 +263,16 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     @Override
     public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl,
             SfDataPlaneLocator dstSfDpl) {
+
+        // If its Eth+NSH call into SfcRspProcessorNshEth.configureNextHopFlow()
+        if (dstSfDpl.getLocatorType() instanceof Mac) {
+            // In this case, the SfLoopbackEncapsulatedEgress and
+            // SfReturnLoopbackIngress flows are not needed
+            sfcRspProcessorNshEth = getSfcRspProcessorNshEth();
+            sfcRspProcessorNshEth.configureNextHopFlow(entry, srcSfDpl, dstSfDpl);
+
+            return;
+        }
 
         IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
         this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSfLocator.getIp().getValue()));
@@ -280,6 +328,16 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
+
+        // If its Eth+NSH call into
+        // SfcRspProcessorNshEth.configureSfTransportEgressFlow()
+        if (dstSfDpl.getLocatorType() instanceof Mac) {
+            sfcRspProcessorNshEth = getSfcRspProcessorNshEth();
+            sfcRspProcessorNshEth.configureSfTransportEgressFlow(entry, srcSffDpl, dstSfDpl, hopDpl);
+
+            return;
+        }
+
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(),
                 entry.getDstDpnId());
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
@@ -318,4 +376,13 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         }
     }
 
+    private SfcRspProcessorNshEth getSfcRspProcessorNshEth() {
+        if (sfcRspProcessorNshEth == null) {
+            sfcRspProcessorNshEth = new SfcRspProcessorNshEth();
+            sfcRspProcessorNshEth.setFlowProgrammer(sfcFlowProgrammer);
+            sfcRspProcessorNshEth.setSfcProviderUtils(sfcProviderUtils);
+        }
+
+        return sfcRspProcessorNshEth;
+    }
 }

@@ -419,4 +419,17 @@ public abstract class SfcOfBaseProviderUtils {
         }
         return interfaceName;
     }
+
+    public SffDataPlaneLocator getSffSfDict_SffDpl(SfName sfName, SffName sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+
+        for(ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+            if(sffDict.getName().equals(sfName)) {
+                return getSffDataPlaneLocator(sff, sffDict.getSffSfDataPlaneLocator().getSffDplName());
+            }
+        }
+
+        return null;
+    }
+
 }

@@ -78,6 +78,8 @@ public class SfcOfRspProcessor {
 
         this.rspTransportProcessors.put(getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshVxgpe());
+        this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
+                new SfcRspProcessorNshEth());
         this.rspTransportProcessors.put(getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
                 new SfcRspProcessorMpls());
         this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Transport.class.getName()),

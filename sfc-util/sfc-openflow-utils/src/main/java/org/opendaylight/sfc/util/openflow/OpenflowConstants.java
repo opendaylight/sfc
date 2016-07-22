@@ -16,4 +16,9 @@ public class OpenflowConstants {
 
     // Constant for marking next protocol=NSH in GPE
     public static final short TUN_GPE_NP_NSH = 0x4;
+
+    // Ethernet NextProtocol/EtherType for NSH
+    public static final long ETHERTYPE_NSH = 0x894F;
+
+    public static final short NSH_NP_ETH = 0x3;
 }

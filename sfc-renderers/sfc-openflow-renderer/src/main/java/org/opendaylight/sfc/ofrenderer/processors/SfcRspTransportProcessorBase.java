@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.ofrenderer.processors;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +17,12 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
@@ -143,6 +146,23 @@ public abstract class SfcRspTransportProcessorBase {
                 throw new SfcRenderingException("processSffDpls srcSff is null [" + entry.getSrcSff() + "]");
             }
 
+            // If the SFF only has 1 DPL, then no extra special processing is needed
+            if (srcSff.getSffDataPlaneLocator().size() == 1) {
+                SffDataPlaneLocatorName dplName = srcSff.getSffDataPlaneLocator().get(0).getName();
+                this.sffGraph.setSffIngressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                this.sffGraph.setSffEgressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                continue;
+            }
+
+            // If there is only 1 DPL not used for SFs, then no extra special processing is needed
+            List<SffDataPlaneLocator> nonSfDpls = getNonSfDataPlaneLocators(srcSff);
+            if(nonSfDpls.size() == 1) {
+                SffDataPlaneLocatorName dplName = nonSfDpls.get(0).getName();
+                this.sffGraph.setSffIngressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                this.sffGraph.setSffEgressDpl(srcSff.getName(), entry.getPathId(), dplName);
+                continue;
+            }
+
             // may be null if its EGRESS
             ServiceFunctionForwarder dstSff =
                     sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
@@ -191,15 +211,15 @@ public abstract class SfcRspTransportProcessorBase {
      */
     private boolean setSffRemainingHopDataPlaneLocator(final ServiceFunctionForwarder sff,
             SffDataPlaneLocator alreadySetSffDpl, boolean ingressDplSet) {
+
+        if(alreadySetSffDpl == null) {
+            LOG.error("setSffRemainingHopDataPlaneLocator alreadySetSffDpl is null, cant continue");
+            return false;
+        }
+
         long pathId = rsp.getPathId();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
-        if (sffDplList.size() == 1) {
-            // Nothing to be done here
-            this.sffGraph.setSffIngressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
-            this.sffGraph.setSffEgressDpl(sff.getName(), pathId, sffDplList.get(0).getName());
-            return true;
-        }
 
         for (SffDataPlaneLocator sffDpl : sffDplList) {
             LOG.debug("try to match sffDpl name: {}, type: {}", sffDpl.getName(),
@@ -349,6 +369,40 @@ public abstract class SfcRspTransportProcessorBase {
         }
 
         return false;
+    }
+
+    /**
+     * Return a list of SffDataPlaneLocator that are not used by any SF, which
+     * is determined by looking at the Sff->SfDictionary->SffSfDpl->SffDpl.
+     * This is useful when there are multiple SFF DPLs, this returns the
+     * one that are not used by SFs. For example, in the case of Vxgpe+NSH
+     * between the SFFs, and Eth+NSH to the SFs, there will be a Eth+NSH
+     * Dpl per SF, and just 1 Vxgpe+NSH DPL for the SFF-SFF, which will
+     * be returned by this method.
+     *
+     * @param sff - The SFF to process
+     * @return List of SffDataPlaneLocator not used by any SF
+     */
+    private List<SffDataPlaneLocator> getNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
+        List <SffDataPlaneLocator> nonSfDpls = new ArrayList<>();
+
+        for(SffDataPlaneLocator sffDpl : sff.getSffDataPlaneLocator()) {
+            boolean dplInSf = false;
+            for(ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+                if(sffDpl.getName().toString().equals(sffDict.getSffSfDataPlaneLocator().getSffDplName().toString())) {
+                    dplInSf = true;
+                    continue;
+                }
+            }
+
+            if(!dplInSf) {
+                // TODO need to change this LOG to debug
+                LOG.info("getNonSfDataPlaneLocators found NonSf DPL [{}] from SFF [{}]", sffDpl.getName().toString(), sff.getName().toString());
+                nonSfDpls.add(sffDpl);
+            }
+        }
+
+        return nonSfDpls;
     }
 
     /**

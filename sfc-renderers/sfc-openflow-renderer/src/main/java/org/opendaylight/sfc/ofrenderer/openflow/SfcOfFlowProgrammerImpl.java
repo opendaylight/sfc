@@ -73,8 +73,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE = "00000102";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE = "00000103";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE = "00000104";
-    // The 000002** cookies are for NSH Eth Transport Egress flows (coming soon)
+    // The 000002** cookies are for NSH Eth Transport Egress flows
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE = "00000201";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE = "00000202";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE = "00000203";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows
     public static final String TRANSPORT_EGRESS_VLAN_COOKIE = "00000301";
@@ -1402,12 +1403,17 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
 
         List<Action> actionList = new ArrayList<>();
-        // Copy/Move Nsc1/Nsc2 to the next hop
+        // Copy/Move Nsc1/Nsc2/Nsi/Nsp to the next hop
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(actionList.size()));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(actionList.size()));
+        // Set Ethernet NextProtocol to NSH
+        actionList.add(SfcOpenflowUtils.createActionSetEtherType(OpenflowConstants.ETHERTYPE_NSH, actionList.size()));
+        // TODO Set NSH NextProtocol to Ethernet
+        actionList.add(SfcOpenflowUtils.createActionNxLoadNshNp(OpenflowConstants.NSH_NP_ETH, actionList.size()));
 
-        // TODO need to encap the Ethernet transport
+        // Ethernet encap is performed in configureNshEthNextHopFlow()
 
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, port,
                 FLOW_PRIORITY_TRANSPORT_EGRESS, TRANSPORT_EGRESS_NSH_ETH_COOKIE);
@@ -1418,8 +1424,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureNshEthTransportEgressFlow(String sffOpenflowNodeName, long nsp, short nsi,
             List<Action> actionList) {
         configureTransportEgressFlow(sffOpenflowNodeName, nsp, nsi, actionList, FLOW_PRIORITY_TRANSPORT_EGRESS,
-                TRANSPORT_EGRESS_NSH_ETH_COOKIE);
-
+                TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE);
     }
 
     @Override
@@ -1452,9 +1457,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
         if (dstMac != null) {
             SfcOpenflowUtils.addMatchDstMac(match, dstMac);
-            // If the dstMac is null, then the packet is leaving SFC and we dont
-            // know
-            // to where. Make it a lower priority, and only match on the pathId
+            // If the dstMac is null, then the packet is leaving SFC and
+            // we dont know to where. Make it a lower priority, and only
+            // match on the pathId
             flowPriority += 10;
         }
 

@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
 
 public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
-    private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
-    private SfcOfBaseProviderUtils sfcOfProviderUtils;
-    private SfcSynchronizer sfcSynchronizer;
-    private Map<NodeId, Boolean> sffInitialized;
-    private OperDsUpdateHandlerInterface operDsHandler;
-    private Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
-    private SfcGeniusRpcClient theGeniusRpcClient;
+    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcOfBaseProviderUtils sfcOfProviderUtils;
+    private final SfcSynchronizer sfcSynchronizer;
+    private final Map<NodeId, Boolean> sffInitialized;
+    private final OperDsUpdateHandlerInterface operDsHandler;
+    private final Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
+    private final SfcGeniusRpcClient theGeniusRpcClient;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /* Logical SFF always assumes vxlan-gpe tunnels for inter-sff transport, and eth-encapsulated
@@ -83,6 +83,9 @@ public class SfcOfRspProcessor {
         this.rspTransportProcessors.put(
                 getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshVxgpe());
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
+                new SfcRspProcessorNshEth());
         this.rspTransportProcessors.put(
                 getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
                 new SfcRspProcessorMpls());
@@ -365,7 +368,7 @@ public class SfcOfRspProcessor {
 
         LOG.debug("configureNextHopFlows: entry:{}, sffGraph:{}", entry, sffGraph);
         ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        SfDataPlaneLocator sfDstDpl = (sfDst == null) ? null : sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
+        SfDataPlaneLocator sfDstDpl = sfDst == null ? null : sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
         if (sfDstDpl != null) {
             if (entry.getSrcSff().equals(SffGraph.INGRESS)) {
                 // Configure the GW-SFF-SF NextHop using sfDpl
@@ -470,9 +473,9 @@ public class SfcOfRspProcessor {
         }
 
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
-        if ((! entry.getSrcSff().getValue().equals(entry.getDstSff().getValue()))
-            || ((entry.isIntraLogicalSFFEntry())
-                 && ( ! entry.getSrcDpnId().getValue().equals(entry.getDstDpnId().getValue())) )) {
+        if (! entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())
+            || entry.isIntraLogicalSFFEntry()
+                 && ! entry.getSrcDpnId().getValue().equals(entry.getDstDpnId().getValue())) {
 
             SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst,
                     sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));

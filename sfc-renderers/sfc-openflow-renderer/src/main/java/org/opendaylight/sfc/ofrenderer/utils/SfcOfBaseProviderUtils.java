@@ -373,13 +373,13 @@ public abstract class SfcOfBaseProviderUtils {
     public String getSfLogicalInterfaceName(ServiceFunction sf) {
         String interfaceName = null;
         LOG.debug("getSfLogicalInterfaceName: called for sf {}", sf.getName());
-        if ((sf.getSfDataPlaneLocator() != null) && (sf.getSfDataPlaneLocator().get(0) != null)) {
+        if (sf.getSfDataPlaneLocator() != null && sf.getSfDataPlaneLocator().get(0) != null) {
             SfDataPlaneLocator sfdpl = sf.getSfDataPlaneLocator().get(0);
             LOG.debug("getSfLogicalInterfaceName: dpl 0 is not null! it is {}", sfdpl);
-            if ((sfdpl.getLocatorType()!= null)
-                && (sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class)) {
-                LogicalInterface logicalInterface = ((LogicalInterface)sfdpl.getLocatorType());
-                if ((logicalInterface != null) && (logicalInterface.getInterfaceName() != null)) {
+            if (sfdpl.getLocatorType()!= null
+                && sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class) {
+                LogicalInterface logicalInterface = (LogicalInterface)sfdpl.getLocatorType();
+                if (logicalInterface != null && logicalInterface.getInterfaceName() != null) {
                     LOG.debug("getSfLogicalInterfaceName: hop is using a logical interface [{}]"
                         , logicalInterface.getInterfaceName());
                     interfaceName = logicalInterface.getInterfaceName();
@@ -387,6 +387,18 @@ public abstract class SfcOfBaseProviderUtils {
             }
         }
         return interfaceName;
+    }
+
+    public SffDataPlaneLocator getSffSfDict_SffDpl(SfName sfName, SffName sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+
+        for(ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
+            if(sffDict.getName().toString().equals(sfName.toString())) {
+                return getSffDataPlaneLocator(sff, sffDict.getSffSfDataPlaneLocator().getSffDplName());
+            }
+        }
+
+        return null;
     }
 
 }

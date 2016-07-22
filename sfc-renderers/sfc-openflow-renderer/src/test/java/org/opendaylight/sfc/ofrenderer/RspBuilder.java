@@ -102,7 +102,7 @@ public class RspBuilder {
     private int VLAN_SF_INDEX = 0;
     private int MPLS_SFF_INDEX = 0;
     private int IF_NAME_INDEX = 0;
-    private Short STARTING_INDEX = 255;
+    private final Short STARTING_INDEX = 255;
 
     SfcOfProviderUtilsTestMock sfcUtilsTestMock;
 
@@ -268,12 +268,12 @@ public class RspBuilder {
         return sff;
     }
 
-    private ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftTypeName sfType,
+    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftTypeName sfType,
             Class<? extends SlTransportType> transportType) {
 
         // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
         Class<? extends SlTransportType> sfTransportType =
-                (transportType.equals(VxlanGpe.class) ? transportType : Mac.class);
+                transportType.equals(VxlanGpe.class) ? transportType : Mac.class;
 
         SfDataPlaneLocator sfDpl = buildSfDataPlaneLocator(new SfDataPlaneLocatorName(sfName.getValue() + "_sfDpl"),
                 buildSfLocatorType(sfTransportType), sffName, sfTransportType);
@@ -285,7 +285,7 @@ public class RspBuilder {
     }
 
     private List<SffDataPlaneLocator> createSffDpls(Class<? extends SlTransportType> transportType) {
-        int dplCount = (transportType.equals(VxlanGpe.class) ? 1 : 2);
+        int dplCount = transportType.equals(VxlanGpe.class) ? 1 : 2;
 
         ArrayList<Integer> tunnelIds = new ArrayList<>();
         int tunnelIdsIndex = 0;

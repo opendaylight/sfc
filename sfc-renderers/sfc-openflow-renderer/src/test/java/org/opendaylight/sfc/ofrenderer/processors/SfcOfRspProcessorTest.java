@@ -33,8 +33,11 @@ import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterIn
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
@@ -328,6 +331,16 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc).purgeFlows();
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
+    }
+
+    @Test
+    public void testVxgpeNshSffEthNshSfFlowCreation() {
+        LOG.info("SfcOfRspProcessorTest testVxgpeNshSffEthNshSfFlowCreation");
+        ServiceFunction sf = rspBuilder.createServiceFunction(new SfName("SfEthNsh"), new SffName(""), new SftTypeName("firewall"), Mac.class);
+        List<ServiceFunction> sfList = new ArrayList<>();
+        sfList.add(sf);
+        //RenderedServicePath nshRsp = rspBuilder.createRspFromSfList(sfList, VxlanGpe.class, Nsh.class);
+        //this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
     }
 
     @Test

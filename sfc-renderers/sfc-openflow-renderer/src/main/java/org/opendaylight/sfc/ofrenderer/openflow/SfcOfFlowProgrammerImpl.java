@@ -62,8 +62,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfFlowProgrammerImpl.class);
 
     public static final int COOKIE_BIGINT_HEX_RADIX = 16;
-    public static final BigInteger TRANSPORT_EGRESS_COOKIE =
-            new BigInteger("BA5EBA11BA5EBA11", COOKIE_BIGINT_HEX_RADIX);
+    public static final String TRANSPORT_EGRESS_COOKIE_STR_BASE         = "BA5EBA11";
+    public static final String TRANSPORT_EGRESS_VXGPE_LASTHOP_COOKIE    = "00000001";
+    public static final String TRANSPORT_EGRESS_VXGPE_COOKIE            = "00000002";
+    public static final String TRANSPORT_EGRESS_NSHNSC_COOKIE           = "00000003";
+    public static final String TRANSPORT_EGRESS_VXGPE_APPCOEXIST_COOKIE = "00000004";
+    public static final String TRANSPORT_EGRESS_OTHER_COOKIE            = "00000005";
 
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     public static final BigInteger METADATA_MASK_SFP_MATCH =
@@ -177,7 +181,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             return false;
         }
 
-        return cookie.getValue().equals(TRANSPORT_EGRESS_COOKIE);
+        return cookie.toString().toUpperCase().startsWith(TRANSPORT_EGRESS_COOKIE_STR_BASE);
     }
 
     //
@@ -970,7 +974,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         }
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
+                configureMacTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1024,7 +1028,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, order++));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
+                configureMacTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1078,7 +1082,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionSetMplsLabel(mplsLabel, order++));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
+                configureMacTransportEgressFlow(match, actionList, port, order, pathId, srcMac, dstMac);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1107,7 +1111,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order);
+                configureTransportEgressFlow(match, actionList, port, order,
+                        FLOW_PRIORITY_TRANSPORT_EGRESS,
+                        TRANSPORT_EGRESS_VXGPE_LASTHOP_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1127,7 +1133,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order);
+                configureTransportEgressFlow(match, actionList, port, order,
+                        FLOW_PRIORITY_TRANSPORT_EGRESS,
+                        TRANSPORT_EGRESS_VXGPE_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1157,7 +1165,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
                         match, new ArrayList<Action>(), port,
-                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                        TRANSPORT_EGRESS_NSHNSC_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1192,7 +1201,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
                         match, actionList, EMPTY_SWITCH_PORT,
-                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                        TRANSPORT_EGRESS_VXGPE_APPCOEXIST_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1209,7 +1219,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *
      * @return a FlowBuilder with the created Path Mapper flow
      */
-    private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList,
+    private FlowBuilder configureMacTransportEgressFlow(MatchBuilder match, List<Action> actionList,
             String port, int order, final long pathId, final String srcMac, final String dstMac) {
 
         //Optionally match on the dstMac
@@ -1226,21 +1236,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionSetDlSrc(srcMac, order++));
         }
 
-        return configureTransportEgressFlow(match, actionList, port, order, flowPriority);
-    }
-
-    /**
-     * Simple pass through with default arg for flowPriority.
-     *
-     * @param match -already created matches
-     * @param actionList - a list of actions already created
-     * @param port - the switch port to send the packet out on
-     * @param order - order to use when writing to the actionList
-     *
-     * @return a FlowBuilder with the created Path Mapper flow
-     */
-    private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList, String port, int order) {
-        return configureTransportEgressFlow(match, actionList, port, order, FLOW_PRIORITY_TRANSPORT_EGRESS);
+        return configureTransportEgressFlow(
+                match, actionList, port, order,
+                flowPriority,
+                TRANSPORT_EGRESS_OTHER_COOKIE);
     }
 
     /**
@@ -1255,7 +1254,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *
      * @return a FlowBuilder with the created Path Mapper flow
      */
-    private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority) {
+    private FlowBuilder configureTransportEgressFlow(
+            MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority, String cookieStr) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
         if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > APP_COEXISTENCE_NOT_SET) {
@@ -1284,10 +1284,17 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         InstructionsBuilder isb = new InstructionsBuilder();
         isb.setInstruction(instructions);
 
+        // Make the cookie
+        BigInteger cookie =
+                new BigInteger(
+                        new String(TRANSPORT_EGRESS_COOKIE_STR_BASE + cookieStr),
+                        COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
         return SfcOpenflowUtils.createFlowBuilder(
                 getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
                 flowPriority,
-                TRANSPORT_EGRESS_COOKIE,
+                cookie,
                 "default_egress_flow", match, isb);
     }
 

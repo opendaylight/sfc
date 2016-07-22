@@ -73,7 +73,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE        = "00000102";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE    = "00000103";
     public static final String TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE = "00000104";
-    // The 000002** cookies are for NSH Eth Transport Egress flows (coming soon)
+    // The 000002** cookies are for NSH Eth Transport Egress flows
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE   = "00000201";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE    = "00000203";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows

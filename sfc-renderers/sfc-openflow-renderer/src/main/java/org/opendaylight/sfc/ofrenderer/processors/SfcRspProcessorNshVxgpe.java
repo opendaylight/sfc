@@ -137,7 +137,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     }
 
     //
-    // PathMapper methods
+    // PathMapper methods - not needed for NSH
     //
 
     /**

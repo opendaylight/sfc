@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_6d042118",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/controller/config/yang/config/sfc_genius/impl/SfcGeniusModule.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-22T12:06:23Z",
+      "side": 1,
+      "message": "Why is the class package name listed out instead of importing it and reducing the package?",
+      "range": {
+        "startLine": 20,
+        "startChar": 79,
+        "endLine": 20,
+        "endChar": 102
+      },
+      "revId": "a3cf5a8e750a1a23f0661580443b473cad524c98",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_4d015d05",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/controller/config/yang/config/sfc_genius/impl/SfcGeniusModuleFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-07-22T12:06:23Z",
+      "side": 1,
+      "message": "Same question here about the complete package name.",
+      "range": {
+        "startLine": 20,
+        "startChar": 79,
+        "endLine": 20,
+        "endChar": 109
+      },
+      "revId": "a3cf5a8e750a1a23f0661580443b473cad524c98",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

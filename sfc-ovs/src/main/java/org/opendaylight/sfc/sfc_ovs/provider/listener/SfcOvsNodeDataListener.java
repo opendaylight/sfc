@@ -143,12 +143,14 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
         if (serviceFunctionForwarders != null && !serviceFunctionForwarders.isEmpty())
             for (ServiceFunctionForwarder sff : serviceFunctionForwarders) {
                 List<SffDataPlaneLocator> sffDataPlaneLocator = sff.getSffDataPlaneLocator();
-                for (SffDataPlaneLocator sffLocator : sffDataPlaneLocator) {
-                    LocatorType locatorType = sffLocator.getDataPlaneLocator().getLocatorType();
-                    if (locatorType instanceof Ip) {
-                        Ip ip = (Ip) locatorType;
-                        if (ip.getIp().equals(remoteIp)) {
-                            return sff;
+                if (sffDataPlaneLocator != null) {
+                    for (SffDataPlaneLocator sffLocator : sffDataPlaneLocator) {
+                        LocatorType locatorType = sffLocator.getDataPlaneLocator().getLocatorType();
+                        if (locatorType instanceof Ip) {
+                            Ip ip = (Ip) locatorType;
+                            if (ip.getIp().equals(remoteIp)) {
+                                return sff;
+                            }
                         }
                     }
                 }

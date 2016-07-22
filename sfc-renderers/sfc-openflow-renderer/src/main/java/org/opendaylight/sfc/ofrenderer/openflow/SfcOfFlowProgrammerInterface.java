@@ -11,7 +11,10 @@ package org.opendaylight.sfc.ofrenderer.openflow;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 
@@ -69,10 +72,10 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureVlanTransportIngressFlow(final String sffNodeName);
 
     // These 2 are work-around flows until the OVS NSH patch is completed
-    public void configureVxlanGpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
-    public void configureVxlanGpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
+    public void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
+    public void configureNshVxgpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
 
-    public void configureVxlanGpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
+    public void configureNshVxgpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
 
     public void configureMplsTransportIngressFlow(final String sffNodeName);
 
@@ -84,8 +87,8 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf);
 
     public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf);
-    // PathMapper not needed for VxlanGpe NSH
-    //configureVxlanGpePathMapperFlow()
+    // PathMapper not needed for NshVxgpe NSH
+    //configureNshVxgpePathMapperFlow()
 
     //
     // Table 3, NextHop
@@ -96,7 +99,10 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
             final long groupId, final String groupName);
 
-    public void configureVxlanGpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
+    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
+            final short nsi);
+
+    public void configureNshEthNextHopFlow(final String sffNodeName, final String dstMac, final long nsp,
             final short nsi);
 
     //
@@ -114,17 +120,28 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureMplsLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final long mplsLabel, final String port, final long pathId);
 
-    public void configureVxlanGpeTransportEgressFlow(
+    public void configureNshVxgpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
-    public void configureVxlanGpeAppCoexistTransportEgressFlow(
+    public void configureNshVxgpeAppCoexistTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
 
-    public void configureVxlanGpeLastHopTransportEgressFlow(
+    //public void configureGeniusBasedTransportEgressFlow(
+    //        final String sffNodeName, final long nshNsp, final short nshNsi, List<Instruction> instructionList);
+    //
+    //public void configureTransportEgressFlows(List<Instruction> instructionList, String sffName);
+
+    public void configureNshVxgpeLastHopTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+
+
+
 
     public void configureNshNscTransportEgressFlow(
             String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
+
+    public void configureNshEthTransportEgressFlow(
+            String sffNodeName, final long nshNsp, final short nshNsi, final String port);
 
     //
     // Configure the MatchAny entry specifying if it should drop or goto the next table
@@ -149,5 +166,28 @@ public interface SfcOfFlowProgrammerInterface {
     // group configuration
     public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName,
             final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
+
+    public void configureNshVxgpeAppCoexistTransportEgressFlow(String sffNodeName,
+            long nshNsp, short nshNsi, String sffIp, int priorityOffset);
+
+    void configureNshEthLastHopTransportEgressFlow(String sffNodeName,
+            long nshNsp, short nshNsi);
+
+    /**
+     * Configure transport egress flows, using a list of externally provided instructions
+     * @param sffNodeName    The openflow identifier for the node on which the flows are to be written
+     * @param nshNsp         NSP to use in the match part
+     * @param nshNsi         NSI to use in the match part
+     * @param instructionList   Instruction list to use in the actions part
+     */
+    public void configureTransportEgressFlow(String openflowName, long nshNsp,
+            short nshNsi, List<Action> actionList, int flowPriority,
+            String cookieStr);
+
+    public void configureSffTransportEgressFlow(String sffNodeName, long nsp,
+            short nsi, List<Action> actionList);
+
+    public void configureSfTransportEgressFlow(String sffOpenFlowNodeName,
+            long pathId, short serviceIndex, List<Action> actionList);
 
 }

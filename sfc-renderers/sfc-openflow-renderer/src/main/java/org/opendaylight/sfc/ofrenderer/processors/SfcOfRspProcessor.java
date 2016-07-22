@@ -10,9 +10,13 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.sfc.genius.rpc.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.SfcLogicalInterfaceOfUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -27,8 +31,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +52,14 @@ public class SfcOfRspProcessor {
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
     private static final Long SFC_FLOWS = new Long(0xdeadbeef);
+    private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
+
+    /* Logical SFF always assumes vxlan-gpe tunnels for inter-sff transport, and eth-encapsulated
+    * NSH for sff-sff transport. The initial "LogicalInterface" preffix is used as an
+    * identifier only (that is, it is not a transport)
+    */
+    private static final String LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY =
+            LogicalInterface.class.getName() + TRANSPORT_ENCAP_SEPARATOR_STRING + Nsh.class.getName();
 
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
@@ -51,11 +68,23 @@ public class SfcOfRspProcessor {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
-        this.sffInitialized = new HashMap<NodeId, Boolean>();
-        this.rspTransportProcessors = new HashMap<String, Class<? extends SfcRspTransportProcessorBase>>();
-        this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNsh.class);
-        this.rspTransportProcessors.put(Mpls.class.getName(), SfcRspProcessorMpls.class);
-        this.rspTransportProcessors.put(Mac.class.getName(), SfcRspProcessorVlan.class);
+        this.sffInitialized = new HashMap<>();
+        this.rspTransportProcessors = new HashMap<>();
+        this.rspTransportProcessors.put(
+                getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
+                SfcRspProcessorNshVxgpe.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
+                SfcRspProcessorNshEth.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
+                SfcRspProcessorMpls.class);
+        this.rspTransportProcessors.put(
+                getTransportEncapName(Mac.class.getName(), Transport.class.getName()),
+                SfcRspProcessorVlan.class);
+        this.rspTransportProcessors.put(
+                LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY,
+                SfcRspProcessorLogicalSff.class);
     }
 
     /**
@@ -101,7 +130,6 @@ public class SfcOfRspProcessor {
                 sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
                 initializeSff(entry);
                 sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
-
                 configureTransportIngressFlows(entry, sffGraph, transportProcessor);
                 configurePathMapperFlows(entry, sffGraph, transportProcessor);
                 configureNextHopFlows(entry, sffGraph, transportProcessor);
@@ -146,8 +174,17 @@ public class SfcOfRspProcessor {
      */
     public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
         try {
+            LOG.info("getTransportProcessor :: transport [{}] encap [{}]",
+                    rsp.getTransportType().getName(), rsp.getSfcEncapsulation());
+            String transportProcessorKey = sffGraph.isUsingLogicalSFF() ?
+                    LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY :
+                    getTransportEncapName(
+                        rsp.getTransportType().getName(),
+                        rsp.getSfcEncapsulation().getName());
+
             Class<? extends SfcRspTransportProcessorBase> transportClass =
-                    rspTransportProcessors.get(rsp.getTransportType().getName());
+                    rspTransportProcessors.get(transportProcessorKey);
+
             SfcRspTransportProcessorBase transportProcessor = transportClass.newInstance();
             transportProcessor.setFlowProgrammer(sfcOfFlowProgrammer);
             transportProcessor.setRsp(rsp);
@@ -156,7 +193,10 @@ public class SfcOfRspProcessor {
 
             return transportProcessor;
         } catch(Exception e) {
-            throw new RuntimeException("getTransportProcessor no processor for transport [" + rsp.getTransportType().getName() + "]" + e);
+            throw new RuntimeException(
+                    "getTransportProcessor no processor for transport [" +
+                    rsp.getTransportType().getName() +
+                    "] encap [" + rsp.getSfcEncapsulation().getName() + "] " + e);
         }
     }
 
@@ -171,6 +211,8 @@ public class SfcOfRspProcessor {
 
         // Setting to INGRESS for the first graph entry, which is the RSP Ingress
         SffName prevSffName = new SffName(SffGraph.INGRESS);
+        // Set to null in the first graph entry
+        DpnIdType srcDpnId = null;
 
         Iterator<RenderedServicePathHop> servicePathHopIter = rsp.getRenderedServicePathHop().iterator();
         SfName sfName = null;
@@ -178,25 +220,45 @@ public class SfcOfRspProcessor {
         String sfgName = null;
         SffGraph.SffGraphEntry entry = null;
         short lastServiceIndex = rsp.getStartingIndex();
+
         while (servicePathHopIter.hasNext()) {
             RenderedServicePathHop rspHop = servicePathHopIter.next();
             SffName curSffName = rspHop.getServiceFunctionForwarder();
             sfName = rspHop.getServiceFunctionName();
             sfgName = rspHop.getServiceFunctionGroupName();
-
+            ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(sfName, rsp.getPathId());
             entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(),
                     rspHop.getServiceIndex());
             entry.setPrevSf(prevSfName);
             lastServiceIndex = rspHop.getServiceIndex();
             prevSfName = sfName;
             prevSffName = curSffName;
+
+            if (SfcLogicalInterfaceOfUtils.isSfUsingALogicalInterface(sf)) {
+                String logicalInterfaceName = sfcOfProviderUtils.getSfLogicalInterfaceName(sf);
+                LOG.debug("populateSffGraph: SF uses a logical interface -> storing id for the dataplane node (interface:{})", logicalInterfaceName);
+                DpnIdType dpnid = SfcGeniusRpcClient.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
+                if (dpnid == null) {
+                    throw new RuntimeException("populateSffGraph:failed.dpnid for interface ["
+                            + logicalInterfaceName + "] was not returned by genius. "
+                            + "Rendered service path cannot be generated at this time");
+                }
+                LOG.debug("populateSffGraph: retrieved dpn id for SF {} :[{}] ", sf.getName(), dpnid);
+                entry.setDstDpnId(dpnid);
+            }
+            entry.setSrcDpnId(srcDpnId);
+            LOG.debug("populateSffGraph:added graph entry: [{}]", entry);
+            srcDpnId = entry.getDstDpnId();
+
         }
         // Add the final connection, which will be the RSP Egress
         // Using the previous sfName as the SrcSf
         entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(),
                 (short) (lastServiceIndex - 1));
         entry.setPrevSf(prevSfName);
+        entry.setSrcDpnId(srcDpnId);
 
+        LOG.debug("populateSffGraph: added final graph entry: [{}]", entry);
         return sffGraph;
     }
 
@@ -246,10 +308,6 @@ public class SfcOfRspProcessor {
         }
 
         DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
-        LocatorType sffLocatorType = dstHopIngressDpl.getLocatorType();
-        if (sffLocatorType == null) {
-            throw new RuntimeException("configurePathMapperFlows hopDpl locatorType is null for sff: " + entry.getDstSff());
-        }
 
         // configure SFF-SFF-SF ingress -OR- Ingress-SFF-SF ingress flow using dstHopIngressDpl
         transportProcessor.configureSffPathMapperFlow(entry, dstHopIngressDpl);
@@ -258,9 +316,6 @@ public class SfcOfRspProcessor {
         if (entry.getSf() != null) {
             ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
             SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sf, entry.getDstSff());
-            if (sfDpl == null) {
-                throw new RuntimeException("configurePathMapperFlows sf Dpl is null for sf: " + entry.getSf() + ", and sff: " + entry.getDstSff());
-            }
             transportProcessor.configureSfPathMapperFlow(entry, sfDpl);
         }
     }
@@ -312,7 +367,20 @@ public class SfcOfRspProcessor {
 
         // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
         if (sfSrcDpl != null) {
-            if (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())) {
+
+            //TODO ediegra check if this can be unified with old logic
+            if (entry.isIntraLogicalSFFEntry()) {
+                if (entry.getSrcDpnId().equals(entry.getDstDpnId())) {
+                    // Same logical SFF, same compute node
+                    transportProcessor.configureNextHopFlow(entry, sfSrcDpl,
+                            sfDstDpl);
+                } else {
+                    // logical sff, but different compute nodes
+                    LOG.debug("configureNextHopFlows: nexthop for sff-sff hop");
+                    transportProcessor.configureNextHopFlow(entry, sfSrcDpl,
+                            (SffDataPlaneLocator) null);
+                }
+            } else if (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())) {
                 // If the next hop is on this SFF then go straight to the next SF
                 // Configure SF-SFF-SF NextHop on the same SFF
                 transportProcessor.configureNextHopFlow(entry, sfSrcDpl, sfDstDpl);
@@ -338,6 +406,7 @@ public class SfcOfRspProcessor {
     private void configureTransportEgressFlows(SffGraph.SffGraphEntry entry,
             SffGraph sffGraph, SfcRspTransportProcessorBase transportProcessor) {
 
+        LOG.debug("configureTransportEgressFlows:called for graph entry with src sff {}",entry.getSrcSff());
         // Configure the SFF-Egress Transport Egress
         ServiceFunctionForwarder sffSrc =
                 sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
@@ -357,15 +426,44 @@ public class SfcOfRspProcessor {
         SfDataPlaneLocator sfDstDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
         ServiceFunctionForwarder sffDst =
                 sfcOfProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
-        if (sfDstDpl != null) {
-            SffSfDataPlaneLocator sffSfDpl = sfcOfProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
-            SffDataPlaneLocator sffDstDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst, sffSfDpl.getSffDplName());
-            transportProcessor.configureSfTransportEgressFlow(entry, sffDstDpl, sfDstDpl, sfDstDpl);
+
+        if (SfcLogicalInterfaceOfUtils.isSfUsingALogicalInterface(sfDst)) {
+            LOG.debug("configureTransportEgressFlows:sff->sf egress from a logical sff");
+            // When the SF is using a logical SFF, the transport egress flows are retrieved from genius
+            String sfLogicalInterface = SfcLogicalInterfaceOfUtils.getSfLogicalInterface(sfDst);
+            LOG.debug("configureTransportEgressFlows:sff->sf egress. Target interface:{} si:{}", sfLogicalInterface,entry.getServiceIndex() );
+            List<Action> actionList = SfcGeniusRpcClient
+                        .getInstance().getEgressActionsFromGeniusRPC(
+                                sfLogicalInterface, false);
+                if (actionList == null || actionList.isEmpty()) {
+                    throw new RuntimeException("Failure during transport egress config. Genius did not return"
+                            + " egress instructions for logical interface [" + sfLogicalInterface
+                            + "] (sf:" + sfDst + ")");
+                }
+                transportProcessor.sfcFlowProgrammer.configureSfTransportEgressFlow(
+                        sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
+                        entry.getPathId(), entry.getServiceIndex(), actionList);
+        } else {
+            // Non-logical SFF is being used
+            if (sfDstDpl != null) {
+                SffSfDataPlaneLocator sffSfDpl = sfcOfProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
+                SffDataPlaneLocator sffDstDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst, sffSfDpl.getSffDplName());
+                transportProcessor.configureSfTransportEgressFlow(entry, sffDstDpl, sfDstDpl, sfDstDpl);
+            }
         }
 
         // Nothing else to be done for Ingress
         if (entry.getSrcSff().equals(SffGraph.INGRESS)) {
             return;
+        }
+
+        if (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())) {
+            if (entry.getSrcDpnId() != entry.getDstDpnId()) {
+                LOG.debug("configureTransportEgressFlows: setting transport egress for a hop"
+                        + " between sffs in a logical SFF");
+                transportProcessor.configureSffTransportEgressFlow(entry, null, null, null);
+                return;
+            }
         }
 
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
@@ -376,6 +474,8 @@ public class SfcOfRspProcessor {
                     sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
             // This is the HOP DPL details between srcSFF and dstSFF, for example: VLAN ID 100
             DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
+
+
             transportProcessor.configureSffTransportEgressFlow(
                     entry, sffSrcEgressDpl, sffDstIngressDpl, dstHopIngressDpl);
         }
@@ -405,7 +505,7 @@ public class SfcOfRspProcessor {
             return;
         }
 
-        String sffNodeName = sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        String sffNodeName = sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
         if (sffNodeName == null) {
             throw new RuntimeException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
         }
@@ -457,5 +557,14 @@ public class SfcOfRspProcessor {
     private void setSffInitialized(final NodeId sffNodeId, boolean initialized) {
         // If the value is already in the map, its value will be replaced
         sffInitialized.put(new NodeId(sffNodeId), initialized);
+    }
+
+    private String getTransportEncapName(final String transportName, final String encapName) {
+        StringBuffer sb =
+                new StringBuffer(transportName).
+                append(TRANSPORT_ENCAP_SEPARATOR_STRING).
+                append(encapName);
+        LOG.info("getTransportEncapName :: transport [{}] encap [{}] result [{}]", transportName, encapName, sb.toString());
+        return sb.toString();
     }
 }

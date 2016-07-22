@@ -31,6 +31,10 @@
       <ovsdb.southbound.version>1.3.0-SNAPSHOT</ovsdb.southbound.version>
       <restconf.version>1.4.0-SNAPSHOT</restconf.version>
       <yangtools.version>1.0.0-SNAPSHOT</yangtools.version>
+      <genius.version>0.1.0-SNAPSHOT</genius.version>
+      <netvirt.version>0.3.0-SNAPSHOT</netvirt.version>
+      <netvirt.ovsdb.version>1.3.0-SNAPSHOT</netvirt.ovsdb.version>
+      <neutron.version>0.7.0-SNAPSHOT</neutron.version>
    </properties>
    <dependencies>
     <!--
@@ -105,7 +109,34 @@
         <classifier>features</classifier>
         <type>xml</type>
     </dependency>
-
+    <dependency>
+      <groupId>org.opendaylight.genius</groupId>
+      <artifactId>genius-features</artifactId>
+      <version>${genius.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.neutron</groupId>
+      <artifactId>features-neutron</artifactId>
+      <version>${neutron.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.netvirt</groupId>
+      <artifactId>vpnservice-features</artifactId>
+      <version>${netvirt.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+<dependency>
+      <groupId>org.opendaylight.netvirt</groupId>
+      <artifactId>features-netvirt</artifactId>
+      <version>${netvirt.ovsdb.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
     <!--
                     BUNDLES SECTION
       Put dependencies for bundles directly referenced in your features.xml file.
@@ -195,6 +226,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-vnfm-tacker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-genius</artifactId>
         <version>${project.version}</version>
       </dependency>
     <!--  Used in odl-sfc-bootstrp and odl-sfc-sb-rest -->
@@ -326,6 +362,14 @@
     <dependency>
        <groupId>${project.groupId}</groupId>
        <artifactId>sfc-sb-rest</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-sb-rest config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-genius</artifactId>
        <version>${project.version}</version>
        <type>xml</type>
        <classifier>config</classifier>

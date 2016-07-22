@@ -81,6 +81,13 @@ module service-function-path {
           "Transport type between SFF from service-locator.yang.";
       }
 
+      leaf sfc-encapsulation {
+        type sfc-sl:sfc-encapsulation-type;
+        description
+          "The type of encapsulation used in this path for passing
+          SFC information along the chain";
+      }
+
       leaf symmetric {
         type boolean;
         default false;
@@ -148,13 +155,6 @@ module service-function-path {
              troubleshooting/reporting service paths.  In addition to
              location within a path, SI can be used for loop
              detection.";
-        }
-
-        leaf sfc-encapsulation {
-          type sfc-sl:sfc-encapsulation-type;
-          description
-            "The type of encapsulation used in this path for passing
-            SFC information along the chain";
         }
 
         ordered-by user;

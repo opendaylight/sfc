@@ -232,22 +232,22 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
+        // Verify calls to configureNshVxgpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeNextHopFlow(
+        // Verify calls to configureNshVxgpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(
                 eq("SFF_0"), anyString(), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
                 eq("SFF_1"), anyString(), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeTransportEgressFlow(
+        // Verify calls to configureNshVxgpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(
                 eq("SFF_0"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 "SFF_1", 0, (short) 253, "INPORT");
@@ -255,7 +255,7 @@ public class SfcOfRspProcessorTest {
         // Verify calls to configureNshNscTransportEgressFlow
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
 
         // verify flow flushing
@@ -280,24 +280,24 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        // Verify calls to configureNshVxgpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
+        // Verify calls to configureNshVxgpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
                 "SFF_0", "192.168.0.1", 0, (short) 255);
 
-        // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
+        // Verify calls to configureNshVxgpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "INPORT");
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
                 "SFF_0", 0, (short) 255, "INPORT");
 
         // Verify calls to configureNshNscTransportEgressFlow
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "INPORT");
 
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "192.168.0.2");
 
         // verify flow flushing

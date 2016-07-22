@@ -111,14 +111,14 @@ public class RspBuilder {
         this.sfcUtilsTestMock = sfcUtilsTestMock;
     }
 
-    public RenderedServicePath createRspFromSfTypes(List<SftTypeName> sfTypes, boolean usesLogicalSff) {
+    public RenderedServicePath createRspFromSfTypes(List<SftTypeName> sfTypes, boolean usesLogicalSffs) {
         List<ServiceFunction> sfList = new ArrayList<>();
         List<ServiceFunctionForwarder> sffList = new ArrayList<>();
         SffName logicalSff = new SffName("logical");
-        this.usesLogicalSff = usesLogicalSff;
+        this.usesLogicalSff = usesLogicalSffs;
 
         // build the logical sff
-        sffList.add(createServiceFunctionForwarder(logicalSff, null, Mac.class, usesLogicalSff));
+        sffList.add(createServiceFunctionForwarder(logicalSff, null, Mac.class, usesLogicalSffs));
 
         // build the SFs
         sfTypes.forEach(sftTypeName -> {
@@ -142,6 +142,19 @@ public class RspBuilder {
             ServiceFunction sf = createServiceFunction(sfName, sffName, sfType, transportType);
             sfList.add(sf);
             sffList.add(createServiceFunctionForwarder(sffName, sf, transportType));
+        }
+
+        return createRsp(sfTypes, sfList, sffList, transportType, sfcEncap);
+    }
+
+    public RenderedServicePath createRspFromSfList(List<ServiceFunction> sfList, SffName sffName,
+            Class<? extends SlTransportType> transportType, Class<? extends SfcEncapsulationIdentity> sfcEncap) {
+        List<ServiceFunctionForwarder> sffList = new ArrayList<>();
+        List<SftTypeName> sfTypes = new ArrayList<>();
+
+        for (ServiceFunction sf : sfList) {
+            sffList.add(createServiceFunctionForwarder(sffName, sf, transportType));
+            sfTypes.add(sf.getType());
         }
 
         return createRsp(sfTypes, sfList, sffList, transportType, sfcEncap);
@@ -255,8 +268,17 @@ public class RspBuilder {
 
     private ServiceFunctionForwarder createServiceFunctionForwarder(SffName sffName, ServiceFunction sf,
             Class<? extends SlTransportType> transportType) {
-        List<SffDataPlaneLocator> sffDpls = createSffDpls(transportType);
-        List<ServiceFunctionDictionary> sfDictList = createSfDictList(sf, sffDpls.get(0).getName());
+
+        Class<? extends SlTransportType> sfTransport = sf.getSfDataPlaneLocator().get(0).getTransport();
+
+        List<SffDataPlaneLocator> sffDpls;
+        if(transportType.equals(sf.getSfDataPlaneLocator().get(0).getTransport())) {
+            sffDpls = createSffDpls(transportType);
+        } else {
+            sffDpls = createSffDpls(transportType, sfTransport);
+        }
+
+        List<ServiceFunctionDictionary> sfDictList = createSfDictList(sf, getSffDpl(sffDpls, sfTransport));
 
         ServiceFunctionForwarder sff = buildServiceFunctionForwarder(sffName, sffDpls, sfDictList);
         sfcUtilsTestMock.addServiceFunctionForwarder(sffName, sff);
@@ -264,7 +286,7 @@ public class RspBuilder {
         return sff;
     }
 
-    private ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftTypeName sfType,
+    public ServiceFunction createServiceFunction(SfName sfName, SffName sffName, SftTypeName sfType,
             Class<? extends SlTransportType> transportType) {
 
         // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
@@ -278,6 +300,37 @@ public class RspBuilder {
         sfcUtilsTestMock.addServiceFunction(sfName, sf);
 
         return sf;
+    }
+
+    // Notice, for now this method is only used for Vxgpe+NSH on SFF-SFF and Eth+NSH on SFF-SF
+    private List<SffDataPlaneLocator> createSffDpls(Class<? extends SlTransportType> sffTransportType,
+            Class<? extends SlTransportType> sfTransportType) {
+        List<SffDataPlaneLocator> sffDpls = new ArrayList<>();
+
+        // First create the sffTransportType, which will be Vxgpe+NSH
+        SffDataPlaneLocatorName name =
+                new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
+        SffDataPlaneLocatorBuilder sffDplBuilder = new SffDataPlaneLocatorBuilder();
+        sffDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
+        sffDplBuilder.setName(name);
+        DataPlaneLocatorBuilder dplBuilder = new DataPlaneLocatorBuilder();
+        dplBuilder.setLocatorType(buildLocatorTypeIp(getNextIpAddress(), VXLAN_UDP_PORT));
+        dplBuilder.setTransport(sffTransportType);
+        sffDplBuilder.setDataPlaneLocator(dplBuilder.build());
+        sffDpls.add(sffDplBuilder.build());
+
+        // Now create the SFF-SF DPL, which will be Eth+NSH
+        name = new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
+        SffDataPlaneLocatorBuilder sffSfDplBuilder = new SffDataPlaneLocatorBuilder();
+        sffSfDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
+        sffSfDplBuilder.setName(name);
+        DataPlaneLocatorBuilder dplBuilder2 = new DataPlaneLocatorBuilder();
+        dplBuilder2.setLocatorType(buildLocatorTypeMac(getNextMacAddress(), -1)); // no vlan
+        dplBuilder2.setTransport(sfTransportType);
+        sffSfDplBuilder.setDataPlaneLocator(dplBuilder2.build());
+        sffDpls.add(sffSfDplBuilder.build());
+
+        return sffDpls;
     }
 
     private List<SffDataPlaneLocator> createSffDpls(Class<? extends SlTransportType> transportType) {
@@ -394,6 +447,17 @@ public class RspBuilder {
         return String.format("tap0000-%02d", ifNameIndex++);
     }
 
+    private SffDataPlaneLocatorName getSffDpl(List<SffDataPlaneLocator> sffDpls,
+            Class<? extends SlTransportType> sfTransport) {
+        for(SffDataPlaneLocator sffDpl : sffDpls) {
+            if(sffDpl.getDataPlaneLocator().getTransport().equals(sfTransport)) {
+                return sffDpl.getName();
+            }
+        }
+
+        return null;
+    }
+
     private LocatorType buildSfLocatorType(Class<? extends SlTransportType> transport) {
         LocatorType lt = null;
 
@@ -418,7 +482,9 @@ public class RspBuilder {
             String macAddress, int vlan) {
         MacBuilder macBuilder = new MacBuilder();
         macBuilder.setMac(new MacAddress(macAddress));
-        macBuilder.setVlanId(vlan);
+        if(vlan >= 0) {
+            macBuilder.setVlanId(vlan);
+        }
 
         return macBuilder.build();
     }

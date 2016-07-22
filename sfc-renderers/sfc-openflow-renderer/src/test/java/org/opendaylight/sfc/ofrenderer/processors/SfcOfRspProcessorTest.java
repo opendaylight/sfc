@@ -33,8 +33,11 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
@@ -321,6 +324,51 @@ public class SfcOfRspProcessorTest {
 
         verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow("SFF_0", 0, (short) 254,
                 "192.168.0.2");
+
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
+    }
+
+    @Test
+    public void testVxgpeNshSffEthNshSfFlowCreation() {
+        LOG.info("SfcOfRspProcessorTest testVxgpeNshSffEthNshSfFlowCreation");
+        String sffName = new String("SFF_0");
+        ServiceFunction sf = rspBuilder.createServiceFunction(new SfName("SfEthNsh"), new SffName(sffName), new SftTypeName("firewall"), Mac.class);
+        List<ServiceFunction> sfList = new ArrayList<>();
+        sfList.add(sf);
+
+        RenderedServicePath ethNshRsp = rspBuilder.createRspFromSfList(sfList, new SffName(sffName), VxlanGpe.class, Nsh.class);
+        this.sfcOfRspProcessor.processRenderedServicePath(ethNshRsp);
+
+        assertMatchAnyMethodsCalled(sffName);
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+
+        // Verify calls to configureVlanTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureVlanTransportIngressFlow(eq(sffName));
+
+        // Verify calls to configureArpTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureArpTransportIngressFlow(eq(sffName), anyString());
+
+        // Verify calls to configureVlanPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureVlanPathMapperFlow(eq(sffName), anyInt(), anyLong(),
+                anyBoolean());
+
+        // Verify calls to configureNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(eq(sffName), anyLong(), anyString(),
+                anyString());
+
+        // Verify calls to configureVlanTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(
+                eq(sffName), anyString(), anyString(), anyInt(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
+                eq(sffName), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();

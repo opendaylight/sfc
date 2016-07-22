@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_4a5023d4",
+        "filename": "sfc-genius/src/main/java/sfc/sfc_genius/provider/SfcGeniusSfInterfaceManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-07-22T07:31:48Z",
+      "side": 1,
+      "message": "All sfc code uses the \"org.opendaylight.sfc\" package. Also, as minor suggestion, \"sfc\" part in \"sfc_genius\" is redundant. \n\nAll sum up, maybe \"org.opendaylight.sfc.genius\" ?",
+      "range": {
+        "startLine": 9,
+        "startChar": 8,
+        "endLine": 9,
+        "endChar": 11
+      },
+      "revId": "3e37335ece3a48dea0aa73e49801b322a87de483",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

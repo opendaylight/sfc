@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup sfc from pre-build. If DIST_URL is null, build sfc from scratch
-#DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.0-SNAPSHOT/
+DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.0-SNAPSHOT/
 
 
 function install_packages {
@@ -28,6 +28,7 @@ EOF
 }
 
 function install_sfc {
+    cd $HOME
     if [[ -n $DIST_URL ]]; then
         curl $DIST_URL/maven-metadata.xml | grep -A2 tar.gz | grep value | cut -f2 -d'>' | cut -f1 -d'<' | \
             xargs -I {} curl $DIST_URL/distribution-karaf-{}.tar.gz | tar xvz-

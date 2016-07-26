@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+$bootstrap_ubuntu = <<SCRIPT
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+sudo bash -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" > /etc/apt/sources.list.d/docker.list'
+sudo apt-get update
+sudo apt-get install linux-image-extra-$(uname -r)
+sudo apt-get install -y docker-engine python-pip
+sudo usermod -aG docker vagrant
+sudo pip install docker-compose
+SCRIPT
+
+$install_ovs = <<SCRIPT
+# From https://raw.githubusercontent.com/priteshk/ovs/nsh-v8/third-party/start-ovs-deb.sh
+sudo apt-get install -y git
+git clone https://github.com/pritesh/ovs.git
+cd ovs
+git checkout nsh-v8
+sudo apt-get install -y build-essential fakeroot debhelper autoconf automake libssl-dev bzip2 openssl graphviz python-all procps python-qt4 python-zopeinterface python-twisted-conch libtool
+DEB_BUILD_OPTIONS='parallel=8 nocheck' fakeroot debian/rules binary
+sudo dpkg --install ../openvswitch-datapath-dkms*
+sudo dpkg --install ../openvswitch-common*
+sudo dpkg --install ../openvswitch-switch*
+SCRIPT
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "trusty-server-cloudimg-amd64"
+  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+
+  config.vm.synced_folder "../../..", "/sfc"
+
+  config.vm.define "odl" do | h |
+    h.vm.host_name = "odl"
+    h.vm.network :private_network, ip: "192.168.99.5"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--memory", 8192]
+      v.customize ["modifyvm", :id, "--cpus", 2]
+    end
+    h.vm.provision "bootstrap", type: "shell", inline: $bootstrap_ubuntu
+    h.vm.provision "install_ovs", type: "shell", inline: $install_ovs
+    h.vm.provision :shell, :inline => "nohup /sfc/sfc-demo/sfc103/setup_odl.sh > setup_odl.log 2>&1 &", privileged: false
+  end
+
+end

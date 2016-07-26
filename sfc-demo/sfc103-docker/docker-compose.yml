@@ -1,0 +1,116 @@
+version: '2'
+
+services:
+  classifier1:
+    image: sfc-service-node
+    build: .
+    container_name: classifier1
+    hostname: classifier1
+    environment:
+      - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.10
+    ipc: "host"
+    devices:
+      - "/dev:/dev"
+      - "/var/run:/var/run"
+    volumes:
+      - "/sfc:/sfc"
+    cap_add:
+      - NET_ADMIN
+
+  classifier2:
+    image: sfc-service-node
+    build: .
+    container_name: classifier2
+    hostname: classifier2
+    environment:
+      - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.60
+    ipc: "host"
+    devices:
+      - "/dev:/dev"
+      - "/var/run:/var/run"
+    volumes:
+      - "/sfc:/sfc"
+    cap_add:
+      - NET_ADMIN
+
+  sff1:
+    image: sfc-service-node
+    build: .
+    container_name: sff1
+    hostname: sff1
+    environment:
+     - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.20
+    cap_add:
+      - NET_ADMIN
+
+  sff2:
+    image: sfc-service-node
+    build: .
+    container_name: sff2
+    hostname: sff2
+    environment:
+     - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.50
+    cap_add:
+      - NET_ADMIN
+
+  sf1:
+    image: sfc-service-node
+    build: .
+    container_name: sf1
+    hostname: sf1
+    environment:
+     - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.30
+    volumes:
+      - "/sfc:/sfc"
+    cap_add:
+      - NET_ADMIN
+
+  sf2:
+    image: sfc-service-node
+    build: .
+    container_name: sf2
+    hostname: sf2
+    environment:
+     - CONTROLLER=192.168.1.5
+    privileged: true
+    tty: true
+    networks:
+      sfc103_mgmt:
+        ipv4_address: 192.168.1.40
+    volumes:
+      - "/sfc:/sfc"
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  sfc103_mgmt:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.5

@@ -105,7 +105,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
+    private DataBroker dataBroker = odlSfc.getDataProvider();;
 
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();

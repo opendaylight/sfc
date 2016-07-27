@@ -52,7 +52,7 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
+    private OpendaylightSfc odl;
     private final String forwarderName = "forwarder";
     private final SfName firstFunctionName = new SfName("firstFunction");
     private final SfName secondFunctionName = new SfName("secondFunction");
@@ -64,7 +64,7 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     @Before
     public void init() {
         dataBroker = getDataBroker();
-        odl.setDataProvider(dataBroker);
+        odl = new OpendaylightSfc(dataBroker, null);
         nodeManager = mock(NodeManager.class);
         prepareSfcEntities();
     }

@@ -96,7 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManager {
 
-    private static final SfcProviderSffEntryDataListener sffEntryDataListener = new SfcProviderSffEntryDataListener();
+    private static SfcProviderSffEntryDataListener sffEntryDataListener = null;
     private static ListenerRegistration<DataChangeListener> sffEntryDataListenerRegistration;
 
     Logger LOG = LoggerFactory.getLogger(SfcProviderSffEntryDataListenerTest.class);
@@ -104,16 +104,19 @@ public class SfcProviderSffEntryDataListenerTest extends AbstractDataStoreManage
     @Before
     public void before() throws Exception {
         setOdlSfc();
+        sffEntryDataListener = new SfcProviderSffEntryDataListener(getDataBroker());
     }
 
     @After
-    public void after() throws Exception {}
+    public void after() throws Exception {
+        sffEntryDataListener.close();
+    }
 
     /**
      * Creates SF object, call listeners explicitly, verify that SF Type was created,
      * cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_CreateData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =

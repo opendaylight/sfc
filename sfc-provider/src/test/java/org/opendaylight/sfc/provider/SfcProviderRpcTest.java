@@ -317,6 +317,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     public void setUp() {
         setOdlSfc();
         sfcProviderRpc = new SfcProviderRpc();
+        sfcProviderRpc.setDataBroker(OpendaylightSfc.getOpendaylightSfcObj().getDataProvider());
     }
 
     // auxiliary method

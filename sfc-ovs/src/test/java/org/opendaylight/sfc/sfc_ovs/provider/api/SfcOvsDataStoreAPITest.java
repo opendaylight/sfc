@@ -80,7 +80,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     private final String testIpv4 = "10.0.0.1";
     private final String testIpv6 = "01:23:45:67:89:AB:CD:EF";
     private final InstanceIdentifier<Node> nodeIID = createNodeIID();
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private OpendaylightSfc opendaylightSfc;
     private SfcOvsDataStoreAPI sfcOvsDataStoreAPIObject;
     private SfcOvsDataStoreAPI.Method methodToCall;
     private Object testResult;
@@ -88,7 +88,7 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     @Before
     public void init() {
         DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        opendaylightSfc = new OpendaylightSfc(dataBroker, null);
 
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writePutTransactionAPI")).toReturn(true);
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "deleteTransactionAPI")).toReturn(true);

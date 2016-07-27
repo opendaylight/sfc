@@ -111,12 +111,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @Before
     public void init() {
+        DataBroker dataBroker = getDataBroker();
         if (opendaylightSfc == null)
-            opendaylightSfc = new OpendaylightSfc();
+            opendaylightSfc = new OpendaylightSfc(dataBroker, null);
         if (executorService == null)
             executorService = opendaylightSfc.getExecutor();
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
 
         // before starting test, node is created
         nodeIID = createNodeIID();

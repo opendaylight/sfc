@@ -10,10 +10,14 @@ package org.opendaylight.sfc.provider;
 
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -31,10 +35,29 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @version 0.1
  * @since 2014-11-11
  */
-public class SfcProviderScfEntryDataListener implements DataChangeListener {
+public class SfcProviderScfEntryDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScfEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+
+    private final DataBroker broker;
+    private ListenerRegistration<DataChangeListener> scfEntryDataChangeListenerRegistration = null;
+
+    public SfcProviderScfEntryDataListener(final DataBroker db) {
+        this.broker = db;
+        registerListeners();
+    }
+
+    private void registerListeners() {
+        //ServiceClassifierEntry
+        try {
+            scfEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                            OpendaylightSfc.SCF_ENTRY_IID, SfcProviderScfEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+        } catch (final Exception e) {
+            LOG.error("SfcProviderScfEntryDataListener: DataChange listener registration fail!", e);
+            throw new IllegalStateException("SfcProviderScfEntryDataListener: registration Listener failed.", e);
+        }
+    }
 
     @Override
     public void onDataChanged(
@@ -119,5 +142,11 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener {
         printTraceStop(LOG);
     }
 
-
+    @Override
+    public void close() throws Exception {
+        if (scfEntryDataChangeListenerRegistration != null) {
+            scfEntryDataChangeListenerRegistration.close();
+        }
+        LOG.debug("ScfEntryDataChangeListenerRegistration cloesd");
+    }
 }

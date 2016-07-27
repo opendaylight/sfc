@@ -14,6 +14,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -71,6 +74,11 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
     public void before() {
         setOdlSfc();
         scheduler = new SfcServiceFunctionRandomSchedulerAPI();
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        close();
     }
 
     /*

@@ -51,7 +51,7 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 
 public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
+    private OpendaylightSfc odl;
     private final String REMOTE_FORWARDER = "remote-forwarder";
     private final String SERVICE_NAME = "service-function";
     private IosXeDataStoreAPI iosXeDataStoreAPI;
@@ -61,7 +61,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     public void init() {
         // Initialize datastore
         mountpoint = getDataBroker();
-        odl.setDataProvider(mountpoint);
+        odl = new OpendaylightSfc(mountpoint, null);
     }
 
     @Test

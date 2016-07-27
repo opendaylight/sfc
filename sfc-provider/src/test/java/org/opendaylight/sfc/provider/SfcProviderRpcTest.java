@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -319,6 +321,11 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         sfcProviderRpc = new SfcProviderRpc();
     }
 
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        close();
+    }
+
     // auxiliary method
     private void init() {
         // Create Service Functions
@@ -483,8 +490,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
                 SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
 
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
-
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
         serviceFunctionClassifierBuilder.setName(SFP_NAME.getValue());
         ServiceFunctionClassifier serviceFunctionClassifier = serviceFunctionClassifierBuilder.build();
@@ -551,8 +556,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
                 SfcProviderServicePathAPI.readServicePathState(SFP_NAME);
         assertEquals(sfpRenderedServicePathList.get(0).getName(), RSP_NAME);
 
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
-
         ServiceFunctionClassifierBuilder serviceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder();
         serviceFunctionClassifierBuilder.setName(SFP_NAME.getValue());
         ServiceFunctionClassifier serviceFunctionClassifier = serviceFunctionClassifierBuilder.build();
@@ -577,7 +580,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput =
                 readRenderedServicePathFirstHopInputBuilder.build();
 
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result =
                 sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
         assertNotNull(result);
@@ -595,7 +597,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         ReadRenderedServicePathFirstHopInput readRenderedServicePathFirstHopInput =
                 readRenderedServicePathFirstHopInputBuilder.build();
 
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> result =
                 sfcProviderRpc.readRenderedServicePathFirstHop(readRenderedServicePathFirstHopInput);
         assertNotNull(result);
@@ -616,7 +617,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         serviceFunctionChainList.add(serviceFunctionChain);
         putServiceFunctionChainsInputBuilder.setServiceFunctionChain(serviceFunctionChainList);
         PutServiceFunctionChainsInput putServiceFunctionChainsInput = putServiceFunctionChainsInputBuilder.build();
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         sfcProviderRpc.putServiceFunctionChains(putServiceFunctionChainsInput);
 
         ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
@@ -636,7 +636,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     public void instantiateServiceFunctionChainTest() {
         InstantiateServiceFunctionChainInputBuilder instantiateServiceFunctionChainInput =
                 new InstantiateServiceFunctionChainInputBuilder();
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         assertNull(sfcProviderRpc.instantiateServiceFunctionChain(instantiateServiceFunctionChainInput.build()));
     }
 
@@ -655,7 +654,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         readRspFirstHopBySftListInputBuilder.setSftList(firewallList);
         ReadRspFirstHopBySftListInput readRspFirstHopBySftListInput = readRspFirstHopBySftListInputBuilder.build();
 
-        SfcProviderRpc sfcProviderRpc = new SfcProviderRpc();
         Future<RpcResult<ReadRspFirstHopBySftListOutput>> result =
                 sfcProviderRpc.readRspFirstHopBySftList(readRspFirstHopBySftListInput);
         assertNotNull(result);

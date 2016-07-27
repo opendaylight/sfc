@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker"
+    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
+    odl:type="default" />
+  <reference id="bindingRegistry"
+    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
+  <reference id="rpcRegistry"
+    interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+
+  <odl:rpc-implementation ref="sfcProviderRpc"/>
+
+  <odl:rpc-service id="sfRpcRegistration"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService"/>
+  <odl:rpc-service id="sfcRpcRegistration"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService"/>
+  <odl:rpc-service id="rspRpcRegistration"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService"/>
+  <odl:rpc-service id="srvPathIdRpcRegistration"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIdService"/>
+
+  <bean id="sfcProviderRpc"
+    class="org.opendaylight.sfc.provider.SfcProviderRpc">
+  </bean>
+  <service ref="sfcProviderRpc"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionService"/>
+  <service ref="sfcProviderRpc"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService"/>
+  <service ref="sfcProviderRpc"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePathService"/>
+  <service ref="sfcProviderRpc"
+    interface="org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.ServicePathIdService"/>
+
+  <bean id="opendaylightSfc"
+    class="org.opendaylight.sfc.provider.OpendaylightSfc"
+    destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="bindingRegistry"/>
+  </bean>
+
+  <bean id="sfcProviderSffEntryDataListener"
+    class="org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener"
+    destroy-method="close">
+    <argument ref="dataBroker"/>
+  </bean>
+
+  <bean id="sfcProviderSfEntryDataListener"
+    class="org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener"
+    destroy-method="close">
+    <argument ref="dataBroker"/>
+  </bean>
+
+  <bean id="sfcProviderScfEntryDataListener"
+    class="org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener"
+    destroy-method="close">
+    <argument ref="dataBroker"/>
+  </bean>
+
+  <bean id="sfcProviderSfstEntryDataListener"
+    class="org.opendaylight.sfc.provider.SfcProviderSfstEntryDataListener"
+    destroy-method="close">
+    <argument ref="dataBroker"/>
+  </bean>
+</blueprint>

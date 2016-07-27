@@ -12,13 +12,17 @@ package org.opendaylight.sfc.provider;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -27,10 +31,28 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 
-public class SfcProviderSfstEntryDataListener implements DataChangeListener {
+public class SfcProviderSfstEntryDataListener implements DataChangeListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfstEntryDataListener.class);
     private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static boolean isCreateTrue = false;
+    private final DataBroker broker;
+    private ListenerRegistration<DataChangeListener> sfstEntryDataChangeListenerRegistration = null;
+
+    public SfcProviderSfstEntryDataListener(final DataBroker db) {
+        this.broker = db;
+        registerListeners(db);
+    }
+
+    private void registerListeners(final DataBroker db) {
+        //SF Schedule type Entry
+        try {
+            sfstEntryDataChangeListenerRegistration = db.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
+                            OpendaylightSfc.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+        } catch (final Exception e) {
+            LOG.error("SfcProviderScfEntryDataListener: DataChange listener registration fail!", e);
+            throw new IllegalStateException("SfcProviderScfEntryDataListener: registration Listener failed.", e);
+        }
+    }
 
     /**
      * This method is called whenever there is change in a SF Schedule Type. Before doing any changes
@@ -148,5 +170,13 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener {
             LOG.error("{}: Failed to Acquire Lock", Thread.currentThread().getStackTrace()[1]);
         }
         printTraceStop(LOG);
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (sfstEntryDataChangeListenerRegistration != null) {
+            sfstEntryDataChangeListenerRegistration.close();
+        }
+        LOG.debug("SfstEntryDataChangeListenerRegistration closed");
     }
 }

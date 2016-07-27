@@ -130,9 +130,11 @@ public class OpendaylightSfc implements AutoCloseable {
     private static OpendaylightSfc opendaylightSfcObj;
 
     /* Constructors */
-    public OpendaylightSfc() {
+    public OpendaylightSfc(final DataBroker db, BindingAwareBroker broker) {
         if (opendaylightSfcObj == null) {
             opendaylightSfcObj = this;
+            opendaylightSfcObj.setDataProvider(db);
+            opendaylightSfcObj.setBroker(broker);
             LOG.info("Opendaylight Service Function Chaining Initialized");
         }
     }

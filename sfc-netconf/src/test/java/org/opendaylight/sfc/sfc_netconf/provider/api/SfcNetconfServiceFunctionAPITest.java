@@ -59,7 +59,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    private OpendaylightSfc opendaylightSfc;
     private static final String IP_MGMT_ADDRESS = "192.168.1.2";
     private static final int DP_PORT = 6633;
     private static final SfName SF_NAME = new SfName("dummySF");
@@ -68,7 +68,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     @Before
     public void before() {
         DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        opendaylightSfc = new OpendaylightSfc(dataBroker, null);
     }
 
     public void testCreateReadServiceFunctionDescription() {

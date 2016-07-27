@@ -52,8 +52,7 @@ import static org.mockito.Mockito.when;
  */
 public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManager {
 
-    private static final SfcProviderSfstEntryDataListener sfstEntryDataListener =
-            new SfcProviderSfstEntryDataListener();
+    private static SfcProviderSfstEntryDataListener sfstEntryDataListener;
     private static ListenerRegistration<DataChangeListener> sfstEntryDataListenerRegistration;
 
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfstEntryDataListenerTest.class);
@@ -66,6 +65,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
     @Before
     public void before() throws Exception {
         setOdlSfc();
+        sfstEntryDataListener = new SfcProviderSfstEntryDataListener(getDataBroker());
     }
 
     @After
@@ -75,7 +75,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
      * Creates SFST object, call listeners explicitly
      * cleans up
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_CreateData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =

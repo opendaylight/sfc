@@ -45,14 +45,15 @@ import static com.google.common.base.Preconditions.checkState;
 public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
 
     protected DataBroker dataBroker;
-    protected static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-    protected static ExecutorService executor = opendaylightSfc.getExecutor();
+    protected static OpendaylightSfc opendaylightSfc;
+    protected static ExecutorService executor;
 
     // initial sfc odl setup, executor is set only once, new data broker is created before every
     // set, it ensures empty data store
     protected void setOdlSfc() {
         dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        opendaylightSfc = new OpendaylightSfc(dataBroker, null);
+        executor = opendaylightSfc.getExecutor();
     }
 
     /*

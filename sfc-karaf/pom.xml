@@ -17,7 +17,6 @@
 
   <properties>
     <!-- The feature to install via featuresBoot in org.apache.karaf.features.cfg  -->
-    <karaf.localFeature>odl-sfc-provider</karaf.localFeature>
   </properties>
 
   <dependencies>

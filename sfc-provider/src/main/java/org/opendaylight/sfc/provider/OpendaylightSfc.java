@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since 2014-06-30
- * @see org.opendaylight.controller.config.yang.config.sfc_provider.impl.SfcProviderModule
  */
 // FIXME Make this class a singleton or remove static getOpendaylightSfcObj
 public class OpendaylightSfc implements AutoCloseable {
@@ -193,8 +192,8 @@ public class OpendaylightSfc implements AutoCloseable {
         return executor;
     }
 
-    public void setDataProvider(DataBroker salDataProvider) {
-        OpendaylightSfc.dataProvider = salDataProvider;
+    public void setDataProvider(DataBroker dataProvider) {
+        OpendaylightSfc.dataProvider = dataProvider;
     }
 
     public DataBroker getDataProvider() {

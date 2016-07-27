@@ -54,9 +54,8 @@ public class SfcOvsRpcTest {
     @Before
     public void init() {
         DataBroker dataBroker = null;
-        OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+        OpendaylightSfc opendaylightSfc = new OpendaylightSfc(dataBroker, null);
         // noinspection ConstantConditions
-        opendaylightSfc.setDataProvider(dataBroker);
     }
 
     @Test

@@ -97,7 +97,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager {
 
-    private static final SfcProviderSfEntryDataListener sfEntryDataListener = new SfcProviderSfEntryDataListener();
+    private static SfcProviderSfEntryDataListener sfEntryDataListener;
 
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListenerTest.class);
 
@@ -109,11 +109,13 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
     @Before
     public void before() throws Exception {
         setOdlSfc();
+        sfEntryDataListener = new SfcProviderSfEntryDataListener(getDataBroker());
         // sfEntryDataListenerRegistration = registerAsDataChangeListener();
     }
 
     @After
     public void after() throws Exception {
+        sfEntryDataListener.close();
         // sfEntryDataListenerRegistration.close();
     }
 

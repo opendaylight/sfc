@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
@@ -53,6 +54,10 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
     protected void setOdlSfc() {
         dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
+    }
+
+    protected void close() throws ExecutionException, InterruptedException {
+        opendaylightSfc.close();
     }
 
     /*

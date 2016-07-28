@@ -107,6 +107,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-genius</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>config-api</artifactId>
                 <version>${config.version}</version>

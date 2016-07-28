@@ -44,6 +44,7 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -97,7 +98,8 @@ public class SfcOfRspTransactionalProcessorTest {
                 new SfcOfRspProcessor(
                     this.flowProgrammerTestMock,
                     this.sfcUtilsTestMock,
-                    new SfcSynchronizer()));
+                    new SfcSynchronizer(),
+                    null));
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();
@@ -139,7 +141,7 @@ public class SfcOfRspTransactionalProcessorTest {
         LOG.info("testSingleRSPDeletion");
 
         // needs to be done inside the test(it is cleared in before() method between tests)
-        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class);
+        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class, Nsh.class);
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         PowerMockito.verifyPrivate(
@@ -188,8 +190,8 @@ public class SfcOfRspTransactionalProcessorTest {
         LOG.info("testMultiRSPDeletionSymmetrical: starting");
 
         // needs to be done inside the test(it is cleared in before() method between tests)
-        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class);
-        this.nshRsp2 = rspBuilder.createRspFromSfTypes(serviceFunctionChain2, VxlanGpe.class);
+        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class, Nsh.class);
+        this.nshRsp2 = rspBuilder.createRspFromSfTypes(serviceFunctionChain2, VxlanGpe.class, Nsh.class);
 
         // ---------------------
         // Step 1. Create RSP 1
@@ -297,8 +299,8 @@ public class SfcOfRspTransactionalProcessorTest {
         LOG.info("testMultiRSPDeletionASymmetrical - starting");
 
         // needs to be done inside the test(it is cleared in before() method between tests)
-        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class);
-        this.nshRsp2 = rspBuilder.createRspFromSfTypes(serviceFunctionChain2, VxlanGpe.class);
+        this.nshRsp = rspBuilder.createRspFromSfTypes(serviceFunctionChain1, VxlanGpe.class, Nsh.class);
+        this.nshRsp2 = rspBuilder.createRspFromSfTypes(serviceFunctionChain2, VxlanGpe.class, Nsh.class);
 
         // ---------------------------------------------------------------------------------------------------------
         // Step 0(Preparation): first create RSP2, store info of created flows. Then delete RSP2.

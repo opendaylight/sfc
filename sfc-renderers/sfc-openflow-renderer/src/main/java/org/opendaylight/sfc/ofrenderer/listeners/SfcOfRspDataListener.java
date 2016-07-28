@@ -13,6 +13,7 @@ import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
@@ -42,11 +43,13 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
             DataBroker dataBroker,
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils,
-            SfcSynchronizer sfcSynchronizer) {
+            SfcSynchronizer sfcSynchronizer,
+            RpcProviderRegistry rpcProviderRegistry) {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
-        this.sfcOfRspProcessor = new SfcOfRspProcessor(sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer);
+        this.sfcOfRspProcessor = new SfcOfRspProcessor(
+                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry);
     }
 
     @Override

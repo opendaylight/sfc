@@ -36,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +74,7 @@ public class SfcOfRspProcessorTest {
         this.sfcOfRspProcessor = new SfcOfRspProcessor(
                 this.flowProgrammerTestMoc,
                 this.sfcUtilsTestMock,
-                new SfcSynchronizer());
+                new SfcSynchronizer(), null);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();
@@ -104,7 +106,7 @@ public class SfcOfRspProcessorTest {
     public void testVlanFlowCreation() {
         LOG.info("SfcOfRspProcessorTest testVlanFlowCreation");
 
-        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mac.class);
+        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mac.class, Transport.class);
         this.sfcOfRspProcessor.processRenderedServicePath(vlanRsp);
 
         assertMatchAnyMethodsCalled("SFF_0");
@@ -164,7 +166,7 @@ public class SfcOfRspProcessorTest {
     public void testMplsFlowCreation() {
         LOG.info("SfcOfRspProcessorTest testMplsFlowCreation");
 
-        RenderedServicePath mplsRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mpls.class);
+        RenderedServicePath mplsRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, Mpls.class, Transport.class);
         this.sfcOfRspProcessor.processRenderedServicePath(mplsRsp);
 
         assertMatchAnyMethodsCalled("SFF_0");
@@ -224,7 +226,7 @@ public class SfcOfRspProcessorTest {
     public void testNshFlowCreation() {
         LOG.info("SfcOfRspProcessorTest testNshFlowCreation");
 
-        RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, VxlanGpe.class);
+        RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, VxlanGpe.class, Nsh.class);
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         assertMatchAnyMethodsCalled("SFF_0");
@@ -232,22 +234,22 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
+        // Verify calls to configureNshVxgpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeNextHopFlow(
+        // Verify calls to configureNshVxgpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(
                 eq("SFF_0"), anyString(), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
                 eq("SFF_1"), anyString(), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureVxlanGpeTransportEgressFlow(
+        // Verify calls to configureNshVxgpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(
                 eq("SFF_0"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 "SFF_1", 0, (short) 253, "INPORT");
@@ -255,7 +257,7 @@ public class SfcOfRspProcessorTest {
         // Verify calls to configureNshNscTransportEgressFlow
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
                 eq("SFF_1"), anyLong(), anyShort(), anyString());
 
         // verify flow flushing
@@ -273,31 +275,31 @@ public class SfcOfRspProcessorTest {
         sfOneHopTypes = new ArrayList<>();
         sfOneHopTypes.add(new SftTypeName("firewall"));
 
-        RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class);
+        RenderedServicePath nshRsp = rspBuilder.createRspFromSfTypes(sfOneHopTypes, VxlanGpe.class, Nsh.class);
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         assertMatchAnyMethodsCalled("SFF_0");
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureVxlanGpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        // Verify calls to configureNshVxgpeTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
 
-        // Verify calls to configureVxlanGpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeNextHopFlow(
+        // Verify calls to configureNshVxgpeNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
                 "SFF_0", "192.168.0.1", 0, (short) 255);
 
-        // Verify calls to configureVxlanGpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeLastHopTransportEgressFlow(
+        // Verify calls to configureNshVxgpeTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "INPORT");
-        verify(this.flowProgrammerTestMoc, times(1)).configureVxlanGpeTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
                 "SFF_0", 0, (short) 255, "INPORT");
 
         // Verify calls to configureNshNscTransportEgressFlow
         verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "INPORT");
 
-        verify(this.flowProgrammerTestMoc).configureVxlanGpeAppCoexistTransportEgressFlow(
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
                 "SFF_0", 0, (short) 254, "192.168.0.2");
 
         // verify flow flushing
@@ -316,7 +318,7 @@ public class SfcOfRspProcessorTest {
         sfTcpProxyTypes.add(new SftTypeName("tcp-proxy"));
         sfTcpProxyTypes.add(new SftTypeName("tcp-proxy"));
 
-        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(sfTcpProxyTypes, Mac.class);
+        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(sfTcpProxyTypes, Mac.class, Transport.class);
         this.sfcOfRspProcessor.processRenderedServicePath(vlanRsp);
 
         // TODO

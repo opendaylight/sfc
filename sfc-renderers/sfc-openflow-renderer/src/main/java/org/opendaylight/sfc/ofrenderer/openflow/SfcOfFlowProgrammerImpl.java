@@ -9,11 +9,13 @@
 package org.opendaylight.sfc.ofrenderer.openflow;
 
 import com.google.common.net.InetAddresses;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
@@ -319,7 +321,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 tableId);
 
         // Add our drop action to a list
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionDropPacket(0));
 
         // Create an Apply Action
@@ -333,7 +335,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         ib.setOrder(order++);
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
 
         // Match any
@@ -368,7 +370,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         ib.setOrder(order++);
         ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
 
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
 
         // Match any
@@ -540,7 +542,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchArpRequest(match);
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxMoveEthSrcToEthDstAction(order++));
         actionList.add(SfcOpenflowUtils.createActionSetDlSrc(mac, order++));
         actionList.add(SfcOpenflowUtils.createActionNxLoadArpOpAction(SfcOpenflowUtils.ARP_REPLY, order++));
@@ -585,7 +587,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchDstIpv4(match, sfIp, 32);
         SfcOpenflowUtils.addMatchDstUdpPort(match, vxlanUdpPort);
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionOutPort((int) sffPort, 0));
 
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -620,7 +622,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchDstUdpPort(match, vxlanUdpPort);
         SfcOpenflowUtils.addMatchInPort(match, new NodeId(sffNodeName), sffPort);
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.LOCAL.toString(), 0));
 
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -665,7 +667,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchMplsLabel(match, mplsLabel);
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionPopMpls(0));
 
         FlowBuilder pathMapperFlow;
@@ -691,7 +693,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchVlan(match, vlan);
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionPopVlan(0));
 
         FlowBuilder pathMapperFlow;
@@ -748,7 +750,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         aab.setAction(actionList);
 
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
 
         int ibOrder = 0;
         int actionOrder = 0;
@@ -825,7 +827,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         gotoNextHopIb.setOrder(ibOrder++);
 
         // Put our Instruction in a list of Instructions
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(metadataIb.build());
         instructions.add(gotoNextHopIb.build());
 
@@ -871,7 +873,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             flowPriority -= 10;
         }
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         if (dstMac != null) {
             // Set the DL (Data Link) Dest Mac Address
             actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, 0));
@@ -898,7 +900,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         if (dstIp != null) {
             Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
             actionList.add(actionSetNwDst);
@@ -952,7 +954,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         instructions.add(gotoTbIb.build());
         isb.setInstruction(instructions);
@@ -978,7 +980,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionWriteDscp((short) pathId, order++));
         actionList.add(SfcOpenflowUtils.createActionPushVlan(order++));
         actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, order++));
@@ -1061,7 +1063,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionPushVlan(order++));
         actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, order++));
 
@@ -1136,7 +1138,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionPushMpls(order++));
         actionList.add(SfcOpenflowUtils.createActionSetMplsLabel(mplsLabel, order++));
 
@@ -1164,7 +1166,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
@@ -1226,7 +1228,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         }
 
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         // Copy/Move Nsc1/Nsc2 to the next hop
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
@@ -1268,7 +1270,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
 
         FlowBuilder transportEgressFlow =
@@ -1301,7 +1303,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
         int order = 0;
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
@@ -1357,6 +1359,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 cookieStr);
     }
 
+    public void configureTransportEgressFlows(List<Instruction> instructionList, String sffName) {
+     // Match any
+        MatchBuilder match = new MatchBuilder();
+
+        // Finish up the instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        isb.setInstruction(instructionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder flowBuilder =  SfcOpenflowUtils.createFlowBuilder(
+                getTableId(TABLE_INDEX_TRANSPORT_EGRESS), FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        //TODO check sff name is correct (i.e. openflow:xxx instead of sff1)
+        sfcOfFlowWriter.writeFlow(flowRspId, sffName, flowBuilder);
+    }
+
     /**
      * Internal util method used by the previously defined configureTransportEgressFlow()
      * methods.
@@ -1394,7 +1411,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         ib.setKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         InstructionsBuilder isb = new InstructionsBuilder();
         isb.setInstruction(instructions);
@@ -1426,7 +1443,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         gb.setGroupName(sfgName);
         gb.setGroupId(new GroupId(sfgId));
 
-        List<Bucket> buckets = new ArrayList<Bucket>();
+        List<Bucket> buckets = new ArrayList<>();
         BucketBuilder bb = new BucketBuilder();
         for (GroupBucketInfo bucketInfo : bucketInfos) {
             LOG.debug("building bucket {}", bucketInfo);
@@ -1445,7 +1462,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         bb.setKey(new BucketKey(bucketId));
         String sfMac = bucketInfo.getSfMac();
         String sfIp = bucketInfo.getSfIp();
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
         if (sfMac != null) {
             // Set the DL (Data Link) Dest Mac Address
             Action actionDstMac = SfcOpenflowUtils.createActionSetDlDst(sfMac, order);
@@ -1493,7 +1510,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         //
         // Create the Actions
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionList = new ArrayList<>();
 
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroupId(groupId);
@@ -1522,7 +1539,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
+        List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
 
@@ -1563,5 +1580,52 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         } else {
             return tableIndex;
         }
+    }
+
+    @Override
+    public void configureGeniusBasedTransportEgressFlow(String sffNodeName,
+            long nshNsp, short nshNsi,
+            List<Instruction> instructionList) {
+
+        MatchBuilder match = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
+        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<>();
+        // Copy/Move Nsc1/Nsc2 to the next hop
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
+        actionList.add(SfcOpenflowUtils
+                .createActionNxMoveTunIdRegister(order++));
+
+     // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+
+        // Put our Instruction in a list of Instructions
+        List<Instruction> instructions = new ArrayList<>();
+        instructions.add(ib.build());
+
+        //FIXME ediegra check wether instruction order/keys must be incremented
+        instructions.addAll(instructionList);
+
+        InstructionsBuilder isb = new InstructionsBuilder();
+        isb.setInstruction(instructions);
+
+        FlowBuilder transportEgressFlowBuilder = SfcOpenflowUtils.createFlowBuilder(
+                getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                //TODO ediegra make sure that priority is correct
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                "default_egress_flow", match, isb);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlowBuilder);
+
     }
 }

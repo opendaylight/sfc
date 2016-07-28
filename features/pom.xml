@@ -31,6 +31,7 @@
       <ovsdb.southbound.version>1.3.0-SNAPSHOT</ovsdb.southbound.version>
       <restconf.version>1.4.0-SNAPSHOT</restconf.version>
       <yangtools.version>1.0.0-SNAPSHOT</yangtools.version>
+      <genius.version>0.1.0-SNAPSHOT</genius.version>
    </properties>
    <dependencies>
     <!--
@@ -104,6 +105,13 @@
         <version>${lispflowmapping.version}</version>
         <classifier>features</classifier>
         <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.genius</groupId>
+      <artifactId>genius-features</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <classifier>features</classifier>
+      <type>xml</type>
     </dependency>
 
     <!--

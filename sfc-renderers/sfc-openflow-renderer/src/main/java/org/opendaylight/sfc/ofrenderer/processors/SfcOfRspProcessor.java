@@ -10,8 +10,10 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -29,6 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +56,8 @@ public class SfcOfRspProcessor {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
-        this.sffInitialized = new HashMap<NodeId, Boolean>();
-        this.rspTransportProcessors = new HashMap<String, Class<? extends SfcRspTransportProcessorBase>>();
+        this.sffInitialized = new HashMap<>();
+        this.rspTransportProcessors = new HashMap<>();
         this.rspTransportProcessors.put(VxlanGpe.class.getName(), SfcRspProcessorNsh.class);
         this.rspTransportProcessors.put(Mpls.class.getName(), SfcRspProcessorMpls.class);
         this.rspTransportProcessors.put(Mac.class.getName(), SfcRspProcessorVlan.class);
@@ -75,6 +80,7 @@ public class SfcOfRspProcessor {
             //
             // Populate the SFF Connection Graph
             //
+            LOG.debug(" ediegra: SfcOfRspProcessor:processRenderedServicePath:populating the graph");
             SffGraph sffGraph = populateSffGraph(rsp);
             SfcRspTransportProcessorBase transportProcessor = getTransportProcessor(sffGraph, rsp);
 
@@ -93,9 +99,14 @@ public class SfcOfRspProcessor {
             //
             SffGraph.SffGraphEntry entry = null;
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
+            int sffIndex = 0;
             while (sffGraphIter.hasNext()) {
                 entry = sffGraphIter.next();
-                LOG.debug("build flows of entry: {}", entry);
+                LOG.debug("ediegra: build flows of entry: {} (index={})", entry, sffIndex++);
+//                ServiceFunctionForwarder aSff = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
+//                SffDataPlaneLocatorName ingressDplName = sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId());
+//                SffDataPlaneLocatorName egressDplName = sffGraph.getSffEgressDpl(entry.getDstSff(), entry.getPathId());
+
 
                 // The flows created by initializeSff dont belong to any particular RSP
                 sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
@@ -171,6 +182,8 @@ public class SfcOfRspProcessor {
 
         // Setting to INGRESS for the first graph entry, which is the RSP Ingress
         SffName prevSffName = new SffName(SffGraph.INGRESS);
+        // Set to null in the first graph entry
+        DpnIdType srcDpnId = null;
 
         Iterator<RenderedServicePathHop> servicePathHopIter = rsp.getRenderedServicePathHop().iterator();
         SfName sfName = null;
@@ -178,25 +191,62 @@ public class SfcOfRspProcessor {
         String sfgName = null;
         SffGraph.SffGraphEntry entry = null;
         short lastServiceIndex = rsp.getStartingIndex();
+        int i = 0;
         while (servicePathHopIter.hasNext()) {
             RenderedServicePathHop rspHop = servicePathHopIter.next();
             SffName curSffName = rspHop.getServiceFunctionForwarder();
             sfName = rspHop.getServiceFunctionName();
-            sfgName = rspHop.getServiceFunctionGroupName();
 
+            ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(sfName, rsp.getPathId());
+
+            LOG.debug("ediegra:populateSffGraph: service function for the hop retrieved! {}", sf);
+
+            String logicalInterfaceName = null;
+            //LogicalInterface interfaceName = null;
+            if ((sf.getSfDataPlaneLocator() != null) && (sf.getSfDataPlaneLocator().get(0) != null)) {
+                LOG.debug("ediegra:populateSffGraph: dpl 0 is not null! it is {}", sf.getSfDataPlaneLocator().get(0));
+                SfDataPlaneLocator sfdpl = sf.getSfDataPlaneLocator().get(0);
+                //if (sfdpl.getLocatorType())
+                if ((sfdpl.getLocatorType()!= null) && (sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class)) {
+                    LOG.debug("ediegra:populateSffGraph: hop {} is using a"
+                            + " SF with a logical interface: {}", i++, sfdpl.getImplementedInterface());
+                    LogicalInterface locatorInterface = ((LogicalInterface)sfdpl.getLocatorType());
+                    if ((locatorInterface != null) && (locatorInterface.getInterfaceName() != null)) {
+                        LOG.debug("ediegra:populateSffGraph: hop  is using logical interface [{}]"
+                            , locatorInterface.getInterfaceName());
+                        logicalInterfaceName = locatorInterface.getInterfaceName();
+                    }
+                }
+            }
+            sfgName = rspHop.getServiceFunctionGroupName();
             entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(),
                     rspHop.getServiceIndex());
             entry.setPrevSf(prevSfName);
             lastServiceIndex = rspHop.getServiceIndex();
             prevSfName = sfName;
             prevSffName = curSffName;
+
+
+            if (logicalInterfaceName != null) {
+                LOG.debug("ediegra: going to genius for dpnid for interface with name {}", logicalInterfaceName);
+                DpnIdType dpnid = SfcRendererRpcProviderAPI.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
+                LOG.debug("ediegra: for {}, genius said: {}", logicalInterfaceName, dpnid);
+                entry.setDstDpnId(dpnid);
+            }
+            entry.setSrcDpnId(srcDpnId);
+
+            LOG.debug("ediegra: added graph entry: [{}]", entry);
+            srcDpnId = entry.getDstDpnId();
+
         }
         // Add the final connection, which will be the RSP Egress
         // Using the previous sfName as the SrcSf
         entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(),
                 (short) (lastServiceIndex - 1));
         entry.setPrevSf(prevSfName);
+        entry.setSrcDpnId(srcDpnId);
 
+        LOG.debug("ediegra: added final graph entry: [{}]", entry);
         return sffGraph;
     }
 
@@ -246,10 +296,6 @@ public class SfcOfRspProcessor {
         }
 
         DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
-        LocatorType sffLocatorType = dstHopIngressDpl.getLocatorType();
-        if (sffLocatorType == null) {
-            throw new RuntimeException("configurePathMapperFlows hopDpl locatorType is null for sff: " + entry.getDstSff());
-        }
 
         // configure SFF-SFF-SF ingress -OR- Ingress-SFF-SF ingress flow using dstHopIngressDpl
         transportProcessor.configureSffPathMapperFlow(entry, dstHopIngressDpl);
@@ -258,9 +304,6 @@ public class SfcOfRspProcessor {
         if (entry.getSf() != null) {
             ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
             SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sf, entry.getDstSff());
-            if (sfDpl == null) {
-                throw new RuntimeException("configurePathMapperFlows sf Dpl is null for sf: " + entry.getSf() + ", and sff: " + entry.getDstSff());
-            }
             transportProcessor.configureSfPathMapperFlow(entry, sfDpl);
         }
     }
@@ -338,6 +381,7 @@ public class SfcOfRspProcessor {
     private void configureTransportEgressFlows(SffGraph.SffGraphEntry entry,
             SffGraph sffGraph, SfcRspTransportProcessorBase transportProcessor) {
 
+        LOG.debug("ediegra:configureTransportEgressFlows:called for graph entry with src sff {}",entry.getSrcSff());
         // Configure the SFF-Egress Transport Egress
         ServiceFunctionForwarder sffSrc =
                 sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
@@ -352,15 +396,41 @@ public class SfcOfRspProcessor {
             return;
         }
 
-        // Configure the SFF-SF Transport Egress using sfDpl
         ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
         SfDataPlaneLocator sfDstDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
+
+        //EDIEGRA: transport egress from logical SFF to SF using a Logical Interface locator
+        //1: get SF Neutron interface (read from DS)
+        //2: ask genius for the egress actions for that interface
+        LOG.debug("ediegra:configureTransportEgress:sfDstDpl: {}", sfDstDpl);
         ServiceFunctionForwarder sffDst =
                 sfcOfProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
-        if (sfDstDpl != null) {
-            SffSfDataPlaneLocator sffSfDpl = sfcOfProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
-            SffDataPlaneLocator sffDstDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst, sffSfDpl.getSffDplName());
-            transportProcessor.configureSfTransportEgressFlow(entry, sffDstDpl, sfDstDpl, sfDstDpl);
+
+        if (entry.getDstDpnId() != null) {
+            LOG.debug("ediegra:configureTransportEgress:entry for a logical sff!");
+            if (sfDstDpl.getLocatorType().getImplementedInterface() == LogicalInterface.class) {
+                //TODO ediegra put in one of those maps. it is nonsense to retrieve it twice
+                LogicalInterface sfNeutronInterface = ((LogicalInterface)sfDstDpl.getLocatorType());
+                String targetInterfaceName = sfNeutronInterface.getInterfaceName();
+                // 1B2, use genius for retrieving egress instructions (Interface
+                // Manager RPC)
+                List<Instruction> instructionList = SfcRendererRpcProviderAPI
+                        .getInstance().getEgressInstructionsFromGeniusRPC(
+                                targetInterfaceName);
+                // 1B3, write those instructions
+                LOG.debug("ediegra:configureTransportEgress:calling configureGeniusBased... with params:{} {} {} {}",
+                        entry.getDstSff().toString(), entry.getPathId(), entry.getServiceIndex(), instructionList );
+                transportProcessor.sfcFlowProgrammer.configureGeniusBasedTransportEgressFlow(
+                       entry.getDstSff().toString(), entry.getPathId(), entry.getServiceIndex(), instructionList);
+            }
+        } else {
+
+            if (sfDstDpl != null) {
+                SffSfDataPlaneLocator sffSfDpl = sfcOfProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
+                LOG.debug("ediegra:configureTransportEgress:sffSfDpl: {}", sffSfDpl);
+                SffDataPlaneLocator sffDstDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst, sffSfDpl.getSffDplName());
+                transportProcessor.configureSfTransportEgressFlow(entry, sffDstDpl, sfDstDpl, sfDstDpl);
+            }
         }
 
         // Nothing else to be done for Ingress
@@ -376,6 +446,8 @@ public class SfcOfRspProcessor {
                     sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
             // This is the HOP DPL details between srcSFF and dstSFF, for example: VLAN ID 100
             DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
+
+
             transportProcessor.configureSffTransportEgressFlow(
                     entry, sffSrcEgressDpl, sffDstIngressDpl, dstHopIngressDpl);
         }
@@ -405,12 +477,14 @@ public class SfcOfRspProcessor {
             return;
         }
 
-        String sffNodeName = sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        LOG.debug("ediegra:initializeSff:retrieving sff node name. Dst sff:{} path id {}, dst dpn id:[{}]",entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
+        String sffNodeName = sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
         if (sffNodeName == null) {
             throw new RuntimeException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
         }
 
         NodeId sffNodeId = new NodeId(sffNodeName);
+        LOG.debug("ediegra:initializeSff:sffNodeName[{}] sffNodeId [{}]",sffNodeName, sffNodeId);
         if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
             this.sfcOfFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);

@@ -85,6 +85,14 @@
         <configfile finalname="etc/opendaylight/karaf/sfc-openflow-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-openflow-renderer/{{VERSION}}/xml/config</configfile>
     </feature>
 
+    <feature name="odl-sfc-vpp-renderer" version="${project.version}" description="OpenDaylight :: sfc-renderers :: VPP Renderer ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector-all</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-topology</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vpp-renderer/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-vpp-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-vpp-renderer/{{VERSION}}/xml/config</configfile>
+    </feature>
+
     <feature name="odl-sfclisp" version="${project.version}" description="OpenDaylight :: sfclisp :: all">
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <feature version="${lispflowmapping.version}">odl-lispflowmapping-mappingservice</feature>

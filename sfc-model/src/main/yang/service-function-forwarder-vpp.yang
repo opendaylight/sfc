@@ -1,6 +1,6 @@
 module service-function-forwarder-vpp {
-    namespace "urn:opendaylight:service-function-forwarder-vpp";
-    prefix "sff-vpp";
+    namespace "urn:cisco:params:xml:ns:yang:sfc-sff-vpp";
+    prefix "sfc-sff-vpp";
 
     import service-function-forwarder {
         prefix sfc-sff;

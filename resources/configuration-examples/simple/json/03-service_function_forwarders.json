@@ -1,0 +1,44 @@
+{
+  "service-function-forwarders": {
+    "service-function-forwarder": [
+      {
+        "name": "sff1",
+        "service-function-forwarder-ovs:ovs-bridge": {
+            "bridge-name": "br-int"
+        },
+        "sff-data-plane-locator": [
+          {
+            "name": "vxgpe",
+            "data-plane-locator":
+            {
+                "ip": "192.168.0.104",
+                "port": 6633,
+                "transport": "service-locator:vxlan-gpe"
+            },
+            "service-function-forwarder-ovs:ovs-options": {
+                "nsp": "flow",
+                "nshc4": "flow",
+                "nshc3": "flow",
+                "nshc2": "flow",
+                "nshc1": "flow",
+                "key": "flow",
+                "dst-port": "6633",
+                "nsi": "flow",
+                "remote-ip": "flow"
+            }
+          }
+        ],
+        "service-function-dictionary": [
+          {
+            "name": "sf1",
+            "sff-sf-data-plane-locator":
+            {
+                "sf-dpl-name": "sff1",
+                "sff-dpl-name": "vxgpe"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+   "service-function-paths": {
+     "service-function-path": [
+       {
+         "name": "sfc-path-1sf1sff",
+         "service-chain-name": "sfc-chain-1sf1sff",
+         "transport-type": "service-locator:vxlan-gpe",
+         "symmetric": true
+       }
+     ]
+   }
+}

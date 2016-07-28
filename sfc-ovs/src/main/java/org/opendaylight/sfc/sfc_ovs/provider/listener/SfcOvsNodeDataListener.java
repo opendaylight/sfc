@@ -21,8 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -140,15 +142,18 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
 
     private ServiceFunctionForwarder findSffByIp(ServiceFunctionForwarders sffs, final IpAddress remoteIp) {
         List<ServiceFunctionForwarder> serviceFunctionForwarders = sffs.getServiceFunctionForwarder();
+
         if (serviceFunctionForwarders != null && !serviceFunctionForwarders.isEmpty())
             for (ServiceFunctionForwarder sff : serviceFunctionForwarders) {
                 List<SffDataPlaneLocator> sffDataPlaneLocator = sff.getSffDataPlaneLocator();
-                for (SffDataPlaneLocator sffLocator : sffDataPlaneLocator) {
-                    LocatorType locatorType = sffLocator.getDataPlaneLocator().getLocatorType();
-                    if (locatorType instanceof Ip) {
-                        Ip ip = (Ip) locatorType;
-                        if (ip.getIp().equals(remoteIp)) {
-                            return sff;
+                if (sffDataPlaneLocator != null) {
+                    for (SffDataPlaneLocator sffLocator : sffDataPlaneLocator) {
+                        LocatorType locatorType = sffLocator.getDataPlaneLocator().getLocatorType();
+                        if (locatorType instanceof Ip) {
+                            Ip ip = (Ip) locatorType;
+                            if (ip.getIp().equals(remoteIp)) {
+                                return sff;
+                            }
                         }
                     }
                 }

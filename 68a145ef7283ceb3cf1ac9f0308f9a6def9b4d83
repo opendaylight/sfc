@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_f60bc78b",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 595,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "Why don\u0027t we have another one for EthNsh?",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_56fd536d",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1188,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "Don\u0027t we also need that for EthNsh?",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_b6d66fef",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerInterface.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "why not including configureNshEthLastHopTransportEgressFlow or AppCoexistTransportEgressFlow? I guess when it comes to TransportNShNscTransportEgressFlow we are just talking about SFFs and EthNsh does not apply to this case, but what about last hop?",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_162e3bfb",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "Do I really need an RSP processor handling only NSH+VxLAN? or should I also have an RSP processor which is able to handle a mixture of VxLAN+NSH between SFFs and Eth+NSH between SF and SFF?\nAs far as I see we have another one for MPLS and another one for VLAN? So shouldn\u0027t we have one with a mixture of VxLAN+NSH and Eth+NSH? (I think you have created the SfcRspProcessorNshEth for that, right?)",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_16159b9b",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcOfFlowProgrammerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "Shouldn\u0027t we include some tests for NshEth?",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_560b937c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5255
+      },
+      "writtenOn": "2016-07-28T06:16:39Z",
+      "side": 1,
+      "message": "Shouldn\u0027t we also include some NshEth tests?",
+      "revId": "68a145ef7283ceb3cf1ac9f0308f9a6def9b4d83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

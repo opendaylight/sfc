@@ -8,11 +8,13 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -42,6 +44,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
 
 public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
@@ -55,6 +60,8 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
         private Map<SffName, ServiceFunctionForwarder> serviceFunctionFowarders;
 
+
+
         public RspContext() {
             serviceFunctions = Collections.synchronizedMap(new HashMap<SfName, ServiceFunction>());
             serviceFunctionGroups = Collections.synchronizedMap(new HashMap<String, ServiceFunctionGroup>());
@@ -63,10 +70,16 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     private Map<Long, RspContext> rspIdToContext;
+    private Table<String, String, BigInteger> dpids;
+
+    //private Map<SffNa>
 
     public SfcOfProviderUtils() {
-        rspIdToContext = new HashMap<Long, RspContext>();
+        rspIdToContext = new HashMap<>();
+        dpids = HashBasedTable.create();
     }
+
+
 
     @Override
     public void addRsp(long rspId) {
@@ -115,13 +128,21 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     public ServiceFunctionForwarder getServiceFunctionForwarder(final SffName sffName, long rspId) {
         RspContext rspContext = rspIdToContext.get(rspId);
 
+        LOG.debug("ediegra:getServiceFunctionForwarder: called");
         ServiceFunctionForwarder sff = rspContext.serviceFunctionFowarders.get(sffName);
         if (sff == null) {
+            LOG.debug("ediegra:getServiceFunctionForwarder: was null in context; trying to read");
             sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
             if (sff != null) {
+                LOG.debug("ediegra:getServiceFunctionForwarder: read; augmenting");
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 rspContext.serviceFunctionFowarders.put(sffName, sff);
+                LOG.debug("ediegra:getServiceFunctionForwarder: augmented and stored in context");
+            } else {
+                LOG.debug("ediegra:getServiceFunctionForwarder: read failed");
             }
+        } else {
+            LOG.debug("ediegra:getServiceFunctionForwarder: already in context, returning: {}", sff);
         }
 
         return sff;
@@ -217,6 +238,15 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(portName)));
 
         return SfcDataStoreAPI.readTransactionAPI(tpIid, LogicalDatastoreType.OPERATIONAL);
+    }
+
+    @Override
+    public BigInteger getDpid(String sffName, String sfName) {
+        return dpids.get(sffName, sfName);
+    }
+    @Override
+    public void setDpid(String sffName, String sfName, BigInteger value) {
+        dpids.put(sffName, sfName, value);
     }
 
 }

@@ -120,23 +120,37 @@ public abstract class SfcRspTransportProcessorBase {
             // may be null if its EGRESS
             ServiceFunctionForwarder dstSff =
                     sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
-            if (dstSff != null) {
+            if (!entry.isIntraLogicalSFFEntry()) {
+                // if the rsp hop from which this graph entry was logicalSff-augmented,
+                // then it must be a logical sff -> it doesn't have dpl
+                // a data plane locator (genius will provide rules for reaching it). So skip it
+                //TODO ediegra check with the team whether this is the best criteria to decide
+
                 // Set the SFF-SFF Hop DPL
-                if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
-                    throw new RuntimeException(
-                            "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
-                                    + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                if (dstSff != null) {
+                    if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
+                            throw new RuntimeException(
+                                    "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
+                                            + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    }
                 }
+            } else {
+                LOG.debug("ediegra:processSFFDpls: this graph entry is for a switch {} "
+                        + "which is part of logical sff: skipping dpl assignment", dstSff.getName());
             }
 
-            if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-                // The srcSff ingress DPL was set in the previous loop
-                // iteration, now we need to set its egress DPL
-                SffDataPlaneLocator srcSffIngressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
-                        sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId()));
-                if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffIngressDpl, true)) {
-                    throw new RuntimeException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
-                            + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+
+        //if(!entry.isPartOfLogicalSFF()) {
+            if (entry.getDstSff().equals(SffGraph.EGRESS) ) {
+                if (entry.getSrcDpnId() == null) { // if last switch is part of logical sff, don't try to set remaining hop dpl
+                    // The srcSff ingress DPL was set in the previous loop
+                    // iteration, now we need to set its egress DPL
+                    SffDataPlaneLocator srcSffIngressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
+                            sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId()));
+                    if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffIngressDpl, true)) {
+                        throw new RuntimeException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
+                                + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    }
                 }
             } else {
                 // The srcSff egress DPL was just set above, now set its ingress DPL
@@ -147,6 +161,7 @@ public abstract class SfcRspTransportProcessorBase {
                             + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
                 }
             }
+
         }
     }
 
@@ -165,6 +180,8 @@ public abstract class SfcRspTransportProcessorBase {
      */
     private boolean setSffRemainingHopDataPlaneLocator(final ServiceFunctionForwarder sff,
             SffDataPlaneLocator alreadySetSffDpl, boolean ingressDplSet) {
+        LOG.debug("ediegra:setSffRemainingHopDataPlaneLocator: called for "
+                + "sff: {} already set dpl {} ingress set {}", sff.getName(), alreadySetSffDpl, ingressDplSet);
         long pathId = rsp.getPathId();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
@@ -213,6 +230,9 @@ public abstract class SfcRspTransportProcessorBase {
         List<SffDataPlaneLocator> curSffDplList = curSff.getSffDataPlaneLocator();
         boolean hasSingleDpl = false;
 
+        LOG.debug("ediegra:setSffHopDataPlaneLocators: called for sffs {} {}"
+                , prevSff.getName(), curSff.getName());
+
         // If the prevSffDplList has just one DPL, nothing special needs to be done
         // Just check that its DPL transport matches the RSP transport
         if (prevSffDplList.size() == 1) {
@@ -225,6 +245,7 @@ public abstract class SfcRspTransportProcessorBase {
             this.sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
             this.sffGraph.setSffIngressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
 
+            LOG.debug("ediegra:setSffHopDataPlaneLocators: prevSff {} had only one sff, dpl resolved", prevSff.getName());
             // Nothing else needs to be done
             hasSingleDpl = true;
         }
@@ -240,12 +261,16 @@ public abstract class SfcRspTransportProcessorBase {
             this.sffGraph.setSffIngressDpl(curSff.getName(), pathId, curSffDpl.getName());
 
             // Nothing else needs to be done
+            LOG.debug("ediegra:setSffHopDataPlaneLocators: currSff {} had only one sff, dpl resolved", prevSff.getName());
             hasSingleDpl = true;
         }
 
         if (hasSingleDpl) {
             return true;
         }
+
+
+        LOG.debug("ediegra:setSffHopDataPlaneLocators: single dpl criteria was not very effective, resuming");
 
         // This is an O(n squared) search, can be improved using a hash table.
         // Considering there should only be 3-4 DPLs, its not worth the extra

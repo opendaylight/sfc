@@ -54,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SfcEncapsulationIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
@@ -105,7 +106,7 @@ public class RspBuilder {
     }
 
     public RenderedServicePath createRspFromSfTypes(List<SftTypeName> sfTypes,
-            Class<? extends SlTransportType> transportType) {
+            Class<? extends SlTransportType> transportType, Class<? extends SfcEncapsulationIdentity> sfcEncap) {
 
         List<ServiceFunction> sfList = new ArrayList<>();
         List<ServiceFunctionForwarder> sffList = new ArrayList<>();
@@ -120,7 +121,7 @@ public class RspBuilder {
         }
 
         ServiceFunctionChain sfc = createServiceFunctionChain(sfTypes);
-        ServiceFunctionPath sfp = createServiceFunctionPath(sfc, transportType);
+        ServiceFunctionPath sfp = createServiceFunctionPath(sfc, transportType, sfcEncap);
         RenderedServicePath rsp = createRenderedServicePath(sfp, sfList, sffList);
 
         return rsp;
@@ -151,7 +152,7 @@ public class RspBuilder {
     }
 
     public ServiceFunctionPath createServiceFunctionPath(ServiceFunctionChain sfc,
-            Class<? extends SlTransportType> transportType) {
+            Class<? extends SlTransportType> transportType, Class <? extends SfcEncapsulationIdentity> encap) {
 
         SfpName sfpName = new SfpName(SFP_NAME_PREFIX + String.valueOf(SFP_NAME_INDEX++));
         ServiceFunctionPathBuilder sfpBuilder = new ServiceFunctionPathBuilder();
@@ -160,6 +161,7 @@ public class RspBuilder {
         sfpBuilder.setServiceChainName(sfc.getName());
         sfpBuilder.setSymmetric(true);
         sfpBuilder.setTransportType(transportType);
+        sfpBuilder.setSfcEncapsulation(encap);
 
         return sfpBuilder.build();
     }
@@ -174,6 +176,7 @@ public class RspBuilder {
         rspBuilder.setParentServiceFunctionPath(sfp.getName());
         rspBuilder.setPathId(RSP_PATHID_INDEX++);
         rspBuilder.setTransportType(sfp.getTransportType());
+        rspBuilder.setSfcEncapsulation(sfp.getSfcEncapsulation());
 
         short index = 0;
         short serviceIndex = 255;

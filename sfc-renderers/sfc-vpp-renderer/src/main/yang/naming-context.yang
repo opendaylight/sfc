@@ -1,0 +1,42 @@
+module naming-context {
+    yang-version 1;
+    namespace "urn:honeycomb:params:xml:ns:yang:naming:context";
+    prefix "nc";
+
+    description
+        "This module contains data definition for naming mapping context";
+
+    revision "2016-05-13" {
+        description
+            "Initial revision.";
+    }
+
+    container contexts {
+
+        list naming-context {
+
+            key "name";
+
+            leaf name {
+                type string;
+            }
+
+            container mappings {
+                list mapping {
+
+                    key "name";
+                    unique "index";
+
+                    leaf name {
+                        type string;
+                    }
+
+                    leaf index {
+                        type int32;
+                    }
+                }
+            }
+        }
+    }
+
+}

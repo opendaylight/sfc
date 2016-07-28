@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_26198cd7",
+        "filename": "sfc-demo/sfc103-docker/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-07-28T12:24:51Z",
+      "side": 1,
+      "message": "You are right. I will add it.",
+      "parentUuid": "9a561d44_66854406",
+      "revId": "ba8314c55163e21abfd9e226746bb9e260c66bc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_8907c917",
         "filename": "sfc-demo/sfc103-docker/demo.sh",
         "patchSetId": 4
@@ -30,6 +48,30 @@
       "writtenOn": "2016-07-28T11:04:42Z",
       "side": 1,
       "message": "This script seems to be not found in this part of the demo.sh script execution. Maybe this should be changed to:\n/sfc/sfc-demo/sfc103/setup_sfc.py",
+      "range": {
+        "startLine": 10,
+        "startChar": 32,
+        "endLine": 10,
+        "endChar": 65
+      },
+      "revId": "ba8314c55163e21abfd9e226746bb9e260c66bc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_4cebff12",
+        "filename": "sfc-demo/sfc103-docker/demo.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-07-28T12:24:51Z",
+      "side": 1,
+      "message": "You are right. I will fix it.",
+      "parentUuid": "9a561d44_8907c917",
       "range": {
         "startLine": 10,
         "startChar": 32,
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_0c8e2779",
+        "filename": "sfc-demo/sfc103-docker/demo.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-07-28T12:24:51Z",
+      "side": 1,
+      "message": "In this case it\u0027s ok this way because the sfc project should be in home folder to have all properly working.",
+      "parentUuid": "9a561d44_292ddd95",
+      "range": {
+        "startLine": 24,
+        "startChar": 20,
+        "endLine": 24,
+        "endChar": 52
+      },
+      "revId": "ba8314c55163e21abfd9e226746bb9e260c66bc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_891ea95d",
         "filename": "sfc-demo/sfc103-docker/demo.sh",
         "patchSetId": 4
@@ -76,6 +142,30 @@
       "writtenOn": "2016-07-28T11:04:42Z",
       "side": 1,
       "message": "same comment as above regarding the path",
+      "range": {
+        "startLine": 54,
+        "startChar": 20,
+        "endLine": 54,
+        "endChar": 53
+      },
+      "revId": "ba8314c55163e21abfd9e226746bb9e260c66bc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_ec8ad362",
+        "filename": "sfc-demo/sfc103-docker/demo.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-07-28T12:24:51Z",
+      "side": 1,
+      "message": "same as above",
+      "parentUuid": "9a561d44_891ea95d",
       "range": {
         "startLine": 54,
         "startChar": 20,

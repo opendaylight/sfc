@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_66854406",
+        "filename": "sfc-demo/sfc103-docker/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 6299
+      },
+      "writtenOn": "2016-07-28T09:53:44Z",
+      "side": 1,
+      "message": "maybe a comment regarding the minimal vagrant version needed could be included here.",
+      "revId": "ba8314c55163e21abfd9e226746bb9e260c66bc7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.utils;
 
 import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -23,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -55,6 +58,7 @@ public abstract class SfcOfBaseProviderUtils {
     abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
     abstract public Long getPortNumberFromName(final String bridgeName, final String portName, long rspId);
+
     /**
      * Return a named SffDataPlaneLocator on a SFF
      *
@@ -151,13 +155,14 @@ public abstract class SfcOfBaseProviderUtils {
         ServiceFunctionDictionary sffSfDict = null;
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
-        for (ServiceFunctionDictionary dict : sffSfDictList) {
-            if (dict.getName().getValue().equals(sfName.getValue())) {
-                sffSfDict = dict;
-                break;
+        if (sffSfDictList != null) {
+            for (ServiceFunctionDictionary dict : sffSfDictList) {
+                if (dict.getName().getValue().equals(sfName.getValue())) {
+                    sffSfDict = dict;
+                    break;
+                }
             }
         }
-
         return sffSfDict;
     }
 
@@ -319,6 +324,21 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
+     * Given an SFF name, return the augmented OpenFlow NodeName
+     *
+     * @param sffName The SFF name to process
+     * @param rspId the rsp the SFF is being processed on
+     * @return OpenFlow NodeName, null if not augmented, null if not found
+     */
+    public String getSffOpenFlowNodeName(final SffName sffName, long rspId, final DpnIdType dpnid) {
+        if (dpnid != null) {
+            // part of logical sff: openflow node name = "openflow:dpnid"
+            return "openflow:" + dpnid.getValue();
+        }
+        return getSffOpenFlowNodeName(sffName, rspId);
+    }
+
+    /**
      * Given an SFF object, return the augmented OpenFlow NodeName
      *
      * @param sff The SFF name to process
@@ -340,6 +360,31 @@ public abstract class SfcOfBaseProviderUtils {
 
         // it its not an sff-ovs, then just return the ServiceNode
         return sff.getServiceNode().getValue();
+    }
+
+    /**
+     * Given a SF, retrieve the logical interface name
+     * @param sf   The service function to use
+     * @return    String the logical interface name when the SF is
+     *            using a logical interface; null otherwise
+     */
+    public String getSfLogicalInterfaceName(ServiceFunction sf) {
+        String interfaceName = null;
+        LOG.debug("getSfLogicalInterfaceName: called for sf {}", sf.getName());
+        if ((sf.getSfDataPlaneLocator() != null) && (sf.getSfDataPlaneLocator().get(0) != null)) {
+            SfDataPlaneLocator sfdpl = sf.getSfDataPlaneLocator().get(0);
+            LOG.debug("getSfLogicalInterfaceName: dpl 0 is not null! it is {}", sfdpl);
+            if ((sfdpl.getLocatorType()!= null)
+                && (sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class)) {
+                LogicalInterface logicalInterface = ((LogicalInterface)sfdpl.getLocatorType());
+                if ((logicalInterface != null) && (logicalInterface.getInterfaceName() != null)) {
+                    LOG.debug("getSfLogicalInterfaceName: hop is using a logical interface [{}]"
+                        , logicalInterface.getInterfaceName());
+                    interfaceName = logicalInterface.getInterfaceName();
+                }
+            }
+        }
+        return interfaceName;
     }
 
 }

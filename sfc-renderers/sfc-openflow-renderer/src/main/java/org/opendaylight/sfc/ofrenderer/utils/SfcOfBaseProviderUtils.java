@@ -8,7 +8,9 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.math.BigInteger;
 import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -23,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -55,6 +58,10 @@ public abstract class SfcOfBaseProviderUtils {
     abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
 
     abstract public Long getPortNumberFromName(final String bridgeName, final String portName, long rspId);
+
+    abstract public BigInteger getDpid(final String sffName, final String sfName);
+
+    abstract public void setDpid(final String sffName, final String sfName, final BigInteger value);
     /**
      * Return a named SffDataPlaneLocator on a SFF
      *
@@ -319,6 +326,24 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
+     * Given an SFF name, return the augmented OpenFlow NodeName
+     *
+     * @param sffName The SFF name to process
+     * @param rspId the rsp the SFF is being processed on
+     * @return OpenFlow NodeName, null if not augmented, null if not found
+     */
+    public String getSffOpenFlowNodeName(final SffName sffName, long rspId, final DpnIdType dpnid) {
+        if (dpnid != null) {
+            // part of logical sff: openflow node name = "openflow:dpnid"
+            return "openflow:" + dpnid.getValue();
+        } else {
+            ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+            // TODO return more addressing type - NodeId
+            return getSffOpenFlowNodeName(sff);
+        }
+    }
+
+    /**
      * Given an SFF object, return the augmented OpenFlow NodeName
      *
      * @param sff The SFF name to process
@@ -341,5 +366,13 @@ public abstract class SfcOfBaseProviderUtils {
         // it its not an sff-ovs, then just return the ServiceNode
         return sff.getServiceNode().getValue();
     }
+
+//    public DpnIdType getDpid(final SffName sffName, final SfName sfName) {
+//        return new DpnIdType(getDpid(sffName.getValue(), sfName.getValue()));
+//    }
+//
+//    public void addDpid(SffName curSffName, SfName sfName, DpnIdType dpnId) {
+//        setDpid(curSffName.getValue(), sfName.getValue(), dpnId.getValue());
+//    }
 
 }

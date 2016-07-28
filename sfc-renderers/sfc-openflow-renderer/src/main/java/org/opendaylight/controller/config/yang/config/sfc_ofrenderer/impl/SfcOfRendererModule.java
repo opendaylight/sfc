@@ -9,6 +9,7 @@
 package org.opendaylight.controller.config.yang.config.sfc_ofrenderer.impl;
 
 import org.opendaylight.sfc.ofrenderer.SfcOfRenderer;
+import org.opendaylight.sfc.ofrenderer.processors.SfcRendererRpcProviderAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +39,15 @@ public class SfcOfRendererModule extends org.opendaylight.controller.config.yang
         LOG.info("SFC OF Renderer initializing");
 
         final SfcOfRenderer openflowSfcRenderer = new SfcOfRenderer(getDataBrokerDependency(), getNotificationServiceDependency());
+        final SfcRendererRpcProviderAPI rpcAPI = SfcRendererRpcProviderAPI.getInstance();
 
         java.lang.AutoCloseable ret = new java.lang.AutoCloseable() {
             @Override
             public void close() throws Exception {
                 openflowSfcRenderer.close();
+                //TODO needed?
+                rpcAPI.close();
+
             }
         };
 

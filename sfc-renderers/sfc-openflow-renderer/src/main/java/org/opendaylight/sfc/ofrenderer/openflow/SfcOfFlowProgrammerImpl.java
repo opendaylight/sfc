@@ -9,11 +9,13 @@
 package org.opendaylight.sfc.ofrenderer.openflow;
 
 import com.google.common.net.InetAddresses;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -1300,6 +1302,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 cookieStr);
     }
 
+    public void configureTransportEgressFlows(List<Instruction> instructionList, String sffName) {
+     // Match any
+        MatchBuilder match = new MatchBuilder();
+
+        // Finish up the instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        isb.setInstruction(instructionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder flowBuilder =  SfcOpenflowUtils.createFlowBuilder(
+                getTableId(TABLE_INDEX_TRANSPORT_EGRESS), FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        //TODO check sff name is correct (i.e. openflow:xxx instead of sff1)
+        sfcOfFlowWriter.writeFlow(flowRspId, sffName, flowBuilder);
+    }
+
     /**
      * Internal util method used by the previously defined configureTransportEgressFlow()
      * methods.
@@ -1506,5 +1523,52 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         } else {
             return tableIndex;
         }
+    }
+
+    @Override
+    public void configureGeniusBasedTransportEgressFlow(String sffNodeName,
+            long nshNsp, short nshNsi, String port,
+            List<Instruction> instructionList) {
+
+        MatchBuilder match = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
+        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<Action>();
+        // Copy/Move Nsc1/Nsc2 to the next hop
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
+        actionList.add(SfcOpenflowUtils
+                .createActionNxMoveTunIdRegister(order++));
+
+     // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+
+        // Put our Instruction in a list of Instructions
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+
+        //FIXME ediegra check wether instruction order/keys must be incremented
+        instructions.addAll(instructionList);
+
+        InstructionsBuilder isb = new InstructionsBuilder();
+        isb.setInstruction(instructions);
+
+        FlowBuilder transportEgressFlowBuilder = SfcOpenflowUtils.createFlowBuilder(
+                getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                //TODO ediegra make sure that priority is correct
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                "default_egress_flow", match, isb);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlowBuilder);
+
     }
 }

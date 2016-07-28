@@ -9,6 +9,8 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
+import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -21,7 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.rev160107.SfDplOvsAugmentation;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 
 
 public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
@@ -40,6 +44,12 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
                 // It may be that multiple SFs are on the same SFF
                 // If so, we dont need to set the transports again
                 // Otherwise the SFF ingress DPL will be overwritten
+                continue;
+            }
+
+            if (entry.isIntraLogicalSFFEntry() || (entry.getDstSff().equals(SffGraph.EGRESS))) {
+                // no need to set DPLs in RSP transports, right?
+                LOG.debug("ediegra: setRspTransports: skipping for logical sff-handled element: {}", entry);
                 continue;
             }
 
@@ -93,7 +103,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
         LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow sf [{}] sfDplOvs augmentation port [{}]",
                 entry.getSf().getValue(), sfDplOvs.getOvsPort().getPortId());
 
-        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
         IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
         String sfIp = new String(dstSfLocator.getIp().getValue());
         short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
@@ -128,7 +138,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
     public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         // TODO later use the dstSffDpl to get the tap port number
         this.sfcFlowProgrammer.configureVxlanGpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()),
+                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
                 entry.getPathId(),
                 entry.getServiceIndex());
     }
@@ -227,7 +237,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
      */
     private void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffName sffName, final String dstIp) {
         this.sfcFlowProgrammer.configureVxlanGpeNextHopFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(sffName, entry.getPathId()),
+                sfcProviderUtils.getSffOpenFlowNodeName(sffName, entry.getPathId(), entry.getDstDpnId()),
                 dstIp, entry.getPathId(), entry.getServiceIndex());
     }
 
@@ -246,7 +256,7 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfTransportEgressFlow(
             SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
-        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
         this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
                 sffNodeName, entry.getPathId(), entry.getServiceIndex(), srcOfsPortStr);
@@ -265,20 +275,54 @@ public class SfcRspProcessorNsh extends SfcRspTransportProcessorBase {
             SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
         long nsp = entry.getPathId();
         short nsi = entry.getServiceIndex();
-        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(), entry.getSrcDpnId());
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
+
+        //Not necessary, already done in SfcOfRspProcessor
+//        if (entry.isDstPartOfLogicalSFF() && entry.getSrcSff().equals(SffGraph.INGRESS)) {
+//            // nothing to do on ithis graph element (sff transport egress rules will be programated
+//            // using the info in Sff graph entries containing both dpns
+//            return;
+//        }
 
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             this.sfcFlowProgrammer.configureNshNscTransportEgressFlow(
                     sffNodeName, nsp, nsi, OutputPortValues.INPORT.toString());
+            //TODO ediegra these need renaming; they are actually transport-independent
             this.sfcFlowProgrammer.configureVxlanGpeLastHopTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
             IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
             this.sfcFlowProgrammer.configureVxlanGpeAppCoexistTransportEgressFlow(
                     sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
         } else {
-            this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
+
+            if (entry.isIntraLogicalSFFEntry()) {
+                // in this case, use Genius to program egress flow
+                // 1. Get dpid for both source sff, dst sff
+                DpnIdType srcDpid = entry.getSrcDpnId();
+                DpnIdType dstDpid = entry.getDstDpnId();
+
+                // for writing transport egress in src sff
+                // 1B, if both found:
+                // 1B1, use genius to retrieve dst interface name (ITM manager
+                // RPC)
+                // TODO this goes to Genius module!
+                String targetInterfaceName = SfcRendererRpcProviderAPI
+                        .getInstance().getTargetInterfaceFromGeniusRPC(srcDpid,
+                                dstDpid);
+                // 1B2, use genius for retrieving egress instructions (Interface
+                // Manager RPC)
+                List<Instruction> instructionList = SfcRendererRpcProviderAPI
+                        .getInstance().getEgressInstructionsFromGeniusRPC(
+                                targetInterfaceName);
+                // 1B3, write those instructions
+                this.sfcFlowProgrammer.configureGeniusBasedTransportEgressFlow(
+                        sffNodeName, nsp, nsi, srcOfsPortStr, instructionList);
+            } else {
+                LOG.debug("--ediegra:configureSffTransportEgressFlow:writing transport egress for sff {}", sffNodeName);
+                this.sfcFlowProgrammer.configureVxlanGpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
+            }
         }
     }
 }

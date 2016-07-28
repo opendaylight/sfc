@@ -1,0 +1,13 @@
+{
+  "service-function-metadata": {
+    "context-metadata": [
+      {
+        "name": "NSH1",
+        "context-header1": "1",
+        "context-header2": "2",
+        "context-header3": "3",
+        "context-header4": "4"
+      }
+    ]
+  }
+}

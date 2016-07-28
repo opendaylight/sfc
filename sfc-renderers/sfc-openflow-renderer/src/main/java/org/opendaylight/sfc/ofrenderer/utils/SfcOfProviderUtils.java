@@ -8,11 +8,13 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -42,7 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
 public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
     // Since this class can be called by multiple threads,
@@ -55,6 +56,8 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
         private Map<SffName, ServiceFunctionForwarder> serviceFunctionFowarders;
 
+
+
         public RspContext() {
             serviceFunctions = Collections.synchronizedMap(new HashMap<SfName, ServiceFunction>());
             serviceFunctionGroups = Collections.synchronizedMap(new HashMap<String, ServiceFunctionGroup>());
@@ -65,7 +68,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     private Map<Long, RspContext> rspIdToContext;
 
     public SfcOfProviderUtils() {
-        rspIdToContext = new HashMap<Long, RspContext>();
+        rspIdToContext = new HashMap<>();
     }
 
     @Override
@@ -121,7 +124,11 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
             if (sff != null) {
                 sff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
                 rspContext.serviceFunctionFowarders.put(sffName, sff);
+            } else {
+                LOG.debug("getServiceFunctionForwarder: read failed");
             }
+        } else {
+            LOG.debug("getServiceFunctionForwarder: already in context, returning: {}", sff);
         }
 
         return sff;

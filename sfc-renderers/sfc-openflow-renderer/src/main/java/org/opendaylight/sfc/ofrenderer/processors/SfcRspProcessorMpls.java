@@ -264,4 +264,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
                     srcOfsPortStr, entry.getPathId());
         }
     }
+
+    @Override
+    public void configureSffTransportEgressFlow(SffGraphEntry entry) {
+    }
 }

@@ -23,6 +23,7 @@
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.genius/genius-features/{{VERSION}}/xml/features</repository>
 
     <feature name="odl-sfc-model" version="${project.version}" description="OpenDaylight :: sfc :: Model">
         <feature version="${mdsal.model.version}">odl-mdsal-models</feature>
@@ -80,8 +81,10 @@
         <feature version="${project.version}">odl-sfc-ovs</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <feature version="${genius.version}">odl-genius-api</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-renderer/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-openflow-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-openflow-renderer/{{VERSION}}/xml/config</configfile>
     </feature>
 

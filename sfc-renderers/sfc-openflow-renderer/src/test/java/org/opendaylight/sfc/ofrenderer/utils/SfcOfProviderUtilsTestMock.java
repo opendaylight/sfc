@@ -8,8 +8,10 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -28,9 +30,9 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
 
     public SfcOfProviderUtilsTestMock() {
         LOG.info("SfcOfProviderUtilsTestMock constructor");
-        serviceFunctions = new HashMap<SfName, ServiceFunction>();
-        serviceFunctionGroups = new HashMap<String, ServiceFunctionGroup>();
-        serviceFunctionForwarders = new HashMap<SffName, ServiceFunctionForwarder>();
+        serviceFunctions = new HashMap<>();
+        serviceFunctionGroups = new HashMap<>();
+        serviceFunctionForwarders = new HashMap<>();
     }
 
     public void addServiceFunction(SfName sfName, ServiceFunction sf) {
@@ -79,5 +81,4 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
     public Long getPortNumberFromName(String bridgeName, String portName, long rspId) {
         return new Long(0);
     }
-
 }

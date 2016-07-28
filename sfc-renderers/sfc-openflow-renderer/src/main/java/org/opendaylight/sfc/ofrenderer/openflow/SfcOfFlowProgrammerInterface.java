@@ -11,7 +11,9 @@ package org.opendaylight.sfc.ofrenderer.openflow;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 
@@ -116,6 +118,16 @@ public interface SfcOfFlowProgrammerInterface {
 
     public void configureVxlanGpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+
+    /**
+     * Configure transport egress flows, using a list of externally provided instructions
+     * @param sffNodeName    The openflow identifier for the node on which the flows are to be written
+     * @param nshNsp         NSP to use in the match part
+     * @param nshNsi         NSI to use in the match part
+     * @param instructionList   Instruction list to use in the actions part
+     */
+    public void configureTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi, List<Instruction> instructionList);
 
     public void configureVxlanGpeAppCoexistTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);

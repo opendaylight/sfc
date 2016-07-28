@@ -11,6 +11,7 @@ package org.opendaylight.sfc.ofrenderer.processors;
 import java.util.Iterator;
 import java.util.List;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -94,6 +95,7 @@ public abstract class SfcRspTransportProcessorBase {
             SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl);
     public abstract void configureSffTransportEgressFlow(
             SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl);
+    public abstract void configureSffTransportEgressFlow(SffGraphEntry entry);
 
     public abstract void setRspTransports();
 
@@ -120,33 +122,48 @@ public abstract class SfcRspTransportProcessorBase {
             // may be null if its EGRESS
             ServiceFunctionForwarder dstSff =
                     sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
-            if (dstSff != null) {
+            // if the rsp hop from which this graph entry was logicalSff-augmented,
+            // then it must be a logical sff -> it doesn't have dpl
+            // a data plane locator (genius will provide rules for the hop). So skip it
+            if (!entry.isIntraLogicalSFFEntry()) {
                 // Set the SFF-SFF Hop DPL
-                if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
-                    throw new RuntimeException(
-                            "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
-                                    + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                if (dstSff != null) {
+                    if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
+                            throw new RuntimeException(
+                                    "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
+                                            + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    }
                 }
+            } else {
+                LOG.debug("processSFFDpls: this graph entry is for a switch {} "
+                        + "which is part of logical sff: skipping dpl assignment", dstSff.getName());
             }
 
-            if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-                // The srcSff ingress DPL was set in the previous loop
-                // iteration, now we need to set its egress DPL
-                SffDataPlaneLocator srcSffIngressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
-                        sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId()));
-                if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffIngressDpl, true)) {
-                    throw new RuntimeException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
-                            + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+            if (entry.getDstSff().equals(SffGraph.EGRESS) ) {
+                if (entry.getSrcDpnId() == null) { // if last switch is part of logical sff, don't try to set remaining hop dpl
+                    // The srcSff ingress DPL was set in the previous loop
+                    // iteration, now we need to set its egress DPL
+                    SffDataPlaneLocator srcSffIngressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
+                            sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId()));
+                    if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffIngressDpl, true)) {
+                        throw new RuntimeException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
+                                + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    }
                 }
             } else {
                 // The srcSff egress DPL was just set above, now set its ingress DPL
-                SffDataPlaneLocator srcSffEgressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
-                        sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
-                if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffEgressDpl, false)) {
-                    throw new RuntimeException("Unable to get SFF HOP ingress DPL srcSff [" + entry.getSrcSff()
-                            + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                if (entry.getSrcDpnId() == null) { // if last switch is part of logical sff, don't try to set remaining hop dpl
+                    SffDataPlaneLocator srcSffEgressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
+                            sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+                    if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffEgressDpl, false)) {
+                        throw new RuntimeException("Unable to get SFF HOP ingress DPL srcSff [" + entry.getSrcSff()
+                                + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    }
+                } else {
+                    LOG.debug("processSFFDpls: skipping src dpl setup for logical sff");
                 }
             }
+
         }
     }
 
@@ -165,6 +182,8 @@ public abstract class SfcRspTransportProcessorBase {
      */
     private boolean setSffRemainingHopDataPlaneLocator(final ServiceFunctionForwarder sff,
             SffDataPlaneLocator alreadySetSffDpl, boolean ingressDplSet) {
+        LOG.debug("setSffRemainingHopDataPlaneLocator: called for "
+                + "sff: {} already set dpl {} ingress set {}", sff.getName(), alreadySetSffDpl, ingressDplSet);
         long pathId = rsp.getPathId();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
@@ -213,6 +232,9 @@ public abstract class SfcRspTransportProcessorBase {
         List<SffDataPlaneLocator> curSffDplList = curSff.getSffDataPlaneLocator();
         boolean hasSingleDpl = false;
 
+        LOG.debug("setSffHopDataPlaneLocators: called for sffs {} {}"
+                , prevSff.getName(), curSff.getName());
+
         // If the prevSffDplList has just one DPL, nothing special needs to be done
         // Just check that its DPL transport matches the RSP transport
         if (prevSffDplList.size() == 1) {
@@ -225,6 +247,7 @@ public abstract class SfcRspTransportProcessorBase {
             this.sffGraph.setSffEgressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
             this.sffGraph.setSffIngressDpl(prevSff.getName(), pathId, prevSffDpl.getName());
 
+            LOG.debug("setSffHopDataPlaneLocators: prevSff {} had only one sff, dpl resolved", prevSff.getName());
             // Nothing else needs to be done
             hasSingleDpl = true;
         }
@@ -240,6 +263,7 @@ public abstract class SfcRspTransportProcessorBase {
             this.sffGraph.setSffIngressDpl(curSff.getName(), pathId, curSffDpl.getName());
 
             // Nothing else needs to be done
+            LOG.debug("setSffHopDataPlaneLocators: currSff {} had only one sff, dpl resolved", prevSff.getName());
             hasSingleDpl = true;
         }
 

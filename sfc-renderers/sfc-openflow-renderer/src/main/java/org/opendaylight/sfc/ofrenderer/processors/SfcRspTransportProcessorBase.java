@@ -104,6 +104,13 @@ public abstract class SfcRspTransportProcessorBase {
      */
     public void processSffDpls() {
         // Iterate the entries in the SFF Graph
+
+        // DPLs are not used for the logical SFF (no SFF DPL / dictionary; SF dpl is a logical interface definition)
+        if (sffGraph.isUsingLogicalSFF()) {
+            LOG.debug("processSFFDpls: skipping src dpl setup for logical sff");
+            return;
+        }
+
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
         while (sffGraphIter.hasNext()) {
             SffGraph.SffGraphEntry entry = sffGraphIter.next();

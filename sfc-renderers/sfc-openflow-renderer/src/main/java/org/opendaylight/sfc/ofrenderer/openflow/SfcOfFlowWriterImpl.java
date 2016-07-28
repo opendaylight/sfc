@@ -83,7 +83,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
     public SfcOfFlowWriterImpl() {
         this.threadPoolExecutorService = Executors.newSingleThreadExecutor();;
-        this.rspNameToFlowsMap = new ConcurrentHashMap<Long, Map<String, List<FlowDetails>>>();
+        this.rspNameToFlowsMap = new ConcurrentHashMap<>();
         this.flowBuilder = null;
         this.setOfFlowsToDelete = new HashSet<>();
         this.setOfFlowsToAdd = new HashSet<>();
@@ -193,6 +193,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         /**
          * This constructor is used for storing flows to be added
+         *
+         * @param sffNodeName - which SFF to write the flow to
+         * @param flowKey - the flow identifier
+         * @param tableKey - the table identifier
+         * @param flow - The flow to be written
          */
         public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow) {
             this.sffNodeName = sffNodeName;
@@ -203,6 +208,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         /**
          * This constructor is used for storing flows to be deleted. Only the path ids are needed
+         *
+         * @param sffNodeName - which SFF to write the flow to
+         * @param flowKey - the flow identifier
+         * @param tableKey - the table identifier
          */
         public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
             this(sffNodeName, flowKey, tableKey, null);
